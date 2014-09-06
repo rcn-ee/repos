@@ -25,4 +25,6 @@ sed -i -e 's:mv debian:#mv debian:g' ./tools/linux_dist_support/debian/rules
 #build deb:
 mkdir out
 ./tools/create_tarball.py
-./tools/create_debian_packages.py
+./tools/create_debian_packages.py --arch armhf
+
+#
