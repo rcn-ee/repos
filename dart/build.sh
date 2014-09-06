@@ -19,6 +19,11 @@ git svn clone -rHEAD https://dart.googlecode.com/svn/branches/bleeding_edge/dart
 
 cd ./dart/
 
+#patch:
+sed -i -e 's:create_sdk:runtime:g' ./tools/linux_dist_support/debian/rules
+sed -i -e 's:_TYPE)/dart-sdk:_TYPE)/dart:g' ./tools/linux_dist_support/debian/rules
+sed -i -e 's:mv debian:#mv debian:g' ./tools/linux_dist_support/debian/rules
+
 #build
 ./tools/build.py -m release --arch arm runtime
 

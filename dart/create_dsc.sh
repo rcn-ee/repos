@@ -1,8 +1,10 @@
 #!/bin/bash -e
 
-mkdir ~/bin/
-cd ~/bin/
-svn co http://src.chromium.org/svn/trunk/tools/depot_tools
+if [ ! -d ~/bin/depot_tools/ ] ; then
+	mkdir ~/bin/
+	cd ~/bin/
+	svn co http://src.chromium.org/svn/trunk/tools/depot_tools
+fi
 
 mkdir -p ~/dart
 cd ~/dart/
