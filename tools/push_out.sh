@@ -18,14 +18,14 @@ pushout () {
 		fi
 	fi
 
-	if [ -f ${package}_${version}.dsc ] ; then
-		cp -v ${package}_${version}.debian.tar.xz /mnt/farm/incoming/${dist}/
-		cp -v ${package}_${version}.dsc /mnt/farm/incoming/${dist}/
+	if [ -f ${package}_${debian_version}.dsc ] ; then
+		cp -v ${package}_${debian_version}.debian.tar.xz /mnt/farm/incoming/${dist}/
+		cp -v ${package}_${debian_version}.dsc /mnt/farm/incoming/${dist}/
 	else
 		../tools/generate_dsc.sh
-		if [ -f ${package}_${version}.dsc ] ; then
-			cp -v ${package}_${version}.debian.tar.xz /mnt/farm/incoming/${dist}/
-			cp -v ${package}_${version}.dsc /mnt/farm/incoming/${dist}/
+		if [ -f ${package}_${debian_version}.dsc ] ; then
+			cp -v ${package}_${debian_version}.debian.tar.xz /mnt/farm/incoming/${dist}/
+			cp -v ${package}_${debian_version}.dsc /mnt/farm/incoming/${dist}/
 		else
 			exit 1
 		fi
