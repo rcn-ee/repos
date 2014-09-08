@@ -13,9 +13,9 @@ build_package () {
 		cd ./${dist}
 		sbuild -d ${dist} http://httphost/farm/incoming/${dist}/${package}_${debian_version}${bpo}.dsc
 
-		if [ -f ${package}_${debian_version}_armhf.changes ] ; then
+		if [ -f ${package}_${debian_version}${bpo}_armhf.changes ] ; then
 			mkdir -p ${out_dir}/
-			cp -v ${package}_${debian_version}_armhf.changes ${out_dir}/
+			cp -v ${package}_${debian_version}${bpo}_armhf.changes ${out_dir}/
 
 			if [ -f ${package}_${version}.orig.tar.xz ] ; then
 				cp -v ${package}_${version}.orig.tar.xz ${out_dir}/
@@ -33,8 +33,8 @@ build_package () {
 				cp -v ${package}_${debian_version}${bpo}.debian.tar.xz ${out_dir}/
 			fi
 
-			if [ -f ${package}_${debian_version}_armhf.deb ] ; then
-				cp -v ${package}_${debian_version}_armhf.deb ${out_dir}/
+			if [ -f ${package}_${debian_version}${bpo}_armhf.deb ] ; then
+				cp -v ${package}_${debian_version}${bpo}_armhf.deb ${out_dir}/
 			fi
 		fi
 		cd ../
@@ -45,7 +45,7 @@ dist="wheezy"
 bpo="~bpo70+1"
 build_package
 
-#dist="jessie"
-#bpo=""
-#build_package
+dist="jessie"
+bpo=""
+build_package
 
