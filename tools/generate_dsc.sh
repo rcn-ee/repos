@@ -7,8 +7,8 @@ generate_dsc () {
 		if [ -d ./${dist} ] ; then
 			rm -rf ./${dist}/
 		fi
-
 		mkdir ./${dist}
+
 		cp -v ${package}_${version}.orig.tar.xz ./${dist}
 
 		cd ./${dist}
@@ -17,6 +17,7 @@ generate_dsc () {
 		cd ./${package}_${version}
 		cp -rv ../../debian/${dist}/* ./
 		debuild -us -uc -S
+
 		cd ../../
 	fi
 }

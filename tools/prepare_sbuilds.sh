@@ -20,6 +20,3 @@ setup_update_sbuild
 dist="jessie"
 setup_update_sbuild
 
-dist="sid"
-setup_update_sbuild
-
