@@ -42,9 +42,3 @@ build_package
 dist="sid"
 build_package
 
-dist="trusty"
-build_package
-
-dist="utopic"
-build_package
-

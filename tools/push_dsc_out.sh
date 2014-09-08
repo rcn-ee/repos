@@ -41,8 +41,3 @@ pushout
 dist="sid"
 pushout
 
-dist="trusty"
-pushout
-
-dist="utopic"
-pushout

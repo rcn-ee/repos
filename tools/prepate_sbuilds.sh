@@ -4,7 +4,6 @@
 proxy="apt-proxy:3142/"
 
 debian_server="ftp.us.debian.org/debian"
-ubuntu_server="ports.ubuntu.com"
 
 setup_update_sbuild () {
 	if [ ! -f /var/lib/sbuild/${dist}-armhf.tar.gz ] ; then
@@ -22,12 +21,5 @@ dist="jessie"
 setup_update_sbuild
 
 dist="sid"
-setup_update_sbuild
-
-mirror="http://${proxy}${ubuntu_server}"
-dist="trusty"
-setup_update_sbuild
-
-dist="utopic"
 setup_update_sbuild
 
