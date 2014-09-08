@@ -7,31 +7,21 @@ pushout () {
 		mkdir -p /mnt/farm/incoming/${dist}/
 	fi
 
-	if [ -f ${package}_${version}.orig.tar.xz ] ; then
-		cp -v ${package}_${version}.orig.tar.xz /mnt/farm/incoming/${dist}/
-	else
-		../tools/generate_source.sh
-		if [ -f ${package}_${version}.orig.tar.xz ] ; then
-			cp -v ${package}_${version}.orig.tar.xz /mnt/farm/incoming/${dist}/
-		else
-			exit 1
-		fi
+	if [ -f ${dist}/${package}_${version}.orig.tar.xz ] ; then
+		cp -v ${dist}/${package}_${version}.orig.tar.xz /mnt/farm/incoming/${dist}/
 	fi
 
-	if [ -f ${package}_${debian_version}.dsc ] ; then
-		cp -v ${package}_${debian_version}.debian.tar.xz /mnt/farm/incoming/${dist}/
-		cp -v ${package}_${debian_version}.dsc /mnt/farm/incoming/${dist}/
-	else
-		../tools/generate_dsc.sh
-		if [ -f ${package}_${debian_version}.dsc ] ; then
-			cp -v ${package}_${debian_version}.debian.tar.xz /mnt/farm/incoming/${dist}/
-			cp -v ${package}_${debian_version}.dsc /mnt/farm/incoming/${dist}/
-		else
-			exit 1
-		fi
+	if [ -f ${dist}/${package}_${debian_version}${bpo}.dsc ] ; then
+		cp -v ${dist}/${package}_${debian_version}${bpo}.debian.tar.xz /mnt/farm/incoming/${dist}/
+		cp -v ${dist}/${package}_${debian_version}${bpo}.dsc /mnt/farm/incoming/${dist}/
 	fi
 }
 
+dist="wheezy"
+bpo="~bpo70+1"
+pushout
+
 dist="jessie"
+bpo=""
 pushout
 
