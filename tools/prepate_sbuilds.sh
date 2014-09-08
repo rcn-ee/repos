@@ -12,7 +12,7 @@ setup_update_sbuild () {
 	fi
 }
 
-mirror="http://${proxy}/${debian_server}"
+mirror="http://${proxy}${debian_server}"
 dist="wheezy"
 setup_update_sbuild
 
@@ -22,7 +22,7 @@ setup_update_sbuild
 dist="sid"
 setup_update_sbuild
 
-mirror="http://${proxy}/${ubuntu_server}"
+mirror="http://${proxy}${ubuntu_server}"
 dist="trusty"
 setup_update_sbuild
 
