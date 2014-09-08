@@ -32,12 +32,6 @@ pushout () {
 	fi
 }
 
-dist="wheezy"
-pushout
-
 dist="jessie"
-pushout
-
-dist="sid"
 pushout
 

@@ -37,12 +37,6 @@ build_package () {
 	fi
 }
 
-dist="wheezy"
-build_package
-
 dist="jessie"
-build_package
-
-dist="sid"
 build_package
 
