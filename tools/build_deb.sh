@@ -5,6 +5,10 @@
 build_package () {
 	out_dir="/mnt/farm/outgoing/${dist}/${package}_${debian_version}"
 	if [ -f /var/lib/sbuild/${dist}-armhf.tar.gz ] ; then
+		if [ -d ./${dist} ] ; then
+			rm -rf ./${dist}/
+		fi
+
 		mkdir ./${dist}
 		cd ./${dist}
 		sbuild -d ${dist} http://httphost/farm/incoming/${dist}/${package}_${debian_version}.dsc
@@ -17,16 +21,16 @@ build_package () {
 				cp -v ${package}_${version}.orig.tar.xz ${out_dir}/
 			fi
 
-			if [ -f ${package}_${debian_version}.dsc ] ; then
-				cp -v ${package}_${debian_version}.dsc ${out_dir}/
+			if [ -f ${package}_${debian_version}${bpo}.dsc ] ; then
+				cp -v ${package}_${debian_version}${bpo}.dsc ${out_dir}/
 			fi
 
-			if [ -f ${package}_${debian_version}.debian.tar.gz ] ; then
-				cp -v ${package}_${debian_version}.debian.tar.gz ${out_dir}/
+			if [ -f ${package}_${debian_version}${bpo}.debian.tar.gz ] ; then
+				cp -v ${package}_${debian_version}${bpo}.debian.tar.gz ${out_dir}/
 			fi
 
-			if [ -f ${package}_${debian_version}.debian.tar.xz ] ; then
-				cp -v ${package}_${debian_version}.debian.tar.xz ${out_dir}/
+			if [ -f ${package}_${debian_version}${bpo}.debian.tar.xz ] ; then
+				cp -v ${package}_${debian_version}${bpo}.debian.tar.xz ${out_dir}/
 			fi
 
 			if [ -f ${package}_${debian_version}_armhf.deb ] ; then
@@ -37,6 +41,11 @@ build_package () {
 	fi
 }
 
-dist="jessie"
+dist="wheezy"
+bpo="~bpo70+1"
 build_package
+
+#dist="jessie"
+#bpo=""
+#build_package
 
