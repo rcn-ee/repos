@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -ex
 
 . version.sh
 
@@ -7,8 +7,8 @@ outgoing="/var/www/html/farm/outgoing"
 
 add_to_reprepro () {
 	if [ ! -f ${repo}pool/main/${reprepro_dir}/${package}_${debian_version}${bpo}_armhf.deb ] ; then
-		if [ -f ${outgoing}/${dist}/${package}_${debian_version}${bpo}_armhf.changes ] ; then
-			reprepro -b ${repo} -C main include ${dist} ${outgoing}/${dist}/${package}_${debian_version}${bpo}_armhf.changes
+		if [ -f ${outgoing}/${dist}/${package}_${debian_version}/${package}_${debian_version}${bpo}_armhf.changes ] ; then
+			reprepro -b ${repo} -C main include ${dist} ${outgoing}/${dist}/${package}_${debian_version}/${package}_${debian_version}${bpo}_armhf.changes
 		fi
 	fi
 }
