@@ -13,12 +13,12 @@ build_package () {
 			mkdir -p ${out_dir}/
 			cp -v ${package}_${debian_version}_armhf.changes ${out_dir}/
 
-			if [ -f ${package}_${version}.dsc ] ; then
-				cp -v ${package}_${version}.dsc ${out_dir}/
-			fi
-
 			if [ -f ${package}_${version}.orig.tar.xz ] ; then
 				cp -v ${package}_${version}.orig.tar.xz ${out_dir}/
+			fi
+
+			if [ -f ${package}_${debian_version}.dsc ] ; then
+				cp -v ${package}_${debian_version}.dsc ${out_dir}/
 			fi
 
 			if [ -f ${package}_${debian_version}.debian.tar.gz ] ; then
