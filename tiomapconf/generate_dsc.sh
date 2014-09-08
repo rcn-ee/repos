@@ -2,8 +2,8 @@
 
 . version.sh
 
-if [ -f ${package}_${version}.orig.tar.gz ] ; then
-	tar xf ${package}_${version}.orig.tar.gz
+if [ -f ${package}_${version}.orig.tar.xz ] ; then
+	tar xf ${package}_${version}.orig.tar.xz
 	cd ./${package}_${version}
 	cp -rv ../debian/ ./
 	debuild -us -uc -S
