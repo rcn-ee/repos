@@ -4,7 +4,7 @@
 proxy="apt-proxy:3142/"
 
 debian_server="ftp.us.debian.org/debian"
-ubuntu_server="ports.ubuntu.com/ubuntu"
+ubuntu_server="ports.ubuntu.com"
 
 setup_update_sbuild () {
 	if [ ! -f /var/lib/sbuild/${dist}-armhf.tar.gz ] ; then
