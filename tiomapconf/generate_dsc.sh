@@ -5,8 +5,7 @@
 if [ -f ${package}_${version}.orig.tar.gz ] ; then
 	tar xf ${package}_${version}.orig.tar.gz
 	cd ./${package}_${version}
-	mkdir debian
-	cp -rv ../debian/ ./debian
+	cp -rv ../debian/ ./
 	debuild -us -uc -S
 fi
 
