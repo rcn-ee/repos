@@ -11,7 +11,7 @@ build_package () {
 
 		mkdir ./${dist}
 		cd ./${dist}
-		sbuild -d ${dist} http://httphost/farm/incoming/${dist}/${package}_${debian_version}.dsc
+		sbuild -d ${dist} http://httphost/farm/incoming/${dist}/${package}_${debian_version}${bpo}.dsc
 
 		if [ -f ${package}_${debian_version}_armhf.changes ] ; then
 			mkdir -p ${out_dir}/
