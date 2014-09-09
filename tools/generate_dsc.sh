@@ -22,7 +22,10 @@ generate_dsc () {
 		cd ./${package}_${version}
 	fi
 
-	cp -rv ../../debian/${dist}/* ./
+	if [ -d ../../debian/${dist}/ ] ; then
+		cp -rv ../../debian/${dist}/* ./
+	fi
+
 	debuild -us -uc -S
 
 	cd ../../
