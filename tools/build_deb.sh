@@ -18,22 +18,10 @@ build_package () {
 			cp -v ${package}_${debian_version}${bpo}_armhf.changes ${out_dir}/
 			cp -v *.deb ${out_dir}/ || true
 			cp -v *.udeb ${out_dir}/ || true
-
-			if [ -f ${package}_${version}.orig.tar.xz ] ; then
-				cp -v ${package}_${version}.orig.tar.xz ${out_dir}/
-			fi
-
-			if [ -f ${package}_${debian_version}${bpo}.dsc ] ; then
-				cp -v ${package}_${debian_version}${bpo}.dsc ${out_dir}/
-			fi
-
-			if [ -f ${package}_${debian_version}${bpo}.debian.tar.gz ] ; then
-				cp -v ${package}_${debian_version}${bpo}.debian.tar.gz ${out_dir}/
-			fi
-
-			if [ -f ${package}_${debian_version}${bpo}.debian.tar.xz ] ; then
-				cp -v ${package}_${debian_version}${bpo}.debian.tar.xz ${out_dir}/
-			fi
+			cp -v *.dsc ${out_dir}/ || true
+			cp -v *.tar.gz ${out_dir}/ || true
+			cp -v *.tar.xz ${out_dir}/ || true
+			cp -v *.diff.gz ${out_dir}/ || true
 		fi
 		cd ../
 	fi
