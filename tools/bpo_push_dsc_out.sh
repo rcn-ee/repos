@@ -21,6 +21,8 @@ pushout () {
 		cp -v ${dist}/${package}_${debian_version}${bpo}.debian.tar.xz /mnt/farm/incoming/${dist}/
 	elif [ -f ${dist}/${package}_${debian_version}${bpo}.debian.tar.gz ] ; then
 		cp -v ${dist}/${package}_${debian_version}${bpo}.debian.tar.gz /mnt/farm/incoming/${dist}/
+	elif [ -f ${dist}/${package}_${debian_version}${bpo}.diff.gz ] ; then
+		cp -v ${dist}/${package}_${debian_version}${bpo}.diff.gz /mnt/farm/incoming/${dist}/
 	fi
 }
 
