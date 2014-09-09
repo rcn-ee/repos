@@ -3,28 +3,44 @@
 . version.sh
 
 generate_dsc () {
-	if [ -f ${package}_${version}.orig.tar.xz ] ; then
-		if [ -d ./${dist} ] ; then
-			rm -rf ./${dist}/
-		fi
-		mkdir ./${dist}
+	if [ -d ./${dist} ] ; then
+		rm -rf ./${dist}/
+	fi
+	mkdir ./${dist}
 
-		cp -v ${package}_${version}.orig.tar.xz ./${dist}
+	cp -v ${package}_${version}.orig.tar.${orig} ./${dist}
+	if [ ! "x${deb_patch}" = "x" ] ; then
+		cp -v ${package}_${debian_version}.diff.gz ./${dist}
+	fi
 
-		cd ./${dist}
-		tar xf ${package}_${version}.orig.tar.xz
-
+	cd ./${dist}
+	tar xf ${package}_${version}.orig.tar.${orig}
+	if [ ! "x${deb_patch}" = "x" ] ; then
+		cd ./${package}-${version}
+		zcat ../${package}_${debian_version}.diff.gz | patch -p1
+	else
 		cd ./${package}_${version}
-		cp -rv ../../debian/${dist}/* ./
-		debuild -us -uc -S
+	fi
 
-		cd ../../
+	cp -rv ../../debian/${dist}/* ./
+	debuild -us -uc -S
+
+	cd ../../
+}
+
+sfile () {
+	if [ -f ${package}_${version}.orig.tar.gz ] ; then
+		orig="gz"
+		generate_dsc
+	elif [ -f ${package}_${version}.orig.tar.xz ] ; then
+		orig="xz"
+		generate_dsc
 	fi
 }
 
 dist="wheezy"
-generate_dsc
+sfile
 
 dist="jessie"
-generate_dsc
+sfile
 
