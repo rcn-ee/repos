@@ -16,6 +16,8 @@ build_package () {
 		if [ -f ${package}_${debian_version}${bpo}_armhf.changes ] ; then
 			mkdir -p ${out_dir}/
 			cp -v ${package}_${debian_version}${bpo}_armhf.changes ${out_dir}/
+			cp -v *.deb ${out_dir}/ || true
+			cp -v *.udeb ${out_dir}/ || true
 
 			if [ -f ${package}_${version}.orig.tar.xz ] ; then
 				cp -v ${package}_${version}.orig.tar.xz ${out_dir}/
@@ -31,11 +33,6 @@ build_package () {
 
 			if [ -f ${package}_${debian_version}${bpo}.debian.tar.xz ] ; then
 				cp -v ${package}_${debian_version}${bpo}.debian.tar.xz ${out_dir}/
-			fi
-
-			if [ -f ${package}_${debian_version}${bpo}_armhf.deb ] ; then
-				cp -v *.deb ${out_dir}/ || true
-				cp -v *.udeb ${out_dir}/ || true
 			fi
 		fi
 		cd ../
