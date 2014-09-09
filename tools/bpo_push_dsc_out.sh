@@ -27,6 +27,6 @@ pushout () {
 }
 
 dist="wheezy"
-bpo="~bpo70+1"
+bpo="${wheezy_backport}"
 pushout
 

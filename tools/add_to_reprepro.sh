@@ -15,7 +15,7 @@ add_to_reprepro () {
 }
 
 dist="wheezy"
-bpo="~bpo70+1"
+bpo="${wheezy_backport}"
 add_to_reprepro
 
 dist="jessie"

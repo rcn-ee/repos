@@ -28,7 +28,7 @@ build_package () {
 }
 
 dist="wheezy"
-bpo="~bpo70+1"
+bpo="${wheezy_backport}"
 build_package
 
 dist="jessie"
