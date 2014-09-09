@@ -3,7 +3,7 @@
 . version.sh
 
 build_package () {
-	out_dir="/mnt/farm/outgoing/${dist}/${package}_${debian_version}"
+	out_dir="/mnt/farm/outgoing/${dist}/${archive}_${debian_version}"
 	if [ -f /var/lib/sbuild/${dist}-armhf.tar.gz ] ; then
 		if [ -d ./${dist} ] ; then
 			rm -rf ./${dist}/
@@ -11,11 +11,11 @@ build_package () {
 
 		mkdir ./${dist}
 		cd ./${dist}
-		sbuild -d ${dist} http://httphost/farm/incoming/${dist}/${package}_${debian_version}${bpo}.dsc
+		sbuild -d ${dist} http://httphost/farm/incoming/${dist}/${archive}_${debian_version}${bpo}.dsc
 
-		if [ -f ${package}_${debian_version}${bpo}_armhf.changes ] ; then
+		if [ -f ${archive}_${debian_version}${bpo}_armhf.changes ] ; then
 			mkdir -p ${out_dir}/
-			cp -v ${package}_${debian_version}${bpo}_armhf.changes ${out_dir}/
+			cp -v ${archive}_${debian_version}${bpo}_armhf.changes ${out_dir}/
 			cp -v *.deb ${out_dir}/ || true
 			cp -v *.udeb ${out_dir}/ || true
 			cp -v *.dsc ${out_dir}/ || true
