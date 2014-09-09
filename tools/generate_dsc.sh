@@ -10,16 +10,26 @@ generate_dsc () {
 
 	cp -v ${package}_${version}.orig.tar.${orig} ./${dist}
 	if [ ! "x${deb_patch}" = "x" ] ; then
-		cp -v ${package}_${debian_version}.diff.gz ./${dist}
+		cp -v ${deb_patch} ./${dist}
 	fi
 
 	cd ./${dist}
 	tar xf ${package}_${version}.orig.tar.${orig}
 	if [ ! "x${deb_patch}" = "x" ] ; then
-		cd ./${package}-${version}
-		zcat ../${package}_${debian_version}.diff.gz | patch -p1
+		if [ -d ./${package}-${version} ] ; then
+			cd ./${package}-${version}
+		fi
+		if [ -d ./${package}_${version} ] ; then
+			cd ./${package}_${version}
+		fi
+		zcat ../${deb_patch} | patch -p1
 	else
-		cd ./${package}_${version}
+		if [ -d ./${package}-${version} ] ; then
+			cd ./${package}-${version}
+		fi
+		if [ -d ./${package}_${version} ] ; then
+			cd ./${package}_${version}
+		fi
 	fi
 
 	if [ -d ../../debian/${dist}/ ] ; then

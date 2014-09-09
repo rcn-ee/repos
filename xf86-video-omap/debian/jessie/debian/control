@@ -1,0 +1,61 @@
+Source: xf86-video-omap
+Section: x11
+Priority: optional
+Maintainer: Sebastian Reichel <sre@debian.org>
+Build-Depends: debhelper (>= 8),
+               dh-autoreconf,
+               libdrm-dev (>= 2.4.36),
+               libudev-dev,
+               libxext-dev,
+               pkg-config,
+               x11proto-core-dev,
+               x11proto-fonts-dev,
+               x11proto-gl-dev,
+               x11proto-xf86dri-dev,
+               xutils-dev,
+               xserver-xorg-dev (>= 2:1.9.4)
+Standards-Version: 3.9.4
+Vcs-Git: git://git.debian.org/git/collab-maint/xf86-video-omap
+Vcs-Browser: http://git.debian.org/?p=collab-maint/xf86-video-omap.git
+
+
+Package: xserver-xorg-video-omap
+Architecture: armel armhf
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         ${xviddriver:Depends}
+Provides: ${xviddriver:Provides}
+Description: X.Org X server -- OMAP display driver
+ This driver for the X.Org X server (see xserver-xorg for a further
+ description) provides support for OMAP2 and newer devices.
+ .
+ The driver depends on omapdrm support in the kernel, which is
+ in the staging area of the mainline kernel since version 3.3.
+ .
+ More information about X.Org can be found at:
+  * <URL:http://www.X.org>
+  * <URL:http://xorg.freedesktop.org>
+  * <URL:http://lists.freedesktop.org/mailman/listinfo/xorg>
+
+Package: xserver-xorg-video-omap-dbg
+Architecture: armel armhf
+Section: debug
+Priority: extra
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         xserver-xorg-video-omap (= ${binary:Version})
+Description: X.Org X server -- OMAP display driver (debug symbols)
+ This driver for the X.Org X server (see xserver-xorg for a further
+ description) provides support for OMAP2 and newer devices.
+ .
+ The driver depends on omapdrm support in the kernel, which is
+ in the staging area of the mainline kernel since version 3.3.
+ .
+ More information about X.Org can be found at:
+  * <URL:http://www.X.org>
+  * <URL:http://xorg.freedesktop.org>
+  * <URL:http://lists.freedesktop.org/mailman/listinfo/xorg>
+ .
+ This package contains debugging symbols for xserver-xorg-video-omap.
