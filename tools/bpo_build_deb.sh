@@ -34,7 +34,8 @@ build_package () {
 			fi
 
 			if [ -f ${package}_${debian_version}${bpo}_armhf.deb ] ; then
-				cp -v ${package}_${debian_version}${bpo}_armhf.deb ${out_dir}/
+				cp -v *.deb ${out_dir}/ || true
+				cp -v *.udeb ${out_dir}/ || true
 			fi
 		fi
 		cd ../
