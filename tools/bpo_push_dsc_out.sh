@@ -28,7 +28,3 @@ dist="wheezy"
 bpo="~bpo70+1"
 pushout
 
-dist="jessie"
-bpo=""
-pushout
-
