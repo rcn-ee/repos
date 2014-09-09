@@ -2,6 +2,7 @@
 
 mirror="http://ftp.de.debian.org/debian"
 package="xf86-video-omap"
+archive="xf86-video-omap"
 version="0.4.3"
 debian_version="0.4.3-1"
 reprepro_dir="x/${package}"

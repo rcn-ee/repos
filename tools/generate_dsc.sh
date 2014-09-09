@@ -8,13 +8,13 @@ generate_dsc () {
 	fi
 	mkdir ./${dist}
 
-	cp -v ${package}_${version}.orig.tar.${orig} ./${dist}
+	cp -v ${archive}_${version}.orig.tar.${orig} ./${dist}
 	if [ ! "x${deb_patch}" = "x" ] ; then
 		cp -v ${deb_patch} ./${dist}
 	fi
 
 	cd ./${dist}
-	tar xf ${package}_${version}.orig.tar.${orig}
+	tar xf ${archive}_${version}.orig.tar.${orig}
 	if [ ! "x${deb_patch}" = "x" ] ; then
 		if [ -d ./${package}-${version} ] ; then
 			cd ./${package}-${version}
@@ -42,10 +42,10 @@ generate_dsc () {
 }
 
 sfile () {
-	if [ -f ${package}_${version}.orig.tar.gz ] ; then
+	if [ -f ${archive}_${version}.orig.tar.gz ] ; then
 		orig="gz"
 		generate_dsc
-	elif [ -f ${package}_${version}.orig.tar.xz ] ; then
+	elif [ -f ${archive}_${version}.orig.tar.xz ] ; then
 		orig="xz"
 		generate_dsc
 	fi

@@ -2,6 +2,7 @@
 
 mirror="http://ftp.de.debian.org/debian"
 package="libdrm"
+archive="libdrm"
 version="2.4.56"
 debian_version="2.4.56-1"
 reprepro_dir="libd/${package}"
