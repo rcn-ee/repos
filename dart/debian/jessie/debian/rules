@@ -1,13 +1,7 @@
 #!/usr/bin/make -f
 export DH_VERBOSE = 1
 
-# Use DEB_BUILD_OPTIONS's parallel=n option (see Policy 4.9.1)
-ifneq (,$(findstring parallel,$(DEB_BUILD_OPTIONS)))
-PARALLEL_JOBS := $(shell echo $(DEB_BUILD_OPTIONS) | \
-	sed -e 's/.*parallel=\([0-9]\+\).*/\1/')
-else
 PARALLEL_JOBS := 1
-endif
 
 ifeq (amd64,$(DEB_HOST_ARCH_CPU))
 BUILD_TYPE += ReleaseX64
@@ -51,7 +45,7 @@ override_dh_auto_configure:
 
 override_dh_auto_build:
 	cd dart; \
-	python tools/build.py -v -m release -a $(ARCH) $(TOOLCHAIN) create_sdk; \
+	python tools/build.py -v -m release -a $(ARCH) $(TOOLCHAIN) runtime; \
 	cd ..
 
 # Building the Dart SDK will already strip all binaries.
@@ -64,7 +58,7 @@ override_dh_shlibdeps:
 
 override_dh_auto_install:
 	mkdir -p debian/tmp/out
-	cp -R dart/out/$(BUILD_TYPE)/dart-sdk debian/tmp/out
-	mv debian/tmp/out/dart-sdk debian/tmp/out/dart
+	#cp -R dart/out/$(BUILD_TYPE)/dart-sdk debian/tmp/out
+	#mv debian/tmp/out/dart-sdk debian/tmp/out/dart
 	dh_install
 	dh_link
