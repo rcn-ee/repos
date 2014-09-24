@@ -28,10 +28,14 @@ build_package () {
 }
 
 dist="wheezy"
-bpo="${wheezy_backport}"
-build_package
+if [ -d debian/${dist}/ ] ; then
+	bpo="${wheezy_version}"
+	build_package
+fi
 
 dist="jessie"
-bpo=""
-build_package
+if [ -d debian/${dist}/ ] ; then
+	bpo="${jessie_version}"
+	build_package
+fi
 

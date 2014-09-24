@@ -9,6 +9,8 @@ pushout () {
 
 	if [ -f ${dist}/${archive}_${version}.orig.tar.xz ] ; then
 		cp -v ${dist}/${archive}_${version}.orig.tar.xz /mnt/farm/incoming/${dist}/
+	elif [ -f ${dist}/${archive}_${version}.orig.tar.bz2 ] ; then
+		cp -v ${dist}/${archive}_${version}.orig.tar.bz2 /mnt/farm/incoming/${dist}/
 	elif [ -f ${dist}/${archive}_${version}.orig.tar.gz ] ; then
 		cp -v ${dist}/${archive}_${version}.orig.tar.gz /mnt/farm/incoming/${dist}/
 	fi
@@ -27,6 +29,7 @@ pushout () {
 }
 
 dist="wheezy"
-bpo="${wheezy_backport}"
-pushout
-
+if [ -d debian/${dist}/ ] ; then
+	bpo="${wheezy_backport}"
+	pushout
+fi
