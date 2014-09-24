@@ -1,0 +1,42 @@
+Source: compton-conf
+Section: x11
+Priority: optional
+Maintainer: Robert Nelson <robertcnelson@gmail.com>
+Build-Depends:
+ cmake,
+ debhelper (>= 9),
+ libconfig-dev,
+ libx11-dev,
+ pkg-config,
+ qttools5-dev (>= 5.3.1),
+ qttools5-dev-tools (>= 5.3.1),
+Standards-Version: 3.9.5
+Homepage: https://github.com/lxde/compton-conf
+#Vcs-Git: git://anonscm.debian.org/collab-maint/compton-conf.git
+#Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/compton-conf.git;a=summary
+
+Package: compton-conf-qt5
+Architecture: any
+Breaks:
+ compton-conf,
+Replaces:
+ compton-conf,
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+Description: Compton Configurator for Qt 
+ Qt configuration tool for X composite manager
+ .
+ This package contain Compton Configurator.
+
+Package: compton-conf-qt5-dbg
+Architecture: any
+Section: debug
+Priority: extra
+Depends:
+ ${misc:Depends},
+ compton-conf,
+Description: Compton Configurator for Qt (debug) 
+ Qt configuration tool for X composite manager
+ .
+ This package contain the debugging symbols.
