@@ -4,14 +4,6 @@
 
 mirror="http://packages.siduction.org"
 
-package="lxqt-globalkeys"
-location="lxqt/pool/main/l/${package}"
-pkg_version="0.7.96"
-deb_version="1"
-orig_comp="bz2"
-deb_file="liblxqt-globalkeys-qt5-0-dev_${pkg_version}-${deb_version}_${deb_arch}.deb"
-
-
 package_name="lxqt-globalkeys"
 debian_pkg_name="${package_name}"
 package_version="0.7.96"
