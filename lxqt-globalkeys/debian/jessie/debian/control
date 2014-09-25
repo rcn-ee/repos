@@ -1,0 +1,82 @@
+Source: lxqt-globalkeys
+Section: x11
+Priority: optional
+Maintainer: Robert Nelson <robertcnelson@gmail.com>
+Build-Depends:
+ cmake,
+ debhelper (>= 9),
+ libx11-dev,
+ pkg-config,
+ liblxqt-qt5-0-dev (>= 0.7.0),
+ libqt5x11extras5-dev (>= 5.3.0),
+ libqt5xdg-dev (>= 1.0.0),
+ qttools5-dev (>= 5.3.0),
+ qttools5-dev-tools (>= 5.3.0),
+Standards-Version: 3.9.5
+Homepage: https://github.com/lxde/lxqt-globalkeys
+#Vcs-Git: git://anonscm.debian.org/collab-maint/lxqt-globalkeys.git
+#Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/lxqt-globalkeys.git;a=summary
+
+Package: lxqt-globalkeys-qt5
+Architecture: any
+Breaks:
+ lxqt-globalkeys,
+Replaces:
+ lxqt-globalkeys,
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+Description: Daemon used to register global keyboard shortcuts (appl.)
+ Daemon used to register global keyboard shortcuts
+ .
+ This package contain the program files for LXQt globalskeys.
+
+Package: liblxqt-globalkeys-qt5-0
+Architecture: any
+Section: libs
+Depends:
+ ${misc:Pre-Depends},
+ ${misc:Depends},
+ ${shlibs:Depends},
+Description: Daemon used to register global keyboard shortcuts (shared libs)
+ Daemon used to register global keyboard shortcuts
+ .
+ This package contain the shared libs for LXQt globalkeys.
+
+Package: liblxqt-globalkeys-qt5-0-dev
+Architecture: any
+Section: libdevel
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+ liblxqt-globalkeys-qt5-0 (= ${binary:Version}),
+Description: Daemon used to register global keyboard shortcuts (dev files)
+ Daemon used to register global keyboard shortcuts
+ .
+ This package contain the development files.
+
+Package: liblxqt-globalkeys-ui-qt5-0 
+Architecture: any
+Section: libs
+Depends:
+ ${misc:Pre-Depends},
+ ${misc:Depends},
+ ${shlibs:Depends},
+ liblxqt-globalkeys-qt5-0 (= ${binary:Version}),
+Description: Daemon used to register global keyboard shortcuts (ui files)
+ Daemon used to register global keyboard shortcuts
+ .
+ This package contain the ui for LXQt globalkeys.
+
+Package: liblxqt-globalkeys-ui-qt5-0-dev
+Architecture: any
+Section: libdevel
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+ liblxqt-globalkeys-ui-qt5-0 (= ${binary:Version}),
+Description: Daemon used to register global keyboard shortcuts (ui dev files)
+ Daemon used to register global keyboard shortcuts
+ .
+ This package contain the ui development files.
+
