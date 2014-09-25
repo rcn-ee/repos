@@ -1,0 +1,69 @@
+Source: liblxqt
+Section: libs
+Priority: optional
+Maintainer: Robert Nelson <robertcnelson@gmail.com>
+Uploaders: Alf Gaida <agaida@siduction.org>
+Build-Depends:
+ cmake,
+ debhelper (>= 9),
+ libdrm-dev,
+ libx11-dev,
+ pkg-config,
+ libqt5x11extras5-dev (>= 5.3.0),
+ libqt5xdg-dev (>= 0.5.3), 
+ qttools5-dev (>= 5.3.0),
+ qttools5-dev-tools (>= 5.3.0),
+# libegl1-mesa-dev is a workaround for a stupid qt 5.3.1 bug
+ libegl1-mesa-dev,
+Standards-Version: 3.9.5
+Homepage: https://github.com/lxde/liblxqt
+#Vcs-Git: git://anonscm.debian.org/collab-maint/liblxqt.git
+#Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/liblxqt.git;a=summary
+
+Package: liblxqt-qt5-0
+Architecture: any
+Multi-Arch: same
+Pre-Depends:
+ multiarch-support
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+Description: Shared libraries for LXQt desktop environment (libs)
+ LXQt is an advanced, easy-to-use, and fast desktop environment based on Qt
+ technologies. It has been tailored for users who value simplicity, speed, and
+ an intuitive interface. Unlike most desktop environments, LXQt also works
+ fine with less powerful machines.
+ .
+ This package contain the shared libraries needed by the LXQt desktop
+ environment.
+
+Package: liblxqt-qt5-0-dev
+Architecture: any
+Section: libdevel
+Depends:
+ ${misc:Depends},
+ liblxqt-qt5-0 (= ${binary:Version}),
+Description: Shared libraries for LXQt desktop environment (dev)
+ LXQt is an advanced, easy-to-use, and fast desktop environment based on Qt
+ technologies. It has been tailored for users who value simplicity, speed, and
+ an intuitive interface. Unlike most desktop environments, LXQt also works
+ fine with less powerful machines.
+ .
+ This package provides the development files.
+
+Package: liblxqt-qt5-0-dbg
+Architecture: any
+Multi-Arch: same
+Section: debug
+Priority: extra
+Depends:
+ ${misc:Depends},
+ liblxqt-qt5-0 (= ${binary:Version}),  
+Description: Shared libraries for LXQt desktop environment (debug)
+ LXQt is an advanced, easy-to-use, and fast desktop environment based on Qt
+ technologies. It has been tailored for users who value simplicity, speed, and
+ an intuitive interface. Unlike most desktop environments, LXQt also works
+ fine with less powerful machines.
+ .
+ This package provides the debugging symbols.
+
