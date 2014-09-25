@@ -3,21 +3,22 @@
 . version.sh
 
 if [ ! "x${git_repo}" = "x" ] ; then
-	git clone ${git_repo} ${package}
-	if [ -f ./${package}/.git/config ] ; then
-		cd ./${package}/
-		git archive --format=tar --prefix=${package}_${version}/ HEAD | xz > ../${package}_${version}.orig.tar.xz
+	git clone ${git_repo} ignore
+	if [ -f ./ignore/.git/config ] ; then
+		cd ./ignore/
+		git archive --format=tar --prefix=${package_name}_${package_version}/ HEAD | xz > ../${package_name}_${package_version}.orig.tar.xz
 		cd ../
-		rm -rf ./${package}/
+		rm -rf ./ignore/
+	fi
+else
+	if [ ! "x${package_source}" = "x" ] ; then
+		wget -c ${dl_path}${package_source}
+		if [ ! "x${debian_patch}" = "x" ] ; then
+			wget -c ${dl_path}${debian_patch}
+		fi
+		if [ ! "x${debian_untar}" = "x" ] ; then
+			wget -c ${dl_path}${debian_untar}
+		fi
 	fi
 fi
 
-if [ ! "x${deb_source}" = "x" ] ; then
-	wget -c ${dl_path}${deb_source}
-	if [ ! "x${deb_patch}" = "x" ] ; then
-		wget -c ${dl_path}${deb_patch}
-	fi
-	if [ ! "x${debian_patch}" = "x" ] ; then
-		wget -c ${dl_path}${debian_patch}
-	fi
-fi

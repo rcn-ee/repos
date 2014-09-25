@@ -3,13 +3,20 @@
 #http://packages.siduction.org/lxqt/pool/main/l/lxmenu-data/
 
 mirror="http://packages.siduction.org"
-package="lxmenu-data"
-archive="lxmenu-data"
+
+package_name="lxmenu-data"
+package_version="0.1.4.siduction.1"
+package_source="${package_name}_${package_version}.tar.xz"
 src_dir="master"
-version="0.1.4.siduction.1"
-#debian_version="${version}-1"
-reprepro_dir="l/${package}"
+
+git_repo=""
+git_sha=""
+reprepro_dir="l/${package_name}"
 dl_path="${mirror}/lxqt/pool/main/${reprepro_dir}/"
-deb_source="${package}_${version}.tar.xz"
-wheezy_version="~bpo70+1"
+
+debian_version=""
+debian_untar=""
+debian_patch=""
+
+wheezy_version="~bpo70+20140924+1"
 jessie_version="~20140924+1"

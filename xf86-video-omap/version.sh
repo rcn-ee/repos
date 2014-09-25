@@ -1,12 +1,20 @@
 #!/bin/bash -e
 
 mirror="http://ftp.de.debian.org/debian"
-package="xf86-video-omap"
-archive="xf86-video-omap"
-version="0.4.3"
-debian_version="0.4.3-1"
-reprepro_dir="x/${package}"
+
+package_name="xf86-video-omap"
+package_version="0.4.3"
+package_source="${package_name}_${package_version}.orig.tar.gz"
+src_dir=""
+
+git_repo=""
+git_sha=""
+reprepro_dir="x/${package_name}"
 dl_path="${mirror}/pool/main/${reprepro_dir}/"
-deb_source="${package}_${version}.orig.tar.gz"
-debian_patch="${package}_${debian_version}.debian.tar.gz"
-wheezy_backport="~bpo70+2"
+
+debian_version="${package_version}-1"
+debian_untar="${package_name}_${debian_version}.debian.tar.gz"
+debian_patch=""
+
+wheezy_version="~bpo70+20140924+1"
+jessie_version="~20140924+1"

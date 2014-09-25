@@ -1,12 +1,20 @@
 #!/bin/bash -e
 
 mirror="http://ftp.de.debian.org/debian"
-package="libdrm"
-archive="libdrm"
-version="2.4.56"
-debian_version="2.4.56-1"
-reprepro_dir="libd/${package}"
+
+package_name="libdrm"
+package_version="2.4.56"
+package_source="${package_name}_${package_version}.orig.tar.gz"
+src_dir="${package_name}-${package_version}"
+
+git_repo=""
+git_sha=""
+reprepro_dir="libd/${package_name}"
 dl_path="${mirror}/pool/main/${reprepro_dir}/"
-deb_source="${package}_${version}.orig.tar.gz"
-deb_patch="${package}_${debian_version}.diff.gz"
-wheezy_backport="~bpo70+1"
+
+debian_version="${package_version}-1"
+debian_untar=""
+debian_patch="${package_name}_${debian_version}.diff.gz"
+
+wheezy_version="~bpo70+20140924+1"
+jessie_version="~20140924+1"

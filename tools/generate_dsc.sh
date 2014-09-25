@@ -8,54 +8,37 @@ generate_dsc () {
 	if [ -d ${DIR}/${dist} ] ; then
 		rm -rf ${DIR}/${dist}/
 	fi
-	mkdir -p ${DIR}/${dist}/${package}_${version}
+	mkdir -p ${DIR}/${dist}/
 
-	cp -v ${DIR}/${deb_source} ${DIR}/${dist}
+	cp -v ${DIR}/${package_source} ${DIR}/${dist}
 
-	if [ ! "x${deb_patch}" = "x" ] ; then
-		cp -v ${deb_patch} ${DIR}/${dist}
+	if [ ! "x${debian_patch}" = "x" ] ; then
+		cp -v ${debian_patch} ${DIR}/${dist}
 	fi
 
 	cd ${DIR}/${dist}
-	tar xf ${DIR}/${deb_source} -C ${DIR}/${dist}/${package}_${version}
-
-	cd ${DIR}/${dist}/${package}_${version}
 
 	if [ ! "x${src_dir}" = "x" ] ; then
-		if [ ! "x${deb_patch}" = "x" ] ; then
-			cd ${DIR}/${dist}/${package}_${version}/${src_dir}
-			zcat ${DIR}/${deb_patch} | patch -p1
-		else
-			cd ${src_dir}
+		tar xf ${DIR}/${package_source} -C ${DIR}/${dist}/
+		cd ${DIR}/${dist}/${src_dir}
+		if [ ! "x${debian_patch}" = "x" ] ; then
+			zcat ${DIR}/${debian_patch} | patch -p1
+		fi
+		if [ ! "x${debian_untar}" = "x" ] ; then
+			tar xfv ${DIR}/${debian_untar} -C ${DIR}/${dist}/${src_dir}
 		fi
 	else
-		if [ -d ${DIR}/${dist}/${package}_${version}/${package}-${version} ] ; then
-			rm -rf ${DIR}/${dist}/${package}_${version}/${package}-${version} || true
-			cd ${DIR}/
-			tar xf ${DIR}/${deb_source}
-		elif [ -d ${DIR}/${dist}/${package}_${version}/${package}_${version} ] ; then
-			rm -rf ${DIR}/${dist}/${package}_${version}/${package}_${version}
-			cd ..
-			tar xf ${DIR}/${deb_source}
-		fi
+		mkdir -p ${DIR}/${dist}/${package_name}_${package_version}
+		tar xf ${DIR}/${package_source} -C ${DIR}/${dist}/${package_name}_${package_version}
 
-		if [ ! "x${deb_patch}" = "x" ] ; then
-			if [ -d ${DIR}/${dist}/${package}-${version} ] ; then
-				cd ${DIR}/${dist}/${package}-${version}
-			elif [ -d ${DIR}/${dist}/${package}_${version} ] ; then
-				cd ${DIR}/${dist}/${package}_${version}
-			fi
-			zcat ${DIR}/${deb_patch} | patch -p1
-		else
-			if [ -d ${DIR}/${dist}/${package}-${version} ] ; then
-				cd ${DIR}/${dist}/${package}-${version}
-			elif [ -d ${DIR}/${dist}/${package}_${version} ] ; then
-				cd ${DIR}/${dist}/${package}_${version}
-			fi
+		cd ${DIR}/${dist}/${package_name}_${package_version}
+		if [ ! "x${debian_patch}" = "x" ] ; then
+			zcat ${DIR}/${debian_patch} | patch -p1
+		fi
+		if [ ! "x${debian_untar}" = "x" ] ; then
+			tar xfv ${DIR}/${debian_untar} -C ${DIR}/${dist}/${package_name}_${package_version}
 		fi
 	fi
-
-	ls
 
 	if [ ! -d ./debian ] ; then
 		mkdir ./debian
