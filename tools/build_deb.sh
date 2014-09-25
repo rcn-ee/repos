@@ -36,6 +36,7 @@ run () {
 			cp -v *.udeb ${out_dir}/ || true
 			cp -v *.dsc ${out_dir}/ || true
 			cp -v ${package_source} ${out_dir}/ || true
+			cp -v ${package_name}_${package_version}${rcn_ee_version}.tar.xz ${out_dir}/ || true
 			cp -v *.tar.* ${out_dir}/ || true
 			cp -v *.diff.* ${out_dir}/ || true
 		fi
