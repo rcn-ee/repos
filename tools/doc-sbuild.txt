@@ -6,15 +6,18 @@ sudo sbuild-shell source:jessie-armhf-sbuild
 
 #add repos.rcn-ee.net key:
 
-apt-get install wget
+apt-get install -y wget
 
 wget -qO - http://repos.rcn-ee.net/debian/conf/repos.rcn-ee.net.gpg.key | apt-key add -
 
 #wheezy
-apt-get remove libgcrypt11 libgnutls26 libgpg-error0 libidn11 libp11-kit0 libtasn1-3 wget --purge
+apt-get remove -y libgcrypt11 libgnutls26 libgpg-error0 libidn11 libp11-kit0 libtasn1-3 wget --purge
+
+echo "deb http://apt-proxy:3142//repos.rcn-ee.net/debian wheezy main" >> /etc/apt/sources.list
+echo "deb-src http://apt-proxy:3142//repos.rcn-ee.net/debian wheezy main" >> /etc/apt/sources.list
 
 #Jessie:
-apt-get remove ca-certificates libffi6 libgnutls-deb0-28 libhogweed2 libidn11 libnettle4 libp11-kit0 libssl1.0.0 libtasn1-6 openssl wget --purge
+apt-get remove -y ca-certificates libffi6 libgnutls-deb0-28 libhogweed2 libidn11 libnettle4 libp11-kit0 libssl1.0.0 libtasn1-6 openssl wget --purge
 
 echo "deb http://apt-proxy:3142//repos.rcn-ee.net/debian jessie main" >> /etc/apt/sources.list
 echo "deb-src http://apt-proxy:3142//repos.rcn-ee.net/debian jessie main" >> /etc/apt/sources.list
