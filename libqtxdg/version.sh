@@ -16,8 +16,8 @@ reprepro_dir="libq/${package_name}"
 dl_path="${mirror}/lxqt/pool/main/${reprepro_dir}/"
 
 debian_version="${package_version}-1"
-debian_untar=""
-debian_patch="${package_name}_${debian_version}.debian.tar.xz"
+debian_untar="${package_name}_${debian_version}.debian.tar.xz"
+debian_patch=""
 
 wheezy_version="~bpo70+20140924+1"
 jessie_version="~20140924+1"
