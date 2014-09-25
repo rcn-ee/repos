@@ -1,0 +1,52 @@
+Source: liblxqt-mount
+Section: libs
+Priority: optional
+Maintainer: Robert Nelson <robertcnelson@gmail.com>
+Build-Depends:
+ cmake,
+ debhelper (>= 9),
+ libx11-dev,
+ pkg-config,
+ qttools5-dev (>= 5.3.0),
+ qttools5-dev-tools (>= 5.3.0),
+# libegl1-mesa-dev is a workaround for a stupid qt 5.3.1 bug
+ libegl1-mesa-dev,
+Standards-Version: 3.9.5
+Homepage: https://github.com/lxde/liblxqt-mount
+#Vcs-Git: git://anonscm.debian.org/collab-maint/liblxqt-mount.git
+#Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/liblxqt-mount.git;a=summary
+
+Package: liblxqtmount-qt5-0
+Architecture: any
+Multi-Arch: same
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+ libqt5xdg1,
+Description: Handling for removable media/devices in LXQt
+ .
+ This package provides the shared library.
+
+Package: liblxqtmount-qt5-0-dev
+Architecture: any
+Section: libdevel
+Depends:
+ ${misc:Depends},
+ liblxqtmount-qt5-0 (= ${binary:Version}),
+Description: Handling for removable media/devices in LXQt (dev files)
+ Library used to manage removable devices for LXDE-Qt
+ .
+ This package provides the development files.
+
+Package: liblxqtmount-qt5-0-dbg
+Architecture: any
+Section: debug
+Priority: extra
+Depends:
+ ${misc:Depends},
+ liblxqtmount-qt5-0 (= ${binary:Version}),
+Description: Handling for removable media/devices in LXQt (debug symbols)
+ Library used to manage removable devices for LXDE-Qt
+ .
+ This package provides the debugging symbols
+
