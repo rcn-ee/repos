@@ -15,13 +15,30 @@ generate_dsc () {
 
 	cd ./${dist}
 	tar xf ${deb_source} -C ./${package}_${version}
+
+	cd ./${package}_${version}
+
+	if [ -d ./${package}-${version} ] ; then
+		rm -rf ./${package}-${version} || true
+		cd ..
+		tar xf ${deb_source}
+	elif [ -d ./${package}_${version} ] ; then
+		rm -rf ./${package}_${version}
+		cd ..
+		tar xf ${deb_source}
+	fi
+
 	if [ ! "x${deb_patch}" = "x" ] ; then
-		if [ -d ./${package}_${version} ] ; then
+		if [ -d ./${package}-${version} ] ; then
+			cd ./${package}-${version}
+		elif [ -d ./${package}_${version} ] ; then
 			cd ./${package}_${version}
 		fi
 		zcat ../${deb_patch} | patch -p1
 	else
-		if [ -d ./${package}_${version} ] ; then
+		if [ -d ./${package}-${version} ] ; then
+			cd ./${package}-${version}
+		elif [ -d ./${package}_${version} ] ; then
 			cd ./${package}_${version}
 		fi
 	fi
