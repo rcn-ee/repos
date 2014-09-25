@@ -1,0 +1,47 @@
+#!/usr/bin/make -f
+
+DH_VERBOSE=1
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+%:
+	dh ${@} --parallel --with autoreconf
+
+override_dh_autoreconf:
+	dh_autoreconf ./autogen.sh --as-needed
+
+override_dh_auto_install:
+	$(MAKE) DESTDIR=$(CURDIR)/debian/pcmanfm install
+
+# override_dh_auto_configure:
+#	dh_auto_configure -- --enable-debug
+
+override_dh_auto_test:
+	# disabled: test fails in po directory
+
+override_dh_builddeb:
+	dh_builddeb -- -Zxz -z9
+
+override_dh_install:
+	dh_install --fail-missing --list-missing 
+	
+override_dh_strip:
+	dh_strip --dbg-package=pcmanfm-dbg
+
+override_dh_installdocs:
+	dh_installdocs --link-doc=pcmanfm
+	
+	
+maintainer-clean:
+	$(RM) -r $$(ls|grep -v debian)
+	$(RM) -r .pc
+	$(RM) -r .xyz
+	dh_clean
+
+get-orig-source:maintainer-clean
+	git clone git://git.lxde.org/git/lxde/pcmanfm.git .xyz; \
+	cd .xyz;\
+	cp -a $$(ls | grep -v debian) ..; \
+	echo ""; \
+	git log --max-count=1 | head; \
+	echo ""; \
+

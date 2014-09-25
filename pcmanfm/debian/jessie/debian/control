@@ -1,0 +1,52 @@
+Source: pcmanfm
+Section: utils
+Priority: optional
+Maintainer: Robert Nelson <robertcnelson@gmail.com>
+Build-Depends:
+ debhelper (>= 9),
+ dh-autoreconf,
+ intltool,
+ pkg-config,
+ libfm-gtk-dev (>= 1.2.0),
+ libgtk2.0-dev,
+Standards-Version: 3.9.5
+Homepage: http://pcmanfm.sourceforge.net/
+Vcs-Browser: http://git.siduction.org/?p=code/pcmanfm.git
+Vcs-Git: git://git.lxde.org/code/pcmanfm.git
+
+Package: pcmanfm
+Architecture: any
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends}
+Recommends:
+ gvfs-backends, gvfs-fuse,
+ lxde-icon-theme | gnome-icon-theme | oxygen-icon-theme | tango-icon-theme
+Description: extremely fast and lightweight file manager
+ PCMan File Manager is a GTK+ based file manager, featuring:
+ .
+  * Extremly fast and lightweight
+  * Can be started in one second on normal machine
+  * Tabbed browsing (similar to Firefox)
+  * Drag & Drop support
+  * Files can be dragged among tabs
+  * Load large directories in reasonable time
+  * File association support (Default application)
+  * Basic thumbnail support
+  * Bookmarks support
+  * Handles non-UTF-8 encoded filenames correctly
+  * Provide icon view and detailed list view
+  * Standard compliant (Follows FreeDesktop.org)
+  * Clean and user-friendly interface (GTK+ 2)
+  * Support GVFS for auto-mount handling on removable devices
+
+Package: pcmanfm-dbg
+Section: debug
+Priority: extra
+Architecture: any
+Depends: ${misc:Depends}, pcmanfm (= ${binary:Version})
+Description: extremely fast and lightweight file manager (debug)
+ PCMan File Manager is a GTK+ based file manager. It is a primary file
+ manager for the LXDE but can be used in any other desktop environment.
+ .
+ This package contains the debugging symbols.
