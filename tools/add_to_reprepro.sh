@@ -5,15 +5,15 @@
 repo="/var/www/html/repos.rcn-ee.net/debian/"
 outgoing="/var/www/html/farm/outgoing"
 
-add_to_reprepro () {
+run () {
 
-	if [ ! -f ${repo}pool/main/${reprepro_dir}/${deb_source} ] ; then
+	if [ ! -f ${repo}pool/main/${reprepro_dir}/${package_source} ] ; then
 		mkdir -p ${repo}pool/main/${reprepro_dir}/
-		cp -v ${outgoing}/${dist}/${archive}_${debian_version}/${deb_source} ${repo}pool/main/${reprepro_dir}/
+		cp -v ${outgoing}/${dist}/${debian_pkg_name}_${debian_version}/${package_source} ${repo}pool/main/${reprepro_dir}/
 	fi
 
-	wfile="${outgoing}/${dist}/${archive}_${debian_version}/${archive}_${debian_version}${bpo}_armhf.changes"
-	if [ ! -f ${repo}pool/main/${reprepro_dir}/${archive}_${debian_version}${bpo}_armhf.deb ] ; then
+	wfile="${outgoing}/${dist}/${debian_pkg_name}_${debian_version}/${debian_pkg_name}_${debian_version}${rcn_ee_version}_armhf.changes"
+	if [ ! -f ${repo}pool/main/${reprepro_dir}/${debian_pkg_name}_${debian_version}${rcn_ee_version}_armhf.deb ] ; then
 		if [ -f ${wfile} ] ; then
 			reprepro -b ${repo} -C main include ${dist} ${wfile}
 		fi
@@ -22,13 +22,13 @@ add_to_reprepro () {
 
 dist="wheezy"
 if [ -d debian/${dist}/ ] ; then
-	bpo="${wheezy_version}"
-	add_to_reprepro
+	rcn_ee_version="${wheezy_version}"
+	run
 fi
 
 dist="jessie"
 if [ -d debian/${dist}/ ] ; then
-	bpo="${jessie_version}"
-	add_to_reprepro
+	rcn_ee_version="${jessie_version}"
+	run
 fi
 
