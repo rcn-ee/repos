@@ -2,7 +2,7 @@
 
 . version.sh
 
-pushout () {
+run () {
 	if [ ! -d /mnt/farm/incoming/${dist}/ ] ; then
 		mkdir -p /mnt/farm/incoming/${dist}/
 	fi
@@ -27,12 +27,12 @@ pushout () {
 dist="wheezy"
 if [ -d debian/${dist}/ ] ; then
 	rcn_ee_version="${wheezy_version}"
-	pushout
+	run
 fi
 
 dist="jessie"
 if [ -d debian/${dist}/ ] ; then
 	rcn_ee_version="${jessie_version}"
-	pushout
+	run
 fi
 

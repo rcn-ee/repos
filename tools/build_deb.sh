@@ -2,8 +2,8 @@
 
 . version.sh
 
-build_package () {
-	out_dir="/mnt/farm/outgoing/${dist}/${archive}_${debian_version}"
+run () {
+	out_dir="/mnt/farm/outgoing/${dist}/${debian_pkg_name}_${debian_version}"
 	if [ -f /var/lib/sbuild/${dist}-armhf.tar.gz ] ; then
 		if [ -d ./${dist} ] ; then
 			rm -rf ./${dist}/
@@ -11,15 +11,15 @@ build_package () {
 
 		mkdir ./${dist}
 		cd ./${dist}
-		sbuild -d ${dist} http://httphost/farm/incoming/${dist}/${archive}_${debian_version}${bpo}.dsc
+		sbuild -d ${dist} http://httphost/farm/incoming/${dist}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.dsc
 
-		if [ -f ${archive}_${debian_version}${bpo}_armhf.changes ] ; then
+		if [ -f ${debian_pkg_name}_${debian_version}${rcn_ee_version}_armhf.changes ] ; then
 			mkdir -p ${out_dir}/
-			cp -v ${archive}_${debian_version}${bpo}_armhf.changes ${out_dir}/
+			cp -v ${debian_pkg_name}_${debian_version}${rcn_ee_version}_armhf.changes ${out_dir}/
 			cp -v *.deb ${out_dir}/ || true
 			cp -v *.udeb ${out_dir}/ || true
 			cp -v *.dsc ${out_dir}/ || true
-			cp -v ${deb_source} ${out_dir}/ || true
+			cp -v ${package_source} ${out_dir}/ || true
 			cp -v *.tar.* ${out_dir}/ || true
 			cp -v *.diff.* ${out_dir}/ || true
 		fi
@@ -29,13 +29,13 @@ build_package () {
 
 dist="wheezy"
 if [ -d debian/${dist}/ ] ; then
-	bpo="${wheezy_version}"
-	build_package
+	rcn_ee_version="${wheezy_version}"
+	run
 fi
 
 dist="jessie"
 if [ -d debian/${dist}/ ] ; then
-	bpo="${jessie_version}"
-	build_package
+	rcn_ee_version="${jessie_version}"
+	run
 fi
 
