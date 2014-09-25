@@ -15,9 +15,14 @@ add_to_reprepro () {
 }
 
 dist="wheezy"
-bpo="${wheezy_backport}"
-add_to_reprepro
+if [ -d debian/${dist}/ ] ; then
+	bpo="${wheezy_version}"
+	add_to_reprepro
+fi
 
 dist="jessie"
-bpo=""
-add_to_reprepro
+if [ -d debian/${dist}/ ] ; then
+	bpo="${jessie_version}"
+	add_to_reprepro
+fi
+
