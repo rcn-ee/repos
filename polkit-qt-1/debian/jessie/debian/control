@@ -1,0 +1,100 @@
+Source: polkit-qt-1
+Priority: extra
+Section: libs
+Maintainer: Robert Nelson <robertcnelson@gmail.com>
+Uploaders: Fathi Boudra <fabo@debian.org>,
+           Modestas Vainius <modax@debian.org>,
+           Alf Gaida <agaida@siduction.org>,
+Build-Depends:
+ automoc,
+ cmake,
+ debhelper (>= 9),
+ libpolkit-agent-1-dev (>= 0.98),
+ libpolkit-gobject-1-dev (>= 0.98),
+ libqt4-dev,
+ pkg-kde-tools,
+ qttools5-dev (>= 5.3.1),
+ qttools5-dev-tools (>= 5.3.1),
+Standards-Version: 3.9.5
+#Vcs-Git: git://git.debian.org/pkg-kde/kde-req/polkit-qt-1.git
+#Vcs-Browser: http://git.debian.org/?p=pkg-kde/kde-req/polkit-qt-1.git
+
+Package: libpolkit-qt-1-dev
+Section: libdevel
+Architecture: any
+Depends:
+ ${misc:Depends},
+ libpolkit-qt-1-1 (= ${binary:Version}),
+ libqt4-dev,
+Description: PolicyKit-qt-1 development files
+ PolicyKit is an application-level toolkit for defining and handling the policy
+ that allows unprivileged processes to speak to privileged processes.
+ .
+ It is a framework for centralizing the decision making process with respect to
+ granting access to privileged operations (like calling the HAL Mount() method)
+ for unprivileged (desktop) applications.
+ .
+ libpolkit-qt-1 provides convenience classes and methods for Qt/KDE
+ applications that want to use PolicyKit-1.
+ .
+ This package contains the development libraries and headers.
+
+
+Package: libpolkit-qt5-1-dev
+Section: libdevel
+Architecture: any
+Depends:
+ ${misc:Depends},
+ libpolkit-qt5-1-1 (= ${binary:Version}),
+Description: PolicyKit-qt5-1 development files
+ PolicyKit is an application-level toolkit for defining and handling the policy
+ that allows unprivileged processes to speak to privileged processes.
+ .
+ It is a framework for centralizing the decision making process with respect to
+ granting access to privileged operations (like calling the HAL Mount() method)
+ for unprivileged (desktop) applications.
+ .
+ libpolkit-qt5-1 provides convenience classes and methods for Qt 5
+ applications that want to use PolicyKit-1.
+ .
+ This package contains the development libraries and headers.
+
+
+Package: libpolkit-qt-1-1
+Architecture: any
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+Description: PolicyKit-qt-1 library
+ PolicyKit is an application-level toolkit for defining and handling the policy
+ that allows unprivileged processes to speak to privileged processes.
+ .
+ It is a framework for centralizing the decision making process with respect to
+ granting access to privileged operations (like calling the HAL Mount() method)
+ for unprivileged (desktop) applications.
+ .
+ libpolkit-qt-1 provides convenience classes and methods for Qt/KDE
+ applications that want to use PolicyKit.
+ .
+ This package contains the files necessary for running applications that use
+ the libpolkit-qt-1 library.
+
+
+Package: libpolkit-qt5-1-1
+Architecture: any
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends}
+Description: PolicyKit-qt5-1 library
+ PolicyKit is an application-level toolkit for defining and handling the policy
+ that allows unprivileged processes to speak to privileged processes.
+ .
+ It is a framework for centralizing the decision making process with respect to
+ granting access to privileged operations (like calling the HAL Mount() method)
+ for unprivileged (desktop) applications.
+ .
+ libpolkit-qt5-1 provides convenience classes and methods for Qt 5
+ applications that want to use PolicyKit.
+ .
+ This package contains the files necessary for running applications that use
+ the libpolkit-qt5-1 library.
