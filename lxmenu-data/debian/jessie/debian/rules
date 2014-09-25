@@ -1,0 +1,26 @@
+#!/usr/bin/make -f
+
+#export DH_VERBOSE=1
+
+%:
+	dh ${@} --with quilt
+
+override_dh_auto_test:
+	# disabled: test fails in po directory
+
+override_dh_install:
+	dh_install --list-missing --fail-missing
+
+maintainer-clean:
+	$(RM) -r $$(ls|grep -v debian)
+	$(RM) -r .pc
+	$(RM) -r .xyz
+	dh_clean;
+
+get-orig-source:maintainer-clean
+	git clone git://git.lxde.org/git/lxde/lxmenu-data .xyz; \
+	cd .xyz; \
+	cp -a $$(ls | grep -v debian) ..; \
+	git log --max-count=1 | head; \
+	echo ""; 
+	./autogen.sh
