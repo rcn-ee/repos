@@ -1,0 +1,63 @@
+Source: libqtxdg
+Section: libs
+Priority: optional
+Maintainer: Robert Nelson <robertcnelson@gmail.com>
+Uploaders: Alf Gaida <agaida@siduction.org>
+Build-Depends:
+ cmake,
+ debhelper (>= 9),
+ libmagic-dev,
+ pkg-config,
+ qtbase5-dev,
+ qttools5-dev,
+ qttools5-dev-tools,
+# libegl1-mesa-dev is a workaround for a stupid qt 5.3.1 bug
+ libegl1-mesa-dev,
+Standards-Version: 3.9.5
+Homepage: https://github.com/lxde/libqtxdg
+#Vcs-Git: git://anonscm.debian.org/collab-maint/libqtxdg.git
+#Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/libqtxdg.git;a=summary
+
+Package: libqt5xdg1
+Provides: libqt5xdg
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Breaks: 
+ libqt5xdg0,
+Replaces:
+ libqt5xdg0,
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+Description: Implementation of the XDG Specifications for Qt, libs
+ This library implements functions of the XDG Specifications in Qt.
+ .
+ It is part of LXQt.
+
+Package: libqt5xdg-dev
+Section: libdevel
+Architecture: any
+Depends:
+ ${misc:Depends},
+ libqt5xdg1 (= ${binary:Version}),
+Description: Development files for libqtxdg
+ This library implements functions of the XDG Specifications in Qt.
+ .
+ It is part of LXQt.
+ .
+ This package contains development files for libqtxdg.
+
+Package: libqt5xdg-dbg
+Section: debug
+Priority: extra
+Multi-Arch: same
+Architecture: any
+Depends:
+ ${misc:Depends},
+ libqt5xdg1 (= ${binary:Version}),
+Description: Debug symbols for libqtxdg
+ This library implements functions of the XDG Specifications in Qt.  It is part
+ of LXQt.
+ .
+ This package contains debug symbols for libqtxdg.
