@@ -12,9 +12,9 @@ run () {
 		mkdir ./${dist}
 		cd ./${dist}
 
-		if [ -f ${dist}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.dsc ] ; then
+		if [ -f /mnt/farm/incoming/${dist}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.dsc ] ; then
 			sbuild -d ${dist} http://httphost/farm/incoming/${dist}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.dsc
-		elif [ -f ${dist}/${package_name}_${package_version}${rcn_ee_version}.dsc ] ; then
+		elif [ -f /mnt/farm/incoming/${dist}/${package_name}_${package_version}${rcn_ee_version}.dsc ] ; then
 			sbuild -d ${dist} http://httphost/farm/incoming/${dist}/${package_name}_${package_version}${rcn_ee_version}.dsc
 		fi
 
