@@ -8,13 +8,13 @@ generate_dsc () {
 	fi
 	mkdir -p ./${dist}/${package}_${version}
 
-	cp -v ${archive}_${version}.orig.tar.* ./${dist}
+	cp -v ${deb_source} ./${dist}
 	if [ ! "x${deb_patch}" = "x" ] ; then
 		cp -v ${deb_patch} ./${dist}
 	fi
 
 	cd ./${dist}
-	tar xfv ${archive}_${version}.orig.tar.* -C ./${package}_${version}
+	tar xf ${deb_source} -C ./${package}_${version}
 	if [ ! "x${deb_patch}" = "x" ] ; then
 		if [ -d ./${package}_${version} ] ; then
 			cd ./${package}_${version}

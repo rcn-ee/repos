@@ -19,6 +19,7 @@ build_package () {
 			cp -v *.deb ${out_dir}/ || true
 			cp -v *.udeb ${out_dir}/ || true
 			cp -v *.dsc ${out_dir}/ || true
+			cp -v ${deb_source} ${out_dir}/ || true
 			cp -v *.tar.* ${out_dir}/ || true
 			cp -v *.diff.* ${out_dir}/ || true
 		fi

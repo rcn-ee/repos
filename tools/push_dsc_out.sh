@@ -7,12 +7,8 @@ pushout () {
 		mkdir -p /mnt/farm/incoming/${dist}/
 	fi
 
-	if [ -f ${dist}/${archive}_${version}.orig.tar.xz ] ; then
-		cp -v ${dist}/${archive}_${version}.orig.tar.xz /mnt/farm/incoming/${dist}/
-	elif [ -f ${dist}/${archive}_${version}.orig.tar.bz2 ] ; then
-		cp -v ${dist}/${archive}_${version}.orig.tar.bz2 /mnt/farm/incoming/${dist}/
-	elif [ -f ${dist}/${archive}_${version}.orig.tar.gz ] ; then
-		cp -v ${dist}/${archive}_${version}.orig.tar.gz /mnt/farm/incoming/${dist}/
+	if [ -f ${dist}/${deb_source} ] ; then
+		cp -v ${dist}/${deb_source} /mnt/farm/incoming/${dist}/
 	fi
 
 	if [ -f ${dist}/${archive}_${debian_version}${bpo}.dsc ] ; then
