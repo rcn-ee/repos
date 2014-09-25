@@ -13,7 +13,14 @@ run () {
 	fi
 
 	wfile="${outgoing}/${dist}/${debian_pkg_name}_${debian_version}/${debian_pkg_name}_${debian_version}${rcn_ee_version}_armhf.changes"
-	if [ ! -f ${repo}pool/main/${reprepro_dir}/${debian_pkg_name}_${debian_version}${rcn_ee_version}_armhf.deb ] ; then
+	if [ ! -f ${repo}pool/main/${reprepro_dir}/${debian_pkg_name}_${debian_version}${rcn_ee_version}*.deb ] ; then
+		if [ -f ${wfile} ] ; then
+			reprepro -b ${repo} -C main include ${dist} ${wfile}
+		fi
+	fi
+
+	wfile="${outgoing}/${dist}/${debian_pkg_name}_${debian_version}/${package_name}_${package_version}${rcn_ee_version}_armhf.changes"
+	if [ ! -f ${repo}pool/main/${reprepro_dir}/${package_name}_${package_version}${rcn_ee_version}*.deb ] ; then
 		if [ -f ${wfile} ] ; then
 			reprepro -b ${repo} -C main include ${dist} ${wfile}
 		fi
