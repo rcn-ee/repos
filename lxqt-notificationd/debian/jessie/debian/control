@@ -1,0 +1,46 @@
+Source: lxqt-notificationd
+Section: x11
+Priority: optional
+Maintainer: Robert Nelson <robertcnelson@gmail.com>
+Build-Depends:
+ cmake,
+ debhelper (>= 9),
+ libx11-dev,
+ pkg-config,
+ liblxqt-qt5-0-dev (>= 0.7.0),
+ libqt5x11extras5-dev (>= 5.3.0),
+ libqt5xdg-dev (>= 1.0.0),
+ qttools5-dev (>= 5.3.0),
+ qttools5-dev-tools (>= 5.3.0),
+Standards-Version: 3.9.5
+Homepage: https://github.com/lxde/lxqt-config
+#Vcs-Git: git://anonscm.debian.org/collab-maint/lxqt-config.git
+#Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/lxqt-config.git;a=summary
+
+Package: lxqt-notificationd-qt5
+Architecture: any
+Breaks:
+ lxqt-notificationd,
+Replaces:
+ lxqt-notificationd,
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+Provides:
+ notification-daemon,
+Description: LXQt notification daemon
+ The LXQt notification daemon
+ .
+ This package contain the LXQt notification daemon.
+
+Package: lxqt-notificationd-qt5-dbg
+Architecture: any
+Section: debug
+Priority: extra
+Depends:
+ ${misc:Depends},
+ lxqt-notificationd-qt5 (= ${binary:Version}),
+Description: LXQt notification daemon (debugging symbols)
+ The LXQt notification daemon
+ .
+ This package contain the debugging symbols.
