@@ -11,7 +11,12 @@ run () {
 
 		mkdir ./${dist}
 		cd ./${dist}
-		sbuild -d ${dist} http://httphost/farm/incoming/${dist}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.dsc
+
+		if [ -f ${dist}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.dsc ] ; then
+			sbuild -d ${dist} http://httphost/farm/incoming/${dist}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.dsc
+		elif [ -f ${dist}/${package_name}_${package_version}${rcn_ee_version}.dsc ] ; then
+			sbuild -d ${dist} http://httphost/farm/incoming/${dist}/${package_name}_${package_version}${rcn_ee_version}.dsc
+		fi
 
 		if [ -f ${debian_pkg_name}_${debian_version}${rcn_ee_version}_armhf.changes ] ; then
 			mkdir -p ${out_dir}/
@@ -23,6 +28,18 @@ run () {
 			cp -v *.tar.* ${out_dir}/ || true
 			cp -v *.diff.* ${out_dir}/ || true
 		fi
+
+		if [ -f ${package_name}_${package_version}${rcn_ee_version}_armhf.changes ] ; then
+			mkdir -p ${out_dir}/
+			cp -v ${package_name}_${package_version}${rcn_ee_version}_armhf.changes ${out_dir}/
+			cp -v *.deb ${out_dir}/ || true
+			cp -v *.udeb ${out_dir}/ || true
+			cp -v *.dsc ${out_dir}/ || true
+			cp -v ${package_source} ${out_dir}/ || true
+			cp -v *.tar.* ${out_dir}/ || true
+			cp -v *.diff.* ${out_dir}/ || true
+		fi
+
 		cd ../
 	fi
 }
