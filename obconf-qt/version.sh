@@ -1,13 +1,13 @@
 #!/bin/bash -e
 
-#http://packages.siduction.org/lxqt/pool/main/p/polkit-qt-1/
+#http://packages.siduction.org/lxqt/pool/main/o/obconf-qt/
 
 mirror="http://packages.siduction.org"
-package="polkit-qt-1"
-archive="polkit-qt-1"
-version="0.112.0"
+package="obconf-qt"
+archive="obconf-qt"
+version="0.1.0"
 debian_version="${version}-1"
-reprepro_dir="p/${package}"
+reprepro_dir="o/${package}"
 dl_path="${mirror}/lxqt/pool/main/${reprepro_dir}/"
 deb_source="${package}_${version}.orig.tar.bz2"
 debian_patch="${package}_${debian_version}.debian.tar.xz"
