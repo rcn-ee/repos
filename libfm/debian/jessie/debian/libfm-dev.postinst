@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+# remove empty directory so symlink can be installed there
+test -d /usr/include/libfm && test ! -h /usr/include/libfm && rmdir /usr/include/libfm
+# if no symlink created then create it
+test -h /usr/include/libfm || ln -s libfm-1.0 /usr/include/libfm
+
+#DEBHELPER#
+
+exit 0

@@ -1,0 +1,53 @@
+#!/usr/bin/make -f
+
+export DH_VERBOSE=1
+
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+%:
+	dh ${@} --parallel --with quilt
+
+override_dh_auto_configure:
+	./autogen.sh
+	dh_auto_configure -- --enable-debug --enable-gtk-doc --enable-udisks --disable-silent-rules
+
+override_dh_auto_install:
+	dh_auto_install
+
+	# removing unused files
+	rm -f debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/*.a
+	rm -f debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/*.la
+
+	# removing symlink, it will be created in postinst instead
+	rm -rf debian/tmp/usr/include/libfm
+
+override_dh_install:
+	dh_install --fail-missing
+
+override_dh_makeshlibs:
+	# modules are not shared libs so disable processing for them
+	dh_makeshlibs -X/modules/
+
+override_dh_strip:
+	dh_strip -plibfm4 -plibfm-extra4 --dbg-package=libfm-dbg
+	dh_strip -plibfm-gtk4 --dbg-package=libfm-gtk-dbg
+	dh_strip -plibfm-modules --dbg-package=libfm-modules-dbg
+	dh_strip -Nlibfm4 -Nlibfm-extra4 -Nlibfm-gtk4 -Nlibfm-modules
+
+
+maintainer-clean:
+	$(RM) -r $$(ls | grep -v debian )
+	$(RM) -r .pc
+	$(RM) -r .xyz
+	dh_clean
+
+get-orig-source: maintainer-clean
+	git clone git@github.com:lxde/libfm.git .xyz;\
+	cd .xyz; \
+	cp -a * ..; \
+	echo "";\
+	git log --max-count=1 | head; \
+	echo ""; \
+

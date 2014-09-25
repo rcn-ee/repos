@@ -1,0 +1,254 @@
+Source: libfm
+Section: libs
+Priority: optional
+Maintainer: Robert Nelson <robertcnelson@gmail.com>
+Build-Depends:
+ debhelper (>= 9),
+ autotools-dev,
+ gtk-doc-tools,
+ intltool,
+ libdbus-glib-1-dev,
+ libglib2.0-dev,
+ libgtk2.0-dev,
+ libexif-dev,
+ libmenu-cache-dev (>=0.5.0), 
+ libtool,
+ pkg-config,
+ valac,
+ libglib2.0-doc,
+ libgtk-3-doc,
+ quilt,
+Standards-Version: 3.9.5
+Homepage: http://pcmanfm.sourceforge.net/
+Vcs-Browser: http://git.siduction.org/?p=code/libfm.git
+Vcs-Git: git://git.siduction.org/code/libfm.git
+
+Package: libfm4
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+ libfm-data (>= 1.2.0~),
+ lxmenu-data,
+Recommends:
+ libfm-modules
+Description: file management support (core library)
+ LibFM provides file management functions built on top of Glib/GIO,
+ giving a convenient higher-level API.
+ .
+ Some features:
+  * Desktop-independent, following FreeDesktop standards;
+  * Fast, light on memory usage, and responsive - well suited to
+    less powerful hardware such as netbooks and thin clients;
+  * Uses GIO/GVFS (like Nautilus) for Trash support and access to
+    remote file systems (FTP, SFTP, WebDAV, Windows shares, etc.);
+  * Clipboard operations are compatible with GTK+/GNOME and Qt/KDE;
+  * Supports both Drag-and-Drop, and the X Direct Save protocol;
+  * Reusable design with the core functions separated out to
+    simplify porting to other GUIs.
+ .
+ This package contains the core library.
+
+Package: libfm-extra4
+Architecture: any
+Multi-Arch: same
+Pre-Depends:
+ ${misc:Pre-Depends}
+Depends:
+ ${misc:Depends},
+  ${shlibs:Depends}
+Description: file management support (extra library)
+ LibFM provides file management functions built on top of Glib/GIO
+ giving a convenient higher-level API.
+ .
+ This package contains standalone library which extends libfm.
+
+Package: libfm-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Depends:
+ ${misc:Depends},
+  libfm4 (= ${binary:Version}),
+ libfm-extra4 (= ${binary:Version}),
+ libglib2.0-dev
+Suggests:
+ libfm-doc
+Description: file management support (core development files)
+ LibFM provides file management functions built on top of Glib/GIO,
+ giving a convenient higher-level API.
+ .
+ This package contains the development files for GUI-independent build.
+
+Package: libfm-gtk-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Depends:
+ ${misc:Depends},
+ libfm-dev (= ${binary:Version}),
+ libfm-gtk4 (= ${binary:Version}),
+ libgtk2.0-dev
+Breaks:
+ libfm-dev (<< 1.0.2)
+Description: file management support (GTK+ GUI development files)
+ LibFM provides file management functions built on top of Glib/GIO,
+ giving a convenient higher-level API.
+ .
+ This package contains the development files for builds using GTK+ library.
+
+Package: libfm-doc
+Section: doc
+Architecture: all
+Depends:
+ ${misc:Depends}
+Breaks:
+ libfm-dev (<< 1.1.1)
+Replaces:
+ libfm-dev (<< 1.1.1)
+Recommends:
+ libglib2.0-doc,
+ libgtk-3-doc
+Description: file management support (development documentation)
+ LibFM provides file management functions built on top of Glib/GIO,
+ giving a convenient higher-level API.
+ .
+ This package contains the development HTML documentation.
+
+Package: libfm-dbg
+Section: debug
+Priority: extra
+Architecture: any
+Multi-Arch: same
+Depends:
+ ${misc:Depends},
+ libfm4 (= ${binary:Version}),
+ libfm-extra4 (= ${binary:Version})
+Breaks:
+ libfm1-dbg
+Replaces:
+ libfm1-dbg
+Description: file management support (libfm debug)
+ LibFM provides file management functions built on top of Glib/GIO,
+ giving a convenient higher-level API.
+ .
+ This package contains the debugging symbols for GUI independent library.
+
+Package: libfm-gtk-dbg
+Section: debug
+Priority: extra
+Architecture: any
+Multi-Arch: same
+Depends:
+ ${misc:Depends},
+ libfm-gtk4 (= ${binary:Version})
+Breaks:
+ libfm-dbg (<< 1.0.2)
+Description: file management support (libfm-gtk debug)
+ LibFM provides file management functions built on top of Glib/GIO,
+ giving a convenient higher-level API.
+ .
+ This package contains the debugging symbols for GTK+ library.
+
+Package: libfm-modules-dbg
+Section: debug
+Priority: extra
+Architecture: any
+Multi-Arch: same
+Depends:
+ ${misc:Depends},
+ libfm-modules (= ${binary:Version})
+Description: file management support (libfm-modules debug)
+ LibFM provides file management functions built on top of Glib/GIO,
+ giving a convenient higher-level API.
+ .
+ This package contains the debugging symbols for libfm modules.
+
+Package: libfm-data
+Section: misc
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends}
+Breaks:
+ libfm0,
+ libfm1
+Replaces:
+ libfm0,
+ libfm1
+Description: file management support (common data)
+ LibFM provides file management functions built on top of Glib/GIO,
+ giving a convenient higher-level API.
+ .
+ This package contains the common data of the core library.
+
+Package: libfm-gtk-data
+Section: misc
+Architecture: all
+Multi-Arch: foreign
+Depends:
+ ${misc:Depends}
+Breaks:
+ libfm-gtk0,
+ libfm-gtk-bin (<< 1.0)
+Replaces:
+ libfm-gtk0
+Description: file management support (GTK+ library common data)
+ LibFM provides file management functions built on top of Glib/GIO,
+ giving a convenient higher-level API.
+ .
+ This package contains the common data of the GTK+ library.
+
+Package: libfm-gtk4
+Architecture: any
+Multi-Arch: same
+Pre-Depends:
+ ${misc:Pre-Depends}
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+ libfm4 (= ${binary:Version}),
+ libfm-gtk-data (>= 1.2.0~)
+Suggests:
+ libfm-tools,
+ nautilus-actions
+Description: file management support (GTK+ 2.0 GUI library)
+ LibFM provides file management functions built on top of Glib/GIO
+ giving a convenient higher-level API.
+ .
+ This package contains the GTK+ version 2.0 GUI.
+
+Package: libfm-tools
+Section: misc
+Architecture: any
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+ libfm-modules
+Conflicts:
+ libfm-gtk-bin,
+ lxshortcut
+Replaces:
+ libfm-gtk-bin,
+ lxshortcut
+Provides:
+ libfm-gtk-bin,
+ lxshortcut
+Description: file management support (utilities)
+ LibFM provides file management functions built on top of Glib/GIO
+ giving a convenient higher-level API.
+ .
+ This package contains applications libfm-pref-apps and lxshortcut.
+
+Package: libfm-modules
+Architecture: any
+Multi-Arch: same
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends}
+Description: file management support (loadable modules for library)
+ LibFM provides file management functions built on top of Glib/GIO
+ giving a convenient higher-level API.
+ .
+ This package contains loadable modules used by libfm* libraries.
