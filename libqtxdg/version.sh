@@ -5,6 +5,7 @@
 mirror="http://packages.siduction.org"
 
 package_name="libqtxdg"
+debian_pkg_name="${package_name}"
 package_version="1.0.0"
 package_source="${package_name}_${package_version}.orig.tar.gz"
 src_dir="${package_name}-${package_version}"

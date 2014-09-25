@@ -3,6 +3,7 @@
 mirror="http://ftp.de.debian.org/debian"
 
 package_name="xf86-video-omap"
+debian_pkg_name="${package_name}"
 package_version="0.4.3"
 package_source="${package_name}_${package_version}.orig.tar.gz"
 src_dir=""

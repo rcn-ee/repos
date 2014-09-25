@@ -5,6 +5,7 @@
 mirror="http://packages.siduction.org"
 
 package_name="compton-conf"
+debian_pkg_name="${package_name}"
 package_version="0.1.0"
 package_source="${package_name}_${package_version}.orig.tar.bz2"
 src_dir=""

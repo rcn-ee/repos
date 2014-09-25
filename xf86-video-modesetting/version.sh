@@ -3,6 +3,7 @@
 mirror="http://ftp.de.debian.org/debian"
 
 package_name="xf86-video-modesetting"
+debian_pkg_name="${package_name}"
 package_version="0.9.0"
 package_source="xserver-xorg-video-modesetting_${package_version}.orig.tar.gz"
 src_dir="${package_name}-${package_version}"
