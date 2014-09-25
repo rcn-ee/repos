@@ -10,6 +10,7 @@ setup_update_sbuild () {
 	if [ ! -f /var/lib/sbuild/${dist}-${deb_arch}.tar.gz ] ; then
 		sudo sbuild-createchroot --make-sbuild-tarball=/var/lib/sbuild/${dist}-${deb_arch}.tar.gz ${dist} `mktemp -d` ${mirror}
 	else
+		sudo chown -R root:root /var/lib/sbuild/${dist}-${deb_arch}.tar.gz
 		sudo sbuild-update -udcar ${dist}-${deb_arch}-sbuild
 	fi
 }
