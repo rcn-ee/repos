@@ -7,7 +7,7 @@ outgoing="/var/www/html/farm/outgoing"
 
 add_to_reprepro () {
 
-	if [ -f ${repo}pool/main/${reprepro_dir}/${deb_source} ] ; then
+	if [ ! -f ${repo}pool/main/${reprepro_dir}/${deb_source} ] ; then
 		mkdir -p ${repo}pool/main/${reprepro_dir}/
 		cp -v ${outgoing}/${dist}/${archive}_${debian_version}/${deb_source} ${repo}pool/main/${reprepro_dir}/
 	fi
