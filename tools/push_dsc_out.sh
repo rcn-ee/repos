@@ -13,6 +13,8 @@ run () {
 
 	if [ -f ${dist}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.dsc ] ; then
 		cp -v ${dist}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.dsc /mnt/farm/incoming/${dist}/
+	elif [ -f ${dist}/${package_name}_${package_version}${rcn_ee_version}.dsc ] ; then
+		cp -v ${dist}/${package_name}_${package_version}${rcn_ee_version}.dsc /mnt/farm/incoming/${dist}/
 	fi
 
 	if [ -f ${dist}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.debian.tar.xz ] ; then
@@ -21,6 +23,10 @@ run () {
 		cp -v ${dist}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.debian.tar.gz /mnt/farm/incoming/${dist}/
 	elif [ -f ${dist}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.diff.gz ] ; then
 		cp -v ${dist}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.diff.gz /mnt/farm/incoming/${dist}/
+	fi
+
+	if [ -f ${dist}/${package_name}_${package_version}${rcn_ee_version}.tar.xz ] ; then
+		cp -v ${dist}/${package_name}_${package_version}${rcn_ee_version}.tar.xz /mnt/farm/incoming/${dist}/
 	fi
 }
 
