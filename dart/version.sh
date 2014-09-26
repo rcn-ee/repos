@@ -2,7 +2,7 @@
 
 package_name="dart"
 debian_pkg_name="${package_name}"
-package_version="1.7.0-edge.40708"
+package_version="1.7.0-edge.40709"
 package_source="${package_name}_${package_version}.orig.tar.gz"
 src_dir="${package_name}-${package_version}"
 
