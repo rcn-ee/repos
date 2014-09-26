@@ -1,0 +1,46 @@
+Source: lxqt-policykit
+Section: x11
+Priority: optional
+Maintainer: Robert Nelson <robertcnelson@gmail.com>
+Build-Depends:
+ cmake,
+ debhelper (>= 9),
+ libpolkit-agent-1-dev,
+ libx11-dev,
+ pkg-config,
+ liblxqt-qt5-0-dev (>= 0.7.0),
+ libpolkit-qt5-1-dev,
+ libqt5x11extras5-dev (>= 5.3.1),
+ libqt5xdg-dev (>= 1.0.0),
+ qttools5-dev (>= 5.3.1),
+ qttools5-dev-tools (>= 5.3.1),
+Standards-Version: 3.9.5
+Homepage: https://github.com/lxde/lxqt-policykit
+#Vcs-Git: git://anonscm.debian.org/collab-maint/lxqt-policykit.git
+#Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/lxqt-policykit.git;a=summary
+
+Package: lxqt-policykit-qt5
+Architecture: any
+Breaks:
+ lxqt-policykit
+Replaces:
+ lxqt-policykit
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+Description: LXQt PolicyKit agent
+ The LXQt PolicyKit agent
+ .
+ This package contain the agent.
+
+Package: lxqt-policykit-qt5-dbg
+Architecture: any
+Section: debug
+Priority: extra
+Depends:
+ ${misc:Depends},
+ lxqt-policykit-qt5 (= ${binary:Version}),
+Description: LXQt PolicyKit agent (debug symbols)
+ The LXQt PolicyKit agent
+ .
+ This package contain debugging symbols.
