@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+
+#export DH_VERBOSE=1
+export USE_QT5=1
+
+
+%:
+	dh ${@} --buildsystem cmake --parallel
+
+override_dh_auto_install:
+	dh_auto_install -- DESTDIR=$(CURDIR)/debian/lxqt-runner-qt5
+
+override_dh_strip:
+	dh_strip --dbg-package=lxqt-runner-qt5-dbg
