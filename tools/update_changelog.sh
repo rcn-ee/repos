@@ -6,10 +6,15 @@ DIR="$PWD"
 
 run () {
 	wfile="${DIR}/debian/${dist}/debian/new"
+	backport=""
+	if [ "x${dist}" = "xwheezy" ] ; then
+		backport="bpo70+"
+	fi
+
 	if [ "x${debian_version}" = "x" ] ; then
-		echo "${debian_pkg_name} (${package_version}~${simple_date}+1) ${dist}; urgency=low" > ${wfile}
+		echo "${debian_pkg_name} (${package_version}~${backport}${simple_date}+1) ${dist}; urgency=low" > ${wfile}
 	else
-		echo "${debian_pkg_name} (${debian_version}~${simple_date}+1) ${dist}; urgency=low" > ${wfile}
+		echo "${debian_pkg_name} (${debian_version}~${backport}${simple_date}+1) ${dist}; urgency=low" > ${wfile}
 	fi
 	echo "" >> ${wfile}
 	echo "  * Rebuild for repos.rcn-ee.net" >> ${wfile}
