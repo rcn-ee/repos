@@ -21,6 +21,7 @@ generate_dsc () {
 	if [ ! "x${src_dir}" = "x" ] ; then
 		tar xf ${DIR}/${package_source} -C ${DIR}/${dist}/
 		cd ${DIR}/${dist}/${src_dir}
+		ls
 		if [ ! "x${debian_patch}" = "x" ] ; then
 			zcat ${DIR}/${debian_patch} | patch -p1
 		fi
@@ -32,6 +33,7 @@ generate_dsc () {
 		tar xf ${DIR}/${package_source} -C ${DIR}/${dist}/${package_name}_${package_version}
 
 		cd ${DIR}/${dist}/${package_name}_${package_version}
+		ls
 		if [ ! "x${debian_patch}" = "x" ] ; then
 			zcat ${DIR}/${debian_patch} | patch -p1
 		fi
