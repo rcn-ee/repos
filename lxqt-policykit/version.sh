@@ -8,7 +8,7 @@ package_name="lxqt-policykit"
 debian_pkg_name="${package_name}"
 package_version="0.7.96"
 package_source="${package_name}_${package_version}.orig.tar.bz2"
-src_dir=""
+src_dir="tmpGCTQx7"
 
 git_repo=""
 git_sha=""
