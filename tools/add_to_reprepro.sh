@@ -2,15 +2,11 @@
 
 . version.sh
 
-repo="/var/www/html/repos.rcn-ee.net/debian/"
+base="/var/www/html/repos.rcn-ee.net/"
+repo="${base}debian/"
 outgoing="/var/www/html/farm/outgoing"
 
 run () {
-
-	if [ ! -f ${repo}pool/main/${reprepro_dir}/${package_source} ] ; then
-		mkdir -p ${repo}pool/main/${reprepro_dir}/
-		cp -v ${outgoing}/${dist}/${debian_pkg_name}_${debian_version}/${package_source} ${repo}pool/main/${reprepro_dir}/
-	fi
 
 	wfile="${outgoing}/${dist}/${debian_pkg_name}_${debian_version}/${debian_pkg_name}_${debian_version}${rcn_ee_version}_armhf.changes"
 	if [ ! -f ${repo}pool/main/${reprepro_dir}/${debian_pkg_name}_${debian_version}${rcn_ee_version}*.deb ] ; then
@@ -25,6 +21,12 @@ run () {
 			reprepro -b ${repo} -C main include ${dist} ${wfile}
 		fi
 	fi
+
+	if [ "x${archive}" = "xenable" ] ; then
+		mkdir -p ${base}archive/${dist}/${debian_pkg_name}/${package_version}/
+		cp -v ${repo}pool/main/${reprepro_dir}/${debian_pkg_name}_${debian_version}${rcn_ee_version}_armhf.deb ${base}archive/${dist}/${debian_pkg_name}/${package_version}/
+	fi
+
 }
 
 dist="wheezy"

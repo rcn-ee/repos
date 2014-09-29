@@ -17,3 +17,5 @@ debian_diff=""
 
 wheezy_version="~bpo70+20140926+1"
 jessie_version="~20140926+1"
+
+archive="enable"
