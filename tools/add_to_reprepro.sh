@@ -24,7 +24,7 @@ run () {
 
 	if [ "x${archive}" = "xenable" ] ; then
 		mkdir -p ${base}archive/${dist}/${debian_pkg_name}/${package_version}/
-		cp -v ${repo}pool/main/${reprepro_dir}/${debian_pkg_name}_${debian_version}${rcn_ee_version}_armhf.deb ${base}archive/${dist}/${debian_pkg_name}/${package_version}/
+		cp -v ${repo}pool/main/${reprepro_dir}/${debian_pkg_name}_${debian_version}${rcn_ee_version}_armhf.deb ${base}archive/${debian_pkg_name}/${dist}/${package_version}/
 	fi
 
 }
