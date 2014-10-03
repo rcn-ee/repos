@@ -1,8 +1,10 @@
 #!/bin/bash -e
 
+#https://code.google.com/p/dart/source/list
+
 package_name="dart"
 debian_pkg_name="${package_name}"
-package_version="1.7.0-edge.40791"
+package_version="1.7.0-edge.40905"
 package_source="${package_name}_${package_version}.orig.tar.gz"
 src_dir="${package_name}-${package_version}"
 
@@ -17,5 +19,5 @@ debian_diff=""
 
 archive="enable"
 
-wheezy_version="~bpo70+20140929+1"
-jessie_version="~20140929+1"
+wheezy_version="~bpo70+20141003+1"
+jessie_version="~20141003+1"

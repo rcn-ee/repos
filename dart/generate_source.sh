@@ -2,7 +2,9 @@
 
 . version.sh
 
-sudo apt-get update ; sudo apt-get install -y subversion git-svn
+if [ ! -f /usr/bin/svn ] ; then
+	sudo apt-get update ; sudo apt-get install -y subversion git-svn
+fi
 
 if [ ! -d ./ignore/ ] ; then
 	mkdir ./ignore/
