@@ -12,4 +12,8 @@ fi
 
 gunzip Packages.gz
 
-grep -E "Source:|Version:" Packages > list.txt
+grep -E "Source:|Version:" Packages > tmp.txt
+tr '\n' ' ' < tmp.txt > list.txt
+sed -i -e 's/ Source:/\nSource:/g' list.txt
+sed -i -e 's/Source: //g' list.txt
+sed -i -e 's/Version: //g' list.txt
