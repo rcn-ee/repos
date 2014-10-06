@@ -15,5 +15,5 @@ debian_version="${package_version}-1"
 debian_patch=""
 debian_diff=""
 
-wheezy_version="~bpo70+20140924+1"
+wheezy_version="~bpo70+20141006+1"
 jessie_version="~20141006+1"
