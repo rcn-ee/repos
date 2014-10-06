@@ -18,4 +18,4 @@ debian_untar=""
 debian_patch="${package_name}_${debian_version}.diff.gz"
 
 wheezy_version="~bpo70+20140924+1"
-jessie_version="~20141006+1"
+jessie_version="bborg~20141006+1"
