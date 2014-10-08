@@ -81,9 +81,23 @@ ifneq (,$(filter arm,$(DEB_HOST_ARCH_CPU)))
 	ARM = yes
 endif
 ifeq ($(ARM), yes)
+
 defines+=sysroot=/ \
          target_arch=arm
+         disable_nacl=1 \
+         linux_use_tcmalloc=0 \
+         use_cups=1 \
+         arm_version=7 \
+         arm_neon=1 \
+         arm_float_abi=hard \
+         arm_thumb=0
+
+defines+=enable_webrtc=0 \
+         enable_google_now=0 \
+         enable_hangout_services_extension=0
+
 endif
+
 
 # make gyp a little more informative
 options+=--check \
