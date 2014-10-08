@@ -7,7 +7,7 @@ package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
 git_repo="https://github.com/andrew-bibb/cmst.git"
-git_sha="3fcaea373dfb5b5ad0e4a48d1c196fd920c02b71"
+git_sha="44ed6cf6f9ae74b802e11b2cb4300c5b912c1657"
 reprepro_dir="c/${package_name}"
 dl_path=""
 
@@ -16,4 +16,4 @@ debian_patch=""
 debian_diff=""
 
 wheezy_version="~bpo70+20141006+1"
-jessie_version="~20141007+2"
+jessie_version="~20141008+1"
