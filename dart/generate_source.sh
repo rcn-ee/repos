@@ -13,12 +13,12 @@ if [ ! -d ./ignore/ ] ; then
 
 	mkdir -p ./dart
 	cd ./dart/
-	svn ls https://dart.googlecode.com/svn/branches/bleeding_edge/
+	svn ls https://dart.googlecode.com/svn/branches/${repo_branch}/
 
 	mkdir ./dart-repo
 	cd ./dart-repo
-	../../depot_tools/gclient config https://dart.googlecode.com/svn/branches/bleeding_edge/deps/all.deps
-	git svn clone -rHEAD https://dart.googlecode.com/svn/branches/bleeding_edge/dart dart
+	../../depot_tools/gclient config https://dart.googlecode.com/svn/branches/${repo_branch}/deps/all.deps
+	git svn clone -rHEAD https://dart.googlecode.com/svn/branches/${repo_branch}/dart dart
 	../../depot_tools/gclient sync -n
 	../../depot_tools/gclient runhooks
 	cd ./dart/

@@ -2,9 +2,11 @@
 
 . version.sh
 
+deb_arch=$(dpkg --print-architecture)
+
 run () {
 	out_dir="/mnt/farm/outgoing/${dist}/${debian_pkg_name}_${debian_version}"
-	if [ -f /var/lib/sbuild/${dist}-armhf.tar.gz ] ; then
+	if [ -f /var/lib/sbuild/${dist}-${deb_arch}.tar.gz ] ; then
 		if [ -d ./${dist} ] ; then
 			rm -rf ./${dist}/
 		fi
