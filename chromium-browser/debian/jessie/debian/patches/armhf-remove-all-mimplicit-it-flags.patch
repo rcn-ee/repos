@@ -1,0 +1,30 @@
+diff --git a/breakpad/BUILD.gn b/breakpad/BUILD.gn
+index 596aea6..9b53f1f 100644
+--- a/breakpad/BUILD.gn
++++ b/breakpad/BUILD.gn
+@@ -422,10 +422,6 @@ if (is_linux && current_toolchain == host_toolchain) {
+ 
+     direct_dependent_configs = [ ":breakpad_client_config" ]
+ 
+-    # Android NDK toolchain doesn't support -mimplicit-it=always
+-    if (cpu_arch == "arm" && !is_android) {
+-      cflags = [ "-Wa,-mimplicit-it=always" ]
+-    }
+     if (cpu_arch == "arm" && is_chromeos) {
+       # Avoid running out of registers in
+       # linux_syscall_support.h:sys_clone()'s inline assembly.
+diff --git a/breakpad/breakpad.gyp b/breakpad/breakpad.gyp
+index ca1286b..f41a0e8 100644
+--- a/breakpad/breakpad.gyp
++++ b/breakpad/breakpad.gyp
+@@ -490,10 +490,6 @@
+           ],
+ 
+           'conditions': [
+-            # Android NDK toolchain doesn't support -mimplicit-it=always
+-            ['target_arch=="arm" and OS!="android"', {
+-              'cflags': ['-Wa,-mimplicit-it=always'],
+-            }],
+             ['target_arch=="arm" and chromeos==1', {
+               # Avoid running out of registers in
+               # linux_syscall_support.h:sys_clone()'s inline assembly.
