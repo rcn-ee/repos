@@ -1,0 +1,38 @@
+Index: skia/BUILD.gn
+diff --git a/skia/BUILD.gn b/skia/BUILD.gn
+index 3af03facf4a5df923679ce0558765b7e68e2d557..f64b22d06839be3895e7bd6f6034fd3be561fdf0 100644
+--- a/skia/BUILD.gn
++++ b/skia/BUILD.gn
+@@ -629,13 +629,6 @@ source_set("skia_opts") {
+           "//third_party/skia/src/opts/memset32_neon.S",
+         ]
+ 
+-        cflags += [
+-          # The neon assembly contains conditional instructions which aren't
+-          # enclosed in an IT block. The assembler complains without this
+-          # option. See #86592.
+-          "-Wa,-mimplicit-it=always",
+-        ]
+-
+         # Root build config sets -mfpu=$arm_fpu, which we expect to be neon
+         # when running this.
+         if (!arm_use_neon) {
+Index: skia/skia_library_opts.gyp
+diff --git a/skia/skia_library_opts.gyp b/skia/skia_library_opts.gyp
+index cb15f2d6c680681ec28634e1843f8542be57dcbb..cc002923b1b7daff78ac44152b2ea471272c6f4c 100644
+--- a/skia/skia_library_opts.gyp
++++ b/skia/skia_library_opts.gyp
+@@ -66,13 +66,6 @@
+         [ 'target_arch == "arm"', {
+           'conditions': [
+             [ 'arm_version >= 7 and (arm_neon == 1 or arm_neon_optional == 1)', {
+-              'cflags': [
+-                # The neon assembly contains conditional instructions which
+-                # aren't enclosed in an IT block. The assembler complains
+-                # without this option.
+-                # See #86592.
+-                '-Wa,-mimplicit-it=always',
+-              ],
+               'dependencies': [
+                 'skia_opts_neon',
+               ]
