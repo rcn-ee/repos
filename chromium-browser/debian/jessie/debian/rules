@@ -19,9 +19,10 @@ export LDFLAGS+=-Wl,--trace -Wl,--stats
 # treat all warnings as errors
 defines=werror=
 
-# use clang instead of gcc
-defines+=clang=1
-defines+=clang_use_chrome_plugins=
+#We need gcc-4.9 on arm...
+## use clang instead of gcc
+#defines+=clang=1
+#defines+=clang_use_chrome_plugins=
 
 # disabled features
 defines+=use_ozone=0 \
@@ -84,16 +85,13 @@ ifeq ($(ARM), yes)
 
 defines+=sysroot=/ \
          target_arch=arm \
-         disable_nacl=1 \
-         linux_use_tcmalloc=0 \
          use_cups=1 \
          arm_version=7 \
          arm_neon=1 \
          arm_float_abi=hard \
          arm_thumb=0
 
-defines+=enable_webrtc=0 \
-         enable_spellcheck=0 \
+defines+=enable_spellcheck=0 \
          enable_background=0 \
          enable_google_now=0 \
          enable_hangout_services_extension=0
