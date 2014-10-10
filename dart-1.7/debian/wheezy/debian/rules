@@ -51,6 +51,7 @@ override_dh_shlibdeps:
 
 override_dh_auto_install:
 	mkdir -p debian/tmp/out
-	cp -vR dart/out/Release$(release)/dart debian/tmp/out
+	mv dart/out/Release$(release)/dart dart/out/Release$(release)/dart-1.7
+	cp -vR dart/out/Release$(release)/dart-1.7 debian/tmp/out
 	dh_install
 	dh_link
