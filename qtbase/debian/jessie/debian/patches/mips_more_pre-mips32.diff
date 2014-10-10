@@ -1,0 +1,24 @@
+Author: Pino Toscano <toscano.pino@tiscali.it>
+Description: Support atomic on pre-MIPS32 archs, also in orderedMemoryFence
+ Set pre-MIPS32 opcodes also in orderedMemoryFence.
+Last-Update: 2013-12-20
+Forwarded: no
+
+---
+ src/corelib/arch/qatomic_mips.h |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+--- a/src/corelib/arch/qatomic_mips.h
++++ b/src/corelib/arch/qatomic_mips.h
+@@ -128,7 +128,10 @@ void QBasicAtomicOps<size>::releaseMemor
+ template <int size> template <typename T> inline
+ void QBasicAtomicOps<size>::orderedMemoryFence(const T &) Q_DECL_NOTHROW
+ {
+-    asm volatile ("sync 0" ::: "memory");
++    asm volatile (".set push\n"
++                  ".set mips32\n"
++                  "sync 0\n"
++                  ".set pop\n" ::: "memory");
+ }
+ 
+ template<> template<typename T> inline

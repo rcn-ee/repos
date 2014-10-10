@@ -1,0 +1,29 @@
+Author: Pino Toscano <toscano.pino@tiscali.it>
+Description: hurd mkspec: remove X11R6-related library and include dirs
+ Such X11 dirs have not been there for years now, and they can cause build
+ issues in cmake-based projects (as they make cmake look in those directories
+ for extra stuff like libGL)
+Last-Update: 2014-05-20
+Forwarded: no
+
+---
+ mkspecs/hurd-g++/qmake.conf |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+--- a/mkspecs/hurd-g++/qmake.conf
++++ b/mkspecs/hurd-g++/qmake.conf
+@@ -12,10 +12,10 @@ QMAKE_CXXFLAGS_THREAD  += $$QMAKE_CFLAGS
+ 
+ QMAKE_INCDIR            =
+ QMAKE_LIBDIR            =
+-QMAKE_INCDIR_X11        = /usr/X11R6/include
+-QMAKE_LIBDIR_X11        = /usr/X11R6/lib
+-QMAKE_INCDIR_OPENGL     = /usr/X11R6/include
+-QMAKE_LIBDIR_OPENGL     = /usr/X11R6/lib
++QMAKE_INCDIR_X11        =
++QMAKE_LIBDIR_X11        =
++QMAKE_INCDIR_OPENGL     =
++QMAKE_LIBDIR_OPENGL     =
+ QMAKE_INCDIR_OPENGL_ES2 = $$QMAKE_INCDIR_OPENGL
+ QMAKE_LIBDIR_OPENGL_ES2 = $$QMAKE_LIBDIR_OPENGL
+ QMAKE_INCDIR_EGL        =

@@ -1,0 +1,73 @@
+Author: Lars Knoll <lars.knoll@digia.com>
+Date: Fri, 5 Sep 2014 12:58:19 +0200
+Description: [PATCH] Fix bugs in internal comparison operators
+ Lisandro removed the tests part as it didn't apply and we are not
+ running them anyway.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+
+The comparison operators between QJsonPrivate::String
+and QJsonPrivate::Latin1String weren't all correct, leading
+to wrong sorting of keys in QJsonObjects when the keys were
+outside of the latin1 range and resulting lookup errors.
+
+Task-number: QTBUG-41100
+Change-Id: Idceff615f85d7ab874ad2a8e4a6c1ce8c2aa0f65
+Reviewed-by: Jędrzej Nowacki <jedrzej.nowacki@digia.com>
+---
+ src/corelib/json/qjson_p.h |   23 ++++++++++++++++++++---
+ 1 file changed, 20 insertions(+), 3 deletions(-)
+
+--- a/src/corelib/json/qjson_p.h
++++ b/src/corelib/json/qjson_p.h
+@@ -352,7 +352,7 @@ public:
+         return !memcmp(d->utf16, str.d->utf16, d->length*sizeof(ushort));
+     }
+     inline bool operator<(const String &other) const;
+-    inline bool operator >=(const String &other) const { return other < *this; }
++    inline bool operator >=(const String &other) const { return !(*this < other); }
+ 
+     inline QString toString() const {
+ #if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+@@ -412,12 +412,29 @@ public:
+             val = d->length - str.d->length;
+         return val >= 0;
+     }
++    inline bool operator<(const String &str) const
++    {
++        const qle_ushort *uc = (qle_ushort *) str.d->utf16;
++        if (!uc || *uc == 0)
++            return false;
++
++        const uchar *c = (uchar *)d->latin1;
++        const uchar *e = c + qMin((int)d->length, (int)str.d->length);
+ 
++        while (c < e) {
++            if (*c != *uc)
++                break;
++            ++c;
++            ++uc;
++        }
++        return (c == e ? (int)d->length < (int)str.d->length : *c < *uc);
++
++    }
+     inline bool operator ==(const String &str) const {
+         return (str == *this);
+     }
+     inline bool operator >=(const String &str) const {
+-        return (str < *this);
++        return !(*this < str);
+     }
+ 
+     inline QString toString() const {
+@@ -454,7 +471,7 @@ inline bool String::operator <(const Str
+         a++,b++;
+     if (l==-1)
+         return (alen < blen);
+-    return (ushort)*a - (ushort)*b;
++    return (ushort)*a < (ushort)*b;
+ }
+ 
+ inline bool String::operator<(const Latin1String &str) const

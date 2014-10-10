@@ -1,0 +1,21 @@
+Description: Do not use specific headers for Sparc atomics
+ By removing the unexistant sparc headers the C++11 ones will be used.
+Author: Adam Majer <adamm@debian.org>
+Forwarded: no
+Reviewed-by: Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>
+
+---
+ src/corelib/thread/qbasicatomic.h |    2 --
+ 1 file changed, 2 deletions(-)
+
+--- a/src/corelib/thread/qbasicatomic.h
++++ b/src/corelib/thread/qbasicatomic.h
+@@ -62,8 +62,6 @@
+ #  include "QtCore/qatomic_ia64.h"
+ #elif defined(Q_PROCESSOR_MIPS)
+ #  include "QtCore/qatomic_mips.h"
+-#elif defined(Q_PROCESSOR_SPARC)
+-#  include "QtCore/qatomic_sparc.h"
+ #elif defined(Q_PROCESSOR_X86)
+ #  include <QtCore/qatomic_x86.h>
+ 
