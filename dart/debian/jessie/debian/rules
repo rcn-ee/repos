@@ -1,6 +1,20 @@
 #!/usr/bin/make -f
 export DH_VERBOSE = 1
 
+# Some variables:
+DEB_HOST_ARCH_OS  ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
+DEB_HOST_ARCH_CPU ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_CPU)
+
+ifneq (,$(filter amd64,$(DEB_HOST_ARCH_CPU)))
+	build=x64
+	release=x86
+endif
+
+ifneq (,$(filter arm,$(DEB_HOST_ARCH_CPU)))
+	build=arm
+	release=ARM
+endif
+
 PARALLEL_JOBS := 1
 
 # Verbose?
@@ -24,7 +38,7 @@ override_dh_auto_configure:
 
 override_dh_auto_build:
 	cd dart; \
-	python tools/build.py -v -m release -a arm runtime; \
+	python tools/build.py -v -m release -a $(build) runtime; \
 	cd ..
 
 # Building the Dart SDK will already strip all binaries.
@@ -37,6 +51,6 @@ override_dh_shlibdeps:
 
 override_dh_auto_install:
 	mkdir -p debian/tmp/out
-	cp -vR dart/out/ReleaseARM/dart debian/tmp/out
+	cp -vR dart/out/Release$(release)/dart debian/tmp/out
 	dh_install
 	dh_link
