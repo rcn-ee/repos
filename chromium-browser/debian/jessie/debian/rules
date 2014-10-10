@@ -10,8 +10,8 @@ export DH_VERBOSE=1
 # enable all build hardening flags
 export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 
-# linker flags to avoid memory allocation issues on i386
-export LDFLAGS+=-Wl,--no-keep-memory -Wl,--reduce-memory-overheads -Wl,--hash-size=7919
+## linker flags to avoid memory allocation issues on i386
+#export LDFLAGS+=-Wl,--no-keep-memory -Wl,--reduce-memory-overheads -Wl,--hash-size=7919
 
 # more verbose linker output
 export LDFLAGS+=-Wl,--trace -Wl,--stats
@@ -38,13 +38,13 @@ defines+=use_ozone=0 \
          enable_remoting_host=0 \
 
 # enabled features
-defines+=enable_hidpi=1 \
+defines+=enable_hidpi=0 \
          enable_webrtc=1 \
          use_pulseaudio=1 \
          use_gnome_keyring=1 \
-         linux_link_libpci=1 \
+         linux_link_libpci=0 \
          linux_link_gsettings=1 \
-         linux_link_libspeechd=1 \
+         linux_link_libspeechd=0 \
 
 # system libraries to use
 defines+=use_system_re2=1 \
