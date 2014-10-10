@@ -13,6 +13,9 @@ export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 ## linker flags to avoid memory allocation issues on i386
 #export LDFLAGS+=-Wl,--no-keep-memory -Wl,--reduce-memory-overheads -Wl,--hash-size=7919
 
+# linker flags to avoid memory allocation issues on i386
+export LDFLAGS+=-Wl,--no-keep-memory -Wl,--reduce-memory-overheads
+
 # more verbose linker output
 export LDFLAGS+=-Wl,--trace -Wl,--stats
 
@@ -89,7 +92,8 @@ defines+=sysroot=/ \
          arm_version=7 \
          arm_neon=1 \
          arm_float_abi=hard \
-         arm_thumb=0
+         arm_thumb=0 \
+         library=shared_library
 
 defines+=enable_spellcheck=0 \
          enable_background=0 \
