@@ -56,13 +56,12 @@ endif
 
 gles2_architectures := armel armhf
 ifeq ($(DEB_HOST_ARCH),$(findstring $(DEB_HOST_ARCH), $(gles2_architectures)))
-	extra_configure_opts += -opengl es2
+	extra_configure_opts += -opengl es2 -eglfs
 else
 	extra_configure_opts += -opengl desktop
-endif
-
-ifneq ($(DEB_HOST_ARCH_OS),linux)
+  ifneq ($(DEB_HOST_ARCH_OS),linux)
 	extra_configure_opts += -no-eglfs
+  endif
 endif
 
 # Compile without sse2 support on i386
