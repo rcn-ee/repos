@@ -20,4 +20,4 @@ debian_diff=""
 archive="enable"
 
 wheezy_version="~bpo70+20141006+1"
-jessie_version="~20141013+5"
+jessie_version="~20141013+6"

@@ -1,0 +1,46 @@
+diff --git a/third_party/ffmpeg/BUILD.gn b/third_party/ffmpeg/BUILD.gn
+index 9e99baa..3752914 100644
+--- a/third_party/ffmpeg/BUILD.gn
++++ b/third_party/ffmpeg/BUILD.gn
+@@ -202,7 +202,7 @@ if (build_ffmpegsumo) {
+           cflags = [ "-marm" ]
+         }
+         cflags += [
+-          "-mthumb",
++          "-marm",
+           "-march=armv7-a",
+           "-mtune=cortex-a8",
+           "-mfpu=${arm_fpu}"
+diff --git a/third_party/ffmpeg/chromium/scripts/build_ffmpeg.py b/third_party/ffmpeg/chromium/scripts/build_ffmpeg.py
+index a4a3fc4..7f01a61 100755
+--- a/third_party/ffmpeg/chromium/scripts/build_ffmpeg.py
++++ b/third_party/ffmpeg/chromium/scripts/build_ffmpeg.py
+@@ -291,7 +291,6 @@ def main(argv):
+           '--enable-armv6',
+           '--enable-armv6t2',
+           '--enable-vfp',
+-          '--enable-thumb',
+           '--disable-neon',
+           '--extra-cflags=-march=armv7-a',
+           '--extra-cflags=-mtune=cortex-a8',
+@@ -312,7 +311,6 @@ def main(argv):
+           '--enable-armv6',
+           '--enable-armv6t2',
+           '--enable-vfp',
+-          '--enable-thumb',
+           '--enable-neon',
+           '--extra-cflags=-march=armv7-a',
+           '--extra-cflags=-mtune=cortex-a8',
+diff --git a/third_party/ffmpeg/ffmpeg.gyp b/third_party/ffmpeg/ffmpeg.gyp
+index 8ad5e3b..dcd2663 100644
+--- a/third_party/ffmpeg/ffmpeg.gyp
++++ b/third_party/ffmpeg/ffmpeg.gyp
+@@ -228,7 +228,7 @@
+                 '-marm',
+               ],
+               'cflags': [
+-                '-mthumb',
++                '-marm',
+                 '-march=armv7-a',
+                 '-mtune=cortex-a8',
+               ],
