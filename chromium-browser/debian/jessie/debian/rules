@@ -20,8 +20,8 @@ export LDFLAGS+=-Wl,--trace -Wl,--stats
 defines=werror=
 
 # use clang instead of gcc
-#defines+=clang=1
-#defines+=clang_use_chrome_plugins=
+defines+=clang=1
+defines+=clang_use_chrome_plugins=
 
 # disabled features
 defines+=use_ozone=0 \
@@ -147,7 +147,7 @@ override_dh_fixperms:
 	dh_fixperms --exclude chrome-sandbox
 
 override_dh_strip:
-	dh_strip --dbg-package=chromium-dbg
+	dh_strip
 
 override_dh_auto_clean:
 	rm -rf out Makefile third_party/flot/*
