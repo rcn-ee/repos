@@ -8,7 +8,7 @@ package_name="liblxqt"
 debian_pkg_name="${package_name}"
 package_version="0.8.0"
 package_source="${package_name}_${package_version}.orig.tar.gz"
-src_dir=""
+src_dir="${package_name}-${package_version}"
 
 git_repo=""
 git_sha=""
