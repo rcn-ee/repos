@@ -15,9 +15,9 @@ run () {
 		cd ./${dist}
 
 		if [ -f /mnt/farm/incoming/${dist}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.dsc ] ; then
-			sbuild -A -s -d ${dist} http://httphost/farm/incoming/${dist}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.dsc
+			sbuild -A -s --force-orig-source -d ${dist} http://httphost/farm/incoming/${dist}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.dsc
 		elif [ -f /mnt/farm/incoming/${dist}/${package_name}_${package_version}${rcn_ee_version}.dsc ] ; then
-			sbuild -A -s -d ${dist} http://httphost/farm/incoming/${dist}/${package_name}_${package_version}${rcn_ee_version}.dsc
+			sbuild -A -s --force-orig-source -d ${dist} http://httphost/farm/incoming/${dist}/${package_name}_${package_version}${rcn_ee_version}.dsc
 		fi
 
 		if [ -f ${debian_pkg_name}_${debian_version}${rcn_ee_version}_armhf.changes ] ; then
