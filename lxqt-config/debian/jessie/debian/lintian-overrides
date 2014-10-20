@@ -1,0 +1,20 @@
+# there will be no manpages in a foreseable future
+lxqt-config-qt5: binary-without-manpage usr/bin/lxqt-config-appearance
+lxqt-config-qt5: binary-without-manpage usr/bin/lxqt-config-file-associations
+lxqt-config-qt5: binary-without-manpage usr/bin/lxqt-config-input
+lxqt-config-qt5: binary-without-manpage usr/bin/lxqt-config-monitor
+lxqt-config-qt5: binary-without-manpage usr/bin/lxqt-config
+
+
+# not a bug, LXQt has not reached freedesktop yet
+lxqt-config-qt5: desktop-entry-invalid-category LXQt usr/share/applications/lxqt-config-appearance.desktop
+lxqt-config-qt5: desktop-entry-invalid-category LXQt usr/share/applications/lxqt-config-file-associations.desktop
+lxqt-config-qt5: desktop-entry-invalid-category LXQt usr/share/applications/lxqt-config-input.desktop
+lxqt-config-qt5: desktop-entry-invalid-category LXQt usr/share/applications/lxqt-config-monitor.desktop
+lxqt-config-qt5: desktop-entry-invalid-category LXQt usr/share/applications/lxqt-config.desktop
+
+
+# there should be no shared lib liblxqt-config-cursor, if the lib is needed the lib should be private
+lxqt-config-qt5: package-name-doesnt-match-sonames liblxqt-config-cursor
+lxqt-config-qt5: shlib-without-versioned-soname usr/lib/liblxqt-config-cursor.so liblxqt-config-cursor.so
+lxqt-config-qt5: pkg-has-shlibs-control-file-but-no-actual-shared-libs
