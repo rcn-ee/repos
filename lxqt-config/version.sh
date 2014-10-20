@@ -20,4 +20,4 @@ debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 
 wheezy_version="~bpo70+20140924+1"
-jessie_version="~20141020+2"
+jessie_version="~20141020+3"
