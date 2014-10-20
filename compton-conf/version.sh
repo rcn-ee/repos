@@ -15,9 +15,9 @@ git_sha=""
 reprepro_dir="c/${package_name}"
 dl_path="${mirror}/lxqt/pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-1"
+debian_version="${package_version}-2"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 
 wheezy_version="~bpo70+20140924+1"
-jessie_version="~20140924+1"
+jessie_version="~20141020+1"
