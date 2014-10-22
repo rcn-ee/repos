@@ -1,0 +1,18 @@
+Description: Quote backslash in examples/screen-keys.conf to avoid syntax error
+Author: Romain Francoise <rfrancoise@debian.org>
+Bug-Debian: http://bugs.debian.org/662250
+Forwarded: no
+
+--- a/examples/screen-keys.conf
++++ b/examples/screen-keys.conf
+@@ -72,8 +72,8 @@
+ bind w list-windows
+ 
+ # quit \ 
+-unbind \
+-bind \ confirm-before "kill-server"
++unbind '\'
++bind '\' confirm-before "kill-server"
+ 
+ # kill K k 
+ unbind K

@@ -1,0 +1,147 @@
+Description: Fix lintian warning about hyphen used as minus sign
+Author: Karl Ferdinand Ebert <kfebert@gmail.com>
+Forwarded: not-needed
+
+--- a/tmux.1
++++ b/tmux.1
+@@ -450,7 +450,7 @@
+ .Ql -
+ may be followed by an offset, for example:
+ .Bd -literal -offset indent
+-select-window -t:+2
++select-window \-t:+2
+ .Ed
+ .Pp
+ When dealing with a session that doesn't contain sequential window indexes,
+@@ -505,13 +505,13 @@
+ .Nm
+ commands include:
+ .Bd -literal -offset indent
+-refresh-client -t/dev/ttyp2
++refresh-client \-t/dev/ttyp2
+ 
+-rename-session -tfirst newname
++rename-session \-tfirst newname
+ 
+-set-window-option -t:0 monitor-activity on
++set-window-option \-t:0 monitor-activity on
+ 
+-new-window ; split-window -d
++new-window ; split-window \-d
+ 
+ bind-key R source-file ~/.tmux.conf \e; \e
+ 	display-message "source-file done"
+@@ -520,11 +520,11 @@
+ Or from
+ .Xr sh 1 :
+ .Bd -literal -offset indent
+-$ tmux kill-window -t :1
++$ tmux kill-window \-t :1
+ 
+-$ tmux new-window \e; split-window -d
++$ tmux new-window \e; split-window \-d
+ 
+-$ tmux new-session -d 'vi /etc/passwd' \e; split-window -d \e; attach
++$ tmux new-session \-d 'vi /etc/passwd' \e; split-window \-d \e; attach
+ .Ed
+ .Sh CLIENTS AND SESSIONS
+ The
+@@ -1041,7 +1041,7 @@
+ and the result executed as a command.
+ If
+ .Ar template
+-is not given, "detach-client -t '%%'" is used.
++is not given, "detach-client \-t '%%'" is used.
+ This command works only from inside
+ .Nm .
+ .It Xo
+@@ -1058,7 +1058,7 @@
+ and the result executed as a command.
+ If
+ .Ar template
+-is not given, "switch-client -t '%%'" is used.
++is not given, "switch-client \-t '%%'" is used.
+ This command works only from inside
+ .Nm .
+ .It Xo
+@@ -1075,7 +1075,7 @@
+ and the result executed as a command.
+ If
+ .Ar template
+-is not given, "select-window -t '%%'" is used.
++is not given, "select-window \-t '%%'" is used.
+ This command works only from inside
+ .Nm .
+ .It Ic display-panes Op Fl t Ar target-client
+@@ -1317,7 +1317,7 @@
+ option only opens a new pipe if no previous pipe exists, allowing a pipe to
+ be toggled with a single key, for example:
+ .Bd -literal -offset indent
+-bind-key C-p pipe-pane -o 'cat >>~/output.#I-#P'
++bind-key C-p pipe-pane \-o 'cat >>~/output.#I-#P'
+ .Ed
+ .It Xo Ic previous-layout
+ .Op Fl t Ar target-window
+@@ -2180,7 +2180,7 @@
+ Examples are:
+ .Bd -literal -offset indent
+ #(sysctl vm.loadavg)
+-#[fg=yellow,bold]#(apm -l)%%#[default] [#S]
++#[fg=yellow,bold]#(apm \-l)%%#[default] [#S]
+ .Ed
+ .Pp
+ Where appropriate, special character sequences may be prefixed with a number to
+@@ -2398,7 +2398,7 @@
+ or with a terminal escape sequence.
+ It may be switched off globally with:
+ .Bd -literal -offset indent
+-set-window-option -g automatic-rename off
++set-window-option \-g automatic-rename off
+ .Ed
+ .Pp
+ .It Ic clock-mode-colour Ar colour
+@@ -3019,7 +3019,7 @@
+ and the result executed as a command.
+ If
+ .Ar template
+-is not given, "paste-buffer -b '%%'" is used.
++is not given, "paste-buffer \-b '%%'" is used.
+ This command works only from inside
+ .Nm .
+ .It Ic clear-history Op Fl t Ar target-pane
+@@ -3226,29 +3226,29 @@
+ .Pp
+ Changing the default prefix key:
+ .Bd -literal -offset indent
+-set-option -g prefix C-a
++set-option \-g prefix C-a
+ unbind-key C-b
+ bind-key C-a send-prefix
+ .Ed
+ .Pp
+ Turning the status line off, or changing its colour:
+ .Bd -literal -offset indent
+-set-option -g status off
+-set-option -g status-bg blue
++set-option \-g status off
++set-option \-g status-bg blue
+ .Ed
+ .Pp
+ Setting other options, such as the default command,
+ or locking after 30 minutes of inactivity:
+ .Bd -literal -offset indent
+-set-option -g default-command "exec /bin/ksh"
+-set-option -g lock-after-time 1800
++set-option \-g default-command "exec /bin/ksh"
++set-option \-g lock-after-time 1800
+ .Ed
+ .Pp
+ Creating new key bindings:
+ .Bd -literal -offset indent
+ bind-key b set-option status
+ bind-key / command-prompt "split-window 'exec man %%'"
+-bind-key S command-prompt "new-window -n %1 'ssh %1'"
++bind-key S command-prompt "new-window \-n %1 'ssh %1'"
+ .Ed
+ .Sh SEE ALSO
+ .Xr pty 4
