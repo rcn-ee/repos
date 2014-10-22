@@ -1,0 +1,29 @@
+Source: qterminal
+Section: x11
+Priority: optional
+Maintainer: Robert Nelson <robertcnelson@gmail.com>
+Build-Depends: debhelper (>= 9),
+               cmake,
+               qt5-default,
+               qtbase5-dev,
+               qttools5-dev-tools,
+               qtbase5-private-dev,
+               qttools5-dev,
+               libqtermwidget5-dev,
+               libqt5x11extras5-dev,
+Standards-Version: 3.9.6
+Homepage: https://github.com/qterminal/qterminal/
+Vcs-Browser: https://github.com/qterminal/qterminal/
+
+Package: qterminal
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},
+Description: A simple terminal in qt
+ qterminal is a simple terminal in Qt
+
+Package: qterminal-dbg
+Architecture: any
+Section: debug
+Depends: qterminal (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Description: Debug package for qterminal
+ This package containes debug symbols.

@@ -1,0 +1,73 @@
+Source: qtermwidget
+Section: x11
+Priority: optional
+Maintainer: Robert Nelson <robertcnelson@gmail.com>
+Build-Depends: debhelper (>= 9),
+               cmake,
+               libqt4-dev,
+               qtbase5-dev,
+               qttools5-dev,
+               qttools5-dev-tools,
+Standards-Version: 3.9.6
+
+Package: libqtermwidget0
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}, libqtermwidget-data, libqtermwidgetplugin
+Description: Terminal widget in Qt
+ Terminal widget library in Qt4
+ .
+ This package contains the core library.
+
+Package: libqtermwidgetplugin
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}, libqtermwidget-data
+Description: Terminal widget in Qt (plugins)
+ Terminal widget library in Qt4
+ .
+ This package contains the plugins.
+
+Package: libqtermwidget-dev
+Section: libdevel
+Architecture: any
+Depends:
+ ${misc:Depends}, libqtermwidget0(= ${binary:Version})
+Description: Terminal widget in Qt (development)
+ Terminal widget in Qt4
+ .
+ This package contains the development files.
+
+Package: libqtermwidget-data
+Section: misc
+Architecture: all
+Depends: ${misc:Depends}
+Description: Terminal widget in Qt (common data)
+ Terminal widget in Qt4
+ .
+ This package contains the common data of the core library.
+
+Package: libqtermwidget5-dev
+Section: libdevel
+Architecture: any
+Depends:
+ ${misc:Depends}, libqtermwidget5-0(= ${binary:Version})
+Description: Terminal widget in Qt (development)
+ Terminal widget in Qt5
+ .
+ This package contains the development files.
+
+Package: libqtermwidget5-data
+Section: misc
+Architecture: all
+Depends: ${misc:Depends}
+Description: Terminal widget in Qt (common data)
+ Terminal widget in Qt5
+ .
+ This package contains the common data of the core library.
+
+Package: libqtermwidget5-0
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}, libqtermwidget5-data
+Description: Terminal widget in Qt
+ Terminal widget library in Qt5
+ .
+ This package contains the core library.
