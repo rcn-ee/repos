@@ -8,7 +8,7 @@ src_dir="${package_name}_${package_version}"
 
 git_repo="https://github.com/qterminal/qtermwidget"
 git_sha="a8aad8edf6cded627258b0deac81c28074ad444f"
-reprepro_dir="q/${package_name}"
+reprepro_dir="libq/${package_name}"
 dl_path=""
 
 debian_version="${package_version}-1"
