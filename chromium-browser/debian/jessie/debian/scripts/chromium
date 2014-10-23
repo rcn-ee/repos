@@ -25,7 +25,7 @@ usage () {
 
 # Source additional settings
 for file in /etc/chromium.d/*; do
-  test $file = /etc/chromium.d/README || . $file
+  test $file = /etc/chromium.d/README || expr $file : .*\.dpkg > /dev/null || . $file
 done
 
 # Set CHROME_VERSION_EXTRA visible in the About dialog and in about:version
