@@ -13,7 +13,7 @@ git_sha=""
 reprepro_dir="c/${package_name}"
 dl_path="http://gsdview.appspot.com/chromium-browser-official"
 
-debian_version="${package_version}-3"
+debian_version="${package_version}-4"
 debian_patch=""
 debian_diff=""
 
