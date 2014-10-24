@@ -6,7 +6,7 @@ if [ ! "x${git_repo}" = "x" ] ; then
 	git clone ${git_repo} ignore
 	if [ -f ./ignore/.git/config ] ; then
 		cd ./ignore/
-		git archive --format=tar --prefix=${package_name}_${package_version}/ HEAD | xz > ../${package_name}_${package_version}.orig.tar.xz
+		git archive --format=tar --prefix=${package_name}_${package_version}/ ${git_sha} | xz > ../${package_name}_${package_version}.orig.tar.xz
 		cd ../
 		rm -rf ./ignore/
 	fi
