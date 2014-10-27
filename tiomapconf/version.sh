@@ -1,8 +1,10 @@
 #!/bin/bash -e
 
+#https://github.com/omapconf/omapconf
+
 package_name="tiomapconf"
 debian_pkg_name="${package_name}"
-package_version="1.70.0"
+package_version="1.70.0-git20140815"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
@@ -15,5 +17,5 @@ debian_version="${package_version}-1"
 debian_patch=""
 debian_diff=""
 
-wheezy_version="~bpo70+20140924+1"
-jessie_version="~20140924+1"
+wheezy_version="~bpo70+20141027+1"
+jessie_version="~20141027+1"
