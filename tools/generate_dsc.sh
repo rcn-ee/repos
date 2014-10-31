@@ -57,11 +57,7 @@ generate_dsc () {
 		cp -rv ${DIR}/debian/${dist}/* ./
 	fi
 
-	if [ ! "x${package_source}" = "x" ] ; then
-		debuild -us -uc -S
-	else
-		debuild
-	fi
+	debuild -us -uc -S
 
 	cd ${DIR}/
 }
