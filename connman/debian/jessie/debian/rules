@@ -1,0 +1,23 @@
+#!/usr/bin/make -f
+%:
+	dh $@
+
+override_dh_auto_configure:
+	./configure \
+		--prefix=/usr \
+		--localstatedir=/var \
+		--enable-debug \
+		--enable-openconnect=builtin \
+		--enable-openvpn=builtin \
+		--enable-vpnc=builtin \
+		--with-systemdunitdir=/lib/systemd/system
+
+override_dh_installinit:
+	cp -a scripts/connman debian/connman-upstream.init
+	dh_installinit
+	cp -a src/connman.service debian/connman-upstream.service
+	cp -a vpn/connman-vpn.service debian/connman-upstream-vpn.service
+	dh_systemd_enable
+	dh_systemd_start
+
+override_dh_auto_test:
