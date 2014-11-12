@@ -1,0 +1,40 @@
+From cae7facfc24e6c87fbdba26aac7228c4a525d160 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Tue, 11 Nov 2014 22:47:15 -0600
+Subject: [PATCH] test: add AM752x support
+
+---
+ src/omap_driver.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/omap_driver.c b/src/omap_driver.c
+index 1fc188d..b9d90c5 100644
+--- a/src/omap_driver.c
++++ b/src/omap_driver.c
+@@ -95,6 +95,7 @@ static SymTabRec OMAPChipsets[] = {
+ 		/*    { 4470, "OMAP4470 with <redacted> ;-)" }, */
+ 		{ 0x5430, "OMAP5430 with PowerVR SGX544 MP" },
+ 		{ 0x5432, "OMAP5432 with PowerVR SGX544 MP" },
++		{ 0x0752, "AM572x with PowerVR SGX544 MP" },
+ 		{-1, NULL }
+ };
+ 
+@@ -620,6 +621,7 @@ OMAPPreInit(ScrnInfoPtr pScrn, int flags)
+ 	case 0x4460:
+ 	case 0x5430:
+ 	case 0x5432:
++	case 0x0752:
+ 		if (xf86LoadSubModule(pScrn, SUB_MODULE_PVR)) {
+ 			INFO_MSG("Loaded the %s sub-module", SUB_MODULE_PVR);
+ 		} else {
+@@ -663,6 +665,7 @@ OMAPAccelInit(ScreenPtr pScreen)
+ 		case 0x4460:
+ 		case 0x5430:
+ 		case 0x5432:
++		case 0x0752:
+ 			INFO_MSG("Initializing the \"%s\" sub-module ...", SUB_MODULE_PVR);
+ 			pOMAP->pOMAPEXA = InitPowerVREXA(pScreen, pScrn, pOMAP->drmFD);
+ 			if (pOMAP->pOMAPEXA) {
+-- 
+2.1.1
+
