@@ -40,10 +40,9 @@ validdate_file() {
 }
 
 dl_install() {
-	########Create dirs
-	mkdir -p /var/cache/ti-pru-cgt-installer
-	mkdir -p /usr/lib/ti-pru-cgt-installer-unpackdir
-	#############
+	if [ ! -d /var/cache/ti-pru-cgt-installer ] ; then
+		mkdir -p /var/cache/ti-pru-cgt-installer
+	fi
 
 	cd /var/cache/ti-pru-cgt-installer/
 
