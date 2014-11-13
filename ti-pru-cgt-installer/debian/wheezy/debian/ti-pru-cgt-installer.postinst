@@ -8,7 +8,7 @@ set -e
 version="2.1.0"
 FILENAME="ti_cgt_pru_${version}_armlinuxa8hf_busybox_installer.sh"
 SHA256SUM_TGZ="8474382a9880a97c16c41863672840d2aaddb735ef05c933283fa55be6849f6c"
-PARTNER_URL="http://downloads.ti.com/codegen/esd/cgt_public_sw/PRU/${version}/"
+PARTNER_URL="http://downloads.ti.com/codegen/esd/cgt_public_sw/PRU/${version}"
 
 # summary of how this script can be called:
 #        * <postinst> `configure' <most-recently-configured-version>
@@ -52,10 +52,10 @@ dl_install() {
 
 	if [ -f $FILENAME ] ; then
 		validdate_file
-	fi
 
-	chmod +x $FILENAME
-	./$FILENAME --prefix /
+		chmod +x $FILENAME
+		./$FILENAME --prefix /
+	fi
 }
 
 case "$1" in
