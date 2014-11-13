@@ -17,7 +17,7 @@ setup_update_sbuild () {
 
 echo "\$build_arch_all = 1;" > ~/.sbuildrc
 echo "\$build_source = 1;" >> ~/.sbuildrc
-echo "\$distribution = 'wheezy';" >> ~/.sbuildrc
+echo "\$distribution = 'jessie';" >> ~/.sbuildrc
 
 mirror="http://${proxy}${debian_server}"
 dist="wheezy"
