@@ -1,9 +1,10 @@
 #!/bin/sh
-# postinst script for ti-pru-cgt-installer
 #
 # see: dh_installdeb(1)
 
 set -e
+
+package="ti-pru-cgt-installer"
 
 version="2.1.0"
 FILENAME="ti_cgt_pru_${version}_armlinuxa8hf_busybox_installer.sh"
@@ -40,11 +41,11 @@ validdate_file() {
 }
 
 dl_install() {
-	if [ ! -d /var/cache/ti-pru-cgt-installer ] ; then
-		mkdir -p /var/cache/ti-pru-cgt-installer
+	if [ ! -d /var/cache/${package} ] ; then
+		mkdir -p /var/cache/${package}
 	fi
 
-	cd /var/cache/ti-pru-cgt-installer/
+	cd /var/cache/${package}/
 
 	if [ ! -f $FILENAME ] ; then
 		dl_file
