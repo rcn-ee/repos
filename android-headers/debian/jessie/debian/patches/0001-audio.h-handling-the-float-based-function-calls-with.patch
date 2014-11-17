@@ -1,0 +1,72 @@
+From: Ricardo Salveti de Araujo <ricardo.salveti@canonical.com>
+Subject: audio.h: handling the float based function calls with aapcs
+
+Patch by David Henningsson <david.henningsson@canonical.com>
+
+Origin: vendor
+Forwarded: no
+
+diff --git a/hardware/audio.h b/hardware/audio.h
+index b1de42c..7a82d40 100644
+--- a/hardware/audio.h
++++ b/hardware/audio.h
+@@ -29,6 +29,12 @@
+ #include <system/audio.h>
+ #include <hardware/audio_effect.h>
+ 
++#ifdef __ARM_PCS_VFP
++#define FP_ATTRIB __attribute__((pcs("aapcs")))
++#else
++#define FP_ATTRIB
++#endif
++
+ __BEGIN_DECLS
+ 
+ /**
+@@ -235,7 +241,7 @@ struct audio_stream_out {
+      * This method might produce multiple PCM outputs or hardware accelerated
+      * codecs, such as MP3 or AAC.
+      */
+-    int (*set_volume)(struct audio_stream_out *stream, float left, float right);
++    int (*set_volume)(struct audio_stream_out *stream, float left, float right) FP_ATTRIB;
+ 
+     /**
+      * Write audio buffer to driver. Returns number of bytes written, or a
+@@ -267,7 +273,7 @@ struct audio_stream_in {
+ 
+     /** set the input gain for the audio driver. This method is for
+      *  for future use */
+-    int (*set_gain)(struct audio_stream_in *stream, float gain);
++    int (*set_gain)(struct audio_stream_in *stream, float gain) FP_ATTRIB;
+ 
+     /** Read audio buffer in from audio driver. Returns number of bytes read, or a
+      *  negative status_t. If at least one frame was read prior to the error,
+@@ -346,14 +352,14 @@ struct audio_hw_device {
+     int (*init_check)(const struct audio_hw_device *dev);
+ 
+     /** set the audio volume of a voice call. Range is between 0.0 and 1.0 */
+-    int (*set_voice_volume)(struct audio_hw_device *dev, float volume);
++    int (*set_voice_volume)(struct audio_hw_device *dev, float volume) FP_ATTRIB;
+ 
+     /**
+      * set the audio volume for all audio activities other than voice call.
+      * Range between 0.0 and 1.0. If any value other than 0 is returned,
+      * the software mixer will emulate this capability.
+      */
+-    int (*set_master_volume)(struct audio_hw_device *dev, float volume);
++    int (*set_master_volume)(struct audio_hw_device *dev, float volume) FP_ATTRIB;
+ 
+     /**
+      * Get the current master volume value for the HAL, if the HAL supports
+@@ -362,7 +368,7 @@ struct audio_hw_device {
+      * the initial master volume across all HALs.  HALs which do not support
+      * this method may leave it set to NULL.
+      */
+-    int (*get_master_volume)(struct audio_hw_device *dev, float *volume);
++    int (*get_master_volume)(struct audio_hw_device *dev, float *volume) FP_ATTRIB;
+ 
+     /**
+      * set_mode is called when the audio mode changes. AUDIO_MODE_NORMAL mode
+-- 
+1.8.3.2
+

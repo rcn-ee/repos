@@ -1,0 +1,16 @@
+=== modified file 'a/linux/android_alarm.h'
+--- a/linux/android_alarm.h	2014-05-19 18:06:24 +0000
++++ b/linux/android_alarm.h	2014-05-20 16:21:36 +0000
+@@ -12,7 +12,11 @@
+ #define _LINUX_ANDROID_ALARM_H
+ 
+ #include <asm/ioctl.h>
++#if defined(__KERNEL__)
+ #include <linux/time.h>
++#else
++#include <time.h>
++#endif
+ 
+ typedef enum {
+ 	// return code bit numbers or set alarm arg
+
