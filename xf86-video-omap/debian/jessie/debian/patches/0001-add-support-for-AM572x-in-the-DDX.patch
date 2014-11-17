@@ -1,12 +1,27 @@
-From cae7facfc24e6c87fbdba26aac7228c4a525d160 Mon Sep 17 00:00:00 2001
+From 900177fdbc582258494346943c3640ce433f0f03 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 11 Nov 2014 22:47:15 -0600
-Subject: [PATCH] test: add AM752x support
+Date: Mon, 17 Nov 2014 11:34:57 -0600
+Subject: [PATCH] add support for AM572x in the DDX
 
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
+ README            | 1 +
  src/omap_driver.c | 3 +++
- 1 file changed, 3 insertions(+)
+ src/omap_driver.h | 2 +-
+ 3 files changed, 5 insertions(+), 1 deletion(-)
 
+diff --git a/README b/README
+index 059f258..d4afd89 100644
+--- a/README
++++ b/README
+@@ -9,6 +9,7 @@ the following chipsets:
+   + OMAP4460
+   + OMAP5430
+   + OMAP5432
++  + AM572x
+ 
+ 
+ NOTE: this driver is work in progress..  you probably don't want to try
 diff --git a/src/omap_driver.c b/src/omap_driver.c
 index 1fc188d..b9d90c5 100644
 --- a/src/omap_driver.c
@@ -35,6 +50,19 @@ index 1fc188d..b9d90c5 100644
  			INFO_MSG("Initializing the \"%s\" sub-module ...", SUB_MODULE_PVR);
  			pOMAP->pOMAPEXA = InitPowerVREXA(pScreen, pScrn, pOMAP->drmFD);
  			if (pOMAP->pOMAPEXA) {
+diff --git a/src/omap_driver.h b/src/omap_driver.h
+index 6d2517e..8277e25 100644
+--- a/src/omap_driver.h
++++ b/src/omap_driver.h
+@@ -184,7 +184,7 @@ static inline Bool has_video(OMAPPtr pOMAP)
+ 
+ static inline Bool has_dmm(OMAPPtr pOMAP)
+ {
+-	return pOMAP->chipset >= 0x4430;
++	return pOMAP->chipset >= 0x4430 || pOMAP->chipset == 0x0752;
+ }
+ 
+ static inline Bool has_rotation(OMAPPtr pOMAP)
 -- 
-2.1.1
+2.1.3
 
