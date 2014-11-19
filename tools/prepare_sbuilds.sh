@@ -4,14 +4,13 @@
 proxy="apt-proxy:3142/"
 
 debian_server="ftp.us.debian.org/debian"
-deb_arch=$(dpkg --print-architecture)
 
 setup_update_sbuild () {
-	if [ ! -f /var/lib/sbuild/${dist}-${deb_arch}.tar.gz ] ; then
-		sudo sbuild-createchroot --make-sbuild-tarball=/var/lib/sbuild/${dist}-${deb_arch}.tar.gz ${dist} `mktemp -d` ${mirror}
+	if [ ! -f /var/lib/sbuild/${dist}-${arch}.tar.gz ] ; then
+		sudo sbuild-createchroot --arch=${arch} --make-sbuild-tarball=/var/lib/sbuild/${dist}-${arch}.tar.gz ${dist} `mktemp -d` ${mirror}
 	else
-		sudo chown -R root:root /var/lib/sbuild/${dist}-${deb_arch}.tar.gz
-		sudo sbuild-update -udcar ${dist}-${deb_arch}-sbuild
+		sudo chown -R root:root /var/lib/sbuild/${dist}-${arch}.tar.gz
+		sudo sbuild-update -udcar ${dist}-${arch}-sbuild
 	fi
 }
 
@@ -21,8 +20,10 @@ echo "\$distribution = 'jessie';" >> ~/.sbuildrc
 
 mirror="http://${proxy}${debian_server}"
 dist="wheezy"
+arch="armhf"
 setup_update_sbuild
 
 dist="jessie"
+arch="armhf"
 setup_update_sbuild
 
