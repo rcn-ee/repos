@@ -9,7 +9,7 @@ package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
 git_repo="git://anongit.freedesktop.org/mesa/mesa"
-git_sha="8b5e53434c9dc8432fdce88aee1ffa6567f99eb4"
+git_sha="b43792f67947055fae3131959cbb04ad83ec5df3"
 reprepro_dir="m/${package_name}"
 dl_path=""
 
