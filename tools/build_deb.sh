@@ -5,7 +5,7 @@
 localdir="/mnt/farm"
 
 run () {
-	out_dir="${localdir}/outgoing/${dist}/${debian_pkg_name}_${debian_version}"
+	out_dir="${localdir}/outgoing/${dist}/${deb_arch}/${debian_pkg_name}_${debian_version}"
 	if [ -f /var/lib/sbuild/${dist}-${deb_arch}.tar.gz ] ; then
 		if [ -d ./${dist} ] ; then
 			rm -rf ./${dist}/
