@@ -29,6 +29,8 @@ run () {
 
 	if [ -f ${dist}/${package_name}_${package_version}${rcn_ee_version}.tar.xz ] ; then
 		cp -v ${dist}/${package_name}_${package_version}${rcn_ee_version}.tar.xz /mnt/farm/incoming/${dist}/
+	elif [ -f ${dist}/${package_name}_${package_version}${rcn_ee_version}.tar.bz2 ] ; then
+		cp -v ${dist}/${package_name}_${package_version}${rcn_ee_version}.tar.bz2 /mnt/farm/incoming/${dist}/
 	fi
 }
 
