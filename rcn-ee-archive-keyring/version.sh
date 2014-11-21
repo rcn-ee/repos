@@ -3,8 +3,8 @@
 package_name="rcn-ee-archive-keyring"
 debian_pkg_name="${package_name}"
 package_version="2014.11.20"
-package_source=""
-src_dir=""
+package_source="${package_name}_${package_version}.orig.tar.xz"
+src_dir="${package_name}_${package_version}"
 
 git_repo=""
 git_sha=""
