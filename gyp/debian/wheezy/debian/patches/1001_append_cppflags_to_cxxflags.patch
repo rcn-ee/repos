@@ -1,0 +1,17 @@
+Description: append CPPFLAGS to CXXFLAGS.
+ Because gyp totally ignores CPPFLAGS.
+Bug: https://code.google.com/p/gyp/issues/detail?id=338
+Bug-Debian: http://bugs.debian.org/689754
+Author: Jérémy Lal <kapouer@melix.org>
+Last-Update: 2013-05-03
+--- a/pylib/gyp/generator/make.py
++++ b/pylib/gyp/generator/make.py
+@@ -249,7 +249,7 @@
+ CC.target ?= %(CC.target)s
+ CFLAGS.target ?= $(CFLAGS)
+ CXX.target ?= %(CXX.target)s
+-CXXFLAGS.target ?= $(CXXFLAGS)
++CXXFLAGS.target ?= $(CXXFLAGS) $(CPPFLAGS)
+ LINK.target ?= %(LINK.target)s
+ LDFLAGS.target ?= $(LDFLAGS)
+ AR.target ?= $(AR)

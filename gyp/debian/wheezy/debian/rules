@@ -1,0 +1,46 @@
+#!/usr/bin/make -f
+
+### Tarball (get-orig-source & get-current-source)
+
+PACKAGE := gyp
+PACKAGE_VERSION := $(shell dpkg-parsechangelog | sed -ne 's/^Version: \(\([0-9]\+\):\)\?\(.*\)-.*/\3/p')
+PACKAGE_VERSION_ROOT := $(shell echo '$(PACKAGE_VERSION)' | cut -d~ -f1)
+PACKAGE_VERSION_SVN := $(shell echo '$(PACKAGE_VERSION)' | cut -d~ -f2 | sed 's/svn//')
+SVN_URL := http://gyp.googlecode.com/svn/trunk
+
+TMP_DIR := get-orig-source-$(shell echo $$$$)
+
+.PHONY: get-orig-source get-current-source
+
+pack-source:
+	rm -rf $(TMP_DIR) $(TARBALL)
+	mkdir $(TMP_DIR)
+	svn export -r $(SVN_REV) $(SVN_URL) $(TMP_DIR)/$(PACKAGE)-$(SRC_VERSION).orig
+	GZIP='--best --no-name' tar czf $(TARBALL) -C $(TMP_DIR) $(PACKAGE)-$(SRC_VERSION).orig
+	rm -rf $(TMP_DIR)
+	echo "  "$(TARBALL)" created; move it to the right destination to build the package"
+
+get-orig-source: SVN_REV = $(shell LANG=C svn info $(SVN_URL) | grep ^Revision: | cut -d' ' -f2)
+get-orig-source: SRC_VERSION = $(PACKAGE_VERSION_ROOT)~svn$(SVN_REV)
+get-orig-source: TARBALL = $(PACKAGE)_$(SRC_VERSION).orig.tar.gz
+get-orig-source: pack-source
+
+get-current-source: SVN_REV = $(PACKAGE_VERSION_SVN)
+get-current-source: SRC_VERSION = $(PACKAGE_VERSION_ROOT)~svn$(SVN_REV)
+get-current-source: TARBALL = $(PACKAGE)_$(SRC_VERSION).orig.tar.gz
+get-current-source: pack-source
+
+###
+
+
+%:
+	dh $@ --with python2
+
+override_dh_auto_build:
+	dh_auto_build
+	a2x -L --doctype manpage --format manpage $(CURDIR)/debian/gyp.txt > $(CURDIR)/debian/gyp.1
+
+override_dh_auto_clean:
+	-dh_auto_clean
+	rm -rf build pylib/gyp.egg-info
+	rm -f debian/gyp.1
