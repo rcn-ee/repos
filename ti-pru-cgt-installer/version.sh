@@ -17,5 +17,5 @@ debian_version="${package_version}-1"
 debian_untar=""
 debian_patch=""
 
-wheezy_version="~bpo70+20141113+1"
-jessie_version="~20141113+1"
+wheezy_version="~bpo70+20141124+1"
+jessie_version="~20141124+1"
