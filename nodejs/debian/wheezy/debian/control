@@ -1,0 +1,96 @@
+Source: nodejs
+Section: web
+Priority: extra
+Maintainer: Debian Javascript Maintainers <pkg-javascript-devel@lists.alioth.debian.org>
+Uploaders: Jérémy Lal <kapouer@melix.org>,
+ Jonas Smedegaard <dr@jones.dk>
+Build-Depends: cdbs,
+ devscripts,
+ debhelper,
+ dh-buildinfo,
+ binutils,
+ openssl (>= 1.0.0g),
+ pkg-config,
+ bash-completion,
+ curl,
+ procps,
+ zlib1g-dev,
+ libkvm-dev [kfreebsd-any],
+ gyp (>= 0.1~svn1654),
+ python,
+ libv8-3.14-dev (>= 3.7),
+ libssl-dev (>= 1.0.0g),
+ libc-ares-dev (>= 1.7.5),
+ ca-certificates
+Standards-Version: 3.9.5
+Homepage: http://nodejs.org/
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/nodejs.git
+Vcs-Git: git://anonscm.debian.org/collab-maint/nodejs.git
+
+Package: nodejs-dev
+Section: devel
+Architecture: any
+Depends: ${cdbs:Depends},
+ ${misc:Depends},
+ nodejs (= ${binary:Version})
+Description: evented I/O for V8 javascript (development files)
+ Node.js is a platform built on Chrome's JavaScript runtime for easily
+ building fast, scalable network applications. Node.js uses an
+ event-driven, non-blocking I/O model that makes it lightweight and
+ efficient, perfect for data-intensive real-time applications that run
+ across distributed devices.
+ .
+ This package is needed to build plugins.
+
+Package: nodejs
+Priority: optional
+Architecture: any
+Depends: ${shlibs:Depends},
+ ${misc:Depends}
+Description: evented I/O for V8 javascript
+ Node.js is a platform built on Chrome's JavaScript runtime for easily
+ building fast, scalable network applications. Node.js uses an
+ event-driven, non-blocking I/O model that makes it lightweight and
+ efficient, perfect for data-intensive real-time applications that run
+ across distributed devices.
+ .
+ Node.js is bundled with several useful libraries to handle server
+ tasks:
+ .
+ System, Events, Standard I/O, Modules, Timers, Child Processes, POSIX,
+ HTTP, Multipart Parsing, TCP, DNS, Assert, Path, URL, Query Strings.
+
+Package: nodejs-dbg
+Section: debug
+Architecture: any
+Depends: ${misc:Depends},
+ nodejs (= ${binary:Version})
+Recommends: libv8-3.14-dbg
+Description: evented I/O for V8 javascript (debug)
+ Node.js is a platform built on Chrome's JavaScript runtime for easily
+ building fast, scalable network applications. Node.js uses an
+ event-driven, non-blocking I/O model that makes it lightweight and
+ efficient, perfect for data-intensive real-time applications that run
+ across distributed devices.
+ .
+ This package contains the debugging symbols.
+
+Package: nodejs-legacy
+Priority: extra
+Architecture: all
+Depends: ${misc:Depends},
+ nodejs (>= 0.6.19~dfsg1-3~)
+Conflicts: node
+Description: evented I/O for V8 javascript (legacy symlink)
+ Node.js is a platform built on Chrome's JavaScript runtime for easily
+ building fast, scalable network applications. Node.js uses an
+ event-driven, non-blocking I/O model that makes it lightweight and
+ efficient, perfect for data-intensive real-time applications that run
+ across distributed devices.
+ .
+ This package contains a symlink for legacy Node.js code requiring
+ binary to be /usr/bin/node (not /usr/bin/nodejs as provided in Debian).
+ .
+ No other Debian packages should depend on this package.  For more
+ information, see
+ <http://lists.debian.org/debian-devel-announce/2012/07/msg00002.html>

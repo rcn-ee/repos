@@ -1,0 +1,39 @@
+Description: Revert https://github.com/joyent/node/commit/0da4c671
+ Unfortunately it relies on a libv8 patch that breaks v8 3.14.5 API.
+Forwarded: not-needed
+
+--- a/src/node.cc
++++ b/src/node.cc
+@@ -3046,11 +3046,6 @@
+ }
+ 
+ int Start(int argc, char *argv[]) {
+-  const char* replaceInvalid = getenv("NODE_INVALID_UTF8");
+-
+-  if (replaceInvalid == NULL)
+-    WRITE_UTF8_FLAGS |= String::REPLACE_INVALID_UTF8;
+-
+   // Hack aroung with the argv pointer. Used for process.title = "blah".
+   argv = uv_setup_args(argc, argv);
+ 
+--- a/test/simple/test-buffer.js
++++ b/test/simple/test-buffer.js
+@@ -791,18 +791,6 @@
+   assert.equal(buf[3], 0xFF);
+ });
+ 
+-// test unmatched surrogates not producing invalid utf8 output
+-// ef bf bd = utf-8 representation of unicode replacement character
+-// see https://codereview.chromium.org/121173009/
+-buf = new Buffer('ab\ud800cd', 'utf8');
+-assert.equal(buf[0], 0x61);
+-assert.equal(buf[1], 0x62);
+-assert.equal(buf[2], 0xef);
+-assert.equal(buf[3], 0xbf);
+-assert.equal(buf[4], 0xbd);
+-assert.equal(buf[5], 0x63);
+-assert.equal(buf[6], 0x64);
+-
+ // test for buffer overrun
+ buf = new Buffer([0, 0, 0, 0, 0]); // length: 5
+ var sub = buf.slice(0, 4);         // length: 4

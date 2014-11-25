@@ -1,0 +1,49 @@
+Description: add support for mipsel arch and mips arch
+Forwarded: not-needed, not yet tested enough
+Author: Jérémy Lal <kapouer@melix.org>
+Last-Update: 2014-04-26
+--- a/Makefile
++++ b/Makefile
+@@ -108,10 +108,10 @@
+ 	$(PYTHON) tools/test.py --mode=debug
+ 
+ test-message: all
+-	$(PYTHON) tools/test.py message
++	$(PYTHON) tools/test.py --arch=$(DESTCPU) message
+ 
+ test-simple: all
+-	$(PYTHON) tools/test.py simple
++	$(PYTHON) tools/test.py --arch=$(DESTCPU) simple
+ 
+ test-pummel: all
+ 	$(PYTHON) tools/test.py pummel
+--- a/configure
++++ b/configure
+@@ -231,7 +231,7 @@
+ parser.add_option("--dest-cpu",
+     action="store",
+     dest="dest_cpu",
+-    help="CPU architecture to build for. Valid values are: arm, ia32, x64")
++    help="CPU architecture to build for. Valid values are: arm, ia32, x64, mips")
+ 
+ parser.add_option("--dest-os",
+     action="store",
+@@ -694,6 +694,7 @@
+   'USE_NINJA': str(int(options.use_ninja or 0)),
+   'USE_XCODE': str(int(options.use_xcode or 0)),
+   'PYTHON': sys.executable,
++  'DESTCPU': output['variables']['target_arch'],
+ }
+ config = '\n'.join(map('='.join, config.iteritems())) + '\n'
+ 
+--- a/src/v8_typed_array_bswap.h
++++ b/src/v8_typed_array_bswap.h
+@@ -24,7 +24,7 @@
+ 
+ // Windows will always be little endian (including ARM), so we just need to
+ // worry about gcc.
+-#if defined (__ppc__) || defined (__ppc64__) || defined(__ARMEB__)
++#if defined (__ppc__) || defined (__ppc64__) || defined(__ARMEB__) || defined(__MIPSEB__)
+ #define V8_TYPED_ARRAY_BIG_ENDIAN 1
+ #else
+ #define V8_TYPED_ARRAY_LITTLE_ENDIAN 1

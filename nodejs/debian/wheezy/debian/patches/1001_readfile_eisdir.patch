@@ -1,0 +1,28 @@
+Description: raise EISDIR if readFile or readFileSync a directory
+Bug-Node: https://github.com/joyent/node/pull/5928
+Author: Jérémy Lal <kapouer@melix.org>
+Last-Update: 2013-07-28
+--- a/lib/fs.js
++++ b/lib/fs.js
+@@ -213,7 +213,8 @@
+           callback(er);
+         });
+       }
+-
++      // some platforms do not throw EISDIR.
++      if (st.isDirectory()) return callback(errnoException('EISDIR', 'read'));
+       size = st.size;
+       if (size === 0) {
+         // the kernel lies about many files.
+@@ -291,7 +292,10 @@
+   var size;
+   var threw = true;
+   try {
+-    size = fs.fstatSync(fd).size;
++    var st = fs.fstatSync(fd);
++    // some platforms do not throw EISDIR.
++    if (st.isDirectory && st.isDirectory()) throw errnoException('EISDIR', 'read');
++    size = st.size;
+     threw = false;
+   } finally {
+     if (threw) fs.closeSync(fd);
