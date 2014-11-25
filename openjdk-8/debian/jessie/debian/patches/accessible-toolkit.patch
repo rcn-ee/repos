@@ -1,0 +1,15 @@
+--- a/jdk/src/share/classes/java/awt/Toolkit.java
++++ b/jdk/src/share/classes/java/awt/Toolkit.java
+@@ -894,7 +894,11 @@
+                         return null;
+                     }
+                 });
+-                loadAssistiveTechnologies();
++                try {
++                    loadAssistiveTechnologies();
++                } catch ( AWTError error) {
++                    // ignore silently
++                }
+             } finally {
+                 // Make sure to always re-enable the JIT.
+                 java.lang.Compiler.enable();

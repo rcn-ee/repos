@@ -1,0 +1,27 @@
+#!/bin/sh
+
+set -e
+
+basedir=/@basedir@
+jre_tools='@jre_hl_tools@'
+
+rm -f $basedir/jre/lib/@archdir@/client/classes.jsa
+rm -f $basedir/jre/lib/@archdir@/server/classes.jsa
+
+if [ "$1" = "remove" ] || [ "$1" = "deconfigure" ]; then
+    for i in $jre_tools; do
+	update-alternatives --remove $i $basedir/jre/bin/$i
+    done
+
+    if which update-binfmts >/dev/null; then
+	# try to remove and ignore the error
+	if [ -e /var/lib/binfmts/@basename@ ]; then
+	    update-binfmts --package @basename@ \
+		--remove jar /usr/bin/jexec || true
+	fi
+    fi
+
+    update-alternatives --remove jexec $basedir/jre/lib/jexec
+fi
+
+#DEBHELPER#

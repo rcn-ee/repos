@@ -1,0 +1,12 @@
+--- src/common/autoconf/autogen.sh
++++ src/common/autoconf/autogen.sh
+@@ -43,7 +43,9 @@
+ 
+ custom_hook=$custom_script_dir/custom-hook.m4
+ 
++if test "x${AUTOCONF}" = x; then
+ AUTOCONF="`which autoconf 2> /dev/null | grep -v '^no autoconf in'`"
++fi
+ 
+ echo "Autoconf found: ${AUTOCONF}"
+ 

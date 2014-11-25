@@ -1,0 +1,35 @@
+Description: Allow loading of ICC profiles when jre/lib/cmm is a
+ symlink by disabling call to isChildOf(f, dir) in getStandardProfileFile
+ and getProfileFile methods.
+ .
+ isChildOf method try to ensures f.getCanonicalPath start with
+ dir.getCanonicalPath but, on openjdk-6, dir.getCanonicalPath
+ will resolve to realpath and so won't match.
+ .
+ It should fix "Cannot open file sRGB.pf" errors.
+Author: Damien Raude-Morvan <drazzib@debian.org>
+Last-Update: 2012-05-18
+Bug-Debian: http://bugs.debian.org/641530
+Forwarded: not-yet
+
+--- a/jdk/src/share/classes/java/awt/color/ICC_Profile.java
++++ b/jdk/src/share/classes/java/awt/color/ICC_Profile.java
+@@ -1833,9 +1833,6 @@
+                     dir = st.nextToken();
+                         fullPath = dir + File.separatorChar + fileName;
+                     f = new File(fullPath);
+-                    if (!isChildOf(f, dir)) {
+-                        f = null;
+-                    }
+                 }
+             }
+ 
+@@ -1872,7 +1869,7 @@
+             File.separatorChar + "lib" + File.separatorChar + "cmm";
+         String fullPath = dir + File.separatorChar + fileName;
+         File f = new File(fullPath);
+-        return (f.isFile() && isChildOf(f, dir)) ? f : null;
++        return (f.isFile()) ? f : null;
+     }
+ 
+     /**

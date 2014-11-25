@@ -1,0 +1,11 @@
+--- jdk8/jdk/src/solaris/native/sun/awt/awt_Font.c	2014-06-23 01:01:34.000000000 +0200
++++ jdk8/jdk/src/solaris/native/sun/awt/awt_Font.c	2014-07-08 23:22:33.235559628 +0200
+@@ -502,7 +502,7 @@
+             jio_snprintf(fdata->flist[i].xlfd, strlen(nativename) + 10,
+                          nativename, size * 10);
+ 
+-            if (nativename != NULL && nativename != "")
++            if (nativename && !strcmp(nativename, ""))
+                 JNU_ReleaseStringPlatformChars(env, fontDescriptorName, (const char *) nativename);
+ 
+             /*

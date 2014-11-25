@@ -1,0 +1,654 @@
+Description: Build the langtools with GCJ. This patch is incomplete but may be
+ used as a starting point for someone really willing to bootstrap OpenJDK 8
+ with GCJ. The compilation fails due to the missing java.nio.file API, several
+ classes would have to be modified to work without this package. It's possible
+ to ignore ~100 errors by skipping the compilation of jdeps (delete the
+ langtools/src/share/classes/com/sun/tools/jdeps directory). The build will then
+ fail on the BUILD_FULL_JAVAC phase.
+Author: Emmanuel Bourg <ebourg@apache.org>
+--- a/common/autoconf/boot-jdk.m4
++++ b/common/autoconf/boot-jdk.m4
+@@ -54,7 +54,7 @@
+             BOOT_JDK_VERSION=`"$BOOT_JDK/bin/java" -version 2>&1 | head -n 1`
+ 
+             # Extra M4 quote needed to protect [] in grep expression.
+-            [FOUND_VERSION_78=`echo $BOOT_JDK_VERSION | grep  '\"1\.[78]\.'`]
++            [FOUND_VERSION_78=`echo $BOOT_JDK_VERSION | grep  '\"1\.[5678]\.'`]
+             if test "x$FOUND_VERSION_78" = x; then
+               AC_MSG_NOTICE([Potential Boot JDK found at $BOOT_JDK is incorrect JDK version ($BOOT_JDK_VERSION); ignoring])
+               AC_MSG_NOTICE([(Your Boot JDK must be version 7 or 8)])
+@@ -278,7 +278,7 @@
+   BOOTJDK_CHECK_TOOL_IN_BOOTJDK(JAVA,java)
+   BOOTJDK_CHECK_TOOL_IN_BOOTJDK(JAVAC,javac)
+   BOOTJDK_CHECK_TOOL_IN_BOOTJDK(JAVAH,javah)
+-  BOOTJDK_CHECK_TOOL_IN_BOOTJDK(JAVAP,javap)
++  #BOOTJDK_CHECK_TOOL_IN_BOOTJDK(JAVAP,javap)
+   BOOTJDK_CHECK_TOOL_IN_BOOTJDK(JAR,jar)
+   BOOTJDK_CHECK_TOOL_IN_BOOTJDK(RMIC,rmic)
+   BOOTJDK_CHECK_TOOL_IN_BOOTJDK(NATIVE2ASCII,native2ascii)
+@@ -286,7 +286,7 @@
+   # Finally, set some other options...
+ 
+   # When compiling code to be executed by the Boot JDK, force jdk7 compatibility.
+-  BOOT_JDK_SOURCETARGET="-source 7 -target 7"
++  BOOT_JDK_SOURCETARGET="-source 1.7 -target 1.7"
+   AC_SUBST(BOOT_JDK_SOURCETARGET)
+   AC_SUBST(JAVAC_FLAGS)
+ ])
+--- a/langtools/src/share/classes/com/sun/tools/javac/file/ZipFileIndex.java
++++ b/langtools/src/share/classes/com/sun/tools/javac/file/ZipFileIndex.java
+@@ -1163,7 +1163,8 @@
+         }
+ 
+         protected ZipFormatException(String message, Throwable cause) {
+-            super(message, cause);
++            super(message);
++            initCause(cause);
+         }
+     }
+ }
+--- a/langtools/src/share/classes/com/sun/tools/javac/jvm/JNIWriter.java
++++ b/langtools/src/share/classes/com/sun/tools/javac/jvm/JNIWriter.java
+@@ -218,7 +218,7 @@
+             println(out, cppGuardEnd());
+             println(out, guardEnd(cname));
+         } catch (TypeSignature.SignatureException e) {
+-            throw new IOException(e);
++            throw (IOException) new IOException().initCause(e);
+         }
+     }
+ 
+--- a/langtools/src/share/classes/com/sun/tools/javac/file/RegularFileObject.java
++++ b/langtools/src/share/classes/com/sun/tools/javac/file/RegularFileObject.java
+@@ -40,7 +40,6 @@
+ import java.nio.CharBuffer;
+ import java.nio.charset.CharsetDecoder;
+ import javax.tools.JavaFileObject;
+-import java.text.Normalizer;
+ 
+ /**
+  * A subclass of JavaFileObject representing regular files.
+@@ -182,17 +181,6 @@
+         if (name.equals(n)) {
+             return true;
+         }
+-        if (isMacOS && Normalizer.isNormalized(name, Normalizer.Form.NFD)
+-            && Normalizer.isNormalized(n, Normalizer.Form.NFC)) {
+-            // On Mac OS X it is quite possible to file name and class
+-            // name normalized in a different way - in that case we have to normalize file name
+-            // to the Normal Form Compised (NFC)
+-            String normName = Normalizer.normalize(name, Normalizer.Form.NFC);
+-            if (normName.equals(n)) {
+-                this.name = normName;
+-                return true;
+-            }
+-        }
+ 
+             if (name.equalsIgnoreCase(n)) {
+             try {
+--- a/langtools/src/share/classes/com/sun/tools/javac/tree/DocPretty.java
++++ b/langtools/src/share/classes/com/sun/tools/javac/tree/DocPretty.java
+@@ -67,7 +67,7 @@
+                 tree.accept(this, null);
+             }
+         } catch (UncheckedIOException ex) {
+-            throw new IOException(ex.getMessage(), ex);
++            throw (IOException) new IOException(ex.getMessage()).initCause(ex);
+         }
+     }
+ 
+--- a/make/common/JavaCompilation.gmk
++++ b/make/common/JavaCompilation.gmk
+@@ -549,7 +549,7 @@
+ 	$$(call ListPathsSafely,$1_SRCS,\n, >> $$($1_BIN)/_the.$1_batch.tmp)
+ 	$(ECHO) Compiling `$(WC) $$($1_BIN)/_the.$1_batch.tmp | $(TR) -s ' ' | $(CUT) -f 2 -d ' '` files for $1
+ 	($$($1_JVM) $$($1_JAVAC) $$($1_FLAGS) \
+-	    -implicit:none -sourcepath "$$($1_SRCROOTSC)" \
++	    -sourcepath "$$($1_SRCROOTSC)" \
+ 	    -d $$($1_BIN) $$($1_HEADERS_ARG) @$$($1_BIN)/_the.$1_batch.tmp && \
+ 	$(MV) $$($1_BIN)/_the.$1_batch.tmp $$($1_BIN)/_the.$1_batch)
+ 
+--- a/langtools/src/share/classes/com/sun/tools/javac/util/ServiceLoader.java
++++ b/langtools/src/share/classes/com/sun/tools/javac/util/ServiceLoader.java
+@@ -38,7 +38,6 @@
+ import java.util.List;
+ import java.util.Map;
+ import java.util.NoSuchElementException;
+-import java.util.Objects;
+ import java.util.ServiceConfigurationError;
+ 
+ 
+@@ -70,7 +69,7 @@
+     private ClassLoader loader;
+ 
+     // Cached providers, in instantiation order
+-    private LinkedHashMap<String,S> providers = new LinkedHashMap<>();
++    private LinkedHashMap<String,S> providers = new LinkedHashMap<String,S>();
+ 
+     // The current lazy-lookup iterator
+     private LazyIterator lookupIterator;
+@@ -92,7 +91,10 @@
+     }
+ 
+     private ServiceLoader(Class<S> svc, ClassLoader cl) {
+-        service = Objects.requireNonNull(svc, "Service interface cannot be null");
++        if (svc == null) {
++            throw new NullPointerException("Service interface cannot be null");
++        }
++        service = svc;
+         loader = (cl == null) ? ClassLoader.getSystemClassLoader() : cl;
+         reload();
+     }
+@@ -170,7 +172,7 @@
+     {
+         InputStream in = null;
+         BufferedReader r = null;
+-        ArrayList<String> names = new ArrayList<>();
++        ArrayList<String> names = new ArrayList<String>();
+         try {
+             // The problem is that by default, streams opened with
+             // u.openInputStream use a cached reference to a JarFile, which
+@@ -362,7 +364,7 @@
+     public static <S> ServiceLoader<S> load(Class<S> service,
+                                             ClassLoader loader)
+     {
+-        return new ServiceLoader<>(service, loader);
++        return new ServiceLoader<S>(service, loader);
+     }
+ 
+     /**
+--- a/langtools/src/share/classes/javax/annotation/processing/AbstractProcessor.java
++++ b/langtools/src/share/classes/javax/annotation/processing/AbstractProcessor.java
+@@ -28,7 +28,6 @@
+ import java.util.Set;
+ import java.util.HashSet;
+ import java.util.Collections;
+-import java.util.Objects;
+ import javax.lang.model.element.*;
+ import javax.lang.model.SourceVersion;
+ import javax.tools.Diagnostic;
+@@ -147,7 +146,8 @@
+     public synchronized void init(ProcessingEnvironment processingEnv) {
+         if (initialized)
+             throw new IllegalStateException("Cannot call init more than once.");
+-        Objects.requireNonNull(processingEnv, "Tool provided null ProcessingEnvironment");
++        if (processingEnv == null)
++            throw new NullPointerException("Tool provided null ProcessingEnvironment");
+ 
+         this.processingEnv = processingEnv;
+         initialized = true;
+--- a/langtools/src/share/classes/com/sun/tools/javac/util/Pair.java
++++ b/langtools/src/share/classes/com/sun/tools/javac/util/Pair.java
+@@ -25,8 +25,6 @@
+ 
+ package com.sun.tools.javac.util;
+ 
+-import java.util.Objects;
+-
+ /** A generic class for pairs.
+  *
+  *  <p><b>This is NOT part of any supported API.
+@@ -51,8 +49,12 @@
+     public boolean equals(Object other) {
+         return
+             other instanceof Pair<?,?> &&
+-            Objects.equals(fst, ((Pair<?,?>)other).fst) &&
+-            Objects.equals(snd, ((Pair<?,?>)other).snd);
++            equals(fst, ((Pair<?,?>)other).fst) &&
++            equals(snd, ((Pair<?,?>)other).snd);
++    }
++
++    private boolean equals(Object a, Object b) {
++        return (a == b) || (a != null && a.equals(b));
+     }
+ 
+     public int hashCode() {
+--- a/langtools/make/build.properties
++++ b/langtools/make/build.properties
+@@ -68,7 +68,7 @@
+ # set the following to -version to verify the versions of javac being used
+ javac.version.opt =
+ # in time, there should be no exceptions to -Xlint:all
+-javac.lint.opts = -Xlint:all -Werror
++javac.lint.opts = -Xlint:all
+ 
+ # options for the <javadoc> task for javac
+ #javadoc.jls3.url=http://java.sun.com/docs/books/jls/
+--- a/langtools/make/BuildLangtools.gmk
++++ b/langtools/make/BuildLangtools.gmk
+@@ -36,7 +36,7 @@
+     JAVAC := $(JAVAC), \
+     SERVER_DIR := $(SJAVAC_SERVER_DIR), \
+     SERVER_JVM := $(SJAVAC_SERVER_JAVA), \
+-    FLAGS := -XDignore.symbol.file=true -g -Xlint:all$(COMMA)-deprecation -Werror))
++    FLAGS := -XDignore.symbol.file=true -g -Xlint:all$(COMMA)-deprecation -nowarn -1.7))
+ 
+ # javax.tools.JavaCompilerTool isn't really a suffix but this gets the file copied.
+ RESOURCE_SUFFIXES := .gif .xml .css .js javax.tools.JavaCompilerTool
+@@ -175,7 +175,7 @@
+         JAVAC := "-Xbootclasspath/p:$(LANGTOOLS_OUTPUTDIR)/dist/bootstrap/lib/javac.jar" \
+             -cp $(LANGTOOLS_OUTPUTDIR)/dist/bootstrap/lib/javac.jar \
+             com.sun.tools.javac.Main, \
+-        FLAGS := -XDignore.symbol.file=true -Xlint:all$(COMMA)-deprecation -Werror, \
++        FLAGS := -XDignore.symbol.file=true -Xlint:all$(COMMA)-deprecation, \
+         SERVER_DIR := $(SJAVAC_SERVER_DIR), \
+         SERVER_JVM := $(SJAVAC_SERVER_JAVA)))
+ 
+--- a/langtools/src/share/classes/com/sun/tools/classfile/ClassFile.java
++++ b/langtools/src/share/classes/com/sun/tools/classfile/ClassFile.java
+@@ -28,8 +28,7 @@
+ import java.io.File;
+ import java.io.IOException;
+ import java.io.InputStream;
+-import java.nio.file.Files;
+-import java.nio.file.Path;
++import java.io.FileInputStream;
+ 
+ import static com.sun.tools.classfile.AccessFlags.*;
+ 
+@@ -44,26 +43,16 @@
+ public class ClassFile {
+     public static ClassFile read(File file)
+             throws IOException, ConstantPoolException {
+-        return read(file.toPath(), new Attribute.Factory());
++        return read(file, new Attribute.Factory());
+     }
+ 
+-    public static ClassFile read(Path input)
+-            throws IOException, ConstantPoolException {
+-        return read(input, new Attribute.Factory());
+-    }
+-
+-    public static ClassFile read(Path input, Attribute.Factory attributeFactory)
++    public static ClassFile read(File file, Attribute.Factory attributeFactory)
+             throws IOException, ConstantPoolException {
+-        try (InputStream in = Files.newInputStream(input)) {
++        try (InputStream in = new FileInputStream(file)) {
+             return new ClassFile(in, attributeFactory);
+         }
+     }
+ 
+-    public static ClassFile read(File file, Attribute.Factory attributeFactory)
+-            throws IOException, ConstantPoolException {
+-        return read(file.toPath(), attributeFactory);
+-    }
+-
+     public static ClassFile read(InputStream in)
+             throws IOException, ConstantPoolException {
+         return new ClassFile(in, new Attribute.Factory());
+--- a/langtools/src/share/classes/com/sun/tools/javac/nio/PathFileManager.java
++++ b/langtools/src/share/classes/com/sun/tools/javac/nio/PathFileManager.java
+@@ -25,10 +25,8 @@
+ 
+ package com.sun.tools.javac.nio;
+ 
++import java.io.File;
+ import java.io.IOException;
+-import java.nio.file.FileSystem;
+-import java.nio.file.FileSystems;
+-import java.nio.file.Path;
+ import javax.tools.FileObject;
+ import javax.tools.JavaFileManager;
+ import javax.tools.JavaFileObject;
+@@ -52,13 +50,13 @@
+      * Get the default file system used to create paths. If no value has been
+      * set, the default file system is {@link FileSystems#getDefault}.
+      */
+-    FileSystem getDefaultFileSystem();
++    //FileSystem getDefaultFileSystem();
+ 
+     /**
+      * Set the default file system used to create paths.
+      * @param fs the default file system used to create any new paths.
+      */
+-    void setDefaultFileSystem(FileSystem fs);
++    //void setDefaultFileSystem(FileSystem fs);
+ 
+     /**
+      * Get file objects representing the given files.
+@@ -69,7 +67,7 @@
+      * a directory
+      */
+     Iterable<? extends JavaFileObject> getJavaFileObjectsFromPaths(
+-        Iterable<? extends Path> paths);
++        Iterable<File> paths);
+ 
+     /**
+      * Get file objects representing the given paths.
+@@ -86,7 +84,7 @@
+      * @throws NullPointerException if the given array contains null
+      * elements
+      */
+-    Iterable<? extends JavaFileObject> getJavaFileObjects(Path... paths);
++    Iterable<? extends JavaFileObject> getJavaFileObjects(File... paths);
+ 
+     /**
+      * Return the Path for a file object that has been obtained from this
+@@ -97,7 +95,7 @@
+      * @throws IllegalArgumentException is the file object was not obtained from
+      * from this file manager.
+      */
+-    Path getPath(FileObject fo);
++    File getPath(FileObject fo);
+ 
+     /**
+      * Get the search path associated with the given location.
+@@ -107,7 +105,7 @@
+      * associated search path
+      * @see #setLocation
+      */
+-    Iterable<? extends Path> getLocation(Location location);
++    Iterable<File> getLocation(Location location);
+ 
+     /**
+      * Associate the given search path with the given location.  Any
+@@ -122,5 +120,5 @@
+      * @throws IOException if location is an output location and searchpath
+      * does not represent an existing directory
+      */
+-    void setLocation(Location location, Iterable<? extends Path> searchPath) throws IOException;
++    void setLocation(Location location, Iterable<File> searchPath) throws IOException;
+ }
+--- a/langtools/src/share/classes/com/sun/tools/doclets/internal/toolkit/util/PathDocFileFactory.java
++++ b/langtools/src/share/classes/com/sun/tools/doclets/internal/toolkit/util/PathDocFileFactory.java
+@@ -28,15 +28,13 @@
+ import java.io.BufferedInputStream;
+ import java.io.BufferedOutputStream;
+ import java.io.BufferedWriter;
++import java.io.File;
+ import java.io.IOException;
+ import java.io.InputStream;
+ import java.io.OutputStream;
+ import java.io.OutputStreamWriter;
+ import java.io.UnsupportedEncodingException;
+ import java.io.Writer;
+-import java.nio.file.DirectoryStream;
+-import java.nio.file.Files;
+-import java.nio.file.Path;
+ import java.util.ArrayList;
+ import java.util.Arrays;
+ import java.util.LinkedHashSet;
+@@ -65,7 +63,7 @@
+  */
+ class PathDocFileFactory extends DocFileFactory {
+     private final PathFileManager fileManager;
+-    private final Path destDir;
++    private final File destDir;
+ 
+     public PathDocFileFactory(Configuration configuration) {
+         super(configuration);
+@@ -75,7 +73,7 @@
+                 || !fileManager.hasLocation(DocumentationTool.Location.DOCUMENTATION_OUTPUT)) {
+             try {
+                 String dirName = configuration.destDirName.isEmpty() ? "." : configuration.destDirName;
+-                Path dir = fileManager.getDefaultFileSystem().getPath(dirName);
++                File dir = new File(dirName);
+                 fileManager.setLocation(DocumentationTool.Location.DOCUMENTATION_OUTPUT, Arrays.asList(dir));
+             } catch (IOException e) {
+                 throw new DocletAbortException(e);
+@@ -86,11 +84,11 @@
+     }
+ 
+     public DocFile createFileForDirectory(String file) {
+-        return new StandardDocFile(fileManager.getDefaultFileSystem().getPath(file));
++        return new StandardDocFile(new File(file));
+     }
+ 
+     public DocFile createFileForInput(String file) {
+-        return new StandardDocFile(fileManager.getDefaultFileSystem().getPath(file));
++        return new StandardDocFile(new File(file));
+     }
+ 
+     public DocFile createFileForOutput(DocPath path) {
+@@ -104,10 +102,10 @@
+ 
+         Set<DocFile> files = new LinkedHashSet<DocFile>();
+         if (fileManager.hasLocation(location)) {
+-            for (Path f: fileManager.getLocation(location)) {
+-                if (Files.isDirectory(f)) {
+-                    f = f.resolve(path.getPath());
+-                    if (Files.exists(f))
++            for (File f: fileManager.getLocation(location)) {
++                if (f.isDirectory()) {
++                    f = new File(f, path.getPath());
++                    if (f.exists())
+                         files.add(new StandardDocFile(f));
+                 }
+             }
+@@ -116,10 +114,10 @@
+     }
+ 
+     class StandardDocFile extends DocFile {
+-        private Path file;
++        private File file;
+ 
+         /** Create a StandardDocFile for a given file. */
+-        private StandardDocFile(Path file) {
++        private StandardDocFile(File file) {
+             super(configuration);
+             this.file = file;
+         }
+@@ -127,7 +125,7 @@
+         /** Create a StandardDocFile for a given location and relative path. */
+         private StandardDocFile(Location location, DocPath path) {
+             super(configuration, location, path);
+-            this.file = destDir.resolve(path.getPath());
++            this.file = new File(destDir, path.getPath());
+         }
+ 
+         /** Open an input stream for the file. */
+@@ -169,22 +167,22 @@
+ 
+         /** Return true if the file can be read. */
+         public boolean canRead() {
+-            return Files.isReadable(file);
++            return file.canRead();
+         }
+ 
+         /** Return true if the file can be written. */
+         public boolean canWrite() {
+-            return Files.isWritable(file);
++            return file.canWrite();
+         }
+ 
+         /** Return true if the file exists. */
+         public boolean exists() {
+-            return Files.exists(file);
++            return file.exists();
+         }
+ 
+         /** Return the base name (last component) of the file name. */
+         public String getName() {
+-            return file.getFileName().toString();
++            return file.getName();
+         }
+ 
+         /** Return the file system path for this file. */
+@@ -199,12 +197,12 @@
+ 
+         /** Return true is file identifies a directory. */
+         public boolean isDirectory() {
+-            return Files.isDirectory(file);
++            return file.isDirectory();
+         }
+ 
+         /** Return true is file identifies a file. */
+         public boolean isFile() {
+-            return Files.isRegularFile(file);
++            return file.exists() && !file.isDirectory();
+         }
+ 
+         /** Return true if this file is the same as another. */
+@@ -212,32 +210,21 @@
+             if (!(other instanceof StandardDocFile))
+                 return false;
+ 
+-            try {
+-                return Files.isSameFile(file, ((StandardDocFile) other).file);
+-            } catch (IOException e) {
+-                return false;
+-            }
++            return file.equals(((StandardDocFile) other).file);
+         }
+ 
+         /** If the file is a directory, list its contents. */
+         public Iterable<DocFile> list() throws IOException {
+             List<DocFile> files = new ArrayList<DocFile>();
+-            try (DirectoryStream<Path> ds = Files.newDirectoryStream(file)) {
+-                for (Path f: ds) {
+-                    files.add(new StandardDocFile(f));
+-                }
++            for (File f : file.listFiles()) {
++                files.add(new StandardDocFile(f));
+             }
+             return files;
+         }
+ 
+         /** Create the file as a directory, including any parent directories. */
+         public boolean mkdirs() {
+-            try {
+-                Files.createDirectories(file);
+-                return true;
+-            } catch (IOException e) {
+-                return false;
+-            }
++            return file.mkdirs();
+         }
+ 
+         /**
+@@ -258,7 +245,7 @@
+          */
+         public DocFile resolve(String p) {
+             if (location == null && path == null) {
+-                return new StandardDocFile(file.resolve(p));
++                return new StandardDocFile(new File(file, p));
+             } else {
+                 return new StandardDocFile(location, path.resolve(p));
+             }
+@@ -272,7 +259,7 @@
+         public DocFile resolveAgainst(Location locn) {
+             if (locn != DocumentationTool.Location.DOCUMENTATION_OUTPUT)
+                 throw new IllegalArgumentException();
+-            return new StandardDocFile(destDir.resolve(file));
++            return new StandardDocFile(new File(destDir, file.toString()));
+         }
+ 
+         /** Return a string to identify the contents of this object,
+@@ -291,7 +278,7 @@
+             return sb.toString();
+         }
+ 
+-        private JavaFileObject getJavaFileObjectForInput(Path file) {
++        private JavaFileObject getJavaFileObjectForInput(File file) {
+             return fileManager.getJavaFileObjects(file).iterator().next();
+         }
+ 
+--- a/langtools/src/share/classes/com/sun/tools/doclets/formats/html/markup/HtmlTree.java
++++ b/langtools/src/share/classes/com/sun/tools/doclets/formats/html/markup/HtmlTree.java
+@@ -196,7 +196,8 @@
+     }
+ 
+     private static String encodeURL(String url) {
+-        byte[] urlBytes = url.getBytes(Charset.forName("UTF-8"));
++        try {
++        byte[] urlBytes = url.getBytes("UTF-8");
+         StringBuilder sb = new StringBuilder();
+         for (int i = 0; i < urlBytes.length; i++) {
+             int c = urlBytes[i];
+@@ -207,6 +208,9 @@
+             }
+         }
+         return sb.toString();
++        } catch (java.io.UnsupportedEncodingException e) {
++            throw new RuntimeException(e);
++        }
+     }
+ 
+     /**
+--- a/langtools/src/share/classes/com/sun/tools/classfile/ReferenceFinder.java
++++ b/langtools/src/share/classes/com/sun/tools/classfile/ReferenceFinder.java
+@@ -28,7 +28,6 @@
+ import java.util.ArrayList;
+ import java.util.HashSet;
+ import java.util.List;
+-import java.util.Objects;
+ import java.util.Set;
+ import com.sun.tools.classfile.Instruction.TypeKind;
+ import static com.sun.tools.classfile.ConstantPool.*;
+@@ -77,8 +76,11 @@
+      * Constructor.
+      */
+     public ReferenceFinder(Filter filter, Visitor visitor) {
+-        this.filter = Objects.requireNonNull(filter);
+-        this.visitor = Objects.requireNonNull(visitor);
++        if (filter == null || visitor == null) {
++            throw new NullPointerException();
++        }
++        this.filter = filter;
++        this.visitor = visitor;
+     }
+ 
+     /**
+--- a/langtools/src/share/classes/com/sun/tools/javac/sym/Profiles.java
++++ b/langtools/src/share/classes/com/sun/tools/javac/sym/Profiles.java
+@@ -25,13 +25,14 @@
+ package com.sun.tools.javac.sym;
+ 
+ import java.io.BufferedInputStream;
++import java.io.BufferedReader;
+ import java.io.BufferedWriter;
+ import java.io.File;
+ import java.io.FileInputStream;
+ import java.io.FileWriter;
++import java.io.InputStreamReader;
+ import java.io.IOException;
+ import java.nio.charset.Charset;
+-import java.nio.file.Files;
+ import java.util.HashMap;
+ import java.util.Map;
+ import java.util.Properties;
+@@ -59,7 +60,9 @@
+                 lists.put(i, new TreeSet<String>());
+ 
+             File rt_jar_lst = new File(args[1]);
+-            for (String line: Files.readAllLines(rt_jar_lst.toPath(), Charset.defaultCharset())) {
++            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(rt_jar_lst)));
++            String line;
++            while ((line = reader.readLine()) != null) {
+                 if (line.endsWith(".class")) {
+                     String type = line.substring(0, line.length() - 6);
+                     int profile = p.getProfile(type);
+@@ -67,6 +70,7 @@
+                         lists.get(i).add(type);
+                 }
+             }
++            reader.close();
+ 
+             for (int i = 1; i <= 4; i++) {
+                 BufferedWriter out = new BufferedWriter(new FileWriter(i + ".txt"));
+--- a/langtools/src/share/classes/com/sun/tools/classfile/SourceDebugExtension_attribute.java
++++ b/langtools/src/share/classes/com/sun/tools/classfile/SourceDebugExtension_attribute.java
+@@ -58,7 +58,11 @@
+     }
+ 
+     public String getValue() {
+-        return new String(debug_extension, UTF8);
++        try {
++            return new String(debug_extension, "UTF-8");
++        } catch (java.io.UnsupportedEncodingException e) {
++            throw new RuntimeException(e);
++        }
+     }
+ 
+     public <R, D> R accept(Visitor<R, D> visitor, D data) {
+--- a/langtools/src/share/classes/com/sun/tools/javac/util/JavacMessages.java
++++ b/langtools/src/share/classes/com/sun/tools/javac/util/JavacMessages.java
+@@ -121,7 +121,7 @@
+                     ResourceBundle rb = ResourceBundle.getBundle(bundleName, locale);
+                     bundleList = bundleList.prepend(rb);
+                 } catch (MissingResourceException e) {
+-                    throw new InternalError("Cannot find javac resource bundle for locale " + locale);
++                    //throw (Error) new InternalError("Cannot find javac resource bundle for locale " + locale).initCause(e);
+                 }
+             }
+             bundleCache.put(locale, new SoftReference<List<ResourceBundle>>(bundleList));

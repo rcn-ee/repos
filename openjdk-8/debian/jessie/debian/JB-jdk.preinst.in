@@ -1,0 +1,23 @@
+#!/bin/sh
+
+set -e
+
+multiarch=@multiarch@
+old_basedir=/usr/lib/jvm/java-7-openjdk
+jdk_tools='appletviewer apt extcheck idlj jar jarsigner javac javadoc javah javap jconsole jdb jhat jinfo jmap jps jrunscript jsadebugd jstack jstat jstatd native2ascii rmic schemagen serialver wsgen wsimport xjc'
+
+case "$1" in
+    upgrade)
+	if [ -n "$multiarch" ] && [ -n "$2" ]; then
+	    for i in $jdk_tools; do
+		if [ -n "$(update-alternatives --list $i 2>/dev/null | grep ^$old_basedir/)" ]; then
+		    update-alternatives --remove $i $old_basedir/bin/$i || true
+		fi
+	    done
+	fi
+	;;
+esac
+
+#DEBHELPER#
+
+exit 0

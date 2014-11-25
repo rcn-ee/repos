@@ -1,0 +1,15 @@
+
+Package: openjdk-8-jre-cacao
+Architecture: @cacao_archs@
+Multi-Arch: same
+Priority: extra
+Pre-Depends: ${dpkg:Depends}
+Depends: @basename@-jre-headless (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Provides: icedtea6-jre-cacao
+Description: Alternative JVM for OpenJDK, using Cacao
+ The package provides an alternative runtime using the Cacao VM and the 
+ Cacao Just In Time Compiler (JIT).  This is a somewhat faster alternative
+ than the Zero port on architectures like alpha, armel, m68k, mips, mipsel,
+ powerpc and s390.
+ .
+ The VM is started with the option `-cacao'. See the README.Debian for details.

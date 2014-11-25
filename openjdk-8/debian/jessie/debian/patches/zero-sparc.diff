@@ -1,0 +1,287 @@
+--- openjdk/hotspot/src/cpu/sparc/vm/bytecodes_sparc.hpp.old	2014-01-14 21:26:34.000000000 +0000
++++ openjdk/hotspot/src/cpu/sparc/vm/bytecodes_sparc.hpp	2014-01-15 10:55:36.991083672 +0000
+@@ -25,7 +25,7 @@
+ #ifndef CPU_SPARC_VM_BYTECODES_SPARC_HPP
+ #define CPU_SPARC_VM_BYTECODES_SPARC_HPP
+ 
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+ #define NLOCALS_IN_REGS 6
+ #endif
+ 
+--- openjdk/hotspot/src/os_cpu/linux_zero/vm/os_linux_zero.cpp.old	2014-01-15 09:57:03.613191054 +0000
++++ openjdk/hotspot/src/os_cpu/linux_zero/vm/os_linux_zero.cpp	2014-01-15 10:55:36.995083702 +0000
+@@ -82,7 +82,7 @@
+   // Must never look like an address returned by reserve_memory,
+   // even in its subfields (as defined by the CPU immediate fields,
+   // if the CPU splits constants across multiple instructions).
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+   // On SPARC, 0 != %hi(any real address), because there is no
+   // allocation in the first 1Kb of the virtual address space.
+   return (char *) 0;
+--- openjdk/hotspot/src/share/vm/opto/output.cpp.old	2014-01-14 21:26:34.000000000 +0000
++++ openjdk/hotspot/src/share/vm/opto/output.cpp	2014-01-15 10:55:37.015083849 +0000
+@@ -682,7 +682,7 @@
+       array->append(new_loc_value( _regalloc, regnum, Location::lng ));
+     }
+ #else //_LP64
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+     if (t->base() == Type::Long && OptoReg::is_reg(regnum)) {
+       // For SPARC we have to swap high and low words for
+       // long values stored in a single-register (g0-g7).
+--- openjdk/hotspot/src/share/vm/opto/chaitin.cpp.old	2014-01-14 21:26:34.000000000 +0000
++++ openjdk/hotspot/src/share/vm/opto/chaitin.cpp	2014-01-15 10:55:37.023083908 +0000
+@@ -723,7 +723,7 @@
+         case Op_RegFlags:
+         case 0:                 // not an ideal register
+           lrg.set_num_regs(1);
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+           lrg.set_reg_pressure(2);
+ #else
+           lrg.set_reg_pressure(1);
+@@ -1328,7 +1328,7 @@
+ 
+     // Check if a color is available and if so pick the color
+     OptoReg::Name reg = choose_color( *lrg, chunk );
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+     debug_only(lrg->compute_set_mask_size());
+     assert(lrg->num_regs() < 2 || lrg->is_bound() || is_even(reg-1), "allocate all doubles aligned");
+ #endif
+--- openjdk/hotspot/src/share/vm/opto/chaitin.hpp.old	2014-01-14 21:26:34.000000000 +0000
++++ openjdk/hotspot/src/share/vm/opto/chaitin.hpp	2014-01-15 10:55:37.015083849 +0000
+@@ -293,7 +293,7 @@
+ // TEMPORARILY REPLACED WITH COMMAND LINE FLAG
+ 
+ //// !!!!! Magic Constants need to move into ad file
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+ //#define FLOAT_PRESSURE 30  /*     SFLT_REG_mask.Size() - 1 */
+ //#define INT_PRESSURE   23  /* NOTEMP_I_REG_mask.Size() - 1 */
+ #define FLOAT_INCREMENT(regs) regs
+--- openjdk/hotspot/src/share/vm/runtime/safepoint.cpp.old	2014-01-14 21:26:34.000000000 +0000
++++ openjdk/hotspot/src/share/vm/runtime/safepoint.cpp	2014-01-15 10:55:37.027083937 +0000
+@@ -765,7 +765,7 @@
+                 newptr, is_oop?"oop":"   ", (wasoop && !is_oop) ? "STALE" : ((wasoop==false&&is_oop==false&&oldptr !=newptr)?"STOMP":"     "));
+ }
+ 
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+ static void print_me(intptr_t *new_sp, intptr_t *old_sp, bool *was_oops) {
+ #ifdef _LP64
+   tty->print_cr("--------+------address-----+------before-----------+-------after----------+");
+--- openjdk/hotspot/src/share/vm/runtime/deoptimization.cpp.old	2014-01-14 21:26:34.000000000 +0000
++++ openjdk/hotspot/src/share/vm/runtime/deoptimization.cpp	2014-01-15 10:55:37.031083968 +0000
+@@ -815,7 +815,7 @@
+ #ifdef _LP64
+       jlong res = (jlong)low->get_int();
+ #else
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+       // For SPARC we have to swap high and low words.
+       jlong res = jlong_from((jint)low->get_int(), (jint)value->get_int());
+ #else
+@@ -866,7 +866,7 @@
+ #ifdef _LP64
+       jlong res = (jlong)low->get_int();
+ #else
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+       // For SPARC we have to swap high and low words.
+       jlong res = jlong_from((jint)low->get_int(), (jint)value->get_int());
+ #else
+--- openjdk/hotspot/src/share/vm/runtime/advancedThresholdPolicy.cpp.old	2014-01-14 21:26:34.000000000 +0000
++++ openjdk/hotspot/src/share/vm/runtime/advancedThresholdPolicy.cpp	2014-01-15 10:55:37.035083997 +0000
+@@ -62,7 +62,7 @@
+   }
+ #endif
+ 
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+   if (FLAG_IS_DEFAULT(InlineSmallCode)) {
+     FLAG_SET_DEFAULT(InlineSmallCode, 2500);
+   }
+--- openjdk/hotspot/src/share/vm/runtime/stackValue.cpp.old	2014-01-14 21:26:34.000000000 +0000
++++ openjdk/hotspot/src/share/vm/runtime/stackValue.cpp	2014-01-15 10:55:37.023083908 +0000
+@@ -34,7 +34,7 @@
+     // Stack or register value
+     Location loc = ((LocationValue *)sv)->location();
+ 
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+     // %%%%% Callee-save floats will NOT be working on a Sparc until we
+     // handle the case of a 2 floats in a single double register.
+     assert( !(loc.is_register() && loc.type() == Location::float_in_dbl), "Sparc does not handle callee-save floats yet" );
+--- openjdk/hotspot/src/share/vm/runtime/arguments.cpp.old	2014-01-14 21:26:34.000000000 +0000
++++ openjdk/hotspot/src/share/vm/runtime/arguments.cpp	2014-01-15 10:55:37.043084056 +0000
+@@ -1993,7 +1993,7 @@
+ 
+   status = status && verify_object_alignment();
+ 
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+   if (UseConcMarkSweepGC || UseG1GC) {
+     // Issue a stern warning if the user has explicitly set
+     // UseMemSetInBOT (it is known to cause issues), but allow
+--- openjdk/hotspot/src/share/vm/c1/c1_Runtime1.cpp.old	2014-01-14 21:26:34.000000000 +0000
++++ openjdk/hotspot/src/share/vm/c1/c1_Runtime1.cpp	2014-01-15 10:55:37.063084203 +0000
+@@ -1074,7 +1074,7 @@
+             RelocIterator iter(nm, (address)instr_pc, (address)(instr_pc + 1));
+             relocInfo::change_reloc_info_for_address(&iter, (address) instr_pc,
+                                                      relocInfo::none, relocInfo::oop_type);
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+             // Sparc takes two relocations for an oop so update the second one.
+             address instr_pc2 = instr_pc + NativeMovConstReg::add_offset;
+             RelocIterator iter2(nm, instr_pc2, instr_pc2 + 1);
+--- openjdk/hotspot/src/share/vm/c1/c1_LIRAssembler.cpp.old	2014-01-14 21:26:34.000000000 +0000
++++ openjdk/hotspot/src/share/vm/c1/c1_LIRAssembler.cpp	2014-01-15 10:55:37.047084085 +0000
+@@ -577,7 +577,7 @@
+       monitor_address(op->in_opr()->as_constant_ptr()->as_jint(), op->result_opr());
+       break;
+ 
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+     case lir_pack64:
+       pack64(op->in_opr(), op->result_opr());
+       break;
+@@ -852,7 +852,7 @@
+         if (!r->is_stack()) {
+           stringStream st;
+           st.print("bad oop %s at %d", r->as_Register()->name(), _masm->offset());
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+           _masm->_verify_oop(r->as_Register(), strdup(st.as_string()), __FILE__, __LINE__);
+ #else
+           _masm->verify_oop(r->as_Register());
+--- openjdk/hotspot/src/share/vm/c1/c1_LinearScan.cpp.old	2014-01-14 21:26:34.000000000 +0000
++++ openjdk/hotspot/src/share/vm/c1/c1_LinearScan.cpp	2014-01-15 10:55:37.079084322 +0000
+@@ -2128,7 +2128,7 @@
+         }
+ #endif
+ 
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+         assert(assigned_reg >= pd_first_fpu_reg && assigned_reg <= pd_last_fpu_reg, "no fpu register");
+         assert(interval->assigned_regHi() >= pd_first_fpu_reg && interval->assigned_regHi() <= pd_last_fpu_reg, "no fpu register");
+         assert(assigned_reg % 2 == 0 && assigned_reg + 1 == interval->assigned_regHi(), "must be sequential and even");
+@@ -2726,7 +2726,7 @@
+ 
+       assert(opr->fpu_regnrLo() == opr->fpu_regnrHi(), "assumed in calculation (only fpu_regnrLo is used)");
+ #endif
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+       assert(opr->fpu_regnrLo() == opr->fpu_regnrHi() + 1, "assumed in calculation (only fpu_regnrHi is used)");
+ #endif
+ #ifdef ARM
+--- openjdk/hotspot/src/share/vm/c1/c1_LIR.hpp.old	2014-01-14 21:26:34.000000000 +0000
++++ openjdk/hotspot/src/share/vm/c1/c1_LIR.hpp	2014-01-15 10:55:37.059084174 +0000
+@@ -595,7 +595,7 @@
+   static LIR_Opr single_softfp(int reg)            { return (LIR_Opr)((reg  << LIR_OprDesc::reg1_shift) |                                     LIR_OprDesc::float_type  | LIR_OprDesc::cpu_register | LIR_OprDesc::single_size); }
+   static LIR_Opr double_softfp(int reg1, int reg2) { return (LIR_Opr)((reg1 << LIR_OprDesc::reg1_shift) | (reg2 << LIR_OprDesc::reg2_shift) | LIR_OprDesc::double_type | LIR_OprDesc::cpu_register | LIR_OprDesc::double_size); }
+ #endif
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+   static LIR_Opr double_fpu(int reg1, int reg2) { return (LIR_Opr)(intptr_t)((reg1 << LIR_OprDesc::reg1_shift) |
+                                                                              (reg2 << LIR_OprDesc::reg2_shift) |
+                                                                              LIR_OprDesc::double_type          |
+--- openjdk/hotspot/src/share/vm/c1/c1_GraphBuilder.cpp.old	2014-01-14 21:26:34.000000000 +0000
++++ openjdk/hotspot/src/share/vm/c1/c1_GraphBuilder.cpp	2014-01-15 10:55:37.055084145 +0000
+@@ -1891,7 +1891,7 @@
+   Value recv = has_receiver ? apop() : NULL;
+   int vtable_index = methodOopDesc::invalid_vtable_index;
+ 
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+   // Currently only supported on Sparc.
+   // The UseInlineCaches only controls dispatch to invokevirtuals for
+   // loaded classes which we weren't able to statically bind.
+--- openjdk/hotspot/src/share/vm/interpreter/bytecodeInterpreter.cpp.old	2014-01-14 21:26:34.000000000 +0000
++++ openjdk/hotspot/src/share/vm/interpreter/bytecodeInterpreter.cpp	2014-01-15 10:55:37.083084351 +0000
+@@ -3095,7 +3095,7 @@
+   tty->print_cr("stack_base: " INTPTR_FORMAT, (uintptr_t) this->_stack_base);
+   tty->print_cr("stack_limit: " INTPTR_FORMAT, (uintptr_t) this->_stack_limit);
+   tty->print_cr("monitor_base: " INTPTR_FORMAT, (uintptr_t) this->_monitor_base);
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+   tty->print_cr("last_Java_pc: " INTPTR_FORMAT, (uintptr_t) this->_last_Java_pc);
+   tty->print_cr("frame_bottom: " INTPTR_FORMAT, (uintptr_t) this->_frame_bottom);
+   tty->print_cr("&native_fresult: " INTPTR_FORMAT, (uintptr_t) &this->_native_fresult);
+--- openjdk/hotspot/src/share/vm/utilities/macros.hpp.old	2014-01-14 21:26:34.000000000 +0000
++++ openjdk/hotspot/src/share/vm/utilities/macros.hpp	2014-01-15 10:55:37.087084380 +0000
+@@ -207,7 +207,7 @@
+ #define NOT_AMD64(code) code
+ #endif
+ 
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+ #define SPARC_ONLY(code) code
+ #define NOT_SPARC(code)
+ #else
+--- openjdk/hotspot/src/share/vm/utilities/globalDefinitions_gcc.hpp.old	2014-01-14 21:26:34.000000000 +0000
++++ openjdk/hotspot/src/share/vm/utilities/globalDefinitions_gcc.hpp	2014-01-15 10:55:37.087084380 +0000
+@@ -243,7 +243,7 @@
+ 
+ // checking for nanness
+ #ifdef SOLARIS
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+ inline int g_isnan(float  f) { return isnanf(f); }
+ #else
+ // isnanf() broken on Intel Solaris use isnand()
+--- openjdk/hotspot/src/share/vm/utilities/globalDefinitions_sparcWorks.hpp.old	2014-01-14 21:26:34.000000000 +0000
++++ openjdk/hotspot/src/share/vm/utilities/globalDefinitions_sparcWorks.hpp	2014-01-15 10:55:37.087084380 +0000
+@@ -249,7 +249,7 @@
+ 
+ // checking for nanness
+ #ifdef SOLARIS
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+ inline int g_isnan(float  f) { return isnanf(f); }
+ #else
+ // isnanf() broken on Intel Solaris use isnand()
+--- openjdk/hotspot/src/share/vm/adlc/output_h.cpp.old	2014-01-14 21:26:34.000000000 +0000
++++ openjdk/hotspot/src/share/vm/adlc/output_h.cpp	2014-01-15 10:55:37.095084439 +0000
+@@ -718,7 +718,7 @@
+   fprintf(fp_hpp, "class Pipeline_Use_Cycle_Mask {\n");
+ 
+   if (_pipeline->_maxcycleused <=
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+     64
+ #else
+     32
+--- openjdk/hotspot/src/share/vm/adlc/formssel.cpp.old	2014-01-14 21:26:34.000000000 +0000
++++ openjdk/hotspot/src/share/vm/adlc/formssel.cpp	2014-01-15 10:55:37.103084499 +0000
+@@ -1020,7 +1020,7 @@
+     const char  *opType   = NULL;
+     while (_matrule->base_operand(position, globals, result, name, opType)) {
+       if ( strcmp(opType,"ConP") == 0 ) {
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+         reloc_entries += 2; // 1 for sethi + 1 for setlo
+ #else
+         ++reloc_entries;
+@@ -1058,7 +1058,7 @@
+   // Check for any component being an immediate float or double.
+   Form::DataType data_type = is_chain_of_constant(globals);
+   if( data_type==idealD || data_type==idealF ) {
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+     // sparc required more relocation entries for floating constants
+     // (expires 9/98)
+     reloc_entries += 6;
+--- openjdk/hotspot/src/share/vm/adlc/output_c.cpp.old	2014-01-14 21:26:34.000000000 +0000
++++ openjdk/hotspot/src/share/vm/adlc/output_c.cpp	2014-01-15 10:55:37.111084557 +0000
+@@ -779,7 +779,7 @@
+     /* Do Nothing */;
+ 
+   else if (_pipeline->_maxcycleused <=
+-#ifdef SPARC
++#if defined(SPARC) && !defined(ZERO)
+     64
+ #else
+     32

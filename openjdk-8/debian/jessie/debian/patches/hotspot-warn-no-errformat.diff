@@ -1,0 +1,28 @@
+# DP: Build Hotspot with -Wno-error=format (not warning free on ppc64el).
+
+Index: b/hotspot/make/solaris/makefiles/gcc.make
+===================================================================
+--- a/hotspot/make/solaris/makefiles/gcc.make
++++ b/hotspot/make/solaris/makefiles/gcc.make
+@@ -116,7 +116,7 @@ endif
+ 
+ 
+ # Compiler warnings are treated as errors 
+-WARNINGS_ARE_ERRORS = -Werror 
++WARNINGS_ARE_ERRORS = -Werror -Wno-error=format
+ # Enable these warnings. See 'info gcc' about details on these options
+ WARNING_FLAGS = -Wpointer-arith -Wconversion -Wsign-compare -Wundef
+ CFLAGS_WARN/DEFAULT = $(WARNINGS_ARE_ERRORS) $(WARNING_FLAGS)
+Index: b/hotspot/make/linux/makefiles/gcc.make
+===================================================================
+--- a/hotspot/make/linux/makefiles/gcc.make
++++ b/hotspot/make/linux/makefiles/gcc.make
+@@ -205,7 +205,7 @@ else
+ endif
+ 
+ # Compiler warnings are treated as errors
+-WARNINGS_ARE_ERRORS = -Werror
++WARNINGS_ARE_ERRORS = -Werror -Wno-error=format -Wno-error=deprecated
+ 
+ ifeq ($(USE_CLANG), true)
+   # However we need to clean the code up before we can unrestrictedly enable this option with Clang

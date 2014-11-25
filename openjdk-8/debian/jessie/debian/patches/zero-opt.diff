@@ -1,0 +1,16 @@
+# DP: Build zero with -O2 -finline-functions instead of -O3 (still needed?)
+--- openjdk/hotspot/make/linux/makefiles/gcc.make~	2013-04-15 13:44:59.703968963 +0200
++++ openjdk/hotspot/make/linux/makefiles/gcc.make	2013-04-15 16:22:04.124240511 +0200
+@@ -170,7 +170,11 @@
+ CFLAGS_WARN/BYFILE = $(CFLAGS_WARN/$@)$(CFLAGS_WARN/DEFAULT$(CFLAGS_WARN/$@)) 
+ 
+ # The flags to use for an Optimized g++ build
+-OPT_CFLAGS += -O3
++ifeq ($(ZERO_BUILD), true)
++  OPT_CFLAGS += -O2 -finline-functions
++else
++  OPT_CFLAGS += -O3
++endif
+ 
+ # Hotspot uses very unstrict aliasing turn this optimization off
+ OPT_CFLAGS += -fno-strict-aliasing

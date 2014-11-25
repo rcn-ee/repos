@@ -1,0 +1,141 @@
+Description:
+
+	Fixing the bad JNI code in the font manager code. Two issues:
+	
+	  o The JNIEnv is unique to the thread. It cannot be saved by one thread and
+	    reused by another. Use GetEnv instead.
+	
+	  o The 'font2D' jobject needs to be converted into a global reference because
+	    its lifetime exceeds the lifetime of a native method call.
+	
+Evaluation:
+
+Appropriately register/free everything with the garbage collector.
+
+Fix:
+
+# HG changeset patch
+# User martin
+# Date 1224202830 25200
+# Node ID 3c9d6001d8a90698a3540a2a483717f26a98db78
+# Parent  68730f05449cd4f39ce1cb82adc6c4e57f87554f
+Crash in freetypeScaler.c due to insufficient GC protection
+Summary: NewGlobalRef/DeleteGlobalRef as needed.
+Reviewed-by:
+Contributed-by: yamauchi@google.com
+
+--- a/jdk/make/mapfiles/libfontmanager/mapfile-vers.openjdk
++++ b/jdk/make/mapfiles/libfontmanager/mapfile-vers.openjdk
+@@ -29,6 +29,7 @@
+ 
+ SUNWprivate_1.1 {
+ 	global:
++                JNI_OnLoad;
+                 getSunFontIDs;
+                 newLayoutTableCache;
+                 freeLayoutTableCache;
+--- a/jdk/src/share/native/sun/font/freetypeScaler.c
++++ b/jdk/src/share/native/sun/font/freetypeScaler.c
+@@ -48,16 +48,6 @@
+ #define  ROUND(x) ((int) (x+0.5))
+ 
+ typedef struct {
+-    /* Important note:
+-         JNI forbids sharing same env between different threads.
+-         We are safe, because pointer is overwritten every time we get into
+-         JNI call (see setupFTContext).
+-
+-         Pointer is used by font data reading callbacks
+-         such as ReadTTFontFileFunc.
+-
+-         NB: We may consider switching to JNI_GetEnv. */
+-    JNIEnv* env;
+     FT_Library library;
+     FT_Face face;
+     jobject font2D;
+@@ -90,6 +80,13 @@
+ void z_error(char *s) {}
+ #endif
+ 
++static JavaVM* jvm = NULL;
++
++JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
++    jvm = vm;
++    return JNI_VERSION_1_2;
++}
++
+ /**************** Error handling utilities *****************/
+ 
+ static jmethodID invalidateScalerMID;
+@@ -120,6 +117,10 @@
+     FT_Done_Face(scalerInfo->face);
+     FT_Done_FreeType(scalerInfo->library);
+ 
++    if (scalerInfo->font2D != NULL) {
++        (*env)->DeleteGlobalRef(env, scalerInfo->font2D);
++    }
++
+     if (scalerInfo->directBuffer != NULL) {
+         (*env)->DeleteGlobalRef(env, scalerInfo->directBuffer);
+     }
+@@ -147,10 +148,9 @@
+ 
+ #define FILEDATACACHESIZE 1024
+ 
+-/* NB: is it ever called? */
+ static void CloseTTFontFileFunc(FT_Stream stream) {
++    JNIEnv* env = (JNIEnv*) JNU_GetEnv(jvm, JNI_VERSION_1_2);
+     FTScalerInfo *scalerInfo = (FTScalerInfo *) stream->pathname.pointer;
+-    JNIEnv* env = scalerInfo->env;
+     jclass tmpClass = (*env)->FindClass(env, "sun/font/TrueTypeFont");
+     jfieldID platNameField =
+          (*env)->GetFieldID(env, tmpClass, "platName", "Ljava/lang/String;");
+@@ -166,8 +166,8 @@
+                                         unsigned char* destBuffer,
+                                         unsigned long numBytes)
+ {
++    JNIEnv* env = (JNIEnv*) JNU_GetEnv(jvm, JNI_VERSION_1_2);
+     FTScalerInfo *scalerInfo = (FTScalerInfo *) stream->pathname.pointer;
+-    JNIEnv* env = scalerInfo->env;
+     jobject bBuffer;
+     int bread = 0;
+ 
+@@ -260,8 +260,7 @@
+     if (scalerInfo == NULL)
+         return 0;
+ 
+-    scalerInfo->env = env;
+-    scalerInfo->font2D = font2D;
++    scalerInfo->font2D = (*env)->NewGlobalRef(env, font2D);
+     scalerInfo->fontDataOffset = 0;
+     scalerInfo->fontDataLength = 0;
+     scalerInfo->fileSize = filesize;
+@@ -278,6 +277,7 @@
+     */
+     error = FT_Init_FreeType(&scalerInfo->library);
+     if (error) {
++        (*env)->DeleteGlobalRef(env, scalerInfo->font2D);
+         free(scalerInfo);
+         return 0;
+     }
+@@ -348,6 +348,7 @@
+         }
+         if (scalerInfo->fontData != NULL)
+             free(scalerInfo->fontData);
++        (*env)->DeleteGlobalRef(env, scalerInfo->font2D);
+         free(scalerInfo);
+         return 0;
+     }
+@@ -408,8 +409,10 @@
+                           FTScalerContext *context) {
+     int errCode = 0;
+ 
+-    scalerInfo->env = env;
+-    scalerInfo->font2D = font2D;
++    if (scalerInfo->font2D != NULL) {
++        (*env)->DeleteGlobalRef(env, scalerInfo->font2D);
++    }
++    scalerInfo->font2D = (*env)->NewGlobalRef(env, font2D);
+ 
+     if (context != NULL) {
+         FT_Set_Transform(scalerInfo->face, &context->transform, NULL);

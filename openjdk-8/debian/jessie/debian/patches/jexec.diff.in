@@ -1,0 +1,14 @@
+--- a/jdk/src/solaris/bin/jexec.c
++++ b/jdk/src/solaris/bin/jexec.c
+@@ -168,9 +168,10 @@
+
+     /* Get the path to the java binary, which is in a known position relative
+      * to our current position, which is in argv[0]. */
+-    if (getJavaPath(argv[argi++], java, RELATIVE_DEPTH) != 0) {
++    if (getJavaPath("/@basedir@/jre/lib/jexec", java, RELATIVE_DEPTH) != 0) {
+         errorExit(errno, MISSING_JAVA_MSG);
+     }
++    argi++;
+     alen = (argc + 2) * (sizeof (const char *));
+     if (alen <= 0 || alen > INT_MAX / sizeof(char *)) {
+         errorExit(errno, BAD_ARG_MSG);

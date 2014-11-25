@@ -1,0 +1,217 @@
+# unused patch (work in progress for PARISC support)
+
+--- openjdk/hotspot/src/os_cpu/linux_zero/vm/os_linux_zero.cpp.old	2010-01-06 16:30:02.000000000 +0100
++++ openjdk/hotspot/src/os_cpu/linux_zero/vm/os_linux_zero.cpp	2010-01-06 23:14:47.000000000 +0100
+@@ -144,8 +144,13 @@
+       address addr = (address) info->si_addr;
+ 
+       // check if fault address is within thread stack
++#ifdef __hppa__
++      if (addr > thread->stack_base() &&
++          addr <= thread->stack_base() + thread->stack_size()) {
++#else
+       if (addr < thread->stack_base() &&
+           addr >= thread->stack_base() - thread->stack_size()) {
++#endif
+         // stack overflow
+         if (thread->in_stack_yellow_zone(addr)) {
+           thread->disable_stack_yellow_zone();
+@@ -294,7 +299,11 @@
+   if (res != 0) {
+     fatal1("pthread_attr_getstack failed with errno = %d", res);
+   }
++#ifdef __hppa__
++  address stack_top = stack_bottom - stack_bytes;
++#else
+   address stack_top = stack_bottom + stack_bytes;
++#endif
+ 
+   // The block of memory returned by pthread_attr_getstack() includes
+   // guard pages where present.  We need to trim these off.
+@@ -321,7 +330,11 @@
+   stack_bottom += (total_pages - guard_pages) / 2 * page_bytes;
+ #endif // IA64
+ 
++#ifdef __hppa__
++  stack_bottom -= guard_bytes;
++#else
+   stack_bottom += guard_bytes;
++#endif
+ 
+   pthread_attr_destroy(&attr);
+ 
+@@ -329,19 +342,36 @@
+   // by pthread_attr_getstack is the maximum size it could possibly
+   // be given what currently mapped.  This can be huge, so we cap it.
+   if (os::Linux::is_initial_thread()) {
++#ifdef __hppa__
++    stack_bytes = stack_bottom - stack_top;
++#else
+     stack_bytes = stack_top - stack_bottom;
++#endif
+ 
+     if (stack_bytes > JavaThread::stack_size_at_create())
+       stack_bytes = JavaThread::stack_size_at_create();
+ 
++#ifdef __hppa__
++    stack_bottom = stack_top + stack_bytes;
++#else
+     stack_bottom = stack_top - stack_bytes;
++#endif
+   }
+ 
++#ifdef __hppa__
++  assert(os::current_stack_pointer() <= stack_bottom, "should do");
++  assert(os::current_stack_pointer() > stack_top, "should do");
++#else
+   assert(os::current_stack_pointer() >= stack_bottom, "should do");
+   assert(os::current_stack_pointer() < stack_top, "should do");
++#endif
+ 
+   *bottom = stack_bottom;
++#ifdef __hppa__
++  *size = stack_bottom - stack_top;
++#else
+   *size = stack_top - stack_bottom;
++#endif
+ }
+ 
+ address os::current_stack_base() {
+--- openjdk/hotspot/src/share/vm/runtime/thread.cpp.old	2009-10-02 23:16:39.000000000 +0200
++++ openjdk/hotspot/src/share/vm/runtime/thread.cpp	2010-01-06 23:31:24.000000000 +0100
+@@ -713,8 +713,13 @@
+   else if (is_ConcurrentGC_thread())        st->print("ConcurrentGCThread");
+   else st->print("Thread");
+ 
++#ifdef __hppa__
+   st->print(" [stack: " PTR_FORMAT "," PTR_FORMAT "]",
+             _stack_base - _stack_size, _stack_base);
++#else
++  st->print(" [stack: " PTR_FORMAT "," PTR_FORMAT "]",
++            _stack_base + _stack_size, _stack_base);
++#endif
+ 
+   if (osthread()) {
+     st->print(" [id=%d]", osthread()->thread_id());
+@@ -792,7 +797,11 @@
+ bool Thread::is_in_stack(address adr) const {
+   assert(Thread::current() == this, "is_in_stack can only be called from current thread");
+   address end = os::current_stack_pointer();
++#ifdef __hppa__
++  if (stack_base() <= adr && adr <= end) return true;
++#else
+   if (stack_base() >= adr && adr >= end) return true;
++#endif
+ 
+   return false;
+ }
+@@ -804,7 +813,11 @@
+ // should be revisited, and they should be removed if possible.
+ 
+ bool Thread::is_lock_owned(address adr) const {
++#ifdef __hppa__
++  return (_stack_base <= adr && adr <= (_stack_base + _stack_size));
++#else
+   return (_stack_base >= adr && adr >= (_stack_base - _stack_size));
++#endif
+ }
+ 
+ bool Thread::set_as_starting_thread() {
+@@ -2108,7 +2121,11 @@
+ 
+ void JavaThread::create_stack_guard_pages() {
+   if (! os::uses_stack_guard_pages() || _stack_guard_state != stack_guard_unused) return;
++#ifdef __hppa__
++  address low_addr = stack_base();
++#else
+   address low_addr = stack_base() - stack_size();
++#endif
+   size_t len = (StackYellowPages + StackRedPages) * os::vm_page_size();
+ 
+   int allocate = os::allocate_stack_guard_pages();
+@@ -2131,7 +2148,11 @@
+ 
+ void JavaThread::remove_stack_guard_pages() {
+   if (_stack_guard_state == stack_guard_unused) return;
++#ifdef __hppa__
++  address low_addr = stack_base();
++#else
+   address low_addr = stack_base() - stack_size();
++#endif
+   size_t len = (StackYellowPages + StackRedPages) * os::vm_page_size();
+ 
+   if (os::allocate_stack_guard_pages()) {
+@@ -2156,10 +2177,17 @@
+ 
+   // The base notation is from the stacks point of view, growing downward.
+   // We need to adjust it to work correctly with guard_memory()
++#ifdef __hppa__
++  address base = stack_yellow_zone_base() + stack_yellow_zone_size();
++
++  guarantee(base > stack_base(),"Error calculating stack yellow zone");
++  guarantee(base > os::current_stack_pointer(),"Error calculating stack yellow zone");
++#else
+   address base = stack_yellow_zone_base() - stack_yellow_zone_size();
+ 
+   guarantee(base < stack_base(),"Error calculating stack yellow zone");
+   guarantee(base < os::current_stack_pointer(),"Error calculating stack yellow zone");
++#endif
+ 
+   if (os::guard_memory((char *) base, stack_yellow_zone_size())) {
+     _stack_guard_state = stack_guard_enabled;
+@@ -2178,7 +2206,11 @@
+ 
+   // The base notation is from the stacks point of view, growing downward.
+   // We need to adjust it to work correctly with guard_memory()
++#ifdef __hppa__
++  address base = stack_yellow_zone_base() + stack_yellow_zone_size();
++#else
+   address base = stack_yellow_zone_base() - stack_yellow_zone_size();
++#endif
+ 
+   if (os::unguard_memory((char *)base, stack_yellow_zone_size())) {
+     _stack_guard_state = stack_guard_yellow_disabled;
+@@ -2192,10 +2224,17 @@
+   // The base notation is from the stacks point of view, growing downward.
+   // We need to adjust it to work correctly with guard_memory()
+   assert(_stack_guard_state != stack_guard_unused, "must be using guard pages.");
++#ifdef __hppa__
++  address base = stack_red_zone_base() + stack_red_zone_size();
++
++  guarantee(base > stack_base(),"Error calculating stack red zone");
++  guarantee(base > os::current_stack_pointer(),"Error calculating stack red zone");
++#else
+   address base = stack_red_zone_base() - stack_red_zone_size();
+ 
+   guarantee(base < stack_base(),"Error calculating stack red zone");
+   guarantee(base < os::current_stack_pointer(),"Error calculating stack red zone");
++#endif
+ 
+   if(!os::guard_memory((char *) base, stack_red_zone_size())) {
+     warning("Attempt to guard stack red zone failed.");
+@@ -2206,7 +2245,11 @@
+   // The base notation is from the stacks point of view, growing downward.
+   // We need to adjust it to work correctly with guard_memory()
+   assert(_stack_guard_state != stack_guard_unused, "must be using guard pages.");
++#ifdef __hppa__
++  address base = stack_red_zone_base() + stack_red_zone_size();
++#else
+   address base = stack_red_zone_base() - stack_red_zone_size();
++#endif
+   if (!os::unguard_memory((char *)base, stack_red_zone_size())) {
+     warning("Attempt to unguard stack red zone failed.");
+   }
+@@ -2451,8 +2494,13 @@
+   if (osthread()) {
+     st->print(", id=%d", osthread()->thread_id());
+   }
++#ifdef __hppa__
++  st->print(", stack(" PTR_FORMAT "," PTR_FORMAT ")",
++            _stack_base + _stack_size, _stack_base);
++#else
+   st->print(", stack(" PTR_FORMAT "," PTR_FORMAT ")",
+             _stack_base - _stack_size, _stack_base);
++#endif
+   st->print("]");
+   return;
+ }

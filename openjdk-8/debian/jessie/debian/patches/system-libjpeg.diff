@@ -1,0 +1,375 @@
+# DP: S8043805: Allow using a system-installed libjpeg
+# DP:   http://hg.openjdk.java.net/jdk9/client/rev/bfd9a3e1aeb5
+# DP:   http://hg.openjdk.java.net/jdk9/client/jdk/rev/320743f0b4fc
+
+Index: b/common/autoconf/generated-configure.sh
+===================================================================
+--- a/common/autoconf/generated-configure.sh
++++ b/common/autoconf/generated-configure.sh
+@@ -1058,6 +1058,7 @@ enable_freetype_bundling
+ with_alsa
+ with_alsa_include
+ with_alsa_lib
++with_libjpeg
+ with_giflib
+ with_zlib
+ with_stdc__lib
+@@ -1828,6 +1829,8 @@ Optional Packages:
+                           headers under PATH/include)
+   --with-alsa-include     specify directory for the alsa include files
+   --with-alsa-lib         specify directory for the alsa library
++  --with-libjpeg          use libjpeg from build system or OpenJDK source
++                          (system, bundled) [bundled]
+   --with-giflib           use giflib from build system or OpenJDK source
+                           (system, bundled) [bundled]
+   --with-zlib             use zlib from build system or OpenJDK source
+@@ -7921,6 +7924,11 @@ $as_echo "$with_jvm_variants" >&6; }
+   JVM_VARIANT_ZEROSHARK=`$ECHO "$JVM_VARIANTS" | $SED -e '/,zeroshark,/!s/.*/false/g' -e '/,zeroshark,/s/.*/true/g'`
+   JVM_VARIANT_CORE=`$ECHO "$JVM_VARIANTS" | $SED -e '/,core,/!s/.*/false/g' -e '/,core,/s/.*/true/g'`
+ 
++  if test "x$JVM_VARIANT_CLIENT" = xtrue; then
++    if test "x$OPENJDK_TARGET_CPU_BITS" = x64; then
++      as_fn_error $? "You cannot build a client JVM for a 64-bit machine." "$LINENO" 5
++    fi
++  fi
+   if test "x$JVM_VARIANT_KERNEL" = xtrue; then
+     if test "x$OPENJDK_TARGET_CPU_BITS" = x64; then
+       as_fn_error $? "You cannot build a kernel JVM for a 64-bit machine." "$LINENO" 5
+@@ -34924,10 +34932,43 @@ done
+   # Check for the jpeg library
+   #
+ 
+-  USE_EXTERNAL_LIBJPEG=true
+-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -ljpeg" >&5
+-$as_echo_n "checking for main in -ljpeg... " >&6; }
+-if ${ac_cv_lib_jpeg_main+:} false; then :
++
++# Check whether --with-libjpeg was given.
++if test "${with_libjpeg+set}" = set; then :
++  withval=$with_libjpeg;
++fi
++
++
++  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for which libjpeg to use" >&5
++$as_echo_n "checking for which libjpeg to use... " >&6; }
++
++  # default is bundled
++  DEFAULT_LIBJPEG=bundled
++
++  #
++  # if user didn't specify, use DEFAULT_LIBJPEG
++  #
++  if test "x${with_libjpeg}" = "x"; then
++    with_libjpeg=${DEFAULT_LIBJPEG}
++  fi
++
++  { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${with_libjpeg}" >&5
++$as_echo "${with_libjpeg}" >&6; }
++
++  if test "x${with_libjpeg}" = "xbundled"; then
++    USE_EXTERNAL_LIBJPEG=false
++  elif test "x${with_libjpeg}" = "xsystem"; then
++    ac_fn_cxx_check_header_mongrel "$LINENO" "jpeglib.h" "ac_cv_header_jpeglib_h" "$ac_includes_default"
++if test "x$ac_cv_header_jpeglib_h" = xyes; then :
++
++else
++   as_fn_error $? "--with-libjpeg=system specified, but jpeglib.h not found!" "$LINENO" 5
++fi
++
++
++    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for jpeg_CreateDecompress in -ljpeg" >&5
++$as_echo_n "checking for jpeg_CreateDecompress in -ljpeg... " >&6; }
++if ${ac_cv_lib_jpeg_jpeg_CreateDecompress+:} false; then :
+   $as_echo_n "(cached) " >&6
+ else
+   ac_check_lib_save_LIBS=$LIBS
+@@ -34935,27 +34976,33 @@ LIBS="-ljpeg  $LIBS"
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+-
++/* Override any GCC internal prototype to avoid an error.
++   Use char because int might match the return type of a GCC
++   builtin and then its argument prototype would still apply.  */
++#ifdef __cplusplus
++extern "C"
++#endif
++char jpeg_CreateDecompress ();
+ int
+ main ()
+ {
+-return main ();
++return jpeg_CreateDecompress ();
+   ;
+   return 0;
+ }
+ _ACEOF
+ if ac_fn_cxx_try_link "$LINENO"; then :
+-  ac_cv_lib_jpeg_main=yes
++  ac_cv_lib_jpeg_jpeg_CreateDecompress=yes
+ else
+-  ac_cv_lib_jpeg_main=no
++  ac_cv_lib_jpeg_jpeg_CreateDecompress=no
+ fi
+ rm -f core conftest.err conftest.$ac_objext \
+     conftest$ac_exeext conftest.$ac_ext
+ LIBS=$ac_check_lib_save_LIBS
+ fi
+-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_jpeg_main" >&5
+-$as_echo "$ac_cv_lib_jpeg_main" >&6; }
+-if test "x$ac_cv_lib_jpeg_main" = xyes; then :
++{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_jpeg_jpeg_CreateDecompress" >&5
++$as_echo "$ac_cv_lib_jpeg_jpeg_CreateDecompress" >&6; }
++if test "x$ac_cv_lib_jpeg_jpeg_CreateDecompress" = xyes; then :
+   cat >>confdefs.h <<_ACEOF
+ #define HAVE_LIBJPEG 1
+ _ACEOF
+@@ -34963,13 +35010,16 @@ _ACEOF
+   LIBS="-ljpeg $LIBS"
+ 
+ else
+-   USE_EXTERNAL_LIBJPEG=false
+-      { $as_echo "$as_me:${as_lineno-$LINENO}: Will use jpeg decoder bundled with the OpenJDK source" >&5
+-$as_echo "$as_me: Will use jpeg decoder bundled with the OpenJDK source" >&6;}
+-
++   as_fn_error $? "--with-libjpeg=system specified, but no libjpeg found" "$LINENO" 5
+ fi
+ 
+ 
++    USE_EXTERNAL_LIBJPEG=true
++  else
++    as_fn_error $? "Invalid use of --with-libjpeg: ${with_libjpeg}, use 'system' or 'bundled'" "$LINENO" 5
++  fi
++
++
+ 
+   ###############################################################################
+   #
+Index: b/common/autoconf/libraries.m4
+===================================================================
+--- a/common/autoconf/libraries.m4
++++ b/common/autoconf/libraries.m4
+@@ -608,11 +608,36 @@ AC_DEFUN_ONCE([LIB_SETUP_MISC_LIBS],
+   # Check for the jpeg library
+   #
+ 
+-  USE_EXTERNAL_LIBJPEG=true
+-  AC_CHECK_LIB(jpeg, main, [],
+-      [ USE_EXTERNAL_LIBJPEG=false
+-      AC_MSG_NOTICE([Will use jpeg decoder bundled with the OpenJDK source])
+-  ])
++  AC_ARG_WITH(libjpeg, [AS_HELP_STRING([--with-libjpeg],
++      [use libjpeg from build system or OpenJDK source (system, bundled) @<:@bundled@:>@])])
++
++  AC_MSG_CHECKING([for which libjpeg to use])
++
++  # default is bundled
++  DEFAULT_LIBJPEG=bundled
++
++  #
++  # if user didn't specify, use DEFAULT_LIBJPEG
++  #
++  if test "x${with_libjpeg}" = "x"; then
++    with_libjpeg=${DEFAULT_LIBJPEG}
++  fi
++
++  AC_MSG_RESULT(${with_libjpeg})
++
++  if test "x${with_libjpeg}" = "xbundled"; then
++    USE_EXTERNAL_LIBJPEG=false
++  elif test "x${with_libjpeg}" = "xsystem"; then
++    AC_CHECK_HEADER(jpeglib.h, [],
++        [ AC_MSG_ERROR([--with-libjpeg=system specified, but jpeglib.h not found!])])
++    AC_CHECK_LIB(jpeg, jpeg_CreateDecompress, [],
++        [ AC_MSG_ERROR([--with-libjpeg=system specified, but no libjpeg found])])
++
++    USE_EXTERNAL_LIBJPEG=true
++  else
++    AC_MSG_ERROR([Invalid use of --with-libjpeg: ${with_libjpeg}, use 'system' or 'bundled'])
++  fi
++
+   AC_SUBST(USE_EXTERNAL_LIBJPEG)
+ 
+   ###############################################################################
+Index: b/jdk/make/lib/Awt2dLibraries.gmk
+===================================================================
+--- a/jdk/make/lib/Awt2dLibraries.gmk
++++ b/jdk/make/lib/Awt2dLibraries.gmk
+@@ -704,21 +704,24 @@ $(BUILD_LIBLCMS): $(BUILD_LIBAWT)
+ 
+ ##########################################################################################
+ 
++BUILD_LIBJAVAJPEG_DIR := $(JDK_TOPDIR)/src/share/native/sun/awt/image/jpeg
++
+ ifdef OPENJDK
+-  BUILD_LIBJPEG_MAPFILE := $(JDK_TOPDIR)/make/mapfiles/libjpeg/mapfile-vers
++  BUILD_LIBJAVAJPEG_MAPFILE := $(JDK_TOPDIR)/make/mapfiles/libjpeg/mapfile-vers
+ else
+-  BUILD_LIBJPEG_MAPFILE := $(JDK_TOPDIR)/make/mapfiles/libjpeg/mapfile-vers-closed
+-  BUILD_LIBJPEG_CLOSED_SRC := $(JDK_TOPDIR)/src/closed/share/native/sun/awt/image/jpeg
+-  BUILD_LIBJPEG_CLOSED_INCLUDES := -I$(BUILD_LIBJPEG_CLOSED_SRC)
++  BUILD_LIBJAVAJPEG_MAPFILE := $(JDK_TOPDIR)/make/mapfiles/libjpeg/mapfile-vers-closed
++  BUILD_LIBJAVAJPEG_CLOSED_SRC := $(JDK_TOPDIR)/src/closed/share/native/sun/awt/image/jpeg
++  BUILD_LIBJAVAJPEG_CLOSED_INCLUDES := -I$(BUILD_LIBJAVAJPEG_CLOSED_SRC)
+ endif
+ 
+-BUILD_LIBJPEG_REORDER :=
++BUILD_LIBJAVAJPEG_REORDER :=
+ ifeq ($(OPENJDK_TARGET_OS), solaris)
+   ifneq ($(OPENJDK_TARGET_CPU), x86_64)
+-    BUILD_LIBJPEG_REORDER := $(JDK_TOPDIR)/make/mapfiles/libjpeg/reorder-$(OPENJDK_TARGET_CPU)
++    BUILD_LIBJAVAJPEG_REORDER := $(JDK_TOPDIR)/make/mapfiles/libjpeg/reorder-$(OPENJDK_TARGET_CPU)
+   endif
+ endif
+ 
++
+ # Suppress gcc warnings like "variable might be clobbered by 'longjmp'
+ # or 'vfork'": this warning indicates that some variable is placed to
+ # a register by optimized compiler and it's value might be lost on longjmp().
+@@ -730,37 +733,50 @@ endif
+ #      $(shell $(EXPR) $(CC_MAJORVER) \> 4 \| \
+ #          \( $(CC_MAJORVER) = 4 \& $(CC_MINORVER) \>= 3 \) )
+ #  ifeq ($(CC_43_OR_NEWER), 1)
+-#    BUILD_LIBJPEG_CFLAGS_linux += -Wno-clobbered
++#    BUILD_LIBJAVAJPEG_CFLAGS_linux += -Wno-clobbered
+ #  endif
+ #endif
+ 
+-$(eval $(call SetupNativeCompilation,BUILD_LIBJPEG, \
+-    LIBRARY := jpeg, \
++ifeq ($(USE_EXTERNAL_LIBJPEG), true)
++  LIBJPEG_LIBS := -ljpeg
++  BUILD_LIBJAVAJPEG_INCLUDE_FILES := \
++      imageIOJPEG.c \
++      jpegdecoder.c
++  BUILD_LIBJAVAJPEG_HEADERS :=
++else
++  LIBJPEG_LIBS :=
++  BUILD_LIBJAVAJPEG_INCLUDE_FILES :=
++  BUILD_LIBJAVAJPEG_HEADERS := -I$(BUILD_LIBJAVAJPEG_DIR)
++endif
++
++$(eval $(call SetupNativeCompilation,BUILD_LIBJAVAJPEG, \
++    LIBRARY := javajpeg, \
+     OUTPUT_DIR := $(INSTALL_LIBRARIES_HERE), \
+-    SRC := $(BUILD_LIBJPEG_CLOSED_SRC) \
+-        $(JDK_TOPDIR)/src/share/native/sun/awt/image/jpeg, \
++    SRC := $(BUILD_LIBJAVAJPEG_CLOSED_SRC) \
++        $(BUILD_LIBJAVAJPEG_DIR), \
++    INCLUDE_FILES := $(BUILD_LIBJAVAJPEG_INCLUDE_FILES), \
+     LANG := C, \
+     OPTIMIZATION := HIGHEST, \
+     CFLAGS := $(CFLAGS_JDKLIB) \
+-        $(BUILD_LIBJPEG_CLOSED_INCLUDES) \
+-        -I$(JDK_TOPDIR)/src/share/native/sun/awt/image/jpeg, \
+-    MAPFILE := $(BUILD_LIBJPEG_MAPFILE), \
+-    LDFLAGS := $(LDFLAGS_JDKLIB) \
++        $(BUILD_LIBJAVAJPEG_CLOSED_INCLUDES) \
++        $(BUILD_LIBJAVAJPEG_HEADERS), \
++    MAPFILE := $(BUILD_LIBJAVAJPEG_MAPFILE), \
++    LDFLAGS := $(LDFLAGS_JDKLIB) $(LIBJPEG_LIBS) \
+         $(call SET_SHARED_LIBRARY_ORIGIN), \
+     LDFLAGS_windows := $(WIN_JAVA_LIB) jvm.lib, \
+     LDFLAGS_SUFFIX := $(LDFLAGS_JDKLIB_SUFFIX), \
+     VERSIONINFO_RESOURCE := $(JDK_TOPDIR)/src/windows/resource/version.rc, \
+     RC_FLAGS := $(RC_FLAGS) \
+-        -D "JDK_FNAME=jpeg.dll" \
+-        -D "JDK_INTERNAL_NAME=jpeg" \
++        -D "JDK_FNAME=javajpeg.dll" \
++        -D "JDK_INTERNAL_NAME=javajpeg" \
+         -D "JDK_FTYPE=0x2L", \
+-    REORDER := $(BUILD_LIBJPEG_REORDER), \
++    REORDER := $(BUILD_LIBJAVAJPEG_REORDER), \
+     OBJECT_DIR := $(JDK_OUTPUTDIR)/objs/libjpeg, \
+     DEBUG_SYMBOLS := $(DEBUG_ALL_BINARIES)))
+ 
+-$(BUILD_LIBJPEG): $(BUILD_LIBJAVA)
++$(BUILD_LIBJAVAJPEG): $(BUILD_LIBJAVA)
+ 
+-BUILD_LIBRARIES += $(BUILD_LIBJPEG)
++BUILD_LIBRARIES += $(BUILD_LIBJAVAJPEG)
+ 
+ ##########################################################################################
+ 
+@@ -1206,6 +1222,13 @@ ifndef BUILD_HEADLESS_ONLY
+     GIFLIB_CFLAGS := -I$(JDK_TOPDIR)/src/share/native/sun/awt/giflib
+   endif
+ 
++  ifeq ($(USE_EXTERNAL_LIBJPEG), true)
++    LIBJPEG_LDFLAGS := -ljpeg
++  else
++    LIBSPLASHSCREEN_DIRS += $(JDK_TOPDIR)/src/share/native/sun/awt/image/jpeg
++    LIBJPEG_CFLAGS := -I$(JDK_TOPDIR)/src/share/native/sun/awt/image/jpeg
++  endif
++
+   ifneq ($(OPENJDK_TARGET_OS), macosx)
+     LIBSPLASHSCREEN_DIRS += $(JDK_TOPDIR)/src/$(OPENJDK_TARGET_OS_API_DIR)/native/sun/awt/splashscreen
+   else
+@@ -1268,11 +1291,13 @@ ifndef BUILD_HEADLESS_ONLY
+       EXCLUDE_FILES := imageioJPEG.c jpegdecoder.c pngtest.c, \
+       LANG := C, \
+       OPTIMIZATION := LOW, \
+-      CFLAGS := $(LIBSPLASHSCREEN_CFLAGS) $(CFLAGS_JDKLIB) $(GIFLIB_CFLAGS), \
++      CFLAGS := $(LIBSPLASHSCREEN_CFLAGS) $(CFLAGS_JDKLIB) \
++                $(GIFLIB_CFLAGS) $(LIBJPEG_CFLAGS), \
+       MAPFILE := $(JDK_TOPDIR)/make/mapfiles/libsplashscreen/mapfile-vers, \
+       LDFLAGS := $(LDFLAGS_JDKLIB) \
+           $(call SET_SHARED_LIBRARY_ORIGIN), \
+-      LDFLAGS_SUFFIX := $(LIBSPLASHSCREEN_LDFLAGS_SUFFIX) $(LIBZ) $(GIFLIB_LDFLAGS), \
++      LDFLAGS_SUFFIX := $(LIBSPLASHSCREEN_LDFLAGS_SUFFIX) $(LIBZ) \
++                        $(GIFLIB_LDFLAGS) $(LIBJPEG_LDFLAGS), \
+       LDFLAGS_SUFFIX_solaris := -lc, \
+       VERSIONINFO_RESOURCE := $(JDK_TOPDIR)/src/windows/resource/version.rc, \
+       RC_FLAGS := $(RC_FLAGS) \
+Index: b/jdk/src/share/classes/com/sun/imageio/plugins/jpeg/JPEGImageReader.java
+===================================================================
+--- a/jdk/src/share/classes/com/sun/imageio/plugins/jpeg/JPEGImageReader.java
++++ b/jdk/src/share/classes/com/sun/imageio/plugins/jpeg/JPEGImageReader.java
+@@ -89,7 +89,7 @@ public class JPEGImageReader extends Ima
+         java.security.AccessController.doPrivileged(
+             new java.security.PrivilegedAction<Void>() {
+                 public Void run() {
+-                    System.loadLibrary("jpeg");
++                    System.loadLibrary("javajpeg");
+                     return null;
+                 }
+             });
+Index: b/jdk/src/share/classes/com/sun/imageio/plugins/jpeg/JPEGImageWriter.java
+===================================================================
+--- a/jdk/src/share/classes/com/sun/imageio/plugins/jpeg/JPEGImageWriter.java
++++ b/jdk/src/share/classes/com/sun/imageio/plugins/jpeg/JPEGImageWriter.java
+@@ -179,7 +179,7 @@ public class JPEGImageWriter extends Ima
+         java.security.AccessController.doPrivileged(
+             new java.security.PrivilegedAction<Void>() {
+                 public Void run() {
+-                    System.loadLibrary("jpeg");
++                    System.loadLibrary("javajpeg");
+                     return null;
+                 }
+             });
+Index: b/jdk/src/share/classes/sun/awt/image/JPEGImageDecoder.java
+===================================================================
+--- a/jdk/src/share/classes/sun/awt/image/JPEGImageDecoder.java
++++ b/jdk/src/share/classes/sun/awt/image/JPEGImageDecoder.java
+@@ -56,7 +56,7 @@ public class JPEGImageDecoder extends Im
+         java.security.AccessController.doPrivileged(
+             new java.security.PrivilegedAction<Void>() {
+                 public Void run() {
+-                    System.loadLibrary("jpeg");
++                    System.loadLibrary("javajpeg");
+                     return null;
+                 }
+             });
+Index: b/jdk/src/share/native/sun/awt/image/jpeg/imageioJPEG.c
+===================================================================
+--- a/jdk/src/share/native/sun/awt/image/jpeg/imageioJPEG.c
++++ b/jdk/src/share/native/sun/awt/image/jpeg/imageioJPEG.c
+@@ -51,7 +51,7 @@
+ 
+ /* headers from the JPEG library */
+ #include <jpeglib.h>
+-#include "jerror.h"
++#include <jerror.h>
+ 
+ #undef MAX
+ #define MAX(a,b)        ((a) > (b) ? (a) : (b))

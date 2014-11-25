@@ -1,0 +1,148 @@
+#!/bin/sh
+
+set -e
+
+multiarch=@multiarch@
+priority=@priority@
+basedir=/@basedir@
+mandir=$basedir/jre/man
+srcext=1.gz
+dstext=1.gz
+jre_tools='@jre_hl_tools@'
+
+case "$1" in
+configure)
+    # fail early.  java currently uses tricks to find its own shared
+    # libraries depending on the path of the binary. Will be changed
+    # in OpenJDK7
+    if ! mountpoint -q /proc; then
+	echo >&2 "the java command requires a mounted proc fs (/proc)."
+	exit 1
+    fi
+
+    [ -d /etc/.java ] || mkdir -m 755 /etc/.java
+    [ -d /etc/.java/.systemPrefs ] || mkdir -m 755 /etc/.java/.systemPrefs
+    if [ ! -f /etc/.java/.systemPrefs/.system.lock ]; then
+	touch /etc/.java/.systemPrefs/.system.lock
+	chmod 644 /etc/.java/.systemPrefs/.system.lock
+    fi
+    if [ ! -f /etc/.java/.systemPrefs/.systemRootModFile ]; then
+	touch /etc/.java/.systemPrefs/.systemRootModFile
+	chmod 644 /etc/.java/.systemPrefs/.systemRootModFile
+    fi
+
+    if [ -z "$2" ]; then
+	update_alternatives=y
+    fi
+    if [ -n "$multiarch" ] && [ -n "$2" ]; then
+	for i in $jre_tools; do
+	    if [ -z "$(update-alternatives --list $i 2>/dev/null | grep ^$basedir/)" ]; then
+		update_alternatives=y
+		break
+	    fi
+	done
+    fi
+    if [ "$update_alternatives" != y ] && [ $priority -gt 1060 ]; then
+	for i in $jre_tools; do
+	    oldp=$(update-alternatives --query java | awk -v b=$basedir '/^Alternative:/ && $2~b {p=1} /^Priority:/ && p {print $2; exit}')
+	    if [ -n "$oldp" ] && [ "$oldp" -le 1060 ]; then
+		update_alternatives=y
+		break
+	    fi
+	done
+    fi
+
+    if [ "$update_alternatives" = y ]; then
+    if [ -n "$multiarch" ] && [ "$DPKG_MAINTSCRIPT_ARCH" != $(dpkg --print-architecture) ]; then
+	priority=$(expr $priority - 1)
+    fi
+    for i in $jre_tools; do
+	unset slave1 slave2 || true
+        if [ -e $mandir/man1/$i.$srcext ]; then
+	    slave1="--slave \
+		/usr/share/man/man1/$i.$dstext \
+                $i.$dstext \
+                $mandir/man1/$i.$srcext"
+	fi
+	# disabled
+        if false && [ -e $mandir/ja/man1/$i.$srcext ]; then
+	    slave2="--slave \
+		/usr/share/man/ja/man1/$i.$dstext \
+                ${i}_ja.$dstext \
+                $mandir/ja/man1/$i.$srcext"
+	fi
+        update-alternatives \
+            --install \
+            /usr/bin/$i \
+            $i \
+            $basedir/jre/bin/$i \
+            $priority \
+	    $slave1 $slave2
+    done
+    update-alternatives \
+	--install /usr/bin/jexec jexec $basedir/jre/lib/jexec $priority \
+	--slave \
+	    /usr/share/binfmts/jar \
+	    jexec-binfmt \
+	    $basedir/jre/lib/jar.binfmt
+    fi # update alternatives
+
+    if [ -n "$multiarch" ] && [ -n "$2" ]; then
+	if true; then
+	    :
+	elif dpkg --compare-versions "$2" lt 7~b147-2.0~pre3-3ubuntu2~; then
+	    for d in cmm; do
+		if [ -d $basedir/jre/lib/$d ] && [ ! -h $basedir/jre/lib/$d ]; then
+		    rm -rf $basedir/jre/lib/$d
+		    ln -s ../../../java-6-openjdk-common/jre/lib/$d $basedir/jre/lib/$d
+		fi
+	    done
+	fi
+    fi
+
+    # register binfmt; ignore errors, the alternative may already be
+    # registered by another JRE.
+    if which update-binfmts >/dev/null && [ -r /usr/share/binfmts/jar ]; then
+        update-binfmts --package @basename@ --import jar || true
+    fi
+
+    # activate class data sharing
+    case @archdir@ in i386|sparc)
+	rm -f $basedir/jre/lib/@archdir@/client/classes.jsa
+	log=$(tempfile)
+	if ! $basedir/bin/java -client -Xshare:dump -XX:PermSize=128m > $log; then
+	    cat >&2 $log
+	    rm -f $log
+	    # this may fail on some machines/configurations, just ignore it.
+	    echo >&2 "ignoring dump failure"
+	    #exit 1
+	fi
+	rm -f $log
+    esac
+    case @archdir@ in amd64|i386|sparc)
+	rm -f $basedir/jre/lib/@archdir@/server/classes.jsa
+	log=$(tempfile)
+	if ! $basedir/bin/java -server -Xshare:dump > $log; then
+	    cat >&2 $log
+	    rm -f $log
+	    # this may fail on some machines/configurations, just ignore it.
+	    echo >&2 "ignoring dump failure"
+	    #exit 1
+	fi
+	rm -f $log
+    esac
+
+    if [ -n "$multiarch" ]; then
+	if [ ! -h /@basedir@/jre/lib/zi ] && [ -d /@basedir@/jre/lib/zi ]; then
+	    rm -rf /@basedir@/jre/lib/zi
+	    ln -s ../../../../../share/javazi /@basedir@/jre/lib/zi
+	fi
+    fi
+
+    ;;
+
+esac
+
+#DEBHELPER#
+
+exit 0

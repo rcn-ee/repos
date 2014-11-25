@@ -1,0 +1,27 @@
+#! /bin/sh
+
+set -e
+
+if [ -h /usr/share/doc/@basename@-jre-headless ]; then
+	rm -f /usr/share/doc/@basename@-jre-headless
+fi
+
+multiarch=@multiarch@
+old_basedir=/usr/lib/jvm/java-7-openjdk
+jre_tools='policytool'
+
+case "$1" in
+    upgrade)
+	if [ -n "$multiarch" ] && [ -n "$2" ]; then
+	    for i in $jre_tools; do
+		if [ -n "$(update-alternatives --list $i 2>/dev/null | grep ^$old_basedir/)" ]; then
+		    update-alternatives --remove $i $old_basedir/jre/bin/$i || true
+		fi
+	    done
+	fi
+	;;
+esac
+
+#DEBHELPER#
+
+exit 0

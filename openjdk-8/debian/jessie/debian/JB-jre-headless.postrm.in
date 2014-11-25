@@ -1,0 +1,21 @@
+#!/bin/sh
+
+set -e
+
+multiarch=@multiarch@
+jdirname=@jdirname@
+etcdir=/@etcdir@
+
+case "$1" in
+purge)
+    if [ -z "$jdirname" ] || [ -z "$etcdir" ]; then
+	echo >&2 "$(basename $0): Internal error"
+	exit 1
+    fi
+    # removals of config files in /etc is handled by dpkg
+
+    # XXX should remove /etc/.java ???
+    ;;
+esac
+
+#DEBHELPER#

@@ -1,0 +1,35 @@
+#! /bin/sh
+
+set -e
+
+if [ -h /usr/share/doc/@basename@-jre-headless ]; then
+	rm -f /usr/share/doc/@basename@-jre-headless
+fi
+
+multiarch=@multiarch@
+basedir=/@basedir@
+old_basedir=/usr/lib/jvm/java-7-openjdk
+jre_tools='java keytool pack200 rmid rmiregistry unpack200 orbd servertool tnameserv'
+
+case "$1" in
+    upgrade)
+	if [ -n "$multiarch" ] && [ -n "$2" ]; then
+	    for i in $jre_tools; do
+		if [ -n "$(update-alternatives --list $i 2>/dev/null | grep ^$old_basedir/)" ]; then
+		    update-alternatives --remove $i $old_basedir/jre/bin/$i || true
+		fi
+	    done
+	    if [ -n "$(update-alternatives --list jexec 2>/dev/null | grep ^$old_basedir/)" ]; then
+		update-alternatives --remove jexec $old_basedir/jre/lib/jexec || true
+	    fi
+
+	    if dpkg --compare-versions "$2" lt 7u45-2.4.3-0~; then
+		if [ -h $basedir/jre/lib/cmm ]; then
+		    rm -f $basedir/jre/lib/cmm
+		fi
+	    fi
+	fi
+	;;
+esac
+
+#DEBHELPER#

@@ -1,0 +1,13 @@
+--- src/common/autoconf/toolchain.m4
++++ src/common/autoconf/toolchain.m4
+@@ -542,7 +542,9 @@
+     LDEXE="$CC"
+     LDCXX="$CXX"
+     LDEXECXX="$CXX"
+-    POST_STRIP_CMD="$STRIP -g"
++    if test -z "$POST_STRIP_CMD" ; then
++      POST_STRIP_CMD="$STRIP -g"
++    fi
+ 
+     # Linking is different on MacOSX
+     if test "x$OPENJDK_TARGET_OS" = xmacosx; then

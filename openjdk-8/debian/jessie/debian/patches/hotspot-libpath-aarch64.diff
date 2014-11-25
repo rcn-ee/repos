@@ -1,0 +1,37 @@
+# DP: Set the hotspot default libpath to ignore lib64 and add multiarch
+
+Index: b/hotspot/src/os/linux/vm/os_linux.cpp
+===================================================================
+--- a/hotspot/src/os/linux/vm/os_linux.cpp
++++ b/hotspot/src/os/linux/vm/os_linux.cpp
+@@ -355,10 +355,10 @@
+ //        1: ...
+ //        ...
+ //        7: The default directories, normally /lib and /usr/lib.
+-#if defined(AMD64) || defined(_LP64) && (defined(SPARC) || defined(PPC) || defined(S390)) || defined(BUILTIN_SIM)
+-#define DEFAULT_LIBPATH "/usr/lib64:/lib64:/lib:/usr/lib"
++#ifdef DEB_MULTIARCH
++#define DEFAULT_LIBPATH	"/usr/lib/" DEB_MULTIARCH "/jni" ":/lib/" DEB_MULTIARCH ":/usr/lib/" DEB_MULTIARCH ":/usr/lib/jni:/lib:/usr/lib"
+ #else
+-#define DEFAULT_LIBPATH "/lib:/usr/lib"
++#define DEFAULT_LIBPATH	"/usr/lib/jni:/lib:/usr/lib"
+ #endif
+ 
+ // Base path of extensions installed on the system.
+Index: b/hotspot/make/linux/makefiles/vm.make
+===================================================================
+--- a/hotspot/make/linux/makefiles/vm.make
++++ b/hotspot/make/linux/makefiles/vm.make
+@@ -98,6 +98,12 @@ CXXFLAGS =           \
+   ${HS_LIB_ARCH}     \
+   ${VM_DISTRO}
+ 
++DEB_MULTIARCH := $(shell dpkg-architecture -qDEB_HOST_MULTIARCH 2>/dev/null || true)
++ifneq (,$(DEB_MULTIARCH))
++CPPFLAGS += -DDEB_MULTIARCH="\"$(DEB_MULTIARCH)\""
++CXXFLAGS += -DDEB_MULTIARCH="\"$(DEB_MULTIARCH)\""
++endif
++
+ # This is VERY important! The version define must only be supplied to vm_version.o
+ # If not, ccache will not re-use the cache at all, since the version string might contain
+ # a time and date.

@@ -1,0 +1,823 @@
+--- src.orig/hotspot/src/os/linux/vm/decoder_linux.cpp
++++ src/hotspot/src/os/linux/vm/decoder_linux.cpp
+@@ -22,6 +22,7 @@
+  *
+  */
+ 
++#include "utilities/globalDefinitions.hpp"
+ #include "prims/jvm.h"
+ #include "utilities/decoder_elf.hpp"
+ 
+--- src.orig/hotspot/src/os/linux/vm/attachListener_linux.cpp
++++ src/hotspot/src/os/linux/vm/attachListener_linux.cpp
+@@ -39,6 +39,10 @@
+ #define UNIX_PATH_MAX   sizeof(((struct sockaddr_un *)0)->sun_path)
+ #endif
+ 
++#if defined(__FreeBSD_kernel__)
++#include <sys/ucred.h>
++#endif
++
+ // The attach mechanism on Linux uses a UNIX domain socket. An attach listener
+ // thread is created at startup or is created on-demand via a signal from
+ // the client tool. The attach listener creates a socket and binds it to a file
+@@ -337,16 +341,26 @@
+ 
+     // get the credentials of the peer and check the effective uid/guid
+     // - check with jeff on this.
++#if defined(LOCAL_PEERCRED) /* GNU/kFreeBSD */
++    struct xucred cred_info;
++    socklen_t optlen = sizeof(cred_info);
++    if (::getsockopt(s, SOL_SOCKET, LOCAL_PEERCRED, (void*)&cred_info, &optlen) == -1) {
++#else
+     struct ucred cred_info;
+     socklen_t optlen = sizeof(cred_info);
+     if (::getsockopt(s, SOL_SOCKET, SO_PEERCRED, (void*)&cred_info, &optlen) == -1) {
++#endif
+       ::close(s);
+       continue;
+     }
+     uid_t euid = geteuid();
+     gid_t egid = getegid();
+ 
++#if defined(LOCAL_PEERCRED) /* GNU/kFreeBSD */
++    if (cred_info.cr_uid != euid || cred_info.cr_gid != egid) {
++#else
+     if (cred_info.uid != euid || cred_info.gid != egid) {
++#endif 
+       ::close(s);
+       continue;
+     }
+--- src.orig/hotspot/src/os/linux/vm/jvm_linux.cpp
++++ src/hotspot/src/os/linux/vm/jvm_linux.cpp
+@@ -169,7 +169,9 @@
+   "WINCH",      SIGWINCH,       /* Window size change (4.3 BSD, Sun).  */
+   "POLL",       SIGPOLL,        /* Pollable event occurred (System V).  */
+   "IO",         SIGIO,          /* I/O now possible (4.2 BSD).  */
++#ifdef SIGPWR
+   "PWR",        SIGPWR,         /* Power failure restart (System V).  */
++#endif
+ #ifdef SIGSYS
+   "SYS",        SIGSYS          /* Bad system call. Only on some Linuxen! */
+ #endif
+--- src.orig/hotspot/src/os/linux/vm/os_linux.cpp
++++ src/hotspot/src/os/linux/vm/os_linux.cpp
+@@ -22,6 +22,7 @@
+  *
+  */
+ 
++#include "utilities/globalDefinitions.hpp"
+ // no precompiled headers
+ #include "classfile/classLoader.hpp"
+ #include "classfile/systemDictionary.hpp"
+@@ -91,8 +92,16 @@
+ # include <semaphore.h>
+ # include <fcntl.h>
+ # include <string.h>
++#if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
++# include <sys/param.h>
++# include <sys/sysctl.h>
++#ifndef ETIME
++# define ETIME ETIMEDOUT
++#endif
++#else
+ # include <syscall.h>
+ # include <sys/sysinfo.h>
++#endif
+ # include <gnu/libc-version.h>
+ # include <sys/ipc.h>
+ # include <sys/shm.h>
+@@ -197,11 +206,22 @@
+ }
+ 
+ julong os::Linux::available_memory() {
++#ifndef __FreeBSD_kernel__
+   // values in struct sysinfo are "unsigned long"
+   struct sysinfo si;
+   sysinfo(&si);
+ 
+   return (julong)si.freeram * si.mem_unit;
++#else
++  int mib[2] = {CTL_HW, HW_USERMEM}, mem;
++  size_t len;
++  len = sizeof(mem);
++  if (sysctl(mib, 2, &mem, &len, NULL, 0) == 0) {
++    return (julong) mem;
++  } else {
++    return 0;
++  }
++#endif
+ }
+ 
+ julong os::physical_memory() {
+@@ -239,11 +259,11 @@
+ // i386: 224, ia64: 1105, amd64: 186, sparc 143
+ #ifdef __ia64__
+ #define SYS_gettid 1105
+-#elif __i386__
++#elif defined(__i386__)
+ #define SYS_gettid 224
+-#elif __amd64__
++#elif defined(__amd64__)
+ #define SYS_gettid 186
+-#elif __sparc__
++#elif defined(__sparc__)
+ #define SYS_gettid 143
+ #else
+ #error define gettid for the arch
+@@ -2219,18 +2239,22 @@
+   st->print("Memory:");
+   st->print(" %dk page", os::vm_page_size()>>10);
+ 
++#ifndef __FreeBSD_kernel__
+   // values in struct sysinfo are "unsigned long"
+   struct sysinfo si;
+   sysinfo(&si);
++#endif
+ 
+   st->print(", physical " UINT64_FORMAT "k",
+             os::physical_memory() >> 10);
+   st->print("(" UINT64_FORMAT "k free)",
+             os::available_memory() >> 10);
++#ifndef __FreeBSD_kernel__
+   st->print(", swap " UINT64_FORMAT "k",
+             ((jlong)si.totalswap * si.mem_unit) >> 10);
+   st->print("(" UINT64_FORMAT "k free)",
+             ((jlong)si.freeswap * si.mem_unit) >> 10);
++#endif
+   st->cr();
+ }
+ 
+@@ -6007,6 +6031,7 @@
+ int os::fork_and_exec(char* cmd) {
+   const char * argv[4] = {"sh", "-c", cmd, NULL};
+ 
++#ifdef __linux__
+   // fork() in LinuxThreads/NPTL is not async-safe. It needs to run
+   // pthread_atfork handlers and reset pthread library. All we need is a
+   // separate process to execve. Make a direct syscall to fork process.
+@@ -6014,6 +6039,9 @@
+   // the best...
+   pid_t pid = NOT_IA64(syscall(__NR_fork);)
+               IA64_ONLY(fork();)
++#else
++  pid_t pid = fork();
++#endif
+ 
+   if (pid < 0) {
+     // fork failed
+@@ -6022,6 +6050,7 @@
+   } else if (pid == 0) {
+     // child process
+ 
++#ifdef __linux__
+     // execve() in LinuxThreads will call pthread_kill_other_threads_np()
+     // first to kill every thread on the thread list. Because this list is
+     // not reset by fork() (see notes above), execve() will instead kill
+@@ -6031,6 +6060,9 @@
+     // above.
+     NOT_IA64(syscall(__NR_execve, "/bin/sh", argv, environ);)
+     IA64_ONLY(execve("/bin/sh", (char* const*)argv, environ);)
++#else
++    execve("/bin/sh", (char* const*)argv, environ);
++#endif
+ 
+     // execve failed
+     _exit(-1);
+--- src.orig/hotspot/src/os/linux/vm/osThread_linux.cpp
++++ src/hotspot/src/os/linux/vm/osThread_linux.cpp
+@@ -22,6 +22,7 @@
+  *
+  */
+ 
++#include "utilities/globalDefinitions.hpp"
+ // no precompiled headers
+ #include "runtime/mutex.hpp"
+ #include "runtime/osThread.hpp"
+--- src.orig/hotspot/src/os_cpu/linux_x86/vm/os_linux_x86.cpp
++++ src/hotspot/src/os_cpu/linux_x86/vm/os_linux_x86.cpp
+@@ -22,6 +22,7 @@
+  *
+  */
+ 
++#include "utilities/globalDefinitions.hpp"
+ // no precompiled headers
+ #include "asm/macroAssembler.hpp"
+ #include "classfile/classLoader.hpp"
+@@ -74,6 +75,7 @@
+ # include <ucontext.h>
+ # include <fpu_control.h>
+ 
++#ifdef __linux__
+ #ifdef AMD64
+ #define REG_SP REG_RSP
+ #define REG_PC REG_RIP
+@@ -87,6 +89,54 @@
+ #define SPELL_REG_SP "esp"
+ #define SPELL_REG_FP "ebp"
+ #endif // AMD64
++#endif
++
++#if defined(__FreeBSD_kernel__)
++#define context_trapno uc_mcontext.mc_trapno
++#ifdef AMD64
++#define SPELL_REG_SP "rsp"
++#define SPELL_REG_FP "rbp"
++#define context_sp uc_mcontext.mc_rsp
++#define context_pc uc_mcontext.mc_rip
++#define context_fp uc_mcontext.mc_rbp
++#define context_rip uc_mcontext.mc_rip
++#define context_rsp uc_mcontext.mc_rsp
++#define context_rbp uc_mcontext.mc_rbp
++#define context_flags uc_mcontext.mc_flags
++#define context_err uc_mcontext.mc_err
++#define context_rax uc_mcontext.mc_rax
++#define context_rbx uc_mcontext.mc_rbx
++#define context_rcx uc_mcontext.mc_rcx
++#define context_rdx uc_mcontext.mc_rdx
++#define context_rsi uc_mcontext.mc_rsi
++#define context_rdi uc_mcontext.mc_rdi
++#define context_r8 uc_mcontext.mc_r8
++#define context_r9 uc_mcontext.mc_r9
++#define context_r10 uc_mcontext.mc_r10
++#define context_r11 uc_mcontext.mc_r11
++#define context_r12 uc_mcontext.mc_r12
++#define context_r13 uc_mcontext.mc_r13
++#define context_r14 uc_mcontext.mc_r14
++#define context_r15 uc_mcontext.mc_r15
++#else
++#define SPELL_REG_SP "esp"
++#define SPELL_REG_FP "ebp"
++#define context_sp uc_mcontext.mc_esp
++#define context_pc uc_mcontext.mc_eip
++#define context_fp uc_mcontext.mc_ebp
++#define context_eip uc_mcontext.mc_eip
++#define context_esp uc_mcontext.mc_esp
++#define context_eax uc_mcontext.mc_eax
++#define context_ebx uc_mcontext.mc_ebx
++#define context_ecx uc_mcontext.mc_ecx
++#define context_edx uc_mcontext.mc_edx
++#define context_ebp uc_mcontext.mc_ebp
++#define context_esi uc_mcontext.mc_esi
++#define context_edi uc_mcontext.mc_edi
++#define context_eflags uc_mcontext.mc_eflags
++#define context_trapno uc_mcontext.mc_trapno
++#endif // AMD64
++#endif
+ 
+ PRAGMA_FORMAT_MUTE_WARNINGS_FOR_GCC
+ 
+@@ -118,15 +168,27 @@
+ }
+ 
+ address os::Linux::ucontext_get_pc(ucontext_t * uc) {
++#if defined(__FreeBSD_kernel__)
++  return (address)uc->context_pc;
++#else
+   return (address)uc->uc_mcontext.gregs[REG_PC];
++#endif
+ }
+ 
+ intptr_t* os::Linux::ucontext_get_sp(ucontext_t * uc) {
++#if defined(__FreeBSD_kernel__)
++  return (intptr_t*)uc->context_sp;
++#else
+   return (intptr_t*)uc->uc_mcontext.gregs[REG_SP];
++#endif
+ }
+ 
+ intptr_t* os::Linux::ucontext_get_fp(ucontext_t * uc) {
++#if defined(__FreeBSD_kernel__)
++  return (intptr_t*)uc->context_fp;
++#else
+   return (intptr_t*)uc->uc_mcontext.gregs[REG_FP];
++#endif
+ }
+ 
+ // For Forte Analyzer AsyncGetCallTrace profiling support - thread
+@@ -278,7 +340,11 @@
+     pc = (address) os::Linux::ucontext_get_pc(uc);
+ 
+     if (StubRoutines::is_safefetch_fault(pc)) {
++#if defined(__FreeBSD_kernel__)
++      uc->context_pc = intptr_t(StubRoutines::continuation_for_safefetch_fault(pc));
++#else
+       uc->uc_mcontext.gregs[REG_PC] = intptr_t(StubRoutines::continuation_for_safefetch_fault(pc));
++#endif
+       return 1;
+     }
+ 
+@@ -443,7 +509,11 @@
+   // Furthermore, a false-positive should be harmless.
+   if (UnguardOnExecutionViolation > 0 &&
+       (sig == SIGSEGV || sig == SIGBUS) &&
++#if defined(__FreeBSD_kernel__)
++      uc->context_trapno == trap_page_fault) {
++#else
+       uc->uc_mcontext.gregs[REG_TRAPNO] == trap_page_fault) {
++#endif
+     int page_size = os::vm_page_size();
+     address addr = (address) info->si_addr;
+     address pc = os::Linux::ucontext_get_pc(uc);
+@@ -513,7 +583,11 @@
+     // save all thread context in case we need to restore it
+     if (thread != NULL) thread->set_saved_exception_pc(pc);
+ 
++#if defined(__FreeBSD_kernel__)
++    uc->context_pc = (intptr_t)stub;
++#else
+     uc->uc_mcontext.gregs[REG_PC] = (greg_t)stub;
++#endif
+     return true;
+   }
+ 
+@@ -765,6 +839,7 @@
+ 
+   ucontext_t *uc = (ucontext_t*)context;
+   st->print_cr("Registers:");
++#ifdef __linux__
+ #ifdef AMD64
+   st->print(  "RAX=" INTPTR_FORMAT, uc->uc_mcontext.gregs[REG_RAX]);
+   st->print(", RBX=" INTPTR_FORMAT, uc->uc_mcontext.gregs[REG_RBX]);
+@@ -807,6 +882,48 @@
+   st->print(", EFLAGS=" INTPTR_FORMAT, uc->uc_mcontext.gregs[REG_EFL]);
+   st->print(", CR2=" INTPTR_FORMAT, uc->uc_mcontext.cr2);
+ #endif // AMD64
++#elif defined(__FreeBSD_kernel__)
++#ifdef AMD64
++  st->print(  "RAX=" INTPTR_FORMAT, uc->context_rax);
++  st->print(", RBX=" INTPTR_FORMAT, uc->context_rbx);
++  st->print(", RCX=" INTPTR_FORMAT, uc->context_rcx);
++  st->print(", RDX=" INTPTR_FORMAT, uc->context_rdx);
++  st->cr();
++  st->print(  "RSP=" INTPTR_FORMAT, uc->context_rsp);
++  st->print(", RBP=" INTPTR_FORMAT, uc->context_rbp);
++  st->print(", RSI=" INTPTR_FORMAT, uc->context_rsi);
++  st->print(", RDI=" INTPTR_FORMAT, uc->context_rdi);
++  st->cr();
++  st->print(  "R8 =" INTPTR_FORMAT, uc->context_r8);
++  st->print(", R9 =" INTPTR_FORMAT, uc->context_r9);
++  st->print(", R10=" INTPTR_FORMAT, uc->context_r10);
++  st->print(", R11=" INTPTR_FORMAT, uc->context_r11);
++  st->cr();
++  st->print(  "R12=" INTPTR_FORMAT, uc->context_r12);
++  st->print(", R13=" INTPTR_FORMAT, uc->context_r13);
++  st->print(", R14=" INTPTR_FORMAT, uc->context_r14);
++  st->print(", R15=" INTPTR_FORMAT, uc->context_r15);
++  st->cr();
++  st->print(  "RIP=" INTPTR_FORMAT, uc->context_rip);
++  st->print(", EFLAGS=" INTPTR_FORMAT, uc->context_flags);
++  st->print(", ERR=" INTPTR_FORMAT, uc->context_err);
++  st->cr();
++  st->print("  TRAPNO=" INTPTR_FORMAT, uc->context_trapno);
++#else
++  st->print(  "EAX=" INTPTR_FORMAT, uc->context_eax);
++  st->print(", EBX=" INTPTR_FORMAT, uc->context_ebx);
++  st->print(", ECX=" INTPTR_FORMAT, uc->context_ecx);
++  st->print(", EDX=" INTPTR_FORMAT, uc->context_edx);
++  st->cr();
++  st->print(  "ESP=" INTPTR_FORMAT, uc->context_esp);
++  st->print(", EBP=" INTPTR_FORMAT, uc->context_ebp);
++  st->print(", ESI=" INTPTR_FORMAT, uc->context_esi);
++  st->print(", EDI=" INTPTR_FORMAT, uc->context_edi);
++  st->cr();
++  st->print(  "EIP=" INTPTR_FORMAT, uc->context_eip);
++  st->print(", EFLAGS=" INTPTR_FORMAT, uc->context_eflags);
++#endif // AMD64
++#endif
+   st->cr();
+   st->cr();
+ 
+@@ -837,6 +954,7 @@
+ 
+   // this is only for the "general purpose" registers
+ 
++#ifdef __linux__
+ #ifdef AMD64
+   st->print("RAX="); print_location(st, uc->uc_mcontext.gregs[REG_RAX]);
+   st->print("RBX="); print_location(st, uc->uc_mcontext.gregs[REG_RBX]);
+@@ -864,6 +982,35 @@
+   st->print("ESI="); print_location(st, uc->uc_mcontext.gregs[REG_ESI]);
+   st->print("EDI="); print_location(st, uc->uc_mcontext.gregs[REG_EDI]);
+ #endif // AMD64
++#elif defined(__FreeBSD_kernel__)
++#ifdef AMD64
++  st->print("RAX="); print_location(st, uc->context_rax);
++  st->print("RBX="); print_location(st, uc->context_rbx);
++  st->print("RCX="); print_location(st, uc->context_rcx);
++  st->print("RDX="); print_location(st, uc->context_rdx);
++  st->print("RSP="); print_location(st, uc->context_rsp);
++  st->print("RBP="); print_location(st, uc->context_rbp);
++  st->print("RSI="); print_location(st, uc->context_rsi);
++  st->print("RDI="); print_location(st, uc->context_rdi);
++  st->print("R8 ="); print_location(st, uc->context_r8);
++  st->print("R9 ="); print_location(st, uc->context_r9);
++  st->print("R10="); print_location(st, uc->context_r10);
++  st->print("R11="); print_location(st, uc->context_r11);
++  st->print("R12="); print_location(st, uc->context_r12);
++  st->print("R13="); print_location(st, uc->context_r13);
++  st->print("R14="); print_location(st, uc->context_r14);
++  st->print("R15="); print_location(st, uc->context_r15);
++#else
++  st->print("EAX="); print_location(st, uc->context_eax);
++  st->print("EBX="); print_location(st, uc->context_ebx);
++  st->print("ECX="); print_location(st, uc->context_ecx);
++  st->print("EDX="); print_location(st, uc->context_edx);
++  st->print("ESP="); print_location(st, uc->context_esp);
++  st->print("EBP="); print_location(st, uc->context_ebp);
++  st->print("ESI="); print_location(st, uc->context_esi);
++  st->print("EDI="); print_location(st, uc->context_edi);
++#endif // AMD64
++#endif
+ 
+   st->cr();
+ }
+--- src.orig/hotspot/src/share/vm/memory/allocation.hpp
++++ src/hotspot/src/share/vm/memory/allocation.hpp
+@@ -25,8 +25,8 @@
+ #ifndef SHARE_VM_MEMORY_ALLOCATION_HPP
+ #define SHARE_VM_MEMORY_ALLOCATION_HPP
+ 
+-#include "runtime/globals.hpp"
+ #include "utilities/globalDefinitions.hpp"
++#include "runtime/globals.hpp"
+ #include "utilities/macros.hpp"
+ #ifdef COMPILER1
+ #include "c1/c1_globals.hpp"
+--- src.orig/hotspot/src/share/vm/ci/ciObject.hpp
++++ src/hotspot/src/share/vm/ci/ciObject.hpp
+@@ -25,6 +25,7 @@
+ #ifndef SHARE_VM_CI_CIOBJECT_HPP
+ #define SHARE_VM_CI_CIOBJECT_HPP
+ 
++#include "utilities/globalDefinitions.hpp"
+ #include "ci/ciBaseObject.hpp"
+ #include "ci/ciClassList.hpp"
+ #include "memory/allocation.hpp"
+--- src.orig/hotspot/src/share/vm/interpreter/bytecodeInterpreter.cpp
++++ src/hotspot/src/share/vm/interpreter/bytecodeInterpreter.cpp
+@@ -22,6 +22,7 @@
+  *
+  */
+ 
++#include "utilities/globalDefinitions.hpp"
+ // no precompiled headers
+ #include "classfile/vmSymbols.hpp"
+ #include "gc_interface/collectedHeap.hpp"
+--- src.orig/hotspot/src/share/vm/utilities/globalDefinitions_gcc.hpp
++++ src/hotspot/src/share/vm/utilities/globalDefinitions_gcc.hpp
+@@ -76,7 +76,7 @@
+ # include <sys/procfs.h>
+ # endif
+ 
+-#if defined(LINUX) || defined(_ALLBSD_SOURCE)
++#if defined(LINUX) || defined(_ALLBSD_SOURCE) || defined(__FreeBSD_kernel__)
+ #ifndef __STDC_LIMIT_MACROS
+ #define __STDC_LIMIT_MACROS
+ #endif // __STDC_LIMIT_MACROS
+--- src.orig/hotspot/make/defs.make
++++ src/hotspot/make/defs.make
+@@ -167,9 +167,6 @@
+ # Windows should have OS predefined
+ ifeq ($(OS),)
+   OS   := $(shell uname -s)
+-  ifneq ($(findstring BSD,$(OS)),)
+-    OS=bsd
+-  endif
+   ifeq ($(OS), Darwin)
+     OS=bsd
+   endif
+@@ -195,6 +192,10 @@
+   OSNAME=linux
+ endif
+ 
++ifeq ($(OS), GNU/kFreeBSD)
++  OSNAME=linux
++endif
++
+ # Determinations of default make arguments and platform specific settings
+ MAKE_ARGS=
+ 
+--- src.orig/hotspot/make/linux/Makefile
++++ src/hotspot/make/linux/Makefile
+@@ -232,6 +232,9 @@
+ SUPPORTED_OS_VERSION = 2.4% 2.5% 2.6% 3%
+ OS_VERSION := $(shell uname -r)
+ EMPTY_IF_NOT_SUPPORTED = $(filter $(SUPPORTED_OS_VERSION),$(OS_VERSION))
++ifeq ($(shell uname -s), GNU/kFreeBSD)
++EMPTY_IF_NOT_SUPPORTED = supported
++endif
+ 
+ check_os_version:
+ ifeq ($(DISABLE_HOTSPOT_OS_VERSION_CHECK)$(EMPTY_IF_NOT_SUPPORTED),)
+--- src.orig/hotspot/make/linux/makefiles/defs.make
++++ src/hotspot/make/linux/makefiles/defs.make
+@@ -102,7 +102,7 @@
+ endif
+ 
+ # i686/i586 ie 32-bit x86
+-ifneq (,$(findstring $(ARCH), i686 i586))
++ifneq (,$(filter i686 i386, $(ARCH)))
+   ARCH_DATA_MODEL  = 32
+   PLATFORM         = linux-i586
+   VM_PLATFORM      = linux_i486
+--- src.orig/hotspot/agent/src/os/linux/ps_core.c
++++ src/hotspot/agent/src/os/linux/ps_core.c
+@@ -551,11 +551,16 @@
+       return false;
+ 
+    // copy regs
++#if defined(__FreeBSD_kernel__)
++   memcpy(&newthr->regs, &prstat->pr_reg, sizeof(struct user_regs_struct));
++#else
+    memcpy(&newthr->regs, prstat->pr_reg, sizeof(struct user_regs_struct));
++#endif
+ 
+    if (is_debug()) {
+       print_debug("integer regset\n");
+ #ifdef i386
++#ifdef __linux__
+       // print the regset
+       print_debug("\teax = 0x%x\n", newthr->regs.eax);
+       print_debug("\tebx = 0x%x\n", newthr->regs.ebx);
+@@ -566,9 +571,21 @@
+       print_debug("\tesi = 0x%x\n", newthr->regs.esi);
+       print_debug("\tedi = 0x%x\n", newthr->regs.edi);
+       print_debug("\teip = 0x%x\n", newthr->regs.eip);
++#elif defined(__FreeBSD_kernel__)
++      print_debug("\teax = 0x%x\n", newthr->regs.r_eax);
++      print_debug("\tebx = 0x%x\n", newthr->regs.r_ebx);
++      print_debug("\tecx = 0x%x\n", newthr->regs.r_ecx);
++      print_debug("\tedx = 0x%x\n", newthr->regs.r_edx);
++      print_debug("\tesp = 0x%x\n", newthr->regs.r_esp);
++      print_debug("\tebp = 0x%x\n", newthr->regs.r_ebp);
++      print_debug("\tesi = 0x%x\n", newthr->regs.r_esi);
++      print_debug("\tedi = 0x%x\n", newthr->regs.r_edi);
++      print_debug("\teip = 0x%x\n", newthr->regs.r_eip);
++#endif
+ #endif
+ 
+ #if defined(amd64) || defined(x86_64)
++#ifdef __linux__
+       // print the regset
+       print_debug("\tr15 = 0x%lx\n", newthr->regs.r15);
+       print_debug("\tr14 = 0x%lx\n", newthr->regs.r14);
+@@ -597,6 +614,27 @@
+       print_debug("\tes = 0x%lx\n", newthr->regs.es);
+       print_debug("\tfs = 0x%lx\n", newthr->regs.fs);
+       print_debug("\tgs = 0x%lx\n", newthr->regs.gs);
++#elif defined(__FreeBSD_kernel__)
++      print_debug("\tr15 = 0x%lx\n", newthr->regs.r_r15);
++      print_debug("\tr14 = 0x%lx\n", newthr->regs.r_r14);
++      print_debug("\tr13 = 0x%lx\n", newthr->regs.r_r13);
++      print_debug("\tr12 = 0x%lx\n", newthr->regs.r_r12);
++      print_debug("\trbp = 0x%lx\n", newthr->regs.r_rbp);
++      print_debug("\trbx = 0x%lx\n", newthr->regs.r_rbx);
++      print_debug("\tr11 = 0x%lx\n", newthr->regs.r_r11);
++      print_debug("\tr10 = 0x%lx\n", newthr->regs.r_r10);
++      print_debug("\tr9 = 0x%lx\n", newthr->regs.r_r9);
++      print_debug("\tr8 = 0x%lx\n", newthr->regs.r_r8);
++      print_debug("\trax = 0x%lx\n", newthr->regs.r_rax);
++      print_debug("\trcx = 0x%lx\n", newthr->regs.r_rcx);
++      print_debug("\trdx = 0x%lx\n", newthr->regs.r_rdx);
++      print_debug("\trsi = 0x%lx\n", newthr->regs.r_rsi);
++      print_debug("\trdi = 0x%lx\n", newthr->regs.r_rdi);
++      print_debug("\trip = 0x%lx\n", newthr->regs.r_rip);
++      print_debug("\tcs = 0x%lx\n", newthr->regs.r_cs);
++      print_debug("\trsp = 0x%lx\n", newthr->regs.r_rsp);
++      print_debug("\tss = 0x%lx\n", newthr->regs.r_ss);
++#endif
+ #endif
+    }
+ 
+--- src.orig/hotspot/agent/src/os/linux/ps_proc.c
++++ src/hotspot/agent/src/os/linux/ps_proc.c
+@@ -40,6 +40,22 @@
+ #define __WALL          0x40000000  // Copied from /usr/include/linux/wait.h
+ #endif
+ 
++#ifndef PTRACE_PEEKDATA
++#define PTRACE_PEEKDATA PT_READ_D
++#endif
++
++#ifndef PTRACE_ATTACH
++#define PTRACE_ATTACH PT_ATTACH
++#endif
++
++#ifndef PTRACE_DETACH
++#define PTRACE_DETACH PT_DETACH
++#endif
++
++#ifndef PTRACE_CONT
++#define PTRACE_CONT PT_CONTINUE
++#endif
++
+ // This file has the libproc implementation specific to live process
+ // For core files, refer to ps_core.c
+ 
+@@ -57,7 +73,11 @@
+ // before calling process_read_data.
+ 
+ static bool process_read_data(struct ps_prochandle* ph, uintptr_t addr, char *buf, size_t size) {
++#if defined(__FreeBSD_kernel__)
++  int rslt;
++#else
+   long rslt;
++#endif
+   size_t i, words;
+   uintptr_t end_addr = addr + size;
+   uintptr_t aligned_addr = align(addr, sizeof(long));
+@@ -65,36 +85,62 @@
+   if (aligned_addr != addr) {
+     char *ptr = (char *)&rslt;
+     errno = 0;
++#if defined(__FreeBSD_kernel__)
++    rslt = ptrace(PTRACE_PEEKDATA, ph->pid, (caddr_t) aligned_addr, 0);
++#else
+     rslt = ptrace(PTRACE_PEEKDATA, ph->pid, aligned_addr, 0);
++#endif
+     if (errno) {
+       print_debug("ptrace(PTRACE_PEEKDATA, ..) failed for %d bytes @ %lx\n", size, addr);
+       return false;
+     }
+     for (; aligned_addr != addr; aligned_addr++, ptr++);
++#if defined(__FreeBSD_kernel__)
++    for (; ((intptr_t)aligned_addr % sizeof(int)) && aligned_addr < end_addr;
++#else
+     for (; ((intptr_t)aligned_addr % sizeof(long)) && aligned_addr < end_addr;
++#endif
+         aligned_addr++)
+        *(buf++) = *(ptr++);
+   }
+ 
++#if defined(__FreeBSD_kernel__)
++  words = (end_addr - aligned_addr) / sizeof(int);
++#else
+   words = (end_addr - aligned_addr) / sizeof(long);
++#endif
+ 
+   // assert((intptr_t)aligned_addr % sizeof(long) == 0);
+   for (i = 0; i < words; i++) {
+     errno = 0;
++#if defined(__FreeBSD_kernel__)
++    rslt = ptrace(PTRACE_PEEKDATA, ph->pid, (caddr_t) aligned_addr, 0);
++#else
+     rslt = ptrace(PTRACE_PEEKDATA, ph->pid, aligned_addr, 0);
++#endif
+     if (errno) {
+       print_debug("ptrace(PTRACE_PEEKDATA, ..) failed for %d bytes @ %lx\n", size, addr);
+       return false;
+     }
++#if defined(__FreeBSD_kernel__)
++    *(int *)buf = rslt;
++    buf += sizeof(int);
++    aligned_addr += sizeof(int);
++#else
+     *(long *)buf = rslt;
+     buf += sizeof(long);
+     aligned_addr += sizeof(long);
++#endif
+   }
+ 
+   if (aligned_addr != end_addr) {
+     char *ptr = (char *)&rslt;
+     errno = 0;
++#if defined(__FreeBSD_kernel__)
++    rslt = ptrace(PTRACE_PEEKDATA, ph->pid, (caddr_t) aligned_addr, 0);
++#else
+     rslt = ptrace(PTRACE_PEEKDATA, ph->pid, aligned_addr, 0);
++#endif
+     if (errno) {
+       print_debug("ptrace(PTRACE_PEEKDATA, ..) failed for %d bytes @ %lx\n", size, addr);
+       return false;
+@@ -133,7 +179,11 @@
+ #endif
+ 
+ #ifdef PTRACE_GETREGS_REQ
++#if defined(__FreeBSD_kernel__)
++ if (ptrace_getregs(PTRACE_GETREGS_REQ, pid, (caddr_t) user, 0) < 0) {
++#else
+  if (ptrace_getregs(PTRACE_GETREGS_REQ, pid, user, NULL) < 0) {
++#endif
+    print_debug("ptrace(PTRACE_GETREGS, ...) failed for lwp %d\n", pid);
+    return false;
+  }
+@@ -205,7 +255,11 @@
+ 
+ // attach to a process/thread specified by "pid"
+ static bool ptrace_attach(pid_t pid) {
++#if defined(__FreeBSD_kernel__)
++  if (ptrace(PTRACE_ATTACH, pid, NULL, 0) < 0) {
++#else
+   if (ptrace(PTRACE_ATTACH, pid, NULL, NULL) < 0) {
++#endif
+     print_debug("ptrace(PTRACE_ATTACH, ..) failed for %d\n", pid);
+     return false;
+   } else {
+@@ -299,7 +353,11 @@
+ 
+ // detach a given pid
+ static bool ptrace_detach(pid_t pid) {
++#if defined(__FreeBSD_kernel__)
++  if (pid && ptrace(PTRACE_DETACH, pid, NULL, 0) < 0) {
++#else
+   if (pid && ptrace(PTRACE_DETACH, pid, NULL, NULL) < 0) {
++#endif
+     print_debug("ptrace(PTRACE_DETACH, ..) failed for %d\n", pid);
+     return false;
+   } else {
+--- src.orig/hotspot/agent/src/os/linux/libproc.h
++++ src/hotspot/agent/src/os/linux/libproc.h
+@@ -28,6 +28,10 @@
+ #include <jni.h>
+ #include <unistd.h>
+ #include <stdint.h>
++#if defined(__FreeBSD_kernel__)
++#include <sys/types.h>
++#include <machine/reg.h>
++#endif
+ #include "proc_service.h"
+ 
+ #if defined(arm) || defined(ppc)
+@@ -72,6 +76,10 @@
+ #define user_regs_struct  pt_regs
+ #endif
+ 
++#if defined(__FreeBSD_kernel__)
++#define user_regs_struct reg
++#endif
++
+ // This C bool type must be int for compatibility with Linux calls and
+ // it would be a mistake to equivalence it to C++ bool on many platforms
+ 
+--- src.orig/hotspot/agent/src/os/linux/LinuxDebuggerLocal.c
++++ src/hotspot/agent/src/os/linux/LinuxDebuggerLocal.c
+@@ -364,7 +364,7 @@
+ 
+ #ifdef i386
+ #define REG_INDEX(reg) sun_jvm_hotspot_debugger_x86_X86ThreadContext_##reg
+-
++#ifdef __linux__
+   regs[REG_INDEX(GS)]  = (uintptr_t) gregs.xgs;
+   regs[REG_INDEX(FS)]  = (uintptr_t) gregs.xfs;
+   regs[REG_INDEX(ES)]  = (uintptr_t) gregs.xes;
+@@ -380,12 +380,28 @@
+   regs[REG_INDEX(PC)] = (uintptr_t) gregs.eip;
+   regs[REG_INDEX(CS)]  = (uintptr_t) gregs.xcs;
+   regs[REG_INDEX(SS)]  = (uintptr_t) gregs.xss;
+-
++#elif defined(__FreeBSD_kernel__)
++  regs[REG_INDEX(GS)]  = (uintptr_t) gregs.r_gs;
++  regs[REG_INDEX(FS)]  = (uintptr_t) gregs.r_fs;
++  regs[REG_INDEX(ES)]  = (uintptr_t) gregs.r_es;
++  regs[REG_INDEX(DS)]  = (uintptr_t) gregs.r_ds;
++  regs[REG_INDEX(EDI)] = (uintptr_t) gregs.r_edi;
++  regs[REG_INDEX(ESI)] = (uintptr_t) gregs.r_esi;
++  regs[REG_INDEX(FP)] = (uintptr_t) gregs.r_ebp;
++  regs[REG_INDEX(SP)] = (uintptr_t) gregs.r_isp;
++  regs[REG_INDEX(EBX)] = (uintptr_t) gregs.r_ebx;
++  regs[REG_INDEX(EDX)] = (uintptr_t) gregs.r_edx;
++  regs[REG_INDEX(ECX)] = (uintptr_t) gregs.r_ecx;
++  regs[REG_INDEX(EAX)] = (uintptr_t) gregs.r_eax;
++  regs[REG_INDEX(PC)] = (uintptr_t) gregs.r_eip;
++  regs[REG_INDEX(CS)]  = (uintptr_t) gregs.r_cs;
++  regs[REG_INDEX(SS)]  = (uintptr_t) gregs.r_ss;
++#endif
+ #endif /* i386 */
+ 
+ #ifdef amd64
+ #define REG_INDEX(reg) sun_jvm_hotspot_debugger_amd64_AMD64ThreadContext_##reg
+-
++#ifdef __linux__
+   regs[REG_INDEX(R15)] = gregs.r15;
+   regs[REG_INDEX(R14)] = gregs.r14;
+   regs[REG_INDEX(R13)] = gregs.r13;
+@@ -411,7 +427,27 @@
+   regs[REG_INDEX(ES)] = gregs.es;
+   regs[REG_INDEX(FS)] = gregs.fs;
+   regs[REG_INDEX(GS)] = gregs.gs;
+-
++#elif defined(__FreeBSD_kernel__)
++  regs[REG_INDEX(R15)] = gregs.r_r15;
++  regs[REG_INDEX(R14)] = gregs.r_r14;
++  regs[REG_INDEX(R13)] = gregs.r_r13;
++  regs[REG_INDEX(R12)] = gregs.r_r12;
++  regs[REG_INDEX(RBP)] = gregs.r_rbp;
++  regs[REG_INDEX(RBX)] = gregs.r_rbx;
++  regs[REG_INDEX(R11)] = gregs.r_r11;
++  regs[REG_INDEX(R10)] = gregs.r_r10;
++  regs[REG_INDEX(R9)] = gregs.r_r9;
++  regs[REG_INDEX(R8)] = gregs.r_r8;
++  regs[REG_INDEX(RAX)] = gregs.r_rax;
++  regs[REG_INDEX(RCX)] = gregs.r_rcx;
++  regs[REG_INDEX(RDX)] = gregs.r_rdx;
++  regs[REG_INDEX(RSI)] = gregs.r_rsi;
++  regs[REG_INDEX(RDI)] = gregs.r_rdi;
++  regs[REG_INDEX(RIP)] = gregs.r_rip;
++  regs[REG_INDEX(CS)] = gregs.r_cs;
++  regs[REG_INDEX(RSP)] = gregs.r_rsp;
++  regs[REG_INDEX(SS)] = gregs.r_ss;
++#endif
+ #endif /* amd64 */
+ 
+ #if defined(sparc) || defined(sparcv9)

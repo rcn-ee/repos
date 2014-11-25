@@ -1,0 +1,21 @@
+http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4953367
+
+--- a/jdk/src/solaris/native/java/lang/java_props_md.c
++++ b/jdk/src/solaris/native/java/lang/java_props_md.c
+@@ -612,6 +612,7 @@
+     sprops.path_separator = ":";
+     sprops.line_separator = "\n";
+ 
++#ifndef __linux__
+ #if !defined(_ALLBSD_SOURCE)
+     /* Append CDE message and resource search path to NLSPATH and
+      * XFILESEARCHPATH, in order to pick localized message for
+@@ -620,7 +621,7 @@
+     setPathEnvironment("NLSPATH=/usr/dt/lib/nls/msg/%L/%N.cat");
+     setPathEnvironment("XFILESEARCHPATH=/usr/dt/app-defaults/%L/Dt");
+ #endif
+-
++#endif
+ 
+ #ifdef MACOSX
+     setProxyProperties(&sprops);

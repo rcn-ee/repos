@@ -1,0 +1,104 @@
+# DP: Add support for zero architectures alpha, m68k, mips*, sh4
+
+--- a/common/autoconf/platform.m4
++++ b/common/autoconf/platform.m4
+@@ -42,6 +42,12 @@ AC_DEFUN([PLATFORM_EXTRACT_VARS_FROM_CPU
+       VAR_CPU_BITS=32
+       VAR_CPU_ENDIAN=little
+       ;;
++    alpha*)
++      VAR_CPU=alpha
++      VAR_CPU_ARCH=alpha
++      VAR_CPU_BITS=64
++      VAR_CPU_ENDIAN=little
++      ;;
+     arm*)
+       VAR_CPU=arm
+       VAR_CPU_ARCH=arm
+@@ -54,6 +60,48 @@ AC_DEFUN([PLATFORM_EXTRACT_VARS_FROM_CPU
+       VAR_CPU_BITS=64
+       VAR_CPU_ENDIAN=little
+       ;;
++    m68k)
++      VAR_CPU=m68k
++      VAR_CPU_ARCH=m68k
++      VAR_CPU_BITS=32
++      VAR_CPU_ENDIAN=big
++      ;;
++    mips)
++      VAR_CPU=mips
++      VAR_CPU_ARCH=mips
++      VAR_CPU_BITS=32
++      VAR_CPU_ENDIAN=big
++      ;;
++    mipsel)
++      VAR_CPU=mipsel
++      VAR_CPU_ARCH=mipsel
++      VAR_CPU_BITS=32
++      VAR_CPU_ENDIAN=little
++      ;;
++    mipsn32)
++      VAR_CPU=mipsn32
++      VAR_CPU_ARCH=mipsn32
++      VAR_CPU_BITS=32
++      VAR_CPU_ENDIAN=big
++      ;;
++    mipsn32el)
++      VAR_CPU=mipsn32el
++      VAR_CPU_ARCH=mipsn32el
++      VAR_CPU_BITS=32
++      VAR_CPU_ENDIAN=little
++      ;;
++    mips64)
++      VAR_CPU=mips64
++      VAR_CPU_ARCH=mips64
++      VAR_CPU_BITS=64
++      VAR_CPU_ENDIAN=big
++      ;;
++    mips64el)
++      VAR_CPU=mips64el
++      VAR_CPU_ARCH=mips64el
++      VAR_CPU_BITS=64
++      VAR_CPU_ENDIAN=little
++      ;;
+     powerpc)
+       VAR_CPU=ppc
+       VAR_CPU_ARCH=ppc
+@@ -72,6 +120,12 @@ AC_DEFUN([PLATFORM_EXTRACT_VARS_FROM_CPU
+       VAR_CPU_BITS=64
+       VAR_CPU_ENDIAN=little
+       ;;
++    sh*)
++      VAR_CPU=sh
++      VAR_CPU_ARCH=sh
++      VAR_CPU_BITS=32
++      VAR_CPU_ENDIAN=little
++      ;;
+     s390)
+       VAR_CPU=s390
+       VAR_CPU_ARCH=s390
+@@ -371,8 +425,13 @@ AC_DEFUN([PLATFORM_SETUP_LEGACY_VARS],
+ 
+   # ZERO_ARCHDEF is used to enable architecture-specific code
+   case "${OPENJDK_TARGET_CPU}" in
++    alpha*)  ZERO_ARCHDEF=ALPHA ;;
++    m68k)  ZERO_ARCHDEF=M68K ;;
++    mips|mipsn32|mips64)  ZERO_ARCHDEF=MIPS ;;
++    mipsel|mipsn32el|mips64el)  ZERO_ARCHDEF=MIPSEL ;;
+     ppc*)    ZERO_ARCHDEF=PPC   ;;
+     s390*)   ZERO_ARCHDEF=S390  ;;
++    sh*)   ZERO_ARCHDEF=sh  ;;
+     sparc*)  ZERO_ARCHDEF=SPARC ;;
+     x86_64*) ZERO_ARCHDEF=AMD64 ;;
+     x86)     ZERO_ARCHDEF=IA32  ;;
+--- a/common/autoconf/toolchain.m4
++++ b/common/autoconf/toolchain.m4
+@@ -1166,6 +1166,8 @@
+     *)
+       ZERO_ARCHFLAG="${COMPILER_TARGET_BITS_FLAG}${OPENJDK_TARGET_CPU_BITS}"
+   esac
++  # use the default for the package builds
++  ZERO_ARCHFLAG=""
+   TOOLCHAIN_COMPILER_CHECK_ARGUMENTS([$ZERO_ARCHFLAG], [], [ZERO_ARCHFLAG=""])
+   AC_SUBST(ZERO_ARCHFLAG)
+ 

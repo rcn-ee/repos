@@ -1,0 +1,356 @@
+
+===============================================================================
+CACAO
+===============================================================================
+
+This package was debianized by Stephan Michels <stephan@apache.org> on
+Sat, 12 Nov 2005 22:07:41 +0100.
+
+It was downloaded from http://www.cacaojvm.org/
+
+Copyright Holder: CACAO Project <cacao@cacaojvm.org>
+  Copyright (C) 1996-2008 Verein zur Foerderung der freien virtuellen Maschine CACAO
+  Portions Copyright (C) 1996-2005, 2006, 2007 R. Grafl, A. Krall, C. Kruegel,
+   C. Oates, R. Obermaisser, M. Platter, M. Probst, S. Ring,
+   E. Steiner, C. Thalinger, D. Thuernbeck, P. Tomsich, C. Ullrich,
+   J. Wenninger, Institut f. Computersprachen - TU Wien
+
+License:
+
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+
+
+On Debian systems a full copy of the GNU General Public License, GPL, can be
+found in the file /usr/share/common-licenses/GPL-2.
+
+
+CACAO uses code from other free software projects.  Only code licensed
+under a GPL compatible license can be merged in.  You can find the
+licenses of third party sources in their respective sources.
+
+
+* src/mm/boehm-gc
+
+Merged in the Boehm-Weiser garbage collector from
+http://www.hpl.hp.com/personal/Hans_Boehm/gc/. 
+
+Copyright (c) 1988, 1989 Hans-J. Boehm, Alan J. Demers
+Copyright (c) 1991-1996 by Xerox Corporation.  All rights reserved.
+Copyright (c) 1996-1999 by Silicon Graphics.  All rights reserved.
+Copyright (c) 1999-2003 by Hewlett-Packard Company. All rights reserved.
+Portions Copyright (c) 1999-2001 by Red Hat, Inc. All rights reserved.
+
+The file linux_threads.c is also
+Copyright (c) 1998 by Fergus Henderson.  All rights reserved.
+
+The files Makefile.am, and configure.in are
+Copyright (c) 2001 by Red Hat Inc. All rights reserved.
+
+Several files supporting GNU-style builds are copyrighted by the Free
+Software Foundation, and carry a different license from that given
+below.
+
+THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
+OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
+
+Permission is hereby granted to use or copy this program
+for any purpose,  provided the above notices are retained on all copies.
+Permission to modify the code and to distribute modified code is granted,
+provided the above notices are retained, and a notice that the code was
+modified is included with the above copyright notice.
+
+A few of the files needed to use the GNU-style build procedure come with
+slightly different licenses, though they are all similar in spirit.  A few
+are GPL'ed, but with an exception that should cover all uses in the
+collector.  (If you are concerned about such things, I recommend you look
+at the notice in config.guess or ltmain.sh.)
+
+The files copyrighted by Hewlett-Packard Company have the notice:
+
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+
+* src/fdlibm
+
+fdlimb contains general algorithms useful for runtimes and compilers to
+support strict double and float mathematical operations.
+
+fdlibm files carry the following notices:
+
+  Copyright (c) 1991 by AT&T.
+
+  Permission to use, copy, modify, and distribute this software for any
+  purpose without fee is hereby granted, provided that this entire notice
+  is included in all copies of any software which is or includes a copy
+  or modification of this software and in all copies of the supporting
+  documentation for such software.
+
+  THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED
+  WARRANTY.  IN PARTICULAR, NEITHER THE AUTHOR NOR AT&T MAKES ANY
+  REPRESENTATION OR WARRANTY OF ANY KIND CONCERNING THE MERCHANTABILITY
+  OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
+
+  Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
+
+  Developed at SunPro, a Sun Microsystems, Inc. business.
+  Permission to use, copy, modify, and distribute this
+  software is freely granted, provided that this notice
+  is preserved.
+
+The upstream for fdlibm is libgcj (http://gcc.gnu.org/java/), they sync
+again with the 'real' upstream (http://www.netlib.org/fdlibm/readme).
+
+
+* src/threads/green/{locks.[ch],threadio.[ch],threads.[ch]}
+
+This files are taken from Kaffe.org VM available at
+http://www.kaffe.org/.  Kaffe's license.terms file is located in the
+top directory of the source code.  The current license of Kaffe is the
+same as of CACAO, GPL Version 2.
+
+
+* src/vm/jit/{i386,x86_64}/{dis-asm.h,i386-dis.c}
+
+Print i386 instructions for GDB, the GNU debugger.
+Copyright 1988, 1989, 1991, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
+2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+
+This file is part of GDB.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA.  */
+
+
+* src/vm/jit/{i386,x86_64}/dis-asm.h
+
+Interface between the opcode library and its callers.
+
+Copyright 2001, 2002 Free Software Foundation, Inc.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor,
+Boston, MA  02110-1301 USA
+
+Written by Cygnus Support, 1993.
+
+The opcode library (libopcodes.a) provides instruction decoders for
+a large variety of instruction sets, callable with an identical
+interface, for making instruction-processing programs more independent
+of the instruction set being processed.
+
+
+* src/vm/jit/powerpc/{ppc.h,ppc-dis.c,ppc-opc.c}
+
+Copyright 1994, 1995, 2000, 2001, 2002 Free Software Foundation, Inc.
+Written by Ian Lance Taylor, Cygnus Support
+
+This file is part of GDB, GAS, and the GNU binutils.
+
+GDB, GAS, and the GNU binutils are free software; you can redistribute
+them and/or modify them under the terms of the GNU General Public
+License as published by the Free Software Foundation; either version
+2, or (at your option) any later version.
+
+GDB, GAS, and the GNU binutils are distributed in the hope that they
+will be useful, but WITHOUT ANY WARRANTY; without even the implied
+warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this file; see the file COPYING.  If not, write to the Free
+Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+Boston, MA  02110-1301 USA.
+
+
+* src/lib/classes/*
+
+GNU Classpath is licensed under the terms of the GNU General Public 
+License  with the following clarification and special exception:
+
+   "Linking this library statically or dynamically with other modules 
+  is making a combined work based on this library. Thus, the terms and 
+  conditions of the GNU General Public License cover the whole 
+  combination.
+
+    As a special exception, the copyright holders of this library give 
+  you permission to link this library with independent modules to 
+  produce an executable, regardless of the license terms of these 
+  independent modules, and to copy and distribute the resulting 
+  executable under terms of your choice, provided that you also meet, 
+  for each linked independent module, the terms and conditions of the 
+  license of that module. An independent module is a module which is 
+  not derived from or based on this library. If you modify this library, 
+  you may extend this exception to your version of the library, but you 
+  are not obligated to do so. If you do not wish to do so, delete this 
+  exception statement from your version."
+
+See license.terms for the text of the GNU General Public License.
+
+More information on GNU Classpath is available from 
+http://www.gnu.org/software/classpath/classpath.html.
+
+
+* m4/{iconv.m4,lib-ld.m4,lib-link.m4,lib-prefix.m4}
+
+Copyright (C) 1996-2003 Free Software Foundation, Inc.
+This file is free software, distributed under the terms of the GNU
+General Public License.  As a special exception to the GNU General
+Public License, this file may be distributed as part of a program
+that contains a configuration script generated by Autoconf, under
+the same distribution terms as the rest of that program.
+
+
+* src/toolbox/avl.[ch]
+
+libavl - library for manipulation of binary trees.
+Copyright (C) 1998-2002 Free Software Foundation, Inc.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+02110-1301 USA.
+
+The author may be contacted at <blp@gnu.org> on the Internet, or
+write to Ben Pfaff, Stanford University, Computer Science Dept., 353
+Serra Mall, Stanford CA 94305, USA.
+
+
+* src/vm/unzip.[ch]
+
+Copyright (C) 1998 Gilles Vollant
+
+This unzip package allow extract file from .ZIP file, compatible with PKZip 2.04g
+  WinZip, InfoZip tools and compatible.
+Encryption and multi volume ZipFile (span) are not supported.
+Old compressions used by old PKZip 1.x are not supported
+
+THIS IS AN ALPHA VERSION. AT THIS STAGE OF DEVELOPPEMENT, SOMES API OR STRUCTURE
+CAN CHANGE IN FUTURE VERSION !!
+I WAIT FEEDBACK at mail info@winimage.com
+Visit also http://www.winimage.com/zLibDll/unzip.htm for evolution
+
+Condition of use and distribution are the same than zlib :
+
+This software is provided 'as-is', without any express or implied
+warranty.  In no event will the authors be held liable for any damages
+arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+
+1. The origin of this software must not be misrepresented; you must not
+   claim that you wrote the original software. If you use this software
+   in a product, an acknowledgment in the product documentation would be
+   appreciated but is not required.
+2. Altered source versions must be plainly marked as such, and must not be
+   misrepresented as being the original software.
+3. This notice may not be removed or altered from any source distribution.
+
+
+src/mm/boehm-gc/libatomic_ops-1.2/src/atomic_ops/sysdeps/armcc
+
+ * Copyright (c) 2007 by NEC LE-IT:               All rights reserved.
+ * A transcription of ARMv6 atomic operations for the ARM Realview Toolchain.
+ * This code works with armcc from RVDS 3.1
+ * This is based on work in gcc/arm.h by
+ *   Copyright (c) 1991-1994 by Xerox Corporation.  All rights reserved.
+ *   Copyright (c) 1996-1999 by Silicon Graphics.  All rights reserved.
+ *   Copyright (c) 1999-2003 by Hewlett-Packard Company. All rights reserved.
+ *
+ *
+ *
+ * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
+ * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
+ *
+ * Permission is hereby granted to use or copy this program
+ * for any purpose,  provided the above notices are retained on all copies.
+ * Permission to modify the code and to distribute modified code is granted,
+ * provided the above notices are retained, and a notice that the code was
+ * modified is included with the above copyright notice.
+
+src/mm/boehm-gc/include/private
+
+  Copyright (c) 2004-2005 Andrei Polushin
+
+  Permission is hereby granted, free of charge,  to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction,  including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+contrib/vmlog:
+
+/* Copyright (C) 2006 Edwin Steiner <edwin.steiner@gmx.net> */
+/*               2007 Peter Molnar <peter.molnar@wm.sk>     */
+
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+Some of the build files are
+
+# Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002,
+# 2003, 2004, 2005  Free Software Foundation, Inc.

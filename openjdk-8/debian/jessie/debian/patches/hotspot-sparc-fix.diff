@@ -1,0 +1,23 @@
+# unused patch
+
+Index: b/hotspot/src/os_cpu/linux_sparc/vm/vm_version_linux_sparc.cpp
+===================================================================
+--- a/hotspot/src/os_cpu/linux_sparc/vm/vm_version_linux_sparc.cpp
++++ b/hotspot/src/os_cpu/linux_sparc/vm/vm_version_linux_sparc.cpp
+@@ -28,6 +28,7 @@
+ 
+ static bool detect_niagara() {
+   char cpu[128];
++  char *buf = cpu;
+   bool rv = false;
+ 
+   FILE* fp = fopen("/proc/cpuinfo", "r");
+@@ -36,7 +37,7 @@ static bool detect_niagara() {
+   }
+ 
+   while (!feof(fp)) {
+-    if (fscanf(fp, "cpu\t\t: %100[^\n]", &cpu) == 1) {
++    if (fscanf(fp, "cpu\t\t: %100[^\n]", buf) == 1) {
+       if (strstr(cpu, "Niagara") != NULL) {
+         rv = true;
+       }

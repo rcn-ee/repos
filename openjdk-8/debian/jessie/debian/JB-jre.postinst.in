@@ -1,0 +1,76 @@
+#!/bin/sh
+
+set -e
+
+multiarch=@multiarch@
+priority=@priority@
+basedir=/@basedir@
+mandir=$basedir/jre/man
+srcext=1.gz
+dstext=1.gz
+jre_tools='@jre_tools@'
+
+case "$1" in
+configure)
+    if [ -d /usr/share/doc/@basename@-jre ] && [ ! -h /usr/share/doc/@basename@-jre ]; then
+	rm -rf /usr/share/doc/@basename@-jre
+	ln -sf @basename@-jre-headless /usr/share/doc/@basename@-jre;
+    fi
+
+    if [ -z "$2" ]; then
+	update_alternatives=y
+    fi
+    if [ -n "$multiarch" ] && [ -n "$2" ]; then
+	for i in $jre_tools; do
+	    if [ -z "$(update-alternatives --list $i 2>/dev/null | grep ^$basedir/)" ]; then
+		update_alternatives=y
+		break
+	    fi
+	done
+    fi
+    if [ "$update_alternatives" != y ] && [ $priority -gt 1060 ]; then
+	for i in $jre_tools; do
+	    oldp=$(update-alternatives --query java | awk -v b=$basedir '/^Alternative:/ && $2~b {p=1} /^Priority:/ && p {print $2; exit}')
+	    if [ -n "$oldp" ] && [ "$oldp" -le 1060 ]; then
+		update_alternatives=y
+		break
+	    fi
+	done
+    fi
+
+    if [ "$update_alternatives" = y ]; then
+    if [ -n "$multiarch" ] && [ "$DPKG_MAINTSCRIPT_ARCH" != $(dpkg --print-architecture) ]; then
+	priority=$(expr $priority - 1)
+    fi
+    for i in $jre_tools; do
+	unset slave1 slave2 || true
+        if [ -e $mandir/man1/$i.$srcext ]; then
+	    slave1="--slave \
+		/usr/share/man/man1/$i.$dstext \
+                $i.$dstext \
+                $mandir/man1/$i.$srcext"
+	fi
+	# disabled
+        if false && [ -e $mandir/ja/man1/$i.$srcext ]; then
+	    slave2="--slave \
+		/usr/share/man/ja/man1/$i.$dstext \
+                ${i}_ja.$dstext \
+                $mandir/ja/man1/$i.$srcext"
+	fi
+        update-alternatives \
+            --install \
+            /usr/bin/$i \
+            $i \
+            $basedir/jre/bin/$i \
+            $priority \
+	    $slave1 $slave2
+    done
+    fi # update alternatives
+
+    ;;
+
+esac
+
+#DEBHELPER#
+
+exit 0

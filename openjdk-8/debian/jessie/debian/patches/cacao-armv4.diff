@@ -1,0 +1,100 @@
+Revert the following cacao change, when building for armel/armv4:
+
+# HG changeset patch
+# User Stefan Ring <stefan@complang.tuwien.ac.at>
+# Date 1344071656 -7200
+# Node ID 73ffc3dc8c16664613f878a131ded372b2099191
+# Parent e153dd602364e16b3f2b275d91cc683c4e3df2bb
+arm: Thumb interworking should work on armv5
+* src/vm/jit/arm/asmpart.S: Use Thumb interworking-aware instructions for transfer to C code.
+* src/vm/jit/arm/codegen.c: Likewise, for ICMD_BUILTIN.
+* src/vm/jit/arm/codegen.h: Define macros for BL and BLX instructions.
+
+--- cacao/cacao/src/vm/jit/arm/asmpart.S.orig	2013-01-10 17:45:14.000000000 +0100
++++ cacao/cacao/src/vm/jit/arm/asmpart.S	2013-02-08 17:24:23.744533547 +0100
+@@ -1,6 +1,6 @@
+ /* src/vm/jit/arm/asmpart.S - Java-C interface functions for ARM
+ 
+-   Copyright (C) 1996-2012
++   Copyright (C) 1996-2005, 2006, 2007, 2008
+    CACAOVM - Verein zur Foerderung der freien virtuellen Maschine CACAO
+ 
+    This file is part of CACAO.
+@@ -239,7 +239,7 @@
+ 	stmfd sp!, {lr}                     /* save return address                */
+ 	add   a0, sp, #(1*4)                /* pass java sp                       */
+ 	mov   a1, lr                        /* pass exception address             */
+-	blx   exceptions_asm_new_abstractmethoderror
++	bl    exceptions_asm_new_abstractmethoderror
+ 	ldmfd sp!, {lr}                     /* restore return address             */
+ 
+ 	mov   xptr, res1                    /* get exception pointer              */
+@@ -281,7 +281,7 @@
+ 	swi   __ARM_NR_cacheflush
+ #endif
+ 
+-	bx    lr
++	mov   pc, lr
+ 
+ 
+ /* disable exec-stacks ********************************************************/
+--- cacao/cacao/src/vm/jit/arm/codegen.h.orig	2013-01-10 17:45:14.000000000 +0100
++++ cacao/cacao/src/vm/jit/arm/codegen.h	2013-02-08 17:24:23.744533547 +0100
+@@ -1,6 +1,6 @@
+ /* src/vm/jit/arm/codegen.h - code generation macros and definitions for ARM
+ 
+-   Copyright (C) 1996-2012
++   Copyright (C) 1996-2005, 2006, 2007, 2008, 2010
+    CACAOVM - Verein zur Foerderung der freien virtuellen Maschine CACAO
+ 
+    This file is part of CACAO.
+@@ -215,19 +215,6 @@
+     } while (0)
+ 
+ 
+-/* branch and branch with link X (instruction set exchange)
+-   cond ... conditional execution
+-   L ...... branch with link (L=1)
+-   reg .... register
+-*/
+-
+-#define M_BRAX(cond,L,reg) \
+-    do { \
+-		*((u4 *) cd->mcodeptr) = (((cond) << 28) | (0x12 << 20) | (0xfff << 8) | (L << 5) | (1 << 4) | ((reg) & 0xf)); \
+-		cd->mcodeptr += 4; \
+-    } while (0)
+-
+-
+ /* branch and branch with link: M_BRA
+    cond ... conditional execution
+    L ...... branch with link (L=1)
+@@ -490,9 +477,6 @@
+ #define M_BLO(off)         M_BRA(COND_CC,0,off)
+ #define M_BLS(off)         M_BRA(COND_LS,0,off)
+ 
+-#define M_BX(a)            M_BRAX(COND_AL,0,a)
+-#define M_BLX(a)           M_BRAX(COND_AL,1,a)
+-
+ 
+ /******************************************************************************/
+ /* macros for load and store instructions *************************************/
+--- cacao/cacao/src/vm/jit/arm/codegen.c.orig	2013-01-10 17:45:14.000000000 +0100
++++ cacao/cacao/src/vm/jit/arm/codegen.c	2013-02-08 17:24:23.748533547 +0100
+@@ -1,6 +1,6 @@
+ /* src/vm/jit/arm/codegen.c - machine code generator for Arm
+ 
+-   Copyright (C) 1996-2012
++   Copyright (C) 1996-2011
+    CACAOVM - Verein zur Foerderung der freien virtuellen Maschine CACAO
+ 
+    This file is part of CACAO.
+@@ -1733,7 +1733,8 @@
+ 
+ 			/* generate the actual call */
+ 
+-			M_BLX(REG_PV);
++			M_MOV(REG_LR, REG_PC);
++			M_MOV(REG_PC, REG_PV);
+ 
+ 			break;
+ 

@@ -1,0 +1,78 @@
+Content of source package
+=========================
+"openjdk-8" is a composite source package:
+- Multiple tarballs from each Oracle mercurial repositories :
+  corba / hotspot / jaxp / jaxws / jdk-dfsg / langtools / openjdk
+- Tarball from CacaoVM <http://www.cacaovm.org/>.
+- Tarball from JamVM <http://jamvm.sourceforge.net>.
+- Debian packaging scripts and patches.
+
+Building a new OpenJDK-8 Debian package
+===================================================
+Pre-requisites:
+- Mercurial
+- Bazaar
+ sudo aptitude install mercurial bzr
+
+0) Clone OpenJDK debian packaging:
+ bzr branch lp:~openjdk/openjdk/openjdk7 openjdk7/
+   or update existing repository clone:
+ (cd openjdk7/; bzr pull --remember lp:~openjdk/openjdk/openjdk7)
+
+1) Clone IcedTea-7 HG:
+ hg clone http://icedtea.classpath.org/hg/icedtea7 icedtea-2.1.1/
+   or update existing repository clone:
+ (cd icedtea7/; hg pull -u)
+
+2) Download OpenJDK upstream tarballs and move them to $BUILD/
+ export BUILD=7u3
+ mkdir -p $BUILD/
+ (
+   cd icedtea-2.1.1/
+   sh autogen.sh && ./configure --enable-jamvm --enable-cacao
+   make download
+ )
+ 
+ mv icedtea-2.1.1/*.tar.gz $BUILD/
+ (
+   cd icedtea-2.1.1/
+   make distclean
+ )
+
+3) Remove files with unclear license from jdk.tar.gz:
+ sh openjdk7/generate-dfsg-zip.sh $BUILD/jdk.tar.gz
+ sh openjdk7/generate-dfsg-zip.sh $BUILD/langtools.tar.gz
+
+4) Check tarballs' name and version (for original directory name)
+   in openjdk7/generate-debian-orig.sh and package version in
+   openjdk7/changelog
+
+5) Generate "orig" directory and "orig+debian" directory
+ sh openjdk7/generate-debian-orig.sh
+
+Support for DEB_BUILD_OPTIONS
+=============================
+As described in Debian Policy §4.9.1, current package's debian/rules support
+the standardized environment variable DEB_BUILD_OPTIONS. This variable can
+contain several flags to change how a package is compiled and built.
+
+  * nocheck: don't run mauve and jtreg test suites.
+  * nodocs: pass --disable-docs to IcedTea configure script, which
+            disable Javadoc generation.
+  * nostrip: debugging symbols should not be stripped from the
+             binary during installation
+  * parallel=X: package should be built using up to X parallel processes
+  * nobootstrap: don't use gcj to bootstrap OpenJDK but use existing OpenJDK
+                 installed on current machine.
+  * noaltcacao: don't build alternative CACao VM.
+  * noaltzero: don't build alternative Zero VM.
+  * noaltshark: don't build alternative Shark VM.
+  * noaltjamvm: don't build alternative Jamvm VM.
+
+Sample usage:
+DEB_BUILD_OPTIONS="parallel=5 nocheck" debuild -i"(\.hg|\.bzr)"
+
+ Build with 5 parallel processes and don't run mauve/jtreg test suites.
+
+This also work with cowbuilder/pbuilder:
+DEB_BUILD_OPTIONS="parallel=5 nocheck" pdebuild -i"(\.hg|\.bzr)" --logfile ../build.log --pbuilder cowbuilder
