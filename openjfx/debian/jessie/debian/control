@@ -1,0 +1,92 @@
+Source: openjfx
+Section: java
+Priority: optional
+Maintainer: Debian Java Maintainers <pkg-java-maintainers@lists.alioth.debian.org>
+Uploaders: Emmanuel Bourg <ebourg@apache.org>
+Build-Depends: antlr3,
+               bison,
+               debhelper (>= 9),
+               flex,
+               gperf,
+               gradle,
+               junit4,
+               ksh,
+               libasound2-dev,
+               libavcodec-dev,
+               libavformat-dev,
+               libgl1-mesa-dev,
+               libgstreamer-plugins-base0.10-dev,
+               libgstreamer0.10-dev,
+               libgtk2.0-dev,
+               libjpeg-dev,
+               libpng-dev,
+               libsqlite3-dev,
+               libswt-gtk-3-java,
+               libudev-dev,
+               libwerken.xpath-java,
+               libx11-dev,
+               libxml2-dev,
+               libxslt1-dev,
+               libxt-dev,
+               libxtst-dev,
+               libxxf86vm-dev,
+               openjdk-8-jdk,
+               pkg-config,
+               qt4-default,
+               qt4-qmake,
+               x11proto-core-dev,
+               x11proto-xf86vidmode-dev
+Standards-Version: 3.9.6
+Vcs-Git: git://anonscm.debian.org/pkg-java/openjfx.git
+Vcs-Browser: http://anonscm.debian.org/cgit/pkg-java/openjfx.git
+Homepage: http://openjdk.java.net/projects/openjfx/
+
+Package: openjfx
+Architecture: any
+Depends: libopenjfx-java, openjdk-8-jre, ${misc:Depends}
+Description: JavaFX/OpenJFX 8 - Rich client application platform for Java
+ JavaFX/OpenJFX is a set of graphics and media APIs that enables Java developers
+ to design, create, test, debug, and deploy rich client applications that
+ operate consistently across diverse platforms.
+
+Package: libopenjfx-java
+Architecture: all
+Depends: libopenjfx-jni, ${misc:Depends}
+Description: JavaFX/OpenJFX 8 - Rich client application platform for Java (Java libraries)
+ JavaFX/OpenJFX is a set of graphics and media APIs that enables Java developers
+ to design, create, test, debug, and deploy rich client applications that
+ operate consistently across diverse platforms.
+ .
+ This package contains the Java libraries.
+
+Package: libopenjfx-jni
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: JavaFX/OpenJFX 8 - Rich client application platform for Java (native libraries)
+ JavaFX/OpenJFX is a set of graphics and media APIs that enables Java developers
+ to design, create, test, debug, and deploy rich client applications that
+ operate consistently across diverse platforms.
+ .
+ This package contains the native libraries for libopenjfx-java.
+
+Package: libopenjfx-java-doc
+Architecture: all
+Section: doc
+Depends: ${misc:Depends}
+Suggests: libopenjfx-java
+Description: JavaFX/OpenJFX 8 - Rich client application platform for Java (Javadoc)
+ JavaFX/OpenJFX is a set of graphics and media APIs that enables Java developers
+ to design, create, test, debug, and deploy rich client applications that
+ operate consistently across diverse platforms.
+ .
+ This package contains the API documentation for libopenjfx-java.
+
+Package: openjfx-source
+Architecture: all
+Depends: ${misc:Depends}
+Description: JavaFX/OpenJFX 8 - Rich client application platform for Java (sources)
+ JavaFX/OpenJFX is a set of graphics and media APIs that enables Java developers
+ to design, create, test, debug, and deploy rich client applications that
+ operate consistently across diverse platforms.
+ .
+ This package contains the source archive to be used with an IDE.
