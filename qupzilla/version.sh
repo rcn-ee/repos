@@ -1,6 +1,5 @@
 #!/bin/bash -e
 
-#https://launchpad.net/~nowrep/+archive/ubuntu/qupzilla/+packages
 #https://github.com/QupZilla/qupzilla/commits/v1.8
 
 package_name="qupzilla"
@@ -20,4 +19,4 @@ debian_patch=""
 debian_diff=""
 
 wheezy_version="~bpo70+20141006+1"
-jessie_version="~20141123+1"
+jessie_version="~20141126+1"

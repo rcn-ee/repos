@@ -1,710 +1,157 @@
-qupzilla (1.8.4-git20141122-1~20141123+1) jessie; urgency=low
+qupzilla (1.8.4-git20141122-1~20141126+1) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.net
 
- -- Robert Nelson <robertcnelson@gmail.com>  Sun, 23 Nov 2014 15:35:07 -0600
+ -- Robert Nelson <robertcnelson@gmail.com>  Wed, 26 Nov 2014 09:46:40 -0600
 
-qupzilla (1.8.4-git20141116-1~20141116+1) jessie; urgency=low
+qupzilla (1.8.3.1~dfsg1-3) unstable; urgency=medium
 
-  * Rebuild for repos.rcn-ee.net
+  * removed completely debian/libqupzilla1.install which caused install
+    bugs.
+  * checked that qupzilla could access
+    https://userstyles.org/styles/98527/old-mobile-opennet-ru
+    without any modification. Closes: #752299
 
- -- Robert Nelson <robertcnelson@gmail.com>  Sun, 16 Nov 2014 15:55:00 -0600
+ -- Georges Khaznadar <georgesk@debian.org>  Sun, 02 Nov 2014 16:54:10 +0100
 
-qupzilla (1.8.4-git20141104-1~20141109+1) jessie; urgency=low
+qupzilla (1.8.3.1~dfsg1-2) unstable; urgency=medium
 
-  * Rebuild for repos.rcn-ee.net
+  * modified the installation method for libraries, which are not
+    always in debian/tmp/usr/lib/*/libQupzilla*; for platforms which
+    do not support multi-arch, they are rather in debian/tmp/usr/lib/.
+    This should fix the build issue for many platforms.
 
- -- Robert Nelson <robertcnelson@gmail.com>  Sun, 09 Nov 2014 15:06:23 -0600
+ -- Georges Khaznadar <georgesk@debian.org>  Sat, 01 Nov 2014 11:32:00 +0100
 
-qupzilla (1.8.3-git20141031-1~20141101+1) jessie; urgency=low
+qupzilla (1.8.3.1~dfsg1-1) unstable; urgency=medium
 
-  * Rebuild for repos.rcn-ee.net
+  * created a script debian/get-newest.sh to repackage upstream source:
+    it removes embedded jquery and jquery-ui compressed javascript code;
+    it removes precompiled .qm locale files; this cleanup is made without
+    touching the useful bin/themes directory, which provides the theme for
+    Linux. Closes: #767482
+  * renamed the debian package since upstream files are removed.
+  * fixed d/rules to prevent erasing useful files
+  * modified d/watch to use the script debian/get-newest.sh
 
- -- Robert Nelson <robertcnelson@gmail.com>  Sat, 01 Nov 2014 12:31:16 -0500
+ -- Georges Khaznadar <georgesk@debian.org>  Fri, 31 Oct 2014 20:02:16 +0100
 
-qupzilla (1.8.3-git20141028-1~20141029+1) jessie; urgency=low
+qupzilla (1.8.3-1) unstable; urgency=medium
 
-  * Rebuild for repos.rcn-ee.net
+  * upgraded to the newest upstream version
+  * upgraded Standards-Version to 3.9.6
+  * changed the build-dependencies to build with Qt5
 
- -- Robert Nelson <robertcnelson@gmail.com>  Wed, 29 Oct 2014 08:07:05 -0500
+ -- Georges Khaznadar <georgesk@debian.org>  Tue, 28 Oct 2014 15:46:54 +0100
 
-qupzilla (1.8.3-1~20141024+2) jessie; urgency=low
+qupzilla (1.6.6-2) unstable; urgency=medium
 
-  * Rebuild for repos.rcn-ee.net
+  * added a conflict between libqupzilla1 and qupzilla <= 1.6.6-1; LP: #1368098
+    also, LP: #1327050 which is the same bug as #1368098, with a French locale
+  * checked the dependency on libqt4-sql-sqlite. LP: #1272397
+  * removed the obsoleted build-dependency on hardening-wrapper
 
- -- Robert Nelson <robertcnelson@gmail.com>  Fri, 24 Oct 2014 19:44:45 -0500
+ -- Georges Khaznadar <georgesk@debian.org>  Thu, 11 Sep 2014 17:40:36 +0200
 
-qupzilla (1.8.3-1~20141024+1) jessie; urgency=low
+qupzilla (1.6.6-1) unstable; urgency=medium
 
-  * Rebuild for repos.rcn-ee.net
+  * upgraded to the newest upstream version
+  * documented the removal of embedded javascript libraries in
+    d/README.Debian
+  * added build-dependencies on libjs-jsquery, libjs-jquery-ui as some
+    of their files are embedded in QRC-resources.
 
- -- Robert Nelson <robertcnelson@gmail.com>  Fri, 24 Oct 2014 16:05:44 -0500
+ -- Georges Khaznadar <georgesk@debian.org>  Thu, 22 May 2014 07:15:53 +0200
 
-qupzilla (1.8.3-1~utopic) utopic; urgency=low
+qupzilla (1.6.3-2) unstable; urgency=medium
 
-  * version 1.8.3
-      - fixed: crash when passing messages to running instance
-      - fixed: keyboard text navigation in some custom html code editors
-      - fixed: string for filter third party cookies + changed default to allow
-      - fixed: coloring CSS exception rules in AdBlock subscription tree
-      - fixed: auto-loading saved plugins on startup in portable mode
-      - fixed: text edit shortcuts not working with non-latin keyboard layout
+  * applied Alf Gaida's patch. Closes: #743216
 
-    https://github.com/QupZilla/qupzilla/tree/v1.8.3
+ -- Georges Khaznadar <georgesk@debian.org>  Mon, 31 Mar 2014 23:05:33 +0200
 
- -- David Rosca <nowrep@gmail.com>  Sun, 19 Oct 2014 21:29:32 +0200
+qupzilla (1.6.3-1) unstable; urgency=medium
 
-qupzilla (1.8.2-1~utopic) utopic; urgency=low
+  * upgraded to the newest upstream version
+  * activated KDE_INTEGRATION and added a build-dependency on kdelibs-dev.
+    Closes: #735055
+  * activated GNOME_INTEGRATION
 
-  * version 1.8.2
-      - updated translations
-      - use bigger default font sizes
-      - fixed: profile version check when updating from 1.8.0
+ -- Georges Khaznadar <georgesk@debian.org>  Mon, 24 Feb 2014 13:48:02 +0100
 
-    https://github.com/QupZilla/qupzilla/tree/v1.8.2
+qupzilla (1.6.1-1) unstable; urgency=medium
 
- -- David Rosca <nowrep@gmail.com>  Thu, 09 Oct 2014 11:06:29 +0200
+  * upgraded to the new upstream version
 
-qupzilla (1.8.1-2~utopic) utopic; urgency=low
+ -- Georges Khaznadar <georgesk@debian.org>  Sun, 09 Feb 2014 22:45:57 +0100
 
-  * version 1.8.1
-      - reverted setting DNT header by default
-      - fixed: autofill not working for some frames
-      - fixed: saving speed dial in case of crash
+qupzilla (1.6.0-1) unstable; urgency=medium
 
-    https://github.com/QupZilla/qupzilla/tree/v1.8.1
+  * upgraded to the last upstream version
+  * upgraded Standards-Version to 3.9.5
+  * added a build-dependency on openssl-dev
 
- -- David Rosca <nowrep@gmail.com>  Sun, 05 Oct 2014 21:27:03 +0200
+ -- Georges Khaznadar <georgesk@debian.org>  Sun, 05 Jan 2014 15:15:08 +0100
 
-qupzilla (1.8.0-1~utopic) utopic; urgency=low
+qupzilla (1.4.4-2) unstable; urgency=low
 
-  * version 1.8.0
-      - added support for window.beforeunload event
-      - added support for external.AddSearchProvider js function
-      - added undo/redo actions to context menu in forms
-      - added new theme Breathe
-      - added new commandline option to toggle fullscreen
-      - added new commandline option to enable portable mode
-      - added new context menu action to open links in private window
-      - added new smooth and fully transparent loading animation
-      - added option to disable weak ciphers in SSL Manager
-      - added support for shadow builds with Qt Creator
-      - completely rewritten bookmarks (including multi-level folders support)
-      - location bar completer is now running in separate thread
-      - menus are not closed when opening links with middle mouse button
-      - ctrl+w shortcut no longer closes pinned tab
-      - pinned tabs are now restored everytime, not only when restoring session
-      - enable sending DoNotTrack header by default
-      - full support for search engines that use POST method
-      - Oxygen icon theme is now default fallback icon theme
-      - Qt translations are now loaded from system directories where available
-      - correctly load one-word hosts (eg. localhost or anything other in /etc/hosts)
-      - search engines manager can now be opened from preferences
-      - various tweaks in SpeedDial theme including lower minimal size for dials
-      - various tweaks in Linux theme including support for big fonts in location bar
-      - various fixes for Qt5 including bugs in tab bar
-      - various fixes for RTL languages including rendering of location bar completer
-      - AdBlock: support for exception css rules
-      - AdBlock: improved performance of loading rules
-      - MouseGestures: option to set mouse button for gestures
-      - MouseGestures: support for rocker navigation to go back/forward in history
-      - GreaseMonkey: correctly load scripts in frames
-      - GreaseMonkey: fix rare issue that userscripts won't load on some sites
-      - KWalletPasswords: support for KF5 KWallet
-      - windows: load font.ttf (from current dir, if exists) and set it as default app font
+  * modified the conditional includes in src/main/main.cpp
+    Closes: #721566
 
-    https://github.com/QupZilla/qupzilla/tree/v1.8.0
+ -- Georges Khaznadar <georgesk@debian.org>  Sat, 21 Sep 2013 16:54:50 +0200
 
- -- David Rosca <nowrep@gmail.com>  Fri, 26 Sep 2014 10:52:32 +0200
-
-qupzilla (1.6.6-1~utopic) utopic; urgency=low
-
-  * version 1.6.6
-      - added new AutoScroll plugin
-      - added new F12 shortcut for Web Inspector
-      - fixed: correctly switching between tabbars when closing tabs
-      - fixed: draw tabbar base even when there are no tabs in main tabbar
-      - fixed: position of add tab button when there are no tabs in main tabbar
-      - fixed: setting correct paths for portable mode
-
-    https://github.com/QupZilla/qupzilla/tree/v1.6.6
-
- -- David Rosca <nowrep@gmail.com>  Mon, 12 May 2014 16:10:05 +0200
-
-qupzilla (1.6.5-1~trusty) trusty; urgency=low
-
-  * version 1.6.5
-      - fixed error handling when downloading CA certificates bundle
-      - fixed error handling when downloading AdBlock subscriptions
-      - fixed loading KWalletPasswords plugin
-
-    https://github.com/QupZilla/qupzilla/tree/v1.6.5
-
- -- David Rosca <nowrep@gmail.com>  Fri, 18 Apr 2014 18:44:12 +0200
-
-qupzilla (1.6.4-1~precise) precise; urgency=low
-
-  * version 1.6.4
-      - enabled sending DoNotTrack header by default
-      - updated ca-bundle certificates
-      - use same session files with both Qt4 and Qt5
-      - fixed: Click2Flash playing videos on YouTube with Qt5
-      - fixed: hiding close button on current tab when dragging it with Qt5
-      - fixed: double clicking on scroll buttons in tabbar with Qt5
-      - fixed: text visibility in speeddial inputs with dark themes
-      - fixed: getting tab index with rtl layout
-      - fixed: ctrl+up shortcut in websearchbar correctly select first item
-      - fixed: correctly loading translations of all plugins
-
-    https://github.com/QupZilla/qupzilla/tree/v1.6.4
-
- -- David Rosca <nowrep@gmail.com>  Mon, 14 Apr 2014 12:56:10 +0200
-
-qupzilla (1.6.3-1~precise) precise; urgency=low
-
-  * version 1.6.3
-      - addded new Spanish (Mexico) translation
-      - option to change list of SslV3 forced sites in settings.ini
-      - show error message when downloading AdBlock subscriptions fails
-      - fixed building on FreeBSD, OS/2
-
-    https://github.com/QupZilla/qupzilla/tree/v1.6.3
-
- -- David Rosca <nowrep@gmail.com>  Fri, 14 Feb 2014 14:15:29 +0100
-
-qupzilla (1.6.2-1~saucy) saucy; urgency=low
-
-  * version 1.6.2
-      - workaround for servers not understanding TLSv1 handshake
-      - tabs on top are now enabled by default
-      - restore session after launch is now enabled by default
-      - don't load tabs until selected is now enabled by default
-      - tab previews are now disabled by default
-      - reworked scrolling with wheel in tabbar
-      - Ctrl+W shortcut no longer closes a pinned tab
-      - fixed: setting DuckDuckGo as default search provider
-      - fixed: issues detected by scan.coverity.com
-      - fixed: showing more default search engines with same name
-      - fixed: incorrect exception rules handling in AdBlock
-      - fixed: flickering when removing tabs from tabbar
-      - fixed: flickering when (un)pinning tabs
-      - fixed: flickering when opening new tabs with sites that loads instantly
-      - fixed: drawing correct mouseouver state for tabs
-      - fixed: drawing tabbar correctly with Oxygen style
-      - fixed: drawing list items with Qt5 Fusion style
-      - fixed: tooltips disappearing on (un)pinning tabs
-      - fixed: incorrectly changing current index when closing tabs in inactive tabbar
-      - fixed: incorrectly showing url in locationbar when load request was not accepted
-      - fixed: always add slash '/' between path and filename when downloading files
-      - fixed: cursor jumping at the start in locationbar
-
-    https://github.com/QupZilla/qupzilla/tree/v1.6.2
-
- -- David Rosca <nowrep@gmail.com>  Thu, 13 Feb 2014 20:27:10 +0100
-
-qupzilla (1.6.1.1-2~precise) precise; urgency=low
-
-  * version 1.6.1
-
-    https://github.com/QupZilla/qupzilla/tree/v1.6.1
-
- -- David Rosca <nowrep@gmail.com>  Sun, 26 Jan 2014 21:25:22 +0100
-
-qupzilla (1.6.1-1~precise) precise; urgency=low
-
-  * version 1.6.1
-      - added option to disable inline completion in locationbar
-      - added option to always switch tabs with mouse wheel
-      - added option to toggle fullscreen with commandline option
-      - added undo/redo context menu actions in editable web elements
-      - speedup loading rules from subscriptions in AdBlock dialog
-      - fixed speed dial with disabled javascript
-      - fixed showing tooltips on tabs when tab previews are disabled
-      - fixed search shortcuts longer than one character in locationbar
-      - fixed building issues on OS X and OS/2
-      - fixed disabling tab previews from preferences
-      - fixed building new Gnome/KDE keyring passwords
-      - fixed building StatusBarIcons plugin on Windows
-      - win: add new jumplist option to open private window
-
-    https://github.com/QupZilla/qupzilla/tree/v1.6.1
-
- -- David Rosca <nowrep@gmail.com>  Sun, 26 Jan 2014 20:14:24 +0100
-
-qupzilla (1.6.0-1-1~precise) precise; urgency=low
-
-  * version 1.6
-      - added support for Proxy Auto-Config (PAC)
-      - added option to open another private window from private window
-      - added option to detach tabs from window
-      - added delete action in edit context menu on page
-      - added possibility to remove EasyList from AdBlock
-      - added inline domain completion to urlbar
-      - added KWallet password backend plugin
-      - added Gnome-Keyring password backend plugin
-      - added StatusBar Icons plugin that adds extra icons to statusbar
-      - added support for POST method in search engines manager
-      - added context menu for translating webpage
-      - added possibility to export bookmarks to html file
-      - great performance improvement for matching basic rules in AdBlock
-      - themes can now be loaded from profile directories
-      - pagescreen can now save output into number of formats, including PDF
-      - proxy exceptions now supports wildcards (*, ?)
-      - cancel upload when trying to upload non-readable files
-      - select previous / next engines with ctrl+up/down in websearchbar
-      - ask user first before closing all but the current tab from tabbar
-      - last 2 sessions are now backuped in profile directory
-      - always show tab previews after a small delay
-      - GreaseMonkey: added icon in statusbar
-      - GreaseMonkey: added support for GM_Settings
-      - GreaseMonkey: fixed userscripts when first loading plugin
-      - GreaseMonkey: run userscripts in all frames on page
-      - oxygen: set rounded corners for tooltips
-      - oxygen: workaround for transparent background of tooltips
-      - X11: Set correct WM_CLASS property to windows
-      - fixed: size of preferences dialog on low-res screens
-      - fixed: loading plugins with relative paths in portable build
-      - fixed: displaying a lot of RSS feeds in RSS widget in locationbar
-      - fixed: enabling disabled rules in AdBlock now works everytime
-      - fixed: parsing OpenSearch files with XML declaration
-      - fixed: don't show urls multiple times in url completer
-      - fixed: drag & drop moving folders under bookmarks toolbar
-      - fixed: files with relative paths can now be opened from command line
-      - fixed: issues with overflowing tabs, it is now possible scroll through all tabs
-
-    https://github.com/QupZilla/qupzilla/tree/v1.6.0
-
- -- David Rosca <nowrep@gmail.com>  Wed, 01 Jan 2014 21:53:51 +0100
-
-qupzilla (1.4.40-1~precise) precise; urgency=low
-
-  * version 1.4.4
-      - added ctrl/shift + insert shortcuts to copy/paste in webview
-      - don't try to download empty page
-      - reverted forcing SSLv3 protocol for secured connections
-      - duckduckgo.com is now default search engine
-      - fixed: correct height of icons widget in SiteInfo
-      - fixed: hide tabbar with only one tab option now works in fullscreen
-      - fixed: crash with Oxygen theme when closing windows with tabs on top
-      - fixed: saving IgnoreAllSSLWarnings option from SSLManager
-      - fixed: crash on saving settings with unavailable theme
-      - fixed: Accept-Language header now works with all sites
-      - fixed: using external download manager with use defined location setting
-      - GreaseMonkey: fixed buttons in script list with RTL layout
-      - GreaseMonkey: run userscripts in all frames on page
-      - X11: Set correct WM_CLASS property to windows
-
-    https://github.com/QupZilla/qupzilla/tree/v1.4.4
-
- -- David Rosca <nowrep@gmail.com>  Sun, 01 Sep 2013 13:22:02 +0200
-
-qupzilla (1.4.31-1-1~natty) natty; urgency=low
-
-  * fixed building with Qt 4.7
-
- -- David Rosca <nowrep@gmail.com>  Fri, 10 May 2013 12:44:52 +0200
-
-qupzilla (1.4.30-1~natty) natty; urgency=low
-
-  * version 1.4.2
-      - fixed: crash upon closing private browsing window
-      - fixed: element hiding rules not working when more than 5000 in subscription
-      - fixed: saving some tab icons in session file
-      - fixed: make Acid3 test pass even with AdBlock enabled
-      - mac: attempt to fix slow scrolling on trackpad
-
-    https://github.com/QupZilla/qupzilla/tree/v1.4.3
-
- -- David Rosca <nowrep@gmail.com>  Fri, 10 May 2013 10:30:48 +0200
-
-qupzilla (1.4.21-1~natty) natty; urgency=low
-
-  * uploaded correct 1.4.2 version to PPA
-
- -- David Rosca <nowrep@gmail.com>  Tue, 23 Apr 2013 10:18:47 +0200
-
-qupzilla (1.4.2-1~maverick) maverick; urgency=low
-
-  * version 1.4.2
-      - don't limit speed of loading animation in tabbar
-      - fixed loading HTML5 videos on YouTube
-      - fixed saving cursive font in fonts preferences
-      - fixed translating edit actions in page context menu
-      - fixed connecting to older secured servers by forcing older SSL protocol
-      - fixed installing bash completions to correct folder
-      - fixed deleting lockfile upon closing application
-      - fixed occasional crash when extracting form data from page
-      - fixed crash in akn plugin while closing tab with labels shown
-      - fixed crash on close when tabs on top is enabled with oxygen theme
-      - GreaseMonkey: fixed laoding scripts with last line commented
-      - mac: correctly refreshing state of menus
-      - mac: added dock menu with basic actions
-
-    https://github.com/QupZilla/qupzilla/tree/v1.4.2
-
- -- David Rosca <nowrep@gmail.com>  Mon, 22 Apr 2013 15:34:14 +0200
-
-qupzilla (1.4.1-1~maverick) maverick; urgency=low
-
-  * version 1.4.1
-      - fixed websearchbar not respecting select all on click settings
-      - fixed certificates from custom path disappearing on saving preferences
-      - fixed showing empty back/forward history menu upon restoring session
-      - fixed duplicating current url in history when restoring session
-      - fixed instantly showing popup when clicking on back/forward button
-
-    https://github.com/QupZilla/qupzilla/tree/v1.4.1
-
- -- David Rosca <nowrep@gmail.com>  Sat, 16 Mar 2013 22:36:06 +0100
-
-qupzilla (1.4.0-1~maverick) maverick; urgency=low
-
-  * new version 1.4.0
-      - highlighting host in address in locationbar
-      - can now be compiled using Qt 5
-      - QtWebKit 2.3 new features - caret browsing, animated scrolling
-      - added support for FTP listing files and downloading
-      - added support for saving passwords of multiple users per site
-      - added support for showing tabs on top
-      - added bash autocompletion file
-      - added more actions to super menu, also show menu inside window
-      - possibility to select text on page with Shift+Arrow keys
-      - asking user whether to allow site to use notifications/geolocation
-      - option to set JavaScript privacy permissions
-      - option to specify default search engine used in locationbar
-      - option to disable search suggestions in websearchbar
-      - option to search only whole words in source viewer
-      - option to hide reload/stop buttons in navigationbar
-      - option to disable alt/ctrl + numbers shortcuts
-      - option to switch to tab from locationbar popup completer
-      - option to set where to store network cache
-      - use .qupzilla/tmp instead of /tmp for temporary data
-      - saving passwords should now work for much more sites
-      - don't steal Ctrl+B/U/I shortcuts from page
-      - disabled by default opacity effect on tab previews - see BUILDING
-      - improved showing navigation toolbar in fullscreen
-      - moved config directory into ~/.config/qupzilla
-      - certificates bundle is now only used on windows
-      - reduced memory usage of AdBlock (saves up to 30MB with just EasyList)
-      - greatly improved performance when matching regexp rules in AdBlock
-      - GreaseMonkey: reload script if source file changed on disk
-      - GreaseMonkey: fixed don't loading invalid scripts
-      - fixed opening browser with url with ampersand (%26) as command line argument
-      - fixed scrolling to anchor in background tabs
-      - fixed parsing UTF-8 filenames in Content-Disposition header
-      - fixed crash with context menu in websearchbar and locationbar
-      - fixed loading NYTimes skimmer page
-      - fixed cookie domain handling according to RFC 6265
-      - fixed qvalue format in Accept-Language HTTP header
-      - fixed sorting files case insensitively in file scheme handler
-      - fixed possible crash in saving page screen of a really long page
-      - fixed showing window in fullscreen with XFCE
-      - fixed AdBlock blocking netscape plugin even without Click2Flash
-      - X11: fixed Ctrl+Q shortcut for DEs other than KDE and Gnome
-
-    https://github.com/QupZilla/qupzilla/tree/v1.4.0
-
- -- David Rosca <nowrep@gmail.com>  Mon, 11 Mar 2013 22:39:04 +0100
-
-qupzilla (1.3.5-2~maverick) maverick; urgency=low
-
-  * new version 1.3.5
-      - new packages now for quantal
-      - new Persion translation
-      - option to remove web search bar
-      - warning user when removing page from speed dial
-      - option to align pages to center in speed dial
-      - added shortcut for Clear private data
-      - new options in AdBlock menu to disable it for domain and for single page
-      - added option to disable search suggestions in search bar
-      - added option to choose what to suggest in address bar
-      - Save x as ... actions will always show file dialog
-      - possibility to choose to use external download manager on every download
-      - remember last section in preferences
-      - much more tabs now fits into tabbar without overflowing into tab buttons
-      - smarter address bar completer will show better search results
-      - support for bookmarks manager and sidebar drag&drop managing bookmarks
-      - new User Agent manager lets you set User Agent per site
-      - new restore session page lets you choose which tabs you want to restore
-      - new scheme handler for file protocol allows browsing through directories
-      - new option to show loading progress in address bar
-      - new option to hide close button on tabs
-      - new option to start new instance with --no-remote option
-      - X11: restore windows on correct virtual desktops
-      - MouseGestures: added 2 new gestures for switching tabs
-      - fixed visibility of navigation bar in fullscreen
-      - fixed bad position of add tab button when there is a lot of tabs
-      - fixed gui with RTL languages
-      - fixed issue with infinite opening mailto links
-      - fixed issue with showing warning after creating new profile
-      - fixed clearing highlight when search text not found
-      - fixed closing bookmarks menu when menu toolbar is hidden
-      - fixed occasional crashes when closing tab while it is still loading
-
-    https://github.com/QupZilla/qupzilla/commit/eddc51734a366eae93b91bd359bd0b7b1545eaae
-
- -- David Rosca <nowrep@gmail.com>  Sun, 16 Apr 2012 21:04:12 +0100
-
-qupzilla (1.3.1-1~maverick) maverick; urgency=low
-
-  * new bugfix version 1.3.1
-      - new packages now for quantal
-      - Ctrl+= shortcut for + zoom in webview
-      - Ctrl+Enter shortcut in PIM plugin now also works with enter on numpad
-      - don't append QupZilla string to changed user agent
-      - fixed ' and " chars in speed dial's input fields
-      - fixed zooming with Ctrl+Wheel for some users
-      - fixed issues with cookies filtering
-      - fixed $subdocument matching in AdBlock
-      - fixed $third-party in AdBlock rules when Referer header is empty
-      - fixed issue with notifications settings always reverting to osd notifications
-      - fixed downloading UTF-8 subscriptions in AdBlock (eg. Ru Adlist)
-
-    https://github.com/QupZilla/qupzilla/commit/0a7741cc42a9a582444bc4835a38f17cf30a46f5
-
- -- David Rosca <nowrep@gmail.com>  Thu, 05 Apr 2012 14:31:45 +0100
-
-qupzilla (1.3.0-1~maverick) maverick; urgency=low
-
-  * new version 1.3.0
-      - new Ukrainian translation
-      - new plugins: GreaseMonkey and PIM (Personal Information Manager)
-      - new command line option to open new window with url
-      - can now open .xhtml files from open file dialog
-      - added animated tab previews with option to turn animations off
-      - possibility to change icon of bookmarks
-      - ssl manager now can import own certificate
-      - clear recent history now remembers last checked options
-      - new urlbar completion widget can now show also entries from bookmarks
-      - little changes in speed dial's preferences
-      - support for 3rd party subscriptions in AdBlock
-      - improved performance of AdBlock rules matching
-      - possibility to add subscriptions with loading abp: links
-      - private browsing is now opened in new window and new process
-      - improved AdBlock dialog distinguish rule types with colors
-      - popup windows now have loading animation in urlbar
-      - new gif for loading animation (spinner)
-      - possibility to add RSS feed into external reader
-      - option to specify preferred behaviour when opening new tab
-      - inverting preferred new tab behaviour with shift modifier (eg. shift+middle click on link)
-      - better support for Content-Disposition header (downloads)
-      - Linux: middle clicking on add tab button will open new tab with global mouse selection's contents
-      - Linux: generating backtrace and saving it into file upon application crash
-      - Windows: fixed theme loading delay (showing ugly interface for a second when starting app)
-      - fixed all issues with saving password (i hope so)
-      - fixed saving passwords on some sites (parsing WebKit's data format)
-      - fixed "go to web address" action when newlines were in string
-      - fixed excessive ssl warnings when rejecting untrusted certificate
-      - fixed dragging the whole text from some labels
-      - fixed handling special characters when searching with shortcuts in urlbar
-      - fixed "open external protocol" dialog overflowing out of desktop if url is too long
-      - fixed "hide when there is only one tab" option in preferences
-      - fixed "close other tabs" action in tabbar context menu
-      - fixed rss popup in urlbar overflowing out of desktop if feed's title is too long
-      - fixed animations occasionally stop working without any reason
-
-    https://github.com/QupZilla/qupzilla/commit/625c9a38f36c911d6f51ff4a1b0b4770db4f1fba
-
- -- David Rosca <nowrep@gmail.com>  Thu, 05 Apr 2012 14:31:45 +0100
-
-qupzilla (1.2.0-1~maverick) maverick; urgency=low
-
-  * new version 1.2.0
-      - added Japanese, Romanian, Brazilian Portuguese, Indonesian, Hungarian and Georgian translation
-      - added "Don't load tabs until selected" option when restoring session
-      - added option to separate http and https proxy configuration
-      - added Access Keys Navigation and Mouse Gestures plugin
-      - added option to craete search engine from <input> element on page
-      - added alt+d shortcut for focusing locationbar
-      - added possibility to import bookmarks folder structure on html import
-      - added information about configuration page qupzilla:config
-      - added option to show only icons in bookmarks toolbar
-      - added new page in site info: databases
-      - support for UTF-8 filenames in Content-Disposition header (downloads)
-      - support for whitelisting/blacklisting cookies
-      - improved source viewer, it now shows line numbers
-      - improved dialogs in Speed Dial
-      - showing build configuration in qupzilla:config
-      - sending referer header when opening new tab from webview
-      - improved Save Page Screen feature
-      - tabbar now accept drops
-      - statusbar message overlay aslo in popup window
-      - improved appaerance of plugin list in preferences
-      - fixed text in locationbar on https sites when using dark theme
-      - fixed not saving cookies on crash
-      - fixed option not to send Referer header to servers
-      - fixed showing plugin icons when plugin is not loaded
-      - fixed dark color of text in locationbar when using dark theme
-      - fixed garbled rendering of desktop notifications
-      - fixed toggling WebInspector
-      - fixed bad behaviour of QWebPage on leaveEvent
-      - fixed deleting history entries in history manager
-      - fixed showing bad total + downloaded size when starting download
-
-    https://github.com/nowrep/QupZilla/commit/ecec41d6471408c6d4e5de4e07fa167bc38103dc
-
- -- David Rosca <nowrep@gmail.com>  Thu, 05 Apr 2012 14:31:45 +0100
-
-qupzilla (1.1.8~maverick) maverick; urgency=low
-
-  * new version 1.1.8
-      - added Swedish, Serbian and Traditional Chinese translation
-      - added option to set Minimum font size in web pages
-      - added option to edit bookmark from bookmarks toolbar context menu
-      - added option to enable/disable HTML5 local storage (and to clear it)
-      - added option not to send Referer header to servers
-      - added option to use external download manager
-      - added option to add/remove page in speed dial from bookmark star icon
-      - added option to import/export passwords into xml file
-      - added option to change user agent
-      - added global shortcuts for loading sites in speed dial (Ctrl+1,2,...9)
-      - added global shortcuts for switch to tabs (Alt+1,2,3...9)
-      - added possibility to create new rss feeds in rss manager
-      - added alt+left/right click shortcuts to navigate in page history
-      - restoring / saving pinned tabs only on first window
-      - Paste & Go option in locationbar and websearchbar
-      - support for JavaScript Popup windows
-      - improved History menu -> added Most visited menu here
-      - don't saving icons in private mode
-      - improved and refactored context menu on page
-      - little improvements in speed dial
-      - using global QSettings object, should save some writed to disk
-      - remember last folder when saving new bookmarks
-      - disabling adblock on local schemes
-      - showing size of file going to be downloaded
-      - improved browser responsibility when loading a lot of cookies/history
-      - improved Speed Dial:
-         * possibility to change background in Speed Dial
-         * possibility to change number of dials in row
-         * possibility to change maximum number of dials in a row
-      - using QImages to store icons in database now - older icons won't work!
-      - fixed showing file type when download file
-      - fixed saving usernames with spaces in password manager
-      - fixed loading of some rss feeds
-      - fixed loading incomplete urls in speed dial
-      - fixed all crashes/issues with web inspector
-      - fixed memory leak when canceling download
-      - fixed open new tab after active option
-      - fixed saving of sidebar width
-      - fixed occasional fails to restore session
-      - fixed occasional crash when closing tabs/windows
-      - fixed wrong tab focus order
-      - fixed loss of speed dial settings
-      - fixed cancelled downloads now no longer leak memory
-      - fixed showing of "Are you sure to close x tabs?" question according to your preferences
-      - fixed searching strings with special characters
-      - fixed sending report in Report Bug page
-
-    https://github.com/nowrep/QupZilla/commit/6bb292efecf62f3de16c4c25725a7f2ed5804da6
-
- -- David Rosca <nowrep@gmail.com>  Tue, 14 Feb 2012 15:48:12 +0100
-
-qupzilla (1.1.5~precise) precise; urgency=low
-
-  * new version 1.1.5
-      - added Portuguese translation
-      - added French translation
-      - added Greek translation
-      - support for loading long locale named qt translations, allowing multiple translations for
-        one language (more dialects)
-      - support for printing page through javascript window.print()
-      - context menu in webview now handles also frames
-      - using own CA certificates database instead of system one (+ automatic updates)
-      - improved commandline options, possibility to use multiple options at once
-      - hiding new tab while moving tabs
-      - new project domain qupzilla.com
-      - using bigger icons in Linux default theme
-      - opens all bookmarks from folder on middle click
-      - Ctrl+Enter in locationbar now appends .com & start loading
-      - opening links in new tab now opens new tab next to current tab
-      - drag&drop site icon on bookmarks toolbar creates bookmark
-      - improved performance of deleting history entries -> moved into separate thread
-      - fixed loading of local files from menu file -> open file...
-      - fixed showing rss feeds without title
-      - fixed searching on page when highlight is enabled + added shortcuts
-      - fixed Click2Flash plugin and enables it by default again
-      - fixed crash when closing WebInspector with QtWebKit 2.2
-      - fixed crash in Click2Flash plugin when element is not found
-      - fixed "hide tabs when there is only one tab" option
-      - fixed cookies loss when closing browser with private browsing
-      - fixed overflowing bookmarks toolbar when there is a lot of bookmarks
-      - fixed going to history items in history back/forward menu in new tab
-      - fixed showing custom rules in AdBlock
-      - fixed problem with downloading with right click -> download link
-      - fixed suggestions for google and youtube
-
-     https://github.com/nowrep/QupZilla/commit/43a029576b8f547501b457212fa9c1e9bd1be11b
-
- -- David Rosca <nowrep@gmail.com>  Sat, 07 Dec 2011 12:52:26 +0100
-
-qupzilla (1.1.2~oneiric) oneiric; urgency=low
-
-  * should fix problems with "no candidate for qupzilla package"
-
- -- David Rosca <nowrep@gmail.com>  Thu, 22 Dec 2011 17:27:57 +0100
-
-qupzilla (1.1.1~maverick) maverick; urgency=low
-
-  * quick fix release:
-      - fixed crash when closing tab with javascript dialog opened
-      - fixed setting speed dial as default url on opening new tab
-      - added Polish translation to desktop launcher
-
- -- David Rosca <nowrep@gmail.com>  Wed, 14 Dec 2011 18:15:57 +0100
-
-qupzilla (1.1.0~maverick) maverick; urgency=low
-
-  * commit 41b5eeb5572f0554e4096b01ad7ad29439569a92
-     - new version: 1.1.0
-     - showing broken page image on bad links in speed dial
-     - click on arrow icon in locationbar now shows 10 most visited pages
-     - restoring closed tabs now remember its position in tabbar
-     - possibility to middle (or ctrl) click on history and bookmakrs menu everywhere
-     - showing yellow locationbar background on secured page with default linux theme
-     - fixed crash when closing tabs with active javascript dialogs
-     - multiple sizes for desktop icon
-
-    https://github.com/nowrep/QupZilla/commit/41b5eeb5572f0554e4096b01ad7ad29439569a92
-
- -- David Rosca <nowrep@gmail.com>  Wed, 14 Dec 2011 18:15:57 +0100
-
-qupzilla (1.0.9.3~maverick) maverick; urgency=low
-
-  * commit 7fa8c1f50c24821cba208c69ec1d72a24179a046
-     - bookmarks toolbar will be shown in bookmarks menu only when bookmarks toolbar
-       is visible
-     - fixed showing of close button on first pinned tab on startup
-     - updated german + dutch + spanish translation
-     - fixed loading animation on first speed dial tab
-     - fixed occasional crash in history manager
-     - preferences are now shown under Edit menu
-
-    https://github.com/nowrep/QupZilla/commit/7fa8c1f50c24821cba208c69ec1d72a24179a046
-
- -- David Rosca <nowrep@gmail.com>  Thu, 08 Dec 2011 16:02:57 +0100
-
-qupzilla (1.0.9.2~maverick) maverick; urgency=low
-
-  * commit a765d3966427fcf58f420e09814f290a9b757bb6
-     - fixed crash in web inspector
-     - fixed loading of user stylesheets
-     - private browsing dialog will only show for the first time
-     - fixed site icon for qupzilla: pages
-
-    https://github.com/nowrep/QupZilla/commit/a765d3966427fcf58f420e09814f290a9b757bb6
-
- -- David Rosca <nowrep@gmail.com>  Thu, 08 Dec 2011 16:02:57 +0100
-
-qupzilla (1.0.9.1-1) oneiric; urgency=low
-
-  * commmit 334571964ed25891cc6af240bac764b2c148bb61
-
-    https://github.com/nowrep/QupZilla/commit/334571964ed25891cc6af240bac764b2c148bb61
-
- -- David Rosca <nowrep@gmail.com>  Tue, 06 Dec 2011 20:39:52 +0100
-
-qupzilla (1.0.9-1) oneiric; urgency=low
-
-  * Initial PPA release
-
- -- David Rosca <nowrep@gmail.com>  Mon, 05 Dec 2011 17:37:52 +0100
+qupzilla (1.4.4-1) unstable; urgency=low
+
+  * changed the conditional includes in src/main/main.cpp to take in
+    account kfreebsd* architectures. Closes: #721566
+
+ -- Georges Khaznadar <georgesk@debian.org>  Sat, 21 Sep 2013 15:54:01 +0200
+
+qupzilla (1.4.4-1) unstable; urgency=low
+
+  * upgraded to the newest upstream version
+  * Previous changes should ... Closes: #721566
+
+ -- Georges Khaznadar <georgesk@debian.org>  Sun, 15 Sep 2013 12:52:41 +0200
+
+qupzilla (1.4.3-5) unstable; urgency=low
+
+  * modified main.cpp to get rid of the stdio-related sytaxes.
+
+ -- Georges Khaznadar <georgesk@debian.org>  Sun, 15 Sep 2013 12:41:43 +0200
+
+qupzilla (1.4.3-4) unstable; urgency=low
+
+  * added "#include <stdio>" in main.cpp to fix bugs with some platforms
+
+ -- Georges Khaznadar <georgesk@debian.org>  Thu, 12 Sep 2013 00:01:51 +0200
+
+qupzilla (1.4.3-3) unstable; urgency=low
+
+  * applied changes to comply with wiki.debian.org/Multiarch/Implementation
+    and wiki.debian.org/QtMultiarchTransition
+
+ -- Georges Khaznadar <georgesk@debian.org>  Sun, 01 Sep 2013 18:35:47 +0200
+
+qupzilla (1.4.3-2) unstable; urgency=low
+
+  * added a dependency on libqt4-sql-sqlite. Closes: #715444
+  * applied Ansgar Burchard's suggestions (thanks!):
+    - added header files into the library-dev's package;
+    - changed the section of the library package to libs.
+
+ -- Georges Khaznadar <georgesk@debian.org>  Sat, 13 Jul 2013 16:20:51 +0200
+
+qupzilla (1.4.3-1) unstable; urgency=low
+
+  * upgraded to the latest upstream release
+  * modified some debian/*.install files, added a clause
+    Predepends: multiarch-support to take in account multiarch
+  * enabled again the generation of libdev package
+
+ -- Georges Khaznadar <georgesk@debian.org>  Sun, 30 Jun 2013 23:31:40 +0200
+
+qupzilla (1.4.1-1) unstable; urgency=low
+
+  * Initial release (Closes: #705972)
+
+ -- Georges Khaznadar <georgesk@debian.org>  Mon, 22 Apr 2013 12:22:00 +0200
