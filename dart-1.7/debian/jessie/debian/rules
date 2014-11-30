@@ -1,6 +1,8 @@
 #!/usr/bin/make -f
 export DH_VERBOSE = 1
 
+dart_version="1.7"
+
 # Some variables:
 DEB_HOST_ARCH_OS  ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
 DEB_HOST_ARCH_CPU ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_CPU)
@@ -68,7 +70,7 @@ override_dh_shlibdeps:
 
 override_dh_auto_install:
 	mkdir -p debian/tmp/out
-	mv dart/out/$(BUILD_TYPE)/dart dart/out/$(BUILD_TYPE)/dart-1.7
-	cp -vR dart/out/$(BUILD_TYPE)/dart-1.7 debian/tmp/out
+	mv dart/out/$(BUILD_TYPE)/dart dart/out/$(BUILD_TYPE)/dart-${dart_version}
+	cp -vR dart/out/$(BUILD_TYPE)/dart-${dart_version} debian/tmp/out
 	dh_install
 	dh_link
