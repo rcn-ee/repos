@@ -43,3 +43,10 @@ if [ -d debian/${dist}/ ] ; then
 	run
 fi
 
+dist="trusty"
+if [ -d ubuntu/${dist}/ ] ; then
+        deb_arch=armhf
+        rcn_ee_version="${trusty_version}"
+        run
+fi
+
