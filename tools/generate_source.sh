@@ -3,7 +3,11 @@
 . version.sh
 
 if [ ! "x${git_repo}" = "x" ] ; then
-	git clone ${git_repo} ignore
+	if [ -f ./git/.git/config ] ; then
+		git clone --reference ./git/ ${git_repo} ignore
+	else
+		git clone ${git_repo} ignore
+	fi
 	if [ -f ./ignore/.git/config ] ; then
 		cd ./ignore/
 		git archive --format=tar --prefix=${package_name}_${package_version}/ ${git_sha} | xz > ../${package_name}_${package_version}.orig.tar.xz
