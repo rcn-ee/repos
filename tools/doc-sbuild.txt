@@ -1,8 +1,7 @@
 #make changes:
 sudo sbuild-shell source:wheezy-armhf-sbuild
-
 sudo sbuild-shell source:jessie-armhf-sbuild
-
+sudo sbuild-shell source:trusty-armhf-sbuild
 
 #add repos.rcn-ee.net key:
 
@@ -21,6 +20,12 @@ apt-get remove -y ca-certificates libffi6 libgnutls-deb0-28 libhogweed2 libidn11
 
 echo "deb http://apt-proxy:3142//repos.rcn-ee.net/debian jessie main" >> /etc/apt/sources.list
 echo "deb-src http://apt-proxy:3142//repos.rcn-ee.net/debian jessie main" >> /etc/apt/sources.list
+
+#Trusty:
+apt-get remove -y ca-certificates libidn11 libssl1.0.0 openssl wget --purge
+
+echo "deb http://apt-proxy:3142//repos.rcn-ee.net/ubuntu trusty main" >> /etc/apt/sources.list
+echo "deb-src http://apt-proxy:3142//repos.rcn-ee.net/ubuntu trusty main" >> /etc/apt/sources.list
 
 apt-get update
 apt-get clean
