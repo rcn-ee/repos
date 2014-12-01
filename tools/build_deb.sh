@@ -5,19 +5,19 @@
 localdir="/mnt/farm"
 
 run () {
-	out_dir="${localdir}/outgoing/${dist}/${deb_arch}/${debian_pkg_name}_${debian_version}"
-	if [ -f /var/lib/sbuild/${dist}-${deb_arch}.tar.gz ] ; then
-		if [ -d ./${dist} ] ; then
-			rm -rf ./${dist}/
+	out_dir="${localdir}/outgoing/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}"
+	if [ -f /var/lib/sbuild/${suite}-${deb_arch}.tar.gz ] ; then
+		if [ -d ./${suite} ] ; then
+			rm -rf ./${suite}/
 		fi
 
-		mkdir ./${dist}
-		cd ./${dist}
+		mkdir ./${suite}
+		cd ./${suite}
 
-		if [ -f ${localdir}/incoming/${dist}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.dsc ] ; then
-			sbuild --arch=${deb_arch} -A -s --force-orig-source -d ${dist} http://httphost/farm/incoming/${dist}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.dsc
-		elif [ -f ${localdir}/incoming/${dist}/${package_name}_${package_version}${rcn_ee_version}.dsc ] ; then
-			sbuild --arch=${deb_arch} -A -s --force-orig-source -d ${dist} http://httphost/farm/incoming/${dist}/${package_name}_${package_version}${rcn_ee_version}.dsc
+		if [ -f ${localdir}/incoming/${suite}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.dsc ] ; then
+			sbuild --arch=${deb_arch} -A -s --force-orig-source -d ${suite} http://httphost/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.dsc
+		elif [ -f ${localdir}/incoming/${suite}/${package_name}_${package_version}${rcn_ee_version}.dsc ] ; then
+			sbuild --arch=${deb_arch} -A -s --force-orig-source -d ${suite} http://httphost/farm/incoming/${suite}/${package_name}_${package_version}${rcn_ee_version}.dsc
 		fi
 
 		if [ -f ${debian_pkg_name}_${debian_version}${rcn_ee_version}_${deb_arch}.changes ] ; then
@@ -47,22 +47,25 @@ run () {
 	fi
 }
 
-dist="wheezy"
-if [ -d debian/${dist}/ ] ; then
+dist="debian"
+suite="wheezy"
+if [ -d ${dist}/${suite}/ ] ; then
 	deb_arch="armhf"
 	rcn_ee_version="${wheezy_version}"
 	run
 fi
 
-dist="jessie"
-if [ -d debian/${dist}/ ] ; then
+dist="debian"
+suite="jessie"
+if [ -d ${dist}/${suite}/ ] ; then
 	deb_arch="armhf"
 	rcn_ee_version="${jessie_version}"
 	run
 fi
 
-dist="trusty"
-if [ -d ubuntu/${dist}/ ] ; then
+dist="ubuntu"
+suite="trusty"
+if [ -d ${dist}/${suite}/ ] ; then
 	deb_arch="armhf"
 	rcn_ee_version="${trusty_version}"
 	run
