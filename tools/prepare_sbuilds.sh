@@ -8,7 +8,7 @@ ubuntu_server="ports.ubuntu.com"
 
 setup_update_sbuild () {
 	if [ ! -f /var/lib/sbuild/${dist}-${arch}.tar.gz ] ; then
-		sudo sbuild-createchroot --arch=${arch} --make-sbuild-tarball=/var/lib/sbuild/${dist}-${arch}.tar.gz ${dist} `mktemp -d` ${mirror}
+		sudo sbuild-createchroot ${options} --arch=${arch} --make-sbuild-tarball=/var/lib/sbuild/${dist}-${arch}.tar.gz ${dist} `mktemp -d` ${mirror}
 	else
 		sudo chown -R root:root /var/lib/sbuild/${dist}-${arch}.tar.gz
 		sudo sbuild-update -udcar ${dist}-${arch}-sbuild
@@ -22,14 +22,17 @@ echo "\$distribution = 'jessie';" >> ~/.sbuildrc
 mirror="http://${proxy}${debian_server}"
 #dist="wheezy"
 #arch="armhf"
+options=""
 #setup_update_sbuild
 
 #dist="jessie"
 #arch="armhf"
+options=""
 #setup_update_sbuild
 
 mirror="http://${proxy}${ubuntu_server}"
 dist="trusty"
 arch="armhf"
+options="--exclude=debfoster"
 setup_update_sbuild
 
