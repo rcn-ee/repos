@@ -57,6 +57,10 @@ generate_dsc () {
 		cp -rv ${DIR}/debian/${dist}/* ./
 	fi
 
+	if [ -d ${DIR}/ubuntu/${dist}/ ] ; then
+		cp -rv ${DIR}/ubuntu/${dist}/* ./
+	fi
+
 	debuild -us -uc -S
 
 	cd ${DIR}/
@@ -69,6 +73,11 @@ fi
 
 dist="jessie"
 if [ -d debian/${dist}/ ] ; then
+	generate_dsc
+fi
+
+dist="trusty"
+if [ -d ubuntu/${dist}/ ] ; then
 	generate_dsc
 fi
 
