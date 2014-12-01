@@ -3,7 +3,6 @@
 . version.sh
 
 base="/var/www/html/repos.rcn-ee.net/"
-repo="${base}debian/"
 outgoing="/var/www/html/farm/outgoing"
 
 run () {
@@ -31,6 +30,7 @@ run () {
 
 dist="wheezy"
 if [ -d debian/${dist}/ ] ; then
+	repo="${base}debian/"
 	deb_arch=armhf
 	rcn_ee_version="${wheezy_version}"
 	run
@@ -38,6 +38,7 @@ fi
 
 dist="jessie"
 if [ -d debian/${dist}/ ] ; then
+	repo="${base}debian/"
 	deb_arch=armhf
 	rcn_ee_version="${jessie_version}"
 	run
@@ -45,6 +46,7 @@ fi
 
 dist="trusty"
 if [ -d ubuntu/${dist}/ ] ; then
+	repo="${base}ubuntu/"
         deb_arch=armhf
         rcn_ee_version="${trusty_version}"
         run
