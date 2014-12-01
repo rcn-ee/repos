@@ -37,12 +37,12 @@ setup_repo () {
 
 dist="debian"
 if [ -f ${apache_dir}/${dist}/conf/distributions ] ; then
-	rm -f ${apache_dir}/${dist}/conf/distributions
+	rm -f ${apache_dir}/${dist}/conf/distributions || true
 fi
 
 dist="ubuntu"
 if [ -f ${apache_dir}/${dist}/conf/distributions ] ; then
-	rm -f ${apache_dir}/${dist}/conf/distributions
+	rm -f ${apache_dir}/${dist}/conf/distributions || true
 fi
 
 dist="debian"
