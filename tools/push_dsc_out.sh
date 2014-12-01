@@ -49,7 +49,7 @@ if [ -d ${dist}/${suite}/ ] ; then
 fi
 
 dist="ubuntu"
-suite="trust"
+suite="trusty"
 if [ -d ${dist}/${suite}/ ] ; then
 	rcn_ee_version="${trusty_version}"
 	run
