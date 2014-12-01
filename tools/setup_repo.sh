@@ -1,12 +1,13 @@
 #!/bin/sh -e
 
 apache_dir="/var/www/html/repos.rcn-ee.net"
+
 setup_repo () {
 	if [ ! -d ${apache_dir}/${dist}/dists/${suite}/ ] ; then
 		mkdir -p ${apache_dir}/${dist}/conf/
 	fi
 
-	echo "Origin: rcn-ee.net" > ${apache_dir}/${dist}/conf/distributions
+	echo "Origin: rcn-ee.net" >> ${apache_dir}/${dist}/conf/distributions
 	echo "Label: rcn-ee.net" >> ${apache_dir}/${dist}/conf/distributions
 	echo "Codename: ${suite}" >> ${apache_dir}/${dist}/conf/distributions
 	echo "Architectures: armhf source" >> ${apache_dir}/${dist}/conf/distributions
@@ -33,6 +34,16 @@ setup_repo () {
 		cd -
 	fi
 }
+
+dist="debian"
+if [ -f ${apache_dir}/${dist}/conf/distributions ] ; then
+	rm -f ${apache_dir}/${dist}/conf/distributions
+fi
+
+dist="ubuntu"
+if [ -f ${apache_dir}/${dist}/conf/distributions ] ; then
+	rm -f ${apache_dir}/${dist}/conf/distributions
+fi
 
 dist="debian"
 suite="wheezy"
