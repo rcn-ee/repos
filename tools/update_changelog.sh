@@ -53,7 +53,7 @@ fi
 dist="ubuntu"
 suite="trusty"
 if [ -d ${DIR}/${dist}/${suite}/ ] ; then
-	rcn_ee_version="${jessie_version}"
+	rcn_ee_version="${trusty_version}"
 	cat ${DIR}/version.sh | grep -v trusty_version > ${DIR}/new-version.sh
 	echo "trusty_version=\"~${simple_date}+1\"" >> ${DIR}/new-version.sh
 	mv ${DIR}/new-version.sh ${DIR}/version.sh
