@@ -20,15 +20,15 @@ echo "\$build_source = 1;" >> ~/.sbuildrc
 echo "\$distribution = 'jessie';" >> ~/.sbuildrc
 
 mirror="http://${proxy}${debian_server}"
-#dist="wheezy"
-#arch="armhf"
+dist="wheezy"
+arch="armhf"
 options=""
-#setup_update_sbuild
+setup_update_sbuild
 
-#dist="jessie"
-#arch="armhf"
+dist="jessie"
+arch="armhf"
 options=""
-#setup_update_sbuild
+setup_update_sbuild
 
 mirror="http://${proxy}${ubuntu_server}"
 dist="trusty"
