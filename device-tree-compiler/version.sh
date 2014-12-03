@@ -19,3 +19,4 @@ debian_patch="${package_name}_${debian_version}.diff.gz"
 
 wheezy_version="bborg~bpo70+20141203+1"
 jessie_version="bborg~20141203+1"
+trusty_version="bborg~20141203+1"

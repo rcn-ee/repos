@@ -1,0 +1,21 @@
+Index: device-tree-compiler-1.0.0/Documentation/Makefile
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ device-tree-compiler-1.0.0/Documentation/Makefile	2007-08-23 18:26:22.000000000 +0200
+@@ -0,0 +1,16 @@
++all: dtc-paper.ps dtc-paper.pdf dtc-manual.txt
++
++dtc-manual.txt: manual.txt
++	cp -f $< $@
++
++dtc-paper.dvi: dtc-paper.tex
++	latex $<
++
++dtc-paper.ps: dtc-paper.dvi
++	dvips $<
++
++dtc-paper.pdf: dtc-paper.tex
++	pdflatex $<
++
++clean:
++	rm -f *.aux *.log *.dvi *.ps *.pdf dtc-manual.txt
