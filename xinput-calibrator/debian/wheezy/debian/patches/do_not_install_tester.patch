@@ -1,0 +1,16 @@
+Description: do not install tester
+ tester is useless to final users and has no documentation at all.
+Author: Andrea Colangelo <warp10@debian.org>
+Last-Update: 2014-02-09
+
+--- xinput-calibrator-0.7.5+git20130410.orig/src/Makefile.am
++++ xinput-calibrator-0.7.5+git20130410/src/Makefile.am
+@@ -30,7 +30,7 @@ SUBDIRS = \
+ 
+ AM_CXXFLAGS = -Wall -ansi -pedantic
+ 
+-bin_PROGRAMS = xinput_calibrator tester
++bin_PROGRAMS = xinput_calibrator
+ 
+ COMMON_SRCS=calibrator.cpp calibrator/XorgPrint.cpp calibrator/Evdev.cpp calibrator/Usbtouchscreen.cpp main_common.cpp gui/gui_common.cpp
+ 

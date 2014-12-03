@@ -1,0 +1,120 @@
+From 18fc8a999ca9d493aef0dc4771dcd5b1fed74676 Mon Sep 17 00:00:00 2001
+From: Goffredo Baroncelli <kreijack@gmail.com>
+Date: Mon, 10 Jun 2013 10:09:55 +0200
+Subject: [PATCH 1/2] Correct the calibration when the axes are inverted.
+
+I had a problem to calibrate a touch screen with the axes inverted. Looking at the code I found that when the axes inversion is detected, the {x,y}_{max,min} are swapped:
+
+    // calculate average of clicks
+    float x_min = (clicked.x[UL] + clicked.x[LL])/2.0;
+    float x_max = (clicked.x[UR] + clicked.x[LR])/2.0;
+    float y_min = (clicked.y[UL] + clicked.y[UR])/2.0;
+    float y_max = (clicked.y[LL] + clicked.y[LR])/2.0;
+
+    // Should x and y be swapped?
+    if (abs(clicked.x[UL] - clicked.x[UR]) < abs(clicked.y[UL] - clicked.y[UR])) {
+        std::swap(x_min, y_min);
+        std::swap(x_max, y_max);
+
+However I think that when the axis are swapped the calculation of the
+{x,y}_{max,min} are wrong.
+Let me explain why:
+
+During the calibration, on the screen are showed four crosses called UL, LR, LL, UR (Upper Left, Lower Right...).
+
+If the axes are not swapped during the calibration we got the following coordinates (x,y the numbers are hypothetical):
+
+    UL -> 10,10            UR -> 90,10
+    LL -> 10,70            LR -> 90,70
+
+and
+
+    x_min = (10+10)/2 = 10
+    x_max = (90+90)/2 = 90
+    y_min = (10+10/2 = 10
+    y_max = (70+70)/2 = 70
+
+Instead if the axes are inverted
+
+    UL -> 10,10            UR -> 10,90
+    LL -> 70,10            LR -> 70,90
+
+and
+
+    x_min = (10+70)/2 = 35
+    x_max = (10+70)/2 = 35                   x_min == x_max
+    y_min = (10+90)/2 = 45
+    y_max = (10+90)/2 = 45                   y_min == y_max
+
+which are basically wrong. I think that the right solution should be to calculate the
+{x,y}_{max,min} as following when an axis inversion is detected:
+
+        x_min = (clicked.x[UL] + clicked.x[UR])/2.0;
+        x_max = (clicked.x[LL] + clicked.x[LR])/2.0;
+        y_min = (clicked.y[UL] + clicked.y[LL])/2.0;
+        y_max = (clicked.y[UR] + clicked.y[LR])/2.0;
+
+( Note the different array indexes )
+---
+ src/calibrator.cpp       |    7 +++++--
+ src/calibrator/Evdev.cpp |   19 ++++++++++++-------
+ 2 files changed, 17 insertions(+), 9 deletions(-)
+
+diff --git a/src/calibrator.cpp b/src/calibrator.cpp
+index cdbd461..bc6b380 100644
+--- a/src/calibrator.cpp
++++ b/src/calibrator.cpp
+@@ -158,8 +158,11 @@ bool Calibrator::finish(int width, int height)
+     // Should x and y be swapped?
+     if (abs(clicked.x[UL] - clicked.x[UR]) < abs(clicked.y[UL] - clicked.y[UR])) {
+         new_axis.swap_xy = !new_axis.swap_xy;
+-        std::swap(x_min, y_min);
+-        std::swap(x_max, y_max);
++        x_min = (clicked.x[UL] + clicked.x[UR])/2.0;
++        x_max = (clicked.x[LL] + clicked.x[LR])/2.0;
++        y_min = (clicked.y[UL] + clicked.y[LL])/2.0;
++        y_max = (clicked.y[UR] + clicked.y[LR])/2.0;
++
+     }
+ 
+     // the screen was divided in num_blocks blocks, and the touch points were at
+diff --git a/src/calibrator/Evdev.cpp b/src/calibrator/Evdev.cpp
+index 9a56475..347d8fc 100644
+--- a/src/calibrator/Evdev.cpp
++++ b/src/calibrator/Evdev.cpp
+@@ -196,6 +196,18 @@ bool CalibratorEvdev::finish(int width, int height)
+     float y_min = (clicked.y[UL] + clicked.y[UR])/2.0;
+     float y_max = (clicked.y[LL] + clicked.y[LR])/2.0;
+ 
++    // Should x and y be swapped?
++    if (abs(clicked.x[UL] - clicked.x[UR]) < abs(clicked.y[UL] - clicked.y[UR])) {
++	fprintf(stderr, "INFO: swap axes\n");
++        new_axis.swap_xy = !new_axis.swap_xy;
++        // calculate average of clicks
++        x_min = (clicked.x[UL] + clicked.x[UR])/2.0;
++        x_max = (clicked.x[LL] + clicked.x[LR])/2.0;
++        y_min = (clicked.y[UL] + clicked.y[LL])/2.0;
++        y_max = (clicked.y[UR] + clicked.y[LR])/2.0;
++
++   }
++
+ 
+     // When evdev detects an invert_X/Y option,
+     // it performs the following *crazy* code just before returning
+@@ -218,13 +230,6 @@ bool CalibratorEvdev::finish(int width, int height)
+     // end of evdev inversion crazyness
+ 
+ 
+-    // Should x and y be swapped?
+-    if (abs(clicked.x[UL] - clicked.x[UR]) < abs(clicked.y[UL] - clicked.y[UR])) {
+-        new_axis.swap_xy = !new_axis.swap_xy;
+-        std::swap(x_min, y_min);
+-        std::swap(x_max, y_max);
+-    }
+-
+     // the screen was divided in num_blocks blocks, and the touch points were at
+     // one block away from the true edges of the screen.
+     const float block_x = width/(float)num_blocks;
+-- 
+1.7.10.4
+

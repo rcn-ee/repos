@@ -1,0 +1,25 @@
+Source: xinput-calibrator
+Section: utils
+Priority: optional
+Maintainer: Andrea Colangelo <warp10@debian.org>
+Build-Depends: debhelper (>= 9.0.0),
+               dh-autoreconf,
+               pkg-config,
+               libx11-dev,
+               libxi-dev
+Standards-Version: 3.9.5
+Homepage: http://www.freedesktop.org/wiki/Software/xinput_calibrator/
+Vcs-Git: git://anonscm.debian.org/collab-maint/xinput-calibrator.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/xinput-calibrator.git
+
+Package: xinput-calibrator
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends}
+Description: Generic touchscreen calibration program for X.Org
+ xinput-calibrator is a tool to calibrate touchscreens under X.Org.
+ Its features include:
+  - work for any Xorg driver (use Xinput to get axis valuators);
+  - output the calibration as Xorg.conf, HAL policy and udev rule;
+  - support advanced driver options, such as Evdev's dynamic calibration;
+  - have a very intuitive GUI (normal X client);
