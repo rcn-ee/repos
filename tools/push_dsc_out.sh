@@ -31,7 +31,7 @@ run () {
 		cp -v ${suite}/${package_name}_${package_version}${rcn_ee_version}.tar.xz /mnt/farm/incoming/${suite}/
 	elif [ -f ${suite}/${package_name}_${package_version}${rcn_ee_version}.tar.bz2 ] ; then
 		cp -v ${suite}/${package_name}_${package_version}${rcn_ee_version}.tar.bz2 /mnt/farm/incoming/${suite}/
-	elif [-f ${suite}/${package_name}_${package_version}${rcn_ee_version}.diff.gz ] ; then
+	elif [ -f ${suite}/${package_name}_${package_version}${rcn_ee_version}.diff.gz ] ; then
 		cp -v ${suite}/${package_name}_${package_version}${rcn_ee_version}.diff.gz /mnt/farm/incoming/${suite}/
 	fi
 }
