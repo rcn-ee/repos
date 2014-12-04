@@ -28,7 +28,7 @@ run () {
 
 dist="debian"
 suite="wheezy"
-if [ -d ${dist}/${suite}/ ] ; then
+if [ -d suite/${suite}/ ] ; then
 	repo="${base}${dist}/"
 	deb_arch=armhf
 	rcn_ee_version="${wheezy_version}"
@@ -37,7 +37,7 @@ fi
 
 dist="debian"
 suite="jessie"
-if [ -d ${dist}/${suite}/ ] ; then
+if [ -d suite/${suite}/ ] ; then
 	repo="${base}${dist}/"
 	deb_arch=armhf
 	rcn_ee_version="${jessie_version}"
@@ -46,7 +46,7 @@ fi
 
 dist="ubuntu"
 suite="trusty"
-if [ -d ${dist}/${suite}/ ] ; then
+if [ -d suite/${suite}/ ] ; then
 	repo="${base}${dist}/"
 	deb_arch=armhf
 	rcn_ee_version="${trusty_version}"

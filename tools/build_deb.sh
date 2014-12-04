@@ -49,7 +49,7 @@ run () {
 
 dist="debian"
 suite="wheezy"
-if [ -d ${dist}/${suite}/ ] ; then
+if [ -d suite/${suite}/ ] ; then
 	deb_arch="armhf"
 	rcn_ee_version="${wheezy_version}"
 	run
@@ -57,7 +57,7 @@ fi
 
 dist="debian"
 suite="jessie"
-if [ -d ${dist}/${suite}/ ] ; then
+if [ -d suite/${suite}/ ] ; then
 	deb_arch="armhf"
 	rcn_ee_version="${jessie_version}"
 	run
@@ -65,7 +65,7 @@ fi
 
 dist="ubuntu"
 suite="trusty"
-if [ -d ${dist}/${suite}/ ] ; then
+if [ -d suite/${suite}/ ] ; then
 	deb_arch="armhf"
 	rcn_ee_version="${trusty_version}"
 	run

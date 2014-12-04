@@ -53,12 +53,8 @@ generate_dsc () {
 		mkdir ./debian
 	fi
 
-	if [ -d ${DIR}/debian/${suite}/ ] ; then
-		cp -rv ${DIR}/debian/${suite}/* ./
-	fi
-
-	if [ -d ${DIR}/ubuntu/${suite}/ ] ; then
-		cp -rv ${DIR}/ubuntu/${suite}/* ./
+	if [ -d ${DIR}/suite/${suite}/ ] ; then
+		cp -rv ${DIR}/suite/${suite}/* ./
 	fi
 
 	debuild -us -uc -S
@@ -68,19 +64,19 @@ generate_dsc () {
 
 dist="debian"
 suite="wheezy"
-if [ -d ${dist}/${suite}/ ] ; then
+if [ -d suite/${suite}/ ] ; then
 	generate_dsc
 fi
 
 dist="debian"
 suite="jessie"
-if [ -d ${dist}/${suite}/ ] ; then
+if [ -d suite/${suite}/ ] ; then
 	generate_dsc
 fi
 
 dist="ubuntu"
 suite="trusty"
-if [ -d ${dist}/${suite}/ ] ; then
+if [ -d suite/${suite}/ ] ; then
 	generate_dsc
 fi
 

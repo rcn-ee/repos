@@ -5,7 +5,7 @@
 DIR="$PWD"
 
 run () {
-	wfile="${DIR}/${dist}/${suite}/debian/new"
+	wfile="${DIR}/suite/${suite}/debian/new"
 	backport=""
 	if [ "x${suite}" = "xwheezy" ] ; then
 		backport="bpo70+"
@@ -22,9 +22,9 @@ run () {
 	echo " -- Robert Nelson <robertcnelson@gmail.com>  ${new_date}" >> ${wfile}
 	echo "" >> ${wfile}
 
-	cat ${DIR}/${dist}/${suite}/debian/changelog >> ${wfile}
-	rm ${DIR}/${dist}/${suite}/debian/changelog
-	mv ${wfile} ${DIR}/${dist}/${suite}/debian/changelog
+	cat ${DIR}/suite/${suite}/debian/changelog >> ${wfile}
+	rm ${DIR}/suite/${suite}/debian/changelog
+	mv ${wfile} ${DIR}/suite/${suite}/debian/changelog
 }
 
 new_date=`LANG=C date -R`
@@ -32,7 +32,7 @@ simple_date=`LANG=C date +%Y%m%d`
 
 dist="debian"
 suite="wheezy"
-if [ -d ${DIR}/${dist}/${suite}/ ] ; then
+if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${wheezy_version}"
 	cat ${DIR}/version.sh | grep -v wheezy_version > ${DIR}/new-version.sh
 	echo "wheezy_version=\"~bpo70+${simple_date}+1\"" >> ${DIR}/new-version.sh
@@ -42,7 +42,7 @@ fi
 
 dist="debian"
 suite="jessie"
-if [ -d ${DIR}/${dist}/${suite}/ ] ; then
+if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${jessie_version}"
 	cat ${DIR}/version.sh | grep -v jessie_version > ${DIR}/new-version.sh
 	echo "jessie_version=\"~${simple_date}+1\"" >> ${DIR}/new-version.sh
@@ -52,7 +52,7 @@ fi
 
 dist="ubuntu"
 suite="trusty"
-if [ -d ${DIR}/${dist}/${suite}/ ] ; then
+if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${trusty_version}"
 	cat ${DIR}/version.sh | grep -v trusty_version > ${DIR}/new-version.sh
 	echo "trusty_version=\"~${simple_date}+1\"" >> ${DIR}/new-version.sh

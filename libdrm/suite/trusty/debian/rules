@@ -1,0 +1,106 @@
+#!/usr/bin/make -f
+
+###
+### Configuration, decide what to build
+###
+
+# Some variables:
+DEB_HOST_ARCH_OS  ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
+DEB_HOST_ARCH_CPU ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_CPU)
+
+confflags = \
+	--enable-radeon \
+	--disable-libkms \
+	$()
+
+# Linux vs. the rest:
+ifeq (linux, $(DEB_HOST_ARCH_OS))
+	confflags += --enable-udev
+	confflags += --enable-vmwgfx
+	confflags += --enable-nouveau
+	NOUVEAU = yes
+else
+	confflags += --disable-udev
+	confflags += --disable-vmwgfx
+	confflags += --disable-nouveau
+	NOUVEAU = no
+	# kfreebsd mangles freebsd's sys/types.h
+	confflags += CFLAGS="$(shell pkg-config --cflags libbsd-overlay)"
+endif
+
+# Intel is only on x86:
+ifneq (,$(filter amd64 i386,$(DEB_HOST_ARCH_CPU)))
+ifneq (,$(filter linux kfreebsd,$(DEB_HOST_ARCH_OS)))
+	INTEL = yes
+endif
+endif
+ifeq ($(INTEL), yes)
+	confflags += --enable-intel
+else
+	confflags += --disable-intel
+endif
+
+# Omap and freedreno are only on arm
+ifneq (,$(filter arm,$(DEB_HOST_ARCH_CPU)))
+	ARM = yes
+endif
+ifeq ($(ARM), yes)
+	confflags += --enable-omap-experimental-api
+	confflags += --enable-freedreno-experimental-api
+	confflags += --enable-exynos-experimental-api
+else
+	confflags += --disable-omap-experimental-api
+	confflags += --disable-freedreno-experimental-api
+	confflags += --disable-exynos-experimental-api
+endif
+
+###
+### Actual build
+###
+
+override_dh_auto_configure:
+	dh_auto_configure -- --disable-silent-rules --enable-static=yes $(confflags)
+
+override_dh_auto_test:
+	dh_auto_test || echo "Test suite failure, but keeping on anyway"
+
+override_dh_auto_install:
+	dh_auto_install --destdir=debian/tmp
+
+override_dh_install:
+	find debian/tmp -name '*.la' -delete
+	dh_install --fail-missing
+
+override_dh_strip:
+	dh_strip -plibdrm2 --dbg-package=libdrm2-dbg
+ifeq ($(INTEL), yes)
+	dh_strip -plibdrm-intel1 --dbg-package=libdrm-intel1-dbg
+endif
+ifeq ($(NOUVEAU), yes)
+	dh_strip -plibdrm-nouveau2 --dbg-package=libdrm-nouveau2-dbg
+endif
+	dh_strip -plibdrm-radeon1 --dbg-package=libdrm-radeon1-dbg
+ifeq ($(ARM), yes)
+	dh_strip -plibdrm-omap1 --dbg-package=libdrm-omap1-dbg
+	dh_strip -plibdrm-freedreno1 --dbg-package=libdrm-freedreno1-dbg
+	dh_strip -plibdrm-exynos1 --dbg-package=libdrm-exynos1-dbg
+endif
+	dh_strip -s --remaining-packages
+
+override_dh_makeshlibs:
+	dh_makeshlibs -plibdrm2 -V'libdrm2 (>= 2.4.46)' --add-udeb=libdrm2-udeb -- -c4
+ifeq ($(INTEL), yes)
+	dh_makeshlibs -plibdrm-intel1 -V'libdrm-intel1 (>= 2.4.57)' -- -c4
+endif
+ifeq ($(NOUVEAU), yes)
+	dh_makeshlibs -plibdrm-nouveau2 -V'libdrm-nouveau2 (>= 2.4.38)' -- -c4
+endif
+	dh_makeshlibs -plibdrm-radeon1 -V'libdrm-radeon1 (>= 2.4.39)' -- -c4
+ifeq ($(ARM), yes)
+	dh_makeshlibs -plibdrm-omap1 -V'libdrm-omap1 (>= 2.4.38)' -- -c4
+	dh_makeshlibs -plibdrm-freedreno1 -V'libdrm-freedreno1 (>= 2.4.57)' -- -c4
+	dh_makeshlibs -plibdrm-exynos1 -V'libdrm-exynos1' -- -c4
+endif
+
+%:
+	dh $@ --with quilt,autoreconf --builddirectory=build/
