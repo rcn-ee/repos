@@ -19,3 +19,4 @@ debian_diff=""
 
 wheezy_version="~bpo70+20141117+1"
 jessie_version="~20141117+1"
+trusty_version="~20141117+1"
