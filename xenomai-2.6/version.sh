@@ -10,7 +10,7 @@ src_dir="${package_name}_${package_version}"
 
 git_repo="git://git.xenomai.org/xenomai-2.6.git"
 git_sha="57881af50b85ff06a4c5b3846468b74dd8584fa2"
-reprepro_dir="libx/${package_name}"
+reprepro_dir="x/${package_name}"
 dl_path=""
 
 debian_version="${package_version}-1"
