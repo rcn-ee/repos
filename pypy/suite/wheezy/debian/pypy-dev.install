@@ -1,0 +1,5 @@
+#!/bin/sh
+set -euf
+
+find include -name '*.h' ! -name 'pypy_*.h' \
+	-printf '%p\t/usr/lib/pypy/%h\n'

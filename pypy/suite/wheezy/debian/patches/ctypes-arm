@@ -1,0 +1,40 @@
+Description: armhf support
+ Workaround the presentce of hard-float in ldconfig -p output
+ Also, handle the wide variety of ARM unames
+Author: Loïc Minier
+Bug-Ubuntu: https://bugs.launchpad.net/bugs/898172
+Bug-cpython: http://bugs.python.org/issue13508
+Last-Update: 2011-12-19
+
+--- a/lib-python/2.7/ctypes/util.py
++++ b/lib-python/2.7/ctypes/util.py
+@@ -214,16 +214,27 @@
+ 
+         def _findSoname_ldconfig(name):
+             import struct
++            # XXX this code assumes that we know all unames and that a single
++            # ABI is supported per uname; instead we should find what the
++            # ABI is (e.g. check ABI of current process) or simply ask libc
++            # to load the library for us
++            uname = os.uname()[4]
++            # ARM has a variety of unames, e.g. armv7l
++            if uname.startswith("arm"):
++                uname = "arm"
+             if struct.calcsize('l') == 4:
+-                machine = os.uname()[4] + '-32'
++                machine = uname + '-32'
+             else:
+-                machine = os.uname()[4] + '-64'
++                machine = uname + '-64'
+             mach_map = {
+                 'x86_64-64': 'libc6,x86-64',
+                 'ppc64-64': 'libc6,64bit',
+                 'sparc64-64': 'libc6,64bit',
+                 's390x-64': 'libc6,64bit',
+                 'ia64-64': 'libc6,IA-64',
++                # this actually breaks on biarch or multiarch as the first
++                # library wins; uname doesn't tell us which ABI we're using
++                'arm-32': 'libc6(,hard-float)?',
+                 }
+             abi_type = mach_map.get(machine, 'libc6')
+ 

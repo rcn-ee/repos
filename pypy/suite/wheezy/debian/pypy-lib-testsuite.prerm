@@ -1,0 +1,27 @@
+#!/bin/sh
+
+set -e
+
+case "$1" in
+    remove)
+        if which pypyclean >/dev/null 2>&1; then
+            pypyclean -p pypy-lib-testsuite
+        fi
+    ;;
+
+    deconfigure|upgrade)
+    ;;
+
+    failed-upgrade)
+    ;;
+
+    *)
+        echo "prerm called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0
+# vim:set et ts=4 sw=4:

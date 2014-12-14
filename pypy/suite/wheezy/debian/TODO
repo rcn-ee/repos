@@ -1,0 +1,20 @@
+* Triage and fix/skip all test failures
+* Stop embedding expat strings
+* Add a way to disable network tests. ATM they fail silently, so this isn't a big priority
+* Look at importing distutils-sysconfig.diff from cpython, if it's needed.
+* Forward patches to PyPy upstream:
+  - pep3147-*
+* Provide an option for i386 machines without SSE2.
+  PyPy upstream claims SSE2 is vital for performance and we can't disable it
+  for i386, we should provide both SSE2-enabled and legacy binaries.
+  The JIT with out SSE2 is currently broken...
+* Work out the details for module packages supporting pypy.
+* Package rpython
+  - Figure out where to put rpython/_cache
+  - Stop writing things into rpytohn/translator/c/src
+* Porting:
+  - _continutation needs a single function ported to each architecture. Mostly
+    copy-paste from python-greenlet, but slightly different API.
+* Multi-Arch:
+  - config cache
+  - headers

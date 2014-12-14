@@ -1,0 +1,14 @@
+#! /bin/sh
+set -e
+
+if [ "$1" = rtupdate ]; then
+	if which pypyclean >/dev/null 2>&1; then
+		pypyclean /usr/lib/pypy/dist-packages
+	fi
+	if which pypycompile >/dev/null 2>&1; then
+		pypycompile /usr/lib/pypy/dist-packages
+	else
+		echo >&2 "pypycompile not found in $(basename $0) hook."
+		exit 1
+	fi
+fi

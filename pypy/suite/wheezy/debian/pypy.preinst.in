@@ -1,0 +1,44 @@
+#!/bin/sh
+
+set -e
+
+hook() {
+    local action old new
+    hook=$1
+    action=$2
+    old_v=$3
+    new_v=$4
+    old=pypy
+    new=pypy
+    echo "running pypy $action hooks for $new_v"
+    for script in /usr/lib/pypy/runtime.d/*."$hook"; do
+        [ -x "$script" ] || continue
+        if ! "$script" "$action" "$old" "$new"; then
+            echo >&2 "error running pypy $action hook $(basename "$script")"
+            return 1
+        fi
+    done
+}
+
+case "$1" in
+    upgrade)
+        old_version=$(echo $2 | sed 's/\([[:digit:]]*\.[[:digit:]]*\).*/\1/')
+        new_version=$(echo #VERSION# | sed 's/\([[:digit:]]*\.[[:digit:]]*\).*/\1/')
+        if [ "$old_version" != "$new_version" ]; then
+            hook rtupdate pre-rtupdate "$old_version" "$new_version" || exit 3
+        fi
+    ;;
+
+    install|abort-upgrade)
+    ;;
+
+    *)
+        echo "preinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0
+# vim:set et ts=4 sw=4:

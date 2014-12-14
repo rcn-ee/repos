@@ -1,0 +1,771 @@
+Description: PEP3147 support.
+ Tests modified from Barry Warsaw's PEP3147 cpython support
+Author: Stefano Rivera <stefanor@debian.org>
+Forwarded: no
+Last-Update: 2013-02-23
+
+--- a/pypy/config/pypyoption.py
++++ b/pypy/config/pypyoption.py
+@@ -167,6 +167,11 @@
+               cmdline="--soabi",
+               default=None),
+ 
++    StrOption("magic_tag",
++              "Tag to differentiate .pyc files for different Python interpreters",
++              cmdline="--magic_tag",
++              default=None),
++
+     BoolOption("honor__builtins__",
+                "Honor the __builtins__ key of a module dictionary",
+                default=False),
+--- a/pypy/module/imp/__init__.py
++++ b/pypy/module/imp/__init__.py
+@@ -17,6 +17,9 @@
+         'get_suffixes':    'interp_imp.get_suffixes',
+ 
+         'get_magic':       'interp_imp.get_magic',
++        'get_tag':         'interp_imp.get_tag',
++        'cache_from_source': 'interp_imp.cache_from_source',
++        'source_from_cache': 'interp_imp.source_from_cache',
+         'find_module':     'interp_imp.find_module',
+         'load_module':     'interp_imp.load_module',
+         'load_source':     'interp_imp.load_source',
+--- a/pypy/module/imp/importing.py
++++ b/pypy/module/imp/importing.py
+@@ -11,7 +11,7 @@
+ from pypy.interpreter.baseobjspace import W_Root, CannotHaveLock
+ from pypy.interpreter.eval import Code
+ from pypy.interpreter.pycode import PyCode
+-from rpython.rlib import streamio, jit
++from rpython.rlib import rstring, streamio, jit
+ from rpython.rlib.streamio import StreamErrors
+ from rpython.rlib.objectmodel import we_are_translated, specialize
+ from pypy.module.sys.version import PYPY_VERSION
+@@ -31,6 +31,7 @@
+ 
+ SO = '.pyd' if _WIN32 else '.so'
+ DEFAULT_SOABI = 'pypy-%d%d' % PYPY_VERSION[:2]
++DEFAULT_MAGIC_TAG = 'pypy-%d%d' % PYPY_VERSION[:2]
+ 
+ @specialize.memo()
+ def get_so_extension(space):
+@@ -553,6 +554,7 @@
+     w = space.wrap
+     space.sys.setmodule(w_mod)
+     space.setattr(w_mod, w('__file__'), space.wrap(filename))
++    space.setattr(w_mod, w('__cached__'), space.w_None)
+     space.setattr(w_mod, w('__doc__'), space.w_None)
+     if pkgdir is not None:
+         space.setattr(w_mod, w('__path__'), space.newlist([w(pkgdir)]))
+@@ -840,6 +842,65 @@
+ 
+     return default_magic
+ 
++def get_pyc_tag(space):
++    """Return the tag used in __pycache__ filenames"""
++    # XXX CPython testing hack: use the default
++    if not we_are_translated():
++        return DEFAULT_MAGIC_TAG
++
++    if space.config.objspace.magic_tag is not None:
++        magic_tag = space.config.objspace.magic_tag
++    else:
++        magic_tag = DEFAULT_MAGIC_TAG
++    return magic_tag
++
++def make_compiled_pathname(space, pathname):
++    """
++    The PEP 3147 path to the byte-compiled file associated with the source path
++    """
++    pathname = rstring.assert_str0(pathname)
++
++    index = pathname.rfind(os.sep)
++    if index < 0:
++        pycachedir = '__pycache__'
++        basename = pathname
++    else:
++        pycachedir = pathname[:index + 1] + '__pycache__'
++        basename = pathname[index + 1:]
++
++    index = basename.rfind('.')
++    if index > 0:
++        basename = basename[:index + 1]
++
++    filename = basename + get_pyc_tag(space) + '.pyc'
++    cpathname = os.path.join(pycachedir, filename)
++    return cpathname
++
++def make_source_pathname(space, cpathname):
++    """
++    Given the path to a PEP 3147 file name, return the associated source code
++    file path.
++    """
++    cpathname = rstring.assert_str0(cpathname)
++
++    index = cpathname.rfind(os.sep)
++    if index < 0:
++        raise OperationError(space.w_ValueError, space.wrap(
++                "Not a PEP 3147 pyc path: %s" % cpathname))
++    pycachedir = cpathname[:index]
++    filename = cpathname[index + 1:]
++
++    index = pycachedir.rfind(os.sep)
++    extension = '.' + get_pyc_tag(space) + '.pyc'
++    ext_index = len(filename) - len(extension)
++    if (index < 0 or pycachedir[index + 1:] != '__pycache__'
++            or not filename.endswith(extension)
++            or ext_index < 0):
++        raise OperationError(space.w_ValueError, space.wrap(
++                "Not a PEP 3147 pyc path: %s" % cpathname))
++    basedir = pycachedir[:index]
++    basename = filename[:ext_index]
++    return os.path.join(basedir, basename + '.py')
+ 
+ def parse_source_module(space, pathname, source):
+     """ Parse a source file and return the corresponding code object """
+@@ -866,7 +927,7 @@
+ 
+     if space.config.objspace.usepycfiles:
+         src_stat = os.fstat(fd)
+-        cpathname = pathname + 'c'
++        cpathname = make_compiled_pathname(space, pathname)
+         mtime = int(src_stat[stat.ST_MTIME])
+         mode = src_stat[stat.ST_MODE]
+         stream = check_compiled_module(space, cpathname, mtime)
+@@ -882,7 +943,7 @@
+             code_w = read_compiled_module(space, cpathname, stream.readall())
+         finally:
+             stream.close()
+-        space.setattr(w_mod, w('__file__'), w(cpathname))
++        space.setattr(w_mod, w('__file__'), w(pathname))
+     else:
+         code_w = parse_source_module(space, pathname, source)
+ 
+@@ -898,6 +959,7 @@
+     if optimize >= 2:
+         code_w.remove_docstrings(space)
+ 
++    space.setattr(w_mod, w('__cached__'), w(cpathname))
+     update_code_filenames(space, code_w, pathname)
+     exec_code_module(space, w_mod, code_w)
+ 
+@@ -1030,6 +1092,19 @@
+             raise
+         #print "Problem while marshalling %s, skipping" % cpathname
+         return
++
++    # Create PEP3147 __pycache__ dir if necessary
++    index = cpathname.rfind(os.sep)
++    if index < 0:
++        return
++    pycachedir = cpathname[:index]
++    if not os.path.isdir(pycachedir):
++        mode = src_mode | 0755
++        try:
++            os.mkdir(pycachedir, mode)
++        except OSError:
++            return
++
+     #
+     # Careful here: we must not crash nor leave behind something that looks
+     # too much like a valid pyc file but really isn't one.
+--- a/pypy/module/imp/interp_imp.py
++++ b/pypy/module/imp/interp_imp.py
+@@ -32,6 +32,18 @@
+     d = x & 0xff
+     return space.wrap(chr(a) + chr(b) + chr(c) + chr(d))
+ 
++def get_tag(space):
++    return space.wrap(importing.get_pyc_tag(space))
++
++@unwrap_spec(path=str)
++def cache_from_source(space, path, w_debug_override=None):
++    # w_debug_override is ignored, pypy doesn't support __debug__
++    return space.wrap(importing.make_compiled_pathname(space, path))
++
++@unwrap_spec(path=str)
++def source_from_cache(space, path):
++    return space.wrap(importing.make_source_pathname(space, path))
++
+ def get_file(space, w_file, filename, filemode):
+     if space.is_none(w_file):
+         try:
+--- a/pypy/module/imp/test/test_app.py
++++ b/pypy/module/imp/test/test_app.py
+@@ -148,6 +148,7 @@
+ 
+     def test_rewrite_pyc_check_code_name(self):
+         # This one is adapted from cpython's Lib/test/test_import.py
++        from imp import cache_from_source
+         from os import chmod
+         from os.path import join
+         from sys import modules, path
+@@ -157,6 +158,7 @@
+             import sys
+             code_filename = sys._getframe().f_code.co_filename
+             module_filename = __file__
++            module_bytefilename = __cached__
+             constant = 1
+             def func():
+                 pass
+@@ -168,7 +170,7 @@
+         file_name = join(dir_name, module_name + '.py')
+         with open(file_name, "wb") as f:
+             f.write(code)
+-        compiled_name = file_name + ("c" if __debug__ else "o")
++        compiled_name = cache_from_source(file_name)
+         chmod(file_name, 0777)
+ 
+         # Setup
+@@ -186,7 +188,8 @@
+         try:
+             # Ensure proper results
+             assert mod != orig_module
+-            assert mod.module_filename == compiled_name
++            assert mod.module_filename == file_name
++            assert mod.module_bytefilename == compiled_name
+             assert mod.code_filename == file_name
+             assert mod.func_filename == file_name
+         finally:
+--- a/pypy/module/imp/test/test_import.py
++++ b/pypy/module/imp/test/test_import.py
+@@ -8,7 +8,7 @@
+ from pypy.tool.option import make_config
+ from pypy.tool.pytest.objspace import maketestobjspace
+ import pytest
+-import sys, os
++import shutil, sys, os
+ import tempfile, marshal
+ 
+ from pypy.module.imp import importing
+@@ -93,12 +93,18 @@
+ 
+     # create compiled/x.py and a corresponding pyc file
+     p = setuppkg("compiled", x = "x = 84")
++    try:
++        p.mkdir('__pycache__')
++    except py.error.EEXIST:
++        pass
++    cpathname = p.join('__pycache__').join(
++            'x.' + importing.get_pyc_tag(space) + '.pyc')
+     if conftest.option.runappdirect:
+         import marshal, stat, struct, os, imp
+         code = py.code.Source(p.join("x.py").read()).compile()
+         s3 = marshal.dumps(code)
+         s2 = struct.pack("i", os.stat(str(p.join("x.py")))[stat.ST_MTIME])
+-        p.join("x.pyc").write(imp.get_magic() + s2 + s3, mode='wb')
++        cpathname.write(imp.get_magic() + s2 + s3, mode='wb')
+     else:
+         w = space.wrap
+         w_modname = w("compiled.x")
+@@ -113,8 +119,9 @@
+             stream.close()
+         if space.config.objspace.usepycfiles:
+             # also create a lone .pyc file
+-            p.join('lone.pyc').write(p.join('x.pyc').read(mode='rb'),
+-                                     mode='wb')
++
++            p.join(importing.make_compiled_pathname(space, 'lone.py')
++                    ).write(cpathname.read(mode='rb'), mode='wb')
+ 
+     # create a .pyw file
+     p = setuppkg("windows", x = "x = 78")
+@@ -712,6 +719,8 @@
+ 
+ class TestPycStuff:
+     # ___________________ .pyc related stuff _________________
++    def setup_class(cls):
++        cls.tag = importing.get_pyc_tag(cls.space)
+ 
+     def test_check_compiled_module(self):
+         space = self.space
+@@ -853,7 +862,8 @@
+         ret = space.int_w(w_ret)
+         assert ret == 42
+ 
+-        cpathname = udir.join('test.pyc')
++        cpathname = importing.make_compiled_pathname(space, 'test.py')
++        cpathname = udir.join(cpathname)
+         assert cpathname.check()
+         cpathname.remove()
+ 
+@@ -871,7 +881,8 @@
+                 write_pyc=False)
+         finally:
+             stream.close()
+-        cpathname = udir.join('test.pyc')
++        cpathname = importing.make_compiled_pathname(space, 'test.py')
++        cpathname = udir.join(cpathname)
+         assert not cpathname.check()
+ 
+     def test_load_source_module_dont_write_bytecode(self):
+@@ -891,7 +902,8 @@
+             space.setattr(space.sys, space.wrap('dont_write_bytecode'),
+                           space.w_False)
+             stream.close()
+-        cpathname = udir.join('test.pyc')
++        cpathname = importing.make_compiled_pathname(space, 'test.py')
++        cpathname = udir.join(cpathname)
+         assert not cpathname.check()
+ 
+     def test_load_source_module_syntaxerror(self):
+@@ -911,7 +923,8 @@
+             pass
+         stream.close()
+ 
+-        cpathname = udir.join('test.pyc')
++        cpathname = importing.make_compiled_pathname(space, 'test.py')
++        cpathname = udir.join(cpathname)
+         assert not cpathname.check()
+         
+     def test_load_source_module_importerror(self):
+@@ -932,7 +945,8 @@
+         stream.close()
+ 
+         # And the .pyc has been generated
+-        cpathname = udir.join('test.pyc')
++        cpathname = importing.make_compiled_pathname(space, 'test.py')
++        cpathname = udir.join(cpathname)
+         assert cpathname.check()
+ 
+     def test_write_compiled_module(self):
+@@ -949,7 +963,8 @@
+         pycode = w_ret
+         assert type(pycode) is pypy.interpreter.pycode.PyCode
+ 
+-        cpathname = str(udir.join('cpathname.pyc'))
++        cpathname = importing.make_compiled_pathname(space, 'cpathname.py')
++        cpathname = str(udir.join(cpathname))
+         mode = 0777
+         mtime = 12345
+         importing.write_compiled_module(space,
+@@ -1021,6 +1036,271 @@
+                 finally:
+                     stream.close()
+ 
++    def test_make_compiled_pathname(self):
++        # Given the path to a .py file, return the path to its PEP 3147
++        # defined .pyc file (i.e. under __pycache__).
++        cpathname = importing.make_compiled_pathname(self.space,
++                                                     '/foo/bar/baz/qux.py')
++        expected = '/foo/bar/baz/__pycache__/qux.%s.pyc' % self.tag
++        assert cpathname == expected
++
++    def test_make_compiled_pathname_cwd(self):
++        cpathname = importing.make_compiled_pathname(self.space, 'foo.py')
++        expected = os.sep.join(('__pycache__', 'foo.%s.pyc' % self.tag))
++        assert cpathname == expected
++
++    @pytest.mark.skipif('os.altsep is None')
++    def test_altsep_make_compiled_pathname(self):
++        # Windows path and PEP 3147.
++        cpathname = importing.make_compiled_pathname(self.space,
++                                                     '\\foo\\bar\\baz\\qux.py')
++        expected = '\\foo\\bar\\baz\\__pycache__\\qux.%s.pyc' % self.tag
++        assert cpathname == expected
++
++    @pytest.mark.skipif('os.altsep is None')
++    def test_altsep_and_sep_make_compiled_pathname(self):
++        # Windows path and PEP 3147 where altsep is right of sep.
++        cpathname = importing.make_compiled_pathname(self.space,
++                                                     '\\foo\\bar/baz\\qux.py')
++        expected = '\\foo\\bar/baz\\__pycache__\\qux.%s.pyc' % self.tag
++        assert cpathname == expected
++
++    @pytest.mark.skipif('os.altsep is None')
++    def test_sep_altsep_and_sep_make_compiled_pathname(self):
++        # Windows path and PEP 3147 where sep is right of altsep.
++        cpathname = importing.make_compiled_pathname(self.space,
++                                                     '\\foo\\bar\\baz/qux.py')
++        expected = '\\foo\\bar\\baz/__pycache__/qux.%s.pyc' % self.tag
++        assert cpathname == expected
++
++    def test_make_source_pathname(self):
++        # Given the path to a PEP 3147 defined .pyc file, return the path to
++        # its source.  This tests the good path.
++        pathname = importing.make_source_pathname(self.space,
++            '/foo/bar/baz/__pycache__/qux.%s.pyc' % self.tag)
++        assert pathname == '/foo/bar/baz/qux.py'
++
++    def test_make_source_pathname_bad_path(self):
++        # When the path to a pyc file is not in PEP 3147 format, a ValueError
++        # is raised.
++        try:
++            importing.make_source_pathname(self.space, '/foo/bar/bazqux.pyc')
++        except OperationError, e:
++            if not e.match(self.space, self.space.w_ValueError):
++                raise
++        else:
++            raise Exception("Should have raised ValueError")
++
++    def test_make_source_pathname_no_slash(self):
++        # No slashes at all in path -> ValueError
++        try:
++            importing.make_source_pathname(self.space, 'foo.%s.pyc' % self.tag)
++        except OperationError, e:
++            if not e.match(self.space, self.space.w_ValueError):
++                raise
++        else:
++            raise Exception("Should have raised ValueError")
++
++    def test_make_source_pathname_too_few_dots(self):
++        # Too few dots in final path component -> ValueError
++        try:
++            importing.make_source_pathname(self.space, '__pycache__/foo.pyc')
++        except OperationError, e:
++            if not e.match(self.space, self.space.w_ValueError):
++                raise
++        else:
++            raise Exception("Should have raised ValueError")
++
++    def test_make_source_pathname_too_many_dots(self):
++        # Too many dots in final path component -> ValueError
++        pathname = '__pycache__/foo.%s.foo.pyc' % self.tag
++        try:
++            importing.make_source_pathname(self.space, pathname)
++        except OperationError, e:
++            if not e.match(self.space, self.space.w_ValueError):
++                raise
++        else:
++            raise Exception("Should have raised ValueError")
++
++    def test_make_source_pathname_no__pycache__(self):
++        # Another problem with the path -> ValueError
++        pathname = '/foo/bar/foo.%s.foo.pyc' % self.tag
++        try:
++            importing.make_source_pathname(self.space, pathname)
++        except OperationError, e:
++            if not e.match(self.space, self.space.w_ValueError):
++                raise
++        else:
++            raise Exception("Should have raised ValueError")
++
++
++class AppTestPEP3147Pyc(object):
++    def test_package___file__(self):
++        import os, sys, shutil
++        # Test that a package's __file__ points to the right source directory.
++        try:
++            os.mkdir('pep3147')
++            sys.path.insert(0, os.curdir)
++            # Touch the __init__.py file.
++            with open('pep3147/__init__.py', 'w'):
++                pass
++            m = __import__('pep3147')
++            # Ensure we load the pyc file.
++            del sys.modules['pep3147']
++            m = __import__('pep3147')
++            assert m.__file__ == os.sep.join(('.', 'pep3147', '__init__.py'))
++        finally:
++            if sys.path[0] == os.curdir:
++                del sys.path[0]
++            shutil.rmtree('pep3147')
++
++
++class AppTestPycache(object):
++    # Test the various PEP 3147 related behaviors.
++
++    def setup_class(cls):
++        space = cls.space
++
++        cls.module = '_app_test_pycache'
++        cls.filename = cls.module + '.py'
++        cls.w_module = space.wrap(cls.module)
++        cls.w_filename = space.wrap(cls.filename)
++        cls.w_tag = space.wrap(importing.get_pyc_tag(space))
++
++    def setup_method(cls, method):
++        if os.path.exists('__pycache__'):
++            shutil.rmtree('__pycache__')
++        if os.path.exists(cls.filename):
++            os.unlink(cls.filename)
++
++        with open(cls.filename, 'w') as fp:
++            print >> fp, '# This is a test file written by test_import.py'
++
++    def teardown_method(cls, method):
++        if os.path.exists('__pycache__'):
++            shutil.rmtree('__pycache__')
++        if os.path.exists(cls.filename):
++            os.unlink(cls.filename)
++
++    def test_import_pyc_path(self):
++        import sys, os
++        sys.path.insert(0, '.')
++        try:
++            assert not os.path.exists('__pycache__')
++            __import__(self.module)
++            assert os.path.exists('__pycache__')
++            assert os.path.exists(os.path.join(
++                '__pycache__', '%s.%s.pyc' % (self.module, self.tag)))
++        finally:
++            del sys.path[0]
++            sys.modules.pop(self.module, None)
++
++    @pytest.mark.skipif('os.name != "posix"')
++    def test_unwritable_directory(self):
++        # When the umask causes the new __pycache__ directory to be
++        # unwritable, the import still succeeds but no .pyc file is written.
++        import os, sys
++        sys.path.insert(0, '.')
++        try:
++            oldmask = os.umask(0222)
++            try:
++                __import__(self.module)
++            finally:
++                os.umask(oldmask)
++            assert os.path.exists('__pycache__')
++            assert not os.path.exists(os.path.join(
++                '__pycache__', '%s.%s.pyc' % (self.module, self.tag)))
++        finally:
++            del sys.path[0]
++            sys.modules.pop(self.module, None)
++
++    def test_missing_source(self):
++        # With PEP 3147 cache layout, removing the source but leaving the pyc
++        # file does not satisfy the import.
++        import imp, os, sys
++        sys.path.insert(0, '.')
++        try:
++            __import__(self.module)
++            pyc_file = imp.cache_from_source(self.filename)
++            assert os.path.exists(pyc_file)
++            os.remove(self.filename)
++            del sys.modules[self.module]
++            try:
++                __import__(self.module)
++            except ImportError:
++                pass
++            else:
++                raise "Expected ImportError to be raised"
++        finally:
++            del sys.path[0]
++            sys.modules.pop(self.module, None)
++
++    def test___cached__(self):
++        # Modules now also have an __cached__ that points to the pyc file.
++        import imp, os, sys
++        sys.path.insert(0, '.')
++        try:
++            m = __import__(self.module)
++            pyc_file = imp.cache_from_source(self.filename)
++            assert m.__cached__ == os.path.join(os.curdir, pyc_file)
++        finally:
++            del sys.path[0]
++            sys.modules.pop(self.module, None)
++
++    def test_package___cached__(self):
++        # Like test___cached__ but for packages.
++        import imp, os, shutil, sys
++        sys.path.insert(0, '.')
++        try:
++            os.mkdir('_test_pep3147')
++            # Touch the __init__.py
++            with open(os.path.join('_test_pep3147', '__init__.py'), 'w'):
++                pass
++            with open(os.path.join('_test_pep3147', 'foo.py'), 'w'):
++                pass
++            m = __import__('_test_pep3147.foo')
++            init_pyc = imp.cache_from_source(
++                os.path.join('_test_pep3147', '__init__.py'))
++            assert m.__cached__ == os.path.join(os.curdir, init_pyc)
++            foo_pyc = imp.cache_from_source(os.path.join('_test_pep3147',
++                                                         'foo.py'))
++            assert (sys.modules['_test_pep3147.foo'].__cached__
++                    == os.path.join(os.curdir, foo_pyc))
++        finally:
++            shutil.rmtree('_test_pep3147')
++            del sys.path[0]
++            sys.modules.pop('_test_pep3147.foo', None)
++            sys.modules.pop('_test_pep3147', None)
++
++    def test_package___cached___from_pyc(self):
++        # Like test___cached__ but ensuring __cached__ when imported from a
++        # PEP 3147 pyc file.
++        import imp, os, shutil, sys
++        sys.path.insert(0, '.')
++        try:
++            os.mkdir('_test_pep3147')
++            # Touch the __init__.py
++            with open(os.path.join('_test_pep3147', '__init__.py'), 'w'):
++                pass
++            with open(os.path.join('_test_pep3147', 'foo.py'), 'w'):
++                pass
++            m = __import__('_test_pep3147.foo')
++            del sys.modules['_test_pep3147.foo']
++            del sys.modules['_test_pep3147']
++            m = __import__('_test_pep3147.foo')
++            init_pyc = imp.cache_from_source(
++                os.path.join('_test_pep3147', '__init__.py'))
++            assert m.__cached__ == os.path.join(os.curdir, init_pyc)
++            foo_pyc = imp.cache_from_source(os.path.join('_test_pep3147',
++                                                         'foo.py'))
++            assert (sys.modules['_test_pep3147.foo'].__cached__
++                    == os.path.join(os.curdir, foo_pyc))
++        finally:
++            shutil.rmtree('_test_pep3147')
++            del sys.path[0]
++            sys.modules.pop('_test_pep3147.foo', None)
++            sys.modules.pop('_test_pep3147', None)
++
+ 
+ def test_PYTHONPATH_takes_precedence(space): 
+     if sys.platform == "win32":
+@@ -1278,17 +1558,18 @@
+ 
+     def test_import_possibly_from_pyc(self):
+         from compiled import x
++        assert x.__file__.endswith('x.py')
+         if self.usepycfiles:
+-            assert x.__file__.endswith('x.pyc')
++            assert x.__cached__.endswith('.pyc')
+         else:
+-            assert x.__file__.endswith('x.py')
++            assert x.__cached__ is None
+         try:
+             from compiled import lone
+         except ImportError:
+-            assert not self.lonepycfiles, "should have found 'lone.pyc'"
++            assert not self.lonepycfiles, "should have found 'lone.TAG.pyc'"
+         else:
+-            assert self.lonepycfiles, "should not have found 'lone.pyc'"
+-            assert lone.__file__.endswith('lone.pyc')
++            assert self.lonepycfiles, "should not have found 'lone.TAG.pyc'"
++            assert lone.__cached__.endswith('.pyc')
+ 
+ class AppTestNoLonePycFile(AppTestNoPycFile):
+     spaceconfig = {
+@@ -1296,12 +1577,6 @@
+         "objspace.lonepycfiles": False
+     }
+ 
+-class AppTestLonePycFile(AppTestNoPycFile):
+-    spaceconfig = {
+-        "objspace.usepycfiles": True,
+-        "objspace.lonepycfiles": True
+-    }
+-
+ 
+ class AppTestMultithreadedImp(object):
+     spaceconfig = dict(usemodules=['thread', 'rctime'])
+--- a/pypy/module/zipimport/test/test_undocumented.py
++++ b/pypy/module/zipimport/test/test_undocumented.py
+@@ -31,12 +31,11 @@
+         Clears zipimport._zip_directory_cache.
+ 
+         """
+-        import zipimport, os, shutil, zipfile, py_compile
++        import zipimport, os, shutil, zipfile, py_compile, imp
+         example_code = 'attr = None'
+         TESTFN = '@test'
+         zipimport._zip_directory_cache.clear()
+         zip_path = TESTFN + '.zip'
+-        bytecode_suffix = 'c'# if __debug__ else 'o'
+         zip_file = zipfile.ZipFile(zip_path, 'w')
+         for path in created_paths:
+             if os.sep in path:
+@@ -53,13 +52,13 @@
+                 zip_file.write(code_path)
+             if bytecode:
+                 py_compile.compile(code_path, doraise=True)
+-                zip_file.write(code_path + bytecode_suffix)
++                bytecode_path = imp.cache_from_source(code_path)
++                zip_file.write(bytecode_path)
+         zip_file.close()
+         return os.path.abspath(zip_path)
+ 
+     def w_cleanup_zipfile(self, created_paths):
+-        import os, shutil
+-        bytecode_suffix = 'c'# if __debug__ else 'o'
++        import os, shutil, imp
+         zip_path = '@test.zip'
+         for path in created_paths:
+             if os.sep in path:
+@@ -67,9 +66,17 @@
+                 if os.path.exists(directory):
+                     shutil.rmtree(directory)
+             else:
+-                for suffix in ('.py', '.py' + bytecode_suffix):
+-                    if os.path.exists(path + suffix):
+-                        os.unlink(path + suffix)
++                source_file = path + '.py'
++                if os.path.exists(source_file):
++                    os.unlink(source_file)
++                    bytecode_file = imp.cache_from_source(source_file)
++                    if os.path.exists(bytecode_file):
++                        os.unlink(bytecode_file)
++                        try:
++                            os.rmdir(os.path.dirname(bytecode_file))
++                        except OSError:
++                            pass
++
+         os.unlink(zip_path)
+ 
+     def test_inheritance(self):
+--- a/pypy/doc/interpreter.rst
++++ b/pypy/doc/interpreter.rst
+@@ -245,6 +245,7 @@
+ 
+ * ``__doc__`` the docstring of the module
+ * ``__file__`` the source filename from which this module was instantiated
++* ``__cached__`` the filename for the byte-compiled cache of this module
+ * ``__path__`` state used for relative imports
+ 
+ Apart from the basic Module used for importing
+--- a/pypy/interpreter/main.py
++++ b/pypy/interpreter/main.py
+@@ -45,6 +45,7 @@
+         space.setitem(w_globals, w('__builtins__'), space.builtin)
+         if filename is not None:
+             space.setitem(w_globals, w('__file__'), w(filename))
++            space.setitem(w_globals, w('__cached__'), space.w_None)
+ 
+         retval = pycode.exec_code(space, w_globals, w_globals)
+         if eval:
+--- a/pypy/interpreter/test/test_main.py
++++ b/pypy/interpreter/test/test_main.py
+@@ -13,6 +13,12 @@
+ main()
+ """
+ 
++test__file__code = """
++assert __file__ is not None
++assert __cached__ is None
++print len('hello world')
++"""
++
+ # On module test we want to ensure that the called module __name__ is
+ # '__main__' and argv is set as expected.
+ testmodulecode = """
+@@ -39,12 +45,14 @@
+     assert capturefn.read(mode='rU') == expected_output
+ 
+ testfn = udir.join('tmp_hello_world.py')
++test__file__fn = udir.join('test__file__.py')
+ testmodule = 'tmp_hello_module'
+ testpackage = 'tmp_package'
+ 
+ class TestMain:
+     def setup_class(cls):
+         testfn.write(testcode, 'w')
++        test__file__fn.write(test__file__code, 'w')
+         udir.join(testmodule + '.py').write(testmodulecode, 'w')
+         udir.ensure(testpackage, '__init__.py')
+         udir.join(testpackage, testmodule + '.py').write(testmodulecode, 'w')
+@@ -78,3 +86,6 @@
+                     testmodule, ['hello world'])
+         checkoutput(self.space, testresultoutput, main.run_module,
+                     testpackage + '.' + testmodule, ['hello world'])
++
++    def test__file__file(self):
++        checkoutput(self.space, testresultoutput, main.run_file, str(test__file__fn))
+--- a/pypy/interpreter/app_main.py
++++ b/pypy/interpreter/app_main.py
+@@ -641,6 +641,7 @@
+             # on the command-line.
+             filename = sys.argv[0]
+             mainmodule.__file__ = filename
++            mainmodule.__cached__ = None
+             sys.path.insert(0, sys.pypy_resolvedirof(filename))
+             # assume it's a pyc file only if its name says so.
+             # CPython goes to great lengths to detect other cases

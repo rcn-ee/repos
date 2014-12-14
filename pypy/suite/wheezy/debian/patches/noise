@@ -1,0 +1,16 @@
+Description: Always draw mandelbrots, so we don't get timed out
+Forwarded: not-needed
+Author: Stefano Rivera <stefanor@debian.org>
+Last-Update: 2013-02-23
+
+--- a/rpython/tool/ansi_print.py
++++ b/rpython/tool/ansi_print.py
+@@ -26,7 +26,7 @@
+         self.kw_to_color.update(kw_to_color)
+         self.file = file
+         self.fancy = True
+-        self.isatty = getattr(sys.stderr, 'isatty', lambda: False)
++        self.isatty = lambda: True
+         if self.fancy and self.isatty(): 
+             self.mandelbrot_driver = Driver()
+         else:

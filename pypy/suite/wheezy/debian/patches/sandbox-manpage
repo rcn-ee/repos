@@ -1,0 +1,77 @@
+Description: Manpage for pypy-sandbox
+Author: Stefano Rivera <stefanor@debian.org>
+Forwarded: no
+Last-Update: 2012-02-14
+
+--- /dev/null
++++ b/pypy/doc/man/pypy-sandbox.1.rst
+@@ -0,0 +1,50 @@
++==============
++ pypy-sandbox
++==============
++
++SYNOPSIS
++========
++
++``pypy-sandbox`` [*options*]
++[``--`` ``-c`` *cmd*\ \|\ ``--`` ``-m`` *mod*\ \|\ *file.py*\ \|\ ``-``\ ]
++[*arg*\ ...]
++
++DESCRIPTION
++===========
++
++``pypy-sandbox`` is a wrapper around a "virtualized" version of PyPy,
++where an external process controls all input/output.
++This is a secure sandbox, it is safe to run any untrusted Python code
++with it.
++The Python code cannot see or modify any local file except via
++interaction with the external process.
++
++Any options after a ``--`` will be passed on to the wrapped
++sandbox-enabled PyPy.
++It supports the same options as the regular ``pypy``\ (1).
++
++OPTIONS
++=======
++
++--tmp *DIR*
++    The real directory that corresponds to the virtual ``/tmp``,
++    which is the virtual current dir (and is read-only).
++
++--heapsize *N*
++    Limit memory usage to *N* bytes, or kilo- mega- giga-bytes
++    with the ``k``, ``m`` or ``g`` suffix respectively.
++
++--timeout *N*
++    Limit execution time to N (real-time) seconds.
++
++--log *FILE*
++    Log all user input into the *FILE*.
++
++--verbose
++    Log all proxied system calls.
++    Requires ``python-py`` to be installed.
++
++SEE ALSO
++========
++
++**pypy**\ (1), **python**\ (1)
+--- a/pypy/doc/commandline_ref.rst
++++ b/pypy/doc/commandline_ref.rst
+@@ -8,3 +8,4 @@
+    :maxdepth: 1
+ 
+    man/pypy.1.rst
++   man/pypy-sandbox.1.rst
+--- a/pypy/doc/conf.py
++++ b/pypy/doc/conf.py
+@@ -222,6 +222,9 @@
+ man_pages = [
+   ('man/pypy.1', 'pypy',
+    u'fast, compliant alternative implementation of the Python language',
++   u'The PyPy Project', 1),
++  ('man/pypy-sandbox.1', 'pypy-sandbox',
++   u'Interact with a sandboxed PyPy subprocess',
+    u'The PyPy Project', 1)
+ ]
+ 

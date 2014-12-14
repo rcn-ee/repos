@@ -1,0 +1,473 @@
+pypy (2.4.0+dfsg-1~bpo70+20141214+1) wheezy; urgency=low
+
+  * Rebuild for repos.rcn-ee.net
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Sun, 14 Dec 2014 17:46:22 -0600
+
+pypy (2.4.0+dfsg-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update copyright.
+  * Refresh patches.
+  * Drop patches, superseded upstream: so_reuseport, sqlite-3.8.4.
+  * Patch fpic-archs: hppa and x32 require -fPIC (Closes: #760267).
+  * Don't attempt to build a JIT on x32.
+  * Patch: sandbox-access: Implement os.access, to get the sandbox working in
+    2.4.0.
+  * Update kFreeBSD releases in patch plat-gnukfreebsd.
+  * Clean up local variables in patch plat-linux2-differences.
+  * Add lintian overrides for pypy-lib-testsuite, that were missed in the
+    stdlib break-up.
+  * First multi-arch steps:
+    - Patch: multiarch: Add multiarch tag to C extension file names.
+    - Build-Depend on dh-exec, to ease installing to multiarch paths.
+    - Move pypy-c-sandbox to a multiarch path.
+    - Fully qualify (cffi) extension filenames with multiarch tags.
+
+ -- Stefano Rivera <stefanor@debian.org>  Wed, 24 Sep 2014 00:51:03 -0700
+
+pypy (2.3.1+dfsg-1) unstable; urgency=medium
+
+  * New upstream point release.
+    - Includes gdbm module.
+      + Build-Depend on libgdbm-dev.
+  * Refresh patches.
+  * Drop patches, superseded upstream: _struct, gcc-4.9, unknown-cpu.
+  * Update copyright.
+
+ -- Stefano Rivera <stefanor@debian.org>  Tue, 10 Jun 2014 02:07:03 +0200
+
+pypy (2.3+dfsg-3) unstable; urgency=medium
+
+  * And similarly, avoid an assertion about VFP support, in an ARM specific
+    path, in the same function, fixing an FTBFS on armel.
+
+ -- Stefano Rivera <stefanor@debian.org>  Tue, 27 May 2014 01:55:01 +0200
+
+pypy (2.3+dfsg-2) unstable; urgency=medium
+
+  * Patch unknown-cpu: Fix an FTBFS on archs which don't have JIT support, due
+    to the use of a previously JIT-specific CPU detection function.
+
+ -- Stefano Rivera <stefanor@debian.org>  Sun, 25 May 2014 22:51:01 +0200
+
+pypy (2.3+dfsg-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Refresh patches.
+  * Drop patches, superseded upstream: fpic-ppc, multiprocessing-typos,
+    site-builddir, webbrowser, pypirc-secure.
+  * PyPy.h isn't copied in at build time (unlike all the other headers)
+  * Patch: _struct - Like CPython, the built-in module should be "_struct",
+    imported.
+  * Patch: gcc-4.9 - Build on GCC 4.9 (Closes: #746892)
+  * Patch: sqlite-3.8.4 - Test suite fix for 3.8.4 compatibility.
+
+ -- Stefano Rivera <stefanor@debian.org>  Sun, 25 May 2014 16:51:43 +0200
+
+pypy (2.2.1+dfsg-3) unstable; urgency=medium
+
+  * fpic-ppc: Compile with -fPIC on PPC.
+  * Put exits in the right places in the maintainer scripts (Closes: #747177)
+
+ -- Stefano Rivera <stefanor@debian.org>  Tue, 06 May 2014 12:00:44 +0200
+
+pypy (2.2.1+dfsg-2) unstable; urgency=medium
+
+  * pep3147-stdlib: In compileall, only create __pycache__ directories when
+    we've found a .py file. (Closes: #742132)
+  * Bump Standards-Version to 3.9.5, no changes needed.
+  * Abort in postinst if PyPy won't run on the machine's CPU. Unfortunately,
+    the non-SSE2 build is currently broken. (Closes: #737018)
+
+ -- Stefano Rivera <stefanor@debian.org>  Sun, 04 May 2014 23:57:47 +0200
+
+pypy (2.2.1+dfsg-1) unstable; urgency=low
+
+  * New upstream bugfix release.
+    - Fixes a ref-counting bug in socket.
+  * Drop build-dep on execstack. Doesn't appear to be necessary any more (and
+    doesn't work on all achitectures).
+
+ -- Stefano Rivera <stefanor@debian.org>  Wed, 27 Nov 2013 11:41:10 -0800
+
+pypy (2.2.0+dfsg-1) unstable; urgency=low
+
+  * New upstream release.
+  * Refresh patches.
+  * Add new upstream copyright holders to debian/copyright.
+  * Drop test_bootstrap-path patch, applied upstream.
+  * pypy{clean,compile}: Perform a logical and instead of or, when -p and a
+    directory are specified (matching pycompile semantics).
+  * Disable JIT on armel. ARMv5 isn't supported.
+  * Drop build-dep on valgrind on armel. It's no longer a supported platform
+    for valgrind (Closes: #729141).
+  * Bump debian/compat to 9, for executable dh_install scripts.
+  * Split the stdlib test suite into a new binary package: pypy-lib-testsuite.
+  * Split the _tkinter module into a new binary package: pypy-tk.
+  * Run pypyclean on the stdlib before upgrading.
+
+ -- Stefano Rivera <stefanor@debian.org>  Sat, 16 Nov 2013 23:05:19 +0000
+
+pypy (2.1.0+dfsg-3) unstable; urgency=low
+
+  * The wildcard for ARM is any-arm.
+  * Build the syslog cffi module in lib_pypy.
+
+ -- Stefano Rivera <stefanor@debian.org>  Thu, 12 Sep 2013 10:33:55 +0200
+
+pypy (2.1.0+dfsg-2) unstable; urgency=low
+
+  * Disable continuation on all architectures except x86 and ARM (requires
+    porting).
+
+ -- Stefano Rivera <stefanor@debian.org>  Tue, 10 Sep 2013 17:10:34 +0200
+
+pypy (2.1.0+dfsg-1) unstable; urgency=low
+
+  * New upstream release.
+    - The ARM JIT is now supported and enabled.
+    - Several bug fixes and performance improvements.
+  * Refresh patches.
+  * Drop patches, applied/superseded upstream:
+    - shared-ffi
+    - distutils-cflags
+    - gnukfreebsd
+    - l2-cache-detection
+  * Add pypycompile and pypyclean scripts for dh_pypy packages.
+    - Use for byte-compiling the stdlib.
+  * Build cffi module for tkinter.
+  * Patch: test_bootstrap-path - avoid a spurious test failure when TMPDIR is
+    set to inside the source tree.
+  * Add /usr/lib/pypy/runtime.d, so that module re-byte-compilation can be
+    triggered on minor version updates. As we only have one pypy version
+    installed concurrently, only .rtupdate is supported.
+
+ -- Stefano Rivera <stefanor@debian.org>  Sun, 01 Sep 2013 09:35:58 +0200
+
+pypy (2.0.2+dfsg-4) unstable; urgency=low
+
+  * Relax the RAM check on kfreebsd-amd64, which currently has 3GB buildds.
+
+ -- Stefano Rivera <stefanor@debian.org>  Fri, 28 Jun 2013 01:12:07 +0200
+
+pypy (2.0.2+dfsg-3) unstable; urgency=low
+
+  * Let dh_usrlocal handle the empty directories in /usr/local, and create
+    them with dh_installdirs. (Closes: #713958)
+  * Use a more conservative RAM requirement on x86. (Closes: #713787)
+
+ -- Stefano Rivera <stefanor@debian.org>  Mon, 24 Jun 2013 18:44:22 +0200
+
+pypy (2.0.2+dfsg-2) unstable; urgency=low
+
+  * Create empty directories in /usr/local
+  * Fix a bug in l2-cache-detection on sparc, causing FTBFS due to the
+    interpreter aborting on startup.
+
+ -- Stefano Rivera <stefanor@debian.org>  Sun, 23 Jun 2013 23:07:54 +0200
+
+pypy (2.0.2+dfsg-1) unstable; urgency=low
+
+  * New upstream bug-fix release.
+    - mainly fatal errors or crashes in the stdlib, and a JIT bug around
+      foreign functions calls in multi-threaded programs.
+  * Refresh patches.
+  * Drop docs-version patch.
+  * Clean up after cffi tests.
+  * so_reuseport: Avoid test failures on machines without SO_REUSEPORT
+    support.
+  * gnukfreebsd: Add the GNUkFreebsd platform descriptions that were
+    accidentally deleted upstream.
+  * Drop B-D on python-greenlet, unneeded.
+  * l2-cache-detection: Add L2 cache size detection code for non-x86
+    architectures.
+  * Bullet pypy's description to make it more readable. Thanks Jonas
+    Smedegaard. (Closes: #709091)
+  * Disable ARM JIT until declared stable by upstream.
+
+ -- Stefano Rivera <stefanor@debian.org>  Fri, 24 May 2013 01:08:28 +0200
+
+pypy (2.0.0+dfsg-1) unstable; urgency=low
+
+  * New upstream release (Closes: #698524)
+  * Upload to unstable.
+  * Refresh patches.
+  * Update copyright.
+  * Drop patches, applied/superseded upstream:
+    - test_telnetlib-deadlock
+    - test_subprocess
+    - ignore-paddd
+    - issue670664
+    - fpic-archs
+    - gnukfreebsd-link-rt
+  * Patches:
+    - pep3147-core: Drop validation of .py filenames. This is behaviour is now
+      expected in tests.
+    - pep3147-stdlib: Use cached_from_source in added tests.
+    - distutils-install-layout: Let pydoc handle dist-packages the same as
+      site-packages.
+    - shared-ffi: Don't static link with libffi.
+    - docs-version: Update docs versions for 2.0 final.
+    - distutils-cflags: Build cffi modules when CFLAGS contains a space.
+  * Export TERM=dumb for lib-python tests (if not already in the environment).
+    Required by test_readline.
+  * Build-Depend on procps, for test_signal.
+  * Build-Depend on netbase, for test_socket.
+  * Build-Depend on libsqlite3-dev, _sqlite3 (which now uses CFFI).
+  * Build with JIT on ARM.
+  * Use valgrind headers on mips, now that they are available there.
+  * Update paths for the rpython-pypy split.
+  * Rename python-pypy.translator.sandbox -> python-pypy.sandbox, following
+    the pypy-rpython split.
+  * cffi is now bundled in the stdlib:
+    - Move _cffi shared libraries out of __pycache__, and put them in the
+      pypy binary package.
+    - Provides pypy-cffi.
+  * Byte-compile lib_pypy, too.
+  * Bumped Standards-Version to 3.9.4, no changes needed.
+  * Build-Depend on python-greenlet, enabling stackless builds on, sparc and
+    sparc64, now that it's available there. Blacklist sh4.
+  * Use valgrind headers on mipsel, now that they are available.
+
+ -- Stefano Rivera <stefanor@debian.org>  Fri, 10 May 2013 20:15:26 +0200
+
+pypy (1.9+dfsg-2) experimental; urgency=low
+
+  * Redirect translation output to stdout. Buildds don't watch stderr for
+    checking timeouts.
+  * Do enforce the RAM check on Ubuntu, for non-primary-archive builds.
+
+ -- Stefano Rivera <stefanor@debian.org>  Thu, 12 Jul 2012 21:51:31 -0600
+
+pypy (1.9+dfsg-1) experimental; urgency=low
+
+  * New upstream release.
+  * Refresh patches.
+  * Update patches for the removal of lib-python/modified-2.7.
+  * Drop patches, applied upstream:
+    - ignore-shufps
+    - pypy-help
+  * Apply patches applied in python2.7 2.7.3~rc2-2:
+    - pypirc-secure: CVE-2011-4944, distutils creates ~/.pypirc insecurely.
+    - xdg-gvfs-open: Use xdg-open/gvfs-open in webbrowser.
+  * Moved RAM check and translation options generation into shell scripts in
+    debian/scripts. They were getting unwieldy in debian/rules.
+  * Updated machine-readable copyright Format to 1.0.
+    - Removed mentions of lib-python/modified-2.7.
+  * Bumped Standards-Version to 3.9.3, no changes needed.
+  * Use valgrind headers on ppc64 and s390x, now that they are available
+    there.
+  * Don't enforce the RAM check on Ubuntu.
+  * Patch ignore-paddd: Update ignored operations in trackinggcroot, as our
+    gcc4.7 produces paddd on i386.
+
+ -- Stefano Rivera <stefanor@debian.org>  Tue, 19 Jun 2012 14:42:45 +0200
+
+pypy (1.8+dfsg-2) experimental; urgency=low
+
+  * Build the sandboxed PyPy with -O2, not -O3 or -Ojit.  Sandboxed pypy can't
+    be built with profile-guided optimisations.
+    - Use generational gc, now that we aren't using the JIT.
+  * Patch gnukfreebsd-link-rt: Link with -lrt on GNU/kFreeBSD.
+
+ -- Stefano Rivera <stefanor@debian.org>  Sat, 18 Feb 2012 09:28:14 +0200
+
+pypy (1.8+dfsg-1) experimental; urgency=low
+
+  * New upstream release.
+  * Refresh patches.
+  * Drop patches, applied upstream:
+    - compiler-flags
+    - docs-version
+    - hardcoded-nursery-size
+    - test_ssl-errno0
+    - test_unix_socket_connect
+    - big-endian-test_codecs
+    - big-endian-clibffi
+    - kfreebsd-glibc
+    - kfreebsd-test-hangs
+  * Build manpage from upstream docs.
+  * Patch doc-envvars: Update manpage, to include environment variables.
+  * Patch fpic-archs: Build shared libraries with -fPIC on arm and mips.
+  * Patch pypy-help: Make --help not crash.
+  * Update copyright contributors and years.
+  * pep3147-core: Assert the absence of nulls (assert_str0) on the pathnames
+    provided in make_compiled_pathname and make_source_pathname.
+  * Build sandboxed pypy: python-pypy.translator.sandbox
+    - Patch ignore-shufps: Fix build failure.
+    - Patch sandbox-bin: Change pypy_interact's --help to name it pypy-sandbox
+    - Patch sandbox-dependencies: Reduce the amount of pypy source that
+      pypy-sandobx needs.
+    - Patch sandbox-manpage: pypy-sandbox manpage.
+    - B-D on python (>= 2.6.6-11~) for dh_python2 with .pyinstall support.
+  * Run translations and tests with unbuffered I/O, to combat build timeouts.
+    - Lower build-time RAM requirement to 1.4G.
+
+ -- Stefano Rivera <stefanor@debian.org>  Tue, 14 Feb 2012 15:10:21 +0200
+
+pypy (1.7+dfsg-6) experimental; urgency=low
+
+  * Restrict architectures to linux-any and kfreebsd-any. Not yet ported to
+    hurd.
+  * Include swap in the RAM calculation on s390*.
+  * Forwarded many patches upstream.
+  * Drop user-prefix patch, and adjust distutils-install-layout patch and
+    package install layout to match.
+  * Update manpage, to include environment variables.
+
+ -- Stefano Rivera <stefanor@debian.org>  Mon, 06 Feb 2012 16:50:16 +0200
+
+pypy (1.7+dfsg-5) experimental; urgency=low
+
+  * Revert memory requirement bump. Timeout was unrelated.
+  * kfreebsd:
+    - Patch plat-gnkfreebsd: Add gnukfreebsd9 platform.
+    - Patch kfreebsd-glibc: Adjust platform checks to be aware of the
+      difference between gnkfreebsd and freebsd.
+    - Patch kfreebsd-test-hangs: Skip tests that deadlock.
+
+ -- Stefano Rivera <stefanor@debian.org>  Sun, 22 Jan 2012 02:20:06 +0200
+
+pypy (1.7+dfsg-4) experimental; urgency=low
+
+  * Really upload to experimental.
+  * Patches:
+    - big-endian-test_codecs: Add big endian test case to
+      test_utf16_encode_decode.
+    - big-endian-clibffi: Correctly handle ushort, ubyte, byte, and char types
+      in clibffi on big endian.
+    - kfreebsd-glibc: Don't attempt to link to libcompat. Link with libdl.
+  * Bump memory requirement to 2100 MiB (32-bit), to avoid timeout on
+    caballero (4G, ia64).
+  * kfreebsd:
+    - Enable JIT.
+    - Augment, rather than replace, compiler flags from the environment.
+  * Don't fail without execstack.
+
+ -- Stefano Rivera <stefanor@debian.org>  Mon, 16 Jan 2012 01:10:27 +0200
+
+pypy (1.7+dfsg-3) experimental; urgency=low
+
+  * Add pypy.1 manpage.
+  * Don't BD on greenlet on architectures which it's known not to be ported
+    to.
+  * Don't BD on execstack on non-linux.
+  * Suppress stdlib bytecompilation output.
+  * Avoid timeout during build, by running make ourselves. PyPy buffers all
+    make output, until it completes.
+
+ -- Stefano Rivera <stefanor@debian.org>  Sat, 14 Jan 2012 17:48:30 +0200
+
+pypy (1.7+dfsg-2) experimental; urgency=low
+
+  * Fix architecture dependant only builds.
+  * Remove spurious copyright newline.
+
+ -- Stefano Rivera <stefanor@debian.org>  Mon, 09 Jan 2012 15:52:29 +0200
+
+pypy (1.7+dfsg-1) experimental; urgency=low
+
+  * Re-introduce package in experimental.
+  * New upstream version.
+  * New packaging:
+    - Drop rpython development bits from pypy-dev.
+    - Drop pypy-stackless: Now part of the default configuration.
+  * Incorporate all useful stdlib patches from python2.7
+  * PEP3147 support
+
+ -- Stefano Rivera <stefanor@debian.org>  Mon, 09 Jan 2012 13:32:00 +0200
+
+pypy (1.0.0-svn55443-1) unstable; urgency=low
+
+  * New upstream snapshot.
+    - Doesn't hardcode libc6.so.6; fixes FTBFS on ia64 (Closes: #440331)
+  * Don't build pypy-stackless on platforms the greenlet module has not been
+    ported to. (Closes: #475868)
+  * Run tests after build on request by upstream.
+
+ -- Chris Lamb <chris@chris-lamb.co.uk>  Sat, 31 May 2008 18:50:58 +0100
+
+pypy (1.0.0-svn51288-1) unstable; urgency=low
+
+  * New upstream release. (Closes: #459118)
+  * New maintainer. (Closes: #455734)
+  * Bump debhelper compatibility version.
+  * Refresh and tidy package descriptions.
+  * Tidy debian/configure.py, debian/rules, Lintian overrides.
+  * Add pypy(1), py.py(1), pypy-translate(1), jscompile(1) and
+    pypy-stackless(1) manpages.
+  * Add get-orig-source target in debian/rules.
+  * Use quilt to manage Thiemo Seufer's MIPS and MIPSEL patch.
+  * Use PyPy-specific temporary directory prefixes. (Closes: #452851)
+
+ -- Chris Lamb <chris@chris-lamb.co.uk>  Tue, 05 Feb 2008 13:26:11 +0000
+
+pypy (1.0.0-svn51091-1) unstable; urgency=low
+
+  * New upstream svn snapshot, fixing 64bit build (closes: #462008)
+
+ -- Alexandre Fayolle <afayolle@debian.org>  Mon, 28 Jan 2008 09:40:48 +0100
+
+pypy (1.0.0-svn50146-2) unstable; urgency=low
+
+  * Added missing build dependency on zlib1g-dev (closes: #460696)
+
+ -- Alexandre Fayolle <afayolle@debian.org>  Mon, 14 Jan 2008 18:15:32 +0100
+
+pypy (1.0.0-svn50146-1) unstable; urgency=low
+
+  * Acknowledge NMU (closes: #431197)
+  * Apply Yaroslav Hachenko's patch to use more recent svn snapshot, and
+    enable threading support (closes: #458953)
+  * Apply Thiemo Seufer's patch to enable mips and mipsel support
+    (closes: #459520)
+  * Added build dep on procps (closes: #444652)
+  * Bumped up standards to 3.7.3
+  * Note that pypy is currently under ITA: I lack time to properly follow
+    upstream developments, and all patches and NMU's are welcome. If you'd
+    like to adopt pypy, just send me an email to notify me and jump for
+    it. Offers to co-maintain are welcome too. Thanks.
+
+ -- Alexandre Fayolle <afayolle@debian.org>  Mon, 14 Jan 2008 09:46:11 +0100
+
+pypy (1.0.0-3.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Disable build of upstream removed logic object space. Remove pypy-logic
+    package. (closes: #442060)
+  * Move build output away from /tmp. (closes: #452850)
+  * Move compile step out of the main translation. This reduces the memory
+    footprint by one third.
+
+ -- Bastian Blank <waldi@debian.org>  Tue, 27 Nov 2007 12:08:06 +0000
+
+pypy (1.0.0-3) unstable; urgency=low
+
+  * Use more conservative options for platforms for which support is uncertain
+  * Enable check of available memory during configuration
+  * Packages are once again arch: any
+
+ -- Alexandre.Fayolle <afayolle@debian.org>  Wed, 18 Jul 2007 12:57:28 +0200
+
+pypy (1.0.0-2) unstable; urgency=low
+
+  * Updated debian/copyright (Closes: #423603)
+  * Removed support for archs not supported upstream (Closes: #426265, #423725)
+  * Adds missing conftest.py (Closes: #428539)
+
+ -- Alexandre.Fayolle <afayolle@debian.org>  Thu, 28 Jun 2007 12:25:53 +0200
+
+pypy (1.0.0-1) unstable; urgency=low
+
+  * Fixed debian/copyright and reupload (Closes: #326892)
+  * New upstream release
+
+ -- Alexandre Fayolle <afayolle@debian.org>  Fri, 13 Apr 2007 09:33:09 +0200
+
+pypy (0.99.0-1) experimental; urgency=low
+
+  * Initial release (Closes: #326892)
+
+ -- Alexandre Fayolle <afayolle@debian.org>  Mon, 19 Feb 2007 10:47:33 +0100
+

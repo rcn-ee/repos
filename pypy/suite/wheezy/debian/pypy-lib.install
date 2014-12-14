@@ -1,0 +1,21 @@
+#!/bin/sh
+set -euf
+
+cat << EOF
+debian/runtime.d                    /usr/lib/pypy
+lib-python/conftest.py              /usr/lib/pypy/lib-python
+lib-python/stdlib-version.*         /usr/lib/pypy/lib-python
+lib-python/2.7/test/__init__.py     /usr/lib/pypy/lib-python/2.7/test
+lib-python/2.7/test/pystone.py      /usr/lib/pypy/lib-python/2.7/test
+lib-python/2.7/test/regrtest.py     /usr/lib/pypy/lib-python/2.7/test
+lib-python/2.7/test/test_support.py /usr/lib/pypy/lib-python/2.7/test
+site-packages/README                /usr/lib/pypy/dist-packages
+EOF
+find lib_pypy -type f \
+	! '(' -path '*/ctypes_config_cache/_*_.py' -a ! -name __init__.py ')' \
+	! -path '*/__pycache__/*' \
+	! -path '*/_tkinter/*' \
+	-printf '%p\t/usr/lib/pypy/%h\n'
+find lib-python/2.7 -type f \
+	! '(' -path '*/test/*' -o -path '*/tests/*' ')' \
+	-printf '%p\t/usr/lib/pypy/%h\n'

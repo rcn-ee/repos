@@ -1,0 +1,12 @@
+#!/usr/bin/python
+import os
+import sys
+
+import pypy.sandbox
+
+basedir = os.path.dirname(pypy.sandbox.__file__)
+# Find our embedded rpython bits
+sys.path.insert(0, basedir)
+
+fn = os.path.join(basedir, 'pypy_interact.py')
+execfile(fn)

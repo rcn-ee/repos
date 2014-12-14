@@ -1,0 +1,102 @@
+#!/usr/bin/pypy
+
+import argparse
+import itertools
+import os
+import re
+import py_compile
+import subprocess
+import sys
+
+
+def abort(message):
+    print >> sys.stderr, message
+    sys.exit(1)
+
+
+def package_modules(package):
+    '''Iterate through all python modules in an install Debian package'''
+    p = subprocess.Popen(('dpkg', '-L', package), stdout=subprocess.PIPE,
+                         stderr=subprocess.PIPE)
+    files, stderr = p.communicate()
+    if p.returncode != 0:
+        abort('Unable to list files in %s. Is it installed?' % package)
+
+    for fn in files.splitlines():
+        if fn.endswith('.py'):
+            yield fn
+
+
+def find_modules(root):
+    '''Iterate through all python modules in directory tree root'''
+    if os.path.isfile(root):
+        yield root
+        return
+
+    for dirpath, dirnames, filenames in os.walk(root):
+        for fn in filenames:
+            if fn.endswith('.py'):
+                yield os.path.join(dirpath, fn)
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description='Byte-compile Python source files in a package, for PyPy')
+    parser.add_argument('-p', '--package', metavar='PACKAGE',
+                        action='append', default=[],
+                        help='Debian package to byte-compile '
+                             '(may be specified multiple times)')
+    parser.add_argument('directory', nargs='*',
+                        help='Directory tree (or file) to byte-compile')
+    parser.add_argument('-X', '--exclude', metavar='REGEXPR',
+                        action='append', default=[], type=re.compile,
+                        help='Exclude items that match given REGEXPR '
+                             '(may be specified multiple times)')
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        help='Be more verbose')
+    parser.add_argument('-q', '--quiet', action='store_true',
+                        help='Be quiet')
+    parser.add_argument('-V', metavar='VRANGE', dest='vrange',
+                        help=argparse.SUPPRESS)
+    parser.add_argument('-O', action='store_true', dest='pyo',
+                        help=argparse.SUPPRESS)
+    args = parser.parse_args()
+
+    if not (args.package or args.directory):
+        parser.error('Either a package or a directory must be specified')
+    if args.quiet and args.verbose:
+        parser.error('--quiet and --verbose cannot both be specified')
+
+    if args.vrange:
+        print >> sys.stderr, '-V is ignored in pypycompile'
+    if args.pyo:
+        print >> sys.stderr, '-O is ignored in pypycompile'
+
+    modules_p = set(itertools.chain(*(
+        package_modules(package) for package in args.package)))
+    modules_d = set(itertools.chain(*(
+        find_modules(dir_) for dir_ in args.directory)))
+
+    if args.package and args.directory:
+        modules = modules_d & modules_p
+    else:
+        modules = modules_d | modules_p
+
+    modules = filter(lambda module: not any(pattern.match(module)
+                                            for pattern in args.exclude),
+                     modules)
+
+    for module in modules:
+        if args.verbose:
+            print 'Byte-compiling %s' % module
+        try:
+            py_compile.compile(module, doraise=True)
+        except py_compile.PyCompileError as e:
+            if not args.quiet:
+                print >> sys.stderr, ('Failed to byte-compile %s: %s'
+                                      % (module, e.msg))
+
+if __name__ == '__main__':
+    main()
+
+# vim: ft=python

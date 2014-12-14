@@ -1,0 +1,1348 @@
+Description: PEP3147 changes to lib-python
+ Backported from cpython's PEP3147 commit
+Origin: cpython: http://hg.python.org/cpython/rev/7b69e630d237
+Author: Barry Warsaw <barry@python.org>
+Author: Stefano Rivera <stefanor@debian.org>
+Last-Update: 2013-02-23
+
+--- a/lib-python/2.7/compileall.py
++++ b/lib-python/2.7/compileall.py
+@@ -11,6 +11,7 @@
+ See module py_compile for details of the actual byte-compilation.
+ """
+ import os
++import errno
+ import sys
+ import py_compile
+ import struct
+@@ -19,7 +20,7 @@
+ __all__ = ["compile_dir","compile_file","compile_path"]
+ 
+ def compile_dir(dir, maxlevels=10, ddir=None,
+-                force=0, rx=None, quiet=0):
++                force=False, rx=None, quiet=False, legacy=False):
+     """Byte-compile all modules in the given directory tree.
+ 
+     Arguments (only dir is required):
+@@ -28,8 +29,9 @@
+     maxlevels: maximum recursion level (default 10)
+     ddir:      the directory that will be prepended to the path to the
+                file as it is compiled into each byte-code file.
+-    force:     if 1, force compilation, even if timestamps are up-to-date
+-    quiet:     if 1, be quiet during compilation
++    force:     if True, force compilation, even if timestamps are up-to-date
++    quiet:     if True, be quiet during compilation
++    legacy:    if True, produce legacy pyc paths instead of PEP 3147 paths
+     """
+     if not quiet:
+         print 'Listing', dir, '...'
+@@ -47,18 +49,20 @@
+         else:
+             dfile = None
+         if not os.path.isdir(fullname):
+-            if not compile_file(fullname, ddir, force, rx, quiet):
++            if not compile_file(fullname, ddir, force, rx, quiet, legacy):
+                 success = 0
+         elif maxlevels > 0 and \
+              name != os.curdir and name != os.pardir and \
+              os.path.isdir(fullname) and \
+-             not os.path.islink(fullname):
++             not os.path.islink(fullname) and \
++             name != '__pycache__':
+             if not compile_dir(fullname, maxlevels - 1, dfile, force, rx,
+-                               quiet):
++                               quiet, legacy):
+                 success = 0
+     return success
+ 
+-def compile_file(fullname, ddir=None, force=0, rx=None, quiet=0):
++def compile_file(fullname, ddir=None, force=0, rx=None, quiet=False,
++                 legacy=False):
+     """Byte-compile one file.
+ 
+     Arguments (only fullname is required):
+@@ -66,8 +70,9 @@
+     fullname:  the file to byte-compile
+     ddir:      if given, the directory name compiled in to the
+                byte-code file.
+-    force:     if 1, force compilation, even if timestamps are up-to-date
+-    quiet:     if 1, be quiet during compilation
++    force:     if True, force compilation, even if timestamps are up-to-date
++    quiet:     if True, be quiet during compilation
++    legacy:    if True, produce legacy pyc paths instead of PEP 3147 paths
+     """
+     success = 1
+     name = os.path.basename(fullname)
+@@ -82,11 +87,20 @@
+     if os.path.isfile(fullname):
+         head, tail = name[:-3], name[-3:]
+         if tail == '.py':
++            if legacy:
++                cfile = fullname + ('c' if __debug__ else 'o')
++            else:
++                cfile = imp.cache_from_source(fullname)
++                cache_dir = os.path.dirname(cfile)
++                try:
++                    os.mkdir(cache_dir)
++                except OSError, error:
++                    if error.errno != errno.EEXIST:
++                        raise
+             if not force:
+                 try:
+                     mtime = int(os.stat(fullname).st_mtime)
+                     expect = struct.pack('<4sl', imp.get_magic(), mtime)
+-                    cfile = fullname + (__debug__ and 'c' or 'o')
+                     with open(cfile, 'rb') as chandle:
+                         actual = chandle.read(8)
+                     if expect == actual:
+@@ -96,7 +110,7 @@
+             if not quiet:
+                 print 'Compiling', fullname, '...'
+             try:
+-                ok = py_compile.compile(fullname, None, dfile, True)
++                ok = py_compile.compile(fullname, cfile, dfile, True)
+             except py_compile.PyCompileError,err:
+                 if quiet:
+                     print 'Compiling', fullname, '...'
+@@ -110,15 +124,17 @@
+                     success = 0
+     return success
+ 
+-def compile_path(skip_curdir=1, maxlevels=0, force=0, quiet=0):
++def compile_path(skip_curdir=1, maxlevels=0, force=False, quiet=False,
++                 legacy=False):
+     """Byte-compile all module on sys.path.
+ 
+     Arguments (all optional):
+ 
+     skip_curdir: if true, skip current directory (default true)
+     maxlevels:   max recursion level (default 0)
+-    force: as for compile_dir() (default 0)
+-    quiet: as for compile_dir() (default 0)
++    force: as for compile_dir() (default False)
++    quiet: as for compile_dir() (default False)
++    legacy: as for compile_dir() (default False)
+     """
+     success = 1
+     for dir in sys.path:
+@@ -126,7 +142,8 @@
+             print 'Skipping current directory'
+         else:
+             success = success and compile_dir(dir, maxlevels, None,
+-                                              force, quiet=quiet)
++                                              force, quiet=quiet,
++                                              legacy=legacy)
+     return success
+ 
+ def expand_args(args, flist):
+@@ -152,7 +169,7 @@
+     """Script main program."""
+     import getopt
+     try:
+-        opts, args = getopt.getopt(sys.argv[1:], 'lfqd:x:i:')
++        opts, args = getopt.getopt(sys.argv[1:], 'lfqd:x:i:b')
+     except getopt.error, msg:
+         print msg
+         print "usage: python compileall.py [-l] [-f] [-q] [-d destdir] " \
+@@ -177,23 +194,26 @@
+         print "-i file: add all the files and directories listed in file to " \
+               "the list considered for"
+         print '         compilation; if "-", names are read from stdin'
++        print "-b: Produce legacy byte-compile file paths"
+ 
+         sys.exit(2)
+     maxlevels = 10
+     ddir = None
+-    force = 0
+-    quiet = 0
++    force = False
++    quiet = False
+     rx = None
+     flist = None
++    legacy = False
+     for o, a in opts:
+         if o == '-l': maxlevels = 0
+         if o == '-d': ddir = a
+-        if o == '-f': force = 1
+-        if o == '-q': quiet = 1
++        if o == '-f': force = True
++        if o == '-q': quiet = True
+         if o == '-x':
+             import re
+             rx = re.compile(a)
+         if o == '-i': flist = a
++        if o == '-b': legacy = True
+     if ddir:
+         if len(args) != 1 and not os.path.isdir(args[0]):
+             print "-d destdir require exactly one directory argument"
+@@ -210,13 +230,14 @@
+                 for arg in args:
+                     if os.path.isdir(arg):
+                         if not compile_dir(arg, maxlevels, ddir,
+-                                           force, rx, quiet):
++                                           force, rx, quiet, legacy):
+                             success = 0
+                     else:
+-                        if not compile_file(arg, ddir, force, rx, quiet):
++                        if not compile_file(arg, ddir, force, rx,
++                                            quiet, legacy):
+                             success = 0
+         else:
+-            success = compile_path()
++            success = compile_path(legacy=legacy)
+     except KeyboardInterrupt:
+         print "\n[interrupted]"
+         success = 0
+--- a/lib-python/2.7/py_compile.py
++++ b/lib-python/2.7/py_compile.py
+@@ -4,6 +4,7 @@
+ """
+ 
+ import __builtin__
++import errno
+ import imp
+ import marshal
+ import os
+@@ -71,20 +72,18 @@
+ def compile(file, cfile=None, dfile=None, doraise=False):
+     """Byte-compile one Python source file to Python bytecode.
+ 
+-    Arguments:
+-
+-    file:    source filename
+-    cfile:   target filename; defaults to source with 'c' or 'o' appended
+-             ('c' normally, 'o' in optimizing mode, giving .pyc or .pyo)
+-    dfile:   purported filename; defaults to source (this is the filename
+-             that will show up in error messages)
+-    doraise: flag indicating whether or not an exception should be
+-             raised when a compile error is found. If an exception
+-             occurs and this flag is set to False, a string
+-             indicating the nature of the exception will be printed,
+-             and the function will return to the caller. If an
+-             exception occurs and this flag is set to True, a
+-             PyCompileError exception will be raised.
++    :param file: The source file name.
++    :param cfile: The target byte compiled file name.  When not given, this
++        defaults to the PEP 3147 location.
++    :param dfile: Purported file name, i.e. the file name that shows up in
++        error messages.  Defaults to the source file name.
++    :param doraise: Flag indicating whether or not an exception should be
++        raised when a compile error is found.  If an exception occurs and this
++        flag is set to False, a string indicating the nature of the exception
++        will be printed, and the function will return to the caller. If an
++        exception occurs and this flag is set to True, a PyCompileError
++        exception will be raised.
++    :return: Path to the resulting byte compiled file.
+ 
+     Note that it isn't necessary to byte-compile Python modules for
+     execution efficiency -- Python itself byte-compiles a module when
+@@ -119,7 +118,12 @@
+             sys.stderr.write(py_exc.msg + '\n')
+             return
+     if cfile is None:
+-        cfile = file + (__debug__ and 'c' or 'o')
++        cfile = imp.cache_from_source(file)
++    try:
++        os.mkdir(os.path.dirname(cfile))
++    except OSError, error:
++        if error.errno != errno.EEXIST:
++            raise
+     with open(cfile, 'wb') as fc:
+         fc.write('\0\0\0\0')
+         wr_long(fc, timestamp)
+@@ -127,6 +131,7 @@
+         fc.flush()
+         fc.seek(0, 0)
+         fc.write(MAGIC)
++    return cfile
+ 
+ def main(args=None):
+     """Compile several source files.
+--- a/lib-python/2.7/runpy.py
++++ b/lib-python/2.7/runpy.py
+@@ -67,6 +67,7 @@
+         run_globals.update(init_globals)
+     run_globals.update(__name__ = mod_name,
+                        __file__ = mod_fname,
++                       __cached__ = None,
+                        __loader__ = mod_loader,
+                        __package__ = pkg_name)
+     exec code in run_globals
+@@ -143,6 +144,7 @@
+        At the very least, these variables in __main__ will be overwritten:
+            __name__
+            __file__
++           __cached__
+            __loader__
+            __package__
+     """
+--- a/lib-python/2.7/test/script_helper.py
++++ b/lib-python/2.7/test/script_helper.py
+@@ -20,6 +20,9 @@
+ 
+ from test.test_support import strip_python_stderr
+ 
++from imp import source_from_cache
++from test.test_support import make_legacy_pyc
++
+ # Executing the interpreter in a subprocess
+ def _assert_python(expected_success, *args, **env_vars):
+     cmd_line = [sys.executable]
+@@ -111,20 +114,18 @@
+     script_file.close()
+     return script_name
+ 
+-def compile_script(script_name):
+-    py_compile.compile(script_name, doraise=True)
+-    if __debug__:
+-        compiled_name = script_name + 'c'
+-    else:
+-        compiled_name = script_name + 'o'
+-    return compiled_name
+-
+ def make_zip_script(zip_dir, zip_basename, script_name, name_in_zip=None):
+     zip_filename = zip_basename+os.extsep+'zip'
+     zip_name = os.path.join(zip_dir, zip_filename)
+     zip_file = zipfile.ZipFile(zip_name, 'w')
+     if name_in_zip is None:
+-        name_in_zip = os.path.basename(script_name)
++        parts = script_name.split(os.sep)
++        if len(parts) >= 2 and parts[-2] == '__pycache__':
++            legacy_pyc = make_legacy_pyc(source_from_cache(script_name))
++            name_in_zip = os.path.basename(legacy_pyc)
++            script_name = legacy_pyc
++        else:
++            name_in_zip = os.path.basename(script_name)
+     zip_file.write(script_name, name_in_zip)
+     zip_file.close()
+     #if test.test_support.verbose:
+@@ -147,8 +148,8 @@
+     script_name = make_script(zip_dir, script_basename, source)
+     unlink.append(script_name)
+     if compiled:
+-        init_name = compile_script(init_name)
+-        script_name = compile_script(script_name)
++        init_name = py_compile(init_name, doraise=True)
++        script_name = py_compile(script_name, doraise=True)
+         unlink.extend((init_name, script_name))
+     pkg_names = [os.sep.join([pkg_name]*i) for i in range(1, depth+1)]
+     script_name_in_zip = os.path.join(pkg_names[-1], os.path.basename(script_name))
+--- a/lib-python/2.7/test/test_compileall.py
++++ b/lib-python/2.7/test/test_compileall.py
+@@ -4,6 +4,8 @@
+ import py_compile
+ import shutil
+ import struct
++import sys
++import subprocess
+ import tempfile
+ from test import test_support
+ import unittest
+@@ -14,11 +16,11 @@
+     def setUp(self):
+         self.directory = tempfile.mkdtemp()
+         self.source_path = os.path.join(self.directory, '_test.py')
+-        self.bc_path = self.source_path + ('c' if __debug__ else 'o')
++        self.bc_path = imp.cache_from_source(self.source_path)
+         with open(self.source_path, 'w') as file:
+             file.write('x = 123\n')
+         self.source_path2 = os.path.join(self.directory, '_test2.py')
+-        self.bc_path2 = self.source_path2 + ('c' if __debug__ else 'o')
++        self.bc_path2 = imp.cache_from_source(self.source_path2)
+         shutil.copyfile(self.source_path, self.source_path2)
+ 
+     def tearDown(self):
+@@ -71,8 +73,61 @@
+         os.unlink(self.bc_path)
+         os.unlink(self.bc_path2)
+ 
++class CommandLineTests(unittest.TestCase):
++    """Test some aspects of compileall's CLI."""
++
++    def setUp(self):
++        self.addCleanup(self._cleanup)
++        self.directory = tempfile.mkdtemp()
++        self.pkgdir = os.path.join(self.directory, 'foo')
++        os.mkdir(self.pkgdir)
++        # Touch the __init__.py and a package module.
++        with open(os.path.join(self.pkgdir, '__init__.py'), 'w'):
++            pass
++        with open(os.path.join(self.pkgdir, 'bar.py'), 'w'):
++            pass
++        sys.path.insert(0, self.directory)
++
++    def _cleanup(self):
++        test_support.rmtree(self.directory)
++        assert sys.path[0] == self.directory, 'Missing path'
++        del sys.path[0]
++
++    def test_pep3147_paths(self):
++        # Ensure that the default behavior of compileall's CLI is to create
++        # PEP 3147 pyc/pyo files.
++        retcode = subprocess.call(
++            (sys.executable, '-m', 'compileall', '-q', self.pkgdir))
++        self.assertEqual(retcode, 0)
++        # Verify the __pycache__ directory contents.
++        cachedir = os.path.join(self.pkgdir, '__pycache__')
++        self.assertTrue(os.path.exists(cachedir))
++        ext = ('pyc' if __debug__ else 'pyo')
++        expected = sorted(base.format(imp.get_tag(), ext) for base in
++                          ('__init__.{}.{}', 'bar.{}.{}'))
++        self.assertEqual(sorted(os.listdir(cachedir)), expected)
++        # Make sure there are no .pyc files in the source directory.
++        self.assertFalse([pyc_file for pyc_file in os.listdir(self.pkgdir)
++                          if pyc_file.endswith(ext)])
++
++    def test_legacy_paths(self):
++        # Ensure that with the proper switch, compileall leaves legacy
++        # pyc/pyo files, and no __pycache__ directory.
++        retcode = subprocess.call(
++            (sys.executable, '-m', 'compileall', '-b', '-q', self.pkgdir))
++        self.assertEqual(retcode, 0)
++        # Verify the __pycache__ directory contents.
++        cachedir = os.path.join(self.pkgdir, '__pycache__')
++        self.assertFalse(os.path.exists(cachedir))
++        ext = ('pyc' if __debug__ else 'pyo')
++        expected = [base.format(ext) for base in ('__init__.{}', 'bar.{}')]
++        expected.extend(['__init__.py', 'bar.py'])
++        expected.sort()
++        self.assertEqual(sorted(os.listdir(self.pkgdir)), expected)
++
++
+ def test_main():
+-    test_support.run_unittest(CompileallTests)
++    test_support.run_unittest(CommandLineTests, CompileallTests)
+ 
+ 
+ if __name__ == "__main__":
+--- a/lib-python/2.7/test/test_imp.py
++++ b/lib-python/2.7/test/test_imp.py
+@@ -1,4 +1,7 @@
+ import imp
++import os
++import shutil
++import sys
+ import unittest
+ from test import test_support
+ 
+@@ -70,8 +73,147 @@
+             imp.reload(marshal)
+ 
+ 
++class PEP3147Tests(unittest.TestCase):
++    """Tests of PEP 3147."""
++
++    tag = imp.get_tag()
++
++    def test_cache_from_source(self):
++        # Given the path to a .py file, return the path to its PEP 3147
++        # defined .pyc file (i.e. under __pycache__).
++        self.assertEqual(
++            imp.cache_from_source('/foo/bar/baz/qux.py', True),
++            '/foo/bar/baz/__pycache__/qux.{}.pyc'.format(self.tag))
++
++    def test_cache_from_source_optimized(self):
++        # Given the path to a .py file, return the path to its PEP 3147
++        # defined .pyo file (i.e. under __pycache__).
++        if test_support.check_impl_detail(pypy=True):
++            # PyPy doesn't support .pyo, so we expect .pyc
++            extension = 'pyc'
++        else:
++            extension = 'pyo'
++        self.assertEqual(
++            imp.cache_from_source('/foo/bar/baz/qux.py', False),
++            '/foo/bar/baz/__pycache__/qux.{}.{}'.format(self.tag, extension))
++
++    def test_cache_from_source_cwd(self):
++        self.assertEqual(imp.cache_from_source('foo.py', True),
++                         os.sep.join(('__pycache__',
++                                      'foo.{}.pyc'.format(self.tag))))
++
++    def test_cache_from_source_override(self):
++        # When debug_override is not None, it can be any true-ish or false-ish
++        # value.
++        if test_support.check_impl_detail(pypy=True):
++            # PyPy doesn't support .pyo, so we expect .pyc
++            extension = 'pyc'
++        else:
++            extension = 'pyo'
++        self.assertEqual(
++            imp.cache_from_source('/foo/bar/baz.py', []),
++            '/foo/bar/__pycache__/baz.{}.pyc'.format(self.tag))
++        self.assertEqual(
++            imp.cache_from_source('/foo/bar/baz.py', [17]),
++            '/foo/bar/__pycache__/baz.{}.{}'.format(self.tag, extension))
++        # However if the bool-ishness can't be determined, the exception
++        # propagates.
++        class Bearish:
++            def __bool__(self): raise RuntimeError
++
++        if test_support.check_impl_detail(pypy=True):
++            # Pypy doesn't even determine bool-ishness
++            try:
++                imp.cache_from_source('/foo/bar/baz.py', Bearish())
++            except RuntimeError:
++                pass
++        else:
++            self.assertRaises(
++                RuntimeError,
++                imp.cache_from_source, '/foo/bar/baz.py', Bearish())
++
++    @unittest.skipIf(os.altsep is None,
++                     'test meaningful only where os.altsep is defined')
++    def test_altsep_cache_from_source(self):
++        # Windows path and PEP 3147.
++        self.assertEqual(
++            imp.cache_from_source('\\foo\\bar\\baz\\qux.py', True),
++            '\\foo\\bar\\baz\\__pycache__\\qux.{}.pyc'.format(self.tag))
++
++    @unittest.skipIf(os.altsep is None,
++                     'test meaningful only where os.altsep is defined')
++    def test_altsep_and_sep_cache_from_source(self):
++        # Windows path and PEP 3147 where altsep is right of sep.
++        self.assertEqual(
++            imp.cache_from_source('\\foo\\bar/baz\\qux.py', True),
++            '\\foo\\bar/baz\\__pycache__\\qux.{}.pyc'.format(self.tag))
++
++    @unittest.skipIf(os.altsep is None,
++                     'test meaningful only where os.altsep is defined')
++    def test_sep_altsep_and_sep_cache_from_source(self):
++        # Windows path and PEP 3147 where sep is right of altsep.
++        self.assertEqual(
++            imp.cache_from_source('\\foo\\bar\\baz/qux.py', True),
++            '\\foo\\bar\\baz/__pycache__/qux.{}.pyc'.format(self.tag))
++
++    def test_source_from_cache(self):
++        # Given the path to a PEP 3147 defined .pyc file, return the path to
++        # its source.  This tests the good path.
++        self.assertEqual(imp.source_from_cache(
++            '/foo/bar/baz/__pycache__/qux.{}.pyc'.format(self.tag)),
++            '/foo/bar/baz/qux.py')
++
++    def test_source_from_cache_bad_path(self):
++        # When the path to a pyc file is not in PEP 3147 format, a ValueError
++        # is raised.
++        self.assertRaises(
++            ValueError, imp.source_from_cache, '/foo/bar/bazqux.pyc')
++
++    def test_source_from_cache_no_slash(self):
++        # No slashes at all in path -> ValueError
++        self.assertRaises(
++            ValueError, imp.source_from_cache, 'foo.cpython-32.pyc')
++
++    def test_source_from_cache_too_few_dots(self):
++        # Too few dots in final path component -> ValueError
++        self.assertRaises(
++            ValueError, imp.source_from_cache, '__pycache__/foo.pyc')
++
++    def test_source_from_cache_too_many_dots(self):
++        # Too many dots in final path component -> ValueError
++        self.assertRaises(
++            ValueError, imp.source_from_cache,
++            '__pycache__/foo.cpython-32.foo.pyc')
++
++    def test_source_from_cache_no__pycache__(self):
++        # Another problem with the path -> ValueError
++        self.assertRaises(
++            ValueError, imp.source_from_cache,
++            '/foo/bar/foo.cpython-32.foo.pyc')
++
++    def test_package___file__(self):
++        # Test that a package's __file__ points to the right source directory.
++        os.mkdir('pep3147')
++        sys.path.insert(0, os.curdir)
++        def cleanup():
++            if sys.path[0] == os.curdir:
++                del sys.path[0]
++            shutil.rmtree('pep3147')
++        self.addCleanup(cleanup)
++        # Touch the __init__.py file.
++        with open('pep3147/__init__.py', 'w'):
++            pass
++        m = __import__('pep3147')
++        # Ensure we load the pyc file.
++        test_support.forget('pep3147')
++        m = __import__('pep3147')
++        self.assertEqual(m.__file__,
++                         os.sep.join(('.', 'pep3147', '__init__.py')))
++
++
+ def test_main():
+     tests = [
++        PEP3147Tests,
+         ReloadTests,
+         LockTests,
+     ]
+--- a/lib-python/2.7/test/test_pkg.py
++++ b/lib-python/2.7/test/test_pkg.py
+@@ -194,14 +194,14 @@
+ 
+         import t5
+         self.assertEqual(fixdir(dir(t5)),
+-                         ['__doc__', '__file__', '__name__',
++                         ['__cached__', '__doc__', '__file__', '__name__',
+                           '__package__', '__path__', 'foo', 'string', 't5'])
+         self.assertEqual(fixdir(dir(t5.foo)),
+-                         ['__doc__', '__file__', '__name__', '__package__',
+-                          'string'])
++                         ['__cached__', '__doc__', '__file__', '__name__',
++                          '__package__', 'string'])
+         self.assertEqual(fixdir(dir(t5.string)),
+-                         ['__doc__', '__file__', '__name__','__package__',
+-                          'spam'])
++                         ['__cached__', '__doc__', '__file__', '__name__',
++                          '__package__', 'spam'])
+ 
+     def test_6(self):
+         hier = [
+@@ -216,13 +216,13 @@
+ 
+         import t6
+         self.assertEqual(fixdir(dir(t6)),
+-                         ['__all__', '__doc__', '__file__',
++                         ['__all__', '__cached__', '__doc__', '__file__',
+                           '__name__', '__package__', '__path__'])
+         s = """
+             import t6
+             from t6 import *
+             self.assertEqual(fixdir(dir(t6)),
+-                             ['__all__', '__doc__', '__file__',
++                             ['__all__', '__cached__', '__doc__', '__file__',
+                               '__name__', '__package__', '__path__',
+                               'eggs', 'ham', 'spam'])
+             self.assertEqual(dir(), ['eggs', 'ham', 'self', 'spam', 't6'])
+@@ -250,18 +250,18 @@
+         t7, sub, subsub = None, None, None
+         import t7 as tas
+         self.assertEqual(fixdir(dir(tas)),
+-                         ['__doc__', '__file__', '__name__',
++                         ['__cached__', '__doc__', '__file__', '__name__',
+                           '__package__', '__path__'])
+         self.assertFalse(t7)
+         from t7 import sub as subpar
+         self.assertEqual(fixdir(dir(subpar)),
+-                         ['__doc__', '__file__', '__name__',
++                         ['__cached__', '__doc__', '__file__', '__name__',
+                           '__package__', '__path__'])
+         self.assertFalse(t7)
+         self.assertFalse(sub)
+         from t7.sub import subsub as subsubsub
+         self.assertEqual(fixdir(dir(subsubsub)),
+-                         ['__doc__', '__file__', '__name__',
++                         ['__cached__', '__doc__', '__file__', '__name__',
+                          '__package__', '__path__', 'spam'])
+         self.assertFalse(t7)
+         self.assertFalse(sub)
+--- a/lib-python/2.7/test/test_pkgimport.py
++++ b/lib-python/2.7/test/test_pkgimport.py
+@@ -1,5 +1,6 @@
+-import os, sys, string, random, tempfile, unittest
++import os, sys, shutil, string, random, tempfile, unittest
+ 
++from imp import cache_from_source
+ from test.test_support import run_unittest
+ 
+ class TestImport(unittest.TestCase):
+@@ -27,22 +28,17 @@
+         self.module_path = os.path.join(self.package_dir, 'foo'+os.extsep+'py')
+ 
+     def tearDown(self):
+-        for file in os.listdir(self.package_dir):
+-            os.remove(os.path.join(self.package_dir, file))
+-        os.rmdir(self.package_dir)
+-        os.rmdir(self.test_dir)
++        shutil.rmtree(self.test_dir)
+         self.assertNotEqual(sys.path.count(self.test_dir), 0)
+         sys.path.remove(self.test_dir)
+         self.remove_modules()
+ 
+     def rewrite_file(self, contents):
+-        for extension in "co":
+-            compiled_path = self.module_path + extension
+-            if os.path.exists(compiled_path):
+-                os.remove(compiled_path)
+-        f = open(self.module_path, 'w')
+-        f.write(contents)
+-        f.close()
++        compiled_path = cache_from_source(self.module_path)
++        if os.path.exists(compiled_path):
++            os.remove(compiled_path)
++        with open(self.module_path, 'w') as f:
++            f.write(contents)
+ 
+     def test_package_import__semantics(self):
+ 
+--- a/lib-python/2.7/test/test_zipfile.py
++++ b/lib-python/2.7/test/test_zipfile.py
+@@ -6,6 +6,7 @@
+ 
+ import os
+ import io
++import imp
+ import sys
+ import time
+ import struct
+@@ -720,7 +721,13 @@
+         with zipfile.PyZipFile(TemporaryFile(), "w") as zipfp:
+             fn = __file__
+             if fn.endswith('.pyc') or fn.endswith('.pyo'):
+-                fn = fn[:-1]
++                path_split = fn.split(os.sep)
++                if os.altsep is not None:
++                    path_split.extend(fn.split(os.altsep))
++                if '__pycache__' in path_split:
++                    fn = imp.source_from_cache(fn)
++                else:
++                    fn = fn[:-1]
+ 
+             zipfp.writepy(fn)
+ 
+--- a/lib-python/2.7/test/test_zipimport.py
++++ b/lib-python/2.7/test/test_zipimport.py
+@@ -43,17 +43,14 @@
+ test_pyc = make_pyc(test_co, NOW)
+ 
+ 
+-if __debug__:
+-    pyc_ext = ".pyc"
+-else:
+-    pyc_ext = ".pyo"
+-
+-
+ TESTMOD = "ziptestmodule"
+ TESTPACK = "ziptestpackage"
+ TESTPACK2 = "ziptestpackage2"
+ TEMP_ZIP = os.path.abspath("junk95142" + os.extsep + "zip")
+ 
++pyc_file = imp.cache_from_source(TESTMOD + '.py')
++pyc_ext = ('.pyc' if __debug__ else '.pyo')
++
+ 
+ class UncompressedZipImportTestCase(ImportHooksBaseTestCase):
+ 
+--- a/lib-python/2.7/zipfile.py
++++ b/lib-python/2.7/zipfile.py
+@@ -3,6 +3,7 @@
+ """
+ import struct, os, time, sys, shutil
+ import binascii, cStringIO, stat
++import imp
+ import io
+ import re
+ import string
+@@ -1433,22 +1434,42 @@
+         file_py  = pathname + ".py"
+         file_pyc = pathname + ".pyc"
+         file_pyo = pathname + ".pyo"
+-        if os.path.isfile(file_pyo) and \
+-                            os.stat(file_pyo).st_mtime >= os.stat(file_py).st_mtime:
+-            fname = file_pyo    # Use .pyo file
+-        elif not os.path.isfile(file_pyc) or \
+-             os.stat(file_pyc).st_mtime < os.stat(file_py).st_mtime:
++        pycache_pyc = imp.cache_from_source(file_py, True)
++        pycache_pyo = imp.cache_from_source(file_py, False)
++        if (os.path.isfile(file_pyo) and
++            os.stat(file_pyo).st_mtime >= os.stat(file_py).st_mtime):
++            # Use .pyo file.
++            arcname = fname = file_pyo
++        elif (os.path.isfile(file_pyc) and
++              os.stat(file_pyc).st_mtime >= os.stat(file_py).st_mtime):
++            # Use .pyc file.
++            arcname = fname = file_pyc
++        elif (os.path.isfile(pycache_pyc) and
++              os.stat(pycache_pyc).st_mtime >= os.stat(file_py).st_mtime):
++            # Use the __pycache__/*.pyc file, but write it to the legacy pyc
++            # file name in the archive.
++            fname = pycache_pyc
++            arcname = file_pyc
++        elif (os.path.isfile(pycache_pyo) and
++              os.stat(pycache_pyo).st_mtime >= os.stat(file_py).st_mtime):
++            # Use the __pycache__/*.pyo file, but write it to the legacy pyo
++            # file name in the archive.
++            fname = pycache_pyo
++            arcname = file_pyo
++        else:
++            # Compile py into PEP 3147 pyc file.
+             import py_compile
+             if self.debug:
+                 print "Compiling", file_py
+             try:
+-                py_compile.compile(file_py, file_pyc, None, True)
+-            except py_compile.PyCompileError,err:
++                py_compile.compile(file_py, doraise=True)
++            except py_compile.PyCompileError, error:
+                 print err.msg
+-            fname = file_pyc
+-        else:
+-            fname = file_pyc
+-        archivename = os.path.split(fname)[1]
++                fname = file_py
++            else:
++                fname = (pycache_pyc if __debug__ else pycache_pyo)
++                arcname = (file_pyc if __debug__ else file_pyo)
++        archivename = os.path.split(arcname)[1]
+         if basename:
+             archivename = "%s/%s" % (basename, archivename)
+         return (fname, archivename)
+--- a/lib-python/2.7/inspect.py
++++ b/lib-python/2.7/inspect.py
+@@ -52,6 +52,7 @@
+     """Return true if the object is a module.
+ 
+     Module objects provide these attributes:
++        __cached__      pathname to byte compiled file
+         __doc__         documentation string
+         __file__        filename (missing for built-in modules)"""
+     return isinstance(object, types.ModuleType)
+--- a/lib-python/2.7/pydoc.py
++++ b/lib-python/2.7/pydoc.py
+@@ -161,7 +161,8 @@
+     """Decide whether to show documentation on a variable."""
+     # Certain special names are redundant.
+     _hidden_names = ('__builtins__', '__doc__', '__file__', '__path__',
+-                     '__module__', '__name__', '__slots__', '__package__')
++                     '__module__', '__name__', '__slots__', '__package__',
++                     '__cached__')
+     if name in _hidden_names: return 0
+     # Private names are hidden, but special names are displayed.
+     if name.startswith('__') and name.endswith('__'): return 1
+--- a/lib-python/2.7/site.py
++++ b/lib-python/2.7/site.py
+@@ -85,8 +85,8 @@
+     return dir, os.path.normcase(dir)
+ 
+ 
+-def abs__file__():
+-    """Set all module' __file__ attribute to an absolute path"""
++def abs_paths():
++    """Set all module __file__ and __cached__ attributes to an absolute path"""
+     for m in sys.modules.values():
+         if hasattr(m, '__loader__'):
+             continue   # don't mess with a PEP 302-supplied __file__
+@@ -97,6 +97,13 @@
+                 m.__file__ = new
+         except (AttributeError, OSError):
+             pass
++        try:
++            prev = m.__cached__
++            new = os.path.abspath(m.__cached__)
++            if prev != new:
++                m.__cached__ = new
++        except (AttributeError, OSError):
++            pass
+ 
+ 
+ def removeduppaths():
+@@ -552,7 +559,7 @@
+     global ENABLE_USER_SITE
+ 
+     import_builtin_stuff()
+-    abs__file__()
++    abs_paths()
+     known_paths = removeduppaths()
+     if ENABLE_USER_SITE is None:
+         ENABLE_USER_SITE = check_enableusersite()
+--- a/lib-python/2.7/test/test_cmd_line_script.py
++++ b/lib-python/2.7/test/test_cmd_line_script.py
+@@ -3,9 +3,10 @@
+ import unittest
+ import os
+ import os.path
++import py_compile
+ import test.test_support
+ from test.script_helper import (run_python,
+-                                temp_dir, make_script, compile_script,
++                                temp_dir, make_script,
+                                 assert_python_failure, make_pkg,
+                                 make_zip_script, make_zip_pkg)
+ 
+@@ -32,6 +33,7 @@
+ # Check population of magic variables
+ assertEqual(__name__, '__main__')
+ print '__file__==%r' % __file__
++assertEqual(__cached__, None)
+ print '__package__==%r' % __package__
+ # Check the sys module
+ import sys
+@@ -105,7 +107,7 @@
+     def test_script_compiled(self):
+         with temp_dir() as script_dir:
+             script_name = _make_test_script(script_dir, 'script')
+-            compiled_name = compile_script(script_name)
++            compiled_name = py_compile.compile(script_name, doraise=True)
+             os.remove(script_name)
+             self._check_script(compiled_name, compiled_name, compiled_name, None)
+ 
+@@ -119,9 +121,10 @@
+             raise unittest.SkipTest("pypy won't load lone .pyc files")
+         with temp_dir() as script_dir:
+             script_name = _make_test_script(script_dir, '__main__')
+-            compiled_name = compile_script(script_name)
++            compiled_name = py_compile.compile(script_name, doraise=True)
+             os.remove(script_name)
+-            self._check_script(script_dir, compiled_name, script_dir, '')
++            pyc_file = test.test_support.make_legacy_pyc(script_name)
++            self._check_script(script_dir, pyc_file, script_dir, '')
+ 
+     def test_directory_error(self):
+         with temp_dir() as script_dir:
+@@ -137,7 +140,7 @@
+     def test_zipfile_compiled(self):
+         with temp_dir() as script_dir:
+             script_name = _make_test_script(script_dir, '__main__')
+-            compiled_name = compile_script(script_name)
++            compiled_name = py_compile.compile(script_name, doraise=True)
+             zip_name, run_name = make_zip_script(script_dir, 'test_zip', compiled_name)
+             self._check_script(zip_name, run_name, zip_name, '')
+ 
+@@ -184,11 +187,12 @@
+             pkg_dir = os.path.join(script_dir, 'test_pkg')
+             make_pkg(pkg_dir)
+             script_name = _make_test_script(pkg_dir, '__main__')
+-            compiled_name = compile_script(script_name)
++            compiled_name = py_compile.compile(script_name, doraise=True)
+             os.remove(script_name)
++            pyc_file = test.test_support.make_legacy_pyc(script_name)
+             launch_name = _make_launch_script(script_dir, 'launch', 'test_pkg')
+-            self._check_script(launch_name, compiled_name,
+-                               compiled_name, 'test_pkg')
++            self._check_script(launch_name, pyc_file,
++                               pyc_file, 'test_pkg')
+ 
+     def test_package_error(self):
+         with temp_dir() as script_dir:
+--- a/lib-python/2.7/test/test_import.py
++++ b/lib-python/2.7/test/test_import.py
+@@ -13,7 +13,8 @@
+ 
+ from test.test_support import (unlink, TESTFN, unload, run_unittest, rmtree,
+                                is_jython, check_warnings, EnvironmentVarGuard,
+-                               impl_detail, check_impl_detail)
++                               impl_detail, check_impl_detail, forget,
++                               make_legacy_pyc, temp_umask)
+ from test import symlink_support
+ from test import script_helper
+ 
+@@ -35,6 +36,11 @@
+ def remove_files(name):
+     for f in _files(name):
+         unlink(f)
++    try:
++        shutil.rmtree('__pycache__')
++    except OSError, error:
++        if error.errno != errno.ENOENT:
++            raise
+ 
+ 
+ class ImportTests(unittest.TestCase):
+@@ -95,9 +101,9 @@
+             except ImportError, err:
+                 self.fail("import from .pyc/.pyo failed: %s" % err)
+             finally:
++                forget(TESTFN)
+                 unlink(pyc)
+                 unlink(pyo)
+-                unload(TESTFN)
+ 
+         sys.path.insert(0, os.curdir)
+         try:
+@@ -115,28 +121,26 @@
+     def test_execute_bit_not_copied(self):
+         # Issue 6070: under posix .pyc files got their execute bit set if
+         # the .py file had the execute bit set, but they aren't executable.
+-        oldmask = os.umask(022)
+-        sys.path.insert(0, os.curdir)
+-        try:
+-            fname = TESTFN + os.extsep + "py"
+-            f = open(fname, 'w').close()
+-            os.chmod(fname, (stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH |
+-                             stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH))
+-            __import__(TESTFN)
+-            fn = fname + 'c'
+-            if not os.path.exists(fn):
+-                fn = fname + 'o'
++        with temp_umask(022):
++            sys.path.insert(0, os.curdir)
++            try:
++                fname = TESTFN + os.extsep + "py"
++                f = open(fname, 'w').close()
++                os.chmod(fname, (stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH |
++                                 stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH))
++                __import__(TESTFN)
++                fn = imp.cache_from_source(fname)
+                 if not os.path.exists(fn):
+                     self.fail("__import__ did not result in creation of "
+                               "either a .pyc or .pyo file")
+-            s = os.stat(fn)
+-            self.assertEqual(stat.S_IMODE(s.st_mode),
+-                             stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
+-        finally:
+-            os.umask(oldmask)
+-            remove_files(TESTFN)
+-            unload(TESTFN)
+-            del sys.path[0]
++                    s = os.stat(fn)
++                    self.assertEqual(
++                        stat.S_IMODE(s.st_mode),
++                        stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
++            finally:
++                del sys.path[0]
++                remove_files(TESTFN)
++                unload(TESTFN)
+ 
+     @unittest.skipIf(sys.dont_write_bytecode,
+         "test meaningful only when writing bytecode")
+@@ -205,12 +209,14 @@
+                 f.write('"",\n')
+             f.write(']')
+ 
+-        # Compile & remove .py file, we only need .pyc (or .pyo).
++        # Compile & remove .py file, we only need .pyc (or .pyo), but that
++        # must be relocated to the PEP 3147 bytecode-only location.
+         with open(filename, 'r') as f:
+             py_compile.compile(filename)
+         if check_impl_detail(pypy=False):
+             # pypy refuses to import a .pyc if the .py does not exist
+             unlink(filename)
++        make_legacy_pyc(filename)
+ 
+         # Need to be able to load from current dir.
+         sys.path.append('')
+@@ -345,7 +351,7 @@
+         sys.path.insert(0, os.curdir)
+         try:
+             source = TESTFN + ".py"
+-            compiled = source + ('c' if __debug__ else 'o')
++            compiled = imp.cache_from_source(source)
+             with open(source, 'w') as f:
+                 pass
+             try:
+@@ -414,6 +420,7 @@
+ import sys
+ code_filename = sys._getframe().f_code.co_filename
+ module_filename = __file__
++module_pyc_filename = __cached__
+ constant = 1
+ def func():
+     pass
+@@ -421,7 +428,7 @@
+ """
+     dir_name = os.path.abspath(TESTFN)
+     file_name = os.path.join(dir_name, module_name) + os.extsep + "py"
+-    compiled_name = file_name + ("c" if __debug__ else "o")
++    compiled_name = imp.cache_from_source(file_name)
+ 
+     def setUp(self):
+         self.sys_path = sys.path[:]
+@@ -449,19 +456,22 @@
+     def test_basics(self):
+         mod = self.import_module()
+         self.assertEqual(mod.module_filename, self.file_name)
++        self.assertEqual(mod.module_pyc_filename, self.compiled_name)
+         self.assertEqual(mod.code_filename, self.file_name)
+         self.assertEqual(mod.func_filename, self.file_name)
+         del sys.modules[self.module_name]
+         mod = self.import_module()
++        self.assertEqual(mod.module_filename, self.file_name)
+         if not sys.dont_write_bytecode:
+-            self.assertEqual(mod.module_filename, self.compiled_name)
++            self.assertEqual(mod.module_pyc_filename, self.compiled_name)
+         self.assertEqual(mod.code_filename, self.file_name)
+         self.assertEqual(mod.func_filename, self.file_name)
+ 
+     def test_incorrect_code_name(self):
+         py_compile.compile(self.file_name, dfile="another_module.py")
+         mod = self.import_module()
+-        self.assertEqual(mod.module_filename, self.compiled_name)
++        self.assertEqual(mod.module_filename, self.file_name)
++        self.assertEqual(mod.module_pyc_filename, self.compiled_name)
+         self.assertEqual(mod.code_filename, self.file_name)
+         self.assertEqual(mod.func_filename, self.file_name)
+ 
+@@ -470,8 +480,9 @@
+         target = "another_module.py"
+         py_compile.compile(self.file_name, dfile=target)
+         os.remove(self.file_name)
++        pyc_file = make_legacy_pyc(self.file_name)
+         mod = self.import_module()
+-        self.assertEqual(mod.module_filename, self.compiled_name)
++        self.assertEqual(mod.module_filename, pyc_file)
+         self.assertEqual(mod.code_filename, target)
+         self.assertEqual(mod.func_filename, target)
+ 
+--- a/lib-python/2.7/test/test_runpy.py
++++ b/lib-python/2.7/test/test_runpy.py
+@@ -5,8 +5,9 @@
+ import sys
+ import re
+ import tempfile
+-from test.test_support import verbose, run_unittest, forget, check_impl_detail
+-from test.script_helper import (temp_dir, make_script, compile_script,
++import py_compile
++from test.test_support import verbose, run_unittest, forget, check_impl_detail, make_legacy_pyc
++from test.script_helper import (temp_dir, make_script,
+                                 make_pkg, make_zip_script, make_zip_pkg)
+ 
+ if check_impl_detail(pypy=True):
+@@ -50,6 +51,7 @@
+         self.assertEqual(d["result"], self.expected_result)
+         self.assertIs(d["__name__"], None)
+         self.assertIs(d["__file__"], None)
++        self.assertIs(d["__cached__"], None)
+         self.assertIs(d["__loader__"], None)
+         self.assertIs(d["__package__"], None)
+         self.assertIs(d["run_argv0"], saved_argv0)
+@@ -78,6 +80,7 @@
+         self.assertTrue(d2["run_name_in_sys_modules"])
+         self.assertTrue(d2["module_in_sys_modules"])
+         self.assertIs(d2["__file__"], file)
++        self.assertIs(d2["__cached__"], None)
+         self.assertIs(d2["run_argv0"], file)
+         self.assertIs(d2["__loader__"], loader)
+         self.assertIs(d2["__package__"], package)
+@@ -177,6 +180,7 @@
+                 __import__(mod_name)
+                 os.remove(mod_fname)
+                 if not sys.dont_write_bytecode:
++                    make_legacy_pyc(mod_fname)
+                     if verbose: print "Running from compiled:", mod_name
+                     d2 = run_module(mod_name) # Read from bytecode
+                     self.assertIn("x", d2)
+@@ -201,6 +205,7 @@
+                 __import__(mod_name)
+                 os.remove(mod_fname)
+                 if not sys.dont_write_bytecode:
++                    make_legacy_pyc(mod_fname)
+                     if verbose: print "Running from compiled:", pkg_name
+                     d2 = run_module(pkg_name) # Read from bytecode
+                     self.assertIn("x", d2)
+@@ -257,6 +262,7 @@
+                 __import__(mod_name)
+                 os.remove(mod_fname)
+                 if not sys.dont_write_bytecode:
++                    make_legacy_pyc(mod_fname)
+                     if verbose: print "Running from compiled:", mod_name
+                     d2 = run_module(mod_name, run_name=run_name) # Read from bytecode
+                     self.assertIn("__package__", d2)
+@@ -324,6 +330,7 @@
+         result = run_path(script_name)
+         self.assertEqual(result["__name__"], expected_name)
+         self.assertEqual(result["__file__"], expected_file)
++        self.assertEqual(result["__cached__"], None)
+         self.assertIn("argv0", result)
+         self.assertEqual(result["argv0"], expected_argv0)
+         self.assertEqual(result["__package__"], expected_package)
+@@ -343,7 +350,7 @@
+         with temp_dir() as script_dir:
+             mod_name = 'script'
+             script_name = self._make_test_script(script_dir, mod_name)
+-            compiled_name = compile_script(script_name)
++            compiled_name = py_compile.compile(script_name, doraise=True)
+             os.remove(script_name)
+             self._check_script(compiled_name, "<run_path>", compiled_name,
+                                compiled_name, None)
+@@ -361,9 +368,10 @@
+         with temp_dir() as script_dir:
+             mod_name = '__main__'
+             script_name = self._make_test_script(script_dir, mod_name)
+-            compiled_name = compile_script(script_name)
++            compiled_name = py_compile.compile(script_name, doraise=True)
+             os.remove(script_name)
+-            self._check_script(script_dir, "<run_path>", compiled_name,
++            legacy_pyc = make_legacy_pyc(script_name)
++            self._check_script(script_dir, "<run_path>", legacy_pyc,
+                                script_dir, '')
+ 
+     def test_directory_error(self):
+@@ -384,8 +392,9 @@
+         with temp_dir() as script_dir:
+             mod_name = '__main__'
+             script_name = self._make_test_script(script_dir, mod_name)
+-            compiled_name = compile_script(script_name)
+-            zip_name, fname = make_zip_script(script_dir, 'test_zip', compiled_name)
++            compiled_name = py_compile.compile(script_name, doraise=True)
++            zip_name, fname = make_zip_script(script_dir, 'test_zip',
++                                              compiled_name)
+             self._check_script(zip_name, "<run_path>", fname, zip_name, '')
+ 
+     def test_zipfile_error(self):
+--- a/lib-python/2.7/test/test_site.py
++++ b/lib-python/2.7/test/test_site.py
+@@ -324,19 +324,40 @@
+         """Restore sys.path"""
+         sys.path[:] = self.sys_path
+ 
+-    def test_abs__file__(self):
+-        # Make sure all imported modules have their __file__ attribute
+-        # as an absolute path.
+-        # Handled by abs__file__()
+-        site.abs__file__()
+-        for module in (sys, os, __builtin__):
+-            try:
+-                self.assertTrue(os.path.isabs(module.__file__), repr(module))
+-            except AttributeError:
+-                continue
+-        # We could try everything in sys.modules; however, when regrtest.py
+-        # runs something like test_frozen before test_site, then we will
+-        # be testing things loaded *after* test_site did path normalization
++    def test_abs_paths(self):
++        # Make sure all imported modules have their __file__ and __cached__
++        # attributes as absolute paths.  Arranging to put the Lib directory on
++        # PYTHONPATH would cause the os module to have a relative path for
++        # __file__ if abs_paths() does not get run.  sys and builtins (the
++        # only other modules imported before site.py runs) do not have
++        # __file__ or __cached__ because they are built-in.
++        parent = os.path.relpath(os.path.dirname(os.__file__))
++        env = os.environ.copy()
++        env['PYTHONPATH'] = parent
++        # We use uuid rather than os, as os isn't modified in pypy
++        # and so not in the same path as test_site
++        command = 'import uuid; print uuid.__file__, uuid.__cached__'
++        # First, prove that with -S (no 'import site'), the paths are
++        # relative.
++        proc = subprocess.Popen([sys.executable, '-S', '-c', command],
++                                env=env,
++                                stdout=subprocess.PIPE,
++                                stderr=subprocess.PIPE)
++        stdout, stderr = proc.communicate()
++        self.assertEqual(proc.returncode, 0)
++        os__file__, os__cached__ = stdout.split()
++        self.assertFalse(os.path.isabs(os__file__))
++        self.assertFalse(os.path.isabs(os__cached__))
++        # Now, with 'import site', it works.
++        proc = subprocess.Popen([sys.executable, '-c', command],
++                                env=env,
++                                stdout=subprocess.PIPE,
++                                stderr=subprocess.PIPE)
++        stdout, stderr = proc.communicate()
++        self.assertEqual(proc.returncode, 0)
++        os__file__, os__cached__ = stdout.split()
++        self.assertTrue(os.path.isabs(os__file__))
++        self.assertTrue(os.path.isabs(os__cached__))
+ 
+     def test_no_duplicate_paths(self):
+         # No duplicate paths should exist in sys.path
+--- a/lib-python/2.7/test/test_support.py
++++ b/lib-python/2.7/test/test_support.py
+@@ -17,6 +17,7 @@
+ import importlib
+ import UserDict
+ import re
++import imp
+ import time
+ import struct
+ import sysconfig
+@@ -34,7 +35,7 @@
+            "open_urlresource", "check_warnings", "check_py3k_warnings",
+            "CleanImport", "EnvironmentVarGuard", "captured_output",
+            "captured_stdout", "TransientResource", "transient_internet",
+-           "run_with_locale", "set_memlimit", "bigmemtest", "bigaddrspacetest",
++           "run_with_locale", "set_memlimit", "temp_umask", "bigmemtest", "bigaddrspacetest",
+            "BasicTestRunner", "run_unittest", "run_doctest", "threading_setup",
+            "threading_cleanup", "reap_children", "cpython_only",
+            "check_impl_detail", "get_attribute", "py3k_bytes",
+@@ -259,16 +260,37 @@
+         if e.errno not in (errno.ENOENT, errno.ESRCH):
+             raise
+ 
++def make_legacy_pyc(source):
++    """Move a PEP 3147 pyc/pyo file to its legacy pyc/pyo location.
++
++    The choice of .pyc or .pyo extension is done based on the __debug__ flag
++    value.
++
++    :param source: The file system path to the source file.  The source file
++        does not need to exist, however the PEP 3147 pyc file must exist.
++    :return: The file system path to the legacy pyc file.
++    """
++    pyc_file = imp.cache_from_source(source)
++    up_one = os.path.dirname(os.path.abspath(source))
++    legacy_pyc = os.path.join(up_one, source + ('c' if __debug__ else 'o'))
++    os.rename(pyc_file, legacy_pyc)
++    return legacy_pyc
++
+ def forget(modname):
+-    '''"Forget" a module was ever imported by removing it from sys.modules and
+-    deleting any .pyc and .pyo files.'''
++    """'Forget' a module was ever imported.
++
++    This removes the module from sys.modules and deletes any PEP 3147 or
++    legacy .pyc and .pyo files.
++    """
+     unload(modname)
+     for dirname in sys.path:
+-        unlink(os.path.join(dirname, modname + os.extsep + 'pyc'))
+-        # Deleting the .pyo file cannot be within the 'try' for the .pyc since
+-        # the chance exists that there is no .pyc (and thus the 'try' statement
+-        # is exited) but there is a .pyo file.
+-        unlink(os.path.join(dirname, modname + os.extsep + 'pyo'))
++        source = os.path.join(dirname, modname + os.extsep + 'py')
++        # It doesn't matter if they exist or not, unlink all possible
++        # combinations of PEP 3147 and legacy pyc and pyo files.
++        unlink(source + 'c')
++        unlink(source + 'o')
++        unlink(imp.cache_from_source(source, debug_override=True))
++        unlink(imp.cache_from_source(source, debug_override=False))
+ 
+ # Check whether a gui is actually available
+ def _is_gui_available():
+@@ -642,6 +664,16 @@
+             rmtree(name)
+ 
+ 
++@contextlib.contextmanager
++def temp_umask(umask):
++    """Context manager that temporarily sets the process umask."""
++    oldmask = os.umask(umask)
++    try:
++        yield
++    finally:
++        os.umask(oldmask)
++
++
+ def findfile(file, here=None, subdir=None):
+     """Try to find a file on sys.path and the working directory.  If it is not
+     found the argument passed to the function is returned (this does not
+--- a/lib-python/2.7/test/test_traceback.py
++++ b/lib-python/2.7/test/test_traceback.py
+@@ -1,6 +1,7 @@
+ """Test cases for traceback module"""
+ 
+ from StringIO import StringIO
++import shutil
+ import sys
+ import unittest
+ from imp import reload
+@@ -113,9 +114,7 @@
+                 self.assertEqual(src, 'raise NotImplementedError')
+         finally:
+             sys.path[:] = savedpath
+-            for f in os.listdir(testdir):
+-                os.unlink(os.path.join(testdir, f))
+-            os.rmdir(testdir)
++            shutil.rmtree(testdir)
+ 
+         err = self.get_exception_format(self.syntax_error_bad_indentation2,
+                                         IndentationError)
+--- a/lib-python/2.7/test/test_py_compile.py
++++ b/lib-python/2.7/test/test_py_compile.py
+@@ -12,7 +12,7 @@
+     def setUp(self):
+         self.directory = tempfile.mkdtemp()
+         self.source_path = os.path.join(self.directory, '_test.py')
+-        self.pyc_path = self.source_path + 'c'
++        self.pyc_path = imp.cache_from_source(self.source_path)
+         self.cwd_drive = os.path.splitdrive(os.getcwd())[0]
+         # In these tests we compute relative paths.  When using Windows, the
+         # current working directory path and the 'self.source_path' might be
+@@ -37,8 +37,9 @@
+     def test_cwd(self):
+         cwd = os.getcwd()
+         os.chdir(self.directory)
++        pyc_file = imp.cache_from_source(os.path.basename(self.source_path))
+         py_compile.compile(os.path.basename(self.source_path),
+-                           os.path.basename(self.pyc_path))
++                           pyc_file)
+         os.chdir(cwd)
+         self.assertTrue(os.path.exists(self.pyc_path))
+ 
