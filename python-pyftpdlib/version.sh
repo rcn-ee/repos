@@ -6,7 +6,7 @@ package_name="python-pyftpdlib"
 debian_pkg_name="${package_name}"
 package_version="1.2.0"
 package_source="${package_name}_${package_version}.orig.tar.gz"
-src_dir="${package_name}-${package_version}"
+src_dir="pyftpdlib-${package_version}"
 
 git_repo=""
 git_sha=""
