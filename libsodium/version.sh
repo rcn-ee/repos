@@ -19,3 +19,4 @@ debian_patch=""
 
 jessie_version="~20141124+1"
 wheezy_version="~bpo70+20141214+1"
+trusty_version="~20141214+1"
