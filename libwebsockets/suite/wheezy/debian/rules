@@ -1,0 +1,22 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# Debian debhelper package build rules for libwebsockets
+
+# Aim for the top, adapt if anything should break on the buildds.
+DEB_BUILD_MAINT_OPTIONS=	hardening=+all
+export DEB_BUILD_MAINT_OPTIONS
+
+%:
+	dh $@ --parallel --dbg-package=libwebsockets3-dbg --with autoreconf
+
+override_dh_auto_configure:
+	dh_auto_configure -- --enable-openssl --enable-libcrypto
+
+get-orig-source:
+	. debian/get-orig-source.sh
+
+.PHONY: override_dh_auto_configure

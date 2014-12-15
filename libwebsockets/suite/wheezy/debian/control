@@ -1,0 +1,60 @@
+Source: libwebsockets
+Section: libs
+Priority: optional
+Maintainer: Peter Pentchev <roam@ringlet.net>
+Uploaders: Laszlo Boszormenyi (GCS) <gcs@debian.org>
+Build-Depends: debhelper (>= 9), dh-autoreconf, libssl-dev, openssl, zlib1g-dev
+Standards-Version: 3.9.4
+Homepage: http://www.libwebsockets.org/
+Vcs-Git: git://anonscm.debian.org/collab-maint/libwebsockets.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/libwebsockets.git
+
+Package: libwebsockets3
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: lightweight C websockets library
+ Libwebsockets is a lightweight pure C library for both websockets
+ clients and servers built to use minimal CPU and memory resources
+ and provide fast throughput in both directions.
+ .
+ This package contains the shared library.
+
+Package: libwebsockets-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Depends: libwebsockets3 (= ${binary:Version}), ${misc:Depends}
+Description: lightweight C websockets library - development files
+ Libwebsockets is a lightweight pure C library for both websockets
+ clients and servers built to use minimal CPU and memory resources
+ and provide fast throughput in both directions.
+ .
+ This package contains the header files needed for developing programs
+ using libwebsockets and a static library.
+
+Package: libwebsockets3-dbg
+Section: debug
+Priority: extra
+Architecture: any
+Multi-Arch: same
+Depends: libwebsockets3 (= ${binary:Version}), ${misc:Depends}
+Description: lightweight C websockets library - debug symbols
+ Libwebsockets is a lightweight pure C library for both websockets
+ clients and servers built to use minimal CPU and memory resources
+ and provide fast throughput in both directions.
+ .
+ This package contains the debugging symbols for the library.
+
+Package: libwebsockets-test-server
+Section: utils
+Architecture: any
+Multi-Arch: foreign
+Depends: libwebsockets3 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Description: lightweight C websockets library - test servers
+ Libwebsockets is a lightweight pure C library for both websockets
+ clients and servers built to use minimal CPU and memory resources
+ and provide fast throughput in both directions.
+ .
+ This package contains several demonstration test servers.
