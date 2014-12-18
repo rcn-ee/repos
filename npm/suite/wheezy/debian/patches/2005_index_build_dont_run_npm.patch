@@ -1,0 +1,16 @@
+Description: Do not run cli.js as it depends on many packages.
+ Get the version from package.json instead.
+Forwarded: https://github.com/isaacs/npm/pull/3873
+Author: Jérémy Lal <kapouer@melix.org>
+Last-Update: 2013-09-08
+--- a/scripts/doc-build.sh
++++ b/scripts/doc-build.sh
+@@ -4,7 +4,7 @@
+ dest=$2
+ name=$(basename ${src%.*})
+ date=$(date -u +'%Y-%M-%d %H:%m:%S')
+-version=$(node cli.js -v)
++version=$(nodejs -e "console.log(require('./package').version)")
+ 
+ mkdir -p $(dirname $dest)
+ 

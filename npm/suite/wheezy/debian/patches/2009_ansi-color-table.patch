@@ -1,0 +1,43 @@
+Description: use ansi-color-table instead of text-table, and ansi instead of ansicolors, ansistyles
+ node-ansi is already available in debian, it's easier to depend on it and it's been patched to
+ be a drop-in replacement of ansicolors and ansistyles.
+Author: Jérémy Lal <kapouer@melix.org>
+Forwarded: not-needed, waiting for upstream ansi.js to accept patch
+Last-Update: 2014-08-05
+--- a/lib/outdated.js
++++ b/lib/outdated.js
+@@ -29,9 +29,9 @@
+   , npm = require("./npm.js")
+   , url = require("url")
+   , isGitUrl = require("./utils/is-git-url.js")
+-  , color = require("ansicolors")
+-  , styles = require("ansistyles")
+-  , table = require("text-table")
++  , color = require("ansi")
++  , styles = color
++  , table = require("ansi-color-table")
+   , semver = require("semver")
+   , os = require("os")
+ 
+--- a/lib/help-search.js
++++ b/lib/help-search.js
+@@ -6,7 +6,7 @@
+   , asyncMap = require("slide").asyncMap
+   , npm = require("./npm.js")
+   , glob = require("glob")
+-  , color = require("ansicolors")
++  , color = require("ansi")
+ 
+ helpSearch.usage = "npm help-search <text>"
+ 
+--- a/lib/ls.js
++++ b/lib/ls.js
+@@ -15,7 +15,7 @@
+   , semver = require("semver")
+   , url = require("url")
+   , isGitUrl = require("./utils/is-git-url.js")
+-  , color = require("ansicolors")
++  , color = require("ansi")
+ 
+ ls.usage = "npm ls"
+ 

@@ -1,0 +1,136 @@
+Description: Change shell command from node to nodejs. Warn on failure.
+ If a lifecycle script fails, it might be because "node" command was needed.
+ We don't automatically try to fix it, and instead warn the user that might
+ have been the cause, and where to find more information.
+Forwarded: not-needed
+Author: Jérémy Lal <kapouer@melix.org>
+Last-Update: 2013-04-28
+
+--- a/scripts/index-build.js
++++ b/scripts/index-build.js
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env node
++#!/usr/bin/nodejs
+ var fs = require("fs")
+   , path = require("path")
+   , root = path.resolve(__dirname, "..")
+--- a/scripts/clean-old.sh
++++ b/scripts/clean-old.sh
+@@ -26,7 +26,7 @@
+ else
+   node="$NODE"
+   if [ "x$node" = "x" ]; then
+-    node=`which node`
++    node=`which nodejs`
+   fi
+   if [ "x$node" = "x" ]; then
+     echo "Can't find node to determine prefix. Aborting."
+--- a/scripts/install.sh
++++ b/scripts/install.sh
+@@ -51,7 +51,7 @@
+ export npm_config_loglevel
+ 
+ # make sure that node exists
+-node=`which node 2>&1`
++node=`which nodejs 2>&1`
+ ret=$?
+ if [ $ret -eq 0 ] && [ -x "$node" ]; then
+   (exit 0)
+--- a/Makefile
++++ b/Makefile
+@@ -1,5 +1,6 @@
+ # vim: set softtabstop=2 shiftwidth=2:
+ SHELL = bash
++node = nodejs
+ 
+ markdowns = $(shell find doc -name '*.md' | grep -v 'index') README.md
+ 
+@@ -58,23 +59,23 @@
+ 	@echo "Installing latest published npm"
+ 	@echo "Use 'make install' or 'make link' to install the code"
+ 	@echo "in this folder that you're looking at right now."
+-	node cli.js install -g -f npm
++	$(node) cli.js install -g -f npm
+ 
+ install: docclean all
+-	node cli.js install -g -f
++	$(node) cli.js install -g -f
+ 
+ # backwards compat
+ dev: install
+ 
+ link: uninstall
+-	node cli.js link -f
++	$(node) cli.js link -f
+ 
+ clean: markedclean ronnclean doc-clean uninstall
+ 	rm -rf npmrc
+-	node cli.js cache clean
++	$(node) cli.js cache clean
+ 
+ uninstall:
+-	node cli.js rm npm -g -f
++	$(node) cli.js rm npm -g -f
+ 
+ doc: $(mandocs) $(htmldocs)
+ 
+@@ -117,7 +118,7 @@
+ 	scripts/doc-build.sh $< $@
+ 
+ doc/misc/npm-index.md: scripts/index-build.js package.json
+-	node scripts/index-build.js > $@
++	$(node) scripts/index-build.js > $@
+ 
+ html/doc/index.html: doc/misc/npm-index.md $(html_docdeps)
+ 	@[ -d html/doc ] || mkdir -p html/doc
+@@ -156,19 +157,19 @@
+ marked: node_modules/.bin/marked
+ 
+ node_modules/.bin/marked:
+-	node cli.js install marked --no-global
++	$(node) cli.js install marked --no-global
+ 
+ ronn: node_modules/.bin/ronn
+ 
+ node_modules/.bin/ronn:
+-	node cli.js install ronn --no-global
++	$(node) cli.js install ronn --no-global
+ 
+ doc: man
+ 
+ man: $(cli_docs) $(api_docs)
+ 
+ test: doc
+-	node cli.js test
++	$(node) cli.js test
+ 
+ publish: link doc
+ 	@git push origin :v$(shell npm -v) 2>&1 || true
+--- a/cli.js
++++ b/cli.js
+@@ -1,2 +1,2 @@
+-#!/usr/bin/env node
++#!/usr/bin/nodejs
+ require("./bin/npm-cli.js")
+--- a/bin/npm-cli.js
++++ b/bin/npm-cli.js
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env node
++#!/usr/bin/nodejs
+ ;(function () { // wrapper in case we're in module_context mode
+ 
+ // windows: running "npm blah" in this folder will invoke WSH, not node.
+--- a/lib/utils/lifecycle.js
++++ b/lib/utils/lifecycle.js
+@@ -228,7 +228,10 @@
+       er.stage = stage
+       er.script = cmd
+       er.pkgname = pkg.name
+-      return cb(er)
++      cb(er)
++      log.warn('', 'This failure might be due to the use of legacy binary "node"')
++      log.warn("For further explanations, please read\n/usr/share/doc/nodejs/README.Debian\n")
++      return
+     } else if (er) {
+       log.error(pkg._id+"."+stage, er)
+       log.error(pkg._id+"."+stage, "continuing anyway")

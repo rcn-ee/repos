@@ -1,0 +1,39 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+# export DH_VERBOSE=1
+
+include /usr/share/cdbs/1/rules/utils.mk
+include /usr/share/cdbs/1/rules/debhelper.mk
+
+# suppress optional build-dependencies
+CDBS_BUILD_DEPENDS_rules_utils_copyright-check =
+
+# Suppress copyright-checking some binaries to not upset dpkg-source
+DEB_COPYRIGHT_CHECK_IGNORE_REGEX = ^(html/npm.*\.png|html/favicon\.ico|html/n-.*\.png|debian/(changelog|copyright(|_hints|_newhints))|node_modules/npm-registry-client/node_modules/couch-login/test/fixtures/registry\.couch)$
+
+clean::
+	make docclean
+
+build/npm::
+	make doc
+
+install/npm::
+	dh_bash-completion
+
+# Fix permissions
+# Remove LICENSE files.
+binary-post-install/npm::
+	chmod a-x debian/npm/usr/share/npm/bin/read-package-json.js
+	chmod a-x debian/npm/usr/share/npm/lib/utils/completion.sh
+	chmod a-x debian/npm/usr/share/npm/node_modules/uid-number/get-uid-gid.js
+	chmod a-x debian/npm/usr/share/npm/node_modules/npmconf/node_modules/config-chain/index.js
+	sed -i -e "s|#!/usr/bin/env node|#!/usr/bin/nodejs|" \
+		debian/npm/usr/share/npm/node_modules/opener/opener.js \
+		debian/npm/usr/share/npm/node_modules/columnify/node_modules/strip-ansi/cli.js
+	find debian/npm -name LICENSE -delete
+	find debian/npm -name LICENCE -delete
+	find debian/npm -name LICENSE.txt -delete
+	find debian/npm -name LICENSE.md -delete
+

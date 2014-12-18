@@ -1,0 +1,15 @@
+Description: child-process-close is not needed with nodejs 0.10.x
+Author: Jérémy Lal <kapouer@melix.org>
+Forwarded: not-needed
+Last-Update: 2013-09-08
+--- a/lib/npm.js
++++ b/lib/npm.js
+@@ -12,7 +12,7 @@
+ 
+ 
+ // monkey-patch support for 0.6 child processes
+-require('child-process-close')
++// require('child-process-close')
+ 
+ var EventEmitter = require("events").EventEmitter
+   , npm = module.exports = new EventEmitter()
