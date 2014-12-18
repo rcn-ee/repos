@@ -1,0 +1,211 @@
+.\" Copyright (c) 2011 Marcelo Jorge Vieira <metal@debian.org>
+'\"
+'\" Redistribution and use in source and binary forms, with or without
+'\" modification, are permitted provided that the following conditions
+'\" are met:
+'\"
+'\"   * Redistributions of source code must retain the above
+'\"     copyright notice, this list of conditions and the following
+'\"     disclaimer.
+'\"
+'\"   * Redistributions in binary form must reproduce the above
+'\"     copyright notice, this list of conditions and the following
+'\"     disclaimer in the documentation and/or other materials
+'\"     provided with the distribution.
+'\"
+'\" THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER “AS IS” AND ANY
+'\" EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+'\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+'\" PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE
+'\" LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+'\" OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+'\" PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+'\" PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+'\" THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+'\" TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+'\" THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+'\" SUCH DAMAGE.
+
+.TH UGLIFYJS 1
+.SH NAME
+uglifyjs \- a JavaScript parser/compressor/beautifier
+
+.SH SYNOPSIS
+.B uglifyjs [options] [input_file]
+
+.SH DESCRIPTION
+This package implements a general-purpose JavaScript
+parser/compressor/beautifier toolkit.
+
+.SH OPTIONS
+
+.TP
+.B \-b, \-\-beautify
+.br
+Output indented code; when passed, additional options control the beautifier.
+.br
+
+.TP
+.B \-i \fInumber-of-spaces\fR, \-\-indent \fInumber-of-spaces\fR
+.br
+Indentation level.
+.br
+
+.TP
+.B \-q, \-\-quote\-keys
+.br
+Quote keys in literal objects (by default, only keys that cannot be identifier
+names will be quotes).
+.br
+
+.TP
+.B \-mt, \-\-mangle\-toplevel
+.br
+Mangle names in the toplevel scope too (by default we don’t do this).
+.br
+
+.TP
+.B \-nm, \-\-no\-mangle
+.br
+Don’t mangle variable names.
+.br
+
+.TP
+.B \-nmf, \-\-no\-mangle-functions
+.br
+In case you want to mangle variable names, but not touch function names.
+.br
+
+.TP
+.B \-ns, \-\-no\-squeeze
+.br
+Don’t call ast_squeeze() (which does various optimizations that result in
+smaller, less readable code).
+.br
+
+.TP
+.B \-\-no\-seqs
+.br
+When ast_squeeze() is called (thus, unless you pass \-\-no-squeeze) it will
+reduce consecutive statements in blocks into a sequence. For example,
+"a = 10; b = 20; foo();" will be written as "a=10,b=20,foo();". In various
+occasions, this allows us to discard the block brackets (since the block
+becomes a single statement). This is ON by default because it seems safe
+and saves a few hundred bytes on some libs that I tested it on, but pass
+\-\-no-seqs to disable it.
+.br
+
+.TP
+.B \-\-no\-dead\-code
+.br
+By default, UglifyJS will remove code that is obviously unreachable
+(code that follows a return, throw, break or continue statement and
+is not a function/variable declaration). Pass this option to disable
+this optimization.
+.br
+
+.TP
+.B \-nc, \-\-no\-copyright
+.br
+By default, uglifyjs will keep the initial comment tokens in the generated
+code (assumed to be copyright information etc.). If you pass this it will
+discard it.
+.br
+
+.TP
+.B \-o \fIfilename\fR, \-\-output \fIfilename\fR
+.br
+Put the result in filename. If this isn’t given, the result goes to standard
+output (or see next one).
+.br
+
+.TP
+.B \-\-overwrite
+.br
+If the code is read from a file (not from STDIN) and you pass --overwrite then
+the output will be written in the same file.
+.br
+
+.TP
+.B \-v, \-\-verbose
+.br
+Output some notes on STDERR (for now just how long each operation takes).
+.br
+
+.TP
+.B \-\-ast
+.br
+Pass this if you want to get the Abstract Syntax Tree instead of JavaScript
+as output. Useful for debugging or learning more about the internals.
+.br
+
+.TP
+.B \-\-unsafe
+.br
+Enable other additional optimizations that are known to be unsafe in some
+contrived situations, but could still be generally useful. For now only this:
+foo.toString() ==> foo+""
+.br
+
+.TP
+.B \-\-max\-line\-len \fIvalue\fR
+.br
+(default 32K characters) — Add a newline after around 32K characters.
+I’ve seen both FF and Chrome croak when all the code was on a single line of
+around 670K. Pass \-\-max-line-len 0 to disable this safety feature.
+.br
+
+.TP
+.B \-\-reserved\-names \fIname1\fR,\fI$name2\fR,\fIname3\fR
+.br
+Some libraries rely on certain names to be used, as pointed out in issue #92
+and #81, so this option allow you to exclude such names from the mangler.
+For example, to keep names require and $super intact you’d specify
+\-\-reserved-names "require,$super"
+.br
+
+.TP
+.B \-c, \-\-consolidate\-primitive\-values
+.br
+Consolidates null, Boolean, and String values. Known as aliasing in the Closure
+Compiler. Worsens the data compression ratio of gzip.
+.br
+
+.TP
+.B \-\-ascii
+.br
+Pass this argument to encode non-ASCII characters as \uXXXX sequences.
+By default UglifyJS won’t bother to do it and will output Unicode characters
+instead. (the output is always encoded in UTF8, but if you pass this option
+you’ll only get ASCII).
+.br
+
+.TP
+.B \-\-inline-script
+.br
+when you want to include the output literally in an HTML <script> tag you
+can use this option to prevent </script from showing up in the output.
+
+.TP
+.B \-\-lift-vars
+.br
+When you pass this, UglifyJS will apply the following transformations (see the notes in API, ast_lift_variables):
+  put all var declarations at the start of the scope
+  make sure a variable is declared only once
+  discard unused function arguments
+  discard unused inner (named) functions
+  finally, try to merge assignments into that one var declaration, if possible.
+.br
+
+.SH BUGS
+The bug tracker can be reached by visiting the website
+\fIhttps://github.com/mishoo/UglifyJS/issues\fR
+
+Before sending a bug report, please verify that you have the latest
+version of UglifyJS. Many bugs (major and minor) are fixed at each
+release, and if yours is out of date, the problem may already have
+been solved.
+
+.SH ADDITIONAL INFORMATION
+
+For further information, visit the website \fIhttps://github.com/mishoo/UglifyJS\fR

@@ -1,0 +1,13 @@
+#!/usr/bin/make -f
+
+include /usr/share/cdbs/1/rules/upstream-tarball.mk
+include /usr/share/cdbs/1/rules/utils.mk
+include /usr/share/cdbs/1/rules/debhelper.mk
+
+DEB_UPSTREAM_URL = https://github.com/mishoo/uglifyjs/archive
+DEB_UPSTREAM_TARBALL_BASENAME = v$(DEB_UPSTREAM_TARBALL_VERSION)
+DEB_UPSTREAM_TARBALL_MD5 = 3edde521456d85da7c3787bbff68aea3
+
+# Unset executable bit on library file
+binary-fixup/node-uglifyjs::
+	chmod -x debian/node-uglify/usr/lib/nodejs/uglify-js/process.js

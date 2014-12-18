@@ -1,0 +1,170 @@
+uglifyjs (1.3.4-1~bpo70+20141218+1) wheezy; urgency=low
+
+  * Rebuild for repos.rcn-ee.net
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Thu, 18 Dec 2014 12:05:58 -0600
+
+uglifyjs (1.3.4-1~bpo7+1) wheezy-backports; urgency=low
+
+  * Upload to wheezy-backports.
+
+ -- Mike Gabriel <sunweaver@debian.org>  Fri, 25 Oct 2013 10:19:25 +0200
+
+uglifyjs (1.3.4-1) unstable; urgency=low
+
+  [ upstream ]
+  * New upstream release.
+
+  [ Jonas Smedegaard ]
+  * Fix adapt path in binary too in fix_lib_path patch.
+  * Consistently adjust only actually used files in node_conflict patch,
+    as already partly done (accidentally?) in 1.3.3-1.
+  * Refresh patches with shortening quilt options.
+  * Bump dephelper compatibility level to 8.
+  * Update package relations:
+    + Relax to build-depend unversioned on debhelper: Needed version
+      satisfied in stable, and oldstable no longer supported.
+    + Build-depend on dh-buildinfo, to improve ability to debug
+      packaging independent from central Debian resources.
+    + Build-depend on devscripts, to enable CDBS copyright checking.
+  * Use anonscm.debian.org for Vcs-Browser field.
+  * Improve slightly unsetting executable bit: use symbolic format, and
+    improve comment.
+  * Update copyright file:
+    + Use recommended License shortname BSD-2-clause.
+    + Rewrap License paragraph at 72 chars with minimal indentation.
+    + Add Upstream-Contact and Source fields.
+    + Fix add additional copyright holder (same license), thanks to CDBS
+      copyright check.
+  * Drop obsolete binary package libnode-uglify (and stop
+    providing/replacing as well).
+  * Update watch file to directly use github.com URL (not
+    githubredir.debian.net).
+  * Switch packaging from short-form dh to CDBS.
+
+ -- Jonas Smedegaard <dr@jones.dk>  Sun, 09 Dec 2012 22:59:07 +0100
+
+uglifyjs (1.3.3-1) experimental; urgency=low
+
+  * Imported Upstream version 1.3.3
+
+ -- Marcelo Jorge Vieira (metal) <metal@debian.org>  Sat, 29 Sep 2012 15:06:47 -0300
+
+uglifyjs (1.2.6-3) unstable; urgency=low
+
+  * Uglify should depend on new nodejs package
+
+ -- Marcelo Jorge Vieira (metal) <metal@debian.org>  Wed, 01 Aug 2012 10:16:03 -0300
+
+uglifyjs (1.2.6-2) unstable; urgency=low
+
+  * Node conflict; For more info, see:
+    http://lists.debian.org/debian-devel-announce/2012/07/msg00002.html
+
+ -- Marcelo Jorge Vieira (metal) <metal@debian.org>  Tue, 31 Jul 2012 18:31:20 -0300
+
+uglifyjs (1.2.6-1) unstable; urgency=low
+
+  * New Upstream Release
+  * Improving manpage
+    + Added new entry: -c or --consolidate-primitive-values
+  * Updated Standards-Version to 3.9.3
+    + Machine-readable debian/copyright version 1.0
+
+ -- Marcelo Jorge Vieira (metal) <metal@debian.org>  Sun, 25 Mar 2012 19:32:00 -0300
+
+uglifyjs (1.2.5-1) unstable; urgency=low
+
+  * New Upstream Release
+
+ -- Marcelo Jorge Vieira (metal) <metal@debian.org>  Wed, 29 Feb 2012 14:21:47 -0300
+
+uglifyjs (1.2.3-1) unstable; urgency=low
+
+  * New Upstream Release
+  * Improving manpage
+    + Added new entry:  -nmf or --no-mangle-functions
+
+ -- Marcelo Jorge Vieira (metal) <metal@debian.org>  Sat, 24 Dec 2011 17:02:57 -0200
+
+uglifyjs (1.1.1-2) unstable; urgency=high
+
+  * Fixed old references to libnode-uglify (Closes: #649525)
+
+ -- Marcelo Jorge Vieira (metal) <metal@debian.org>  Mon, 21 Nov 2011 20:34:19 -0200
+
+uglifyjs (1.1.1-1) unstable; urgency=low
+
+  * New Upstream Release.
+  * Renamed the binary package from 'libnode-uglify' to 'node-uglify'
+    to follow the Debian JavaScript Policy.
+
+ -- Marcelo Jorge Vieira (metal) <metal@debian.org>  Mon, 21 Nov 2011 01:23:17 -0200
+
+uglifyjs (1.1-1) unstable; urgency=low
+
+  * New Upstream Release
+  * Improving manpage
+    + Added new entry: --lift-vars
+
+ -- Marcelo Jorge Vieira (metal) <metal@debian.org>  Tue, 27 Sep 2011 12:53:55 -0300
+
+uglifyjs (1.0.6-1) unstable; urgency=low
+
+  * New Upstream Release
+  * Improving manpage
+    + Added new entry: --inline-script
+
+ -- Marcelo Jorge Vieira (metal) <metal@debian.org>  Tue, 19 Jul 2011 18:05:58 -0300
+
+uglifyjs (1.0.4-1) unstable; urgency=low
+
+  * New upstream release.
+  * Add myself as uploader.
+  * Fix support "require 'uglify-js'":
+    + Adjust install paths.
+    + Add symlinks.
+    + Simplify patch.
+  * Refresh patch w/ shortening options --no-index --no-timestamps -pab.
+  * Add DEP3 header to patch.
+  * Ease building with git-buildpackage: Git-ignore quilt .pc dir.
+  * Bump policy compliance to standards-version 3.9.2.
+
+ -- Jonas Smedegaard <dr@jones.dk>  Fri, 08 Jul 2011 23:26:55 +0200
+
+uglifyjs (1.0.3-1) unstable; urgency=low
+
+  * New Upstream Release
+
+ -- Marcelo Jorge Vieira (metal) <metal@debian.org>  Wed, 29 Jun 2011 20:04:08 -0300
+
+uglifyjs (1.0.2-1) UNRELEASED; urgency=low
+
+  * New Upstream Release
+  * Fixed description-synopsis-starts-with-article
+  * Updating fix_lib_path.patch
+
+ -- Marcelo Jorge Vieira (metal) <metal@debian.org>  Sun, 29 May 2011 22:05:00 -0300
+
+uglifyjs (1.0.1-1) unstable; urgency=low
+
+  * New Upstream Release
+
+ -- Marcelo Jorge Vieira (metal) <metal@debian.org>  Sun, 24 Apr 2011 17:22:43 -0300
+
+uglifyjs (1.0-1) unstable; urgency=low
+
+  * New Upstream Release
+  * Improving manpage
+    + Added new entries (--ascii and --reserved-names)
+    + Fixed options params
+    + Added description for all options
+  * Updating fix_lib_path.patch
+
+ -- Marcelo Jorge Vieira (metal) <metal@debian.org>  Wed, 16 Mar 2011 11:46:36 -0300
+
+uglifyjs (0.90-1) unstable; urgency=low
+
+  * Initial Release (Closes: #616700).
+
+ -- Marcelo Jorge Vieira (metal) <metal@debian.org>  Sat, 05 Mar 2011 15:41:54 -0300
