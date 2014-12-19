@@ -9,7 +9,9 @@ ifeq ($(DEB_BUILD_ARCH_OS), kfreebsd)
 endif
 
 override_dh_auto_configure:
-	dh_auto_configure -- --with-system-pgm
+#	dh_auto_configure -- --with-system-pgm
+#	# Don't use '--with-system-pgm' on recommendation from Michael
+	dh_auto_configure -- --with-pgm --with-libsodium
 
 override_dh_auto_test:
 ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
