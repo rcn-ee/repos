@@ -18,4 +18,4 @@ debian_untar=""
 debian_patch=""
 
 jessie_version="~20141124+1"
-wheezy_version="~bpo70+20141219+1"
+wheezy_version="~bpo70+20141219+2"
