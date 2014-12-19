@@ -65,6 +65,8 @@ dl_install() {
 		echo "extracting: $FILENAME"
 		tar xf $FILENAME -C ${extract_dir}
 		chown -R 1000:1000 ${extract_dir}
+
+		systemctl --system daemon-reload || true
 	fi
 }
 
