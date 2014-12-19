@@ -5,7 +5,7 @@ ifeq ($(DEB_BUILD_ARCH_OS), kfreebsd)
 endif
 
 %:
-	dh $@ --with=autoreconf
+	mkdir config ; dh $@ --with=autoreconf
 
 override_dh_auto_configure:
 #	# Don't use '--with-system-pgm' on recommendation from Michael
