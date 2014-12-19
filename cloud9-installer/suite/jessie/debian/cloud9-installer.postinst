@@ -6,9 +6,10 @@ set -e
 
 package="cloud9-installer"
 
-version="3.0.1-git20140211"
+version="3.0.620-git20141219"
+SHA256SUM_TGZ="3b3eca9e293102577f0861330b4eb7e7fb289520871cc70fc4e5fbfb73cc627d"
+
 FILENAME="c9v3_${version}-build.tar.xz"
-SHA256SUM_TGZ="f84f2855c2e9a3d23db1627e18369ce68072d2f0665b4a647148a36ec7909c9b"
 PARTNER_URL="https://rcn-ee.net/pkgs/c9v3/"
 extract_dir="/opt/cloud9/build/"
 
@@ -55,10 +56,13 @@ dl_install() {
 	if [ -f $FILENAME ] ; then
 		validdate_file
 
+		systemctl stop cloud9.socket || true
+
 		if [ ! -d ${extract_dir} ] ; then
 			mkdir -p ${extract_dir} || true
 		fi
 
+		echo "extracting: $FILENAME"
 		tar xf $FILENAME -C ${extract_dir}
 		chown -R 1000:1000 ${extract_dir}
 	fi
