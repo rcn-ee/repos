@@ -1,0 +1,20 @@
+Description: revert late upstream soname update
+ Upstream just updated library soname which should have happened sooner. Now
+ it's not for Jessie.
+Author: Laszlo Boszormenyi (GCS) <gcs@debian.org>
+Forwarded: not-needed
+Last-Update: 2014-10-22
+
+---
+
+--- zeromq3-4.0.5+dfsg.orig/configure.ac
++++ zeromq3-4.0.5+dfsg/configure.ac
+@@ -32,7 +32,7 @@ AC_SUBST(PACKAGE_VERSION)
+ # ZeroMQ version 4.0: 4:0:0 (ABI version 4)
+ #
+ # libzmq -version-info current:revision:age
+-LTVER="4:0:0"
++LTVER="4:0:1"
+ AC_SUBST(LTVER)
+ 
+ # Take a copy of original flags
