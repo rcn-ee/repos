@@ -1,0 +1,11 @@
+#!/usr/bin/make -f
+#export DH_VERBOSE=1
+
+%:
+	dh $@ --with autotools-dev
+
+override_dh_installchangelogs:
+	dh_installchangelogs NEWS
+
+override_dh_strip:
+	dh_strip --dbg-package=libczmq-dbg
