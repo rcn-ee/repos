@@ -6,11 +6,10 @@ set -e
 
 package="cloud9-installer"
 
-version="3.0.623-git20141222"
-SHA256SUM_TGZ="bf526116c4e0f8a0272989590a6cb630a11f8e37902bc36fcd969d381e51442c"
+sha256sum_tgz="a69ca4aa4dd81352d8c1dd01e77d5e0dfe0aff47e478b38da9fba4b3aa967707"
+filename="c9v3_3.0.632-git20141222-build.tar.xz"
 
-FILENAME="c9v3_${version}-build.tar.xz"
-PARTNER_URL="https://rcn-ee.net/pkgs/c9v3/"
+partner_url="https://rcn-ee.net/pkgs/c9v3"
 extract_dir="/opt/cloud9/build/"
 
 # summary of how this script can be called:
@@ -26,16 +25,16 @@ extract_dir="/opt/cloud9/build/"
 # the debian-policy package
 
 dl_file() {
-	wget --no-check-certificate $PARTNER_URL/$FILENAME
+	wget ${partner_url}/${filename}
 }
 
 validdate_file() {
-	sha256compare=$(sha256sum $FILENAME | awk '{print $1}')
-	if [ ! "x${sha256compare}" = "x${SHA256SUM_TGZ}" ] ; then
-		rm -rf $FILENAME
+	sha256compare=$(sha256sum ${filename} | awk '{print $1}')
+	if [ ! "x${sha256compare}" = "x${sha256sum_tgz}" ] ; then
+		rm -rf ${filename}
 		dl_file
-		sha256compare=$(sha256sum $FILENAME | awk '{print $1}')
-		if [ ! "x${sha256compare}" = "x${SHA256SUM_TGZ}" ] ; then
+		sha256compare=$(sha256sum ${filename} | awk '{print $1}')
+		if [ ! "x${sha256compare}" = "x${sha256sum_tgz}" ] ; then
 			echo "dl failure"
 			exit 1
 		fi
@@ -49,11 +48,11 @@ dl_install() {
 
 	cd /var/cache/${package}/
 
-	if [ ! -f $FILENAME ] ; then
+	if [ ! -f ${filename} ] ; then
 		dl_file
 	fi
 
-	if [ -f $FILENAME ] ; then
+	if [ -f ${filename} ] ; then
 		validdate_file
 
 		systemctl stop cloud9.socket || true
@@ -62,8 +61,8 @@ dl_install() {
 			mkdir -p ${extract_dir} || true
 		fi
 
-		echo "extracting: $FILENAME"
-		tar xf $FILENAME -C ${extract_dir}
+		echo "extracting: ${filename}"
+		tar xf ${filename} -C ${extract_dir}
 		chown -R 1000:1000 ${extract_dir}
 
 		systemctl --system daemon-reload || true
