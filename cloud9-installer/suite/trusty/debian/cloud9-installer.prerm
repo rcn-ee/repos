@@ -19,8 +19,8 @@ extract_dir="/opt/cloud9/build/"
 # the debian-policy package
 
 remove_file () {
-	if [ -f ${wfile} ] ; then
-		rm -f ${wfile}
+	if [ -f /var/cache/${package}/${wfile} ] ; then
+		rm -f /var/cache/${package}/${wfile}
 	fi
 }
 
@@ -31,12 +31,13 @@ remove_dir () {
 }
 
 remove_all() {
-	wfile="/var/cache/${package}/c9v3_3.0.1-git20140211-build.tar.xz" ; remove_file
-	wfile="/var/cache/${package}/c9v3_3.0.620-git20141219-build.tar.xz" ; remove_file
-	wfile="/var/cache/${package}/c9v3_3.0.623-git20141222-build.tar.xz" ; remove_file
+	wfile="c9v3_3.0.1-git20140211-build.tar.xz" ; remove_file
+	wfile="c9v3_3.0.620-git20141219-build.tar.xz" ; remove_file
+	wfile="c9v3_3.0.623-git20141222-build.tar.xz" ; remove_file
+	wfile="c9v3_3.0.632-git20141222-build.tar.xz" ; remove_file
 
 	#Always keep the current one for quick reinstalls...
-	#wfile="/var/cache/${package}/c9v3_3.0.632-git20141222-build.tar.xz" ; remove_file
+	#wfile="c9v3_3.0.642-git20141227-build.tar.xz" ; remove_file
 
 	wdir="${extract_dir}standalonebuild/" ; remove_dir
 }
