@@ -1,0 +1,79 @@
+Fetched from http://wiki.cython.org/ReleaseNotes-0.15 on Sat Jun 30 12:28:27 EDT 2012\n
+= Cython 0.15 =
+ * Release date: August 5, 2011
+ * Download: http://cython.org/release/Cython-0.15.tar.gz
+
+== Major Features ==
+
+ * Generators (yield) - Cython has full support for generators, generator expressions and http://www.python.org/dev/peps/pep-0342/ coroutines.
+
+ * The nonlocal keyword is supported.
+
+ * Re-acquiring the gil: with gil - works as expected within a nogil context.
+
+ * OpenMP support: http://docs.cython.org/0.15/src/userguide/parallelism.html.
+
+ * Control flow analysis prunes dead code and emits warnings and errors about uninitialised variables.
+
+ * Debugger command cy set to assign values of expressions to Cython variables and cy exec counterpart $cy_eval().
+
+ * Exception chaining http://www.python.org/dev/peps/pep-3134/.
+
+ * Relative imports http://www.python.org/dev/peps/pep-0328/.
+
+ * Improved http://docs.cython.org/0.15/src/tutorial/pure.html including cython.cclass, cython.cfunc, and cython.ccall.
+
+ * The with statement has its own dedicated and faster C implementation.
+
+ * Support for del.
+
+ * Boundschecking directives implemented for builtin Python sequence types.
+
+ * Several updates and additions to the shipped https://github.com/cython/cython/tree/master/Cython/Includes.
+
+ * Forward declaration of types is no longer required for circular references.
+
+Note: this will be the last release to support Python 2.3; Python 2.4 will be supported for at least one more release.
+
+== General improvements and bug fixes ==
+
+This release contains over a thousand commits including hundreds of bugfixes and optimizations.  The bug tracker has not been as heavily used this release cycle, but is still an interesting http://trac.cython.org/cython_trac/query?status=closed&group=component&order=id&col=id&col=summary&col=milestone&col=status&col=type&col=priority&col=owner&col=component&milestone=0.15&desc=1
+
+== Incompatible changes ==
+
+ * Uninitialized variables are no longer initialized to None and accessing them has the same semantics as standard Python.
+
+ * globals() now returns a read-only dict of the Cython module's globals, rather than the globals
+   of the first non-Cython module in the stack 
+
+ * Many C++ exceptions are now special cased to give closer Python counterparts.  This means that except+ functions that formerly raised generic RuntimeErrors may raise something else such as ArithmeticError.
+
+== Known regressions ==
+
+ * The inlined generator expressions (introduced in Cython 0.13) were disabled in favour of full generator expression support. This breaks code that previously used them inside of cdef functions (usage in def functions continues to work) and induces a performance regression for cases that continue to work but that were previously inlined. We hope to reinstate this feature in the near future.
+
+== Contributors ==
+
+Many thanks to:
+
+Francesc Alted, 
+Haoyu Bai, 
+Stefan Behnel, 
+Robert Bradshaw, 
+Lars Buitinck, 
+Lisandro Dalcin, 
+John Ehresman, 
+Mark Florisson, 
+Christoph Gohlke, 
+Jason Grout, 
+Chris Lasher, 
+Vitja Makarov, 
+Brent Pedersen, 
+Dag Sverre Seljebotn, 
+Nathaniel Smith, 
+and Pauli Virtanen
+
+
+
+----
+CategoryReleaseNotes

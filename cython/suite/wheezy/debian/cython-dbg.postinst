@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -e
+
+## https://wiki.debian.org/MissingCopyrightFile
+## Replace documentation directory with symlink
+docdir="/usr/share/doc/cython"
+if [ -d "${docdir}-dbg" ] && [ ! -h "${docdir}-dbg" ]; then
+    rmdir "${docdir}-dbg" 2>/dev/null \
+    && ln -sf "${docdir}" "${docdir}-dbg" \
+    || echo "W: Unable to remove \"${docdir}-dbg\" -- not empty?"
+fi
+
+#DEBHELPER#

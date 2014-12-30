@@ -1,0 +1,80 @@
+Fetched from http://wiki.cython.org/ReleaseNotes-0.13 on Sat Jun 30 12:28:29 EDT 2012\n
+= Cython 0.13 =
+ * Release date: August 25, 2010
+ * Download: http://cython.org/release/Cython-0.13.tar.gz http://cython.org/release/Cython-0.13.zip
+
+The Cython project is happy to announce the release of Cython 0.13.
+
+This release sets another milestone on the path towards Python compatibility and brings major new features and improvements for the usability of the Cython language.
+
+== New Features ==
+
+ * Closures are fully supported for Python functions. Cython supports inner functions and lambda expressions. Generators and generator expressions are __not__ supported in this release.
+
+ * Proper C++ support. Cython knows about C++ classes, templates and overloaded function signatures, so that Cython code can interact with them in a straight forward way.
+
+ * Type inference is enabled by default for safe C types (e.g. double, bint, C++ classes) and known extension types. This reduces the need for explicit type declarations and can improve the performance of untyped code in some cases. There is also a verbose compile mode for testing the impact on user code.
+
+ * Cython's for-in-loop can iterate over C arrays and sliced pointers. The type of the loop variable will be inferred automatically in this case.
+
+ * The Py_UNICODE integer type for Unicode code points is fully supported, including for-loops and 'in' tests on unicode strings. It coerces from and to single character unicode strings. Note that untyped for-loop variables will automatically be inferred as Py_UNICODE when iterating over a unicode string. In most cases, this will be much more efficient than yielding sliced string objects, but can also have a negative performance impact when the variable is used in a Python context multiple times, so that it needs to coerce to a unicode string object more than once. If this happens, typing the loop variable as unicode or object will help.
+
+ * The built-in functions any(), all(), sum(), list(), set() and dict() are inlined as plain `for` loops when called on generator expressions. Note that generator expressions are not generally supported apart from this feature. Also, tuple(genexpr) is not currently supported - use tuple([listcomp]) instead.
+
+ * More shipped standard library declarations. The python_* and stdlib/stdio .pxd files have been deprecated in favor of clib.* and cpython[.*] and may get removed in a future release.
+
+== Python compatibility ==
+
+ * Pure Python mode no longer disallows non-Python keywords like 'cdef', 'include' or 'cimport'. It also no longer recognises syntax extensions like the for-from loop.
+
+ * Parsing has improved for Python 3 syntax in Python code, although not all features are correctly supported. The missing Python 3 features are being worked on for the next release.
+
+ * from __future__ import print_function is supported in Python 2.6 and later. Note that there is currently no emulation for earlier Python versions, so code that uses print() with this future import will require at least Python 2.6.
+
+ * New compiler directive language_level (valid values: 2 or 3) with corresponding command line options -2 and -3 requests source code compatibility with Python 2.x or Python 3.x respectively. Language level 3 currently enforces unicode literals for unprefixed string literals, enables the print function (requires Python 2.6 or later) and keeps loop variables in list comprehensions from leaking.
+
+ * Loop variables in set/dict comprehensions no longer leak into the surrounding scope (following Python 2.7). List comprehensions are unchanged in language level 2.
+
+ * print >> stream
+
+== Incompatible changes ==
+
+ * The availability of type inference by default means that Cython will also infer the type of pointers on assignments. Previously, code like this
+ 
+ cdef char* s = ...
+ untyped_variable = s
+ 
+ would convert the char* to a Python bytes string and assign that. This is no longer the case and no coercion will happen in the example above. The correct way of doing this is through an explicit cast or by typing the target variable, i.e.
+ 
+ cdef char* s = ...
+ untyped_variable1 = <bytes>s
+ untyped_variable2 = <object>s
+
+ cdef object py_object = s
+ cdef bytes  bytes_string = s
+ 
+
+ * `bool` is no longer a valid type name by default. The problem is that it's not clear whether `bool` should refer to the Python type or the C++ type, and expecting one and finding the other has already led to several hard-to-find bugs. Both types are available for importing: you can use `from cpython cimport bool` for the Python `bool` type, and `from libcpp cimport bool` for the C++ type. `bool` is still a valid object by default, so one can still write `bool(x)`. 
+
+ * __getsegcount__ is now correctly typed to take a Py_size_t* rather than an int*. 
+
+== Contributors ==
+
+Many people contributed to this release, including:
+
+ * David Barnett
+ * Stefan Behnel
+ * Chuck Blake
+ * Robert Bradshaw
+ * Craig Citro
+ * Bryan Cole
+ * Lisandro Dalcin
+ * Eric Firing
+ * Danilo Freitas
+ * Christoph Gohlke
+ * Dag Sverre Seljebotn
+ * Kurt Smith
+ * Erik Tollerud
+ * Carl Witty
+----
+CategoryReleaseNotes

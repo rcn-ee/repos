@@ -1,0 +1,182 @@
+Fetched from http://wiki.cython.org/ReleaseHistory on Mon Dec  3 11:21:48 EST 2012\n
+There seems to be no list of releases available on the web. These are collected from the mailing list. It is not complete, but is probably already useful so that people can see if it worth upgrading to the latest version. The current release is always linked to from the main site, old releases can be found at http://cython.org/release/.
+
+The latest changelog is available in the source tree: for the https://github.com/cython/cython/blob/master/CHANGES.rst and for https://github.com/cython/cython/blob/0.17/CHANGES.rst.
+
+ * [[ReleaseNotes-0.17.1]]
+
+ * [[ReleaseNotes-0.17]]
+
+ * [[ReleaseNotes-0.16]]
+
+ * [[ReleaseNotes-0.15.1]]
+
+ * [[ReleaseNotes-0.15]]
+
+ * [[ReleaseNotes-0.14.1]]
+
+ * [[ReleaseNotes-0.14]]
+
+ * [[ReleaseNotes-0.13]]
+
+ * [[ReleaseNotes-0.12.1]]
+
+ * [[ReleaseNotes-0.12]]
+
+ * [[ReleaseNotes-0.11.2]]
+
+= 0.10 =
+Date: 2008-11-09
+
+There are lots of new features, most notably pure python compatible  
+syntax for cython declarations, improved buffer support, better  
+Python 3.0 support, and some major re-factoring of temporary  
+allocation and code generation. There are also many bug fixes and  
+optimizations.
+
+http://trac.cython.org/cython_trac/query?group=component&milestone=0.10
+
+http://cython.org/Cython-0.10.tar.gz
+http://cython.org/Cython-0.10.zip
+http://article.gmane.org/gmane.comp.python.cython.devel/3534
+
+= 0.9.8.1 =
+Date: 2008-08-19
+
+The largest addition was Dag  
+Seljebotn's buffer support which is amazing. Kudos to him for all his  
+hard work (and to Enthought/Google for funding him this summer). Part  
+of this effort involved moving to a pipeline/transformation based  
+compilation system, which has allowed for many other nice features  
+(e.g. long if statements get translated into c switch statements if  
+possible).
+
+Another big inclusion is Paul Prescod's pyximport. Now one can simply  
+start up Python and type
+
+import pyximport; pyximport.install()
+import foo
+
+which will compile foo.pyx for you. We would like to be able to  
+(optionally) specify all options via directives in the files  
+themselves, which would make this even more useful.
+
+There are numerous fixes and improvements by Stefan Behnel, Dag  
+Seljebotn, and Robert Bradshaw that are not listed here. Among them  
+are better support for Py3, unicode, C++, literals, testing  
+framework, etc. We also merged patches by Jim Kleckner, Hoyt Koepke,  
+Marcus Bitzl, Kirill Smelkov, and Carl Witty.
+
+http://www.cython.org/Cython-0.9.8.1.zip
+http://www.cython.org/Cython-0.9.8.1.tar.gz
+http://article.gmane.org/gmane.comp.python.cython.devel/2650
+
+= 0.9.8 =
+Date: 2008-06-13
+
+ * everything that was done in Pyrex 0.9.8.x that wasn't in Cython already
+ * faster compilation
+ * more optimisations
+ * stricter warnings about potential coding problems (e.g. when using nogil)
+ * support for Python 2.6
+ * __future__ imports for unicode literals
+
+Due to very recent changes in the Python code base, this release does not yet
+compile code for Python 3.0beta1, but it's well prepared so that when 3.0beta1
+finally comes out, we can provide a quick update to make your code compile
+with anything from Python 2.3 to 3.0.
+
+http://www.cython.org/Cython-0.9.8.zip
+http://www.cython.org/Cython-0.9.8.tar.gz
+
+= 0.9.6.14 =
+Date: 2008-05-02
+
+Cython 0.9.6.14 is out. This is mostly a bugfix release, however  
+there are several other improvements, notably:
+
+ * Source code encoding support (PEP 263) and UTF-8 default source encoding (PEP 3120) (Stefan Behnel)
+ * New command line option -w to change the working directory when running Cython (Gary Furnish)
+ * L.append(x) now optimized if L a (runtime) list (Robert Bradshaw)
+ * Cdef variables may be declared python builtin types (CEP 507), though there is much more potential for optimization (Robert Bradshaw)
+ * Enums declared "public" will get exported to the (python-accessible) module namespace (Robert Bradshaw)
+ * Correct special float values (Christian Heimes/Stefan Behnel)
+
+http://www.cython.org/Cython-0.9.6.14.zip
+http://www.cython.org/Cython-0.9.6.14.tar.gz
+
+
+= 0.9.6.13 =
+Date: 2008-04-05
+
+ * C++ exception handling (Felix Wu)
+ * (optional) C line numbers in Errors (Gary Furnish)
+ * some circular cimports (Gary Furnish)
+ * (experimental) parse tree transforms (Dag Seljebotn)
+ * struct member functions automatically coerced to function pointers (for easier C++ wrapping)
+ * no unneeded incref on function arguments
+ * allow single-character ascii literals to be used as ints (no need for c'x' notation)
+ * better support for using arrays as pointers
+
+There are also several bugfixes and pre-Py3K changes due to Robert  
+Bradshaw, Stefan Behnel, Jum Kleckner, and Chris Perkins. The  
+compiler and package repositories have been merged, and while all  
+history has been preserved it is a completely new repository now.
+
+http://www.cython.org/Cython-0.9.6.13.1.zip
+http://www.cython.org/Cython-0.9.6.13.1.tar.gz
+
+= 0.9.6.12 =
+Date: 2008-02-14 04:42:01 
+
+The most significant change is more flexible c(p)def functions and  
+overriding. Specifically, c(p)def functions can now:
+ * have optional arguments (which may grow)
+ * be defined in the module scope
+ * are always cimport-able if defined in the .pxd (i.e. "api" by default)
+ * declare narrower return types than the superclass
+ * cpdef can override cdef
+
+There are also better conversions (<type?> does a type-checked cast,  
+<int>x does the right thing), and numerous optimizations (especially  
+with regard to python function tuple unpacking) and bugfixes, and a  
+much expanded testing framework.
+
+For more details, see the end of http://wiki.cython.org/DifferencesFromPyrex and the changelog at http://hg.cython.org/
+
+
+http://www.cython.org/Cython-0.9.6.12.zip
+http://www.cython.org/Cython-0.9.6.12.tar.gz
+
+= 0.9.6.10 =
+Date: 2007-12-29
+
+The only significant changes are more correct overflow handling (e.g.  
+on assignment to a short, etc.) and automatic conversion "for i in  
+range(n)" to "for i from 0 <= i < n". There are also a couple of  
+smaller bug fixes.
+
+= 0.9.6.8 =
+Date: 2007-11-01
+
+The primary feature of this release is merging in the changes/ 
+bugfixed of Pyrex 0.9.6.3. There are numerous other bugfixes  
+(including several memory leak and refcount fixes) and rdef has been  
+renamed to cpdef (its final name).
+
+
+
+= 0.9.6.7 =
+Date: 2007-10-11
+
+ * GIL handling code
+ * support of keyword-only arguments
+ * Class-level executable bodies for cdef classes, including a working classmethod()
+ * RichCmp instead of Cmp for <, <=, ==, ... operators (for consistency with interpreted python)
+ * interned integer constants
+ * several bug fixes (of which there is some overlap with the recent Pyrex release) and optimizations.
+
+There is also a new experimental type of function, rdef (formerly  
+cdef overridable, but the syntax is still up for debate), which is a  
+cdef function which is callable from python (via an auto-generated  
+def function) and can be overriden in pure-python subclasses.

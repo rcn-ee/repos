@@ -1,0 +1,77 @@
+Fetched from http://wiki.cython.org/ReleaseNotes-0.14 on Sat Jun 30 12:28:28 EDT 2012\n
+= Cython 0.14 =
+ * Release date: December 14, 2010
+ * Download: http://cython.org/release/Cython-0.14.tar.gz http://cython.org/release/Cython-0.14.zip
+
+The Cython project is happy to announce the release of Cython 0.14.
+
+This release fixes several bugs in the previous 0.13 release, improved debugging and build support, and heavily improves Python compatibility in terms of supported features.
+
+The bug tracker has a http://trac.cython.org/cython_trac/query?status=closed&group=component&order=id&col=id&col=summary&col=milestone&col=status&col=type&col=priority&col=component&milestone=0.14&desc=1
+
+== New Features ==
+
+ * Python classes can now be nested and receive a proper closure at definition time.
+
+ * Redefinition is supported for Python functions, even within the same scope.
+
+ * Lambda expressions are supported in class bodies and at the module level.
+
+ * Metaclasses are supported for Python classes, both in Python 2 and Python 3 syntax. The Python 3 syntax (using a keyword argument in the type declaration) is preferred and optimised at compile time.
+
+ * "final" extension classes prevent inheritance in Python space. This feature is available through the new "cython.final" decorator. In the future, these classes may receive further optimisations.
+
+ * "internal" extension classes do not show up in the module dictionary. This feature is available through the new "cython.internal" decorator.
+
+ * Extension type inheritance from builtin types, such as "cdef class MyUnicode(unicode)", now works without further external type redeclarations (which are also strongly discouraged now and continue to issue a warning).
+
+ * GDB support. http://docs.cython.org/src/userguide/debugging.html
+
+ * A new build system with support for inline distutils directives, correct dependency tracking, and parallel compilation. http://wiki.cython.org/enhancements/distutils_preprocessing
+
+ * Support for dynamic compilation at runtime via the new cython.inline function and cython.compile decorator. http://wiki.cython.org/enhancements/inline
+
+== General improvements and bug fixes ==
+
+ * In parallel assignments, the right side was evaluated in reverse order in 0.13. This could result in errors if it had side effects (e.g. function calls).
+
+ * In some cases, methods of builtin types would raise a SystemError instead of an AttributeError when called on None.
+
+ * Constant tuples are now cached over the lifetime of an extension module, just like CPython does. Constant argument tuples of Python function calls are also cached.
+
+ * Closures have tightened to include exactly the names used in the inner functions and classes. Previously, they held the complete locals of the defining function.
+
+ * "nogil" blocks are supported when compiling pure Python code by writing "with cython.nogil".
+
+ * The builtin "next()" function in Python 2.6 and later is now implemented internally and therefore available in all Python versions. This makes it the preferred and portable way of manually advancing an iterator.
+
+ * In addition to the previously supported inlined generator expressions in 0.13, "sorted(genexpr)" can now be used as well. Typing issues were fixed in "sum(genexpr)" that could lead to invalid C code being generated. Other known issues with inlined generator expressions were also fixed that make upgrading to 0.14 a strong recommendation for code that uses them. Note that general generators and generator expressions continue to be not supported.
+
+ * Iterating over arbitrary pointer types is now supported, as is an optimized version of the in operator, e.g. x in ptr[a:b].
+
+ * Inplace arithmetic operators now respect the cdivision directive and are supported for complex types.
+
+== Incompatible changes ==
+
+ * Typing a variable as type "complex" previously gave it the Python object type. It now uses the appropriate C/C++ double complex type. A side-effect is that assignments and typed function parameters now accept anything that Python can coerce to a complex, including integers and floats, and not only complex instances.
+
+ * Large integer literals pass through the compiler in a safer way. To prevent truncation in C code, non 32-bit literals are turned into Python objects if not used in a C context. This context can either be given by a clear C literal suffix such as "UL" or "LL" (or "L" in Python 3 code), or it can be an assignment to a typed variable or a typed function argument, in which case it is up to the user to take care of a sufficiently large value space of the target.
+
+ * Python functions are declared in the order they appear in the file, rather than all being created at module creation time. This is consistent with Python and needed to support, for example, conditional or repeated declarations of functions. In the face of circular imports this may cause code to break, so a new --disable-function-redefinition flag was added to revert to the old behavior. This flag will be removed in a future release, so should only be used as a stopgap until old code can be fixed.
+
+== Contributors ==
+
+Many people contributed to this release, including:
+
+ * Haoyu Bai
+ * Stefan Behnel
+ * Robert Bradshaw
+ * Ondrej Certik
+ * Lisandro Dalcin
+ * Mark Florisson
+ * Eric Huss
+ * Vitja Makarov
+ * Corbin Simpson
+ * Kurt Smith
+----
+CategoryReleaseNotes

@@ -1,0 +1,41 @@
+Fetched from http://wiki.cython.org/ReleaseNotes-0.11.2 on Sat Jun 30 12:28:30 EDT 2012\n
+= Cython 0.11.2 =
+ * Release date: May 20th 2009
+
+I'm happy to announce the release of Cython 0.11.2.
+
+http://cython.org/Cython-0.11.2.tar.gz
+http://cython.org/Cython-0.11.2.zip
+
+New features:
+
+ * There's now native complex floating point support! C99 complex will be used if complex.h is included, otherwise explicit complex arithmetic working on all C compilers is used. [Robert Bradshaw]
+
+
+    cdef double complex a = 1 + 0.3j
+    cdef np.ndarray[np.complex128_t, ndim=2] arr = \
+        np.zeros(10, np.complex128)
+
+
+ * Cython can now generate a main()-method for embedding of the Python interpreter into an executable (see #289) [Robert Bradshaw]
+
+ * @wraparound directive (another way to disable arr[idx] for negative idx) [Dag Sverre Seljebotn]
+ * Correct support for NumPy record dtypes with different alignments, and "cdef packed struct" support [Dag Sverre Seljebotn]
+ * @callspec directive, allowing custom calling convention macros [Lisandro Dalcin]
+ * Bug fixes and smaller improvements. For the full list, see [1].
+
+== Contributors to this release ==
+ * Stefan Behnel
+ * Robert Bradshaw
+ * Lisandro Dalcin
+ * Dag Sverre Seljebotn
+
+Thanks also to everybody who's helping us out in our discussions on the 
+mailing list.
+
+[1] http://trac.cython.org/cython_trac/query?group=component&milestone=0.11.2&resolution=fixed
+
+
+-- Dag Sverre Seljebotn
+----
+CategoryReleaseNotes

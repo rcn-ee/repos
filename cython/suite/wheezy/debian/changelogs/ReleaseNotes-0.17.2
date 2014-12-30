@@ -1,0 +1,47 @@
+Obtained from the release announcement email
+
+0.17.2 (2012-11-20)
+===================
+
+Features added
+--------------
+
+* ``cythonize()`` gained a best effort compile mode that can be used to
+simply ignore .py files that fail to compile.
+
+Bugs fixed
+----------
+
+* Replacing an object reference with the value of one of its cdef
+attributes could generate incorrect C code that accessed the object after
+deleting its last reference.
+
+* C-to-Python type coercions during cascaded comparisons could generate
+invalid C code, specifically when using the 'in' operator.
+
+* "obj[1,]" passed a single integer into the item getter instead of a tuple.
+
+* Cyclic imports at module init time did not work in Py3.
+
+* The names of C++ destructors for template classes were built incorrectly.
+
+* In pure mode, type casts in Cython syntax and the C ampersand operator
+are now rejected. Use the pure mode replacements instead.
+
+* In pure mode, C type names and the sizeof() function are no longer
+recognised as such and can be used as normal Python names.
+
+* The extended C level support for the CPython array type was declared too
+late to be used by user defined classes.
+
+* C++ class nesting was broken.
+
+* Better checking for required nullary constructors for stack-allocated C++
+instances.
+
+* Remove module docstring in no-docstring mode.
+
+* Fix specialization for varargs function signatures.
+
+* Fix several compiler crashes.
+

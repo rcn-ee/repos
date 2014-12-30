@@ -1,0 +1,39 @@
+Fetched from http://wiki.cython.org/ReleaseNotes-0.12.1 on Sat Jun 30 12:28:29 EDT 2012\n
+= Cython 0.12.1 =
+ * Release date: February 2, 2010
+ * Download: http://cython.org/release/Cython-0.12.1.tar.gz http://cython.org/release/Cython-0.12.1.zip
+
+I'm happy to announce the release of Cython 0.12.1. 
+
+== New Features ==
+
+ * Type inference improvements.
+
+   There have been several bug fixes and improvements to the type inferencer. 
+   Notably, there is now a "safe" mode enabled by  setting the infer_types directive to None.
+   (The None here refers to the "default" mode, which will be the default in 0.13.) This safe mode limits inference to 
+   Python object types and C doubles, which should speed up execution without affecting any semantics such as integer overflow behavior like infer_types=True might. There is also an infer_types.verbose option which allows one to see what types are inferred. 
+
+ * The boundscheck directive works for lists and tuples as well as buffers.
+ * len(s) and s.decode("encoding") are efficiently supported for char* s. 
+ * Cython's INLINE macro has been renamed to CYTHON_INLINE to reduce conflict and has better support for the MSVC compiler on Windows. It is no longer clobbered if externally defined. 
+ * Revision history is now omitted from the source package, resulting in a 85% size reduction. Running make repo will download the history and turn the directory into a complete Mercurial working repository. 
+ * Cython modules don't need to be recompiled when the size of an external type grows. (A warning, rather than an error, is produced.) This should be helpful for binary distributions relying on NumPy. 
+
+Several other bugs and minor improvements have been made. This release should be fully backwards compatible with 0.12.
+
+== Contributors to this release ==
+
+ * Arfrever Frehtes Taifersar Arahesis
+ * Stefan Behnel
+ * Robert Bradshaw
+ * Lisandro Dalcin
+ * Julien Danjou
+ * Mark Lodato
+ * Dag Sverre Seljebotn
+
+Thanks also to the many who've submitted feedback and contributed to discussions on the mailing list.
+
+http://trac.cython.org/cython_trac/query?group=component&milestone=0.12.1
+----
+CategoryReleaseNotes

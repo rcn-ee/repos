@@ -1,0 +1,64 @@
+Fetched from http://wiki.cython.org/ReleaseNotes-0.12 on Sat Jun 30 12:28:30 EDT 2012\n
+= Cython 0.12 =
+
+Release date: November 23 2009
+
+Tarball: http://cython.org/release/Cython-0.12.tar.gz
+
+Milestone: http://trac.cython.org/cython_trac/query?group=component&milestone=0.12
+
+== New features ==
+
+ * Type inference with the infer_types directive
+
+ * Seamless C++ complex support
+
+ * Fast extension type instantiation using the normal Python meme obj = MyType.__new__(MyType)
+
+ * Improved support for Py3.1
+
+ * Cython now runs under Python 3.x using the 2to3 tool
+
+ * unittest support for doctests in Cython modules
+
+ * Optimised handling of C strings (char*): for c in cstring[2:50] and cstring.decode()
+
+ * Looping over c pointers: for i in intptr[:50]. 
+
+ * Many other optimisation, e.g. enumerate() loops, parallel swap assignments (a,b = b,a), and unicode.encode()
+
+ * More complete numpy.pxd
+
+ * pyximport improvements
+
+ * cython_freeze improvements
+
+ * Many bug fixes
+
+There has also been a lot of work behind the scenes to improve temp handling, streamline writing optimizations, and cleanup code in general. 
+
+== Semantic Changes ==
+
+This revision to introduces some backwards incompatible changes to more closely align Cython with the Python language. They are
+
+ * Division involving negative C integers now follow Python semantics rather than C semantics. Division by zero also now raises a Python exception. See enhancements/division This has been optional for several releases, and is now the default. It can be disabled on a per-function or per-file basis, or from the command line (see [[enhancements/compilerdirectives]])
+
+ * Unmarked strings are now of type str in both Python 2.x (becoming byte strings) and Python 3.x (becoming unicode strings). Byte strings may be marked as b"..." and unicode strings as u"..." no matter what the runtime environment. See enhancements/stringliterals
+
+ * The boolean expressions x or y and x and y return either x or y just like in Python, even when x and y are c types. This means that the types must be compatible. Previously x and y were coerced into truth values first, and either 1 or 0 was returned. 
+
+== Contributors to this release ==
+ * Peter Alexander
+ * Stefan Behnel
+ * Robert Bradshaw
+ * David Cournapeau
+ * Lisandro Dalcin
+ * Mark Lodato
+ * Sturla Molden
+ * Holger Rapp
+ * Dag Sverre Seljebotn
+
+Thanks also to everybody who's helping us out in our discussions on the 
+mailing list.
+----
+CategoryReleaseNotes
