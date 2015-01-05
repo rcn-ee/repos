@@ -1,0 +1,21 @@
+commit 682351fa41ec8db193ff7bd40b862f9c6d4b0ed5
+Author: Michael Haberler <git@mah.priv.at>
+Date:   Sun Jun 1 17:36:02 2014 +0200
+
+    selftest/zauth: increase poll timeout for slow platforms
+
+    fixes #497 .
+
+diff --git a/src/zauth.c b/src/zauth.c
+index f32777b..31e64e0 100644
+--- a/src/zauth.c
++++ b/src/zauth.c
+@@ -569,7 +569,7 @@ s_can_connect (zctx_t *ctx, void **server, void **client)
+     assert (rc == 0);
+     zstr_send (*server, "Hello, World");
+     zpoller_t *poller = zpoller_new (*client, NULL);
+-    bool success = (zpoller_wait (poller, 200) == *client);
++    bool success = (zpoller_wait (poller, 1000) == *client);
+     zpoller_destroy (&poller);
+     zsocket_destroy (ctx, *client);
+     zsocket_destroy (ctx, *server);
