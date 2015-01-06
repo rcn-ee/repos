@@ -6,7 +6,7 @@ package_name="dart-1.8"
 debian_pkg_name="${package_name}"
 repo_branch="1.8"
 #repo_branch="bleeding_edge"
-package_version="1.8.3-git20141228"
+package_version="1.8.3-git20150105"
 package_source="${package_name}_${package_version}.orig.tar.gz"
 src_dir="${package_name}.3"
 
@@ -21,6 +21,6 @@ debian_diff=""
 
 archive="enable"
 
-wheezy_version="~bpo70+20141228+1"
-jessie_version="~20141228+1"
-trusty_version="~20141228+1"
+wheezy_version="~bpo70+20150105+1"
+jessie_version="~20150105+1"
+trusty_version="~20150105+1"
