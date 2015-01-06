@@ -6,7 +6,7 @@ package_name="dart-edge"
 debian_pkg_name="${package_name}"
 #repo_branch="1.7"
 repo_branch="bleeding_edge"
-package_version="1.9.0-edge.42566"
+package_version="1.9.0-edge.42617"
 package_source="${package_name}_${package_version}.orig.tar.gz"
 src_dir="dart-${package_version}"
 
@@ -21,6 +21,6 @@ debian_diff=""
 
 archive="enable"
 
-wheezy_version="~bpo70+20141228+1"
-jessie_version="~20141228+1"
-trusty_version="~20141228+1"
+wheezy_version="~bpo70+20150105+1"
+jessie_version="~20150105+1"
+trusty_version="~20150105+1"
