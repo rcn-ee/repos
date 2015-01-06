@@ -47,10 +47,12 @@ endif
 ifeq ($(ARM), yes)
 	confflags += --enable-omap-experimental-api
 	confflags += --enable-freedreno-experimental-api
+	confflags += --enable-etnaviv-experimental-api
 	confflags += --enable-exynos-experimental-api
 else
 	confflags += --disable-omap-experimental-api
 	confflags += --disable-freedreno-experimental-api
+	confflags += --disable-etnaviv-experimental-api
 	confflags += --disable-exynos-experimental-api
 endif
 
@@ -83,6 +85,7 @@ endif
 ifeq ($(ARM), yes)
 	dh_strip -plibdrm-omap1 --dbg-package=libdrm-omap1-dbg
 	dh_strip -plibdrm-freedreno1 --dbg-package=libdrm-freedreno1-dbg
+	dh_strip -plibdrm-etnaviv0 --dbg-package=libdrm-etnaviv0-dbg
 	dh_strip -plibdrm-exynos1 --dbg-package=libdrm-exynos1-dbg
 endif
 	dh_strip -s --remaining-packages
@@ -99,6 +102,7 @@ endif
 ifeq ($(ARM), yes)
 	dh_makeshlibs -plibdrm-omap1 -V'libdrm-omap1 (>= 2.4.38)' -- -c4
 	dh_makeshlibs -plibdrm-freedreno1 -V'libdrm-freedreno1 (>= 2.4.57)' -- -c4
+	dh_makeshlibs -plibdrm-etnaviv0 -V'libdrm-etnaviv0' -- -c4
 	dh_makeshlibs -plibdrm-exynos1 -V'libdrm-exynos1' -- -c4
 endif
 
