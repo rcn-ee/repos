@@ -23,20 +23,9 @@ else
 	confflags += --build=$(DEB_BUILD_GNU_TYPE) --host=$(DEB_HOST_GNU_TYPE)
 endif
 
-# arch tuning flags:
-ifneq (,$(filter $(DEB_HOST_ARCH), i386))
-  # i386: build with -march=pentium3 -mtune=generic
-  CFLAGS_TUNE   += -Wall -march=pentium3 -mtune=generic
-  CXXFLAGS_TUNE += -Wall -march=pentium3 -mtune=generic
-else
-  # amd64
-  CFLAGS_TUNE   += -Wall
-  CXXFLAGS_TUNE += -Wall
-endif
-
 ifeq (,$(filter $(DEB_HOST_ARCH), armhf))
 buildflags = \
-	$(shell DEB_CFLAGS_MAINT_APPEND="$(CFLAGS_TUNE)" DEB_CXXFLAGS_MAINT_APPEND="$(CXXFLAGS_TUNE)" dpkg-buildflags --export=configure)
+	$(shell DEB_CFLAGS_MAINT_APPEND=-Wall DEB_CXXFLAGS_MAINT_APPEND=-Wall dpkg-buildflags --export=configure)
 else
 # Workaround for a variant of LP: #725126
 buildflags = \
@@ -108,10 +97,6 @@ else
   ifneq (,$(filter $(DEB_HOST_ARCH),amd64 i386 kfreebsd-amd64 kfreebsd-i386))
 	GALLIUM_DRIVERS += swrast
   else
-    ifneq (,$(filter $(DEB_HOST_ARCH),arm64 armhf))
-	#we want kms-swrast
-	GALLIUM_DRIVERS += swrast
-    endif
 	DRI_DRIVERS += swrast
   endif
 
@@ -135,7 +120,6 @@ else
   endif
 
 	confflags_DIRECT_RENDERING = --enable-driglx-direct
-	confflags_OPENVG = --enable-openvg --enable-gallium-egl
 	confflags_GALLIUM += --enable-vdpau
 endif
 confflags_EGL = --with-egl-platforms="$(EGL_DISPLAYS)"
@@ -158,7 +142,6 @@ confflags-dri = \
 	$(confflags_EGL) \
 	$(confflags_GALLIUM) \
 	$(confflags_GLES) \
-	$(confflags_OPENVG) \
 	$(buildflags)
 
 confflags-swx11 = \
