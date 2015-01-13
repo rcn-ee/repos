@@ -1,10 +1,16 @@
-Debian: http://repos.rcn-ee.net/debian/ (wheezy/jessie)
+Debian 7: (Wheezy): http://repos.rcn-ee.net/debian/
 ```
 deb [arch=armhf] http://repos.rcn-ee.net/debian/ wheezy main
 #deb-src [arch=armhf] http://repos.rcn-ee.net/debian/ wheezy main
 ```
 
-Ubuntu: http://repos.rcn-ee.net/ubuntu/ (trusty)
+Debian 8: (Jessie): http://repos.rcn-ee.net/debian/
+```
+deb [arch=armhf] http://repos.rcn-ee.net/debian/ jessie main
+#deb-src [arch=armhf] http://repos.rcn-ee.net/debian/ jessie main
+```
+
+Ubuntu 14.04 lts: (Trusty): http://repos.rcn-ee.net/ubuntu/
 ```
 deb [arch=armhf] http://repos.rcn-ee.net/ubuntu/ trusty main
 #deb-src [arch=armhf] http://repos.rcn-ee.net/ubuntu/ trusty main
