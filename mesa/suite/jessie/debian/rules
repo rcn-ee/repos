@@ -94,7 +94,8 @@ else
   endif
 
   # Do not build llvmpipe for armhf, it regresses compared to the classic swrast.
-  ifneq (,$(filter $(DEB_HOST_ARCH),amd64 i386 kfreebsd-amd64 kfreebsd-i386))
+  #rcn-ee: build llvmpipe for armhf...
+  ifneq (,$(filter $(DEB_HOST_ARCH),amd64 i386 kfreebsd-amd64 kfreebsd-i386 armhf))
 	GALLIUM_DRIVERS += swrast
   else
 	DRI_DRIVERS += swrast
