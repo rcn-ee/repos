@@ -2,6 +2,8 @@
 
 . version.sh
 
+incoming_mirror="http://incoming.debian.org/debian-buildd/"
+
 if [ ! "x${git_repo}" = "x" ] ; then
 	if [ -f ./git/.git/config ] ; then
 		git clone --reference ./git/ ${git_repo} ignore
@@ -16,12 +18,19 @@ if [ ! "x${git_repo}" = "x" ] ; then
 	fi
 else
 	if [ ! "x${package_source}" = "x" ] ; then
-		wget -c ${dl_path}${package_source}
+		wget -c ${mirror}/${dl_path}${package_source}
 		if [ ! "x${debian_patch}" = "x" ] ; then
-			wget -c ${dl_path}${debian_patch}
+			wget -c ${mirror}/${dl_path}${debian_patch} || true
+		fi
+		if [ ! "x${debian_patch}" = "x" ] ; then
+			wget -c ${incoming_mirror}/${dl_path}${debian_patch}
+		fi
+
+		if [ ! "x${debian_untar}" = "x" ] ; then
+			wget -c  ${mirror}/${dl_path}${debian_untar} || true
 		fi
 		if [ ! "x${debian_untar}" = "x" ] ; then
-			wget -c ${dl_path}${debian_untar}
+			wget -c ${incoming_mirror}/${dl_path}${debian_untar}
 		fi
 	fi
 fi
