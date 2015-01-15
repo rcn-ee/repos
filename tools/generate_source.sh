@@ -23,14 +23,18 @@ else
 			wget -c ${mirror}/${dl_path}${debian_patch} || true
 		fi
 		if [ ! "x${debian_patch}" = "x" ] ; then
-			wget -c ${incoming_mirror}/${dl_path}${debian_patch}
+			if [ ! -f ${debian_patch} ] ; then
+				wget -c ${incoming_mirror}/${dl_path}${debian_patch}
+			fi
 		fi
 
 		if [ ! "x${debian_untar}" = "x" ] ; then
 			wget -c  ${mirror}/${dl_path}${debian_untar} || true
 		fi
 		if [ ! "x${debian_untar}" = "x" ] ; then
-			wget -c ${incoming_mirror}/${dl_path}${debian_untar}
+			if [ ! -f ${debian_untar} ] ; then
+				wget -c ${incoming_mirror}/${dl_path}${debian_untar}
+			fi
 		fi
 	fi
 fi
