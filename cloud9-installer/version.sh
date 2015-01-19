@@ -4,19 +4,19 @@
 
 package_name="cloud9-installer"
 debian_pkg_name="${package_name}"
-package_version="3.0.669"
+package_version="3.0.713"
 package_source=""
 src_dir=""
 
 git_repo=""
 git_sha=""
 reprepro_dir="c/${package_name}"
-dl_path="${mirror}/pool/main/${reprepro_dir}/"
+dl_path="pool/main/${reprepro_dir}/"
 
 debian_version="${package_version}-1"
 debian_untar=""
 debian_patch=""
 
-wheezy_version="~bpo70+20150112+1"
-jessie_version="~20150112+1"
-trusty_version="~20150112+1"
+wheezy_version="~bpo70+20150119+1"
+jessie_version="~20150119+1"
+trusty_version="~20150119+1"
