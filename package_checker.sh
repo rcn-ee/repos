@@ -30,7 +30,7 @@ package_name="gyp"; package_version="0.1~svn1729-3"; check
 package_name="jansson"; package_version="2.7-1"; check
 package_name="libsodium"; package_version="1.0.0-1"; check
 package_name="libv8-3.14"; package_version="3.14.5.8-8"; check
-package_name="nodejs"; package_version="0.10.29~dfsg-1.1"; check
+package_name="nodejs"; package_version="0.10.29~dfsg-1"; check
 package_name="node-abbrev"; package_version="1.0.5-2"; check
 package_name="node-ansi"; package_version="0.3.0-2"; check
 package_name="node-ansi-color-table"; package_version="1.0.0-1"; check
