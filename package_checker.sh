@@ -26,7 +26,7 @@ package_name="xserver-xorg-video-modesetting" ; package_version="0.9.0-1" ; chec
 suite="jessie"
 package_name="cython" ; package_version="0.19.1+git34-gac3e3a2-1" ; check
 
-package_name="gyp"; package_version="0.1~svn1729-1"; check
+package_name="gyp"; package_version="0.1~svn1729-3"; check
 package_name="jansson"; package_version="2.7-1"; check
 package_name="libsodium"; package_version="1.0.0-1"; check
 package_name="libv8-3.14"; package_version="3.14.5.8-8"; check
