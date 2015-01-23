@@ -79,6 +79,7 @@ package_name="node-uglify" ; package_version="1.3.4-1" ; check
 package_name="node-underscore" ; package_version="1.7.0~dfsg-1" ; check
 package_name="node-uuid"; package_version="1.4.0-1" ; check
 package_name="node-which"; package_version="1.0.5-2"; check
+package_name="node-wordwrap"; package_version="0.0.2-2"; check
 package_name="npm"; package_version="1.4.21+ds-2"; check
 package_name="python-sendfile" ; package_version="2.0.0-6" ; check
 package_name="python-pyftpdlib" ; package_version="1.2.0-1" ; check
