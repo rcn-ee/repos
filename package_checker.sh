@@ -53,7 +53,7 @@ package_name="node-ini"; package_version="1.1.0-1"; check
 package_name="node-json-stringify-safe"; package_version="5.0.0-1"; check
 package_name="node-lockfile"; package_version="0.4.1-1"; check
 package_name="node-lru-cache"; package_version="2.3.1-1"; check
-package_name="node-marked"; package_version="0.3.1+dfsg-1"; check
+package_name="node-marked"; package_version="0.3.2+dfsg-1"; check
 package_name="node-mime"; package_version="1.2.11-1"; check
 package_name="node-minimatch"; package_version="1.0.0-1"; check
 package_name="node-mkdirp"; package_version="0.5.0-1"; check
