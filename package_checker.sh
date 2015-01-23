@@ -62,6 +62,7 @@ package_name="node-nopt"; package_version="3.0.1-1"; check
 package_name="node-normalize-package-data"; package_version="0.2.2-1"; check
 package_name="node-npmlog"; package_version="0.0.4-1"; check
 package_name="node-once"; package_version="1.1.1-1"; check
+package_name="node-optimist"; package_version="0.3.5-1"; check
 package_name="node-osenv"; package_version="0.1.0-1"; check
 package_name="node-qs"; package_version="2.2.4-1"; check
 package_name="node-read"; package_version="1.0.5-1"; check
