@@ -76,7 +76,7 @@ package_name="node-sigmund"; package_version="1.0.0-1"; check
 package_name="node-slide"; package_version="1.1.4-1"; check
 package_name="node-tar"; package_version="0.1.18-1" ; check
 package_name="node-tunnel-agent"; package_version="0.3.1-1"; check
-package_name="node-uglify" ; package_version="1.3.4-1" ; check
+package_name="node-uglify" ; package_version="2.4.15-1" ; check
 package_name="node-underscore" ; package_version="1.7.0~dfsg-1" ; check
 package_name="node-uuid"; package_version="1.4.0-1" ; check
 package_name="node-which"; package_version="1.0.5-2"; check
