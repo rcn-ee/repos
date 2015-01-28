@@ -22,11 +22,19 @@ setup_repo () {
 	echo "basedir ${apache_dir}/${dist}" >> ${apache_dir}/${dist}/conf/options
 	echo "ask-passphrase" >> ${apache_dir}/${dist}/conf/options
 
+	#This key expires: 2015-07-02
 	if [ ! -f ${apache_dir}/${dist}/conf/repos.rcn-ee.net.gpg.key ] ; then
 		cd ${apache_dir}/${dist}/conf/
 		gpg --armor --output repos.rcn-ee.net.gpg.key --export 53A22F89
 		cd -
 	fi
+
+	if [ ! -f ${apache_dir}/${dist}/conf/repos.rcn-ee.net.2015.gpg.key ] ; then
+		cd ${apache_dir}/${dist}/conf/
+		gpg --armor --output repos.rcn-ee.net.2015.gpg.key --export A4C46402
+		cd -
+	fi
+
 	#for apt-cacher-ng...
 	if [ ! -f ${apache_dir}/${dist}/conf/custom.gpg ] ; then
 		cd ${apache_dir}/${dist}/conf/
