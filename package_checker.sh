@@ -1,5 +1,27 @@
 #!/bin/bash
 
+check_http () {
+	if [ -f /tmp/index.html ] ; then
+		rm -f /tmp/index.html
+	fi
+	wget --no-verbose --directory-prefix=/tmp/ ${site}/${package_name}/
+	cat /tmp/index.html | grep "<a href=" > /tmp/temp.html
+	sed -i -e "s/<a href/\\n<a href/g" /tmp/temp.html
+	sed -i -e 's/\"/\"><\/a>\n/2' /tmp/temp.html
+	cat /tmp/temp.html | grep href | grep dsc > /tmp/index.html
+	sed -i -e 's/<a href="//g' /tmp/index.html
+	sed -i -e 's/"><\/a>//g' /tmp/index.html
+
+	version=$(cat /tmp/index.html | grep dsc | awk -F ".dsc" '{print $1}')
+	if [ ! "x${version}" = "x" ] ; then
+		if [ ! "x${package_version}" = "x${version}" ] ; then
+			echo "Change: ${package_name}: upstream:${version} local:${package_version}"
+		fi
+	else
+		echo ${output}
+	fi
+}
+
 check () {
 #	echo "Checking: ${package_name}"
 	output=$(rmadison -s ${suite} ${package_name} | grep ${package_name})
@@ -12,6 +34,12 @@ check () {
 		echo ${output}
 	fi
 }
+
+site="http://packages.siduction.org/extra/pool/main/c"
+package_name="connman" ; package_version="connman_1.27~20150123g04cbd7e-2" ; check_http
+
+#really slow...
+#exit
 
 suite="sid"
 package_name="chromium" ; package_version="39.0.2171.71-2" ; check
