@@ -1,19 +1,22 @@
 #!/bin/bash -e
 
+#http://packages.siduction.org/lxqt/pool/main/q/qtermwidget/
+
+mirror="http://packages.siduction.org"
+
 package_name="qtermwidget"
 debian_pkg_name="${package_name}"
-package_version="0.6.0-git20141202"
-package_source="${package_name}_${package_version}.orig.tar.xz"
-src_dir="${package_name}_${package_version}"
+package_version="0.6.0"
+dl_package_source="${package_name}_${package_version}-4.tar.gz"
+package_source="${package_name}_${package_version}.orig.tar.gz"
+src_dir="checkout"
 
-git_repo="https://github.com/qterminal/qtermwidget"
-git_sha="3ce99c7450fa85294a29322267b18a31d21f9886"
-reprepro_dir="libq/${package_name}"
-dl_path=""
+git_repo=""
+git_sha=""
+reprepro_dir="q/${package_name}"
+dl_path="lxqt/pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-1"
+debian_version="${package_version}-4"
 debian_patch=""
-debian_diff=""
 
-wheezy_version="~bpo70+20140924+1"
-jessie_version="~20141203+2"
+jessie_version="~20150130+1"

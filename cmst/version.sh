@@ -16,8 +16,7 @@ git_sha=""
 reprepro_dir="c/${package_name}"
 dl_path="extra/pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-4"
-debian_untar=""
+debian_version="${package_version}-1"
 debian_patch=""
 
 jessie_version="~20150130+1"
