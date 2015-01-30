@@ -1,6 +1,26 @@
 #!/usr/bin/make -f
-
 #export DH_VERBOSE=1
 
+export QT_SELECT = 5
+
 %:
-	dh $@
+	dh $@ --parallel
+
+
+maintainer-clean:
+	$(RM) -r checkout
+	$(RM) *.build
+	$(RM) *.changes
+	$(RM) *.deb
+	$(RM) *.dsc
+	$(RM) *.tar.gz
+	$(RM) *.upload
+ 
+checkout: maintainer-clean
+	git clone --depth=1 git@github.com:andrew-bibb/cmst.git checkout; \
+	cd checkout; \
+	$(RM) -r debian; \
+	cp -a ../debian . ; \
+	echo "";\
+	git log | head; \
+	echo ""
