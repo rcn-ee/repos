@@ -39,6 +39,9 @@ site="http://packages.siduction.org/extra/pool/main/c"
 package_name="connman" ; package_version="connman_1.27~20150123g04cbd7e-2" ; check_http
 package_name="cmst" ; package_version="cmst_2015.01.24-4" ; check_http
 
+site="http://packages.siduction.org/lxqt/pool/main/q"
+package_name="qtermwidget" ; package_version="qtermwidget_0.6.0-4" ; check_http
+
 #really slow...
 #exit
 
