@@ -41,6 +41,7 @@ package_name="cmst" ; package_version="cmst_2015.01.24-4" ; check_http
 
 site="http://packages.siduction.org/lxqt/pool/main/q"
 package_name="qtermwidget" ; package_version="qtermwidget_0.6.0-4" ; check_http
+package_name="qterminal" ; package_version="qterminal_0.6.0-6" ; check_http
 
 #really slow...
 #exit
