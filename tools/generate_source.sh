@@ -17,23 +17,28 @@ if [ ! "x${git_repo}" = "x" ] ; then
 		rm -rf ./ignore/
 	fi
 else
-	if [ ! "x${package_source}" = "x" ] ; then
-		wget -c ${mirror}/${dl_path}${package_source}
-		if [ ! "x${debian_patch}" = "x" ] ; then
-			wget -c ${mirror}/${dl_path}${debian_patch} || true
-		fi
-		if [ ! "x${debian_patch}" = "x" ] ; then
-			if [ ! -f ${debian_patch} ] ; then
-				wget -c ${incoming_mirror}/${dl_path}${debian_patch}
-			fi
-		fi
 
-		if [ ! "x${debian_untar}" = "x" ] ; then
-			wget -c  ${mirror}/${dl_path}${debian_untar} || true
-		fi
-		if [ ! "x${debian_untar}" = "x" ] ; then
-			if [ ! -f ${debian_untar} ] ; then
-				wget -c ${incoming_mirror}/${dl_path}${debian_untar}
+	if [ ! "x${dl_package_source}" = "x" ] ; then
+		wget -c ${mirror}/${dl_path}${dl_package_source}
+	else
+		if [ ! "x${package_source}" = "x" ] ; then
+			wget -c ${mirror}/${dl_path}${package_source}
+			if [ ! "x${debian_patch}" = "x" ] ; then
+				wget -c ${mirror}/${dl_path}${debian_patch} || true
+			fi
+			if [ ! "x${debian_patch}" = "x" ] ; then
+				if [ ! -f ${debian_patch} ] ; then
+					wget -c ${incoming_mirror}/${dl_path}${debian_patch}
+				fi
+			fi
+
+			if [ ! "x${debian_untar}" = "x" ] ; then
+				wget -c  ${mirror}/${dl_path}${debian_untar} || true
+			fi
+			if [ ! "x${debian_untar}" = "x" ] ; then
+				if [ ! -f ${debian_untar} ] ; then
+					wget -c ${incoming_mirror}/${dl_path}${debian_untar}
+				fi
 			fi
 		fi
 	fi

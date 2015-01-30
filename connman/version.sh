@@ -1,22 +1,23 @@
 #!/bin/bash -e
 
-#https://github.com/pfl/connman-deb
-#http://anonscm.debian.org/cgit/collab-maint/connman.git
+#http://packages.siduction.org/extra/pool/main/c/connman/
+
+mirror="http://packages.siduction.org"
 
 package_name="connman"
 debian_pkg_name="${package_name}"
-package_version="1.26"
-package_source="${package_name}_${package_version}.orig.tar.xz"
-src_dir="${package_name}_${package_version}"
+package_version="1.27~20150123g04cbd7e"
+dl_package_source="${package_name}_${package_version}-2.tar.gz"
+package_source="${package_name}_${package_version}.orig.tar.gz"
+src_dir="${package_name}"
 
-git_repo="git://git.kernel.org/pub/scm/network/connman/connman.git"
-git_sha="5a715ed10dc008126c24b20efaf5a8495140608a"
+git_repo=""
+git_sha=""
 reprepro_dir="c/${package_name}"
-dl_path=""
+dl_path="extra/pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0.1"
+debian_version="${package_version}-2"
+debian_untar=""
 debian_patch=""
-debian_diff=""
 
-wheezy_version="~bpo70+20141112+1"
-jessie_version="~20141112+3"
+jessie_version="~20150130+1"

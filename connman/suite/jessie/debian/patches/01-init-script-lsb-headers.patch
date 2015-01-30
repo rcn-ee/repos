@@ -1,0 +1,75 @@
+From: Petter Reinholdtsen <pere@hungry.com>
+Subject: connman: Missing LSB header in init.d script
+Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=543869
+
+---
+ scripts/connman.in |   33 ++++++++++++++++++++++++++++++---
+ 1 file changed, 30 insertions(+), 3 deletions(-)
+
+Index: b/scripts/connman.in
+===================================================================
+--- a/scripts/connman.in
++++ b/scripts/connman.in
+@@ -1,7 +1,17 @@
+ #!/bin/sh
++### BEGIN INIT INFO
++# Provides:       connman
++# Required-Start: $remote_fs $syslog dbus
++# Required-Stop:  $remote_fs $syslog dbus
++# Default-Start:  2 3 4 5
++# Default-Stop:   0 1 6
++# Short-Description: Connection Manager
++### END INIT INFO
++
+ 
+ DAEMON=@prefix@/sbin/connmand
+ DESC="Connection Manager"
++NAME=connmand
+ 
+ . /lib/lsb/init-functions
+ 
+@@ -9,8 +19,6 @@ if [ -f @sysconfdir@/default/connman ] ;
+ 	. @sysconfdir@/default/connman
+ fi
+ 
+-set -e
+-
+ do_start() {
+ 	start-stop-daemon --start --oknodo --exec $DAEMON -- $DAEMON_OPTS
+ }
+@@ -19,6 +27,15 @@ do_stop() {
+ 	start-stop-daemon --stop --oknodo --quiet --exec $DAEMON
+ }
+ 
++get_pid() {
++	[ -n "$1" ] || return 0
++	[ -S /var/run/dbus/system_bus_socket ] || return 0
++
++	dbus-send --system --dest=org.freedesktop.DBus --print-reply \
++		/org/freedesktop/DBus org.freedesktop.DBus.GetConnectionUnixProcessID \
++		string:$1 2>/dev/null | awk '/uint32/ {print $2}'
++}
++
+ case "$1" in
+   start)
+ 	log_daemon_msg "Starting $DESC"
+@@ -37,8 +54,18 @@ case "$1" in
+ 	do_start
+ 	log_end_msg $?
+ 	;;
++  status)
++	pid=$(get_pid net.connman)
++	if [ -n "$pid" ]; then
++		log_success_msg "$NAME is running"
++		return 0
++	else
++		log_failure_msg "$NAME is not running"
++		return 3 # LSB exit code for "program is not running"
++	fi
++	;;
+   *)
+-	log_success_msg "Usage: $0 {start|stop|restart|force-reload}" >&2
++	log_success_msg "Usage: $0 {start|stop|status|restart|force-reload}" >&2
+ 	exit 1
+ 	;;
+ esac

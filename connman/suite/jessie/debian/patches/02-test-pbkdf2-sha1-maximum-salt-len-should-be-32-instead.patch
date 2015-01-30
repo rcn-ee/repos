@@ -1,0 +1,27 @@
+From: Ricardo Salveti de Araujo <ricardo.salveti@canonical.com>
+Subject: test-pbkdf2-sha1.c: maximum salt len should be 32 instead of 36
+
+pbkdf2_sha1 needs 4 extra chars to help calculate the sha1 value, so
+avoid overflow by decreasing the salt used by the test.
+
+Signed-off-by: Ricardo Salveti de Araujo <ricardo.salveti@canonical.com>
+---
+ unit/test-pbkdf2-sha1.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/unit/test-pbkdf2-sha1.c b/unit/test-pbkdf2-sha1.c
+index 91be03d..c646cf0 100644
+--- a/unit/test-pbkdf2-sha1.c
++++ b/unit/test-pbkdf2-sha1.c
+@@ -115,9 +115,9 @@ static const struct pbkdf2_data pbkdf2_test_vector_4 = {
+ 
+ static const struct pbkdf2_data pbkdf2_test_vector_5 = {
+ 	.password	= "passwordPASSWORDpassword",
+-	.salt		= "saltSALTsaltSALTsaltSALTsaltSALTsalt",
++	.salt		= "saltSALTsaltSALTsaltSALTsaltSALT",
+ 	.count		= 4096,
+-	.key		= "3d2eec4fe41c849b80c8d83662c0e44a8b291a964cf2f07038",
++	.key		= "3549ba2d34e0f940370f1ea8b3f2ac830d96fb03fffd0b386d",
+ 	.key_len	= 25,
+ };
+ 
