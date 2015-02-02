@@ -1,0 +1,21 @@
+#!/usr/bin/make -f
+# Copyright (c) 2013 Intel Corporation
+
+DEB_DESTDIR := $(CURDIR)/debian/tmp
+
+%:
+	dh $@ --buildsystem cmake
+
+override_dh_auto_configure:
+	dh_auto_configure -- \
+		-DCMAKE_BINARY_DIR=$(CURDIR)/debian/tmp \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=/usr/lib/$(DEB_HOST_MULTIARCH) \
+		-DCMAKE_BUILD_TYPE=Release \
+		-Dwaffle_has_gbm=1 \
+		-Dwaffle_has_glx=1 \
+		-Dwaffle_has_x11_egl=1 \
+		-Dwaffle_has_wayland=1 \
+		-Dwaffle_build_manpages=1 \
+		-Dwaffle_build_htmldocs=0 \
+		-Dwaffle_build_examples=0

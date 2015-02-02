@@ -52,6 +52,7 @@ package_name="libdrm"; package_version="2.4.58-2"; check
 package_name="mesa"; package_version="10.4.2-2"; check
 package_name="openjdk-8-jdk" ; package_version="8u40~b09-1" ; check
 package_name="openjfx" ; package_version="8u20-b26-3" ; check
+package_name="waffle" ; package_version="1.5.1-1" ; check
 package_name="xinput-calibrator" ; package_version="0.7.5+git20140213-1" ; check
 package_name="xserver-xorg-video-omap" ; package_version="0.4.3-git20130328-1" ; check
 package_name="xserver-xorg-video-modesetting" ; package_version="0.9.0-1" ; check
