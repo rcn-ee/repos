@@ -16,7 +16,7 @@ git_sha=""
 reprepro_dir="q/${package_name}"
 dl_path="lxqt/pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-5"
+debian_version="${package_version}-5.1"
 debian_patch=""
 
 jessie_version="~20150211+1"
