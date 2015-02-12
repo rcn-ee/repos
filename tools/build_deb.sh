@@ -18,6 +18,8 @@ run () {
 			sbuild --arch=${deb_arch} -A -s --force-orig-source -d ${suite} http://httphost/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.dsc
 		elif [ -f ${localdir}/incoming/${suite}/${package_name}_${package_version}${rcn_ee_version}.dsc ] ; then
 			sbuild --arch=${deb_arch} -A -s --force-orig-source -d ${suite} http://httphost/farm/incoming/${suite}/${package_name}_${package_version}${rcn_ee_version}.dsc
+		elif [ -f ${localdir}/incoming/${suite}/${package_name}_${package_version}.dsc ] ; then
+			sbuild --arch=${deb_arch} -A -s --force-orig-source -d ${suite} http://httphost/farm/incoming/${suite}/${package_name}_${package_version}.dsc
 		fi
 
 		if [ -f ${debian_pkg_name}_${debian_version}${rcn_ee_version}_${deb_arch}.changes ] ; then
