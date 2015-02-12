@@ -1,10 +1,12 @@
 Source: liblxqt
 Section: libs
 Priority: optional
-Maintainer: ChangZhuo Chen (陳昌倬) <czchen@gmail.com>
-Uploaders: Alf Gaida <agaida@siduction.org>
+Maintainer: Debian LXQt Maintainers <lxqt-debian@lists.lxde.org>
+Uploaders:
+ Alf Gaida <agaida@siduction.org>,
+ ChangZhuo Chen (陳昌倬) <czchen@gmail.com>
 Build-Depends:
- cmake,
+ cmake (>= 3.0.2),
  debhelper (>= 9),
  libdrm-dev,
  libx11-dev,
@@ -13,12 +15,13 @@ Build-Depends:
  libqt5xdg-dev (>= 1.0.0), 
  qttools5-dev (>= 5.3.2),
  qttools5-dev-tools (>= 5.3.2),
+ libkf5windowsystem-dev (>= 5.4.0),
 Standards-Version: 3.9.6
 Homepage: https://github.com/lxde/liblxqt
 #Vcs-Git: git://anonscm.debian.org/collab-maint/liblxqt.git
 #Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/liblxqt.git;a=summary
 
-Package: liblxqt-qt5-0
+Package: liblxqt0
 Architecture: any
 Multi-Arch: same
 Pre-Depends:
@@ -26,6 +29,8 @@ Pre-Depends:
 Depends:
  ${shlibs:Depends},
  ${misc:Depends},
+Breaks: liblxqt-qt5-0 (<< 0.9.0) 
+Replaces: liblxqt-qt5-0 (<< 0.9.0)
 Description: Shared libraries for LXQt desktop environment (libs)
  LXQt is an advanced, easy-to-use, and fast desktop environment based on Qt
  technologies. It has been tailored for users who value simplicity, speed, and
@@ -35,12 +40,14 @@ Description: Shared libraries for LXQt desktop environment (libs)
  This package contain the shared libraries needed by the LXQt desktop
  environment.
 
-Package: liblxqt-qt5-0-dev
+Package: liblxqt0-dev
 Architecture: any
 Section: libdevel
 Depends:
  ${misc:Depends},
- liblxqt-qt5-0 (= ${binary:Version}),
+ liblxqt0 (= ${binary:Version}),
+Breaks: liblxqt-qt5-0-dev (<< 0.9.0)
+Replaces: liblxqt-qt5-0-dev (<< 0.9.0)
 Description: Shared libraries for LXQt desktop environment (dev)
  LXQt is an advanced, easy-to-use, and fast desktop environment based on Qt
  technologies. It has been tailored for users who value simplicity, speed, and
@@ -49,14 +56,16 @@ Description: Shared libraries for LXQt desktop environment (dev)
  .
  This package contain the development files.
 
-Package: liblxqt-qt5-0-dbg
+Package: liblxqt0-dbg
 Architecture: any
 Multi-Arch: same
 Section: debug
 Priority: extra
 Depends:
  ${misc:Depends},
- liblxqt-qt5-0 (= ${binary:Version}),  
+ liblxqt0 (= ${binary:Version}),
+Breaks: liblxqt-qt5-0-dbg (<< 0.9.0)
+Replaces: liblxqt-qt5-0-dbg (<< 0.9.0)  
 Description: Shared libraries for LXQt desktop environment (debug)
  LXQt is an advanced, easy-to-use, and fast desktop environment based on Qt
  technologies. It has been tailored for users who value simplicity, speed, and
@@ -65,3 +74,28 @@ Description: Shared libraries for LXQt desktop environment (debug)
  .
  This package contain the debugging symbols.
 
+# ---- can be dropped in 2016 ----
+
+Package: liblxqt0-qt5-0
+Depends: liblxqt0, ${misc:Depends}
+Priority: extra
+Section: oldlibs
+Architecture: all
+Description: liblxqt transitional package
+ Empty package to facilitate upgrades, can be safely removed.
+
+Package: liblxqt0-qt5-0-dev
+Depends: liblxqt0-dev, ${misc:Depends}
+Priority: extra
+Section: oldlibs
+Architecture: all
+Description: liblxqt transitional package (dev)
+ Empty package to facilitate upgrades, can be safely removed.
+
+Package: liblxqt0-qt5-0-dbg
+Depends: liblxqt0-dbg, ${misc:Depends}
+Priority: extra
+Section: oldlibs
+Architecture: all
+Description: liblxqt transitional package (dbg)
+ Empty package to facilitate upgrades, can be safely removed.
