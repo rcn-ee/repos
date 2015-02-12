@@ -16,7 +16,7 @@ git_sha=""
 reprepro_dir="k/${package_name}"
 dl_path="lxqt/pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-4"
+debian_version="${package_version}-4.1"
 debian_patch=""
 
 wheezy_version="~bpo70+20140924+1"
