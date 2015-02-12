@@ -13,6 +13,13 @@ run () {
 		fi
 	fi
 
+	wfile="${outgoing}/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}/${debian_pkg_name}_${debian_version}_${deb_arch}.changes"
+	if [ ! -f ${repo}pool/main/${reprepro_dir}/${debian_pkg_name}_${debian_version}*.deb ] ; then
+		if [ -f ${wfile} ] ; then
+			reprepro -b ${repo} -C main include ${suite} ${wfile}
+		fi
+	fi
+
 	wfile="${outgoing}/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}/${package_name}_${package_version}${rcn_ee_version}_${deb_arch}.changes"
 	if [ ! -f ${repo}pool/main/${reprepro_dir}/${package_name}_${package_version}${rcn_ee_version}*.deb ] ; then
 		if [ -f ${wfile} ] ; then
