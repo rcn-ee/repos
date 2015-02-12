@@ -1,0 +1,107 @@
+pkg-kde-tools for Debian
+------------------------
+
+ These snippets (/usr/share/pkg-kde-tools/makefiles/1) should be universally
+ usable:
+  - If your package uses CDBS, you should be able to just include the
+    cdbs/kde.mk file.
+  - If you use other tools, include the variables.mk file and run cmake with
+    $(DEB_CMAKE_KDE4_FLAGS) to get the kde4 default variables.
+  - If you want to use Debhelper dh(1) command sequencer, you will find section
+    "Using with Debhelper Command Sequencer `dh`" below interesting. Please
+    note that /usr/share/pkg-kde-tools/makefiles/1/debhelper/kde.mk has been
+    dropped in pkg-kde-tools 0.7.0.
+
+ In order to link with --as-needed (disabled by default), you could set
+ DEB_KDE_LINK_WITH_AS_NEEDED to 'yes' before the include. However, please note
+ that enabling DEB_KDE_LINK_WITH_AS_NEEDED implicitly links with --no-undefined
+ as well unless DEB_KDE_LINK_WITH_NO_UNDEFINED is set to `no`.
+
+Using with Debhelper Command Sequencer `dh`
+------------------------------------------
+
+pkg-kde-tools provides a couple of additions to dh(1) and its toolset.
+
+* Debhelper build system 'kde'. It is based on the debhelper build system
+  'cmake'. The only difference is that in addition it passes KDE 4 specific
+  flags to cmake by default. In order to use it, pass --buildsystem=kde when
+  running dh_auto_*. Debhelper 7.3.0 or later is required to use this build
+  system.
+* dh sequence addon 'kde'. It will tweak default dh sequences to be best
+  suitable for building KDE applications. For example, that includes passing of
+  --buildsystem=kde to all dh_auto_* commands by default and other
+  enhancements. Debhelper 7.3.16 or later is required to use this addon.
+
+In order to build a simple KDE package, all you need to do is to pass `--with
+kde` option to dh(1). More advanced usage (e.g. to pass additional flags to
+cmake) may require overriding of some debhelper commands (e.g.
+dh_auto_configure). See examples below for more details.
+
+In order to kde dh sequence addon, you must depend on debhelper (>= 7.3.16) and
+pkg-kde-tools (>= 0.5). What's more, pkg-kde-tools (>= 0.6.2) has more
+interesting changes like dh_movelibkdeinit and docbook exclusion from
+dh_compress.
+
+Examples
+--------
+
+* A CDBS using package.
+
+-------> debian/rules <-------
+#!/usr/bin/make -f
+
+include /usr/share/pkg-kde-tools/makefiles/1/cdbs/kde.mk
+include /usr/share/cdbs/1/rules/debhelper.mk
+------------------------------
+
+* A non CDBS using package could start with something like the following
+  and end up like any other cmake using package.
+
+-------> debian/rules <-------
+#!/usr/bin/make -f
+
+include /usr/share/pkg-kde-tools/makefiles/1/variables.mk
+
+builddir/Makefile:
+	dh_testdir
+
+	mkdir -p builddir
+	cd builddir && cmake .. \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_C_FLAGS="$(CPPFLAGS) $(CFLAGS)" \
+		-DCMAKE_LD_FLAGS="$(LDFLAGS) -Wl,-z,defs" \
+		-DCMAKE_CXX_FLAGS="$(CPPFLAGS) $(CXXFLAGS)" \
+		-DCMAKE_SKIP_RPATH=ON \
+		-DCMAKE_VERBOSE_MAKEFILE=ON \
+		$(DEB_CMAKE_KDE4_FLAGS)
+
+build: build-stamp
+build-stamp: builddir/Makefile
+	dh_testdir
+
+	$(MAKE) -C builddir
+
+	touch $@
+------------------------------
+
+* A very simple KDE package using dh.
+
+-------> debian/rules <-------
+#!/usr/bin/make -f
+
+%:
+	dh $@ --with kde
+------------------------------
+
+* A more complicated KDE package using dh. Additional -DSOME_FLAG is passed to
+  cmake and quilt addon is used for managing patches.
+
+-------> debian/rules <-------
+#!/usr/bin/make -f
+
+override_dh_auto_configure:
+	dh_auto_configure --buildsystem=kde -- -DSOME_FLAG=some_value
+
+%:
+	dh $@ --with quilt,kde
+------------------------------

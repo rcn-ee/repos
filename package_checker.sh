@@ -51,6 +51,9 @@ package_name="liblxqt" ; package_version="liblxqt_0.9.0-1" ; check_http
 #really slow...
 #exit
 
+suite="experimental"
+package_name="pkg-kde-tools" ; package_version="0.15.16" ; check
+
 suite="sid"
 package_name="chromium" ; package_version="39.0.2171.71-2" ; check
 package_name="libdrm"; package_version="2.4.58-2"; check
