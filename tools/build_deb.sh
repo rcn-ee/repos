@@ -33,6 +33,17 @@ run () {
 			cp -v *.diff.* ${out_dir}/ || true
 		fi
 
+		if [ -f ${debian_pkg_name}_${debian_version}_${deb_arch}.changes ] ; then
+			mkdir -p ${out_dir}/
+			cp -v ${debian_pkg_name}_${debian_version}_${deb_arch}.changes ${out_dir}/
+			cp -v *.deb ${out_dir}/ || true
+			cp -v *.udeb ${out_dir}/ || true
+			cp -v *.dsc ${out_dir}/ || true
+			cp -v ${package_source} ${out_dir}/ || true
+			cp -v *.tar.* ${out_dir}/ || true
+			cp -v *.diff.* ${out_dir}/ || true
+		fi
+
 		if [ -f ${package_name}_${package_version}${rcn_ee_version}_${deb_arch}.changes ] ; then
 			mkdir -p ${out_dir}/
 			cp -v ${package_name}_${package_version}${rcn_ee_version}_${deb_arch}.changes ${out_dir}/
