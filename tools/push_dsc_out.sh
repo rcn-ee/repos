@@ -11,11 +11,7 @@ run () {
 		cp -v ${suite}/${package_source} /mnt/farm/incoming/${suite}/
 	fi
 
-	if [ -f ${suite}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.dsc ] ; then
-		cp -v ${suite}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.dsc /mnt/farm/incoming/${suite}/
-	elif [ -f ${suite}/${package_name}_${package_version}${rcn_ee_version}.dsc ] ; then
-		cp -v ${suite}/${package_name}_${package_version}${rcn_ee_version}.dsc /mnt/farm/incoming/${suite}/
-	fi
+	cp -v ${suite}/*.dsc /mnt/farm/incoming/${suite}/
 
 	if [ -f ${suite}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.debian.tar.xz ] ; then
 		cp -v ${suite}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.debian.tar.xz /mnt/farm/incoming/${suite}/
