@@ -43,7 +43,7 @@ site="http://packages.siduction.org/lxqt/pool/main/q"
 package_name="qtermwidget" ; package_version="qtermwidget_0.6.0-5" ; check_http
 package_name="qterminal" ; package_version="qterminal_0.6.0-6" ; check_http
 
-site="http://packages.siduction.org/lxqt/pool/main/k/"
+site="http://packages.siduction.org/lxqt/pool/main/k"
 package_name="kwindowsystem" ; package_version="kwindowsystem_5.5.0-4" ; check_http
 site="http://packages.siduction.org/lxqt/pool/main/libl"
 package_name="liblxqt" ; package_version="liblxqt_0.9.0-1" ; check_http
