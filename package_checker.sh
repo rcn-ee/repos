@@ -59,6 +59,9 @@ site="http://packages.siduction.org/lxqt/pool/main/l"
 package_name="lxqt-globalkeys" ; package_version="lxqt-globalkeys_0.9.0-1" ; check_http
 package_name="lxqt-notificationd" ; package_version="${package_name}_0.9.0-1" ; check_http
 
+site="http://packages.siduction.org/lxqt/pool/main/libs"
+package_name="libsysstat" ; package_version="${package_name}_0.3.0-1" ; check_http
+
 #really slow...
 #exit
 
