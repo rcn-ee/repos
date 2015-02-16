@@ -1,0 +1,17 @@
+Index: trunk/data/polkit-1.in
+===================================================================
+--- trunk.orig/data/polkit-1.in
++++ trunk/data/polkit-1.in
+@@ -1,6 +1,8 @@
+ #%PAM-1.0
+ 
+-auth       include      @PAM_FILE_INCLUDE_AUTH@
+-account    include      @PAM_FILE_INCLUDE_ACCOUNT@
+-password   include      @PAM_FILE_INCLUDE_PASSWORD@
+-session    include      @PAM_FILE_INCLUDE_SESSION@
++@include common-auth
++@include common-account
++@include common-password
++session       required   pam_env.so readenv=1 user_readenv=0
++session       required   pam_env.so readenv=1 envfile=/etc/default/locale user_readenv=0
++@include common-session

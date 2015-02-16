@@ -1,0 +1,43 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
+%:
+	dh $@ --with autoreconf,gir
+
+DPKG_GENSYMBOLS_CHECK_LEVEL=4
+export DPKG_GENSYMBOLS_CHECK_LEVEL
+
+LDFLAGS += -Wl,--no-as-needed
+
+ifeq (linux,$(DEB_HOST_ARCH_OS))
+  SYSTEMD_CONFIG_FLAG = --enable-libsystemd-login
+else
+  SYSTEMD_CONFIG_FLAG = --disable-libsystemd-login
+endif
+
+override_dh_auto_configure:
+	dh_auto_configure -- \
+		--enable-gtk-doc \
+		--enable-man-pages \
+		--enable-introspection \
+		$(SYSTEMD_CONFIG_FLAG) \
+		--disable-examples \
+		--with-systemdsystemunitdir=/lib/systemd/system \
+		--libexecdir=\$${prefix}/lib/policykit-1
+
+override_dh_auto_test:
+	# the system D-BUS tests can't work on the buildds, so don't let a
+	# failed test fail the build
+	make check || true
+
+override_dh_install:
+	dh_install --list-missing
+	# on Debian use sudo group; on Ubuntu, also allow the admin group for
+	# historical reasons
+	if dpkg-vendor --is ubuntu; then \
+	    sed 's/@admin@/"unix-group:sudo", "unix-group:admin"/' debian/admin.rules.in > debian/policykit-1/etc/polkit-1/rules.d/40-ubuntu-admin.rules; \
+	elif dpkg-vendor --is debian; then \
+	    sed 's/@admin@/"unix-group:sudo"/' debian/admin.rules.in > debian/policykit-1/etc/polkit-1/rules.d/40-debian-sudo.rules; \
+	fi
