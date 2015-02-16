@@ -79,6 +79,9 @@ package_name="lxqt-powermanagement" ; package_version="${package_name}_0.9.0-1" 
 package_name="lximage-qt" ; package_version="${package_name}_0.3.1-1" ; check_http
 package_name="lxqt-config" ; package_version="${package_name}_0.9.0-1" ; check_http
 
+site="http://packages.siduction.org/lxqt/pool/main/o"
+package_name="obconf-qt" ; package_version="${package_name}_0.1.2-1" ; check_http
+
 #really slow...
 #exit
 
