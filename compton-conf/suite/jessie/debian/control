@@ -1,9 +1,11 @@
 Source: compton-conf
 Section: x11
 Priority: optional
-Maintainer: Alf Gaida <agaida@siduction.org>
+Maintainer: Debian LXQt Maintainers <lxqt-debian@lists.lxde.org>
+Uploaders:
+ Alf Gaida <agaida@siduction.org>
 Build-Depends:
- cmake,
+ cmake (>= 3.0.2),
  debhelper (>= 9),
  libconfig-dev,
  libx11-dev,
@@ -15,12 +17,10 @@ Homepage: https://github.com/lxde/compton-conf
 #Vcs-Git: git://anonscm.debian.org/collab-maint/compton-conf.git
 #Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/compton-conf.git;a=summary
 
-Package: compton-conf-qt5
+Package: compton-conf
 Architecture: any
-Breaks:
- compton-conf,
-Replaces:
- compton-conf,
+Breaks: compton-conf-qt5 (<< 0.2.0)
+Replaces: compton-conf-qt5 (<< 0.2.0)
 Depends:
  ${misc:Depends},
  ${shlibs:Depends},
@@ -28,3 +28,14 @@ Description: Compton Configurator for Qt
  Qt configuration tool for X composite manager
  .
  This package contain Compton Configurator.
+
+# ---- to be removed in 2016 ----
+
+Package: compton-conf-qt5
+Depends: compton-conf, ${misc:Depends}
+Priority: extra
+Section: oldlibs
+Architecture: all
+Description: compton-conf transitional package
+ Empty package to facilitate upgrades, can be safely removed.
+
