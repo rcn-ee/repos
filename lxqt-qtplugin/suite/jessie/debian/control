@@ -1,13 +1,16 @@
 Source: lxqt-qtplugin
 Section: x11
 Priority: optional
-Maintainer: Alf Gaida <agaida@siduction.org>
+Maintainer: Debian LXQt Maintainers <lxqt-debian@lists.lxde.org>
+Uploaders:
+ Alf Gaida <agaida@siduction.org>
 Build-Depends:
- cmake,
+ cmake (>= 3.0.2),
  debhelper (>= 9),
  libx11-dev,
  pkg-config,
- liblxqt-qt5-0-dev (>= 0.8.0),
+ libkf5windowsystem-dev (>= 5.5.0),
+ liblxqt0-dev (>= 0.8.1),
  libqt5x11extras5-dev (>= 5.3.2),
  libqt5xdg-dev (>= 1.0.0),
  qtbase5-private-dev (>= 5.3.2),
@@ -18,12 +21,10 @@ Homepage: https://github.com/lxde/lxqt-qtplugin
 #Vcs-Git: git://anonscm.debian.org/collab-maint/lxqt-qtplugin.git
 #Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/lxqt-qtplugin.git;a=summary
 
-Package: lxqt-qtplugin-qt5
+Package: lxqt-qtplugin
 Architecture: any
-Breaks:
- lxqt-qtplugin,
-Replaces:
- lxqt-qtplugin,
+Breaks: lxqt-qtplugin-qt5 (<< 0.9.0)
+Replaces: lxqt-qtplugin-qt5 (<< 0.9.0)
 Depends:
  ${misc:Depends},
  ${shlibs:Depends},
@@ -33,15 +34,35 @@ Description: LXQt system integration plugin for Qt
  .
  This package provides the lxqt qtplugin interface. 
 
-Package: lxqt-qtplugin-qt5-dbg
+Package: lxqt-qtplugin-dbg
 Architecture: any
 Section: debug
 Priority: extra
+Breaks: lxqt-qtplugin-qt5-dbg (<< 0.9.0)
+Replaces: lxqt-qtplugin-qt5-dbg (<< 0.9.0)
 Depends:
  ${misc:Depends},
- lxqt-qtplugin-qt5 (= ${binary:Version}),
+ lxqt-qtplugin (= ${binary:Version}),
 Description: LXQt system integration plugin for Qt (debug symbols)
  With this plugin, all Qt-based programs can adopt settings of
  LXQt, such as the icon theme.
  .
  This package provides the debugging symbols.
+
+# ---- to be removed in 2016 -----
+
+Package: lxqt-qtplugin-qt5
+Depends: lxqt-qtplugin, ${misc:Depends}
+Priority: extra
+Section: oldlibs
+Architecture: all
+Description: lxqt-qtplugin transitional package
+ Empty package to facilitate upgrades, can be safely removed.
+
+Package: lxqt-qtplugin-qt5-dbg
+Depends: lxqt-qtplugin-dbg, ${misc:Depends}
+Priority: extra
+Section: oldlibs
+Architecture: all
+Description: lxqt-qtplugin transitional package (dbg)
+ Empty package to facilitate upgrades, can be safely removed.
