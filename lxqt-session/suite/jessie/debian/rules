@@ -1,0 +1,37 @@
+#!/usr/bin/make -f
+#export DH_VERBOSE=1
+
+DEB_HOST_ARCH_OS ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
+
+
+%:
+	dh ${@} --buildsystem cmake --parallel
+
+
+override_dh_auto_configure:
+	dh_auto_configure -- -DLIB_SUFFIX="/$(DEB_HOST_MULTIARCH)"
+
+override_dh_auto_install:
+	dh_auto_install -- DESTDIR=$(CURDIR)/debian/lxqt-session
+
+override_dh_strip:
+	dh_strip --dbg-package=lxqt-session-dbg
+
+
+maintainer-clean:
+	$(RM) -r checkout
+	$(RM) *.build
+	$(RM) *.changes
+	$(RM) *.deb
+	$(RM) *.dsc
+	$(RM) *.tar.gz
+	$(RM) *.upload
+
+checkout: maintainer-clean
+	git clone --depth=1 git://github.com/lxde/lxqt-session.git checkout; \
+	cd checkout; \
+	cp -a ../debian .; \
+	echo "";\
+	git log | head; \
+	echo ""; \
+
