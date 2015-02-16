@@ -1,0 +1,39 @@
+#!/usr/bin/make -f
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+export DPKG_GENSYMBOLS_CHECK_LEVEL=4
+
+%:
+	dh $@ --parallel --buildsystem=cmake
+
+override_dh_auto_configure:
+	mkdir qt5
+	cd qt5 && QT_SELECT=qt5 cmake -DCMAKE_INSTALL_PREFIX=/usr -DUSE_QT5=true -DCMAKE_BUILD_TYPE=RelWithDebInfo ../
+
+override_dh_auto_build:
+	cd qt5 && make
+
+override_dh_clean:
+	dh_clean
+	rm -rf qt5
+
+override_dh_auto_install:
+	cd qt5 && make DESTDIR=../debian/tmp install
+	echo "Removing embedded jquery javascript library..."
+	rm debian/tmp/usr/share/doc/libdbusmenu-qt5-doc/jquery.js
+
+override_dh_install:
+	dh_install --fail-missing
+
+override_dh_auto_test:
+	echo "Skipping tests (can't test inside chroot)..."
+
+override_dh_gencontrol:
+	# Ugly hack, since we don't want to have Qt5 as our depends, we prefer
+	# those as Suggests for now
+	sed -i '/^shlibs/s/libqt5[^,]*, //g' debian/libdbusmenu-qt5-3.substvars
+	sed -i '/^shlibs/s/,[^,]* libqt5.*$$//' debian/libdbusmenu-qt5-3.substvars
+
+	dh_gencontrol

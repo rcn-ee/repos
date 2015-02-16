@@ -1,0 +1,60 @@
+Source: libdbusmenu-qt5
+Section: libs
+Priority: optional
+Build-Depends: cmake (>= 2.8.11),
+               debhelper (>= 9),
+               doxygen,
+               libqjson-dev,
+               qtbase5-dev,
+Maintainer: Alf Gaida <agaida@siduction.org>
+Standards-Version: 3.9.6
+Homepage: https://launchpad.net/libdbusmenu-qt
+Vcs-Bzr: https://code.launchpad.net/~dbusmenu-team/libdbusmenu-qt/trunk
+Vcs-Browser: https://bazaar.launchpad.net/~dbusmenu-team/libdbusmenu-qt/trunk/files
+
+Package: libdbusmenu-qt5-3
+Architecture: any
+Pre-Depends: ${misc:Pre-Depends},
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+Suggests: libqt5dbus5,
+          libqt5gui5,
+          libqt5widgets5,
+Multi-Arch: same
+Description: Qt5 implementation of the DBusMenu protocol
+ This library provides a Qt5 implementation of the DBusMenu protocol.
+ .
+ The DBusMenu protocol makes it possible for applications to export
+ and import their menus over DBus.
+ .
+ This package provides shared libraries.
+
+
+Package: libdbusmenu-qt5-dev
+Section: libdevel
+Architecture: any
+Depends: libdbusmenu-qt5-3 (= ${binary:Version}),
+         qtbase5-dev,
+         ${misc:Depends},
+Description: Qt5 implementation of the DBusMenu protocol (development)
+ This library provides a Qt5 implementation of the DBusMenu protocol.
+ .
+ The DBusMenu protocol makes it possible for applications to export
+ and import their menus over DBus.
+ .
+ This package provides header files for development.
+
+
+Package: libdbusmenu-qt5-doc
+Section: doc
+Architecture: all
+Depends: libjs-jquery,
+         ${misc:Depends},
+Description: Qt5 implementation of the DBusMenu protocol (documentation)
+ This library provides a Qt5 implementation of the DBusMenu protocol.
+ .
+ The DBusMenu protocol makes it possible for applications to export
+ and import their menus over DBus.
+ .
+ This package provides API documentation in html format.
+
