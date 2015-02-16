@@ -1,28 +1,31 @@
 Source: lxqt-about
 Section: x11
 Priority: optional
-Maintainer: Alf Gaida <agaida@siduction.org>
+Maintainer: Debian LXQt Maintainers <lxqt-debian@lists.lxde.org>
+Uploaders:
+ Alf Gaida <agaida@siduction.org>
 Build-Depends:
- cmake,
+ cmake (>= 3.0.2),
  debhelper (>= 9),
  libx11-dev,
  pkg-config,
- liblxqt-qt5-0-dev (>= 0.8.0),
+ libkf5windowsystem-dev (>= 5.5.0),
+ liblxqt0-dev (>= 0.8.1),
  libqt5x11extras5-dev (>= 5.3.2),
  libqt5xdg-dev (>= 1.0.0),
  qttools5-dev (>= 5.3.2),
  qttools5-dev-tools (>= 5.3.2),
+# until categories fixed
+ quilt,
 Standards-Version: 3.9.6
 Homepage: https://github.com/lxde/lxqt-about
 #Vcs-Git: git://anonscm.debian.org/collab-maint/lxqt-about.git
 #Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/lxqt-about.git;a=summary
 
-Package: lxqt-about-qt5
+Package: lxqt-about
 Architecture: any
-Breaks:
- lxqt-about,
-Replaces:
- lxqt-about,
+Breaks: lxqt-about-qt5 (<< 0.9.0)
+Replaces: lxqt-about-qt5 (<< 0.9.0)
 Depends:
  ${misc:Depends},
  ${shlibs:Depends},
@@ -30,3 +33,13 @@ Description: About screen for LXQt
  The about screen for LXQt
  .
  This package contain the LXQt about screen.
+
+# ---- to be removed in 2016 ----
+
+Package: lxqt-about-qt5
+Depends: lxqt-about, ${misc:Depends}
+Priority: extra
+Section: oldlibs
+Architecture: all
+Description: lxqt-about transitional package
+ Empty package to facilitate upgrades, can be safely removed.
