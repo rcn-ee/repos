@@ -1,33 +1,35 @@
 Source: lxqt-common
 Section: x11
 Priority: optional
-Maintainer: Alf Gaida <agaida@siduction.org>
+Maintainer: Debian LXQt Maintainers <lxqt-debian@lists.lxde.org>
+Uploaders:
+ Alf Gaida <agaida@siduction.org>
 Build-Depends:
- cmake,
+ cmake (>= 3.0.2),
  debhelper (>= 9),
  libx11-dev,
  pkg-config,
- liblxqt-qt5-0-dev (>= 0.8.0),
+ libkf5windowsystem-dev (>= 5.5.0),
+ liblxqt0-dev (>= 0.8.1),
  libqt5x11extras5-dev (>= 5.3.2),
  libqt5xdg-dev (>= 1.0.0),
  qttools5-dev (>= 5.3.2),
  qttools5-dev-tools (>= 5.3.2),
+ quilt,
 Standards-Version: 3.9.6
 Homepage: https://github.com/lxde/lxqt-common
 #Vcs-Git: git://anonscm.debian.org/collab-maint/lxqt-common.git
 #Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/lxqt-common.git;a=summary
 
-Package: lxqt-common-qt5
+Package: lxqt-common
 Architecture: all
-Breaks:
- lxqt-common,
-Replaces:
- lxqt-common,
+Breaks: lxqt-common-qt5 (<< 0.9.0)
+Replaces: lxqt-common-qt5 (<< 0.9.0)
 Depends:
  ${misc:Depends},
  ${shlibs:Depends},
 Recommends: 
- lxqt-panel-qt5,  
+ lxqt-panel,  
 Description: Common files for LXQt
  Some common files for LXQt:
    * autostart
@@ -36,3 +38,13 @@ Description: Common files for LXQt
    * xsession
  .
  This Package contains common LXQt files.
+
+# ---- to be removed in 2016 ----
+
+Package: lxqt-common-qt5
+Depends: lxqt-common, ${misc:Depends}
+Priority: extra
+Section: oldlibs
+Architecture: all
+Description: lxqt-common transitional package
+ Empty package to facilitate upgrades, can be safely removed.
