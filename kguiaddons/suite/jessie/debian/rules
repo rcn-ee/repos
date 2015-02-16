@@ -1,0 +1,11 @@
+#!/usr/bin/make -f
+ 
+%:
+	dh ${@} --buildsystem kf5
+
+
+override_dh_strip:
+	dh_strip -plibkf5guiaddons5 --dbg-package=libkf5guiaddons5-dbg
+
+override_dh_auto_test:
+	# do nothing

@@ -1,0 +1,54 @@
+Source: kguiaddons
+Priority: optional
+Maintainer: Alf Gaida <agaida@siduction.org>
+Build-Depends:
+ cmake,
+ debhelper (>= 9),
+ extra-cmake-modules (>= 1.2.0),
+ libqt5x11extras5-dev,
+ pkg-config,
+ pkg-kf5-tools,
+ qtbase5-private-dev,
+ xauth,
+ xvfb,
+ qttools5-dev,
+ qttools5-dev-tools,
+Standards-Version: 3.9.6
+Section: libs
+Homepage: http://projects.kde.org/kguiaddons
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-kde/frameworks/kguiaddons.git
+Vcs-Git: git://anonscm.debian.org/pkg-kde/frameworks/kguiaddons.git
+
+Package: libkf5guiaddons-dev
+Section: libdevel
+Architecture: any
+Depends: 
+ ${misc:Depends},
+ libkf5guiaddons5 (= ${binary:Version}),
+ qtbase5-dev
+Description: development headers for the kguiaddons framework
+ This package contains development files for building software that uses
+ libraries from the kguiaddon framework
+
+Package: libkf5guiaddons5
+Section: libs
+Architecture: any
+Multi-Arch: same
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends}
+Description: additional addons for QtGui
+ Qt widgets for colours, fonts and text
+
+Package: libkf5guiaddons5-dbg
+Section: debug
+Priority: extra
+Architecture: any
+Multi-Arch: same
+Depends:
+ libkf5guiaddons5 (= ${binary:Version}),
+ ${misc:Depends},
+ ${shlibs:Depends}
+Description: debugging symbols for the kguiaddons framework
+ This package contains debugging files used to investigate problems with
+ binaries included in the kguiaddon framework
