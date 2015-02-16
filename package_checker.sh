@@ -48,10 +48,15 @@ package_name="libqtxdg" ; package_version="libqtxdg_1.1.0-3" ; check_http
 
 site="http://packages.siduction.org/lxqt/pool/main/k"
 package_name="kwindowsystem" ; package_version="kwindowsystem_5.5.0-4" ; check_http
+
 site="http://packages.siduction.org/lxqt/pool/main/libl"
 package_name="liblxqt" ; package_version="liblxqt_0.9.0-1" ; check_http
+
 site="http://packages.siduction.org/lxqt/pool/main/libl"
 package_name="liblxqt-mount" ; package_version="liblxqt-mount_0.9.0-1" ; check_http
+
+site="http://packages.siduction.org/lxqt/pool/main/l"
+package_name="lxqt-globalkeys" ; package_version="lxqt-globalkeys_0.9.0-1" ; check_http
 
 #really slow...
 #exit
