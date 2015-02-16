@@ -74,6 +74,7 @@ site="http://packages.siduction.org/lxqt/pool/main/l"
 package_name="lxqt-session" ; package_version="${package_name}_0.9.0-1" ; check_http
 package_name="lxqt-runner" ; package_version="${package_name}_0.9.0-1" ; check_http
 package_name="lxqt-qtplugin" ; package_version="${package_name}_0.9.0-1" ; check_http
+package_name="lxqt-policykit" ; package_version="${package_name}_0.9.0-1" ; check_http
 
 #really slow...
 #exit

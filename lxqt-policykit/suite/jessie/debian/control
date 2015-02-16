@@ -1,0 +1,68 @@
+Source: lxqt-policykit
+Section: x11
+Priority: optional
+Maintainer: Debian LXQt Maintainers <lxqt-debian@lists.lxde.org>
+Uploaders:
+ Alf Gaida <agaida@siduction.org>
+Build-Depends:
+ cmake (>= 3.0.2),
+ debhelper (>= 9),
+ libpolkit-agent-1-dev,
+ libx11-dev,
+ pkg-config,
+ libkf5windowsystem-dev (>= 5.5.0),
+ liblxqt0-dev (>= 0.8.1),
+ libpolkit-qt5-1-dev (>= 0.112),
+ libqt5x11extras5-dev (>= 5.3.2),
+ libqt5xdg-dev (>= 1.0.0),
+ qttools5-dev (>= 5.3.2),
+ qttools5-dev-tools (>= 5.3.2),
+Standards-Version: 3.9.6
+Homepage: https://github.com/lxde/lxqt-policykit
+#Vcs-Git: git://anonscm.debian.org/collab-maint/lxqt-policykit.git
+#Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/lxqt-policykit.git;a=summary
+
+Package: lxqt-policykit
+Architecture: any
+Breaks: lxqt-policykit-qt5 (<< 0.9.0)
+Replaces: lxqt-policykit-qt5 (<< 0.9.0)
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+Description: LXQt PolicyKit agent
+ The LXQt PolicyKit agent
+ .
+ This package contain the agent.
+
+Package: lxqt-policykit-dbg
+Architecture: any
+Section: debug
+Priority: extra
+Breaks: lxqt-policykit-qt5-dbg (<< 0.9.0)
+Replaces: lxqt-policykit-qt5-dbg (<< 0.9.0)
+Depends:
+ ${misc:Depends},
+ lxqt-policykit (= ${binary:Version}),
+Description: LXQt PolicyKit agent (debug symbols)
+ The LXQt PolicyKit agent
+ .
+ This package contain debugging symbols.
+
+# ---- to be removed in 2016 ----
+
+Package: lxqt-policykit-qt5
+Depends: lxqt-policykit, ${misc:Depends}
+Priority: extra
+Section: oldlibs
+Architecture: all
+Description: lxqt-policykit transitional package
+ Empty package to facilitate upgrades, can be safely removed.
+
+Package: lxqt-policykit-qt5-dbg
+Depends: lxqt-policykit-dbg, ${misc:Depends}
+Priority: extra
+Section: oldlibs
+Architecture: all
+Description: lxqt-policykit transitional package (dbg)
+ Empty package to facilitate upgrades, can be safely removed.
+
