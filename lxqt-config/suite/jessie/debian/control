@@ -1,0 +1,69 @@
+Source: lxqt-config
+Section: x11
+Priority: optional
+Maintainer: Debian LXQt Maintainers <lxqt-debian@lists.lxde.org>
+Uploaders:
+ Alf Gaida <agaida@siduction.org>
+Build-Depends:
+ cmake (>= 3.0.2),
+ debhelper (>= 9),
+ libx11-dev,
+ libxcursor-dev,
+ libxfixes-dev,
+ pkg-config,
+ zlib1g-dev,
+ libkf5windowsystem-dev (>= 5.4.0),
+ liblxqt0-dev (>= 0.8.1),
+ libqt5x11extras5-dev (>= 5.3.2),
+ libqt5xdg-dev (>= 1.0.0),
+ qttools5-dev (>= 5.3.2),
+ qttools5-dev-tools (>= 5.3.2),
+Standards-Version: 3.9.6
+Homepage: https://github.com/lxde/lxqt-config
+#Vcs-Git: git://anonscm.debian.org/collab-maint/lxqt-config.git
+#Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/lxqt-config.git;a=summary
+
+Package: lxqt-config
+Architecture: any
+Breaks: lxqt-config-qt5 (<< 0.9.0)
+Replaces: lxqt-config-qt5 (<< 0.9.0)
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+Description: LXQt system settings center
+ The LXQt system settings center
+ .
+ This package contain the LXQt configuration ui.
+
+Package: lxqt-config-dbg
+Architecture: any
+Breaks: lxqt-config-qt5-dbg (<< 0.9.0)
+Replaces: lxqt-config-qt5-dbg (<< 0.9.0)
+Section: debug
+Priority: extra
+Depends:
+ ${misc:Depends},
+ lxqt-config (= ${binary:Version}),
+Description: LXQt system settings center (debug)
+ The LXQt system settings center
+ .
+ This package contain the debugging symbols for LXQt config ui.
+
+# ---- to be removed in 2016 ----
+
+Package: lxqt-config-qt5
+Depends: lxqt-config, ${misc:Depends}
+Priority: extra
+Section: oldlibs
+Architecture: all
+Description: lxqt-config transitional package
+ Empty package to facilitate upgrades, can be safely removed.
+
+Package: lxqt-config-qt5-dbg 
+Depends: lxqt-config-dbg, ${misc:Depends}
+Priority: extra
+Section: oldlibs
+Architecture: all
+Description: lxqt-config transitional package (dbg)
+ Empty package to facilitate upgrades, can be safely removed.
+

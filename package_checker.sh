@@ -76,7 +76,8 @@ package_name="lxqt-runner" ; package_version="${package_name}_0.9.0-1" ; check_h
 package_name="lxqt-qtplugin" ; package_version="${package_name}_0.9.0-1" ; check_http
 package_name="lxqt-policykit" ; package_version="${package_name}_0.9.0-1" ; check_http
 package_name="lxqt-powermanagement" ; package_version="${package_name}_0.9.0-1" ; check_http
-package_name="lximage-qt ; package_version="${package_name}_0.3.1-1" ; check_http
+package_name="lximage-qt" ; package_version="${package_name}_0.3.1-1" ; check_http
+package_name="lxqt-config" ; package_version="${package_name}_0.9.0-1" ; check_http
 
 #really slow...
 #exit
