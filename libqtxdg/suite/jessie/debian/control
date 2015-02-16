@@ -1,14 +1,15 @@
 Source: libqtxdg
 Section: libs
 Priority: optional
-Maintainer: ChangZhuo Chen (陳昌倬) <czchen@gmail.com>
-Uploaders: Alf Gaida <agaida@siduction.org>
+Maintainer: Debian LXQt Maintainers <lxqt-debian@lists.lxde.org>
+Uploaders:
+ Alf Gaida <agaida@siduction.org>,
+ ChangZhuo Chen (陳昌倬) <czchen@gmail.com>
 Build-Depends:
- cmake,
+ cmake (>= 3.0.2),
  debhelper (>= 9),
  libmagic-dev,
  pkg-config,
- qtbase5-dev (>= 5.3.2),
  qttools5-dev (>= 5.3.2),
  qttools5-dev-tools (>= 5.3.2),
 Standards-Version: 3.9.6
@@ -21,10 +22,8 @@ Provides: libqt5xdg
 Architecture: any
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
-Breaks: 
- libqt5xdg0,
-Replaces:
- libqt5xdg0,
+Breaks: libqt5xdg0,
+Replaces: libqt5xdg0,
 Depends:
  ${shlibs:Depends},
  ${misc:Depends},
@@ -55,7 +54,8 @@ Depends:
  ${misc:Depends},
  libqt5xdg1 (= ${binary:Version}),
 Description: Debug symbols for libqtxdg
- This library implements functions of the XDG Specifications in Qt.  It is part
- of LXQt.
+ This library implements functions of the XDG Specifications in Qt.
+ .
+ It is part of LXQt.
  .
  This package contains debug symbols for libqtxdg.

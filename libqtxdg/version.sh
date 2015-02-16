@@ -6,18 +6,18 @@ mirror="http://packages.siduction.org"
 
 package_name="libqtxdg"
 debian_pkg_name="${package_name}"
-package_version="1.0.0"
+package_version="1.1.0"
+dl_package_source="${package_name}_${package_version}-3.tar.gz"
 package_source="${package_name}_${package_version}.orig.tar.gz"
-src_dir="${package_name}-${package_version}"
+src_dir="checkout"
 
 git_repo=""
 git_sha=""
 reprepro_dir="libq/${package_name}"
-dl_path="${mirror}/lxqt/pool/main/${reprepro_dir}/"
+dl_path="lxqt/pool/main/${reprepro_dir}/"
 
 debian_version="${package_version}-3"
-debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 
 wheezy_version="~bpo70+20140924+1"
-jessie_version="~20141017+1"
+jessie_version="~20150216+1"
