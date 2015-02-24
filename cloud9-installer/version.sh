@@ -4,7 +4,7 @@
 
 package_name="cloud9-installer"
 debian_pkg_name="${package_name}"
-package_version="3.0.798"
+package_version="3.0.954"
 package_source=""
 src_dir=""
 
@@ -17,6 +17,6 @@ debian_version="${package_version}-1"
 debian_untar=""
 debian_patch=""
 
-wheezy_version="~bpo70+20150211+1"
-jessie_version="~20150211+1"
-trusty_version="~20150211+1"
+wheezy_version="~bpo70+20150224+1"
+jessie_version="~20150224+1"
+trusty_version="~20150224+1"
