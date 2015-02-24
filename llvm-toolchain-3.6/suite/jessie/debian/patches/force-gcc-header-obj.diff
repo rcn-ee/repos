@@ -1,0 +1,16 @@
+Index: llvm-toolchain-snapshot_3.5~svn201651/clang/lib/Driver/ToolChains.cpp
+===================================================================
+--- llvm-toolchain-snapshot_3.5~svn201651.orig/clang/lib/Driver/ToolChains.cpp	2014-02-19 09:46:43.433569829 +0100
++++ llvm-toolchain-snapshot_3.5~svn201651/clang/lib/Driver/ToolChains.cpp	2014-02-19 09:46:45.621708435 +0100
+@@ -3078,6 +3078,11 @@
+     return;
+   }
+ 
++  // Force the inclusion of the gcc headers (objc/objc.h)
++  addExternCSystemIncludeIfExists(
++     DriverArgs, CC1Args, GCCInstallation.getInstallPath() + "/include");
++
++
+   // Lacking those, try to detect the correct set of system includes for the
+   // target triple.
+ 

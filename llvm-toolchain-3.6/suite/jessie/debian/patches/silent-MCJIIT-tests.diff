@@ -1,0 +1,132 @@
+Index: llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/cross-module-sm-pic-a.ll
+===================================================================
+--- llvm-toolchain-snapshot_3.6~svn225436.orig/test/ExecutionEngine/MCJIT/cross-module-sm-pic-a.ll
++++ llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/cross-module-sm-pic-a.ll
+@@ -1,5 +1,5 @@
+ ; RUN: %lli -extra-module=%p/Inputs/cross-module-b.ll -relocation-model=pic -code-model=small %s > /dev/null
+-; XFAIL: mips, i686, i386
++; XFAIL: *
+ 
+ declare i32 @FB()
+ 
+Index: llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/eh-lg-pic.ll
+===================================================================
+--- llvm-toolchain-snapshot_3.6~svn225436.orig/test/ExecutionEngine/MCJIT/eh-lg-pic.ll
++++ llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/eh-lg-pic.ll
+@@ -1,5 +1,5 @@
+ ; RUN: %lli -relocation-model=pic -code-model=large %s
+-; XFAIL: cygwin, win32, mingw, mips, i686, i386, aarch64, arm, asan, msan
++; XFAIL: *
+ declare i8* @__cxa_allocate_exception(i64)
+ declare void @__cxa_throw(i8*, i8*, i8*)
+ declare i32 @__gxx_personality_v0(...)
+Index: llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/eh-sm-pic.ll
+===================================================================
+--- llvm-toolchain-snapshot_3.6~svn225436.orig/test/ExecutionEngine/MCJIT/eh-sm-pic.ll
++++ llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/eh-sm-pic.ll
+@@ -1,5 +1,5 @@
+ ; RUN: %lli -relocation-model=pic -code-model=small %s
+-; XFAIL: cygwin, win32, mingw, mips, i686, i386, darwin, aarch64, arm, asan, msan
++; XFAIL: *
+ declare i8* @__cxa_allocate_exception(i64)
+ declare void @__cxa_throw(i8*, i8*, i8*)
+ declare i32 @__gxx_personality_v0(...)
+Index: llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/hello-sm-pic.ll
+===================================================================
+--- llvm-toolchain-snapshot_3.6~svn225436.orig/test/ExecutionEngine/MCJIT/hello-sm-pic.ll
++++ llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/hello-sm-pic.ll
+@@ -1,5 +1,5 @@
+ ; RUN: %lli -relocation-model=pic -code-model=small %s > /dev/null
+-; XFAIL: mips, i686, i386, darwin, aarch64, arm
++; XFAIL: *
+ 
+ @.LC0 = internal global [12 x i8] c"Hello World\00"		; <[12 x i8]*> [#uses=1]
+ 
+Index: llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/multi-module-sm-pic-a.ll
+===================================================================
+--- llvm-toolchain-snapshot_3.6~svn225436.orig/test/ExecutionEngine/MCJIT/multi-module-sm-pic-a.ll
++++ llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/multi-module-sm-pic-a.ll
+@@ -1,5 +1,5 @@
+ ; RUN: %lli -extra-module=%p/Inputs/multi-module-b.ll -extra-module=%p/Inputs/multi-module-c.ll -relocation-model=pic -code-model=small %s > /dev/null
+-; XFAIL: mips, i686, i386
++; XFAIL: *
+ 
+ declare i32 @FB()
+ 
+Index: llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/stubs-sm-pic.ll
+===================================================================
+--- llvm-toolchain-snapshot_3.6~svn225436.orig/test/ExecutionEngine/MCJIT/stubs-sm-pic.ll
++++ llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/stubs-sm-pic.ll
+@@ -1,5 +1,5 @@
+ ; RUN: %lli -disable-lazy-compilation=false -relocation-model=pic -code-model=small %s
+-; XFAIL: mips, i686, i386, aarch64, arm
++; XFAIL: *
+ 
+ define i32 @main() nounwind {
+ entry:
+Index: llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/test-global-init-nonzero-sm-pic.ll
+===================================================================
+--- llvm-toolchain-snapshot_3.6~svn225436.orig/test/ExecutionEngine/MCJIT/test-global-init-nonzero-sm-pic.ll
++++ llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/test-global-init-nonzero-sm-pic.ll
+@@ -1,5 +1,5 @@
+ ; RUN: %lli -relocation-model=pic -code-model=small %s > /dev/null
+-; XFAIL: mips, aarch64, arm, i686, i386
++; XFAIL: *
+ 
+ @count = global i32 1, align 4
+ 
+Index: llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/test-ptr-reloc-sm-pic.ll
+===================================================================
+--- llvm-toolchain-snapshot_3.6~svn225436.orig/test/ExecutionEngine/MCJIT/test-ptr-reloc-sm-pic.ll
++++ llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/test-ptr-reloc-sm-pic.ll
+@@ -1,5 +1,5 @@
+ ; RUN: %lli -O0 -relocation-model=pic -code-model=small %s
+-; XFAIL: mips, aarch64, arm, i686, i386
++; XFAIL: *
+ 
+ @.str = private unnamed_addr constant [6 x i8] c"data1\00", align 1
+ @ptr = global i8* getelementptr inbounds ([6 x i8]* @.str, i32 0, i32 0), align 4
+Index: llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/remote/cross-module-sm-pic-a.ll
+===================================================================
+--- llvm-toolchain-snapshot_3.6~svn225436.orig/test/ExecutionEngine/MCJIT/remote/cross-module-sm-pic-a.ll
++++ llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/remote/cross-module-sm-pic-a.ll
+@@ -1,5 +1,5 @@
+ ; RUN: %lli -extra-module=%p/Inputs/cross-module-b.ll -disable-lazy-compilation=true -remote-mcjit -mcjit-remote-process=lli-child-target%exeext -relocation-model=pic -code-model=small %s > /dev/null
+-; XFAIL: mips, i686, i386, arm
++; XFAIL: mips, i686, i386, arm, i586
+ 
+ declare i32 @FB()
+ 
+Index: llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/remote/multi-module-sm-pic-a.ll
+===================================================================
+--- llvm-toolchain-snapshot_3.6~svn225436.orig/test/ExecutionEngine/MCJIT/remote/multi-module-sm-pic-a.ll
++++ llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/remote/multi-module-sm-pic-a.ll
+@@ -1,5 +1,5 @@
+ ; RUN: %lli -extra-module=%p/Inputs/multi-module-b.ll -extra-module=%p/Inputs/multi-module-c.ll -disable-lazy-compilation=true -remote-mcjit -mcjit-remote-process=lli-child-target%exeext -relocation-model=pic -code-model=small %s > /dev/null
+-; XFAIL: mips, i686, i386, arm
++; XFAIL: mips, i686, i386, arm, i586
+ 
+ declare i32 @FB()
+ 
+Index: llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/remote/test-global-init-nonzero-sm-pic.ll
+===================================================================
+--- llvm-toolchain-snapshot_3.6~svn225436.orig/test/ExecutionEngine/MCJIT/remote/test-global-init-nonzero-sm-pic.ll
++++ llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/remote/test-global-init-nonzero-sm-pic.ll
+@@ -1,5 +1,5 @@
+ ; RUN: %lli -remote-mcjit -relocation-model=pic -code-model=small %s > /dev/null
+-; XFAIL: mips, aarch64, arm, i686, i386
++; XFAIL: mips, aarch64, arm, i686, i386, i586
+ 
+ @count = global i32 1, align 4
+ 
+Index: llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/remote/test-ptr-reloc-sm-pic.ll
+===================================================================
+--- llvm-toolchain-snapshot_3.6~svn225436.orig/test/ExecutionEngine/MCJIT/remote/test-ptr-reloc-sm-pic.ll
++++ llvm-toolchain-snapshot_3.6~svn225436/test/ExecutionEngine/MCJIT/remote/test-ptr-reloc-sm-pic.ll
+@@ -1,5 +1,5 @@
+ ; RUN: %lli -remote-mcjit -O0 -relocation-model=pic -code-model=small %s
+-; XFAIL: mips, aarch64, arm, i686, i386
++; XFAIL: mips, aarch64, arm, i686, i386, i586
+ 
+ @.str = private unnamed_addr constant [6 x i8] c"data1\00", align 1
+ @ptr = global i8* getelementptr inbounds ([6 x i8]* @.str, i32 0, i32 0), align 4

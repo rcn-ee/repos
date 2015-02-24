@@ -1,0 +1,22 @@
+#!/usr/bin/make -f
+
+TARGET_BUILD	:= build-llvm
+DEB_HOST_ARCH       = $(shell dpkg-architecture -qDEB_HOST_ARCH)
+
+ifneq (,$(filter parallel=%,$(subst $(COMMA), ,$(DEB_BUILD_OPTIONS))))
+  NJOBS := -j $(subst parallel=,,$(filter parallel=%,$(subst $(COMMA), ,$(DEB_BUILD_OPTIONS))))
+endif
+
+# List of the archs we know we have 100 % tests working
+ARCH_LLVM_TEST_OK := amd64 i386
+
+all:
+# LLVM tests
+ifneq (,$(findstring $(DEB_HOST_ARCH),$(ARCH_LLVM_TEST_OK)))
+# Fail the build if the test fails
+	NJOBS="$(NJOBS)" LD_LIBRARY_PATH=$(CURDIR)/../../$(TARGET_BUILD)/Release/lib/ $(MAKE) -C ../../$(TARGET_BUILD) check
+else
+	NJOBS="$(NJOBS)" LD_LIBRARY_PATH=$(CURDIR)/../../$(TARGET_BUILD)/Release/lib/ $(MAKE) -C ../../$(TARGET_BUILD) check || true
+endif
+
+

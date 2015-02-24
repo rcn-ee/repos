@@ -1,0 +1,63 @@
+description = "Low Level Virtual Machine bindings"
+version = "@LLVM_VERSION@"
+
+directory = "+llvm-@LLVM_VERSION@"
+
+archive(byte)   = "llvm.cma"
+archive(native) = "llvm.cmxa"
+linkopts = "-cclib -lstdc++ -cclib -lllvm"
+
+package "executionengine"
+(
+  requires = "llvm-@LLVM_VERSION@"
+  version = "@LLVM_VERSION@"
+  archive(native) = "llvm_executionengine.cmxa"
+  archive(byte)   = "llvm_executionengine.cma"
+  linkopts = "-cclib -lllvm_executionengine"
+)
+
+package "target"
+(
+  requires = "llvm-@LLVM_VERSION@"
+  version = "@LLVM_VERSION@"
+  archive(native) = "llvm_target.cmxa"
+  archive(byte)   = "llvm_target.cma"
+  linkopts = "-cclib -lllvm_target"
+)
+
+package "scalar_opts"
+(
+  requires = "llvm-@LLVM_VERSION@ llvm-@LLVM_VERSION@.target"
+  version = "@LLVM_VERSION@"
+  archive(native) = "llvm_scalar_opts.cmxa"
+  archive(byte)   = "llvm_scalar_opts.cma"
+  linkopts = "-cclib -lllvm_scalar_opts"
+)
+
+package "analysis"
+(
+  requires = "llvm-@LLVM_VERSION@"
+  version = "@LLVM_VERSION@"
+  archive(native) = "llvm_analysis.cmxa"
+  archive(byte)   = "llvm_analysis.cma"
+  linkopts = "-cclib -lllvm_analysis"
+)
+
+package "bitwriter"
+(
+  requires = "llvm-@LLVM_VERSION@"
+  version = "@LLVM_VERSION@"
+  archive(native) = "llvm_bitwriter.cmxa"
+  archive(byte)   = "llvm_bitwriter.cma"
+  linkopts = "-cclib -lllvm_bitwriter"
+)
+
+package "bitreader"
+(
+  requires = "llvm-@LLVM_VERSION@ llvm-@LLVM_VERSION@.bitwriter"
+  version = "@LLVM_VERSION@"
+  archive(native) = "llvm_bitreader.cmxa"
+  archive(byte)   = "llvm_bitreader.cma"
+  linkopts = "-cclib -lllvm_bitreader"
+)
+

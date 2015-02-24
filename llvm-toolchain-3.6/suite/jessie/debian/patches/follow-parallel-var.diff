@@ -1,0 +1,16 @@
+Index: llvm-toolchain-3.4-3.4.2/test/Makefile
+===================================================================
+--- llvm-toolchain-3.4-3.4.2.orig/test/Makefile
++++ llvm-toolchain-3.4-3.4.2/test/Makefile
+@@ -29,6 +29,11 @@ else
+ LIT_ARGS := -s -v
+ endif
+ 
++# NJOBS allows an override of the number of threads
++ifneq ($(NJOBS),)
++LIT_ARGS += $(NJOBS)
++endif
++
+ ifdef TESTSUITE
+ LIT_TESTSUITE := $(TESTSUITE)
+ else

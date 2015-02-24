@@ -1,0 +1,16 @@
+Index: llvm-toolchain-snapshot_3.5~svn201239/tools/llvm-config/llvm-config.cpp
+===================================================================
+--- llvm-toolchain-snapshot_3.5~svn201239.orig/tools/llvm-config/llvm-config.cpp	2014-02-12 16:21:54.713558937 +0100
++++ llvm-toolchain-snapshot_3.5~svn201239/tools/llvm-config/llvm-config.cpp	2014-02-12 16:34:24.993540587 +0100
+@@ -321,9 +321,9 @@
+         OS << "ON\n";
+ #endif
+       } else if (Arg == "--obj-root") {
+-        OS << ActivePrefix << '\n';
++        OS << ActivePrefix << "/build/" << '\n';
+       } else if (Arg == "--src-root") {
+-        OS << LLVM_SRC_ROOT << '\n';
++        OS << ActivePrefix << "/build/" << '\n';
+       } else {
+         usage();
+       }

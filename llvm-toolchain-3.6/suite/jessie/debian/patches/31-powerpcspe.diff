@@ -1,0 +1,15 @@
+Index: llvm-toolchain-snapshot_3.4~svn188990/clang/lib/Lex/Makefile
+===================================================================
+--- llvm-toolchain-snapshot_3.4~svn188990.orig/clang/lib/Lex/Makefile	2013-08-22 09:07:43.368608381 +0200
++++ llvm-toolchain-snapshot_3.4~svn188990/clang/lib/Lex/Makefile	2013-08-22 09:07:43.368608381 +0200
+@@ -17,8 +17,10 @@
+ LIBRARYNAME := clangLex
+ 
+ ifeq ($(ARCH),PowerPC)
++ifneq ($(shell dpkg-architecture -qDEB_HOST_ARCH),powerpcspe)
+ CXX.Flags += -maltivec
+ endif
++endif
+ 
+ include $(CLANG_LEVEL)/Makefile
+ 

@@ -1,0 +1,21 @@
+Index: llvm-toolchain-snapshot_3.5~svn210337/clang/lib/Basic/Version.cpp
+===================================================================
+--- llvm-toolchain-snapshot_3.5~svn210337.orig/clang/lib/Basic/Version.cpp
++++ llvm-toolchain-snapshot_3.5~svn210337/clang/lib/Basic/Version.cpp
+@@ -15,6 +15,7 @@
+ #include "clang/Basic/LLVM.h"
+ #include "clang/Config/config.h"
+ #include "llvm/Support/raw_ostream.h"
++#include "clang/Debian/debian_path.h"
+ #include <cstdlib>
+ #include <cstring>
+ 
+@@ -125,7 +126,7 @@ std::string getClangToolFullVersion(Stri
+ #ifdef CLANG_VENDOR
+   OS << CLANG_VENDOR;
+ #endif
+-  OS << ToolName << " version " CLANG_VERSION_STRING " "
++  OS << ToolName << " version " CLANG_VERSION_STRING "-" DEB_PATCHSETVERSION " "
+      << getClangFullRepositoryVersion();
+ 
+   // If vendor supplied, include the base LLVM version as well.

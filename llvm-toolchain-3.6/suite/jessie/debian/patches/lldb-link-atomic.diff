@@ -1,0 +1,15 @@
+Index: llvm-toolchain-snapshot_3.5~svn201241/lldb/lib/Makefile
+===================================================================
+--- llvm-toolchain-snapshot_3.5~svn201241.orig/lldb/lib/Makefile	2014-02-12 17:04:14.743875515 +0100
++++ llvm-toolchain-snapshot_3.5~svn201241/lldb/lib/Makefile	2014-02-12 17:06:32.408601271 +0100
+@@ -151,6 +151,10 @@
+     # Link in python
+     LLVMLibsOptions += $(PYTHON_BUILD_FLAGS) -lrt -ledit -lncurses -lpanel
+     LLVMLibsOptions += -Wl,--soname,lib$(LIBRARYNAME)$(SHLIBEXT)
++    ifneq (,$(filter $(shell dpkg-architecture -qDEB_HOST_ARCH), mips mipsel powerpc powerpcspe))
++     # Link GCC atomic helper library
++     LLVMLibsOptions += -latomic
++    endif
+ endif
+ 
+ ifeq ($(HOST_OS),FreeBSD)

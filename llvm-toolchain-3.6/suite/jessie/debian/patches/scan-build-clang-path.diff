@@ -1,0 +1,13 @@
+Index: llvm-toolchain-snapshot_3.5~svn199197/clang/tools/scan-build/scan-build
+===================================================================
+--- llvm-toolchain-snapshot_3.5~svn199197.orig/clang/tools/scan-build/scan-build	2014-01-14 11:30:50.852868672 +0100
++++ llvm-toolchain-snapshot_3.5~svn199197/clang/tools/scan-build/scan-build	2014-01-14 11:30:50.848868672 +0100
+@@ -1559,7 +1559,7 @@
+ 
+ # Find 'clang'
+ if (!defined $AnalyzerDiscoveryMethod) {
+-  $Clang = Cwd::realpath("$RealBin/bin/clang");
++  $Clang = Cwd::realpath("/usr/lib/llvm-3.6/bin/clang");
+   if (!defined $Clang || ! -x $Clang) {
+     $Clang = Cwd::realpath("$RealBin/clang");
+   }

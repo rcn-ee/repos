@@ -1,0 +1,53 @@
+Index: llvm-toolchain-3.5-3.5/utils/lit/utils/check-coverage
+===================================================================
+--- llvm-toolchain-3.5-3.5.orig/utils/lit/utils/check-coverage
++++ llvm-toolchain-3.5-3.5/utils/lit/utils/check-coverage
+@@ -23,7 +23,7 @@ fi
+ # sitecustomize.
+ if ! python -c \
+       'import sitecustomize, sys; sys.exit("coverage" not in dir(sitecustomize))' \
+-      &> /dev/null; then
++      >/dev/null 2>&1; then
+     printf 1>&2 "error: active python does not appear to enable coverage in its 'sitecustomize.py'\n"
+     exit 1
+ fi
+Index: llvm-toolchain-3.5-3.5/configure
+===================================================================
+--- llvm-toolchain-3.5-3.5.orig/configure
++++ llvm-toolchain-3.5-3.5/configure
+@@ -9942,7 +9942,7 @@ if test "$ac_res" != no; then
+ else
+ 
+               echo "Error! You need to have libopagent around."
+-              exit -1
++              exit 1
+ 
+ fi
+ 
+@@ -10105,7 +10105,7 @@ if test $ac_cv_header_opagent_h = yes; t
+ else
+ 
+               echo "Error! You need to have opagent.h around."
+-              exit -1
++              exit 1
+ 
+ fi
+ 
+Index: llvm-toolchain-3.5-3.5/autoconf/configure.ac
+===================================================================
+--- llvm-toolchain-3.5-3.5.orig/autoconf/configure.ac
++++ llvm-toolchain-3.5-3.5/autoconf/configure.ac
+@@ -1521,11 +1521,11 @@ AC_ARG_WITH(oprofile,
+             AC_SEARCH_LIBS(bfd_init, bfd, [], [])
+             AC_SEARCH_LIBS(op_open_agent, opagent, [], [
+               echo "Error! You need to have libopagent around."
+-              exit -1
++              exit 1
+             ])
+             AC_CHECK_HEADER([opagent.h], [], [
+               echo "Error! You need to have opagent.h around."
+-              exit -1
++              exit 1
+               ])
+           fi ;;
+         *)

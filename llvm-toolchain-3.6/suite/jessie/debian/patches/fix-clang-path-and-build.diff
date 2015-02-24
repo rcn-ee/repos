@@ -1,0 +1,13 @@
+Index: llvm-toolchain-snapshot_3.5~svn201651/clang/lib/Driver/ToolChains.cpp
+===================================================================
+--- llvm-toolchain-snapshot_3.5~svn201651.orig/clang/lib/Driver/ToolChains.cpp	2014-02-19 09:46:23.400300812 +0100
++++ llvm-toolchain-snapshot_3.5~svn201651/clang/lib/Driver/ToolChains.cpp	2014-02-19 09:46:35.377059510 +0100
+@@ -2326,6 +2326,8 @@
+       DriverArgs.hasArg(options::OPT_nostdincxx))
+     return;
+ 
++  addSystemInclude(DriverArgs, CC1Args, "/usr/include/clang/" + std::string(CLANG_VERSION_STRING) + "/include/");
++
+   switch (GetCXXStdlibType(DriverArgs)) {
+   case ToolChain::CST_Libcxx:
+     addSystemInclude(DriverArgs, CC1Args,

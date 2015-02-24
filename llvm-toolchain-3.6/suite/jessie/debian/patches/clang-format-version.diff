@@ -1,0 +1,39 @@
+Index: llvm-toolchain-snapshot_3.6~svn225450/clang/tools/clang-format/clang-format.py
+===================================================================
+--- llvm-toolchain-snapshot_3.6~svn225450.orig/clang/tools/clang-format/clang-format.py
++++ llvm-toolchain-snapshot_3.6~svn225450/clang/tools/clang-format/clang-format.py
+@@ -25,7 +25,7 @@ import vim
+ 
+ # set g:clang_format_path to the path to clang-format if it is not on the path
+ # Change this to the full path if clang-format is not on the path.
+-binary = 'clang-format'
++binary = 'clang-format-3.6'
+ if vim.eval('exists("g:clang_format_path")') == "1":
+   binary = vim.eval('g:clang_format_path')
+ 
+Index: llvm-toolchain-snapshot_3.6~svn225450/clang/tools/clang-format/clang-format-diff.py
+===================================================================
+--- llvm-toolchain-snapshot_3.6~svn225450.orig/clang/tools/clang-format/clang-format-diff.py
++++ llvm-toolchain-snapshot_3.6~svn225450/clang/tools/clang-format/clang-format-diff.py
+@@ -32,7 +32,7 @@ import sys
+ 
+ 
+ # Change this to the full path if clang-format is not on the path.
+-binary = 'clang-format'
++binary = 'clang-format-3.6'
+ 
+ 
+ def main():
+Index: llvm-toolchain-snapshot_3.6~svn225450/clang/tools/clang-format/clang-format.el
+===================================================================
+--- llvm-toolchain-snapshot_3.6~svn225450.orig/clang/tools/clang-format/clang-format.el
++++ llvm-toolchain-snapshot_3.6~svn225450/clang/tools/clang-format/clang-format.el
+@@ -35,7 +35,7 @@
+   :group 'tools)
+ 
+ (defcustom clang-format-executable
+-  (or (executable-find "clang-format")
++  (or (executable-find "clang-format-3.6")
+       "clang-format")
+   "Location of the clang-format executable.
+ 

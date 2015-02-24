@@ -1,0 +1,54 @@
+Index: llvm-toolchain-snapshot_3.5~svn201241/lldb/test/dotest.py
+===================================================================
+--- llvm-toolchain-snapshot_3.5~svn201241.orig/lldb/test/dotest.py	2014-01-30 21:19:22.000000000 +0100
++++ llvm-toolchain-snapshot_3.5~svn201241/lldb/test/dotest.py	2014-02-12 17:04:14.971889980 +0100
+@@ -1612,8 +1612,8 @@
+             def addSuccess(self, test):
+                 global parsable
+                 super(LLDBTestResult, self).addSuccess(test)
+-                if parsable:
+-                    self.stream.write("PASS: LLDB (%s) :: %s\n" % (self._config_string(test), str(test)))
++#                if parsable:
++#                    self.stream.write("PASS: LLDB (%s) :: %s\n" % (self._config_string(test), str(test)))
+ 
+             def addError(self, test, err):
+                 global sdir_has_content
+@@ -1653,8 +1653,8 @@
+                 method = getattr(test, "markExpectedFailure", None)
+                 if method:
+                     method(err, bugnumber)
+-                if parsable:
+-                    self.stream.write("XFAIL: LLDB (%s) :: %s\n" % (self._config_string(test), str(test)))
++#                if parsable:
++#                    self.stream.write("XFAIL: LLDB (%s) :: %s\n" % (self._config_string(test), str(test)))
+ 
+             def addSkip(self, test, reason):
+                 global sdir_has_content
+@@ -1664,8 +1664,8 @@
+                 method = getattr(test, "markSkippedTest", None)
+                 if method:
+                     method()
+-                if parsable:
+-                    self.stream.write("UNSUPPORTED: LLDB (%s) :: %s (%s) \n" % (self._config_string(test), str(test), reason))
++#                if parsable:
++#                    self.stream.write("UNSUPPORTED: LLDB (%s) :: %s (%s) \n" % (self._config_string(test), str(test), reason))
+ 
+             def addUnexpectedSuccess(self, test, bugnumber):
+                 global sdir_has_content
+Index: llvm-toolchain-snapshot_3.5~svn201241/lldb/test/unittest2/runner.py
+===================================================================
+--- llvm-toolchain-snapshot_3.5~svn201241.orig/lldb/test/unittest2/runner.py	2013-09-25 22:47:51.000000000 +0200
++++ llvm-toolchain-snapshot_3.5~svn201241/lldb/test/unittest2/runner.py	2014-02-12 17:04:14.971889980 +0100
+@@ -171,9 +171,9 @@
+         if hasattr(result, 'separator2'):
+             self.stream.writeln(result.separator2)
+         run = result.testsRun
+-        self.stream.writeln("Ran %d test%s in %.3fs" %
+-                            (run, run != 1 and "s" or "", timeTaken))
+-        self.stream.writeln()
++#        self.stream.writeln("Ran %d test%s in %.3fs" %
++#                            (run, run != 1 and "s" or "", timeTaken))
++#        self.stream.writeln()
+         
+         expectedFails = unexpectedSuccesses = skipped = 0
+         try:

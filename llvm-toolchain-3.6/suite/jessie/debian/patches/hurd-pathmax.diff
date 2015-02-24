@@ -1,0 +1,43 @@
+Index: llvm-toolchain-snapshot_3.5~svn211597/clang/lib/Basic/FileManager.cpp
+===================================================================
+--- llvm-toolchain-snapshot_3.5~svn211597.orig/clang/lib/Basic/FileManager.cpp
++++ llvm-toolchain-snapshot_3.5~svn211597/clang/lib/Basic/FileManager.cpp
+@@ -492,6 +492,10 @@ void FileManager::invalidateCache(const
+   UniqueRealFiles.erase(Entry->getUniqueID());
+ }
+ 
++// For GNU Hurd
++#if defined(__GNU__) && !defined(PATH_MAX)
++# define PATH_MAX 4096
++#endif
+ 
+ void FileManager::GetUniqueIDMapping(
+                    SmallVectorImpl<const FileEntry *> &UIDToFiles) const {
+Index: llvm-toolchain-snapshot_3.5~svn211597/lldb/include/lldb/lldb-defines.h
+===================================================================
+--- llvm-toolchain-snapshot_3.5~svn211597.orig/lldb/include/lldb/lldb-defines.h
++++ llvm-toolchain-snapshot_3.5~svn211597/lldb/include/lldb/lldb-defines.h
+@@ -28,6 +28,11 @@
+     #define INT32_MAX 2147483647
+ #endif
+ 
++// For GNU Hurd
++#if defined(__GNU__) && !defined(PATH_MAX)
++# define PATH_MAX 4096
++#endif
++
+ #if !defined(UINT32_MAX)
+     #define UINT32_MAX 4294967295U
+ #endif
+Index: llvm-toolchain-snapshot_3.5~svn211597/lib/Support/Unix/Path.inc
+===================================================================
+--- llvm-toolchain-snapshot_3.5~svn211597.orig/lib/Support/Unix/Path.inc
++++ llvm-toolchain-snapshot_3.5~svn211597/lib/Support/Unix/Path.inc
+@@ -58,6 +58,7 @@
+ // For GNU Hurd
+ #if defined(__GNU__) && !defined(PATH_MAX)
+ # define PATH_MAX 4096
++# define MAXPATHLEN 4096
+ #endif
+ 
+ using namespace llvm;

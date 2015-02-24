@@ -1,0 +1,13 @@
+Index: llvm-toolchain-snapshot_3.4~svn188990/lib/Support/Unix/Memory.inc
+===================================================================
+--- llvm-toolchain-snapshot_3.4~svn188990.orig/lib/Support/Unix/Memory.inc	2013-08-22 09:07:39.252608486 +0200
++++ llvm-toolchain-snapshot_3.4~svn188990/lib/Support/Unix/Memory.inc	2013-08-22 09:07:39.248608486 +0200
+@@ -336,7 +336,7 @@
+   // FIXME: Can we safely always call this for __GNUC__ everywhere?
+   const char *Start = static_cast<const char *>(Addr);
+   const char *End = Start + Len;
+-  __clear_cache(const_cast<char *>(Start), const_cast<char *>(End));
++  __builtin___clear_cache(const_cast<char *>(Start), const_cast<char *>(End));
+ #  elif defined(__mips__)
+   const char *Start = static_cast<const char *>(Addr);
+ #    if defined(ANDROID)

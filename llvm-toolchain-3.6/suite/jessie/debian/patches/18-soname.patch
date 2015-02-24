@@ -1,0 +1,21 @@
+Index: llvm-toolchain-snapshot_3.6~svn214630/clang/tools/libclang/Makefile
+===================================================================
+--- llvm-toolchain-snapshot_3.6~svn214630.orig/clang/tools/libclang/Makefile
++++ llvm-toolchain-snapshot_3.6~svn214630/clang/tools/libclang/Makefile
+@@ -14,6 +14,7 @@ EXPORTED_SYMBOL_FILE = $(PROJ_SRC_DIR)/l
+ 
+ LINK_LIBS_IN_SHARED = 1
+ SHARED_LIBRARY = 1
++SONAME_MAJOR=1
+ 
+ include $(CLANG_LEVEL)/../../Makefile.config
+ LINK_COMPONENTS := AsmParser BitReader Core MC MCParser Option Support
+@@ -34,7 +35,7 @@ include $(CLANG_LEVEL)/Makefile
+ 
+ # Add soname to the library.
+ ifeq ($(HOST_OS), $(filter $(HOST_OS), Linux FreeBSD GNU GNU/kFreeBSD))
+-        LLVMLibsOptions += -Wl,-soname,lib$(LIBRARYNAME)$(SHLIBEXT)
++        LLVMLibsOptions += -Wl,-soname,lib$(LIBRARYNAME)-$(LLVM_VERSION_MAJOR).$(LLVM_VERSION_MINOR)$(SHLIBEXT).$(SONAME_MAJOR)
+ endif
+ 
+ ifeq ($(ENABLE_CLANG_ARCMT),1)

@@ -1,0 +1,16 @@
+#!/bin/sh -e
+
+if test "$1" = "remove"; then
+    if test -x /usr/sbin/update-binfmts; then
+        update-binfmts --package llvm-@LLVM_VERSION@-runtime \
+            --remove llvm-@LLVM_VERSION@-runtime.binfmt /usr/bin/lli-@LLVM_VERSION@ || true
+        if test -f /var/lib/binfmts/llvm-@LLVM_VERSION@.binfmt; then
+            # Purge old file
+            update-binfmts --package llvm-@LLVM_VERSION@-runtime \
+                --remove llvm-@LLVM_VERSION@.binfmt /usr/bin/lli-@LLVM_VERSION@ || true
+        fi
+    fi
+fi
+
+#DEBHELPER#
+

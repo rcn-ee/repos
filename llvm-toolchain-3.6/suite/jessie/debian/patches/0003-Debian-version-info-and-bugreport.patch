@@ -1,0 +1,15 @@
+Index: llvm-toolchain-snapshot_3.5~svn211104/lib/Support/CommandLine.cpp
+===================================================================
+--- llvm-toolchain-snapshot_3.5~svn211104.orig/lib/Support/CommandLine.cpp
++++ llvm-toolchain-snapshot_3.5~svn211104/lib/Support/CommandLine.cpp
+@@ -1702,6 +1702,10 @@ public:
+     OS << " " << LLVM_VERSION_INFO;
+ #endif
+     OS << "\n  ";
++#ifdef LLVM_DEBIAN_INFO
++    OS << LLVM_DEBIAN_INFO;
++#endif
++    OS << "\n  ";
+ #ifndef __OPTIMIZE__
+     OS << "DEBUG build";
+ #else

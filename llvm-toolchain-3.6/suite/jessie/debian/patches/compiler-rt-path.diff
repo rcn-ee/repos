@@ -1,0 +1,13 @@
+Index: llvm-toolchain-snapshot-3.5~svn208979/compiler-rt/make/platform/clang_linux.mk
+===================================================================
+--- llvm-toolchain-snapshot-3.5~svn208979.orig/compiler-rt/make/platform/clang_linux.mk	2014-05-16 19:13:05.702922367 +0200
++++ llvm-toolchain-snapshot-3.5~svn208979/compiler-rt/make/platform/clang_linux.mk	2014-05-16 19:13:27.551329647 +0200
+@@ -11,7 +11,7 @@
+ # cross compilers). For now, we just find the target architecture of the
+ # compiler and only define configurations we know that compiler can generate.
+ CompilerTargetTriple := $(shell \
+-	LANG=C $(CC) -v 2>&1 | grep 'Target:' | cut -d' ' -f2)
++	LD_LIBRARY_PATH=../build-llvm/Release/lib  LANG=C $(CC) -v 2>&1 | grep 'Target:' | cut -d' ' -f2)
+ ifeq ($(CompilerTargetTriple),)
+ $(error "unable to infer compiler target triple for $(CC)")
+ endif

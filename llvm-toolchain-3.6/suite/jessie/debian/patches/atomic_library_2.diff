@@ -1,0 +1,42 @@
+Index: llvm-toolchain-snapshot_3.5~svn201651/clang/test/CodeGen/linux-arm-atomic.c
+===================================================================
+--- llvm-toolchain-snapshot_3.5~svn201651.orig/clang/test/CodeGen/linux-arm-atomic.c	2014-02-19 09:46:27.872584164 +0100
++++ llvm-toolchain-snapshot_3.5~svn201651/clang/test/CodeGen/linux-arm-atomic.c	2014-02-19 09:46:29.748703000 +0100
+@@ -1,5 +1,6 @@
+ // RUN: %clang_cc1 %s -emit-llvm -o - -triple=armv7-unknown-linux | FileCheck %s
+ // RUN: %clang_cc1 %s -emit-llvm -o - -triple=armv6-unknown-linux | FileCheck %s
++// RUN: %clang_cc1 %s -emit-llvm -o - -triple=thumbv7-unknown-linux | FileCheck %s
+ 
+ typedef int _Atomic_word;
+ _Atomic_word exchange_and_add(volatile _Atomic_word *__mem, int __val) {
+Index: llvm-toolchain-snapshot_3.5~svn201651/clang/lib/Basic/Targets.cpp
+===================================================================
+--- llvm-toolchain-snapshot_3.5~svn201651.orig/clang/lib/Basic/Targets.cpp	2014-02-19 09:46:27.872584164 +0100
++++ llvm-toolchain-snapshot_3.5~svn201651/clang/lib/Basic/Targets.cpp	2014-02-19 09:46:29.748703000 +0100
+@@ -3774,9 +3774,23 @@
+     if (T.getOS() != llvm::Triple::Linux)
+      return false;
+     StringRef ArchName = T.getArchName();
+-    if (ArchName.startswith("armv6") || ArchName.startswith("armv7"))
+-      return true;
+-    return false;
++    if (T.getArch() == llvm::Triple::arm) {
++      if (!ArchName.startswith("armv"))
++        return false;
++      StringRef VersionStr = ArchName.substr(4);
++      unsigned Version;
++      if (VersionStr.getAsInteger(10, Version))
++        return false;
++      return Version >= 6;
++    }
++    assert(T.getArch() == llvm::Triple::thumb);
++    if (!ArchName.startswith("thumbv"))
++      return false;
++    StringRef VersionStr = ArchName.substr(6);
++    unsigned Version;
++    if (VersionStr.getAsInteger(10, Version))
++      return false;
++    return Version >= 7;
+   }
+ 
+ public:
