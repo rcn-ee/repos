@@ -13,7 +13,7 @@ run () {
 
 		mkdir ./${suite}
 		cd ./${suite}
-			options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite} --append-to-version=${backport}"
+			options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite}"
 			sbuild ${options} ${mirror}/${dl_path}${package_name}_${debian_version}.dsc
 
 		cd ../
