@@ -13,7 +13,8 @@ run () {
 
 		mkdir ./${suite}
 		cd ./${suite}
-			sbuild --arch=${deb_arch} -A -s --force-orig-source -d ${suite} ${mirror}/${dl_path}${package_name}_${debian_version}.dsc
+			options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite} --append-to-version=${backport}"
+			sbuild ${options} ${mirror}/${dl_path}${package_name}_${debian_version}.dsc
 
 		cd ../
 	fi
@@ -21,6 +22,7 @@ run () {
 
 dist="debian"
 suite="jessie"
+backport="~bpo80"
 deb_arch="armhf"
 run
 
