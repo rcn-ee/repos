@@ -6,23 +6,11 @@ base="/var/www/html/repos.rcn-ee.net/"
 outgoing="/var/www/html/farm/outgoing"
 
 run () {
-	wfile="${outgoing}/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}/${debian_pkg_name}_${debian_version}${rcn_ee_version}_${deb_arch}.changes"
-	if [ ! -f ${repo}pool/main/${reprepro_dir}/${debian_pkg_name}_${debian_version}${rcn_ee_version}*.deb ] ; then
-		if [ -f ${wfile} ] ; then
-			reprepro -b ${repo} -C main include ${suite} ${wfile}
-		fi
-	fi
+	changes_file=$(ls ${outgoing}/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}/ | grep changes)
 
-	wfile="${outgoing}/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}/${debian_pkg_name}_${debian_version}_${deb_arch}.changes"
-	if [ ! -f ${repo}pool/main/${reprepro_dir}/${debian_pkg_name}_${debian_version}*.deb ] ; then
-		if [ -f ${wfile} ] ; then
-			reprepro -b ${repo} -C main include ${suite} ${wfile}
-		fi
-	fi
-
-	wfile="${outgoing}/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}/${package_name}_${package_version}${rcn_ee_version}_${deb_arch}.changes"
-	if [ ! -f ${repo}pool/main/${reprepro_dir}/${package_name}_${package_version}${rcn_ee_version}*.deb ] ; then
-		if [ -f ${wfile} ] ; then
+	if [ ! "x${changes_file}" = "x" ] ; then
+		if [ -f ${outgoing}/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}/${changes_file} ] ; then
+			wfile="${outgoing}/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}/${changes_file}"
 			reprepro -b ${repo} -C main include ${suite} ${wfile}
 		fi
 	fi
