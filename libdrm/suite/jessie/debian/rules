@@ -45,15 +45,17 @@ ifneq (,$(filter arm,$(DEB_HOST_ARCH_CPU)))
 	ARM = yes
 endif
 ifeq ($(ARM), yes)
-	confflags += --enable-omap-experimental-api
-	confflags += --enable-freedreno-experimental-api
+	confflags += --enable-freedreno --enable-freedreno-kgsl
 	confflags += --enable-etnaviv-experimental-api
 	confflags += --enable-exynos-experimental-api
+	confflags += --enable-omap-experimental-api
+	confflags += --enable-tegra-experimental-api
 else
-	confflags += --disable-omap-experimental-api
-	confflags += --disable-freedreno-experimental-api
+	confflags += --disable-freedreno
 	confflags += --disable-etnaviv-experimental-api
 	confflags += --disable-exynos-experimental-api
+	confflags += --disable-omap-experimental-api
+	confflags += --disable-tegra-experimental-api
 endif
 
 ###
@@ -87,6 +89,7 @@ ifeq ($(ARM), yes)
 	dh_strip -plibdrm-freedreno1 --dbg-package=libdrm-freedreno1-dbg
 	dh_strip -plibdrm-etnaviv0 --dbg-package=libdrm-etnaviv0-dbg
 	dh_strip -plibdrm-exynos1 --dbg-package=libdrm-exynos1-dbg
+	dh_strip -plibdrm-tegra0 --dbg-package=libdrm-tegra0-dbg
 endif
 	dh_strip -s --remaining-packages
 
@@ -104,6 +107,7 @@ ifeq ($(ARM), yes)
 	dh_makeshlibs -plibdrm-freedreno1 -V'libdrm-freedreno1 (>= 2.4.57)' -- -c4
 	dh_makeshlibs -plibdrm-etnaviv0 -V'libdrm-etnaviv0' -- -c4
 	dh_makeshlibs -plibdrm-exynos1 -V'libdrm-exynos1' -- -c4
+	dh_makeshlibs -plibdrm-tegra0 -V'libdrm-tegra0' -- -c4
 endif
 
 %:

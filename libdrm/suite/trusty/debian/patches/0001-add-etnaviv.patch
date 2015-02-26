@@ -1,6 +1,6 @@
-From 2a3c418a057af9a544b6d4793399ab3881649db5 Mon Sep 17 00:00:00 2001
+From 9104eff16cf4ed345f86bc55b05af36fc31f1bbb Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 6 Jan 2015 16:31:48 -0600
+Date: Thu, 26 Feb 2015 15:53:58 -0600
 Subject: [PATCH] add etnaviv
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -8,11 +8,11 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  Makefile.am                     |    6 +-
  configure.ac                    |   14 +
  etnaviv/Makefile.am             |   22 +
- etnaviv/etnaviv_bo.c            |  326 +++++++++
- etnaviv/etnaviv_cmd_stream.c    |  248 +++++++
+ etnaviv/etnaviv_bo.c            |  327 +++++++++
+ etnaviv/etnaviv_cmd_stream.c    |  265 +++++++
  etnaviv/etnaviv_device.c        |   99 +++
  etnaviv/etnaviv_drm.h           |  214 ++++++
- etnaviv/etnaviv_drmif.h         |  146 ++++
+ etnaviv/etnaviv_drmif.h         |  150 ++++
  etnaviv/etnaviv_pipe.c          |  182 +++++
  etnaviv/etnaviv_priv.h          |  169 +++++
  etnaviv/libdrm_etnaviv.pc.in    |   11 +
@@ -25,7 +25,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  tests/etnaviv/state_2d.xml.h    | 1473 +++++++++++++++++++++++++++++++++++++++
  tests/etnaviv/write_bmp.c       |  152 ++++
  tests/etnaviv/write_bmp.h       |   34 +
- 20 files changed, 4050 insertions(+), 1 deletion(-)
+ 20 files changed, 4072 insertions(+), 1 deletion(-)
  create mode 100644 etnaviv/Makefile.am
  create mode 100644 etnaviv/etnaviv_bo.c
  create mode 100644 etnaviv/etnaviv_cmd_stream.c
@@ -45,29 +45,29 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  create mode 100644 tests/etnaviv/write_bmp.h
 
 diff --git a/Makefile.am b/Makefile.am
-index 3952a88..f6d183c 100644
+index 3cb516c..438b12a 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -53,7 +53,11 @@ if HAVE_FREEDRENO
- FREEDRENO_SUBDIR = freedreno
+@@ -57,7 +57,11 @@ if HAVE_TEGRA
+ TEGRA_SUBDIR = tegra
  endif
  
--SUBDIRS = . $(LIBKMS_SUBDIR) $(INTEL_SUBDIR) $(NOUVEAU_SUBDIR) $(RADEON_SUBDIR) $(OMAP_SUBDIR) $(EXYNOS_SUBDIR) $(FREEDRENO_SUBDIR) tests man
+-SUBDIRS = . $(LIBKMS_SUBDIR) $(INTEL_SUBDIR) $(NOUVEAU_SUBDIR) $(RADEON_SUBDIR) $(OMAP_SUBDIR) $(EXYNOS_SUBDIR) $(FREEDRENO_SUBDIR) $(TEGRA_SUBDIR) tests man
 +if HAVE_ETNAVIV
 +ETNAVIV_SUBDIR = etnaviv
 +endif
 +
-+SUBDIRS = . $(LIBKMS_SUBDIR) $(INTEL_SUBDIR) $(NOUVEAU_SUBDIR) $(RADEON_SUBDIR) $(OMAP_SUBDIR) $(EXYNOS_SUBDIR) $(FREEDRENO_SUBDIR) $(ETNAVIV_SUBDIR) tests man
++SUBDIRS = . $(LIBKMS_SUBDIR) $(INTEL_SUBDIR) $(NOUVEAU_SUBDIR) $(RADEON_SUBDIR) $(OMAP_SUBDIR) $(EXYNOS_SUBDIR) $(FREEDRENO_SUBDIR) $(TEGRA_SUBDIR) $(ETNAVIV_SUBDIR) tests man
  
  libdrm_la_LTLIBRARIES = libdrm.la
  libdrm_ladir = $(libdir)
 diff --git a/configure.ac b/configure.ac
-index ee59b03..bf90078 100644
+index 8afee83..872d2e3 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -98,6 +98,11 @@ AC_ARG_ENABLE(freedreno-experimental-api,
- 	      [Enable support for freedreno's experimental API (default: disabled)]),
- 	      [FREEDRENO=$enableval], [FREEDRENO=no])
+@@ -108,6 +108,11 @@ AC_ARG_ENABLE(tegra-experimental-api,
+ 	      [Enable support for Tegra's experimental API (default: disabled)]),
+ 	      [TEGRA=$enableval], [TEGRA=no])
  
 +AC_ARG_ENABLE(etnaviv-experimental-api,
 +	      AS_HELP_STRING([--enable-etnaviv-experimental-api],
@@ -77,8 +77,8 @@ index ee59b03..bf90078 100644
  AC_ARG_ENABLE(install-test-programs,
  		  AS_HELP_STRING([--enable-install-test-programs],
  		  [Install test programs (default: no)]),
-@@ -304,6 +309,11 @@ if test "x$RADEON" = xyes; then
- 	AC_DEFINE(HAVE_RADEON, 1, [Have radeon support])
+@@ -331,6 +336,11 @@ if test "x$TEGRA" = xyes; then
+ 	AC_DEFINE(HAVE_TEGRA, 1, [Have Tegra support])
  fi
  
 +AM_CONDITIONAL(HAVE_ETNAVIV, [test "x$ETNAVIV" = xyes])
@@ -89,27 +89,27 @@ index ee59b03..bf90078 100644
  AM_CONDITIONAL(HAVE_INSTALL_TESTS, [test "x$INSTALL_TESTS" = xyes])
  if test "x$INSTALL_TESTS" = xyes; then
  	AC_DEFINE(HAVE_INSTALL_TESTS, 1, [Install test programs])
-@@ -403,6 +413,8 @@ AC_CONFIG_FILES([
- 	exynos/libdrm_exynos.pc
- 	freedreno/Makefile
+@@ -432,6 +442,8 @@ AC_CONFIG_FILES([
  	freedreno/libdrm_freedreno.pc
+ 	tegra/Makefile
+ 	tegra/libdrm_tegra.pc
 +	etnaviv/Makefile
 +	etnaviv/libdrm_etnaviv.pc
  	tests/Makefile
  	tests/modeprint/Makefile
  	tests/modetest/Makefile
-@@ -410,6 +422,7 @@ AC_CONFIG_FILES([
- 	tests/radeon/Makefile
+@@ -441,6 +453,7 @@ AC_CONFIG_FILES([
  	tests/vbltest/Makefile
  	tests/exynos/Makefile
+ 	tests/tegra/Makefile
 +	tests/etnaviv/Makefile
  	man/Makefile
  	libdrm.pc])
  AC_OUTPUT
-@@ -425,4 +438,5 @@ echo "  Nouveau API    $NOUVEAU"
- echo "  OMAP API       $OMAP"
+@@ -457,4 +470,5 @@ echo "  OMAP API       $OMAP"
  echo "  EXYNOS API     $EXYNOS"
- echo "  Freedreno API  $FREEDRENO"
+ echo "  Freedreno API  $FREEDRENO (kgsl: $FREEDRENO_KGSL)"
+ echo "  Tegra API      $TEGRA"
 +echo "  Etnaviv API    $ETNAVIV"
  echo ""
 diff --git a/etnaviv/Makefile.am b/etnaviv/Makefile.am
@@ -142,10 +142,10 @@ index 0000000..8b0bc41
 +pkgconfig_DATA = libdrm_etnaviv.pc
 diff --git a/etnaviv/etnaviv_bo.c b/etnaviv/etnaviv_bo.c
 new file mode 100644
-index 0000000..fe5ca34
+index 0000000..81f0d3c
 --- /dev/null
 +++ b/etnaviv/etnaviv_bo.c
-@@ -0,0 +1,326 @@
+@@ -0,0 +1,327 @@
 +/*
 + * Copyright (C) 2014 Etnaviv Project
 + *
@@ -316,12 +316,11 @@ index 0000000..fe5ca34
 + */
 +struct etna_bo * etna_bo_from_dmabuf(struct etna_device *dev, int fd)
 +{
-+#if 0
 +	struct etna_bo *bo = NULL;
 +	struct drm_prime_handle req = {
 +			.fd = fd,
 +	};
-+	int ret;
++	int ret, size;
 +
 +	pthread_mutex_lock(&table_lock);
 +
@@ -330,9 +329,12 @@ index 0000000..fe5ca34
 +		goto fail;
 +	}
 +
++	/* hmm, would be nice if we had a way to figure out the size.. */
++	size = 0;
++
 +	bo = lookup_bo(dev, req.handle);
 +	if (!bo) {
-+		bo = bo_from_handle(dev, req.handle);
++		bo = bo_from_handle(dev, size, req.handle);
 +	}
 +
 +	pthread_mutex_unlock(&table_lock);
@@ -342,7 +344,6 @@ index 0000000..fe5ca34
 +fail:
 +	pthread_mutex_unlock(&table_lock);
 +	free(bo);
-+#endif
 +	return NULL;
 +}
 +
@@ -474,12 +475,12 @@ index 0000000..fe5ca34
 +
 diff --git a/etnaviv/etnaviv_cmd_stream.c b/etnaviv/etnaviv_cmd_stream.c
 new file mode 100644
-index 0000000..0222a9e
+index 0000000..a5213a4
 --- /dev/null
 +++ b/etnaviv/etnaviv_cmd_stream.c
-@@ -0,0 +1,248 @@
+@@ -0,0 +1,265 @@
 +/*
-+ * Copyright (C) 2014 Etnaviv Project
++ * Copyright (C) 2014-2015 Etnaviv Project
 + *
 + * Permission is hereby granted, free of charge, to any person obtaining a
 + * copy of this software and associated documentation files (the "Software"),
@@ -624,13 +625,30 @@ index 0000000..0222a9e
 +	stream->cmd[stream->offset++] = data;
 +}
 +
++uint32_t etna_cmd_stream_get(struct etna_cmd_stream *stream, uint32_t offset)
++{
++	return stream->cmd[offset];
++}
++
++void etna_cmd_stream_set(struct etna_cmd_stream *stream, uint32_t offset,
++		uint32_t data)
++{
++	stream->cmd[offset] = data;
++}
++
++uint32_t etna_cmd_stream_offset(struct etna_cmd_stream *stream)
++{
++	return stream->offset;
++}
++
 +uint32_t etna_cmd_stream_timestamp(struct etna_cmd_stream *stream)
 +{
 +	return stream->last_timestamp;
 +}
 +
 +/* add (if needed) bo, return idx: */
-+static uint32_t bo2idx(struct etna_cmd_stream *stream, struct etna_bo *bo, uint32_t flags)
++static uint32_t bo2idx(struct etna_cmd_stream *stream, struct etna_bo *bo,
++		uint32_t flags)
 +{
 +	int id = stream->pipe->id;
 +	uint32_t idx;
@@ -1053,12 +1071,12 @@ index 0000000..009dfe9
 +#endif /* __ETNAVIV_DRM_H__ */
 diff --git a/etnaviv/etnaviv_drmif.h b/etnaviv/etnaviv_drmif.h
 new file mode 100644
-index 0000000..8c7312b
+index 0000000..0266085
 --- /dev/null
 +++ b/etnaviv/etnaviv_drmif.h
-@@ -0,0 +1,146 @@
+@@ -0,0 +1,150 @@
 +/*
-+ * Copyright (C) 2014 Etnaviv Project
++ * Copyright (C) 2014-2015 Etnaviv Project
 + *
 + * Permission is hereby granted, free of charge, to any person obtaining a
 + * copy of this software and associated documentation files (the "Software"),
@@ -1183,12 +1201,16 @@ index 0000000..8c7312b
 + */
 +
 +struct etna_cmd_stream * etna_cmd_stream_new(struct etna_pipe *pipe);
-+void etna_cmd_stream_del(struct etna_cmd_stream *ctx);
-+void etna_cmd_stream_reserve(struct etna_cmd_stream *ctx, size_t n);
-+void etna_cmd_stream_emit(struct etna_cmd_stream *ctx, uint32_t data);
-+uint32_t etna_cmd_stream_timestamp(struct etna_cmd_stream *ctx);
-+void etna_cmd_stream_flush(struct etna_cmd_stream *ctx);
-+void etna_cmd_stream_finish(struct etna_cmd_stream *ctx);
++void etna_cmd_stream_del(struct etna_cmd_stream *stream);
++void etna_cmd_stream_reserve(struct etna_cmd_stream *stream, size_t n);
++void etna_cmd_stream_emit(struct etna_cmd_stream *stream, uint32_t data);
++uint32_t etna_cmd_stream_get(struct etna_cmd_stream *stream, uint32_t offset);
++void etna_cmd_stream_set(struct etna_cmd_stream *stream, uint32_t offset,
++		uint32_t data);
++uint32_t etna_cmd_stream_offset(struct etna_cmd_stream *stream);
++uint32_t etna_cmd_stream_timestamp(struct etna_cmd_stream *stream);
++void etna_cmd_stream_flush(struct etna_cmd_stream *stream);
++void etna_cmd_stream_finish(struct etna_cmd_stream *stream);
 +
 +struct etna_reloc {
 +	struct etna_bo *bo;
@@ -1200,9 +1222,9 @@ index 0000000..8c7312b
 +	int32_t  shift;
 +};
 +
-+void etna_cmd_stream_reloc(struct etna_cmd_stream *ring, const struct etna_reloc *r);
++void etna_cmd_stream_reloc(struct etna_cmd_stream *stream, const struct etna_reloc *r);
 +
-+#endif /* FREEDRENO_DRMIF_H_ */
++#endif /* ETNAVIV_DRMIF_H_ */
 diff --git a/etnaviv/etnaviv_pipe.c b/etnaviv/etnaviv_pipe.c
 new file mode 100644
 index 0000000..8ef7f89
@@ -1727,11 +1749,11 @@ index 0000000..27e0761
 +
 +#endif /*_U_DOUBLE_LIST_H_*/
 diff --git a/tests/Makefile.am b/tests/Makefile.am
-index cd11491..8ca9f2f 100644
+index e7ec4fa..7d69674 100644
 --- a/tests/Makefile.am
 +++ b/tests/Makefile.am
-@@ -24,6 +24,10 @@ if HAVE_EXYNOS
- SUBDIRS += exynos
+@@ -28,6 +28,10 @@ if HAVE_TEGRA
+ SUBDIRS += tegra
  endif
  
 +#if HAVE_ETNAVIV
