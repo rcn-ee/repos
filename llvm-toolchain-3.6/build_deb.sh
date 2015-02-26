@@ -13,8 +13,17 @@ run () {
 
 		mkdir ./${suite}
 		cd ./${suite}
-			options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite}"
-			sbuild ${options} ${mirror}/${dl_path}${package_name}_${debian_version}.dsc
+
+		options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite}"
+		sbuild ${options} ${mirror}/${dl_path}${package_name}_${debian_version}.dsc
+
+		if [ -f *.changes ] ; then
+			mkdir -p ${out_dir}/
+			cp -v *.deb ${out_dir}/ || true
+			cp -v *.udeb ${out_dir}/ || true
+			cp -v *.dsc ${out_dir}/ || true
+			cp -v *orig* ${out_dir}/ || true
+		fi
 
 		cd ../
 	fi
