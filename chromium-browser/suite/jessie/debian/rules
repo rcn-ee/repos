@@ -136,8 +136,8 @@ excluded=native_client/NOTICE \
 override_dh_auto_configure:
 	#a few third party libs are looking for clang/clang++ here:
 	mkdir -p ./third_party/llvm-build/Release+Asserts/bin/
-	ln -s /usr/bin/clang-3.5 ./third_party/llvm-build/Release+Asserts/bin/clang
-	ln -s /usr/bin/clang++-3.5 ./third_party/llvm-build/Release+Asserts/bin/clang++
+	ln -s /usr/bin/clang-3.6 ./third_party/llvm-build/Release+Asserts/bin/clang
+	ln -s /usr/bin/clang++-3.6 ./third_party/llvm-build/Release+Asserts/bin/clang++
 	for file in $(flotpaths); do ln -sf $$file third_party/flot; done
 	GYP_DEFINES="$(defines)" ./build/gyp_chromium $(options)
 

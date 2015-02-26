@@ -107,6 +107,7 @@ package_name="policykit-1" ; package_version="0.112-4" ; check
 suite="sid"
 package_name="chromium" ; package_version="39.0.2171.71-2" ; check
 package_name="libdrm"; package_version="2.4.58-2"; check
+package_name="llvm-toolchain-3.6"; package_version="1:3.6~+rc4-1"; check
 package_name="mesa"; package_version="10.4.2-2"; check
 package_name="openjdk-8-jdk" ; package_version="8u40~b09-1" ; check
 package_name="openjfx" ; package_version="8u20-b26-3" ; check
