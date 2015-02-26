@@ -14,46 +14,24 @@ run () {
 		mkdir ./${suite}
 		cd ./${suite}
 
+		options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite}"
+
 		if [ -f ${localdir}/incoming/${suite}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.dsc ] ; then
-			sbuild --arch=${deb_arch} -A -s --force-orig-source -d ${suite} http://httphost/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.dsc
+			sbuild ${options} http://httphost/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}${rcn_ee_version}.dsc
 		elif [ -f ${localdir}/incoming/${suite}/${package_name}_${package_version}${rcn_ee_version}.dsc ] ; then
-			sbuild --arch=${deb_arch} -A -s --force-orig-source -d ${suite} http://httphost/farm/incoming/${suite}/${package_name}_${package_version}${rcn_ee_version}.dsc
+			sbuild ${options} http://httphost/farm/incoming/${suite}/${package_name}_${package_version}${rcn_ee_version}.dsc
 		elif [ -f ${localdir}/incoming/${suite}/${package_name}_${package_version}.dsc ] ; then
-			sbuild --arch=${deb_arch} -A -s --force-orig-source -d ${suite} http://httphost/farm/incoming/${suite}/${package_name}_${package_version}.dsc
+			sbuild ${options} http://httphost/farm/incoming/${suite}/${package_name}_${package_version}.dsc
 		fi
 
-		if [ -f ${debian_pkg_name}_${debian_version}${rcn_ee_version}_${deb_arch}.changes ] ; then
+		if [ -f *.changes ] ; then
 			mkdir -p ${out_dir}/
-			cp -v ${debian_pkg_name}_${debian_version}${rcn_ee_version}_${deb_arch}.changes ${out_dir}/
+			cp -v *orig* ${out_dir}/ || true
+			cp -v *debian* ${out_dir}/ || true
+			cp -v *.changes ${out_dir}/ || true
 			cp -v *.deb ${out_dir}/ || true
-			cp -v *.udeb ${out_dir}/ || true
 			cp -v *.dsc ${out_dir}/ || true
-			cp -v ${package_source} ${out_dir}/ || true
-			cp -v *.tar.* ${out_dir}/ || true
-			cp -v *.diff.* ${out_dir}/ || true
-		fi
-
-		if [ -f ${debian_pkg_name}_${debian_version}_${deb_arch}.changes ] ; then
-			mkdir -p ${out_dir}/
-			cp -v ${debian_pkg_name}_${debian_version}_${deb_arch}.changes ${out_dir}/
-			cp -v *.deb ${out_dir}/ || true
 			cp -v *.udeb ${out_dir}/ || true
-			cp -v *.dsc ${out_dir}/ || true
-			cp -v ${package_source} ${out_dir}/ || true
-			cp -v *.tar.* ${out_dir}/ || true
-			cp -v *.diff.* ${out_dir}/ || true
-		fi
-
-		if [ -f ${package_name}_${package_version}${rcn_ee_version}_${deb_arch}.changes ] ; then
-			mkdir -p ${out_dir}/
-			cp -v ${package_name}_${package_version}${rcn_ee_version}_${deb_arch}.changes ${out_dir}/
-			cp -v *.deb ${out_dir}/ || true
-			cp -v *.udeb ${out_dir}/ || true
-			cp -v *.dsc ${out_dir}/ || true
-			cp -v ../${package_source} ${out_dir}/ || true
-			cp -v ${package_source} ${out_dir}/ || true
-			cp -v *.tar.* ${out_dir}/ || true
-			cp -v *.diff.* ${out_dir}/ || true
 		fi
 
 		cd ../
