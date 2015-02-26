@@ -6,7 +6,7 @@ package_name="chromium-browser"
 debian_pkg_name="chromium-browser"
 package_version="40.0.2214.111"
 package_source="${debian_pkg_name}_${package_version}.orig.tar.xz"
-src_dir="${package_name}-${package_version}"
+src_dir="chromium-${package_version}"
 
 git_repo=""
 git_sha=""
