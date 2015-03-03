@@ -3,14 +3,12 @@
 
 
 %:
-	dh ${@} --buildsystem cmake --parallel --with quilt
+	dh ${@} --buildsystem cmake --parallel
 
 
 override_dh_auto_install:
 	dh_auto_install -- DESTDIR=$(CURDIR)/debian/lxqt-about
 
-override_dh_install:
-	dh_install --list-missing --fail-missing
 
 
 maintainer-clean:
