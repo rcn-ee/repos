@@ -1,0 +1,107 @@
+Source: solid
+Section: libs
+Priority: optional
+Maintainer: Debian/Kubuntu Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
+Uploaders: Maximiliano Curia <maxy@debian.org>
+Build-Depends: bison,
+               cmake,
+               debhelper (>= 9.0.0),
+               extra-cmake-modules (>= 1.7.0),
+               flex,
+               libhupnp-dev,
+               libudev-dev [linux-any],
+               pkg-kde-tools (>= 0.15.15ubuntu1~),
+               qtbase5-dev,
+               qtdeclarative5-dev,
+               qttools5-dev,
+               qttools5-dev-tools
+Standards-Version: 3.9.5
+Homepage: https://projects.kde.org/projects/frameworks/solid
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-kde/frameworks/solid.git
+Vcs-Git: git://anonscm.debian.org/pkg-kde/frameworks/solid.git
+
+Package: libkf5solid-dev
+Section: libdevel
+Architecture: any
+Depends: libkf5solid5 (= ${binary:Version}), qtbase5-dev, ${misc:Depends}
+Description: Qt library to query and control hardware
+ Solid is a device integration framework. It provides a way of querying and
+ interacting with hardware independently of the underlying operating system.
+ .
+ This package is part of KDE Frameworks 5.
+ .
+ This package contains the development files.
+
+Package: libkf5solid5
+Architecture: any
+Multi-Arch: same
+Depends: libkf5solid5-data (= ${source:Version}),
+         ${misc:Depends},
+         ${shlibs:Depends}
+Suggests: media-player-info [linux-any]
+Description: Qt library to query and control hardware
+ Solid is a device integration framework. It provides a way of querying and
+ interacting with hardware independently of the underlying operating system.
+ .
+ Solid is part of KDE Frameworks 5.
+
+Package: libkf5solid5-data
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends}
+Description: Qt library to query and control hardware
+ Solid is a device integration framework. It provides a way of querying and
+ interacting with hardware independently of the underlying operating system.
+ .
+ Solid is part of KDE Frameworks 5.
+ .
+ This package contains shared data files.
+
+Package: libkf5solid-bin
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Recommends: udisks2, upower
+Description: Qt library to query and control hardware
+ Solid is a device integration framework. It provides a way of querying and
+ interacting with hardware independently of the underlying operating system.
+ .
+ Solid is part of KDE Frameworks 5.
+ .
+ This package contains the solid-hardware5 tool.
+
+Package: qtdeclarative5-kf5solid
+Architecture: all
+Depends: qml-module-org-kde-solid, ${misc:Depends}, ${shlibs:Depends}
+Priority: extra
+Section: oldlibs
+Description: transitional package to renamed qml-module-org-kde-solid
+ Transitional package for qml-module-org-kde-solid.  This package is
+ safe to remove.
+ .
+ This package is part of KDE Frameworks 5.
+
+Package: qml-module-org-kde-solid
+Architecture: any
+Multi-Arch: same
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Replaces: qtdeclarative5-kf5solid (<< 5.0.0-0ubuntu2)
+Breaks: qtdeclarative5-kf5solid (<< 5.0.0-0ubuntu2)
+Description: Qt library to query and control hardware plugin
+ Solid is a device integration framework. It provides a way of querying and
+ interacting with hardware independently of the underlying operating system.
+ .
+ This package is part of KDE Frameworks 5.
+
+Package: libkf5solid5-dbg
+Architecture: any
+Multi-Arch: same
+Section: debug
+Priority: extra
+Depends: libkf5solid5 (= ${binary:Version}), ${misc:Depends}
+Description: debug symbols for libsolid
+ Solid is a device integration framework. It provides a way of querying and
+ interacting with hardware independently of the underlying operating system.
+ .
+ This package is part of KDE Frameworks 5.
+ .
+ This package contains the debug symbols.

@@ -13,7 +13,7 @@ check_http () {
 	sed -i -e 's/<a href="//g' /tmp/index.html
 	sed -i -e 's/"><\/a>//g' /tmp/index.html
 
-	version=$(cat /tmp/index.html | grep dsc | awk -F ".dsc" '{print $1}')
+	version=$(cat /tmp/index.html | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
 	if [ ! "x${version}" = "x" ] ; then
 		if [ ! "x${package_version}" = "x${version}" ] ; then
 			echo "Change: ${package_name}: upstream:${version} local:${package_version}"
@@ -84,6 +84,11 @@ package_name="lxqt-session" ; package_version="${package_name}_0.9.0-1" ; check_
 package_name="lxqt-runner" ; package_version="${package_name}_0.9.0-1" ; check_http
 package_name="lxqt-qtplugin" ; package_version="${package_name}_0.9.0-1" ; check_http
 package_name="lxqt-policykit" ; package_version="${package_name}_0.9.0-1" ; check_http
+
+site="http://archive.ubuntu.com/ubuntu/pool/universe/s/"
+package_name="solid" ; package_version="${package_name}_5.7.0-0ubuntu1" ; check_http
+
+site="http://packages.siduction.org/lxqt/pool/main/l"
 package_name="lxqt-powermanagement" ; package_version="${package_name}_0.9.0-1" ; check_http
 package_name="lximage-qt" ; package_version="${package_name}_0.3.1-1" ; check_http
 package_name="lxqt-config" ; package_version="${package_name}_0.9.0-1" ; check_http
