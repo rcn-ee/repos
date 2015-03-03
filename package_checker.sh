@@ -78,7 +78,7 @@ site="http://packages.siduction.org/lxqt/pool/main/l"
 package_name="lxqt-panel" ; package_version="${package_name}_0.9.0-3" ; check_http
 
 site="http://packages.siduction.org/lxqt/pool/main/p"
-package_name="pcmanfm-qt" ; package_version="${package_name}_0.9.0-1" ; check_http
+package_name="pcmanfm-qt" ; package_version="${package_name}_0.9.0-2" ; check_http
 
 site="http://packages.siduction.org/lxqt/pool/main/l"
 package_name="lxqt-session" ; package_version="${package_name}_0.9.0-1" ; check_http
