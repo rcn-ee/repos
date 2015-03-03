@@ -21,4 +21,4 @@ debian_version="${package_version}-0ubuntu1"
 debian_patch="${debian_pkg_name}_${debian_version}.debian.tar.xz"
 debian_diff=""
 
-jessie_version="~20150227+1"
+jessie_version="~20150303+1"

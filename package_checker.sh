@@ -75,7 +75,7 @@ site="http://packages.siduction.org/lxqt/pool/main/k"
 package_name="kguiaddons" ; package_version="${package_name}_5.7.0-1" ; check_http
 
 site="http://archive.ubuntu.com/ubuntu/pool/universe/s/"
-package_name="solid" ; package_version="${package_name}_5.7.0-0ubuntu1-not-yet-built" ; check_http
+package_name="solid" ; package_version="${package_name}_5.7.0-0ubuntu1" ; check_http
 
 site="http://packages.siduction.org/lxqt/pool/main/l"
 package_name="lxqt-panel" ; package_version="${package_name}_0.9.0-3-not-yet" ; check_http
