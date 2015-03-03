@@ -1,10 +1,11 @@
 #!/bin/bash
 
 check_http () {
+	echo "Checking: ${package_name}"
 	if [ -f /tmp/index.html ] ; then
 		rm -f /tmp/index.html
 	fi
-	wget --no-verbose --directory-prefix=/tmp/ ${site}/${package_name}/
+	wget --no-verbose --directory-prefix=/tmp/ ${site}/${package_name}/ &> /dev/null
 	cat /tmp/index.html | grep "<a href=" > /tmp/temp.html
 	sed -i -e "s/<a href/\\n<a href/g" /tmp/temp.html
 	sed -i -e 's/\"/\"><\/a>\n/2' /tmp/temp.html
@@ -16,6 +17,7 @@ check_http () {
 	if [ ! "x${version}" = "x" ] ; then
 		if [ ! "x${package_version}" = "x${version}" ] ; then
 			echo "Change: ${package_name}: upstream:${version} local:${package_version}"
+			echo ""
 		fi
 	else
 		echo ${output}
@@ -23,12 +25,13 @@ check_http () {
 }
 
 check () {
-#	echo "Checking: ${package_name}"
+	echo "Checking: ${package_name}"
 	output=$(rmadison -s ${suite} ${package_name} | grep ${package_name})
 	version=$(echo ${output} | awk '{print $3}')
 	if [ ! "x${version}" = "x" ] ; then
 		if [ ! "x${package_version}" = "x${version}" ] ; then
 			echo "Change: ${package_name}: ${suite}:${version} local:${package_version}"
+			echo ""
 		fi
 	else
 		echo ${output}
@@ -101,7 +104,7 @@ package_name="lxqt-common" ; package_version="${package_name}_0.9.1-1" ; check_h
 
 suite="experimental"
 package_name="pkg-kde-tools" ; package_version="0.15.16" ; check
-package_name="extra-cmake-modules" ; package_version="1.6.1-1" ; check
+package_name="extra-cmake-modules" ; package_version="1.7.0-1" ; check
 package_name="policykit-1" ; package_version="0.112-4" ; check
 
 suite="sid"
