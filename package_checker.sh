@@ -53,7 +53,7 @@ site="http://packages.siduction.org/lxqt/pool/main/p"
 package_name="polkit-qt-1" ; package_version="${package_name}_0.112.0-2" ; check_http
 
 site="http://packages.siduction.org/lxqt/pool/main/libq"
-package_name="libqtxdg" ; package_version="libqtxdg_1.1.0-3" ; check_http
+package_name="libqtxdg" ; package_version="${package_name}_1.1.0-4" ; check_http
 
 site="http://packages.siduction.org/lxqt/pool/main/k"
 package_name="kwindowsystem" ; package_version="kwindowsystem_5.5.0-4" ; check_http
