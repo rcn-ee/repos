@@ -72,7 +72,7 @@ site="http://packages.siduction.org/lxqt/pool/main/libs"
 package_name="libsysstat" ; package_version="${package_name}_0.3.0-1" ; check_http
 
 site="http://packages.siduction.org/lxqt/pool/main/k"
-package_name="kguiaddons" ; package_version="${package_name}_5.5.0-2" ; check_http
+package_name="kguiaddons" ; package_version="${package_name}_5.7.0-1" ; check_http
 site="http://packages.siduction.org/lxqt/pool/main/l"
 package_name="lxqt-panel" ; package_version="${package_name}_0.9.0" ; check_http
 
