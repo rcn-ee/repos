@@ -73,8 +73,12 @@ package_name="libsysstat" ; package_version="${package_name}_0.3.0-1" ; check_ht
 
 site="http://packages.siduction.org/lxqt/pool/main/k"
 package_name="kguiaddons" ; package_version="${package_name}_5.7.0-1" ; check_http
+
+site="http://archive.ubuntu.com/ubuntu/pool/universe/s/"
+package_name="solid" ; package_version="${package_name}_5.7.0-0ubuntu1-not-yet-built" ; check_http
+
 site="http://packages.siduction.org/lxqt/pool/main/l"
-package_name="lxqt-panel" ; package_version="${package_name}_0.9.0" ; check_http
+package_name="lxqt-panel" ; package_version="${package_name}_0.9.0-3-not-yet" ; check_http
 
 site="http://packages.siduction.org/lxqt/pool/main/p"
 package_name="pcmanfm-qt" ; package_version="${package_name}_0.9.0-1" ; check_http
@@ -85,8 +89,6 @@ package_name="lxqt-runner" ; package_version="${package_name}_0.9.0-1" ; check_h
 package_name="lxqt-qtplugin" ; package_version="${package_name}_0.9.0-1" ; check_http
 package_name="lxqt-policykit" ; package_version="${package_name}_0.9.0-1" ; check_http
 
-site="http://archive.ubuntu.com/ubuntu/pool/universe/s/"
-package_name="solid" ; package_version="${package_name}_5.7.0-0ubuntu1-not-yet-built" ; check_http
 
 site="http://packages.siduction.org/lxqt/pool/main/l"
 package_name="lxqt-powermanagement" ; package_version="${package_name}_0.9.0-1" ; check_http
