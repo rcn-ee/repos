@@ -61,9 +61,6 @@ package_name="kwindowsystem" ; package_version="${package_name}_5.7.0-1" ; check
 site="http://packages.siduction.org/lxqt/pool/main/libl"
 package_name="liblxqt" ; package_version="${package_name}_0.9.0-2" ; check_http
 
-site="http://packages.siduction.org/lxqt/pool/main/libl"
-package_name="liblxqt-mount" ; package_version="liblxqt-mount_0.9.0-1" ; check_http
-
 site="http://packages.siduction.org/lxqt/pool/main/l"
 package_name="lxqt-globalkeys" ; package_version="${package_name}_0.9.0-2" ; check_http
 package_name="lxqt-notificationd" ; package_version="${package_name}_0.9.0-2" ; check_http
