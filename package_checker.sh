@@ -56,7 +56,7 @@ site="http://packages.siduction.org/lxqt/pool/main/libq"
 package_name="libqtxdg" ; package_version="${package_name}_1.1.0-4" ; check_http
 
 site="http://packages.siduction.org/lxqt/pool/main/k"
-package_name="kwindowsystem" ; package_version="kwindowsystem_5.5.0-4" ; check_http
+package_name="kwindowsystem" ; package_version="${package_name}_5.7.0-1" ; check_http
 
 site="http://packages.siduction.org/lxqt/pool/main/libl"
 package_name="liblxqt" ; package_version="liblxqt_0.9.0-1" ; check_http
