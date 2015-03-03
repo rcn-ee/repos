@@ -88,7 +88,7 @@ package_name="lxqt-policykit" ; package_version="${package_name}_0.9.0-1" ; chec
 
 
 site="http://packages.siduction.org/lxqt/pool/main/l"
-package_name="lxqt-powermanagement" ; package_version="${package_name}_0.9.0-1" ; check_http
+package_name="lxqt-powermanagement" ; package_version="${package_name}_0.9.0-3" ; check_http
 package_name="lximage-qt" ; package_version="${package_name}_0.3.1-1" ; check_http
 package_name="lxqt-config" ; package_version="${package_name}_0.9.0-1" ; check_http
 
