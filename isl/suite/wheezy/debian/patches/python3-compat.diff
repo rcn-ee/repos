@@ -1,0 +1,494 @@
+Index: b/interface/isl.py
+===================================================================
+--- a/interface/isl.py
++++ b/interface/isl.py
+@@ -383,7 +383,7 @@ class union_map:
+         exc_info = [None]
+         fn = CFUNCTYPE(c_int, c_void_p, c_void_p)
+         def cb_func(cb_arg0, cb_arg1):
+-            cb_arg0 = map(ctx=arg0.ctx, ptr=cb_arg0)
++            cb_arg0 = list(map(ctx=arg0.ctx, ptr=cb_arg0))
+             try:
+                 arg1(cb_arg0)
+             except:
+@@ -394,7 +394,7 @@ class union_map:
+         cb = fn(cb_func)
+         res = isl.isl_union_map_foreach_map(arg0.ptr, cb, None)
+         if exc_info[0] != None:
+-            raise exc_info[0][0], exc_info[0][1], exc_info[0][2]
++            raise exc_info[0][0](exc_info[0][1]).with_traceback(exc_info[0][2])
+         return res
+ 
+ isl.isl_union_map_from_basic_map.restype = c_void_p
+@@ -457,44 +457,44 @@ class map(union_map):
+     def lexmin(arg0):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         res = isl.isl_map_lexmin(isl.isl_map_copy(arg0.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def lexmax(arg0):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         res = isl.isl_map_lexmax(isl.isl_map_copy(arg0.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def reverse(arg0):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         res = isl.isl_map_reverse(isl.isl_map_copy(arg0.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def union(arg0, arg1):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         try:
+             if not arg1.__class__ is map:
+-                arg1 = map(arg1)
++                arg1 = list(map(arg1))
+         except:
+             return union_map(arg0).union(arg1)
+         res = isl.isl_map_union(isl.isl_map_copy(arg0.ptr), isl.isl_map_copy(arg1.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def intersect_domain(arg0, arg1):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         try:
+@@ -503,11 +503,11 @@ class map(union_map):
+         except:
+             return union_map(arg0).intersect_domain(arg1)
+         res = isl.isl_map_intersect_domain(isl.isl_map_copy(arg0.ptr), isl.isl_set_copy(arg1.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def intersect_range(arg0, arg1):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         try:
+@@ -516,50 +516,50 @@ class map(union_map):
+         except:
+             return union_map(arg0).intersect_range(arg1)
+         res = isl.isl_map_intersect_range(isl.isl_map_copy(arg0.ptr), isl.isl_set_copy(arg1.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def apply_domain(arg0, arg1):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         try:
+             if not arg1.__class__ is map:
+-                arg1 = map(arg1)
++                arg1 = list(map(arg1))
+         except:
+             return union_map(arg0).apply_domain(arg1)
+         res = isl.isl_map_apply_domain(isl.isl_map_copy(arg0.ptr), isl.isl_map_copy(arg1.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def apply_range(arg0, arg1):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         try:
+             if not arg1.__class__ is map:
+-                arg1 = map(arg1)
++                arg1 = list(map(arg1))
+         except:
+             return union_map(arg0).apply_range(arg1)
+         res = isl.isl_map_apply_range(isl.isl_map_copy(arg0.ptr), isl.isl_map_copy(arg1.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def intersect(arg0, arg1):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         try:
+             if not arg1.__class__ is map:
+-                arg1 = map(arg1)
++                arg1 = list(map(arg1))
+         except:
+             return union_map(arg0).intersect(arg1)
+         res = isl.isl_map_intersect(isl.isl_map_copy(arg0.ptr), isl.isl_map_copy(arg1.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def intersect_params(arg0, arg1):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         try:
+@@ -568,32 +568,32 @@ class map(union_map):
+         except:
+             return union_map(arg0).intersect_params(arg1)
+         res = isl.isl_map_intersect_params(isl.isl_map_copy(arg0.ptr), isl.isl_set_copy(arg1.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def subtract(arg0, arg1):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         try:
+             if not arg1.__class__ is map:
+-                arg1 = map(arg1)
++                arg1 = list(map(arg1))
+         except:
+             return union_map(arg0).subtract(arg1)
+         res = isl.isl_map_subtract(isl.isl_map_copy(arg0.ptr), isl.isl_map_copy(arg1.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def complement(arg0):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         res = isl.isl_map_complement(isl.isl_map_copy(arg0.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def deltas(arg0):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         res = isl.isl_map_deltas(isl.isl_map_copy(arg0.ptr))
+@@ -601,15 +601,15 @@ class map(union_map):
+     def detect_equalities(arg0):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         res = isl.isl_map_detect_equalities(isl.isl_map_copy(arg0.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def affine_hull(arg0):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         res = isl.isl_map_affine_hull(isl.isl_map_copy(arg0.ptr))
+@@ -617,7 +617,7 @@ class map(union_map):
+     def polyhedral_hull(arg0):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         res = isl.isl_map_polyhedral_hull(isl.isl_map_copy(arg0.ptr))
+@@ -625,31 +625,31 @@ class map(union_map):
+     def flatten(arg0):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         res = isl.isl_map_flatten(isl.isl_map_copy(arg0.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def flatten_domain(arg0):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         res = isl.isl_map_flatten_domain(isl.isl_map_copy(arg0.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def flatten_range(arg0):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         res = isl.isl_map_flatten_range(isl.isl_map_copy(arg0.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def sample(arg0):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         res = isl.isl_map_sample(isl.isl_map_copy(arg0.ptr))
+@@ -657,7 +657,7 @@ class map(union_map):
+     def is_empty(arg0):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         res = isl.isl_map_is_empty(arg0.ptr)
+@@ -665,12 +665,12 @@ class map(union_map):
+     def is_subset(arg0, arg1):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         try:
+             if not arg1.__class__ is map:
+-                arg1 = map(arg1)
++                arg1 = list(map(arg1))
+         except:
+             return union_map(arg0).is_subset(arg1)
+         res = isl.isl_map_is_subset(arg0.ptr, arg1.ptr)
+@@ -678,12 +678,12 @@ class map(union_map):
+     def is_strict_subset(arg0, arg1):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         try:
+             if not arg1.__class__ is map:
+-                arg1 = map(arg1)
++                arg1 = list(map(arg1))
+         except:
+             return union_map(arg0).is_strict_subset(arg1)
+         res = isl.isl_map_is_strict_subset(arg0.ptr, arg1.ptr)
+@@ -691,12 +691,12 @@ class map(union_map):
+     def is_equal(arg0, arg1):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         try:
+             if not arg1.__class__ is map:
+-                arg1 = map(arg1)
++                arg1 = list(map(arg1))
+         except:
+             return union_map(arg0).is_equal(arg1)
+         res = isl.isl_map_is_equal(arg0.ptr, arg1.ptr)
+@@ -704,12 +704,12 @@ class map(union_map):
+     def is_disjoint(arg0, arg1):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         try:
+             if not arg1.__class__ is map:
+-                arg1 = map(arg1)
++                arg1 = list(map(arg1))
+         except:
+             return union_map(arg0).is_disjoint(arg1)
+         res = isl.isl_map_is_disjoint(arg0.ptr, arg1.ptr)
+@@ -717,7 +717,7 @@ class map(union_map):
+     def is_single_valued(arg0):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         res = isl.isl_map_is_single_valued(arg0.ptr)
+@@ -725,7 +725,7 @@ class map(union_map):
+     def is_injective(arg0):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         res = isl.isl_map_is_injective(arg0.ptr)
+@@ -733,7 +733,7 @@ class map(union_map):
+     def is_bijective(arg0):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         res = isl.isl_map_is_bijective(arg0.ptr)
+@@ -741,20 +741,20 @@ class map(union_map):
+     def gist(arg0, arg1):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         try:
+             if not arg1.__class__ is map:
+-                arg1 = map(arg1)
++                arg1 = list(map(arg1))
+         except:
+             return union_map(arg0).gist(arg1)
+         res = isl.isl_map_gist(isl.isl_map_copy(arg0.ptr), isl.isl_map_copy(arg1.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def gist_domain(arg0, arg1):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         try:
+@@ -763,19 +763,19 @@ class map(union_map):
+         except:
+             return union_map(arg0).gist_domain(arg1)
+         res = isl.isl_map_gist_domain(isl.isl_map_copy(arg0.ptr), isl.isl_set_copy(arg1.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def coalesce(arg0):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         res = isl.isl_map_coalesce(isl.isl_map_copy(arg0.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def foreach_basic_map(arg0, arg1):
+         try:
+             if not arg0.__class__ is map:
+-                arg0 = map(arg0)
++                arg0 = list(map(arg0))
+         except:
+             raise
+         exc_info = [None]
+@@ -792,7 +792,7 @@ class map(union_map):
+         cb = fn(cb_func)
+         res = isl.isl_map_foreach_basic_map(arg0.ptr, cb, None)
+         if exc_info[0] != None:
+-            raise exc_info[0][0], exc_info[0][1], exc_info[0][2]
++            raise exc_info[0][0](exc_info[0][1]).with_traceback(exc_info[0][2])
+         return res
+ 
+ isl.isl_map_read_from_str.restype = c_void_p
+@@ -898,7 +898,7 @@ class basic_map(map):
+         except:
+             return map(arg0).union(arg1)
+         res = isl.isl_basic_map_union(isl.isl_basic_map_copy(arg0.ptr), isl.isl_basic_map_copy(arg1.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def apply_domain(arg0, arg1):
+         try:
+             if not arg0.__class__ is basic_map:
+@@ -977,7 +977,7 @@ class basic_map(map):
+         except:
+             raise
+         res = isl.isl_basic_map_lexmin(isl.isl_basic_map_copy(arg0.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def lexmax(arg0):
+         try:
+             if not arg0.__class__ is basic_map:
+@@ -985,7 +985,7 @@ class basic_map(map):
+         except:
+             raise
+         res = isl.isl_basic_map_lexmax(isl.isl_basic_map_copy(arg0.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def is_empty(arg0):
+         try:
+             if not arg0.__class__ is basic_map:
+@@ -1306,7 +1306,7 @@ class union_set:
+         cb = fn(cb_func)
+         res = isl.isl_union_set_foreach_set(arg0.ptr, cb, None)
+         if exc_info[0] != None:
+-            raise exc_info[0][0], exc_info[0][1], exc_info[0][2]
++            raise exc_info[0][0](exc_info[0][1]).with_traceback(exc_info[0][2])
+         return res
+ 
+ isl.isl_union_set_read_from_str.restype = c_void_p
+@@ -1473,7 +1473,7 @@ class set(union_set):
+             raise
+         try:
+             if not arg1.__class__ is map:
+-                arg1 = map(arg1)
++                arg1 = list(map(arg1))
+         except:
+             return union_set(arg0).apply(arg1)
+         res = isl.isl_set_apply(isl.isl_set_copy(arg0.ptr), isl.isl_map_copy(arg1.ptr))
+@@ -1579,7 +1579,7 @@ class set(union_set):
+         cb = fn(cb_func)
+         res = isl.isl_set_foreach_basic_set(arg0.ptr, cb, None)
+         if exc_info[0] != None:
+-            raise exc_info[0][0], exc_info[0][1], exc_info[0][2]
++            raise exc_info[0][0](exc_info[0][1]).with_traceback(exc_info[0][2])
+         return res
+     def identity(arg0):
+         try:
+@@ -1588,7 +1588,7 @@ class set(union_set):
+         except:
+             raise
+         res = isl.isl_set_identity(isl.isl_set_copy(arg0.ptr))
+-        return map(ctx=arg0.ctx, ptr=res)
++        return list(map(ctx=arg0.ctx, ptr=res))
+     def is_wrapping(arg0):
+         try:
+             if not arg0.__class__ is set:
+Index: b/isl.py
+===================================================================
+--- a/isl.py
++++ b/isl.py
+@@ -64,10 +64,10 @@ class IslPrintCommand (gdb.Command):
+                 printer = str_lookup_function(arg)
+ 
+                 if printer == None:
+-                        print "No isl printer for this type"
++                        print("No isl printer for this type")
+                         return
+ 
+-                print printer.to_string()
++                print((printer.to_string()))
+ 
+ IslPrintCommand()
+ 

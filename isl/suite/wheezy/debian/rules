@@ -1,0 +1,36 @@
+#!/usr/bin/make -f
+
+p = libisl10
+DEB_HOST_MULTIARCH := $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
+export AUTOMAKE = automake-1.11
+export ACLOCAL = aclocal-1.11
+
+%:
+	dh $@ --with autoreconf
+
+override_dh_auto_configure:
+	$(shell dpkg-buildflags --export=configure) \
+	  dh_auto_configure -v -- \
+		--disable-silent-rules \
+		--libdir=/usr/lib/$(DEB_HOST_MULTIARCH)
+
+override_dh_install:
+	dh_install
+	mkdir -p debian/libisl-dbg/usr/lib/debug/usr/lib/$(DEB_HOST_MULTIARCH)
+	mv debian/libisl-dbg/usr/lib/*/*-gdb.py debian/libisl-dbg/usr/lib/debug/usr/lib/$(DEB_HOST_MULTIARCH)/
+
+override_dh_auto_install:
+	dh_auto_install --
+	sed -i -e 's,/.*/,,' debian/tmp/usr/include/isl/stdint.h
+
+override_dh_strip:
+	dh_strip --dbg-package=libisl-dbg
+
+override_dh_installdocs:
+	dh_installdocs -p$(p)
+	dh_installdocs -N$(p) --link-doc=$(p)
+
+override_dh_clean:
+	dh_clean
+	rm -f isl-uninstalled.sh *.pc *.pc.in gitversion.h include/isl/stdint.h interface/Makefile config.log config.status
