@@ -96,7 +96,7 @@ site="http://packages.siduction.org/lxqt/pool/main/o"
 package_name="obconf-qt" ; package_version="${package_name}_0.1.2-1" ; check_http
 
 site="http://packages.siduction.org/lxqt/pool/main/c"
-package_name="compton-conf" ; package_version="${package_name}_0.1.2-2" ; check_http
+package_name="compton-conf" ; package_version="${package_name}_0.1.2-3" ; check_http
 
 site="http://packages.siduction.org/lxqt/pool/main/l"
 package_name="lxqt-about" ; package_version="${package_name}_0.9.0-2" ; check_http
