@@ -2,14 +2,10 @@
 #export DH_VERBOSE = 1
 
 %:
-	dh ${@} --buildsystem cmake --parallel
-
-
-override_dh_install:
-	dh_install --list-missing --fail-missing
-
-override_dh_strip:
-	dh_strip --dbg-package=libqt5xdg-dbg
+	dh ${@} --buildsystem cmake --parallel \
+	        --dbg-package=libqt5xdg1-dbg \
+		--list-missing \
+		--fail-missing 
 
 
 maintainer-clean:

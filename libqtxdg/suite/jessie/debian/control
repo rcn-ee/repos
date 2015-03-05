@@ -1,12 +1,12 @@
 Source: libqtxdg
 Section: libs
 Priority: optional
-Maintainer: Debian LXQt Maintainers <lxqt-debian@lists.lxde.org>
+Maintainer: LXQt Packaging Team <pkg-lxqt-devel@lists.alioth.debian.org>
 Uploaders:
  Alf Gaida <agaida@siduction.org>,
  ChangZhuo Chen (陳昌倬) <czchen@gmail.com>
 Build-Depends:
- cmake (>= 3.0.2),
+ cmake (>= 3.0),
  debhelper (>= 9),
  libmagic-dev,
  pkg-config,
@@ -14,8 +14,8 @@ Build-Depends:
  qttools5-dev-tools (>= 5.3.2),
 Standards-Version: 3.9.6
 Homepage: https://github.com/lxde/libqtxdg
-#Vcs-Git: git://anonscm.debian.org/collab-maint/libqtxdg.git
-#Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/libqtxdg.git;a=summary
+Vcs-Git: git://anonscm.debian.org/pkg-lxqt/libqtxdg.git
+Vcs-Browser: http://anonscm.debian.org/cgit/pkg-lxqt/libqtxdg.git
 
 Package: libqt5xdg1
 Provides: libqt5xdg
@@ -28,9 +28,10 @@ Depends:
  ${shlibs:Depends},
  ${misc:Depends},
 Description: Implementation of the XDG Specifications for Qt, libs
- This library implements functions of the XDG Specifications in Qt.
+ This library implements functions of the XDG Specifications in Qt.  It is part
+ of LXQt.
  .
- It is part of LXQt.
+ This package provides the shared library.
 
 Package: libqt5xdg-dev
 Section: libdevel
@@ -39,13 +40,12 @@ Depends:
  ${misc:Depends},
  libqt5xdg1 (= ${binary:Version}),
 Description: Development files for libqtxdg
- This library implements functions of the XDG Specifications in Qt.
+ This library implements functions of the XDG Specifications in Qt.  It is part
+ of LXQt.
  .
- It is part of LXQt.
- .
- This package contains development files for libqtxdg.
+ This package provides development files.
 
-Package: libqt5xdg-dbg
+Package: libqt5xdg1-dbg
 Section: debug
 Priority: extra
 Multi-Arch: same
@@ -54,8 +54,7 @@ Depends:
  ${misc:Depends},
  libqt5xdg1 (= ${binary:Version}),
 Description: Debug symbols for libqtxdg
- This library implements functions of the XDG Specifications in Qt.
- .
- It is part of LXQt.
+ This library implements functions of the XDG Specifications in Qt.  It is part
+ of LXQt.
  .
  This package contains debug symbols for libqtxdg.
