@@ -4,7 +4,7 @@ mirror="http://ftp.de.debian.org/debian"
 
 package_name="chromium-browser"
 debian_pkg_name="chromium-browser"
-package_version="40.0.2214.111"
+package_version="41.0.2272.76"
 package_source="${debian_pkg_name}_${package_version}.orig.tar.xz"
 src_dir="chromium-${package_version}"
 
@@ -19,4 +19,4 @@ debian_diff=""
 
 archive="enable"
 
-jessie_version="~20150227+1"
+jessie_version="~20150306+1"

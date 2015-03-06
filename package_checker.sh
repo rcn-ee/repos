@@ -112,7 +112,7 @@ package_name="extra-cmake-modules" ; package_version="1.7.0-1" ; check
 package_name="policykit-1" ; package_version="0.112-4" ; check
 
 suite="sid"
-package_name="chromium" ; package_version="40.0.2214.111-1" ; check
+package_name="chromium" ; package_version="41.0.2272.76-1" ; check
 package_name="libdrm"; package_version="2.4.58-2"; check
 package_name="llvm-toolchain-3.6"; package_version="1:3.6-2"; check
 package_name="mesa"; package_version="10.4.2-2"; check
