@@ -93,7 +93,7 @@ package_name="lximage-qt" ; package_version="${package_name}_0.4.0-1" ; check_ht
 package_name="lxqt-config" ; package_version="${package_name}_0.9.0-2" ; check_http
 
 site="http://packages.siduction.org/lxqt/pool/main/o"
-package_name="obconf-qt" ; package_version="${package_name}_0.1.2-1" ; check_http
+package_name="obconf-qt" ; package_version="${package_name}_0.1.2-2" ; check_http
 
 site="http://packages.siduction.org/lxqt/pool/main/c"
 package_name="compton-conf" ; package_version="${package_name}_0.1.2-3" ; check_http
