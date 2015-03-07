@@ -1,10 +1,9 @@
 #!/usr/bin/make -f
 #export DH_VERBOSE=1
-export USE_QT5=1
 
 
 %:
-	dh ${@} --buildsystem cmake --parallel
+	dh ${@} --buildsystem cmake --parallel --dbg-package=lximage-qt-dbg
 
 
 override_dh_auto_install:
@@ -24,7 +23,7 @@ maintainer-clean:
 	$(RM) *.upload
 	
 checkout: maintainer-clean
-	git clone --depth=1 git://git.lxde.org/git/lxde/lximage-qt.git checkout; \
+	git clone --depth=1 git@github.com:lxde/lximage-qt.git checkout; \
 	cd checkout; \
 	cp -a ../debian .; \
 	echo "";\

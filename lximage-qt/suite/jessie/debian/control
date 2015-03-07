@@ -1,11 +1,12 @@
 Source: lximage-qt
 Section: x11
 Priority: optional
-Maintainer: Debian LXQt Maintainers <lxqt-debian@lists.lxde.org>
+Maintainer: LXQt Packaging Team <pkg-lxqt-devel@lists.alioth.debian.org>
 Uploaders:
- Alf Gaida <agaida@siduction.org>
+ Alf Gaida <agaida@siduction.org>,
+ ChangZhuo Chen (陳昌倬) <czchen@gmail.com>,
 Build-Depends:
- cmake (>= 3.0.2),
+ cmake (>= 3.0),
  debhelper (>= 9),
  pkg-config,
  libx11-dev,
@@ -13,14 +14,14 @@ Build-Depends:
  libexif-dev,
  libfm-dev,
  libxfixes-dev,
- libfm-qt5-dev (>= 0.8.1),
+ libfm-qt5-dev (>= 0.9.0),
  libqt5x11extras5-dev (>= 5.3.2),
  qttools5-dev (>= 5.3.2),
  qttools5-dev-tools (>= 5.3.2),
 Standards-Version: 3.9.6
-Homepage: http://lxde.org/
-Vcs-Browser: http://git.siduction.org/?p=code/lximage-qt.git
-Vcs-Git: git://git.siduction.org/code/lximage-qt.git
+Homepage: https://github.com/lxde/lximage-qt
+Vcs-Git: git://anonscm.debian.org/pkg-lxqt/lximage-qt.git
+Vcs-Browser: http://anonscm.debian.org/cgit/pkg-lxqt/lximage-qt.git
 
 Package: lximage-qt
 Architecture: any
@@ -31,6 +32,8 @@ Depends:
  ${shlibs:Depends},
 Description: Image viewer for LXQt
  lximage-qt is a simple image viewer for LXQt.
+ .
+ This package contain the program files.
 
 Package: lximage-qt-dbg
 Architecture: any
@@ -43,7 +46,9 @@ Depends:
  ${misc:Depends},
  lximage-qt (= ${binary:Version}),
 Description: Debug package for lximage-qt
- This package contain debug symbols.
+ lximage-qt is a simple image viewer for LXQt.
+ .
+ This package contain debugging symbols.
 
 # ---- to be removed in 2016 ----
 
