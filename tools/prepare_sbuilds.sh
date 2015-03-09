@@ -36,3 +36,12 @@ arch="armhf"
 options="--exclude=debfoster"
 setup_update_sbuild
 
+dist="utopic"
+arch="armhf"
+options="--exclude=debfoster"
+setup_update_sbuild
+
+dist="vivid"
+arch="armhf"
+options="--exclude=debfoster"
+setup_update_sbuild
