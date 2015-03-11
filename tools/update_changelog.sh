@@ -10,6 +10,9 @@ run () {
 	if [ "x${suite}" = "xwheezy" ] ; then
 		backport="bpo70+"
 	fi
+	if [ "x${suite}" = "xjessie" ] ; then
+		backport="bpo80+"
+	fi
 
 	if [ "x${debian_version}" = "x" ] ; then
 		echo "${debian_pkg_name} (${package_version}~${backport}${simple_date}+1) ${suite}; urgency=low" > ${wfile}
@@ -45,7 +48,7 @@ suite="jessie"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${jessie_version}"
 	cat ${DIR}/version.sh | grep -v jessie_version > ${DIR}/new-version.sh
-	echo "jessie_version=\"~${simple_date}+1\"" >> ${DIR}/new-version.sh
+	echo "jessie_version=\"~bpo80+${simple_date}+1\"" >> ${DIR}/new-version.sh
 	mv ${DIR}/new-version.sh ${DIR}/version.sh
 	run
 fi

@@ -38,6 +38,9 @@ check () {
 	fi
 }
 
+site="http://ftp.de.debian.org/debian/pool/main/q"
+package_name="qtbase-opensource-src" ; package_version="${package_name}_5.3" ; check_http
+
 site="http://packages.siduction.org/extra/pool/main/c"
 package_name="connman" ; package_version="connman_1.27~20150123g04cbd7e-2" ; check_http
 package_name="cmst" ; package_version="cmst_2015.02.01-1" ; check_http
@@ -184,7 +187,6 @@ package_name="node-wordwrap"; package_version="0.0.2-2"; check
 package_name="npm"; package_version="1.4.21+ds-2"; check
 package_name="python-sendfile" ; package_version="2.0.0-6" ; check
 package_name="python-pyftpdlib" ; package_version="1.2.0-1" ; check
-package_name="qtbase5-dev" ; package_version="5.3.2+dfsg-4" ; check
 package_name="tmux" ; package_version="1.9-6" ; check
 
 echo "Done:"
