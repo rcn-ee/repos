@@ -11,7 +11,7 @@ src_dir=""
 git_repo=""
 git_sha=""
 reprepro_dir="t/${package_name}"
-dl_path="${mirror}/pool/main/${reprepro_dir}/"
+dl_path="pool/main/${reprepro_dir}/"
 
 debian_version="${package_version}-1"
 debian_untar=""
