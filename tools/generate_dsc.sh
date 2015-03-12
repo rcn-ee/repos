@@ -68,7 +68,6 @@ if [ -d suite/${suite}/ ] ; then
 	generate_dsc
 fi
 
-dist="debian"
 suite="jessie"
 if [ -d suite/${suite}/ ] ; then
 	generate_dsc
@@ -79,4 +78,15 @@ suite="trusty"
 if [ -d suite/${suite}/ ] ; then
 	generate_dsc
 fi
+
+suite="utopic"
+if [ -d suite/${suite}/ ] ; then
+	generate_dsc
+fi
+
+suite="vivid"
+if [ -d suite/${suite}/ ] ; then
+	generate_dsc
+fi
+
 
