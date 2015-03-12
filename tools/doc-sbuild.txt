@@ -16,6 +16,18 @@ sudo sbuild-shell source:trusty-armhf-sbuild
 echo "deb http://apt-proxy:3142//repos.rcn-ee.net/ubuntu trusty main" >> /etc/apt/sources.list ; \
 echo "deb-src http://apt-proxy:3142//repos.rcn-ee.net/ubuntu trusty main" >> /etc/apt/sources.list
 
+#ubuntu utopic:
+sudo sbuild-shell source:utopic-armhf-sbuild
+
+echo "deb http://apt-proxy:3142//repos.rcn-ee.net/ubuntu utopic main" >> /etc/apt/sources.list ; \
+echo "deb-src http://apt-proxy:3142//repos.rcn-ee.net/ubuntu utopic main" >> /etc/apt/sources.list
+
+#ubuntu vivid:
+sudo sbuild-shell source:vivid-armhf-sbuild
+
+echo "deb http://apt-proxy:3142//repos.rcn-ee.net/ubuntu vivid main" >> /etc/apt/sources.list ; \
+echo "deb-src http://apt-proxy:3142//repos.rcn-ee.net/ubuntu vivid main" >> /etc/apt/sources.list
+
 apt-get update ; apt-get install rcn-ee-archive-keyring --force-yes
 
 apt-get update ; apt-get clean ; exit
