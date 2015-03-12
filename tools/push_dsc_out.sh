@@ -39,7 +39,6 @@ if [ -d suite/${suite}/ ] ; then
 	run
 fi
 
-dist="debian"
 suite="jessie"
 if [ -d suite/${suite}/ ] ; then
 	rcn_ee_version="${jessie_version}"
@@ -50,6 +49,18 @@ dist="ubuntu"
 suite="trusty"
 if [ -d suite/${suite}/ ] ; then
 	rcn_ee_version="${trusty_version}"
+	run
+fi
+
+suite="utopic"
+if [ -d suite/${suite}/ ] ; then
+	rcn_ee_version="${utopic_version}"
+	run
+fi
+
+suite="vivid"
+if [ -d suite/${suite}/ ] ; then
+	rcn_ee_version="${vivid_version}"
 	run
 fi
 

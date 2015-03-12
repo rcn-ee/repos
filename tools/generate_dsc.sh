@@ -89,4 +89,3 @@ if [ -d suite/${suite}/ ] ; then
 	generate_dsc
 fi
 
-
