@@ -13,6 +13,16 @@ run () {
 	if [ "x${suite}" = "xjessie" ] ; then
 		backport="bpo80+"
 	fi
+	if [ "x${suite}" = "xtrusty" ] ; then
+		backport="bpo1404+"
+	fi
+	if [ "x${suite}" = "xutopic" ] ; then
+		backport="bpo1410+"
+	fi
+	if [ "x${suite}" = "xvivid" ] ; then
+		backport="bpo1504+"
+	fi
+
 
 	if [ "x${debian_version}" = "x" ] ; then
 		echo "${debian_pkg_name} (${package_version}~${backport}${simple_date}+1) ${suite}; urgency=low" > ${wfile}
@@ -43,7 +53,6 @@ if [ -d ${DIR}/suite/${suite}/ ] ; then
 	run
 fi
 
-dist="debian"
 suite="jessie"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${jessie_version}"
@@ -58,7 +67,25 @@ suite="trusty"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${trusty_version}"
 	cat ${DIR}/version.sh | grep -v trusty_version > ${DIR}/new-version.sh
-	echo "trusty_version=\"~${simple_date}+1\"" >> ${DIR}/new-version.sh
+	echo "trusty_version=\"~bpo1404+${simple_date}+1\"" >> ${DIR}/new-version.sh
+	mv ${DIR}/new-version.sh ${DIR}/version.sh
+	run
+fi
+
+suite="utopic"
+if [ -d ${DIR}/suite/${suite}/ ] ; then
+	rcn_ee_version="${utopic_version}"
+	cat ${DIR}/version.sh | grep -v utopic_version > ${DIR}/new-version.sh
+	echo "utopic_version=\"~bpo1410+${simple_date}+1\"" >> ${DIR}/new-version.sh
+	mv ${DIR}/new-version.sh ${DIR}/version.sh
+	run
+fi
+
+suite="vivid"
+if [ -d ${DIR}/suite/${suite}/ ] ; then
+	rcn_ee_version="${vivid_version}"
+	cat ${DIR}/version.sh | grep -v vivid_version > ${DIR}/new-version.sh
+	echo "vivid_version=\"~bpo1504+${simple_date}+1\"" >> ${DIR}/new-version.sh
 	mv ${DIR}/new-version.sh ${DIR}/version.sh
 	run
 fi
