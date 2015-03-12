@@ -48,25 +48,25 @@ dl_install() {
 
 	cd /var/cache/${package}/
 
-	if [ ! -f ${wfile} ] ; then
-		dl_file
-	fi
+#	if [ ! -f ${wfile} ] ; then
+#		dl_file
+#	fi
 
-	if [ -f ${wfile} ] ; then
-		validdate_file
+#	if [ -f ${wfile} ] ; then
+#		validdate_file
 
-		systemctl stop cloud9.socket || true
+#		systemctl stop cloud9.socket || true
 
-		if [ ! -d ${extract_dir} ] ; then
-			mkdir -p ${extract_dir} || true
-		fi
+#		if [ ! -d ${extract_dir} ] ; then
+#			mkdir -p ${extract_dir} || true
+#		fi
 
-		echo "extracting: ${wfile}"
-		tar xf ${wfile} -C ${extract_dir}
-		chown -R 1000:1000 ${extract_dir}
+#		echo "extracting: ${wfile}"
+#		tar xf ${wfile} -C ${extract_dir}
+#		chown -R 1000:1000 ${extract_dir}
 
-		systemctl --system daemon-reload || true
-	fi
+#		systemctl --system daemon-reload || true
+#	fi
 }
 
 case "$1" in
