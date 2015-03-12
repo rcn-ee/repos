@@ -50,7 +50,7 @@ endif
 
 gles2_architectures := armel armhf
 ifeq ($(DEB_HOST_ARCH),$(findstring $(DEB_HOST_ARCH), $(gles2_architectures)))
-	extra_configure_opts += -no-xcb -opengl es2 -eglfs
+	extra_configure_opts += -opengl es2 -eglfs
 else
 	extra_configure_opts += -opengl desktop
 endif
@@ -122,6 +122,8 @@ override_dh_auto_configure:
 	            -reduce-relocations \
 		    -no-strip \
 	            -no-separate-debug-info \
+	            -qpa xcb \
+	            -xcb \
 	            -glib \
 	            -icu \
 	            -accessibility \
