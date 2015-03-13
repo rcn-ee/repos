@@ -13,10 +13,10 @@ git_sha=""
 reprepro_dir="c/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-1"
+debian_version="${package_version}-2"
 debian_patch="${debian_pkg_name}_${debian_version}.debian.tar.xz"
 debian_diff=""
 
 archive="enable"
 
-jessie_version="~20150306+1"
+jessie_version="~20150313+1"

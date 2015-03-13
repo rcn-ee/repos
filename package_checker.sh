@@ -89,7 +89,6 @@ package_name="lxqt-runner" ; package_version="${package_name}_0.9.0-3" ; check_h
 package_name="lxqt-qtplugin" ; package_version="${package_name}_0.9.0-1" ; check_http
 package_name="lxqt-policykit" ; package_version="${package_name}_0.9.0-1" ; check_http
 
-
 site="http://packages.siduction.org/lxqt/pool/main/l"
 package_name="lxqt-powermanagement" ; package_version="${package_name}_0.9.0-3" ; check_http
 package_name="lximage-qt" ; package_version="${package_name}_0.4.0-1" ; check_http
@@ -106,6 +105,10 @@ package_name="lxqt-about" ; package_version="${package_name}_0.9.0-2" ; check_ht
 package_name="lxqt-admin" ; package_version="${package_name}_0.9.0-2" ; check_http
 package_name="lxqt-common" ; package_version="${package_name}_0.9.1-3" ; check_http
 
+
+site="http://ftp.de.debian.org/debian/pool/main/c"
+package_name="chromium-browser" ; package_version="${package_name}_41.0.2272.76-2" ; check_http
+
 #really slow...
 #exit
 
@@ -115,7 +118,6 @@ package_name="extra-cmake-modules" ; package_version="1.7.0-1" ; check
 package_name="policykit-1" ; package_version="0.112-4" ; check
 
 suite="sid"
-package_name="chromium" ; package_version="41.0.2272.76-1" ; check
 package_name="libdrm"; package_version="2.4.58-2"; check
 package_name="llvm-toolchain-3.6"; package_version="1:3.6-2"; check
 package_name="mesa"; package_version="10.4.2-2"; check
