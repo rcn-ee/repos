@@ -1,11 +1,11 @@
-From 08e55d009c41904300c41248a68b4167a540aeb5 Mon Sep 17 00:00:00 2001
+From 5a42f6856354627a82f27b85d9806307c0027414 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 20 Mar 2015 09:46:28 -0500
+Date: Fri, 20 Mar 2015 11:27:24 -0500
 Subject: [PATCH] add etnaviv
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- Makefile.am                     |    6 +-
+ Makefile.am                     |    5 +
  configure.ac                    |   14 +
  etnaviv/Makefile.am             |   22 +
  etnaviv/etnaviv_bo.c            |  327 +++++++++
@@ -25,7 +25,7 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  tests/etnaviv/state_2d.xml.h    | 1473 +++++++++++++++++++++++++++++++++++++++
  tests/etnaviv/write_bmp.c       |  152 ++++
  tests/etnaviv/write_bmp.h       |   34 +
- 20 files changed, 4072 insertions(+), 1 deletion(-)
+ 20 files changed, 4072 insertions(+)
  create mode 100644 etnaviv/Makefile.am
  create mode 100644 etnaviv/etnaviv_bo.c
  create mode 100644 etnaviv/etnaviv_cmd_stream.c
@@ -45,27 +45,33 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  create mode 100644 tests/etnaviv/write_bmp.h
 
 diff --git a/Makefile.am b/Makefile.am
-index 3cb516c..438b12a 100644
+index 42d3d7f..36bdb12 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -57,7 +57,11 @@ if HAVE_TEGRA
+@@ -73,6 +73,10 @@ if HAVE_TEGRA
  TEGRA_SUBDIR = tegra
  endif
  
--SUBDIRS = . $(LIBKMS_SUBDIR) $(INTEL_SUBDIR) $(NOUVEAU_SUBDIR) $(RADEON_SUBDIR) $(OMAP_SUBDIR) $(EXYNOS_SUBDIR) $(FREEDRENO_SUBDIR) $(TEGRA_SUBDIR) tests man
 +if HAVE_ETNAVIV
 +ETNAVIV_SUBDIR = etnaviv
 +endif
 +
-+SUBDIRS = . $(LIBKMS_SUBDIR) $(INTEL_SUBDIR) $(NOUVEAU_SUBDIR) $(RADEON_SUBDIR) $(OMAP_SUBDIR) $(EXYNOS_SUBDIR) $(FREEDRENO_SUBDIR) $(TEGRA_SUBDIR) $(ETNAVIV_SUBDIR) tests man
+ SUBDIRS = \
+ 	. \
+ 	$(LIBKMS_SUBDIR) \
+@@ -83,6 +87,7 @@ SUBDIRS = \
+ 	$(EXYNOS_SUBDIR) \
+ 	$(FREEDRENO_SUBDIR) \
+ 	$(TEGRA_SUBDIR) \
++	$(ETNAVIV_SUBDIR) \
+ 	tests \
+ 	man
  
- libdrm_la_LTLIBRARIES = libdrm.la
- libdrm_ladir = $(libdir)
 diff --git a/configure.ac b/configure.ac
-index 8afee83..872d2e3 100644
+index 155d577..31de6e5 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -108,6 +108,11 @@ AC_ARG_ENABLE(tegra-experimental-api,
+@@ -109,6 +109,11 @@ AC_ARG_ENABLE(tegra-experimental-api,
  	      [Enable support for Tegra's experimental API (default: disabled)]),
  	      [TEGRA=$enableval], [TEGRA=no])
  
@@ -77,7 +83,7 @@ index 8afee83..872d2e3 100644
  AC_ARG_ENABLE(install-test-programs,
  		  AS_HELP_STRING([--enable-install-test-programs],
  		  [Install test programs (default: no)]),
-@@ -331,6 +336,11 @@ if test "x$TEGRA" = xyes; then
+@@ -341,6 +346,11 @@ if test "x$TEGRA" = xyes; then
  	AC_DEFINE(HAVE_TEGRA, 1, [Have Tegra support])
  fi
  
@@ -89,7 +95,7 @@ index 8afee83..872d2e3 100644
  AM_CONDITIONAL(HAVE_INSTALL_TESTS, [test "x$INSTALL_TESTS" = xyes])
  if test "x$INSTALL_TESTS" = xyes; then
  	AC_DEFINE(HAVE_INSTALL_TESTS, 1, [Install test programs])
-@@ -432,6 +442,8 @@ AC_CONFIG_FILES([
+@@ -442,6 +452,8 @@ AC_CONFIG_FILES([
  	freedreno/libdrm_freedreno.pc
  	tegra/Makefile
  	tegra/libdrm_tegra.pc
@@ -98,15 +104,15 @@ index 8afee83..872d2e3 100644
  	tests/Makefile
  	tests/modeprint/Makefile
  	tests/modetest/Makefile
-@@ -441,6 +453,7 @@ AC_CONFIG_FILES([
- 	tests/vbltest/Makefile
+@@ -452,6 +464,7 @@ AC_CONFIG_FILES([
  	tests/exynos/Makefile
  	tests/tegra/Makefile
+ 	tests/nouveau/Makefile
 +	tests/etnaviv/Makefile
  	man/Makefile
  	libdrm.pc])
  AC_OUTPUT
-@@ -457,4 +470,5 @@ echo "  OMAP API       $OMAP"
+@@ -468,4 +481,5 @@ echo "  OMAP API       $OMAP"
  echo "  EXYNOS API     $EXYNOS"
  echo "  Freedreno API  $FREEDRENO (kgsl: $FREEDRENO_KGSL)"
  echo "  Tegra API      $TEGRA"
@@ -1749,11 +1755,11 @@ index 0000000..27e0761
 +
 +#endif /*_U_DOUBLE_LIST_H_*/
 diff --git a/tests/Makefile.am b/tests/Makefile.am
-index e7ec4fa..d64003e 100644
+index 10f54e3..cfe49b6 100644
 --- a/tests/Makefile.am
 +++ b/tests/Makefile.am
-@@ -28,6 +28,10 @@ if HAVE_TEGRA
- SUBDIRS += tegra
+@@ -35,6 +35,10 @@ if HAVE_NOUVEAU
+ SUBDIRS += nouveau
  endif
  
 +#if HAVE_ETNAVIV
