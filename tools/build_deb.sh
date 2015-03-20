@@ -18,7 +18,7 @@ run () {
 		options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite}"
 
 		if [ ! "x${dsc_file}" = "x" ] ; then
-			if [ -f ${localdir}/${suite}/${debian_pkg_name}_${debian_version}/${dsc_file} ] ; then
+			if [ -f ${localdir}/incoming/${suite}/${debian_pkg_name}_${debian_version}/${dsc_file} ] ; then
 				sbuild ${options} http://httphost/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}/${dsc_file}
 
 				if [ -f *.changes ] ; then
