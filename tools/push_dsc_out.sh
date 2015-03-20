@@ -3,12 +3,15 @@
 . version.sh
 
 run () {
-	if [ ! -d /mnt/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}/ ] ; then
-		mkdir -p /mnt/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}/
+	wdir="/mnt/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}/"
+	if [ ! -d ${wdir} ] ; then
+		mkdir -p ${wdir}
 	fi
 
-	cp -v ${suite}/*.dsc /mnt/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}/
-	cp -v ${suite}/*.gz /mnt/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}/
+	cp -v ${suite}/*.dsc ${wdir} || true
+	cp -v ${suite}/*.gz ${wdir} || true
+	cp -v ${suite}/*.bz2 ${wdir} || true
+	cp -v ${suite}/*.xz ${wdir} || true
 }
 
 dist="debian"
