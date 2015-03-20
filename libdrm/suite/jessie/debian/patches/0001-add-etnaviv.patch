@@ -1,6 +1,6 @@
-From 9104eff16cf4ed345f86bc55b05af36fc31f1bbb Mon Sep 17 00:00:00 2001
+From 08e55d009c41904300c41248a68b4167a540aeb5 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 26 Feb 2015 15:53:58 -0600
+Date: Fri, 20 Mar 2015 09:46:28 -0500
 Subject: [PATCH] add etnaviv
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -475,7 +475,7 @@ index 0000000..81f0d3c
 +
 diff --git a/etnaviv/etnaviv_cmd_stream.c b/etnaviv/etnaviv_cmd_stream.c
 new file mode 100644
-index 0000000..a5213a4
+index 0000000..1e38ae4
 --- /dev/null
 +++ b/etnaviv/etnaviv_cmd_stream.c
 @@ -0,0 +1,265 @@
@@ -720,7 +720,7 @@ index 0000000..a5213a4
 +void etna_cmd_stream_finish(struct etna_cmd_stream *stream)
 +{
 +	flush(stream);
-+	etna_pipe_wait(stream->pipe, stream->last_timestamp);
++	etna_pipe_wait(stream->pipe, stream->last_timestamp, 5000);
 +	switch_to_next_buffer(stream);
 +}
 +
@@ -1071,7 +1071,7 @@ index 0000000..009dfe9
 +#endif /* __ETNAVIV_DRM_H__ */
 diff --git a/etnaviv/etnaviv_drmif.h b/etnaviv/etnaviv_drmif.h
 new file mode 100644
-index 0000000..0266085
+index 0000000..cc9dfbd
 --- /dev/null
 +++ b/etnaviv/etnaviv_drmif.h
 @@ -0,0 +1,150 @@
@@ -1170,7 +1170,7 @@ index 0000000..0266085
 +void etna_pipe_del(struct etna_pipe *pipe);
 +int etna_pipe_get_param(struct etna_pipe *pipe, enum etna_param_id param,
 +		uint64_t *value);
-+int etna_pipe_wait(struct etna_pipe *pipe, uint32_t timestamp);
++int etna_pipe_wait(struct etna_pipe *pipe, uint32_t timestamp, uint32_t ms);
 +
 +
 +/* buffer-object functions:
@@ -1227,7 +1227,7 @@ index 0000000..0266085
 +#endif /* ETNAVIV_DRMIF_H_ */
 diff --git a/etnaviv/etnaviv_pipe.c b/etnaviv/etnaviv_pipe.c
 new file mode 100644
-index 0000000..8ef7f89
+index 0000000..16d2de3
 --- /dev/null
 +++ b/etnaviv/etnaviv_pipe.c
 @@ -0,0 +1,182 @@
@@ -1327,7 +1327,7 @@ index 0000000..8ef7f89
 +	return 0;
 +}
 +
-+int etna_pipe_wait(struct etna_pipe *pipe, uint32_t timestamp)
++int etna_pipe_wait(struct etna_pipe *pipe, uint32_t timestamp, uint32_t ms)
 +{
 +	struct etna_device *dev = pipe->dev;
 +	struct drm_etnaviv_wait_fence req = {
@@ -1336,7 +1336,7 @@ index 0000000..8ef7f89
 +	};
 +	int ret;
 +
-+	get_abs_timeout(&req.timeout, 5000);
++	get_abs_timeout(&req.timeout, ms);
 +
 +	ret = drmCommandWrite(dev->fd, DRM_ETNAVIV_WAIT_FENCE, &req, sizeof(req));
 +	if (ret) {
@@ -1749,7 +1749,7 @@ index 0000000..27e0761
 +
 +#endif /*_U_DOUBLE_LIST_H_*/
 diff --git a/tests/Makefile.am b/tests/Makefile.am
-index e7ec4fa..7d69674 100644
+index e7ec4fa..d64003e 100644
 --- a/tests/Makefile.am
 +++ b/tests/Makefile.am
 @@ -28,6 +28,10 @@ if HAVE_TEGRA
