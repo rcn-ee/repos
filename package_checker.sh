@@ -48,7 +48,7 @@ site="http://ftp.de.debian.org/debian/pool/main/l"
 package_name="llvm-toolchain-3.6" ; package_version="${package_name}_3.6-2" ; check_http
 
 site="http://ftp.de.debian.org/debian/pool/main/libd"
-package_name="libdrm" ; package_version="${package_name}_2.4.59-1" ; check_http
+package_name="libdrm" ; package_version="${package_name}_2.4.60-1" ; check_http
 
 site="http://ftp.de.debian.org/debian/pool/main/m"
 package_name="mesa" ; package_version="${package_name}_10.4.2-2" ; check_http
