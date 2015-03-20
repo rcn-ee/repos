@@ -14,7 +14,7 @@ run () {
 		mkdir ./${suite}
 		cd ./${suite}
 
-		dsc_file=$(ls ${outgoing}/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}/ | grep dsc)
+		dsc_file=$(ls ${localdir}/outgoing/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}/ | grep dsc)
 		options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite}"
 
 		if [ ! "x${dsc_file}" = "x" ] ; then
