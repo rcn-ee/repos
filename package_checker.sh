@@ -48,8 +48,8 @@ package_name="extra-cmake-modules" ; package_version="${package_name}_1.8.0-1" ;
 
 site="http://ftp.de.debian.org/debian/pool/main/q"
 package_name="qtbase-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-2" ; check_http
-package_name="qtxmlpatterns-opensource-src" ; package_version="${package_name}_5.4.1" ; check_http
-package_name="qtdeclarative-opensource-src" ; package_version="${package_name}_5.4.1" ; check_http
+package_name="qtxmlpatterns-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+package_name="qtdeclarative-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 package_name="qtscript-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-3" ; check_http
 package_name="qtwebkit-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-3" ; check_http
 
@@ -74,7 +74,7 @@ echo "connman/cmst:"
 
 site="http://packages.siduction.org/extra/pool/main/c"
 package_name="connman" ; package_version="connman_1.27~20150123g04cbd7e-2" ; check_http
-package_name="cmst" ; package_version="cmst_2015.02.01-1" ; check_http
+package_name="cmst" ; package_version="cmst_2015.03.28-2" ; check_http
 
 echo "lxqt:"
 
