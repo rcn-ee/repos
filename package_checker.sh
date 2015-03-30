@@ -38,17 +38,25 @@ check () {
 	fi
 }
 
+echo "qt5:"
+
 site="http://ftp.de.debian.org/debian/pool/main/p"
 package_name="pkg-kde-tools" ; package_version="${package_name}_0.15.16" ; check_http
 
 site="http://ftp.de.debian.org/debian/pool/main/e"
 package_name="extra-cmake-modules" ; package_version="${package_name}_1.8.0-1" ; check_http
 
+site="http://ftp.de.debian.org/debian/pool/main/q"
+package_name="qtbase-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-2" ; check_http
+package_name="qtxmlpatterns-opensource-src" ; package_version="${package_name}_5.4.1" ; check_http
+
 site="http://ftp.de.debian.org/debian/pool/main/s"
 package_name="solid" ; package_version="${package_name}_5.8.0-1" ; check_http
 
 site="http://ftp.de.debian.org/debian/pool/main/k"
 package_name="kguiaddons" ; package_version="${package_name}_5.8.0-1" ; check_http
+
+echo "llvm/mesa:"
 
 site="http://ftp.de.debian.org/debian/pool/main/l"
 package_name="llvm-toolchain-3.6" ; package_version="${package_name}_3.6-2" ; check_http
@@ -59,12 +67,13 @@ package_name="libdrm" ; package_version="${package_name}_2.4.60-1" ; check_http
 site="http://ftp.de.debian.org/debian/pool/main/m"
 package_name="mesa" ; package_version="${package_name}_10.4.2-2" ; check_http
 
-site="http://ftp.de.debian.org/debian/pool/main/q"
-package_name="qtbase-opensource-src" ; package_version="${package_name}_5.3" ; check_http
+echo "connman/cmst:"
 
 site="http://packages.siduction.org/extra/pool/main/c"
 package_name="connman" ; package_version="connman_1.27~20150123g04cbd7e-2" ; check_http
 package_name="cmst" ; package_version="cmst_2015.02.01-1" ; check_http
+
+echo "lxqt:"
 
 site="http://packages.siduction.org/lxqt/pool/main/q"
 package_name="qtermwidget" ; package_version="qtermwidget_0.6.0-5" ; check_http
