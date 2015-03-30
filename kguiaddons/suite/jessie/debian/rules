@@ -1,11 +1,9 @@
 #!/usr/bin/make -f
- 
-%:
-	dh ${@} --buildsystem kf5
 
+include /usr/share/pkg-kde-tools/qt-kde-team/3/debian-qt-kde.mk
 
 override_dh_strip:
-	dh_strip -plibkf5guiaddons5 --dbg-package=libkf5guiaddons5-dbg
+	$(overridden_command) --dbg-package=libkf5guiaddons5-dbg
 
 override_dh_auto_test:
-	# do nothing
+	xvfb-run $(overridden_command)
