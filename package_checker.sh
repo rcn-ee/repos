@@ -44,6 +44,12 @@ package_name="pkg-kde-tools" ; package_version="${package_name}_0.15.16" ; check
 site="http://ftp.de.debian.org/debian/pool/main/e"
 package_name="extra-cmake-modules" ; package_version="${package_name}_1.8.0-1" ; check_http
 
+site="http://ftp.de.debian.org/debian/pool/main/s"
+package_name="solid" ; package_version="${package_name}_5.8.0-1" ; check_http
+
+site="http://ftp.de.debian.org/debian/pool/main/k"
+package_name="kguiaddons" ; package_version="${package_name}_5.7.0-1" ; check_http
+
 site="http://ftp.de.debian.org/debian/pool/main/l"
 package_name="llvm-toolchain-3.6" ; package_version="${package_name}_3.6-2" ; check_http
 
@@ -86,11 +92,7 @@ package_name="lxqt-notificationd" ; package_version="${package_name}_0.9.0-2" ; 
 site="http://packages.siduction.org/lxqt/pool/main/libs"
 package_name="libsysstat" ; package_version="${package_name}_0.3.0-1" ; check_http
 
-site="http://packages.siduction.org/lxqt/pool/main/k"
-package_name="kguiaddons" ; package_version="${package_name}_5.7.0-1" ; check_http
 
-site="http://archive.ubuntu.com/ubuntu/pool/universe/s/"
-package_name="solid" ; package_version="${package_name}_5.7.0-0ubuntu1" ; check_http
 
 site="http://packages.siduction.org/lxqt/pool/main/l"
 package_name="lxqt-panel" ; package_version="${package_name}_0.9.0-4" ; check_http
@@ -128,7 +130,6 @@ package_name="chromium-browser" ; package_version="${package_name}_41.0.2272.76-
 #exit
 
 suite="experimental"
-package_name="pkg-kde-tools" ; package_version="0.15.16" ; check
 package_name="policykit-1" ; package_version="0.112-4" ; check
 
 suite="sid"
