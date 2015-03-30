@@ -80,7 +80,7 @@ echo "lxqt:"
 
 site="http://packages.siduction.org/lxqt/pool/main/q"
 package_name="qtermwidget" ; package_version="qtermwidget_0.6.0-9" ; check_http
-package_name="qterminal" ; package_version="qterminal_0.6.0-6" ; check_http
+package_name="qterminal" ; package_version="qterminal_0.6.0-8" ; check_http
 
 site="http://packages.siduction.org/extra/pool/main/libd"
 package_name="libdbusmenu-qt5" ; package_version="${package_name}_0.9.3-1siduction" ; check_http
