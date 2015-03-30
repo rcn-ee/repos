@@ -1,0 +1,110 @@
+Source: qtwebkit-opensource-src
+Priority: optional
+Maintainer: Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
+Uploaders: Fathi Boudra <fabo@debian.org>,
+           Timo Jyrinki <timo@debian.org>,
+           Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>,
+           Dmitry Shachnev <mitya57@debian.org>
+Build-Depends: bison,
+               chrpath,
+               debhelper (>= 9.0.0),
+               flex,
+               gperf,
+               libfontconfig1-dev,
+               libgl1-mesa-dev [!armel !armhf] | libgl-dev [!armel !armhf],
+               libgles2-mesa-dev [armel armhf] | libgles2-dev [armel armhf],
+               libglib2.0-dev,
+               libglu1-mesa-dev [!armel !armhf] | libglu-dev [!armel !armhf],
+               libgstreamer-plugins-base0.10-dev,
+               libgstreamer0.10-dev,
+               libicu-dev,
+               libjpeg-dev,
+#              libleveldb-dev,
+               libpng-dev,
+               libqt5opengl5-dev (>= 5.4.1+dfsg~),
+               libqt5xmlpatterns5-private-dev (>= 5.4.1~),
+               libsqlite3-dev,
+               libwebp-dev,
+               libxcomposite-dev,
+               libxml2-dev,
+               libxrender-dev,
+               libxslt1-dev,
+               mesa-common-dev,
+               pkg-config,
+               pkg-kde-tools (>= 0.6.4),
+               python-minimal,
+               python2.7,
+               qtbase5-private-dev (>= 5.4.1+dfsg~),
+               qtdeclarative5-private-dev (>= 5.4.1~),
+               qtscript5-private-dev (>= 5.4.1+dfsg~),
+               ruby
+Build-Depends-Indep: qtbase5-doc-html (>= 5.4.1+dfsg~)
+Standards-Version: 3.9.6
+Section: libs
+Homepage: http://trac.webkit.org/wiki/QtWebKit
+Vcs-Git: git://anonscm.debian.org/pkg-kde/qt/qt5webkit.git
+Vcs-Browser: http://anonscm.debian.org/cgit/pkg-kde/qt/qt5webkit.git
+
+Package: libqt5webkit5-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Pre-Depends: dpkg (>= 1.15.6~)
+Depends: libqt5webkit5 (= ${binary:Version}),
+         qtbase5-dev,
+         qtdeclarative5-dev,
+         ${misc:Depends}
+Description: Web content engine library for Qt - development files
+ QtWebKit provides a Web browser engine that makes it easy to embed content
+ from the World Wide Web into your Qt application.
+ .
+ This package contains the development files needed to build Qt 5 applications
+ using QtWebKit library.
+
+Package: libqt5webkit5
+Architecture: any
+Multi-Arch: same
+Pre-Depends: dpkg (>= 1.15.6~), ${misc:Pre-Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Web content engine library for Qt
+ QtWebKit provides a Web browser engine that makes it easy to embed content
+ from the World Wide Web into your Qt application.
+ .
+ This package contains the QtWebKit libraries.
+
+Package: qml-module-qtwebkit
+Architecture: any
+Multi-Arch: same
+Pre-Depends: dpkg (>= 1.15.6~), ${misc:Pre-Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Breaks: libqt5webkit5-qmlwebkitplugin (<< 5.2.1+dfsg-6~)
+Replaces: libqt5webkit5-qmlwebkitplugin (<< 5.2.1+dfsg-6~)
+Description: Qt WebKit QML module
+ QtWebKit provides a Web browser engine that makes it easy to embed content
+ from the World Wide Web into your Qt application.
+ .
+ This package contains the WebKit QML module for QtDeclarative.
+
+Package: libqt5webkit5-dbg
+Priority: extra
+Architecture: amd64 i386 powerpc s390x
+Multi-Arch: same
+Section: debug
+Depends: libqt5webkit5 (= ${binary:Version}), ${misc:Depends}
+Description: Web content engine library for Qt - debugging symbols
+ QtWebKit provides a Web browser engine that makes it easy to embed content
+ from the World Wide Web into your Qt application.
+ .
+ This package contains the debugging symbols for the Qt WebKit library.
+
+Package: qtwebkit5-doc-html
+Priority: extra
+Architecture: all
+Section: doc
+Depends: ${misc:Depends}
+Description: Qt 5 webkit HTML documentation
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the HTML documentation for the Qt 5 webkit
+ libraries.

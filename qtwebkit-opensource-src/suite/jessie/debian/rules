@@ -1,0 +1,81 @@
+#!/usr/bin/make -f
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+export CFLAGS := $(shell dpkg-buildflags --get CFLAGS) $(shell dpkg-buildflags --get CPPFLAGS)
+export CXXFLAGS := $(shell dpkg-buildflags --get CXXFLAGS) $(shell dpkg-buildflags --get CPPFLAGS)
+export LDFLAGS := $(shell dpkg-buildflags --get LDFLAGS) -Wl,--as-needed
+export QT_SELECT := qt5
+
+DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
+gstab_architectures := amd64 i386 powerpc s390x
+fulldebug_architectures := none
+disabled_jit_architectures := armel mips mipsel
+disabled_pch_architectures := amd64 powerpc s390x
+
+%:
+	dh $@ --parallel --dbg-package=libqt5webkit5-dbg --with pkgkde_symbolshelper
+
+override_dh_auto_configure:
+	# Run qmake once to create .qmake.conf and be sure to append the following values.
+	qmake
+
+# Enable gstabs debugging symbols only on gstab_architectures.
+ifeq ($(DEB_HOST_ARCH),$(findstring $(DEB_HOST_ARCH), $(gstab_architectures)))
+	echo "QMAKE_CXXFLAGS -= -g" >> .qmake.conf
+	echo "QMAKE_CXXFLAGS += -gstabs" >> .qmake.conf
+# Enable normal debugging symbols only on fulldebug_architectures.
+else ifeq ($(DEB_HOST_ARCH),$(findstring $(DEB_HOST_ARCH), $(fulldebug_architectures)))
+	echo "QMAKE_CXXFLAGS += -g" >> .qmake.conf
+else
+# Disable debugging symbols in all the other archs.
+	echo "QMAKE_CXXFLAGS -= -g" >> .qmake.conf
+	echo "QMAKE_CXXFLAGS -= -gstabs" >> .qmake.conf
+endif
+
+# Disable JIT on selected architectures
+ifeq ($(DEB_HOST_ARCH),$(findstring $(DEB_HOST_ARCH), $(disabled_jit_architectures)))
+	echo "QMAKE_CXXFLAGS += -DENABLE_JIT=0" >> .qmake.conf
+endif
+
+# Disable header precompliation as it creates invalid includes on certain
+# architectures causing build failure. LP: 1395661
+ifeq ($(DEB_HOST_ARCH),$(findstring $(DEB_HOST_ARCH), $(disabled_pch_architectures)))
+	echo "CONFIG -= precompile_header" >> .qmake.conf
+endif
+
+	# Run qmake again now with the proper values.
+	qmake
+
+override_dh_auto_build-indep:
+	dh_auto_build -Smakefile -- html_docs
+
+override_dh_auto_install-arch:
+	make install INSTALL_ROOT=$(CURDIR)/debian/tmp
+	
+	# Remove rpath from the offending binaries
+	chrpath -d $(CURDIR)/debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/qt5/libexec/QtWebProcess
+	chrpath -d $(CURDIR)/debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/qt5/libexec/QtWebPluginProcess
+	
+	# Fix wrong path in pkgconfig files
+	find $(CURDIR)/debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/pkgconfig -type f -name '*.pc' \
+	-exec sed -i -e 's/$(DEB_HOST_MULTIARCH)\/$(DEB_HOST_MULTIARCH)/$(DEB_HOST_MULTIARCH)/g' {} \;
+	
+	# Remove private headers
+	rm -rf debian/tmp/usr/include/$(DEB_HOST_MULTIARCH)/qt5/QtWebKit/*/QtWebKit
+	rm -rf debian/tmp/usr/include/$(DEB_HOST_MULTIARCH)/qt5/QtWebKitWidgets/*/QtWebKitWidgets
+	# And associated files
+	rm -fv debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/qt5/mkspecs/modules/qt_lib_webkit_private.pri
+	rm -fv debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/qt5/mkspecs/modules/qt_lib_webkitwidgets_private.pri
+	
+	# Remove libtool-like files
+	rm -f debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/*.la
+
+override_dh_auto_install-indep:
+	make INSTALL_ROOT=$(CURDIR)/debian/tmp install_html_docs
+
+override_dh_install:
+	dh_install --fail-missing

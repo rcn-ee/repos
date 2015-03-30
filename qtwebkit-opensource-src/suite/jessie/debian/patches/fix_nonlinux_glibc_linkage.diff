@@ -1,0 +1,16 @@
+Author: Sune Vuorela
+Description: Ensures we link with rt on all the platforms where we 
+have glibc. Not yet upstreamed. Requires a upstreamming of the gnukfreebsd patch
+Index: b/Source/WebKit2/WebKit2.pri
+===================================================================
+--- a/Source/WebKit2/WebKit2.pri
++++ b/Source/WebKit2/WebKit2.pri
+@@ -75,7 +75,7 @@
+ 
+ INCLUDEPATH += $$WEBKIT2_GENERATED_SOURCES_DIR
+ 
+-linux-*:!android {
++linux-*:!android|hurd-*|gnukfreebsd-* {
+     # -lrt is required for shm_open and shm_unlink.
+     LIBS += -lrt
+ }
