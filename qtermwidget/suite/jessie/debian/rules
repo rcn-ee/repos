@@ -14,6 +14,12 @@ override_dh_install:
 	dh_install --list-missing --fail-missing
 
 
+#override_dh_makeshlibs:
+#	dh_makeshlibs
+#	echo " -- cut here -- "
+#	find . -name symbols | xargs sed 's/ \(_.*\) \(.*\)/ (c++)"\1" \2/' | c++filt | uniq 
+#	echo " -- cut here -- "
+
 maintainer-clean:
 	$(RM) -r checkout
 	$(RM) *.build
@@ -32,4 +38,4 @@ checkout: maintainer-clean
 	cp -a ../debian .
 
 symbols:
-	find . -name symbols | xargs sed 's/ \(_.*\) \(.*\)/ (c++)"\1" \2/' | c++filt | uniq > debian/mangled
+	find . -name symbols | xargs sed 's/ \(_.*\) \(.*\)/ (c++)"\1" \2/' | c++filt | uniq | tee debian/mangled

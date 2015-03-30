@@ -79,7 +79,7 @@ package_name="cmst" ; package_version="cmst_2015.03.28-2" ; check_http
 echo "lxqt:"
 
 site="http://packages.siduction.org/lxqt/pool/main/q"
-package_name="qtermwidget" ; package_version="qtermwidget_0.6.0-5" ; check_http
+package_name="qtermwidget" ; package_version="qtermwidget_0.6.0-9" ; check_http
 package_name="qterminal" ; package_version="qterminal_0.6.0-6" ; check_http
 
 site="http://packages.siduction.org/extra/pool/main/libd"
