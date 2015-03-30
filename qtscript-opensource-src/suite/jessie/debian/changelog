@@ -1,0 +1,265 @@
+qtscript-opensource-src (5.4.1+dfsg-3~bpo80+20150330+1) jessie; urgency=low
+
+  * Rebuild for repos.rcn-ee.net
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Mon, 30 Mar 2015 14:21:15 -0500
+
+qtscript-opensource-src (5.4.1+dfsg-3) experimental; urgency=medium
+
+  * Add upstream patch to correctly detect little-endian ppc/ppc64.
+  * mark_private_symbols.sh: Strip trailing colon from symbols names.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Sun, 01 Mar 2015 22:06:25 +0300
+
+qtscript-opensource-src (5.4.1+dfsg-2) experimental; urgency=medium
+
+  * Disable some failing tests.
+  * Remove a symbol from libqt5script5.symbols that should not be there.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Wed, 25 Feb 2015 15:34:04 +0300
+
+qtscript-opensource-src (5.4.1+dfsg-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Update debian/watch to use https://download.qt.io/.
+  * Build-depend on qtbase 5.4.1.
+  * Drop upstream_Disable-pthread_np.h-on-BSD-w-GNU-libc.patch, applied
+    upstream.
+  * Refresh s390x_jscore.diff.
+  * Update debian/copyright.
+  * Run the tests during build.
+  * Mark three destructors symbols as optional to fix build with GCC 5
+    (closes: #778093).
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Wed, 25 Feb 2015 13:13:33 +0300
+
+qtscript-opensource-src (5.4.0+dfsg-2) experimental; urgency=medium
+
+  [ Pino Toscano ]
+  * Backport upstream commit 52e775b4d0e59dfb44c22b070f272dbc21014389 to fix
+    build on GNU/kFreeBSD, making sure that pthread_np.h is not used;
+    patch upstream_Disable-pthread_np.h-on-BSD-w-GNU-libc.patch.
+
+  [ Dmitry Shachnev ]
+  * Update debian/copyright.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Sat, 24 Jan 2015 18:14:24 +0300
+
+qtscript-opensource-src (5.4.0+dfsg-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Build-depend on qtbase 5.4.0.
+  * Add myself to Uploaders.
+  * Update Vcs-Git URL to point to cgit interface.
+  * Bump Standards-Version to 3.9.6, no changes needed.
+  * Update debian/copyright.
+  * Use Files-Excluded instead of prune-nonfree.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Tue, 16 Dec 2014 17:18:09 +0300
+
+qtscript-opensource-src (5.3.2+dfsg-2) unstable; urgency=medium
+
+  * Upload to unstable.
+  * Update symbols files with buildds' logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sun, 21 Sep 2014 23:38:08 -0300
+
+qtscript-opensource-src (5.3.2+dfsg-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Bump Qt build dependencies.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Tue, 16 Sep 2014 22:07:20 -0300
+
+qtscript-opensource-src (5.3.1+dfsg-3) unstable; urgency=medium
+
+  * Bump qtbase's build dependencies to >= 5.3.1-2 to get qtbase-abi-5-3-1.
+  * Update symbols files with buildds' and mips64el's logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Fri, 27 Jun 2014 23:59:44 -0300
+
+qtscript-opensource-src (5.3.1+dfsg-2) unstable; urgency=medium
+
+  * Bump Qt build dependencies.
+  * Update symbols files with buildds' logs.
+  * Mark new private symbols as such.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Thu, 26 Jun 2014 23:43:47 -0300
+
+qtscript-opensource-src (5.3.1+dfsg-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update symbols files with buildds' and mips64el's logs.
+  * Update symbols files with current log.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Thu, 26 Jun 2014 20:23:08 -0300
+
+qtscript-opensource-src (5.3.0+dfsg-4) unstable; urgency=medium
+
+  * Update symbols files with buildds' logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Thu, 19 Jun 2014 12:03:23 -0300
+
+qtscript-opensource-src (5.3.0+dfsg-3) unstable; urgency=medium
+
+  * Update symbols files with buildds' logs (Closes: #746899).
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Wed, 18 Jun 2014 11:16:00 -0300
+
+qtscript-opensource-src (5.3.0+dfsg-2) unstable; urgency=medium
+
+  * Upload to unstable.
+  * Development packages are now Arch: any and Multi-Arch: same.
+  * Search for private symbols at build time and produce a diff so as to be
+    able to get the changes from build logs.
+    - Modify mark_private_symbols.sh.
+    - Run mark_private_symbols.sh from debian/rules.
+  * Do not override dh_builddeb, xz is now the default compression method.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Thu, 05 Jun 2014 23:15:25 -0300
+
+qtscript-opensource-src (5.3.0+dfsg-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Add missing word in qtscript5-private-dev's description (Closes: #745300).
+    Thanks Pascal De Vuyst.
+  * Do not build qtscript5-doc anymore from this source, thus allowing us to
+    avoid a dependency on qttools and a circular dependency.
+    The package will be built from qttools itself.
+  * Bump the build dependency on qtbase to 5.3.0+dfsg~.
+  * Refresh s390x_jscore.diff.
+  * Move headers to their new multi-arch aware path.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Wed, 21 May 2014 12:43:46 -0300
+
+qtscript-opensource-src (5.2.1+dfsg-2) unstable; urgency=medium
+
+  * Upload to unstable.
+  * Add license to mark_private_symbols.sh and corresponding entry in
+    debian/copyright.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Mon, 24 Mar 2014 22:19:17 -0300
+
+qtscript-opensource-src (5.2.1+dfsg-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Update symbols files with buildd's logs.
+  * Bump Qt build dependencies.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Mon, 10 Feb 2014 13:07:06 -0300
+
+qtscript-opensource-src (5.2.0+dfsg-3) unstable; urgency=medium
+
+  * Do not run tests until we get the transition sorted out.
+  * Update symbols files with buildd's logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sat, 01 Feb 2014 18:13:07 -0300
+
+qtscript-opensource-src (5.2.0+dfsg-2) unstable; urgency=medium
+
+  [ Iftikhar Ahmad ]
+  * debian/patches/enable-make-check.patch:
+    - Fix make check to work.
+  * Run tests as part of the override_dh_auto_test
+
+  [ Dmitry Shachnev ]
+  * Provide qtscript-abi-5-2-0 (and not 5-1-0).
+  * Build tests in build target, and use dh_auto_test.
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Upload to unstable.
+  * Move mkspec files to their new location.
+    - B-D on qtbase5-private-dev 5.2.0+dfsg-7 which changed the location.
+  * Update symbols files with buildd's logs.
+  * Update Standards-Version to 3.9.5, no changes required.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Fri, 31 Jan 2014 18:47:35 -0300
+
+qtscript-opensource-src (5.2.0+dfsg-1) experimental; urgency=low
+
+  * New upstream release.
+  * Bump build dependencies.
+  * Refresh s390x_jscore.diff.
+  * Adjust install files.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Fri, 13 Dec 2013 14:15:37 -0300
+
+qtscript-opensource-src (5.1.1+dfsg-2) unstable; urgency=low
+
+  * Switch symbols substitutions failing in s390 from ssize_t to intptr_t
+    (which is the correct type). Tested on a porterbox.
+  * Confirm symbols files for all other archs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Thu, 03 Oct 2013 22:28:19 -0300
+
+qtscript-opensource-src (5.1.1+dfsg-1) unstable; urgency=low
+
+  * New upstream release.
+  * Be verbose on the files we remove to make the source tarball DFSG
+    compliant.
+  * Tighten Qt 5 build dependencies.
+  * Refresh s390x_jscore.diff.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Fri, 30 Aug 2013 22:11:00 -0300
+
+qtscript-opensource-src (5.1.0+dfsg-3) unstable; urgency=low
+
+  * Require pkg-kde-tools with version at least 0.15.8 to fix a symbol
+    substitution on s390.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sun, 25 Aug 2013 20:50:33 -0300
+
+qtscript-opensource-src (5.1.0+dfsg-2) unstable; urgency=low
+
+  * Upload to unstable.
+  * Update symbols files.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sun, 11 Aug 2013 12:54:48 -0300
+
+qtscript-opensource-src (5.1.0+dfsg-1) experimental; urgency=low
+
+  * New upstream release.
+  * Fix watch file.
+  * Bump Qt dependencies to 5.1.0~.
+  * Make libqt5script5 provide qtscript-api-5-1-0.
+    In this way we can know if external packages are using private headers.
+    - Add the necessary options in the symbols file.
+    - Add mark_private_symbols.sh.
+    - Mark private symbols.
+    - Add lintian overrides for dependency on other lib.
+  * Update install files.
+  * Update symbols files.
+  * Add third party copyright stuff for ce-compat.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sun, 14 Jul 2013 16:25:38 -0300
+
+qtscript-opensource-src (5.0.2+dfsg-3) experimental; urgency=low
+
+  [ Pino Toscano ]
+  * debian/control: remove extra ${misc:Pre-Depends} from qtscript5-examples.
+  * Copy patch s390x_jscore.diff from qt4-x11 (which is a backport of an
+    upstream commit) to support s390/s390x.
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Build the documentation shipped with this submodule as a build-indep task:
+    - Add the necessary indep build dependencies:
+      * qttools5-dev-tools to use qhelpgenerator.
+      * libqt5sql5-sqlite to generate qch doc.
+    - Build and create packages for qch and HTML doc formats.
+  * Update symbols file.
+  * Make qtscript5-dbg M-A same to allow debugging symbols coinstalability.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Thu, 20 Jun 2013 19:45:49 -0300
+
+qtscript-opensource-src (5.0.2+dfsg-2) experimental; urgency=low
+
+  [ Pino Toscano ]
+  * Update symbols file.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Wed, 05 Jun 2013 15:06:13 -0300
+
+qtscript-opensource-src (5.0.2+dfsg-1) experimental; urgency=low
+
+  * Initial release. (Closes: #697509)
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Fri, 17 May 2013 16:35:39 -0300

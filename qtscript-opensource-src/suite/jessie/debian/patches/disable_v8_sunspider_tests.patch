@@ -1,0 +1,24 @@
+Description: Remove mixedly licensed tests.
+ The license mix in Qt Script is already quite colorful, and the sunspider
+ and V8 tests are a further mix of licenses and license-not-specified or
+ clearly non-DFSG. Currently the easiest way out is to repackage the
+ tarball not to include those tests.
+ .
+ This patch disables the tests provided by the removed sources.
+Author: Timo Jyrinki <timo.jyrinki@canonical.com>
+Forwarded: not-needed
+
+--- a/tests/benchmarks/script/script.pro.old	2013-01-29 19:03:26.000000000 +0000
++++ b/tests/benchmarks/script/script.pro	2013-02-11 08:31:02.073365014 +0000
+@@ -5,10 +5,8 @@
+         qscriptclass_bytearray \
+         qscriptengine \
+         qscriptvalue \
+-        sunspider \
+         qscriptqobject \
+-        qscriptvalueiterator \
+-        v8
++        qscriptvalueiterator
+ 
+ TRUSTED_BENCHMARKS += \
+     qscriptclass \

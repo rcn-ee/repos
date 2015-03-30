@@ -1,0 +1,39 @@
+#!/usr/bin/make -f
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+export CFLAGS := $(shell dpkg-buildflags --get CFLAGS) $(shell dpkg-buildflags --get CPPFLAGS)
+export CXXFLAGS := $(shell dpkg-buildflags --get CXXFLAGS) $(shell dpkg-buildflags --get CPPFLAGS)
+export LDFLAGS := $(shell dpkg-buildflags --get LDFLAGS) -Wl,--as-needed
+export QT_SELECT := qt5
+export QT_QPA_PLATFORM := minimal
+
+%:
+	dh $@ --parallel --with pkgkde_symbolshelper --dbg-package=qtscript5-dbg
+
+override_dh_auto_configure:
+	qmake QT_BUILD_PARTS+=tests
+
+override_dh_auto_build-indep:
+	dh_auto_build -Smakefile -- html_docs
+
+override_dh_auto_install-arch:
+	dh_auto_install
+
+	# Remove libtool-like files
+	rm -f debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/*.la
+
+override_dh_auto_install-indep:
+	make INSTALL_ROOT=$(CURDIR)/debian/tmp install_html_docs
+
+override_dh_install:
+	dh_install --fail-missing
+
+override_dh_makeshlibs:
+	dh_makeshlibs
+	# Check for private symbols not marked as such. Be verbose.
+	DEBUG=1 debian/mark_private_symbols.sh
+
+override_dh_auto_test:
+	xvfb-run -a dh_auto_test

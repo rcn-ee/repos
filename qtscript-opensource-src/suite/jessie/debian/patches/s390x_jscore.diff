@@ -1,0 +1,40 @@
+Description: Add support for s390/s390x architectures
+Author: Dan Horák <dan@danny.cz>
+Origin: vendor (http://trac.webkit.org/changeset?old_path=%2Ftrunk&old=71843+&new_path=%2Ftrunk&new=71844+)
+Forwarded: no
+Last-Update: 2014-05-21
+
+---
+ src/3rdparty/javascriptcore/JavaScriptCore/wtf/Platform.h |   14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+--- a/src/3rdparty/javascriptcore/JavaScriptCore/wtf/Platform.h
++++ b/src/3rdparty/javascriptcore/JavaScriptCore/wtf/Platform.h
+@@ -222,6 +222,18 @@
+ #define WTF_CPU_SPARC 1
+ #endif
+ 
++/* CPU(S390X) - S390 64-bit */
++#if defined(__s390x__)
++#define WTF_CPU_S390X 1
++#define WTF_CPU_BIG_ENDIAN 1
++#endif
++
++/* CPU(S390) - S390 32-bit */
++#if defined(__s390__)
++#define WTF_CPU_S390 1
++#define WTF_CPU_BIG_ENDIAN 1
++#endif
++
+ /* CPU(X86) - i386 / x86 32-bit */
+ #if   defined(__i386__) \
+     || defined(i386)     \
+@@ -944,7 +956,7 @@
+ #endif
+ 
+ #if !defined(WTF_USE_JSVALUE64) && !defined(WTF_USE_JSVALUE32) && !defined(WTF_USE_JSVALUE32_64)
+-#if (CPU(X86_64) && !CPU(X32) && (OS(UNIX) || OS(WINDOWS) || OS(SOLARIS) || OS(HPUX))) || (CPU(IA64) && !CPU(IA64_32)) || CPU(ALPHA) || CPU(AIX64) || CPU(SPARC64) || CPU(MIPS64) || CPU(AARCH64)
++#if (CPU(X86_64) && !CPU(X32) && (OS(UNIX) || OS(WINDOWS) || OS(SOLARIS) || OS(HPUX))) || (CPU(IA64) && !CPU(IA64_32)) || CPU(ALPHA) || CPU(AIX64) || CPU(SPARC64) || CPU(MIPS64) || CPU(AARCH64) || CPU(S390X)
+ #define WTF_USE_JSVALUE64 1
+ #elif CPU(ARM) || CPU(PPC64)
+ #define WTF_USE_JSVALUE32 1
