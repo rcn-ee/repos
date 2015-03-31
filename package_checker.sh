@@ -163,7 +163,7 @@ qt5_lxqt () {
 
 	site="http://packages.siduction.org/lxqt/pool/main/l"
 	package_name="lxqt-about" ; package_version="${package_name}_0.9.0-2" ; check_http
-	package_name="lxqt-admin" ; package_version="${package_name}_0.9.0-2" ; check_http
+	package_name="lxqt-admin" ; package_version="${package_name}_0.9.0-4" ; check_http
 	package_name="lxqt-common" ; package_version="${package_name}_0.9.1-3" ; check_http
 }
 
