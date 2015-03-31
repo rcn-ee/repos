@@ -58,9 +58,8 @@ package_name="qttools-opensource-src" ; package_version="${package_name}_5.4.1-1
 package_name="qtconnectivity-opensource-src" ; package_version="${package_name}_5.4.1-2" ; check_http
 package_name="qtenginio-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 package_name="qtgraphicaleffects-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+package_name="qtimageformats-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 
-#qtdoc-opensource-src*
-#qtimageformats-opensource-src*
 #qtlocation-opensource-src*
 #qtmobility*
 #qtmultimedia-opensource-src*
@@ -76,6 +75,7 @@ package_name="qtgraphicaleffects-opensource-src" ; package_version="${package_na
 #qtwebsockets-opensource-src*
 #qtx11extras-opensource-src*
 #qtxmlpatterns-opensource-src*
+#qtdoc-opensource-src*
 
 echo "qt5: kde:"
 
