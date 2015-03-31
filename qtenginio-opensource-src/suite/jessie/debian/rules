@@ -1,0 +1,42 @@
+#!/usr/bin/make -f
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
+export CFLAGS := $(shell dpkg-buildflags --get CFLAGS) $(shell dpkg-buildflags --get CPPFLAGS)
+export CXXFLAGS := $(shell dpkg-buildflags --get CXXFLAGS) $(shell dpkg-buildflags --get CPPFLAGS)
+export LDFLAGS := $(shell dpkg-buildflags --get LDFLAGS) -Wl,--as-needed
+export QT_SELECT := qt5
+
+%:
+	dh $@ --with pkgkde_symbolshelper --parallel --dbg-package=qtenginio5-dbg
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -rfv doc/qtenginio*/ mkspecs/ lib/
+	rm -fv doc/qtenginio*.qch
+	rm -fv include/Enginio/EnginioDepends
+
+override_dh_auto_configure:
+	qmake 
+
+override_dh_auto_build-indep:
+	dh_auto_build -- docs
+
+override_dh_auto_install-arch:
+	dh_auto_install
+	
+	# Remove libtool-like file
+	rm -fv debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/libEnginio.la
+
+	# Remove private headers and related files, nothing needs them so far.
+	rm -rfv debian/tmp/usr/include/$(DEB_HOST_MULTIARCH)/qt5/Enginio/*/Enginio/private/
+	rm -fv debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/qt5/mkspecs/modules/qt_lib_enginio_private.pri
+
+override_dh_auto_install-indep:
+	dh_auto_build -- INSTALL_ROOT=$(CURDIR)/debian/tmp install_docs
+
+override_dh_install:
+	dh_install --fail-missing

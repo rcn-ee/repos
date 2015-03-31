@@ -56,6 +56,7 @@ package_name="qtwebkit-opensource-src" ; package_version="${package_name}_5.4.1+
 package_name="qttools-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 
 package_name="qtconnectivity-opensource-src" ; package_version="${package_name}_5.4.1-2" ; check_http
+package_name="qtenginio-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 
 echo "qt5: kde:"
 

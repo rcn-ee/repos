@@ -1,0 +1,98 @@
+Source: qtenginio-opensource-src
+Section: libs
+Priority: optional
+Maintainer: Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
+Uploaders: Dmitry Shachnev <mitya57@debian.org>,
+           Fathi Boudra <fabo@debian.org>,
+           Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>,
+           Modestas Vainius <modax@debian.org>,
+           Pino Toscano <pino@debian.org>,
+           Sune Vuorela <debian@pusling.com>,
+           Timo Jyrinki <timo@debian.org>
+Build-Depends: debhelper (>= 9),
+               pkg-kde-tools,
+               qtbase5-private-dev (>= 5.4.1+dfsg~),
+               qtdeclarative5-dev (>= 5.4.1~)
+Build-Depends-Indep: libqt5sql5-sqlite (>= 5.4.1+dfsg~),
+                     qtbase5-doc-html (>= 5.4.1+dfsg~),
+                     qttools5-dev-tools (>= 5.4.1~)
+Standards-Version: 3.9.6
+Homepage: http://qt-project.org/
+Vcs-Git: git://anonscm.debian.org/pkg-kde/qt/qtenginio.git
+Vcs-Browser: http://anonscm.debian.org/cgit/pkg-kde/qt/qtenginio.git
+
+Package: libenginio1
+Architecture: any
+Multi-Arch: same
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Qt 5 Enginio library
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the Qt Enginio cloud data storage library.
+
+Package: libenginio1-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Depends: libenginio1 (= ${binary:Version}), ${misc:Depends}
+Description: Qt 5 Enginio development files
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the development files for the Qt Enginio cloud
+ data storage library.
+
+Package: qml-module-enginio
+Architecture: any
+Multi-Arch: same
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Qt 5 Enginio QML module
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the QML module for Qt Enginio library.
+
+Package: qtenginio5-examples
+Architecture: any
+Multi-Arch: same
+Depends: qml-module-enginio, ${misc:Depends}
+Description: Qt 5 Enginio examples
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the example source code for Qt Enginio.
+
+Package: qtenginio5-dbg
+Priority: extra
+Architecture: any
+Section: debug
+Multi-Arch: same
+Depends: libenginio1 (= ${binary:Version}), ${misc:Depends}
+Description: Qt 5 Enginio debugging symbols
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the debugging symbols for Qt Enginio.
+
+Package: qtenginio5-doc
+Priority: extra
+Architecture: all
+Section: doc
+Depends: ${misc:Depends}
+Description: Qt 5 Enginio documentation
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the documentation for the Qt Enginio.
+
+Package: qtenginio5-doc-html
+Priority: extra
+Architecture: all
+Section: doc
+Depends: ${misc:Depends}
+Description: Qt 5 Enginio HTML documentation
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the HTML documentation for the Qt Enginio.
