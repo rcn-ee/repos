@@ -164,13 +164,13 @@ qt5_lxqt () {
 	site="http://packages.siduction.org/lxqt/pool/main/l"
 	package_name="lxqt-about" ; package_version="${package_name}_0.9.0-2" ; check_http
 	package_name="lxqt-admin" ; package_version="${package_name}_0.9.0-4" ; check_http
-	package_name="lxqt-common" ; package_version="${package_name}_0.9.1-3" ; check_http
+	package_name="lxqt-common" ; package_version="${package_name}_0.9.1-5" ; check_http
 }
 
-#mesa
-#qt5
-#qt5_kde
-#qt5_apps
+mesa
+qt5
+qt5_kde
+qt5_apps
 qt5_lxqt
 
 site="http://ftp.de.debian.org/debian/pool/main/c"
