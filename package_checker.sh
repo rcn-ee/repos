@@ -52,6 +52,8 @@ package_name="qtchooser" ; package_version="${package_name}_52-gae5eeef-1" ; che
 package_name="qtxmlpatterns-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 package_name="qtdeclarative-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 package_name="qtscript-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-3" ; check_http
+
+#webkit takes about a half day build...
 package_name="qtwebkit-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-3" ; check_http
 package_name="qttools-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 
@@ -64,8 +66,8 @@ package_name="qtmultimedia-opensource-src" ; package_version="${package_name}_5.
 package_name="qtquick1-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 package_name="qtquickcontrols-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 package_name="qtsensors-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-1" ; check_http
+package_name="qtserialport-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 
-#qtserialport-opensource-src*
 #qtsvg-opensource-src*
 #qttranslations-opensource-src*
 #qtwayland-opensource-src*

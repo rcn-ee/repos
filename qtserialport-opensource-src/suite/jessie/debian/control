@@ -1,0 +1,81 @@
+Source: qtserialport-opensource-src
+Section: libs
+Priority: optional
+Maintainer: Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
+Uploaders: Fathi Boudra <fabo@debian.org>,
+           Modestas Vainius <modax@debian.org>,
+           Sune Vuorela <debian@pusling.com>,
+           Pino Toscano <pino@debian.org>,
+           Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>,
+           Felix Geyer <fgeyer@debian.org>,
+           Timo Jyrinki <timo@debian.org>,
+           Dmitry Shachnev <mitya57@debian.org>
+Build-Depends: debhelper (>= 9),
+               libudev-dev [linux-any],
+               pkg-kde-tools,
+               qtbase5-dev (>= 5.4.1+dfsg~)
+Build-Depends-Indep: libqt5sql5-sqlite (>= 5.4.1+dfsg~),
+                     qtbase5-doc-html (>= 5.4.1+dfsg~),
+                     qttools5-dev-tools (>= 5.4.1~)
+Standards-Version: 3.9.6
+Homepage: http://qt-project.org/
+Vcs-Git: git://anonscm.debian.org/pkg-kde/qt/qtserialport.git
+Vcs-Browser: http://anonscm.debian.org/cgit/pkg-kde/qt/qtserialport.git
+
+Package: libqt5serialport5
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Qt 5 serial port support
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package includes the library to use serial ports from within Qt 5.
+
+Package: libqt5serialport5-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Depends: libqt5serialport5 (= ${binary:Version}), qtbase5-dev, ${misc:Depends}
+Description: Qt 5 serial port development files
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package includes the development headers for the serial port library.
+
+Package: qtserialport5-dbg
+Priority: extra
+Architecture: any
+Multi-Arch: same
+Section: debug
+Depends: libqt5serialport5 (= ${binary:Version}), ${misc:Depends}
+Description: Qt 5 serial port library debugging symbols
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the debugging symbols for the Qt 5 serial port library.
+
+Package: qtserialport5-doc
+Priority: extra
+Architecture: all
+Section: doc
+Depends: ${misc:Depends}
+Description: Qt 5 serial port documentation
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the documentation for the Qt 5 serial port library
+ and binaries.
+
+Package: qtserialport5-doc-html
+Priority: extra
+Architecture: all
+Section: doc
+Depends: ${misc:Depends}
+Description: Qt 5 serial port HTML documentation
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the HTML documentation for the Qt 5 serial port
+ libraries and binaries.
