@@ -52,15 +52,19 @@ package_name="qtxmlpatterns-opensource-src" ; package_version="${package_name}_5
 package_name="qtdeclarative-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 package_name="qtscript-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-3" ; check_http
 package_name="qtwebkit-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-3" ; check_http
-
 package_name="qttools-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 
+package_name="qtconnectivity-opensource-src" ; package_version="${package_name}_5.4.1-2" ; check_http
+
+
+echo "qt5: kde:"
 
 site="http://ftp.de.debian.org/debian/pool/main/s"
 package_name="solid" ; package_version="${package_name}_5.8.0-1" ; check_http
 
 site="http://ftp.de.debian.org/debian/pool/main/k"
 package_name="kguiaddons" ; package_version="${package_name}_5.8.0-1" ; check_http
+package_name="kwindowsystem" ; package_version="${package_name}_5.8.0-1" ; check_http
 
 echo "llvm/mesa:"
 
@@ -79,11 +83,13 @@ site="http://packages.siduction.org/extra/pool/main/c"
 package_name="connman" ; package_version="connman_1.27~20150123g04cbd7e-2" ; check_http
 package_name="cmst" ; package_version="cmst_2015.03.28-2" ; check_http
 
-echo "lxqt:"
+echo "qterminal:"
 
 site="http://packages.siduction.org/lxqt/pool/main/q"
 package_name="qtermwidget" ; package_version="qtermwidget_0.6.0-9" ; check_http
 package_name="qterminal" ; package_version="qterminal_0.6.0-8" ; check_http
+
+echo "lxqt:"
 
 site="http://packages.siduction.org/extra/pool/main/libd"
 package_name="libdbusmenu-qt5" ; package_version="${package_name}_0.9.3-1siduction" ; check_http
@@ -93,9 +99,6 @@ package_name="polkit-qt-1" ; package_version="${package_name}_0.112.0-2" ; check
 
 site="http://packages.siduction.org/lxqt/pool/main/libq"
 package_name="libqtxdg" ; package_version="${package_name}_1.1.0-7" ; check_http
-
-site="http://packages.siduction.org/lxqt/pool/main/k"
-package_name="kwindowsystem" ; package_version="${package_name}_5.7.0-1" ; check_http
 
 site="http://packages.siduction.org/lxqt/pool/main/libl"
 package_name="liblxqt" ; package_version="${package_name}_0.9.0-2" ; check_http
