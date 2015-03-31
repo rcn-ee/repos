@@ -61,8 +61,8 @@ package_name="qtgraphicaleffects-opensource-src" ; package_version="${package_na
 package_name="qtimageformats-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 package_name="qtlocation-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 package_name="qtmultimedia-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+package_name="qtquick1-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 
-#qtquick1-opensource-src*
 #qtquickcontrols-opensource-src*
 #qtsensors-opensource-src*
 #qtserialport-opensource-src*

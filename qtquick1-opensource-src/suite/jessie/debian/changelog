@@ -1,0 +1,190 @@
+qtquick1-opensource-src (5.4.1-1~bpo80+20150331+1) jessie; urgency=low
+
+  * Rebuild for repos.rcn-ee.net
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Tue, 31 Mar 2015 11:52:08 -0500
+
+qtquick1-opensource-src (5.4.1-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Bump Qt build-dependencies to 5.4.1.
+  * Update debian/watch to use https://download.qt.io/.
+  * Update mark_private_symbols.sh to the latest version.
+  * Mark destructors symbols missing in GCC 5 optional (closes: #778092).
+  * Clean debian/copyright a bit up.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Tue, 03 Mar 2015 15:20:05 +0300
+
+qtquick1-opensource-src (5.4.0-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Bump Qt build-dependencies to 5.4.0.
+  * Update debian/copyright.
+  * Bump Standards-Version to 3.9.6, no changes needed.
+  * Add myself to Uploaders.
+  * Update Vcs-Browser field to point to cgit interface.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Sat, 27 Dec 2014 18:37:19 +0300
+
+qtquick1-opensource-src (5.3.2-3) unstable; urgency=medium
+
+  * Do not ship CMake files for plugins, we don't need them.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Wed, 24 Sep 2014 22:59:28 -0300
+
+qtquick1-opensource-src (5.3.2-2) unstable; urgency=medium
+
+  * Update symbols files with buildds' logs.
+  * Upload to unstable.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Mon, 22 Sep 2014 19:53:03 -0300
+
+qtquick1-opensource-src (5.3.2-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Update symbols files with buildds's logs.
+  * Bump Qt build dependencies.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Wed, 17 Sep 2014 13:58:48 -0300
+
+qtquick1-opensource-src (5.3.1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Bump Qt build dependencies.
+  * Update symbols files with buildds' logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Mon, 30 Jun 2014 16:03:16 -0300
+
+qtquick1-opensource-src (5.3.0-4) unstable; urgency=medium
+
+  * Update symbols files with buildds' and current logs (Closes: #746897).
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sat, 14 Jun 2014 18:45:27 -0300
+
+qtquick1-opensource-src (5.3.0-3) unstable; urgency=medium
+
+  * Update symbols files with buildds' logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sun, 08 Jun 2014 22:38:39 -0300
+
+qtquick1-opensource-src (5.3.0-2) unstable; urgency=medium
+
+  * Upload to unstable.
+  * Update symbols files with buildds' and current logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Fri, 06 Jun 2014 13:33:36 -0300
+
+qtquick1-opensource-src (5.3.0-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Bump Qt build dependencies.
+  * Move headers to their new m-a path. Mark development package as
+    Multi-Arch: same.
+  * Improve mark_private_symbols.sh to be able to show private symbols not
+    marked as such at build time. Modify debian/rules accordingly.
+  * Do not override dh_builddeb, xz is now the default compression method.
+  * Update install files.
+  * Update debian/copyright.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Thu, 29 May 2014 18:39:47 -0300
+
+qtquick1-opensource-src (5.2.1-3) unstable; urgency=medium
+
+  * Upload to unstable.
+  * Add license to mark_private_symbols.sh and corresponding entry in
+    debian/copyright.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Tue, 25 Mar 2014 11:24:54 -0300
+
+qtquick1-opensource-src (5.2.1-2) experimental; urgency=medium
+
+  * Install private headers, needed by Qt Creator.
+    - Add script to mark private symbols as such.
+    - Modify symbols file to make users of private symbols to depend on
+      qtquick-abi-5-2-1.
+    - Mark private symbols as such.
+  * Simplify qtquick1-5-dev.install.
+  * Update symbols files with current and buildd's logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sat, 01 Mar 2014 18:10:25 -0300
+
+qtquick1-opensource-src (5.2.1-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Bump Qt build dependencies.
+  * No symbols changes since last upload.
+  * Add libicu-dev as build dependency, as it now seems required.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sat, 22 Feb 2014 17:24:33 -0300
+
+qtquick1-opensource-src (5.2.0-2) unstable; urgency=low
+
+  [ Pino Toscano ]
+  * Make qtquick1-5-dev depend on qtbase5-dev.
+  * Remove the Pre-Depends on dpkg >= 1.15.6~, since that version is available
+    in Squeeze already.
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Upload to unstable.
+  * Move mkspec files to their new location.
+    - B-D on qtbase5-private-dev 5.2.0+dfsg-7 which changed the location.
+  * Update Standards-Version to 3.9.5, no changes required.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sat, 01 Feb 2014 14:27:29 -0300
+
+qtquick1-opensource-src (5.2.0-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Bump Qt build dependencies.
+  * Remove new private stuff we are not shipping.
+  * Recreate symbols that used the qreal substitution.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Thu, 19 Dec 2013 16:18:14 -0300
+
+qtquick1-opensource-src (5.1.1-2) unstable; urgency=low
+
+  [ Pino Toscano ]
+  * Update symbols file.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sat, 14 Sep 2013 14:34:50 -0300
+
+qtquick1-opensource-src (5.1.1-1) unstable; urgency=low
+
+  * New upstream release.
+  * Tighten Qt 5 build dependencies.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Mon, 02 Sep 2013 12:09:29 -0300
+
+qtquick1-opensource-src (5.1.0-2) unstable; urgency=low
+
+  * Upload to unstable.
+  * Improve the copyright file:
+    - Add myself to the Debian stuff.
+    - Use 2012-2013 for Digia's copyrights.
+  * Update symbols file.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Mon, 12 Aug 2013 15:42:38 -0300
+
+qtquick1-opensource-src (5.1.0-1) experimental; urgency=low
+
+  * New upstream release.
+  * Fix watch file.
+  * Bump Qt build dependencies to 5.1.0~.
+  * Update install files.
+  * Update symbols file.
+  * Make qtquick1-5-dbg M-A: same, to allow coinstalability of debugging
+    symbols.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Tue, 16 Jul 2013 10:48:15 -0300
+
+qtquick1-opensource-src (5.0.2-2) experimental; urgency=low
+
+  * Split QML plugins in their own package.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sun, 02 Jun 2013 11:46:35 -0300
+
+qtquick1-opensource-src (5.0.2-1) experimental; urgency=low
+
+  * Initial release (Closes: #697509).
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sun, 02 Jun 2013 10:15:44 -0300
