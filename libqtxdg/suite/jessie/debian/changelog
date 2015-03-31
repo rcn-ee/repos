@@ -1,8 +1,63 @@
-libqtxdg (1.1.0-7~20150307+1) jessie; urgency=low
+libqtxdg (1.2.0-1~bpo80+20150331+1) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.net
 
- -- Robert Nelson <robertcnelson@gmail.com>  Sat, 07 Mar 2015 11:43:58 -0600
+ -- Robert Nelson <robertcnelson@gmail.com>  Tue, 31 Mar 2015 14:51:03 -0500
+
+libqtxdg (1.2.0-1) unstable; urgency=medium
+
+  * commit da936792f2376327db2c287348738ede394e7bcc
+    Release 1.2.0
+
+ -- Alf Gaida <agaida@siduction.org>  Sun, 29 Mar 2015 15:10:20 +0200
+
+libqtxdg (1.1.0-14a) unstable; urgency=medium
+
+  * fix https://github.com/lxde/lxqt/issues/563
+  * commit d2c9635876eb054f5ee19de7c306a94539448caa
+    Fixes XdgDesktop::isShow() caching mechanism
+    The cache mechanism was totally broken. It stored the last mIsShow value.
+    And that's it. It didn't take into account the environment.
+    It didn't work with straightforward code like this:
+    for (int i = 0; i < N; ++i)
+
+ -- Alf Gaida <agaida@siduction.org>  Sun, 29 Mar 2015 01:06:24 +0100
+
+libqtxdg (1.1.0-13) unstable; urgency=low
+
+  * commit d3ba6ef8b248f5d80ce5b3c0c0cd7047eb8452d5
+    Add QtDBus/Qt5DBus dependency
+    We depend on it for the DBusActivation support.
+
+ -- Alf Gaida <agaida@siduction.org>  Thu, 26 Mar 2015 01:33:02 +0100
+
+libqtxdg (1.1.0-12) unstable; urgency=medium
+
+  * commit 0a9abfeed2106ac7ab3c7ec8240bb68ffd5ae813
+    Fixes an Qt4 FTBFS
+    QProcess::nullDevice() is just sugar for "/dev/null" on everything except
+    Windows.
+  * qtbase5-private-dev added as build dependency 
+
+ -- Alf Gaida <agaida@siduction.org>  Sat, 14 Mar 2015 21:44:53 +0100
+ 
+libqtxdg (1.1.0-9) unstable; urgency=medium
+
+  * commit 9bc56a68b53cab26a0b97abb218394cb1e3b082f
+    Adds a list of special non detachable execs
+    .   
+    Some executables (pkexec) don't work with QProcess::startDetached().
+    Instead of calling QProcess::start(), which in some situations can lead
+    to the executable being killed as an result of his parent kill, we maintain
+    a list of executables that don't cope with QProcess::startDetached() and
+
+ -- Alf Gaida <agaida@siduction.org>  Thu, 19 Mar 2015 17:53:09 +0100
+
+libqtxdg (1.1.0-8) unstable; urgency=medium
+
+  * fix symbols
+
+ -- Alf Gaida <agaida@siduction.org>  Sun, 08 Mar 2015 20:38:52 +0100
 
 libqtxdg (1.1.0-7) unstable; urgency=medium
 

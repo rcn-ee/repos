@@ -38,124 +38,139 @@ check () {
 	fi
 }
 
-echo "qt5:"
+mesa () {
+	echo "llvm/mesa:"
 
-site="http://ftp.de.debian.org/debian/pool/main/p"
-package_name="pkg-kde-tools" ; package_version="${package_name}_0.15.16" ; check_http
+	site="http://ftp.de.debian.org/debian/pool/main/l"
+	package_name="llvm-toolchain-3.6" ; package_version="${package_name}_3.6-2" ; check_http
 
-site="http://ftp.de.debian.org/debian/pool/main/e"
-package_name="extra-cmake-modules" ; package_version="${package_name}_1.8.0-1" ; check_http
+	site="http://ftp.de.debian.org/debian/pool/main/libd"
+	package_name="libdrm" ; package_version="${package_name}_2.4.60-1" ; check_http
 
-site="http://ftp.de.debian.org/debian/pool/main/q"
-package_name="qtbase-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-2" ; check_http
-package_name="qtchooser" ; package_version="${package_name}_52-gae5eeef-1" ; check_http
-package_name="qtxmlpatterns-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-package_name="qtdeclarative-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-package_name="qtscript-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-3" ; check_http
+	site="http://ftp.de.debian.org/debian/pool/main/m"
+	package_name="mesa" ; package_version="${package_name}_10.4.2-2" ; check_http
+}
 
-#qtwebkit takes about a half day build...
-package_name="qtwebkit-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-3" ; check_http
-package_name="qttools-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+qt5 () {
+	echo "qt5:"
 
-package_name="qtconnectivity-opensource-src" ; package_version="${package_name}_5.4.1-2" ; check_http
-package_name="qtenginio-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-package_name="qtgraphicaleffects-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-package_name="qtimageformats-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-package_name="qtlocation-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-package_name="qtmultimedia-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-package_name="qtquick1-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-package_name="qtquickcontrols-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-package_name="qtsensors-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-1" ; check_http
-package_name="qtserialport-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-package_name="qtsvg-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-package_name="qttranslations-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-package_name="qtwayland-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-package_name="qtwebkit-examples-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-1" ; check_http
-package_name="qtwebsockets-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-package_name="qtx11extras-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-package_name="qtdoc-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+	site="http://ftp.de.debian.org/debian/pool/main/p"
+	package_name="pkg-kde-tools" ; package_version="${package_name}_0.15.16" ; check_http
 
-echo "qt5: kde:"
+	site="http://ftp.de.debian.org/debian/pool/main/e"
+	package_name="extra-cmake-modules" ; package_version="${package_name}_1.8.0-1" ; check_http
 
-site="http://ftp.de.debian.org/debian/pool/main/s"
-package_name="solid" ; package_version="${package_name}_5.8.0-1" ; check_http
+	site="http://ftp.de.debian.org/debian/pool/main/q"
+	package_name="qtbase-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-2" ; check_http
+	package_name="qtchooser" ; package_version="${package_name}_52-gae5eeef-1" ; check_http
+	package_name="qtxmlpatterns-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+	package_name="qtdeclarative-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+	package_name="qtscript-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-3" ; check_http
 
-site="http://ftp.de.debian.org/debian/pool/main/k"
-package_name="kguiaddons" ; package_version="${package_name}_5.8.0-1" ; check_http
-package_name="kwindowsystem" ; package_version="${package_name}_5.8.0-1" ; check_http
+	#qtwebkit takes about a half day build...
+	package_name="qtwebkit-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-3" ; check_http
+	package_name="qttools-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 
-echo "llvm/mesa:"
+	package_name="qtconnectivity-opensource-src" ; package_version="${package_name}_5.4.1-2" ; check_http
+	package_name="qtenginio-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+	package_name="qtgraphicaleffects-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+	package_name="qtimageformats-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+	package_name="qtlocation-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+	package_name="qtmultimedia-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+	package_name="qtquick1-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+	package_name="qtquickcontrols-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+	package_name="qtsensors-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-1" ; check_http
+	package_name="qtserialport-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+	package_name="qtsvg-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+	package_name="qttranslations-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+	package_name="qtwayland-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+	package_name="qtwebkit-examples-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-1" ; check_http
+	package_name="qtwebsockets-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+	package_name="qtx11extras-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+	package_name="qtdoc-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+}
 
-site="http://ftp.de.debian.org/debian/pool/main/l"
-package_name="llvm-toolchain-3.6" ; package_version="${package_name}_3.6-2" ; check_http
+qt5_kde () {
+	echo "qt5: kde:"
 
-site="http://ftp.de.debian.org/debian/pool/main/libd"
-package_name="libdrm" ; package_version="${package_name}_2.4.60-1" ; check_http
+	site="http://ftp.de.debian.org/debian/pool/main/s"
+	package_name="solid" ; package_version="${package_name}_5.8.0-1" ; check_http
 
-site="http://ftp.de.debian.org/debian/pool/main/m"
-package_name="mesa" ; package_version="${package_name}_10.4.2-2" ; check_http
+	site="http://ftp.de.debian.org/debian/pool/main/k"
+	package_name="kguiaddons" ; package_version="${package_name}_5.8.0-1" ; check_http
+	package_name="kwindowsystem" ; package_version="${package_name}_5.8.0-1" ; check_http
+}
 
-echo "connman/cmst:"
+qt5_apps () {
+	echo "connman/cmst:"
 
-site="http://packages.siduction.org/extra/pool/main/c"
-package_name="connman" ; package_version="connman_1.27~20150123g04cbd7e-2" ; check_http
-package_name="cmst" ; package_version="cmst_2015.03.28-2" ; check_http
+	site="http://packages.siduction.org/extra/pool/main/c"
+	package_name="connman" ; package_version="connman_1.27~20150123g04cbd7e-2" ; check_http
+	package_name="cmst" ; package_version="cmst_2015.03.28-2" ; check_http
 
-echo "qterminal:"
+	echo "qterminal:"
 
-site="http://packages.siduction.org/lxqt/pool/main/q"
-package_name="qtermwidget" ; package_version="qtermwidget_0.6.0-9" ; check_http
-package_name="qterminal" ; package_version="qterminal_0.6.0-8" ; check_http
+	site="http://packages.siduction.org/lxqt/pool/main/q"
+	package_name="qtermwidget" ; package_version="qtermwidget_0.6.0-9" ; check_http
+	package_name="qterminal" ; package_version="qterminal_0.6.0-8" ; check_http
+}
 
-echo "lxqt:"
+qt5_lxqt () {
+	echo "lxqt:"
 
-site="http://packages.siduction.org/extra/pool/main/libd"
-package_name="libdbusmenu-qt5" ; package_version="${package_name}_0.9.3-1siduction" ; check_http
+	site="http://packages.siduction.org/extra/pool/main/libd"
+	package_name="libdbusmenu-qt5" ; package_version="${package_name}_0.9.3-1siduction3" ; check_http
 
-site="http://packages.siduction.org/lxqt/pool/main/p"
-package_name="polkit-qt-1" ; package_version="${package_name}_0.112.0-2" ; check_http
+	site="http://packages.siduction.org/lxqt/pool/main/p"
+	package_name="polkit-qt-1" ; package_version="${package_name}_0.112.0-2" ; check_http
 
-site="http://packages.siduction.org/lxqt/pool/main/libq"
-package_name="libqtxdg" ; package_version="${package_name}_1.1.0-7" ; check_http
+	site="http://packages.siduction.org/lxqt/pool/main/libq"
+	package_name="libqtxdg" ; package_version="${package_name}_1.1.0-7" ; check_http
 
-site="http://packages.siduction.org/lxqt/pool/main/libl"
-package_name="liblxqt" ; package_version="${package_name}_0.9.0-2" ; check_http
+	site="http://packages.siduction.org/lxqt/pool/main/libl"
+	package_name="liblxqt" ; package_version="${package_name}_0.9.0-2" ; check_http
 
-site="http://packages.siduction.org/lxqt/pool/main/l"
-package_name="lxqt-globalkeys" ; package_version="${package_name}_0.9.0-3" ; check_http
-package_name="lxqt-notificationd" ; package_version="${package_name}_0.9.0-2" ; check_http
+	site="http://packages.siduction.org/lxqt/pool/main/l"
+	package_name="lxqt-globalkeys" ; package_version="${package_name}_0.9.0-3" ; check_http
+	package_name="lxqt-notificationd" ; package_version="${package_name}_0.9.0-2" ; check_http
 
-site="http://packages.siduction.org/lxqt/pool/main/libs"
-package_name="libsysstat" ; package_version="${package_name}_0.3.0-1" ; check_http
+	site="http://packages.siduction.org/lxqt/pool/main/libs"
+	package_name="libsysstat" ; package_version="${package_name}_0.3.0-1" ; check_http
 
-site="http://packages.siduction.org/lxqt/pool/main/l"
-package_name="lxqt-panel" ; package_version="${package_name}_0.9.0-4" ; check_http
+	site="http://packages.siduction.org/lxqt/pool/main/l"
+	package_name="lxqt-panel" ; package_version="${package_name}_0.9.0-4" ; check_http
 
-site="http://packages.siduction.org/lxqt/pool/main/p"
-package_name="pcmanfm-qt" ; package_version="${package_name}_0.9.0-3" ; check_http
+	site="http://packages.siduction.org/lxqt/pool/main/p"
+	package_name="pcmanfm-qt" ; package_version="${package_name}_0.9.0-3" ; check_http
 
-site="http://packages.siduction.org/lxqt/pool/main/l"
-package_name="lxqt-session" ; package_version="${package_name}_0.9.0-1" ; check_http
-package_name="lxqt-runner" ; package_version="${package_name}_0.9.0-3" ; check_http
-package_name="lxqt-qtplugin" ; package_version="${package_name}_0.9.0-1" ; check_http
-package_name="lxqt-policykit" ; package_version="${package_name}_0.9.0-1" ; check_http
+	site="http://packages.siduction.org/lxqt/pool/main/l"
+	package_name="lxqt-session" ; package_version="${package_name}_0.9.0-1" ; check_http
+	package_name="lxqt-runner" ; package_version="${package_name}_0.9.0-3" ; check_http
+	package_name="lxqt-qtplugin" ; package_version="${package_name}_0.9.0-1" ; check_http
+	package_name="lxqt-policykit" ; package_version="${package_name}_0.9.0-1" ; check_http
 
-site="http://packages.siduction.org/lxqt/pool/main/l"
-package_name="lxqt-powermanagement" ; package_version="${package_name}_0.9.0-3" ; check_http
-package_name="lximage-qt" ; package_version="${package_name}_0.4.0-1" ; check_http
-package_name="lxqt-config" ; package_version="${package_name}_0.9.0-2" ; check_http
+	site="http://packages.siduction.org/lxqt/pool/main/l"
+	package_name="lxqt-powermanagement" ; package_version="${package_name}_0.9.0-3" ; check_http
+	package_name="lximage-qt" ; package_version="${package_name}_0.4.0-1" ; check_http
+	package_name="lxqt-config" ; package_version="${package_name}_0.9.0-2" ; check_http
 
-site="http://packages.siduction.org/lxqt/pool/main/o"
-package_name="obconf-qt" ; package_version="${package_name}_0.1.2-2" ; check_http
+	site="http://packages.siduction.org/lxqt/pool/main/o"
+	package_name="obconf-qt" ; package_version="${package_name}_0.1.2-2" ; check_http
 
-site="http://packages.siduction.org/lxqt/pool/main/c"
-package_name="compton-conf" ; package_version="${package_name}_0.1.2-3" ; check_http
+	site="http://packages.siduction.org/lxqt/pool/main/c"
+	package_name="compton-conf" ; package_version="${package_name}_0.1.2-3" ; check_http
 
-site="http://packages.siduction.org/lxqt/pool/main/l"
-package_name="lxqt-about" ; package_version="${package_name}_0.9.0-2" ; check_http
-package_name="lxqt-admin" ; package_version="${package_name}_0.9.0-2" ; check_http
-package_name="lxqt-common" ; package_version="${package_name}_0.9.1-3" ; check_http
+	site="http://packages.siduction.org/lxqt/pool/main/l"
+	package_name="lxqt-about" ; package_version="${package_name}_0.9.0-2" ; check_http
+	package_name="lxqt-admin" ; package_version="${package_name}_0.9.0-2" ; check_http
+	package_name="lxqt-common" ; package_version="${package_name}_0.9.1-3" ; check_http
+}
 
+#mesa
+#qt5
+#qt5_kde
+#qt5_apps
+qt5_lxqt
 
 site="http://ftp.de.debian.org/debian/pool/main/c"
 package_name="chromium-browser" ; package_version="${package_name}_41.0.2272.76-2" ; check_http
