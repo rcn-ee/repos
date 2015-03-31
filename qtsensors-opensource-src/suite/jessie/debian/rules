@@ -1,0 +1,76 @@
+#!/usr/bin/make -f
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+DEB_HOST_ARCH_OS ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
+
+export CFLAGS := $(shell dpkg-buildflags --get CFLAGS) $(shell dpkg-buildflags --get CPPFLAGS)
+export CXXFLAGS := $(shell dpkg-buildflags --get CXXFLAGS) $(shell dpkg-buildflags --get CPPFLAGS)
+export LDFLAGS := $(shell dpkg-buildflags --get LDFLAGS) -Wl,--as-needed
+export QT_SELECT := qt5
+
+# Retrieve packages that have a .install-common file
+pkgs_with_common = $(patsubst debian/%.install-common,%,$(wildcard debian/*.install-common))
+# Retrieve packages that have a .install-$DEB_HOST_ARCH_OS file
+pkgs_with_os = $(patsubst debian/%.install-$(DEB_HOST_ARCH_OS),%,$(wildcard debian/*.install-$(DEB_HOST_ARCH_OS)))
+
+%:
+	dh $@ --parallel --with pkgkde_symbolshelper --dbg-package=qtsensors5-dbg
+
+override_dh_auto_configure:
+	qmake QT_BUILD_PARTS+=tests
+
+override_dh_auto_build-indep:
+	dh_auto_build -Smakefile -- docs
+
+override_dh_auto_test:
+	xvfb-run -a dh_auto_test -- QT_PLUGIN_PATH=$(CURDIR)/plugins LD_LIBRARY_PATH=$(CURDIR)/lib
+
+override_dh_auto_install-arch:
+	dh_auto_install
+	
+	# Fix wrong path in pkgconfig files
+	find $(CURDIR)/debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/pkgconfig -type f -name '*.pc' \
+	-exec sed -i -e 's/$(DEB_HOST_MULTIARCH)\/$(DEB_HOST_MULTIARCH)/$(DEB_HOST_MULTIARCH)/g' {} \;
+	
+	# Remove libtool-like files
+	rm -f debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/*.la
+
+	# Remove private headers
+	rm -fv debian/tmp/usr/include/*/qt5/QtSensors/*/QtSensors/private/*
+	# ... and other private stuff
+	rm -fv debian/tmp/usr/lib/*/qt5/mkspecs/modules/qt_lib_sensors_private.pri
+
+override_dh_auto_install-indep:
+	make INSTALL_ROOT=$(CURDIR)/debian/tmp install_docs
+
+override_dh_install:
+	# Now flush all the .install-* files as .install files.
+	set -e; for pkg in $(pkgs_with_common); do \
+		cat debian/$$pkg.install-common >> debian/$$pkg.install ; \
+	done
+
+	set -e; for pkg in $(pkgs_with_os); do \
+		cat debian/$$pkg.install-$(DEB_HOST_ARCH_OS) >> debian/$$pkg.install ; \
+	done
+
+	dh_install --fail-missing
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -rf doc/qtsensors doc/qtsensors.qch
+	rm -f examples/sensors/grue/detect_grue
+
+override_dh_clean:
+	dh_clean
+
+	# Don't forget to remove the .install files we generated.
+	for pkg in $(pkgs_with_common); do \
+		rm -f debian/$$pkg.install ; \
+	done
+
+	for pkg in $(pkgs_with_os); do \
+		rm -f debian/$$pkg.install ; \
+	done

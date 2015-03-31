@@ -1,0 +1,16 @@
+Description: disable tests that work only for local installations
+Author: Dmitry Shachnev <mitya57@debian.org>
+Forwarded: not-needed
+Last-Update: 2015-03-03
+
+--- a/tests/auto/auto.pro
++++ b/tests/auto/auto.pro
+@@ -5,8 +5,5 @@
+ #SUBDIRS += legacy_sensors
+ SUBDIRS += qtsensors5
+ SUBDIRS += qsensorgestures
+-SUBDIRS += qsensorgestureplugins
+ SUBDIRS += cmake
+ 
+-!mac:!win32:SUBDIRS += qsensorgestures_gestures
+-

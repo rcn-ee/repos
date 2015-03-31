@@ -63,8 +63,8 @@ package_name="qtlocation-opensource-src" ; package_version="${package_name}_5.4.
 package_name="qtmultimedia-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 package_name="qtquick1-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 package_name="qtquickcontrols-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+package_name="qtsensors-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-1" ; check_http
 
-#qtsensors-opensource-src*
 #qtserialport-opensource-src*
 #qtsvg-opensource-src*
 #qttranslations-opensource-src*
