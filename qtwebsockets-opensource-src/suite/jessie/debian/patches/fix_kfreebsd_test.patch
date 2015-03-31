@@ -1,0 +1,101 @@
+Description: fix some tests in kfreebsd.
+Author: Adam Majer <adamm@zombino.com>
+Bug-Qt: https://bugreports.qt-project.org/browse/QTBUG-41448
+
+---
+ tests/auto/qwebsocket/tst_qwebsocket.cpp |   31 ++++++++++++++++++++++++++++---
+ 1 file changed, 28 insertions(+), 3 deletions(-)
+
+--- a/tests/auto/qwebsocket/tst_qwebsocket.cpp
++++ b/tests/auto/qwebsocket/tst_qwebsocket.cpp
+@@ -246,6 +246,7 @@ void tst_QWebSocket::tst_invalidOpen_dat
+     QTest::addColumn<QString>("expectedUrl");
+     QTest::addColumn<QString>("expectedPeerName");
+     QTest::addColumn<QString>("expectedResourceName");
++    QTest::addColumn<QAbstractSocket::SocketError>("socketErrorAfterConnect");
+     QTest::addColumn<QAbstractSocket::SocketState>("stateAfterOpenCall");
+     QTest::addColumn<int>("disconnectedCount");
+     QTest::addColumn<int>("stateChangedCount");
+@@ -253,18 +254,28 @@ void tst_QWebSocket::tst_invalidOpen_dat
+     QTest::newRow("Illegal local address")
+             << QStringLiteral("ws://127.0.0.1:1/") << QStringLiteral("ws://127.0.0.1:1/")
+             << QStringLiteral("127.0.0.1")
+-            << QStringLiteral("/") << QAbstractSocket::ConnectingState
++            << QStringLiteral("/")
++#ifdef Q_OS_FREEBSD_KERNEL
++            << QAbstractSocket::ConnectionRefusedError
++            << QAbstractSocket::UnconnectedState
++#else
++            << QAbstractSocket::UnknownSocketError
++            << QAbstractSocket::ConnectingState
++#endif
+             << 1
+             << 2;  //going from connecting to disconnected
+     QTest::newRow("URL containing new line in the hostname")
+             << QStringLiteral("ws://myhacky\r\nserver/") << QString()
+             << QString()
+-            << QString() << QAbstractSocket::UnconnectedState
++            << QString() 
++            << QAbstractSocket::UnknownSocketError
++            << QAbstractSocket::UnconnectedState
+             << 0 << 0;
+     QTest::newRow("URL containing new line in the resource name")
+             << QStringLiteral("ws://127.0.0.1:1/tricky\r\npath") << QString()
+             << QString()
+             << QString()
++            << QAbstractSocket::UnknownSocketError
+             << QAbstractSocket::UnconnectedState
+             << 0 << 0;
+ }
+@@ -275,6 +286,7 @@ void tst_QWebSocket::tst_invalidOpen()
+     QFETCH(QString, expectedUrl);
+     QFETCH(QString, expectedPeerName);
+     QFETCH(QString, expectedResourceName);
++    QFETCH(QAbstractSocket::SocketError, socketErrorAfterConnect);
+     QFETCH(QAbstractSocket::SocketState, stateAfterOpenCall);
+     QFETCH(int, disconnectedCount);
+     QFETCH(int, stateChangedCount);
+@@ -298,7 +310,8 @@ void tst_QWebSocket::tst_invalidOpen()
+     QCOMPARE(socket.version(), QWebSocketProtocol::VersionLatest);
+     //at this point the socket is in a connecting state
+     //so, there should no error at this point
+-    QCOMPARE(socket.error(), QAbstractSocket::UnknownSocketError);
++    // but it depends on the platform
++    QCOMPARE(socket.error(), socketErrorAfterConnect);
+     QVERIFY(!socket.errorString().isEmpty());
+     QVERIFY(!socket.isValid());
+     QVERIFY(socket.localAddress().isNull());
+@@ -365,7 +378,13 @@ void tst_QWebSocket::tst_invalidOrigin()
+ 
+     //at this point the socket is in a connecting state
+     //so, there should no error at this point
++#ifdef Q_OS_FREEBSD_KERNEL
++    // except with FreeBSD, which seems too fast for tests
++    QCOMPARE(socket.error(), QAbstractSocket::ConnectionRefusedError);
++#else
+     QCOMPARE(socket.error(), QAbstractSocket::UnknownSocketError);
++#endif
++
+     QVERIFY(!socket.errorString().isEmpty());
+     QVERIFY(!socket.isValid());
+     QVERIFY(socket.localAddress().isNull());
+@@ -374,13 +393,19 @@ void tst_QWebSocket::tst_invalidOrigin()
+     QVERIFY(socket.peerAddress().isNull());
+     QCOMPARE(socket.peerPort(), quint16(0));
+     QCOMPARE(socket.peerName(), QStringLiteral("127.0.0.1"));
++#ifdef Q_OS_FREEBSD_KERNEL
++    QCOMPARE(socket.state(), QAbstractSocket::UnconnectedState);
++#else
+     QCOMPARE(socket.state(), QAbstractSocket::ConnectingState);
++#endif
+     QCOMPARE(socket.readBufferSize(), 0);
+     QCOMPARE(socket.resourceName(), QStringLiteral("/"));
+     QCOMPARE(socket.requestUrl(), QUrl(QStringLiteral("ws://127.0.0.1:1/")));
+     QCOMPARE(socket.closeCode(), QWebSocketProtocol::CloseCodeNormal);
+ 
++#ifndef Q_OS_FREEBSD_KERNEL
+     QVERIFY(errorSpy.wait());
++#endif
+ 
+     QCOMPARE(errorSpy.count(), 1);
+     QList<QVariant> arguments = errorSpy.takeFirst();
