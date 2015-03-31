@@ -1,0 +1,21 @@
+Author: Pino Toscano <toscano.pino@tiscali.it>
+Description: Enable RPATH also on Hurd and kFreeBSD
+ Enable RPATH also on those platforms so the spectrum example can locate the
+ fftreal library in its own directory.
+ .
+ The "hurd-*" addition can be upstreamed, while the "gnukfreebsd-*" depends on
+ a (currently) Debian-only mkspec.
+Last-Update: 2014-05-21
+Forwarded: no
+
+--- a/examples/multimedia/spectrum/app/app.pro
++++ b/examples/multimedia/spectrum/app/app.pro
+@@ -76,7 +76,7 @@ macx {
+                                 ../spectrum.app/Contents/MacOS/spectrum
+     }
+ } else {
+-    linux-g++*: {
++    linux-g++*|hurd-*|gnukfreebsd-*: {
+         # Provide relative path from application to fftreal library
+         QMAKE_LFLAGS += -Wl,--rpath=\\\$\$ORIGIN
+     }

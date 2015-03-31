@@ -60,9 +60,8 @@ package_name="qtenginio-opensource-src" ; package_version="${package_name}_5.4.1
 package_name="qtgraphicaleffects-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 package_name="qtimageformats-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 package_name="qtlocation-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+package_name="qtmultimedia-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 
-#qtmobility*
-#qtmultimedia-opensource-src*
 #qtquick1-opensource-src*
 #qtquickcontrols-opensource-src*
 #qtsensors-opensource-src*

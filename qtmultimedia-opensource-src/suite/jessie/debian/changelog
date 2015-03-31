@@ -1,0 +1,339 @@
+qtmultimedia-opensource-src (5.4.1-1~bpo80+20150331+1) jessie; urgency=low
+
+  * Rebuild for repos.rcn-ee.net
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Tue, 31 Mar 2015 11:14:54 -0500
+
+qtmultimedia-opensource-src (5.4.1-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Bump Qt build-dependencies to 5.4.1.
+  * Update debian/watch to point to https://download.qt.io/.
+  * Update debian/copyright.
+  * Mark destructors symbols missing with GCC 5 as optional
+    (closes: #778091).
+  * Also add one new symbol to libqt5multimediaquick-p5.symbols.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Thu, 05 Mar 2015 14:45:17 +0300
+
+qtmultimedia-opensource-src (5.4.0-2) experimental; urgency=medium
+
+  * Install Qt5Quick_QSGVideoNodeFactory_EGL.cmake on armel as well.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Tue, 23 Dec 2014 14:44:41 +0300
+
+qtmultimedia-opensource-src (5.4.0-1) experimental; urgency=medium
+
+  [ Timo Jyrinki ]
+  * New upstream release.
+  * Bump build dependencies.
+  * Update qtmultimedia-dev.install
+  * Add qtmultimedia5-dev.install-armhf, rename qtmultimedia5-dev.install
+    to qtmultimedia5-dev.install-common and update debian/rules to handle
+    those similar to how it's done in qtbase.
+
+  [ Dmitry Shachnev ]
+  * Drop also_build_alsa_plugin.patch, applied upstream.
+  * Update debian/copyright.
+  * Update Vcs-Browser field to point to cgit interface.
+  * Add qtbase5-doc-html to Build-Depends-Indep to make sure docs
+    are properly linked with qtbase.
+  * Bump Standards-Version to 3.9.6, no changes needed.
+  * Add myself to Uploaders.
+  * Update symbols files.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Mon, 22 Dec 2014 15:09:24 +0300
+
+qtmultimedia-opensource-src (5.3.2-5) unstable; urgency=medium
+
+  * Simplify libqt5multimedia5-plugins.install, solving the FTBFS on
+    kfreebsd-* due to the missing ALSA plugin.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Wed, 03 Dec 2014 13:51:59 -0300
+
+qtmultimedia-opensource-src (5.3.2-4) unstable; urgency=medium
+
+  * Add a patch from Chris Ruvolo to also build the ALSA plugin even if we
+    are building with pulseaudio support (Closes: #771391).
+    - Include the plugin in libqt5multimedia5-plugins' install file.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Wed, 03 Dec 2014 10:37:12 -0300
+
+qtmultimedia-opensource-src (5.3.2-3) unstable; urgency=medium
+
+  * Remove CMake files for plugins, we don't need to ship them
+    (Closes: #765488).
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Wed, 15 Oct 2014 12:46:29 -0300
+
+qtmultimedia-opensource-src (5.3.2-2) unstable; urgency=medium
+
+  * Upload to unstable.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Mon, 22 Sep 2014 23:29:57 -0300
+
+qtmultimedia-opensource-src (5.3.2-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Bump Qt build dependencies.
+  * Update symbols files with buildds' logs.
+  * Remove test_v4l.patch, applied upstream.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Wed, 17 Sep 2014 20:11:40 -0300
+
+qtmultimedia-opensource-src (5.3.1-4) unstable; urgency=medium
+
+  * Make libqgsttools-p1 Architecture: any, as it now builds on Hurd.
+  * Use a better version of test_v4l.patch.
+    - Fix install files, we now do not have exceptions for Hurd.
+  * Update symbols files with Hurd's log.
+  * This upload will get rebuilt against a fixed pkg-kde-tools' symbolshelper,
+    thus fixing the FTBFS in kfreebsd-amd64 (Closes: #754750).
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Thu, 24 Jul 2014 11:11:08 -0300
+
+qtmultimedia-opensource-src (5.3.1-3) unstable; urgency=medium
+
+  * Backport test_v4l.patch to allow GStreamer stuff to be built on Hurd
+    (Closes: #753835).
+    - Fix install files accordingly.
+  * Update symbols files with buildds' and current logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sat, 12 Jul 2014 13:29:19 -0300
+
+qtmultimedia-opensource-src (5.3.1-2) unstable; urgency=medium
+
+  * Update symbols files with buildds' logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Tue, 01 Jul 2014 13:20:56 -0300
+
+qtmultimedia-opensource-src (5.3.1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Bump Qt build dependencies.
+  * Fix install files for Hurd.
+  * Update symbols files with buildds' and current logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Mon, 30 Jun 2014 19:08:40 -0300
+
+qtmultimedia-opensource-src (5.3.0-6) unstable; urgency=medium
+
+  * Only install development files for gstreamer stuff on Linux and KFreeBSD.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Fri, 20 Jun 2014 22:08:02 -0300
+
+qtmultimedia-opensource-src (5.3.0-5) unstable; urgency=medium
+
+  [ Dmitry Shachnev ]
+  * Third try to fix building on Hurd: make some files in
+    qtmultimedia5-dev.install Linux/kFreeBSD-specific.
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Update symbols files.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Fri, 20 Jun 2014 19:09:06 -0300
+
+qtmultimedia-opensource-src (5.3.0-4) unstable; urgency=medium
+
+  [ Dmitry Shachnev ]
+  * Do not install gstreamer libraries on Hurd. We are currently not building
+    them until QTBUG-39762 gets solved.
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Update symbols files with buildds' logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Thu, 19 Jun 2014 15:43:29 -0300
+
+qtmultimedia-opensource-src (5.3.0-3) unstable; urgency=medium
+
+  [ Dmitry Shachnev ]
+  * Minor fixes for debian/copyright.
+  * Make gstreamer config test a bit stricter, to make sure it does
+    not pass on Hurd.
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Update symbols files with buildd's and current logs (Closes: #746902).
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Wed, 18 Jun 2014 00:44:07 -0300
+
+qtmultimedia-opensource-src (5.3.0-2) unstable; urgency=medium
+
+  * Upload to unstable.
+  * Update symbols files with buildds' logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Fri, 06 Jun 2014 15:08:29 -0300
+
+qtmultimedia-opensource-src (5.3.0-1) experimental; urgency=medium
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * New upstream release.
+  * Add config.tests/mmrenderer/* to debian/copyright. Thanks Scott Kitterman
+    for noticing!
+  * Bump Qt build dependencies.
+  * Move headers to their new multi arch path. Mark development package as
+    Multi-Arch: same.
+  * Remove transitional packages, they are no longer needed.
+  * Fix path for removing private headers.
+  * Do not override dh_builddeb, xz is now the default method.
+  * Remove gstreamer_cleanup_system_includes.patch, applied upstream.
+  * Do not install private stuff.
+  * Fix install file with new headers.
+  * Update symbols files with current build log.
+  * Update debian/copyright.
+
+  [ Pino Toscano ]
+  * Enable RPATH in the spectrum example also on kFreeBSD and Hurd; patch
+    rpath_nonlinux.diff. (Closes: #748816)
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Wed, 28 May 2014 23:59:53 -0300
+
+qtmultimedia-opensource-src (5.2.1-3) unstable; urgency=medium
+
+  * Rename QML packages with proper files renaming and Break+Replaces:
+    - qtdeclarative5-qtaudioengine-plugin → qml-module-qtaudioengine
+    - qtdeclarative5-qtmultimedia-plugin → qml-module-qtmultimedia
+  * Add qml-module-qtquick2 as qml-module-qtmultimedia dependency.
+  * Backport gstreamer_cleanup_system_includes.patch to solve FTBFS in
+    kfreebsd-*.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Thu, 03 Apr 2014 11:25:23 -0300
+
+qtmultimedia-opensource-src (5.2.1-2) unstable; urgency=medium
+
+  * Upload to unstable.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Mon, 24 Mar 2014 23:43:36 -0300
+
+qtmultimedia-opensource-src (5.2.1-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Bump Qt build dependencies.
+  * Update symbols files with buildd's and current logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Wed, 19 Feb 2014 19:26:24 -0300
+
+qtmultimedia-opensource-src (5.2.0-3) unstable; urgency=low
+
+  [ Pino Toscano ]
+  * Simplify qtmultimedia5-examples.install.
+  * Remove the Pre-Depends on dpkg >= 1.15.6~, since that version is available
+    in Squeeze already.
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Upload to unstable.
+  * Move mkspec files to their new location.
+    - B-D on qtbase5-private-dev 5.2.0+dfsg-7 which changed the location.
+  * Update symbols files with buildd's logs.
+  * Update Standards-Version to 3.9.5, no changes required.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Fri, 31 Jan 2014 20:06:31 -0300
+
+qtmultimedia-opensource-src (5.2.0-2) experimental; urgency=medium
+
+  * Update symbols files with buildd's logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Fri, 20 Dec 2013 14:39:45 -0300
+
+qtmultimedia-opensource-src (5.2.0-1) experimental; urgency=low
+
+  [ Dmitry Shachnev ]
+  * New upstream release.
+  * Bump Qt 5 build-dependencies to 5.2.0.
+  * Update qtmultimedia5-examples.install.
+  * Make Vcs-Browser field canonical by dropping useless attribute.
+  * Explicitly define DEB_HOST_MULTIARCH in debian/rules.
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Remove new private stuff we are not shipping.
+  * Adjust install files.
+  * Update symbols files with current build log.
+  * Regenerate the symbols that used to have the qreal subst.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Mon, 16 Dec 2013 23:15:42 -0300
+
+qtmultimedia-opensource-src (5.1.1-2) unstable; urgency=low
+
+  * Switch priority to optional. Hat tip to Dmitry Shachnev.
+    - Switch the dbg package back to priority extra.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Mon, 16 Dec 2013 19:07:59 -0300
+
+qtmultimedia-opensource-src (5.1.1-1) unstable; urgency=low
+
+  * New upstream release.
+  * Tighten Qt 5 build dependencies.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Fri, 30 Aug 2013 22:59:54 -0300
+
+qtmultimedia-opensource-src (5.1.0-2) unstable; urgency=low
+
+  * Upload to unstable.
+  * Update symbols files.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sun, 11 Aug 2013 10:50:12 -0300
+
+qtmultimedia-opensource-src (5.1.0-1) experimental; urgency=low
+
+  * New upstream release.
+
+  [ Ricardo Salveti de Araujo ]
+  * debian/control: adding missing dependencies for qtmultimedia5-examples.
+    Forwarded to Debian by Dmitry Shachnev.
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Update symbols files.
+  * Fix watch file.
+  * Bump build dependencies to 5.1.0~.
+  * Remove package qtmultimedia5-private-dev. Nothing in the Qt stack seems to
+    be using it. Can be reintroduced later if needed.
+    - Remove associated install file.
+    - Remove the files from debian/tmp before installing the packages.
+  * Adjust install files.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Thu, 11 Jul 2013 20:42:48 -0300
+
+qtmultimedia-opensource-src (5.0.2-4) experimental; urgency=low
+
+  * Build the documentation shipped with this submodule as a build-indep task:
+    - Add the necessary indep build dependencies:
+      * qttools5-dev-tools to use qhelpgenerator.
+      * libqt5sql5-sqlite to generate qch doc.
+    - Build and create packages for qch and HTML doc formats.
+  * Update symbols file.
+  * Make qtmultimedia5-dbg M-A same to allow coinstalability of debugging
+    symbols.
+  * Bump qtbase B-D to 5.0.2+dfsg1-6~, because it's the version that adds
+    GStreamer support.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Thu, 20 Jun 2013 20:26:20 -0300
+
+qtmultimedia-opensource-src (5.0.2-3) experimental; urgency=low
+
+  [ Pino Toscano ]
+  * qtmultimedia5-examples: add ${misc:Pre-Depends}.
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Update symbols files.
+
+  [ Timo Jyrinki]
+  * Fix paths in pkgconfig files
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Wed, 29 May 2013 12:19:03 -0300
+
+qtmultimedia-opensource-src (5.0.2-2) experimental; urgency=low
+
+  [ Pino Toscano ]
+  * Update Vcs-Browser and Vcs-Git headers.
+  * Remove extra qt5-qmake and qtbase5-dev-tools build dependencies.
+  * qtmultimedia5-dbg: add ${misc:Depends}, and demote the
+    qtmultimedia5-examples dependency to suggest.
+  * Update symbols files.
+  * Add the libasound2-dev (on Linux only) build dependency.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Mon, 06 May 2013 15:15:00 -0300
+
+qtmultimedia-opensource-src (5.0.2-1) experimental; urgency=low
+
+  * Initial release. (Closes: #697509)
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sun, 28 Apr 2013 09:28:52 -0300
