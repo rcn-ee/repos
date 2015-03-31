@@ -29,3 +29,6 @@ checkout: maintainer-clean
 	echo "";\
 	git log | head; \
 	echo ""; \
+
+symbols:
+	find . -name symbols | xargs sed 's/ \(_.*\) \(.*\)/ (c++)"\1" \2/' | c++filt | uniq > debian/mangled
