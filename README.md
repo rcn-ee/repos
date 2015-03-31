@@ -16,9 +16,19 @@ deb [arch=armhf] http://repos.rcn-ee.net/ubuntu/ trusty main
 #deb-src [arch=armhf] http://repos.rcn-ee.net/ubuntu/ trusty main
 ```
 
+Ubuntu 14.10: (Utopic): http://repos.rcn-ee.net/ubuntu/
+```
+deb [arch=armhf] http://repos.rcn-ee.net/ubuntu/ utopic main
+#deb-src [arch=armhf] http://repos.rcn-ee.net/ubuntu/ utopic main
+```
+
+Ubuntu 15.04: (Vivid): http://repos.rcn-ee.net/ubuntu/
+```
+deb [arch=armhf] http://repos.rcn-ee.net/ubuntu/ vivid main
+#deb-src [arch=armhf] http://repos.rcn-ee.net/ubuntu/ vivid main
+```
+
 keyring:
 ```
 sudo apt-get install rcn-ee-archive-keyring
 ```
-
-secure https (via: apt-transport-https) is also available: https://repos.rcn-ee.net/[debian|ubuntu]/
