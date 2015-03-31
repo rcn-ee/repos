@@ -70,8 +70,8 @@ package_name="qtserialport-opensource-src" ; package_version="${package_name}_5.
 package_name="qtsvg-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 package_name="qttranslations-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 package_name="qtwayland-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+package_name="qtwebkit-examples-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-1" ; check_http
 
-#qtwebkit-examples-opensource-src*
 #qtwebsockets-opensource-src*
 #qtx11extras-opensource-src*
 #qtxmlpatterns-opensource-src*
