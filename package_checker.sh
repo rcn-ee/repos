@@ -59,8 +59,8 @@ package_name="qtconnectivity-opensource-src" ; package_version="${package_name}_
 package_name="qtenginio-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 package_name="qtgraphicaleffects-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 package_name="qtimageformats-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+package_name="qtlocation-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 
-#qtlocation-opensource-src*
 #qtmobility*
 #qtmultimedia-opensource-src*
 #qtquick1-opensource-src*

@@ -1,0 +1,63 @@
+#!/usr/bin/make -f
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+export CFLAGS := $(shell dpkg-buildflags --get CFLAGS) $(shell dpkg-buildflags --get CPPFLAGS)
+export CXXFLAGS := $(shell dpkg-buildflags --get CXXFLAGS) $(shell dpkg-buildflags --get CPPFLAGS)
+export LDFLAGS := $(shell dpkg-buildflags --get LDFLAGS) -Wl,--as-needed
+export QT_SELECT := qt5
+
+%:
+	dh $@ --parallel --with pkgkde_symbolshelper --dbg-package=qtpositioning5-dbg
+
+override_dh_auto_configure:
+	qmake QT_BUILD_PARTS+=tests
+
+override_dh_auto_build-indep:
+	dh_auto_build -Smakefile -- docs
+
+override_dh_auto_install-arch:
+	dh_auto_install
+	# Fix wrong path in pkgconfig files
+	find $(CURDIR)/debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/pkgconfig -type f -name '*.pc' \
+	-exec sed -i -e 's/$(DEB_HOST_MULTIARCH)\/$(DEB_HOST_MULTIARCH)/$(DEB_HOST_MULTIARCH)/g' {} \;
+	
+	# Remove libtool-like files
+	rm -f debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/*.la
+	
+	# Remove private stuff
+	rm -rfv $(CURDIR)/debian/tmp/usr/include/$(DEB_HOST_MULTIARCH)/qt5/QtLocation/*/QtLocation/private
+	rm -rfv $(CURDIR)/debian/tmp/usr/include/$(DEB_HOST_MULTIARCH)/qt5/QtPositioning/*/QtPositioning/private
+	rm -fv $(CURDIR)/debian/tmp/usr/lib/*/qt5/mkspecs/modules/qt_lib_*_private.pri
+	
+	# Remove binary that includes libtheora in itself
+	rm -f debian/tmp/usr/lib/*/qt5/examples/qtlocation/declarative/mapviewer/qml_location_mapviewer
+
+override_dh_auto_install-indep:
+	make INSTALL_ROOT=$(CURDIR)/debian/tmp install_docs
+
+override_dh_install:
+	dh_install --fail-missing
+
+override_dh_auto_test:
+ifeq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
+	dbus-launch --exit-with-session dh_auto_test -- QT_QPA_PLATFORM=minimal QT_DEBUG_PLUGINS=1 QT_PLUGIN_PATH=$(CURDIR)/plugins
+endif
+
+override_dh_auto_clean:
+	dh_auto_clean
+	# Leftover files and all symlinks
+	find \( -false \
+	  -o -name \*.a \
+	  -o -name Makefile.Debug \
+	  -o -name Makefile.Release \
+	  -o -name \*.o \
+	  -o -name \*.prl \
+	  -o -name \*.so \
+	  -o -name \*.so.debug \
+	  -o -type l \
+	\) -print0 | xargs -0 rm -rfv
+
+	# Some other leftover binaries
+	rm -fv config.tests/geoclue/geoclue
