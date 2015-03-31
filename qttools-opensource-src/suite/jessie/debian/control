@@ -1,0 +1,264 @@
+Source: qttools-opensource-src
+Section: libs
+Priority: optional
+Maintainer: Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
+Uploaders: Fathi Boudra <fabo@debian.org>,
+           Modestas Vainius <modax@debian.org>,
+           Sune Vuorela <debian@pusling.com>,
+           Pino Toscano <pino@debian.org>,
+           Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>,
+           Felix Geyer <fgeyer@debian.org>,
+           Timo Jyrinki <timo@debian.org>,
+           Dmitry Shachnev <mitya57@debian.org>
+Build-Depends: debhelper (>= 9),
+               libdouble-conversion-dev,
+               libqt5opengl5-dev (>= 5.4.1+dfsg~),
+               libqt5sql5-sqlite (>= 5.4.1+dfsg~),
+               libqt5webkit5-dev (>= 5.4.1+dfsg~),
+               pkg-kde-tools,
+               qtbase5-private-dev (>= 5.4.1+dfsg~),
+               qtdeclarative5-private-dev (>= 5.4.1~),
+               zlib1g-dev
+Build-Depends-Indep: qtbase5-doc-html (>= 5.4.1+dfsg~),
+                     qtdeclarative5-doc-html (>= 5.4.1~),
+                     qtscript5-doc-html (>= 5.4.1+dfsg~),
+                     qtwebkit5-doc-html (>= 5.4.1+dfsg~),
+                     qtxmlpatterns5-doc-html (>= 5.4.1~)
+Standards-Version: 3.9.6
+Homepage: http://qt-project.org/
+Vcs-Git: git://anonscm.debian.org/pkg-kde/qt/qttools.git
+Vcs-Browser: http://anonscm.debian.org/cgit/pkg-kde/qt/qttools.git
+
+Package: libqt5clucene5
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Qt 5 CLucene module
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package includes the CLucene module. CLucene is a high-performance,
+ scalable indexing and searching API.
+
+Package: libqt5designer5
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Qt 5 designer module
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ The QtDesigner module provides classes that allow you to create your own
+ custom widget plugins for Qt Designer, and classes that enable you to access
+ Qt Designer's components.
+
+Package: libqt5designercomponents5
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Qt 5 Designer components module
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package includes components for the Qt 5 Designer module.
+
+Package: qdbus-qt5
+Architecture: any
+Section: utils
+Depends: qtchooser, ${misc:Depends}, ${shlibs:Depends}
+Description: Qt 5 D-Bus tool
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains qdbus, a command-line tool interface to D-Bus that uses
+ the QtDBus library.
+
+Package: libqt5help5
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Qt 5 help module
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ The QtHelp module provides classes for integrating online documentation in
+ applications.
+
+Package: qttools5-dev
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: libqt5clucene5 (= ${binary:Version}),
+         libqt5designer5 (= ${binary:Version}),
+         libqt5designercomponents5 (= ${binary:Version}),
+         libqt5help5 (= ${binary:Version}),
+         qtbase5-dev,
+         ${misc:Depends}
+Description: Qt 5 tools development files
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the header development files used for building Qt 5
+ applications.
+
+Package: qttools5-private-dev
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: qttools5-dev (= ${binary:Version}), ${misc:Depends}
+Breaks: qttools5-dev (<< 5.2.0-3~)
+Replaces: qttools5-dev (<< 5.2.0-3~)
+Description: Qt 5 tools private development files
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains private header development files.
+ .
+ Use at your own risk.
+
+Package: qttools5-dev-tools
+Architecture: any
+Section: devel
+Depends: qtchooser, ${misc:Depends}, ${shlibs:Depends}
+Recommends: libqt5sql5-sqlite
+Breaks: qttools5-examples (<< 5.3.0-4~)
+Replaces: qttools5-examples (<< 5.3.0-4~)
+Description: Qt 5 development tools
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains a set of applications to browse the documentation,
+ translate applications, generate help files and other stuff that
+ helps in Qt development. These tools are among others:
+  * assistant
+  * designer
+  * linguist
+  * pixeltool
+  * qdbusviewer
+
+Package: qttools5-examples
+Architecture: any
+Multi-Arch: same
+Section: x11
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Qt 5 tools examples
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains examples of the Qt 5 tools module.
+
+Package: qttools5-dbg
+Architecture: any
+Multi-Arch: same
+Priority: extra
+Section: debug
+Depends: libqt5clucene5 (= ${binary:Version}),
+         libqt5designer5 (= ${binary:Version}),
+         libqt5designercomponents5 (= ${binary:Version}),
+         libqt5help5 (= ${binary:Version}),
+         ${misc:Depends}
+Description: Qt 5 tools debugging symbols
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the debugging symbols for the Qt 5 tools and tools
+ libraries.
+
+Package: qttools5-examples-dbg
+Architecture: any
+Multi-Arch: same
+Priority: extra
+Section: debug
+Depends: qttools5-dbg (= ${binary:Version}),
+         qttools5-examples (= ${binary:Version}),
+         ${misc:Depends}
+Description: Qt 5 tools examples debugging symbols
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the debugging symbols for the Qt 5 tools examples.
+
+Package: qtbase5-doc
+Priority: extra
+Architecture: all
+Section: doc
+Depends: ${misc:Depends}
+Description: Qt 5 base documentation
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the documentation for the Qt 5 base libraries.
+
+Package: qtdeclarative5-doc
+Priority: extra
+Architecture: all
+Section: doc
+Depends: ${misc:Depends}
+Description: Qt 5 declarative documentation
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the documentation for the Qt 5 declarative libraries.
+
+Package: qtscript5-doc
+Priority: extra
+Architecture: all
+Section: doc
+Depends: ${misc:Depends}
+Description: Qt 5 script documentation
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the documentation for the Qt 5 script libraries.
+
+Package: qttools5-doc
+Priority: extra
+Architecture: all
+Section: doc
+Depends: ${misc:Depends}
+Description: Qt 5 tools documentation
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the documentation for the Qt 5 tools libraries
+ and binaries.
+
+Package: qttools5-doc-html
+Priority: extra
+Architecture: all
+Section: doc
+Depends: ${misc:Depends}
+Description: Qt 5 tools HTML documentation
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the HTML documentation for the Qt 5 tools
+ libraries and binaries.
+
+Package: qtxmlpatterns5-doc
+Priority: extra
+Architecture: all
+Section: doc
+Depends: ${misc:Depends}
+Description: Qt 5 XML patterns documentation
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the documentation for the Qt 5 XML patterns
+ libraries.
+
+Package: qtwebkit5-doc
+Priority: extra
+Architecture: all
+Section: doc
+Depends: ${misc:Depends}
+Description: Qt 5 webkit documentation
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the documentation for the Qt 5 webkit libraries.

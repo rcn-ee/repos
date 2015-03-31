@@ -53,6 +53,9 @@ package_name="qtdeclarative-opensource-src" ; package_version="${package_name}_5
 package_name="qtscript-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-3" ; check_http
 package_name="qtwebkit-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-3" ; check_http
 
+package_name="qttools-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+
+
 site="http://ftp.de.debian.org/debian/pool/main/s"
 package_name="solid" ; package_version="${package_name}_5.8.0-1" ; check_http
 

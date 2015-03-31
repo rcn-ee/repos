@@ -1,0 +1,19 @@
+Author: Marc Dequènes <duck@duckcorp.org>
+Bug: https://bugreports.qt-project.org/browse/QTBUG-6960
+Description: PATH_MAX fix
+ Fix a POSIX incompatibility (as programs should not rely on having PATH_MAX
+ defined on all systems) and causes FTBFS on Hurd.
+
+--- a/src/assistant/3rdparty/clucene/src/CLucene/config/compiler.h
++++ b/src/assistant/3rdparty/clucene/src/CLucene/config/compiler.h
+@@ -136,6 +136,10 @@
+ #define LUCENE_INT32_MAX_SHOULDBE 0x7FFFFFFFL
+ #define LUCENE_UINT8_MAX_SHOULDBE 0xff
+ 
++#if defined(__GNU__)
++ #define PATH_MAX 4096
++#endif
++
+ //maximum path length. only used for buffers that use fullpath.
+ //anything else should use a dynamic length.
+ #if defined(CL_MAX_PATH)

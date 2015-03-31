@@ -1,0 +1,461 @@
+qttools-opensource-src (5.4.1-1~bpo80+20150331+1) jessie; urgency=low
+
+  * Rebuild for repos.rcn-ee.net
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Tue, 31 Mar 2015 08:32:36 -0500
+
+qttools-opensource-src (5.4.1-1) experimental; urgency=medium
+
+  [ Dmitry Shachnev ]
+  * New upstream release.
+  * Update debian/watch to use https://download.qt.io/.
+  * Update debian/copyright.
+  * Symbols files:
+    - Add support for powerpcspe (closes: #771913).
+    - Mark symbols missing with GCC 5 as optional (closes: #778095).
+    - Remove references to ia64 and s390 (build logs are no longer available).
+    - Remove references to sparc, Qt is not built there for a while.
+  * Bump Qt build-dependencies to 5.4.1.
+
+  [ Rohan Garg ]
+  * Make sure we build depend on libdouble-conversion-dev, required
+    by the linker.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Tue, 03 Mar 2015 14:39:16 +0300
+
+qttools-opensource-src (5.4.0-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Bump Qt build-dependencies to 5.4.0.
+  * debian/copyright:
+    - Update for LGPL v3 addition, and use correct syntax for exceptions.
+    - Make Unicode data license text readable, and give it a short name
+      without spaces (MIT-Unicode).
+  * Bump Standards-Version to 3.9.6, no changes needed.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Sun, 21 Dec 2014 13:52:48 +0300
+
+qttools-opensource-src (5.3.2-3) unstable; urgency=medium
+
+  * Remove all CMake files for plugins, we should not be shipping them. They
+    are only useful for people building their own installers.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Wed, 24 Sep 2014 17:46:39 -0300
+
+qttools-opensource-src (5.3.2-2) unstable; urgency=medium
+
+  * Upload to unstable.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Mon, 22 Sep 2014 10:28:20 -0300
+
+qttools-opensource-src (5.3.2-1) experimental; urgency=medium
+
+  [ Dmitry Shachnev ]
+  * Fix a typo in debian/rules.
+  * Update my e-mail address.
+  * Update Vcs-Browser field to point to cgit interface.
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * New upstream release.
+  * Bump Qt build dependencies.
+  * Update symbols files with buildds' logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Wed, 17 Sep 2014 12:56:33 -0300
+
+qttools-opensource-src (5.3.1-3) unstable; urgency=medium
+
+  * Update symbols files with buildds' and mips64el's logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Wed, 16 Jul 2014 14:45:50 -0300
+
+qttools-opensource-src (5.3.1-2) unstable; urgency=medium
+
+  [ Dmitry Shachnev ]
+  * Move designer plugins that are built from examples/designer back
+    to qttools5-examples package. Only plugins that are built from
+    src/designer/src/plugins remain in qttools5-dev-tools package
+    (really closes: #749336).
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Update symbols files with buildds' and mips64el's logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sun, 13 Jul 2014 15:16:30 -0300
+
+qttools-opensource-src (5.3.1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update symbols files with buildds' logs.
+  * Bump Qt build depends.
+  * Fix install files.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Mon, 30 Jun 2014 11:07:52 -0300
+
+qttools-opensource-src (5.3.0-5) unstable; urgency=medium
+
+  * Update symbols files with buildds' logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sat, 21 Jun 2014 11:05:48 -0300
+
+qttools-opensource-src (5.3.0-4) unstable; urgency=medium
+
+  [ Dmitry Shachnev ]
+  * Make qtwebkit build-dependency versioned.
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Update symbols files with buildds' and current logs (Closes: #746903).
+  * Install designer plugins alongside designer itself and not with the
+    examples (Closes: #749336).
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Fri, 20 Jun 2014 21:29:30 -0300
+
+qttools-opensource-src (5.3.0-3) unstable; urgency=medium
+
+  * Update symbols files with buildds' logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sun, 08 Jun 2014 22:58:46 -0300
+
+qttools-opensource-src (5.3.0-2) unstable; urgency=medium
+
+  * Upload to unstable.
+  * Update symbols files with buildds' and current logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Fri, 06 Jun 2014 13:09:41 -0300
+
+qttools-opensource-src (5.3.0-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Don't force dh_builddeb to use xz compression: it's already the default.
+  * Build against qtwebkit to fix assistant (Closes: #742396):
+    - Build qtwebkit5-doc and qtscript5-doc from this source, thus allowing us
+      to avoid a circular dependency.
+    - Build depend upon libqt5webkit5-dev.
+  * Install headers into their new multi-arch path. Mark the development
+    packages as Multi-Arch: same.
+  * Bump Qt build dependencies.
+  * Remove fix_path_to_lrelease.patch, applied upstream.
+  * Require qtdeclarative >= 5.3.0-3~, it includes a fix in the development
+    package that we need.
+  * QuickDialogs are not part of Declarative anymore, so we don't build it's
+    documentation.
+  * Modify install files to install new files in this version.
+  * Build depend upon libqt5opengl5-dev (>= 5.3.0+dfsg~), we need to link
+    against it.
+  * Update symbols files with current build log.
+  * Update copyright file.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sat, 24 May 2014 14:37:00 -0300
+
+qttools-opensource-src (5.2.1-8) unstable; urgency=medium
+
+  [ Dmitry Shachnev ]
+  * Simplify libqt5designercomponents5.symbols a bit more.
+  * Update copyright files for all external docs, not just for qtbase.
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Upload to unstable.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Mon, 24 Mar 2014 22:00:57 -0300
+
+qttools-opensource-src (5.2.1-7) experimental; urgency=medium
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Update symbols files with buildd's logs.
+  * Apply fix_path_to_lrelease.patch to fix the path of lrelease in CMake files
+    (Closes: #738196).
+  * Simplify list of archs in symbols files: only mark sparc when suitable.
+
+  [ Dmitry Shachnev ]
+  * Update symbols files to support arm64 and ppc64el.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Mon, 17 Mar 2014 12:04:18 -0300
+
+qttools-opensource-src (5.2.1-6) experimental; urgency=medium
+
+  * Update symbols files with buildd's logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Wed, 26 Feb 2014 16:28:28 -0300
+
+qttools-opensource-src (5.2.1-5) experimental; urgency=medium
+
+  * Update symbols files with buildd's logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Mon, 24 Feb 2014 22:35:01 -0300
+
+qttools-opensource-src (5.2.1-4) experimental; urgency=medium
+
+  [ Dmitry Shachnev ]
+  * Update debian/libqt5designer5.symbols from buildds’ logs.
+  * Build qtxmlpatterns5-doc package from this source.
+    This should finally solve the dependency loop problem.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Thu, 13 Feb 2014 11:35:20 -0300
+
+qttools-opensource-src (5.2.1-3) experimental; urgency=medium
+
+  [ Dmitry Shachnev ]
+  * Set version number to 5.2.1-3 to correctly handle upgrades
+    for qtdeclarative5-doc package.
+  * Build qtdeclarative5-doc package from this source.
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Update symbols files with buildd's and current logs.
+  * Add qtdeclarative5-private-dev to build lrelease with qml support
+    (Closes: #738617).
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Tue, 11 Feb 2014 15:59:24 -0300
+
+qttools-opensource-src (5.2.1-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Bump Qt build dependencies to 5.2.1.
+  * No symbols changes since last upload.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sun, 09 Feb 2014 16:22:41 -0300
+
+qttools-opensource-src (5.2.0-9) unstable; urgency=medium
+
+  [ Pino Toscano ]
+  * Update symbols files. (Closes: #737358)
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sun, 02 Feb 2014 10:46:48 -0300
+
+qttools-opensource-src (5.2.0-8) unstable; urgency=medium
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Upload to unstable.
+  * Update symbols files with buildd's logs.
+  * Move mkspec files to their new location.
+    - B-D on qtbase 5.2.0+dfsg-7~, which introduces the new location.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Fri, 31 Jan 2014 13:29:52 -0300
+
+qttools-opensource-src (5.2.0-7) experimental; urgency=medium
+
+  [ Dmitry Shachnev ]
+  * Correct qttools5-doc-html package description: these are not XML
+    tools.
+  * Build qtbase5-doc in this source package, based on HTML files from
+    qtbase5-doc-html package.
+
+  [ Sune Vuorela ]
+  * Update description of the dev tools package to mention some of the
+    tools available in there.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sun, 19 Jan 2014 11:41:42 -0300
+
+qttools-opensource-src (5.2.0-6) experimental; urgency=medium
+
+  * Update symbols files to fix build failure on armel, armhf and s390x.
+
+ -- Dmitry Shachnev <mitya57@gmail.com>  Thu, 09 Jan 2014 17:56:04 +0400
+
+qttools-opensource-src (5.2.0-5) experimental; urgency=medium
+
+  * Update symbols files with buildd's logs.
+  * Update Standards-Version to 3.9.5, no changes needed.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sat, 04 Jan 2014 16:41:46 -0300
+
+qttools-opensource-src (5.2.0-4) experimental; urgency=medium
+
+  * Update symbols files again. All differences seems to come from sparc, ia64
+    and powerpc having an older gcc.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Thu, 26 Dec 2013 14:31:28 -0300
+
+qttools-opensource-src (5.2.0-3) experimental; urgency=low
+
+  [ Pino Toscano ]
+  * Install the private qmake stuff in qttools5-private-dev, not in
+    qttools5-dev.
+  * Simplify qttools5-examples.install.
+  * Remove the Pre-Depends on dpkg >= 1.15.6~, since that version is available
+    in Squeeze already.
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Update symbols files with buildds' and current logs.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Thu, 26 Dec 2013 12:13:08 -0300
+
+qttools-opensource-src (5.2.0-2) experimental; urgency=low
+
+  * Adjust Qt build dependencies to 5.2.0+dfsg~, or it picks the beta versions.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Thu, 12 Dec 2013 23:42:13 -0300
+
+qttools-opensource-src (5.2.0-1) experimental; urgency=low
+
+  * New upstream release.
+  * Change the section of qdbus-qt5 to utils (Closes: #730141).
+  * Update symbols files:
+    - with buildds' logs.
+    - with current build. Deeleted symbols where all added in beta1.
+  * Update install files.
+  * Adjust Qt build dependencies.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Thu, 12 Dec 2013 21:27:23 -0300
+
+qttools-opensource-src (5.2.0~beta1-2) experimental; urgency=low
+
+  [ Dmitry Shachnev ]
+  * Update libqt5designer5.symbols for armhf, ia64, powerpc, s390* and sparc.
+  * Add myself to Uploaders.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Tue, 19 Nov 2013 19:20:36 -0300
+
+qttools-opensource-src (5.2.0~beta1-1) experimental; urgency=low
+
+  [ Dmitry Shachnev ]
+  * New upstream beta release.
+  * Update qtbase build-dependencies to 5.2.0.
+  * Remove .qmake.cache in clean target.
+  * Update .install files for new upstream release.
+  * Update libqt5designer5.symbols.
+  * Add copyright info for qtpaths to debian/copyright.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Tue, 12 Nov 2013 13:27:17 -0300
+
+qttools-opensource-src (5.1.1-3) UNRELEASED; urgency=low
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Add cmake as a build dependency, it's used to run some tests against the
+    generated CMake files.
+
+ -- Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>  Tue, 01 Oct 2013 11:57:28 -0300
+
+qttools-opensource-src (5.1.1-2) unstable; urgency=low
+
+  * Add README.source explaining how to bootstrap this package.
+  * Call 'make qmake_all' after building qttools, this way we can build the
+    arch-independent stuff without the need to recursively build-depend on us.
+    Thanks Александр Волков from Astra Linux for the tip.
+  * Update symbols files.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Tue, 01 Oct 2013 11:03:48 -0300
+
+qttools-opensource-src (5.1.1-1) unstable; urgency=low
+
+  * New upstream release.
+    - Update build dependencies versions.
+  * Update symbols files from previous builds.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Fri, 30 Aug 2013 16:00:20 -0300
+
+qttools-opensource-src (5.1.0-3) unstable; urgency=low
+
+  [ Pino Toscano ]
+  * Update symbols files. (try to address #719339)
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Mon, 12 Aug 2013 13:18:21 -0300
+
+qttools-opensource-src (5.1.0-2) unstable; urgency=low
+
+  * Updload to unstable.
+  * Update symbols files.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sat, 10 Aug 2013 14:13:12 -0300
+
+qttools-opensource-src (5.1.0-1) experimental; urgency=low
+
+  * New upstream release.
+  * Update watch file.
+  * Bump Qt5 build dependencies to 5.1.0.
+  * Update install files.
+  * Update symbols files.
+  * Fix the description of qttools5-dev-tools.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Tue, 09 Jul 2013 18:34:42 -0300
+
+qttools-opensource-src (5.0.2-9) experimental; urgency=low
+
+  * Manually mark some symbols as optional, gcc internal. They seem to be
+    constructors generated by gcc which appear and dissapear causing random
+    FTBFSs.
+  * Update symbols files with build logs from other archs.
+  * Make qttools5-dbg package M-A same. As a trade off of a muliple-binary
+    debug package, remove the dependency on qttools5-dev-tools which is not
+    M-A same.
+  * Make qttools5-examples-dbg also M-A same, no changes required.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Thu, 27 Jun 2013 12:12:37 -0300
+
+qttools-opensource-src (5.0.2-8) experimental; urgency=low
+
+  * Update symbols files.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Wed, 26 Jun 2013 12:10:59 -0300
+
+qttools-opensource-src (5.0.2-7) experimental; urgency=low
+
+  * Make every package that ships a binary managed by qtchooser depend on it.
+  * Build the documentation shipped with this submodule as a build-indep task:
+    - Add the necessary indep build dependencies:
+      * qttools5-dev-tools to use qhelpgenerator.
+      * libqt5sql5-sqlite to generate qch doc.
+    - Build and create packages for qch and HTML doc formats.
+  * Confirm amd64 symbols with new compiler.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Thu, 20 Jun 2013 18:37:49 -0300
+
+qttools-opensource-src (5.0.2-6) experimental; urgency=low
+
+  [ Pino Toscano ]
+  * Update symbols files.
+  * Make qttools5-dev-tools recommend libqt5sql5-sqlite (for assistant).
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Update symbols files with amd64 build. Three symbols dissapeared, but the
+    code hasn't changed and their where amd64-only symbols, so it seems safe.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sat, 18 May 2013 22:38:04 -0300
+
+qttools-opensource-src (5.0.2-5) experimental; urgency=low
+
+  [ Pino Toscano ]
+  * Update symbols files.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Fri, 10 May 2013 15:54:35 -0300
+
+qttools-opensource-src (5.0.2-4) experimental; urgency=low
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Update symbols files for armhf, ia64 and ppc64.
+
+  [ Timo Jyrinki ]
+  * Fix wrong paths in pkgconfig
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Mon, 06 May 2013 15:54:42 -0300
+
+qttools-opensource-src (5.0.2-3) experimental; urgency=low
+
+  [ Dmitry Shachnev ]
+  * Use correct (and canonical) Vcs fields.
+
+  [ Pino Toscano ]
+  * debian/control: remove unused ${misc:Pre-Depends} from qttools5-dev-tools.
+  * debian/control: make qttools5-dev depend on qtbase5-dev.
+  * Update symbols files.
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Update amd64 symbols.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sun, 28 Apr 2013 23:41:12 -0300
+
+qttools-opensource-src (5.0.2-2) experimental; urgency=low
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Confirm symbols files for i386, ia64 and powerpc.
+
+  [ Pino Toscano ]
+  * Fix build on Hurd; patch hurd-path_max.diff.
+  * debian/control: remove unused ${misc:Pre-Depends} from qdbus-qt5,
+    qttools5-dev, qttools5-private-dev, qttools5-dbg and qttools5-examples-dbg.
+  * debian/qttools5-private-dev.install: use wildcards instead of the version.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Mon, 22 Apr 2013 18:10:15 -0300
+
+qttools-opensource-src (5.0.2-1) experimental; urgency=low
+
+  * Initial release. (Closes: #697509)
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sat, 20 Apr 2013 23:25:12 -0300
