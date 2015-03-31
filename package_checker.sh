@@ -68,8 +68,8 @@ package_name="qtquickcontrols-opensource-src" ; package_version="${package_name}
 package_name="qtsensors-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-1" ; check_http
 package_name="qtserialport-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 package_name="qtsvg-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+package_name="qttranslations-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 
-#qttranslations-opensource-src*
 #qtwayland-opensource-src*
 #qtwebkit*
 #qtwebkit-examples-opensource-src*
