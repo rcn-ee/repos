@@ -71,8 +71,8 @@ package_name="qtsvg-opensource-src" ; package_version="${package_name}_5.4.1-1" 
 package_name="qttranslations-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 package_name="qtwayland-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 package_name="qtwebkit-examples-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-1" ; check_http
-#package_name="qtwebsockets-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-#package_name="qtx11extras-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+package_name="qtwebsockets-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+package_name="qtx11extras-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 #package_name="qtdoc-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 
 echo "qt5: kde:"
