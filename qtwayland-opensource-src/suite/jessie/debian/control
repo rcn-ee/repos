@@ -1,0 +1,68 @@
+Source: qtwayland-opensource-src
+Section: libs
+Priority: optional
+Maintainer: Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
+Uploaders: Dmitry Shachnev <mitya57@debian.org>,
+           Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>,
+           Sune Vuorela <debian@pusling.com>,
+           Pino Toscano <pino@debian.org>,
+           Timo Jyrinki <timo@debian.org>
+Build-Depends: debhelper (>= 9),
+               libegl1-mesa-dev,
+               libfontconfig1-dev,
+               libglib2.0-dev,
+               libmtdev-dev,
+               libudev-dev,
+               libwayland-dev (>= 1.2.0),
+               libwayland-egl1-mesa | libwayland-egl1,
+               libxkbcommon-dev (>= 0.2.0),
+               libxrender-dev,
+               pkg-config,
+               pkg-kde-tools,
+               qtbase5-private-dev (>= 5.4.1+dfsg~)
+Standards-Version: 3.9.6
+Homepage: http://qt-project.org/
+Vcs-Git: git://anonscm.debian.org/pkg-kde/qt/qtwayland.git
+Vcs-Browser: http://anonscm.debian.org/cgit/pkg-kde/qt/qtwayland.git
+
+Package: libqt5waylandclient5
+Architecture: any
+Multi-Arch: same
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: QtWayland client library
+ QtWayland is a Qt 5 module that wraps the functionality of Wayland.
+ .
+ This package contains the QtWayland client library.
+
+Package: libqt5waylandclient5-dev
+Architecture: any
+Section: libdevel
+Multi-Arch: same
+Depends: libqt5waylandclient5 (= ${binary:Version}), ${misc:Depends}
+Description: QtWayland development files
+ QtWayland is a Qt 5 module that wraps the functionality of Wayland.
+ .
+ This package contains the development files for QtWayland client
+ library.
+
+Package: qtwayland5
+Architecture: any
+Multi-Arch: same
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: QtWayland platform plugin
+ QtWayland is a Qt 5 module that wraps the functionality of Wayland.
+ .
+ This package contains the QtWayland platform plugin, which allows users
+ to run Qt 5 applications under Wayland, and the qtwaylandscanner
+ binary.
+
+Package: qtwayland5-dbg
+Architecture: any
+Priority: extra
+Section: debug
+Multi-Arch: same
+Depends: libqt5waylandclient5 (= ${binary:Version}), ${misc:Depends}
+Description: QtWayland debugging symbols
+ QtWayland is a Qt 5 module that wraps the functionality of Wayland.
+ .
+ This package contains the debugging symbols for QtWayland.

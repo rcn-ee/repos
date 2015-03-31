@@ -1,0 +1,26 @@
+#!/usr/bin/make -f
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
+export CFLAGS := $(shell dpkg-buildflags --get CFLAGS) $(shell dpkg-buildflags --get CPPFLAGS)
+export CXXFLAGS := $(shell dpkg-buildflags --get CXXFLAGS) $(shell dpkg-buildflags --get CPPFLAGS)
+export LDFLAGS := $(shell dpkg-buildflags --get LDFLAGS) -Wl,--as-needed
+export QT_SELECT := qt5
+
+%:
+	dh $@ --with pkgkde_symbolshelper --parallel --dbg-package=qtwayland5-dbg
+
+override_dh_auto_configure:
+	qmake
+
+override_dh_auto_install:
+	dh_auto_install
+
+	# Remove libtool-like file
+	rm -f debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/libQt5WaylandClient.la
+
+override_dh_install:
+	dh_install --fail-missing

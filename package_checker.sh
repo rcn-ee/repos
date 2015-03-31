@@ -69,9 +69,8 @@ package_name="qtsensors-opensource-src" ; package_version="${package_name}_5.4.1
 package_name="qtserialport-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 package_name="qtsvg-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 package_name="qttranslations-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+package_name="qtwayland-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 
-#qtwayland-opensource-src*
-#qtwebkit*
 #qtwebkit-examples-opensource-src*
 #qtwebsockets-opensource-src*
 #qtx11extras-opensource-src*
@@ -85,7 +84,7 @@ package_name="solid" ; package_version="${package_name}_5.8.0-1" ; check_http
 
 site="http://ftp.de.debian.org/debian/pool/main/k"
 package_name="kguiaddons" ; package_version="${package_name}_5.8.0-1" ; check_http
-package_name="kwindowsystem" ; package_version="${package_name}_5.8.0-1" ; check_http
+package_name="kwindowsystem" ; package_version="${package_name}_5.8.0-1aa" ; check_http
 
 echo "llvm/mesa:"
 
