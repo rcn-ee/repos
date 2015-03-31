@@ -1,12 +1,10 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
-%:
-	dh ${@} --buildsystem kf5
-
+include /usr/share/pkg-kde-tools/qt-kde-team/3/debian-qt-kde.mk
 
 override_dh_strip:
-	dh_strip --dbg-package=libkf5windowsystem5-dbg
+	$(overridden_command) --dbg-package=libkf5windowsystem5-dbg
 
 override_dh_auto_test:
 	-$(overriden_command)
