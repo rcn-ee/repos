@@ -1,0 +1,60 @@
+Author: Pino Toscano <pino@debian.org>
+Description: Enable RPATH also on kFreeBSD and Hurd
+ qtcreator's plugins use RPATH to locate the qtcreator libraries, so enable it
+ also on kFreeBSD and Hurd.
+Last-Update: 2014-08-19
+Forwarded: no
+
+---
+ src/qtcreatorplugin.pri                         |    4 ++--
+ src/rpath.pri                                   |    2 +-
+ src/tools/qtcreatorwidgets/qtcreatorwidgets.pro |    4 ++--
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+Index: qtcreator/src/rpath.pri
+===================================================================
+--- qtcreator.orig/src/rpath.pri	2014-12-25 01:53:23.534706324 -0600
++++ qtcreator/src/rpath.pri	2014-12-25 01:54:23.126708641 -0600
+@@ -1,6 +1,6 @@
+ macx {
+     QMAKE_LFLAGS += -Wl,-rpath,@loader_path/../,-rpath,@executable_path/../
+-} else:linux-* {
++} else:linux-*|glibc-*|hurd-* {
+     #do the rpath by hand since it's not possible to use ORIGIN in QMAKE_RPATHDIR
+     # this expands to $ORIGIN (after qmake and make), it does NOT read a qmake var
+     QMAKE_RPATHDIR += \$\$ORIGIN
+Index: qtcreator/src/qtcreatorplugin.pri
+===================================================================
+--- qtcreator.orig/src/qtcreatorplugin.pri	2014-12-25 01:53:23.534706324 -0600
++++ qtcreator/src/qtcreatorplugin.pri	2014-12-25 01:53:23.530706324 -0600
+@@ -96,7 +96,7 @@
+ 
+ TEMPLATE = lib
+ CONFIG += plugin plugin_with_soname
+-linux*:QMAKE_LFLAGS += $$QMAKE_LFLAGS_NOUNDEF
++linux*|glibc-*|hurd-*:QMAKE_LFLAGS += $$QMAKE_LFLAGS_NOUNDEF
+ 
+ !macx {
+     target.path = $$QTC_PREFIX/$$IDE_LIBRARY_BASENAME/qtcreator/plugins
+Index: qtcreator/src/tools/qtcreatorwidgets/qtcreatorwidgets.pro
+===================================================================
+--- qtcreator.orig/src/tools/qtcreatorwidgets/qtcreatorwidgets.pro	2014-12-25 01:53:23.534706324 -0600
++++ qtcreator/src/tools/qtcreatorwidgets/qtcreatorwidgets.pro	2014-12-25 01:53:23.530706324 -0600
+@@ -13,7 +13,7 @@
+     IDE_LIBRARY_BASENAME = lib
+ }
+ 
+-linux-*||win32 {
++linux-*||win32||glibc-*||hurd-* {
+   # form abs path to qtcreator lib dir
+   QTC_LIBS=$$dirname(OUT_PWD)
+   QTC_LIBS=$$dirname(QTC_LIBS)
+@@ -21,7 +21,7 @@
+   QTC_LIBS=$$QTC_LIBS/$$IDE_LIBRARY_BASENAME/qtcreator
+ }
+ 
+-linux-*{  
++linux-*|glibc-*|hurd-*{
+   QMAKE_RPATHDIR *= $$QTC_LIBS
+ }
+ 

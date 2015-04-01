@@ -88,6 +88,8 @@ qt5 () {
 	package_name="qtwebsockets-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 	package_name="qtx11extras-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 	package_name="qtdoc-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+
+	package_name="qtcreator" ; package_version="${package_name}_3.3.1+dfsg-1" ; check_http
 }
 
 qt5_kde () {
