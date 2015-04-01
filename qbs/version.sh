@@ -14,7 +14,7 @@ reprepro_dir="q/${debian_pkg_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
 debian_version="${package_version}-2"
-debian_untar="${debian_pkg_name}_1.debian.tar.xz"
+debian_untar="${debian_pkg_name}_1.4~7fd456-1.debian.tar.xz"
 debian_patch=""
 
 jessie_version="~bpo80+20150401+1"
