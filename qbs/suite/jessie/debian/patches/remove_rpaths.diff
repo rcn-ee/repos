@@ -1,0 +1,22 @@
+Description: do not pass wrong -L flag when linking with libqbscore
+Author: Adam Majer <adamm@zombino.com>
+Forwarded: not-needed
+Last-Update: 2015-01-08
+
+Index: qbs/src/lib/corelib/use_installed_corelib.pri
+===================================================================
+--- qbs.orig/src/lib/corelib/use_installed_corelib.pri	2015-03-12 18:53:43.451299470 -0500
++++ qbs/src/lib/corelib/use_installed_corelib.pri	2015-03-12 18:54:43.995297832 -0500
+@@ -4,11 +4,9 @@
+ 
+ QBSLIBDIR=$${PWD}/../../lib
+ unix {
+-    LIBS += -L$$QBSLIBDIR -lqbscore
++    LIBS += -lqbscore
+ }
+ 
+-!qbs_disable_rpath:unix:QMAKE_LFLAGS += -Wl,-rpath,$${QBSLIBDIR}
+-
+ !CONFIG(static, static|shared) {
+     QBSCORELIBSUFFIX = $$QBS_VERSION_MAJ
+ }

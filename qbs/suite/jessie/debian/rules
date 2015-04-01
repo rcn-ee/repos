@@ -1,0 +1,62 @@
+#!/usr/bin/make -f
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+CONFIG_DIR = $(CURDIR)/debian/config
+
+export CFLAGS := $(shell dpkg-buildflags --get CFLAGS) $(shell dpkg-buildflags --get CPPFLAGS)
+export CXXFLAGS := $(shell dpkg-buildflags --get CXXFLAGS) $(shell dpkg-buildflags --get CPPFLAGS)
+export LDFLAGS := $(shell dpkg-buildflags --get LDFLAGS) -Wl,--as-needed
+export QT_SELECT := qt5
+export XDG_CONFIG_HOME := $(CONFIG_DIR)
+
+%:
+	dh $@ --parallel --with pkgkde_symbolshelper --dbg-package=qbs-dbg
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -rfv doc/html $(CONFIG_DIR) tests/auto/*/testWorkDir
+	rm -fv doc/qbs.qch bin/qbs* bin/tst*
+
+override_dh_auto_configure:
+	qmake qbs.pro \
+		CONFIG+=debug \
+		CONFIG+=disable_rpath \
+		CONFIG+=qbs_enable_project_file_updates \
+		QMAKE_CFLAGS+="${CFLAGS} ${CPPFLAGS}" \
+		QMAKE_CXXFLAGS+="${CXXFLAGS} ${CPPFLAGS}" \
+		QMAKE_LFLAGS+="${LDFLAGS}" \
+		QBS_INSTALL_PREFIX=/usr
+
+override_dh_auto_build-indep:
+	dh_auto_build -- docs
+
+override_dh_auto_install-indep:
+	dh_auto_build -- INSTALL_ROOT=$(CURDIR)/debian/tmp install_docs
+
+	# Remove empty directories
+	rmdir $(CURDIR)/debian/tmp/usr/share/doc/qbs/html/images/used-in-examples/
+	rmdir $(CURDIR)/debian/tmp/usr/share/doc/qbs/html/scripts/
+
+override_dh_auto_install-arch:
+	dh_auto_install
+
+	# Move libraries to Multi-Arch locations
+	mkdir -p $(CURDIR)/debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)
+	mv $(CURDIR)/debian/tmp/usr/lib/*.so* $(CURDIR)/debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/
+	mv $(CURDIR)/debian/tmp/usr/lib/qbs $(CURDIR)/debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/
+
+override_dh_auto_test:
+	mkdir -p $(CONFIG_DIR)/QtProject
+	set -ex; \
+		export LD_LIBRARY_PATH=$(CURDIR)/lib/:$$LD_LIBRARY_PATH; \
+		$(CURDIR)/bin/qbs-setup-toolchains --detect --settings-dir $(CONFIG_DIR)/QtProject; \
+		$(CURDIR)/bin/qbs-setup-qt /usr/bin/qmake qbs_autotests; \
+		[ -n "`$(CURDIR)/bin/qbs-config --settings-dir $(CONFIG_DIR)/QtProject --list profiles.qbs_autotests.baseProfile`" ] || \
+			$(CURDIR)/bin/qbs-config --settings-dir $(CONFIG_DIR)/QtProject profiles.qbs_autotests.baseProfile gcc; \
+		dh_auto_test
+
+override_dh_install:
+	dh_install --fail-missing
