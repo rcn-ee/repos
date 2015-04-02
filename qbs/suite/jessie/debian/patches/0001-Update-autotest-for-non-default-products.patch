@@ -1,0 +1,30 @@
+From b2adf96ad714a87895ebc2c975dfd262c87f4eb6 Mon Sep 17 00:00:00 2001
+From: Christian Kandeler <christian.kandeler@theqtcompany.com>
+Date: Thu, 12 Mar 2015 17:27:23 +0100
+Subject: [PATCH 1/7] Update autotest for non-default products.
+
+Adding a dependency makes it fail once in a while, so it now represents
+the linked bug report.
+
+Task-number: QBS-727
+Change-Id: Ic7481f7f2c3cd46640b3a14f680e62e90c86622d
+Reviewed-by: Jake Petroules <jake.petroules@petroules.com>
+---
+ tests/auto/blackbox/testdata/non-default-product/project.qbs | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/tests/auto/blackbox/testdata/non-default-product/project.qbs b/tests/auto/blackbox/testdata/non-default-product/project.qbs
+index 03ee83b..4983449 100644
+--- a/tests/auto/blackbox/testdata/non-default-product/project.qbs
++++ b/tests/auto/blackbox/testdata/non-default-product/project.qbs
+@@ -9,6 +9,7 @@ Project {
+ 
+     CppApplication {
+         name: "non-default app"
++        Depends { name: "default app" }
+         consoleApplication: true
+         builtByDefault: false
+         files: "main.cpp"
+-- 
+2.1.4
+

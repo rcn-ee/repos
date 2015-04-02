@@ -1,0 +1,30 @@
+From 69585a148477a5e841646ab19383d81cfafb54c4 Mon Sep 17 00:00:00 2001
+From: Christian Kandeler <christian.kandeler@theqtcompany.com>
+Date: Wed, 1 Apr 2015 12:10:35 +0200
+Subject: [PATCH 6/7] Fix "bad interpreter" autotest.
+
+My mksh shell does not say "Permission denied" there.
+
+Change-Id: Ifa3ea9a48190de91a416ccec2437d18851b36695
+Reviewed-by: Joerg Bornemann <joerg.bornemann@theqtcompany.com>
+---
+ tests/auto/blackbox/tst_blackbox.cpp | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/tests/auto/blackbox/tst_blackbox.cpp b/tests/auto/blackbox/tst_blackbox.cpp
+index d8b35a4..58a84a4 100644
+--- a/tests/auto/blackbox/tst_blackbox.cpp
++++ b/tests/auto/blackbox/tst_blackbox.cpp
+@@ -2304,7 +2304,8 @@ void TestBlackbox::testBadInterpreter()
+ 
+     params.arguments = QStringList() << "-p" << "script-interp-noexec";
+     QCOMPARE(runQbs(params), 1);
+-    QVERIFY(m_qbsStderr.contains("bad interpreter: Permission denied"));
++    QVERIFY(m_qbsStderr.contains("bad interpreter: Permission denied")
++            || m_qbsStderr.contains("bad interpreter: No such file or directory"));
+ 
+     params.arguments = QStringList() << "-p" << "script-noexec";
+     QCOMPARE(runQbs(params), 1);
+-- 
+2.1.4
+

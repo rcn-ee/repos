@@ -1,0 +1,505 @@
+From c96ef7654f6ea8ebd5737261aada123b52981213 Mon Sep 17 00:00:00 2001
+From: Christian Kandeler <christian.kandeler@theqtcompany.com>
+Date: Tue, 10 Mar 2015 14:46:58 +0100
+Subject: [PATCH 4/7] Introduce new class SourceArtifact.
+
+So the API can export information about the file tags of a source file.
+
+Change-Id: I60f6f72abbd98d79446bec260131289aa0e3cda8
+Task-number: QBS-762
+Reviewed-by: Jake Petroules <jake.petroules@petroules.com>
+---
+ src/lib/corelib/api/project.cpp              |  51 +++++++++----
+ src/lib/corelib/api/project_p.h              |   1 +
+ src/lib/corelib/api/projectdata.cpp          | 105 +++++++++++++++++++++++----
+ src/lib/corelib/api/projectdata.h            |  28 ++++++-
+ src/lib/corelib/api/projectdata_p.h          |  14 +++-
+ src/lib/corelib/language/forward_decls.h     |   6 +-
+ src/lib/corelib/language/language.cpp        |   6 +-
+ src/lib/corelib/language/language.h          |  10 +--
+ src/lib/corelib/language/projectresolver.cpp |   4 +-
+ tests/auto/api/tst_api.cpp                   |   7 +-
+ 10 files changed, 185 insertions(+), 47 deletions(-)
+
+diff --git a/src/lib/corelib/api/project.cpp b/src/lib/corelib/api/project.cpp
+index 8728d26..afa170a 100644
+--- a/src/lib/corelib/api/project.cpp
++++ b/src/lib/corelib/api/project.cpp
+@@ -238,19 +238,28 @@ GroupData ProjectPrivate::createGroupDataFromGroup(const GroupPtr &resolvedGroup
+     group.d->name = resolvedGroup->name;
+     group.d->location = resolvedGroup->location;
+     foreach (const SourceArtifactConstPtr &sa, resolvedGroup->files)
+-        group.d->filePaths << sa->absoluteFilePath;
++        group.d->sourceArtifacts << createApiSourceArtifact(sa);
+     if (resolvedGroup->wildcards) {
+         foreach (const SourceArtifactConstPtr &sa, resolvedGroup->wildcards->files)
+-            group.d->expandedWildcards << sa->absoluteFilePath;
++            group.d->sourceArtifactsFromWildcards << createApiSourceArtifact(sa);
+     }
+-    qSort(group.d->filePaths);
+-    qSort(group.d->expandedWildcards);
++    qSort(group.d->sourceArtifacts);
++    qSort(group.d->sourceArtifactsFromWildcards);
+     group.d->properties.d->m_map = resolvedGroup->properties;
+     group.d->isEnabled = resolvedGroup->enabled;
+     group.d->isValid = true;
+     return group;
+ }
+ 
++SourceArtifact ProjectPrivate::createApiSourceArtifact(const SourceArtifactConstPtr &sa)
++{
++    SourceArtifact saApi;
++    saApi.d->isValid = true;
++    saApi.d->filePath = sa->absoluteFilePath;
++    saApi.d->fileTags = sa->fileTags.toStringList();
++    return saApi;
++}
++
+ #ifdef QBS_ENABLE_PROJECT_FILE_UPDATES
+ void ProjectPrivate::addGroup(const ProductData &product, const QString &groupName)
+ {
+@@ -427,18 +436,18 @@ void ProjectPrivate::addFiles(const ProductData &product, const GroupData &group
+     updateInternalCodeLocations(internalProject, adder.itemPosition(), adder.lineOffset());
+     updateExternalCodeLocations(m_projectData, adder.itemPosition(), adder.lineOffset());
+ 
+-    QList<SourceArtifactPtr> addedSourceArtifacts;
++    QHash<QString, SourceArtifactPtr> addedSourceArtifacts;
+     for (int i = 0; i < groupContext.resolvedGroups.count(); ++i) {
+         const ResolvedProductPtr &resolvedProduct = groupContext.resolvedProducts.at(i);
+         const GroupPtr &resolvedGroup = groupContext.resolvedGroups.at(i);
+         foreach (const QString &file, filesContext.absoluteFilePaths) {
+-             addedSourceArtifacts << createSourceArtifact(file, resolvedProduct,
+-                    resolvedGroup, resolvedGroup->files, logger);
++             addedSourceArtifacts.insert(file, createSourceArtifact(file, resolvedProduct,
++                    resolvedGroup, resolvedGroup->files, logger));
+         }
+         foreach (const QString &file, filesContext.absoluteFilePathsFromWildcards) {
+             QBS_CHECK(resolvedGroup->wildcards);
+-             addedSourceArtifacts << createSourceArtifact(file, resolvedProduct,
+-                    resolvedGroup, resolvedGroup->wildcards->files, logger);
++             addedSourceArtifacts.insert(file, createSourceArtifact(file, resolvedProduct,
++                    resolvedGroup, resolvedGroup->wildcards->files, logger));
+         }
+         if (resolvedProduct->enabled) {
+             foreach (const SourceArtifactConstPtr &sa, addedSourceArtifacts)
+@@ -446,10 +455,23 @@ void ProjectPrivate::addFiles(const ProductData &product, const GroupData &group
+         }
+     }
+     doSanityChecks(internalProject, logger);
++    QList<SourceArtifact> sourceArtifacts;
++    QList<SourceArtifact> sourceArtifactsFromWildcards;
++    foreach (const QString &fp, filesContext.absoluteFilePaths) {
++        const SourceArtifactConstPtr sa = addedSourceArtifacts.value(fp);
++        QBS_CHECK(sa);
++        sourceArtifacts << createApiSourceArtifact(sa);
++    }
++    foreach (const QString &fp, filesContext.absoluteFilePathsFromWildcards) {
++        const SourceArtifactConstPtr sa = addedSourceArtifacts.value(fp);
++        QBS_CHECK(sa);
++        sourceArtifactsFromWildcards << createApiSourceArtifact(sa);
++    }
+     foreach (const GroupData &g, groupContext.groups) {
+-        g.d->filePaths << filesContext.absoluteFilePaths;
+-        g.d->expandedWildcards << filesContext.absoluteFilePathsFromWildcards;
+-        qSort(g.d->filePaths);
++        g.d->sourceArtifacts << sourceArtifacts;
++        qSort(g.d->sourceArtifacts);
++        g.d->sourceArtifactsFromWildcards << sourceArtifactsFromWildcards;
++        qSort(g.d->sourceArtifactsFromWildcards);
+     }
+ }
+ 
+@@ -491,8 +513,9 @@ void ProjectPrivate::removeFiles(const ProductData &product, const GroupData &gr
+     updateInternalCodeLocations(internalProject, remover.itemPosition(), remover.lineOffset());
+     updateExternalCodeLocations(m_projectData, remover.itemPosition(), remover.lineOffset());
+     foreach (const GroupData &g, groupContext.groups) {
+-        foreach (const QString &filePath, filesContext.absoluteFilePaths) {
+-            g.d->filePaths.removeOne(filePath);
++        for (int i = g.d->sourceArtifacts.count() - 1; i >= 0; --i) {
++            if (filesContext.absoluteFilePaths.contains(g.d->sourceArtifacts.at(i).filePath()))
++                g.d->sourceArtifacts.removeAt(i);
+         }
+     }
+ }
+diff --git a/src/lib/corelib/api/project_p.h b/src/lib/corelib/api/project_p.h
+index e36bee0..8ec273a 100644
+--- a/src/lib/corelib/api/project_p.h
++++ b/src/lib/corelib/api/project_p.h
+@@ -74,6 +74,7 @@ public:
+     GroupData findGroupData(const ProductData &product, const QString &groupName) const;
+ 
+     GroupData createGroupDataFromGroup(const GroupPtr &resolvedGroup);
++    SourceArtifact createApiSourceArtifact(const SourceArtifactConstPtr &sa);
+ 
+     struct GroupUpdateContext {
+         QList<ResolvedProductPtr> resolvedProducts;
+diff --git a/src/lib/corelib/api/projectdata.cpp b/src/lib/corelib/api/projectdata.cpp
+index 3277616..1a07003 100644
+--- a/src/lib/corelib/api/projectdata.cpp
++++ b/src/lib/corelib/api/projectdata.cpp
+@@ -37,6 +37,8 @@
+ #include <tools/qbsassert.h>
+ #include <tools/scripttools.h>
+ 
++#include <algorithm>
++
+ namespace qbs {
+ 
+ /*!
+@@ -89,19 +91,30 @@ QString GroupData::name() const
+ /*!
+  * \brief The files listed in the group item's "files" binding.
+  * \note These do not include expanded wildcards.
+- * \sa GroupData::expandedWildcards
++ * \sa GroupData::sourceArtifactsFromWildcards
+  */
+-QStringList GroupData::filePaths() const
++QList<SourceArtifact> GroupData::sourceArtifacts() const
+ {
+-    return d->filePaths;
++    return d->sourceArtifacts;
+ }
+ 
+ /*!
+  * \brief The list of files resulting from expanding all wildcard patterns in the group.
+  */
+-QStringList GroupData::expandedWildcards() const
++QList<SourceArtifact> GroupData::sourceArtifactsFromWildcards() const
++{
++    return d->sourceArtifactsFromWildcards;
++}
++
++/*!
++ * \brief All files in this group, regardless of how whether they were given explicitly
++ *        or via wildcards.
++ * \sa GroupData::sourceArtifacts
++ * \sa GroupData::sourceArtifactsFromWildcards
++ */
++QList<SourceArtifact> GroupData::allSourceArtifacts() const
+ {
+-    return d->expandedWildcards;
++    return sourceArtifacts() + sourceArtifactsFromWildcards();
+ }
+ 
+ /*!
+@@ -130,15 +143,17 @@ bool GroupData::isEnabled() const
+ }
+ 
+ /*!
+- * \fn QStringList GroupData::allFilePaths() const
+- * \brief All files in this group, regardless of how whether they were given explicitly
+- *        or via wildcards.
+- * \sa GroupData::filePaths
+- * \sa GroupData::expandedWildcards
++ * \brief The paths of all files in this group.
++ * \sa GroupData::allSourceArtifacts
+  */
+ QStringList GroupData::allFilePaths() const
+ {
+-    return d->filePaths + d->expandedWildcards;
++    const QList<SourceArtifact> &artifacts = allSourceArtifacts();
++    QStringList paths;
++    paths.reserve(artifacts.count());
++    std::transform(artifacts.constBegin(), artifacts.constEnd(), std::back_inserter(paths),
++                          [](const SourceArtifact &sa) { return sa.filePath(); });
++    return paths;
+ }
+ 
+ bool operator!=(const GroupData &lhs, const GroupData &rhs)
+@@ -154,8 +169,8 @@ bool operator==(const GroupData &lhs, const GroupData &rhs)
+     return lhs.isValid() == rhs.isValid()
+             && lhs.name() == rhs.name()
+             && lhs.location() == rhs.location()
+-            && lhs.expandedWildcards() == rhs.expandedWildcards()
+-            && lhs.filePaths() == rhs.filePaths()
++            && lhs.sourceArtifactsFromWildcards() == rhs.sourceArtifactsFromWildcards()
++            && lhs.sourceArtifacts() == rhs.sourceArtifacts()
+             && lhs.properties() == rhs.properties()
+             && lhs.isEnabled() == rhs.isEnabled();
+ }
+@@ -167,6 +182,70 @@ bool operator<(const GroupData &lhs, const GroupData &rhs)
+ 
+ 
+ /*!
++ * \class SourceArtifact
++ * \brief The \c SourceArtifact class describes a source file in a product.
++ */
++
++SourceArtifact::SourceArtifact() : d(new Internal::SourceArtifactPrivate)
++{
++}
++
++SourceArtifact::SourceArtifact(const SourceArtifact &other) : d(other.d)
++{
++}
++
++SourceArtifact &SourceArtifact::operator=(const SourceArtifact &other)
++{
++    d = other.d;
++    return *this;
++}
++
++SourceArtifact::~SourceArtifact()
++{
++}
++
++/*!
++ * \brief Returns true if and only if this object holds data that was initialized by Qbs.
++ */
++bool SourceArtifact::isValid() const
++{
++    return d->isValid;
++}
++
++/*!
++ * \brief The full path of this file.
++ */
++QString SourceArtifact::filePath() const
++{
++    return d->filePath;
++}
++
++/*!
++ * \brief The tags of this file.
++ * Typically, this list will contain just one element.
++ */
++QStringList SourceArtifact::fileTags() const
++{
++    return d->fileTags;
++}
++
++bool operator==(const SourceArtifact &sa1, const SourceArtifact &sa2)
++{
++    return sa1.filePath() == sa2.filePath() && sa1.fileTags() == sa2.fileTags();
++}
++
++bool operator!=(const SourceArtifact &sa1, const SourceArtifact &sa2)
++{
++    return !(sa1 == sa2);
++}
++
++bool operator<(const SourceArtifact &sa1, const SourceArtifact &sa2)
++{
++    return sa1.filePath() < sa2.filePath();
++}
++
++
++/*!
+  * \class TargetArtifact
+  * \brief The \c TargetArtifact class describes a top-level build result of a product.
+  * For instance, the target artifact of a product with type "application" is an executable file.
+diff --git a/src/lib/corelib/api/projectdata.h b/src/lib/corelib/api/projectdata.h
+index 0d11c35..72aa69e 100644
+--- a/src/lib/corelib/api/projectdata.h
++++ b/src/lib/corelib/api/projectdata.h
+@@ -48,6 +48,7 @@ class ProductDataPrivate;
+ class ProjectPrivate;
+ class ProjectDataPrivate;
+ class PropertyMapPrivate;
++class SourceArtifactPrivate;
+ class TargetArtifactPrivate;
+ } // namespace Internal
+ 
+@@ -84,6 +85,28 @@ private:
+     Internal::PropertyMapPrivate *d;
+ };
+ 
++class QBS_EXPORT SourceArtifact
++{
++    friend class Internal::ProjectPrivate;
++public:
++    SourceArtifact();
++    SourceArtifact(const SourceArtifact &other);
++    SourceArtifact &operator=(const SourceArtifact &other);
++    ~SourceArtifact();
++
++    bool isValid() const;
++
++    QString filePath() const;
++    QStringList fileTags() const;
++
++private:
++    QExplicitlySharedDataPointer<Internal::SourceArtifactPrivate> d;
++};
++
++QBS_EXPORT bool operator==(const SourceArtifact &ta1, const SourceArtifact &ta2);
++QBS_EXPORT bool operator!=(const SourceArtifact &ta1, const SourceArtifact &ta2);
++QBS_EXPORT bool operator<(const SourceArtifact &ta1, const SourceArtifact &ta2);
++
+ class QBS_EXPORT GroupData
+ {
+     friend class Internal::ProjectPrivate;
+@@ -97,8 +120,9 @@ public:
+ 
+     CodeLocation location() const;
+     QString name() const;
+-    QStringList filePaths() const;
+-    QStringList expandedWildcards() const;
++    QList<SourceArtifact> sourceArtifacts() const;
++    QList<SourceArtifact> sourceArtifactsFromWildcards() const;
++    QList<SourceArtifact> allSourceArtifacts() const;
+     PropertyMap properties() const;
+     bool isEnabled() const;
+     QStringList allFilePaths() const;
+diff --git a/src/lib/corelib/api/projectdata_p.h b/src/lib/corelib/api/projectdata_p.h
+index 0b7749f..895be44 100644
+--- a/src/lib/corelib/api/projectdata_p.h
++++ b/src/lib/corelib/api/projectdata_p.h
+@@ -45,13 +45,23 @@ public:
+ 
+     QString name;
+     CodeLocation location;
+-    QStringList filePaths;
+-    QStringList expandedWildcards;
++    QList<SourceArtifact> sourceArtifacts;
++    QList<SourceArtifact> sourceArtifactsFromWildcards;
+     PropertyMap properties;
+     bool isEnabled;
+     bool isValid;
+ };
+ 
++class SourceArtifactPrivate : public QSharedData
++{
++public:
++    SourceArtifactPrivate() : isValid(false) {}
++
++    QString filePath;
++    QStringList fileTags;
++    bool isValid;
++};
++
+ class TargetArtifactPrivate : public QSharedData
+ {
+ public:
+diff --git a/src/lib/corelib/language/forward_decls.h b/src/lib/corelib/language/forward_decls.h
+index ca6b739..c56b98f 100644
+--- a/src/lib/corelib/language/forward_decls.h
++++ b/src/lib/corelib/language/forward_decls.h
+@@ -95,9 +95,9 @@ class ResolvedScanner;
+ typedef QSharedPointer<ResolvedScanner> ResolvedScannerPtr;
+ typedef QSharedPointer<const ResolvedScanner> ResolvedScannerConstPtr;
+ 
+-class SourceArtifact;
+-typedef QSharedPointer<SourceArtifact> SourceArtifactPtr;
+-typedef QSharedPointer<const SourceArtifact> SourceArtifactConstPtr;
++class SourceArtifactInternal;
++typedef QSharedPointer<SourceArtifactInternal> SourceArtifactPtr;
++typedef QSharedPointer<const SourceArtifactInternal> SourceArtifactConstPtr;
+ 
+ class ScriptFunction;
+ typedef QSharedPointer<ScriptFunction> ScriptFunctionPtr;
+diff --git a/src/lib/corelib/language/language.cpp b/src/lib/corelib/language/language.cpp
+index 62cfa67..203d5c0 100644
+--- a/src/lib/corelib/language/language.cpp
++++ b/src/lib/corelib/language/language.cpp
+@@ -110,7 +110,7 @@ void FileTagger::store(PersistentPool &pool) const
+  * SourceArtifact could simply have a back pointer to the group in addition to the file path.)
+  * \sa ResolvedGroup
+  */
+-void SourceArtifact::load(PersistentPool &pool)
++void SourceArtifactInternal::load(PersistentPool &pool)
+ {
+     absoluteFilePath = pool.idLoadString();
+     pool.stream() >> fileTags;
+@@ -118,7 +118,7 @@ void SourceArtifact::load(PersistentPool &pool)
+     properties = pool.idLoadS<PropertyMapInternal>();
+ }
+ 
+-void SourceArtifact::store(PersistentPool &pool) const
++void SourceArtifactInternal::store(PersistentPool &pool) const
+ {
+     pool.storeString(absoluteFilePath);
+     pool.stream() << fileTags;
+@@ -1203,7 +1203,7 @@ QString keyFromElem(const ArtifactPropertiesPtr &ap)
+     return lst.join(QLatin1Char(','));
+ }
+ 
+-bool operator==(const SourceArtifact &sa1, const SourceArtifact &sa2)
++bool operator==(const SourceArtifactInternal &sa1, const SourceArtifactInternal &sa2)
+ {
+     return sa1.absoluteFilePath == sa2.absoluteFilePath
+             && sa1.fileTags == sa2.fileTags
+diff --git a/src/lib/corelib/language/language.h b/src/lib/corelib/language/language.h
+index 0a6328f..940fe2b 100644
+--- a/src/lib/corelib/language/language.h
++++ b/src/lib/corelib/language/language.h
+@@ -127,10 +127,10 @@ inline bool operator!=(const RuleArtifact::Binding &b1, const RuleArtifact::Bind
+ bool operator==(const RuleArtifact &a1, const RuleArtifact &a2);
+ inline bool operator!=(const RuleArtifact &a1, const RuleArtifact &a2) { return !(a1 == a2); }
+ 
+-class SourceArtifact : public PersistentObject
++class SourceArtifactInternal : public PersistentObject
+ {
+ public:
+-    static SourceArtifactPtr create() { return SourceArtifactPtr(new SourceArtifact); }
++    static SourceArtifactPtr create() { return SourceArtifactPtr(new SourceArtifactInternal); }
+ 
+     QString absoluteFilePath;
+     FileTags fileTags;
+@@ -138,13 +138,13 @@ public:
+     PropertyMapPtr properties;
+ 
+ private:
+-    SourceArtifact() : overrideFileTags(true) {}
++    SourceArtifactInternal() : overrideFileTags(true) {}
+ 
+     void load(PersistentPool &pool);
+     void store(PersistentPool &pool) const;
+ };
+-bool operator==(const SourceArtifact &sa1, const SourceArtifact &sa2);
+-inline bool operator!=(const SourceArtifact &sa1, const SourceArtifact &sa2) {
++bool operator==(const SourceArtifactInternal &sa1, const SourceArtifactInternal &sa2);
++inline bool operator!=(const SourceArtifactInternal &sa1, const SourceArtifactInternal &sa2) {
+     return !(sa1 == sa2);
+ }
+ 
+diff --git a/src/lib/corelib/language/projectresolver.cpp b/src/lib/corelib/language/projectresolver.cpp
+index 91bbeea..9ea7b3c 100644
+--- a/src/lib/corelib/language/projectresolver.cpp
++++ b/src/lib/corelib/language/projectresolver.cpp
+@@ -460,7 +460,7 @@ SourceArtifactPtr ProjectResolver::createSourceArtifact(const ResolvedProductCon
+         const PropertyMapPtr &properties, const QString &fileName, const FileTags &fileTags,
+         bool overrideTags, QList<SourceArtifactPtr> &artifactList)
+ {
+-    SourceArtifactPtr artifact = SourceArtifact::create();
++    SourceArtifactPtr artifact = SourceArtifactInternal::create();
+     artifact->absoluteFilePath = FileInfo::resolvePath(rproduct->sourceDirectory, fileName);
+     artifact->absoluteFilePath = QDir::cleanPath(artifact->absoluteFilePath); // Potentially necessary for groups with prefixes.
+     artifact->fileTags = fileTags;
+@@ -814,7 +814,7 @@ void ProjectResolver::resolveTransformer(Item *item, ProjectContext *projectCont
+     foreach (const Item *child, item->children()) {
+         if (Q_UNLIKELY(child->typeName() != QLatin1String("Artifact")))
+             throw ErrorInfo(Tr::tr("Transformer: wrong child type '%0'.").arg(child->typeName()));
+-        SourceArtifactPtr artifact = SourceArtifact::create();
++        SourceArtifactPtr artifact = SourceArtifactInternal::create();
+         artifact->properties = m_productContext->product->moduleProperties;
+         QString filePath = m_evaluator->stringValue(child, QLatin1String("filePath"));
+         if (Q_UNLIKELY(filePath.isEmpty()))
+diff --git a/tests/auto/api/tst_api.cpp b/tests/auto/api/tst_api.cpp
+index cd58c99..b362773 100644
+--- a/tests/auto/api/tst_api.cpp
++++ b/tests/auto/api/tst_api.cpp
+@@ -399,7 +399,7 @@ static void printProjectData(const qbs::ProjectData &project)
+         qDebug("    Product '%s' at %s", qPrintable(p.name()), qPrintable(p.location().toString()));
+         foreach (const qbs::GroupData &g, p.groups()) {
+             qDebug("        Group '%s' at %s", qPrintable(g.name()), qPrintable(g.location().toString()));
+-            qDebug("            Files: %s", qPrintable(g.filePaths().join(QLatin1String(", "))));
++            qDebug("            Files: %s", qPrintable(g.allFilePaths().join(QLatin1String(", "))));
+         }
+     }
+ }
+@@ -578,8 +578,9 @@ void TestApi::changeContent()
+     product = projectData.products().first();
+     group = findGroup(product, "Group with wildcards");
+     QVERIFY(group.isValid());
+-    QCOMPARE(group.expandedWildcards().count(), 1);
+-    QCOMPARE(group.expandedWildcards().first(), QFileInfo(newFile).absoluteFilePath());
++    QCOMPARE(group.sourceArtifactsFromWildcards().count(), 1);
++    QCOMPARE(group.sourceArtifactsFromWildcards().first().filePath(),
++             QFileInfo(newFile).absoluteFilePath());
+ 
+     // Error checking: Try to remove a file that originates from a wildcard pattern.
+     projectData = project.projectData();
+-- 
+2.1.4
+
