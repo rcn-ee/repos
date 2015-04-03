@@ -176,8 +176,8 @@ qt5_kde
 qt5_apps
 qt5_lxqt
 
-site="http://ftp.de.debian.org/debian/pool/main/c"
-package_name="chromium-browser" ; package_version="${package_name}_41.0.2272.76-2" ; check_http
+site="http://ports.ubuntu.com/pool/universe/c"
+package_name="chromium-browser" ; package_version="${package_name}_41.0.2272.76-0ubuntu1.1134" ; check_http
 
 #really slow...
 #exit
