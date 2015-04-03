@@ -1,0 +1,15 @@
+Description: Ten seconds is not enough time for some busy machines. Don't kill
+  GPU process until 20 sec.
+Author: Chad MILLER <chad.miller@canonical.com>
+
+--- a/content/gpu/gpu_main.cc
++++ b/content/gpu/gpu_main.cc
+@@ -62,7 +62,7 @@
+ #include <sanitizer/asan_interface.h>
+ #endif
+ 
+-const int kGpuTimeout = 10000;
++const int kGpuTimeout = 20000;
+ 
+ namespace content {
+ 

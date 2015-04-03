@@ -1,0 +1,3363 @@
+--- a/ui/gfx/geometry/box_f.cc
++++ b/ui/gfx/geometry/box_f.cc
+@@ -11,7 +11,7 @@
+ 
+ namespace gfx {
+ 
+-std::string BoxF::ToString() const {
++std::string OpaqueBoxF::ToString() const {
+   return base::StringPrintf("%s %fx%fx%f",
+                             origin().ToString().c_str(),
+                             width_,
+@@ -19,13 +19,13 @@ std::string BoxF::ToString() const {
+                             depth_);
+ }
+ 
+-bool BoxF::IsEmpty() const {
++bool OpaqueBoxF::IsEmpty() const {
+   return (width_ == 0 && height_ == 0) ||
+          (width_ == 0 && depth_ == 0) ||
+          (height_ == 0 && depth_ == 0);
+ }
+ 
+-void BoxF::ExpandTo(const Point3F& min, const Point3F& max) {
++void OpaqueBoxF::ExpandTo(const Point3F& min, const Point3F& max) {
+   DCHECK_LE(min.x(), max.x());
+   DCHECK_LE(min.y(), max.y());
+   DCHECK_LE(min.z(), max.z());
+@@ -43,7 +43,7 @@ void BoxF::ExpandTo(const Point3F& min,
+   depth_ = max_z - min_z;
+ }
+ 
+-void BoxF::Union(const BoxF& box) {
++void OpaqueBoxF::Union(const OpaqueBoxF& box) {
+   if (IsEmpty()) {
+     *this = box;
+     return;
+@@ -53,16 +53,16 @@ void BoxF::Union(const BoxF& box) {
+   ExpandTo(box);
+ }
+ 
+-void BoxF::ExpandTo(const Point3F& point) {
++void OpaqueBoxF::ExpandTo(const Point3F& point) {
+   ExpandTo(point, point);
+ }
+ 
+-void BoxF::ExpandTo(const BoxF& box) {
++void OpaqueBoxF::ExpandTo(const OpaqueBoxF& box) {
+   ExpandTo(box.origin(), gfx::Point3F(box.right(), box.bottom(), box.front()));
+ }
+ 
+-BoxF UnionBoxes(const BoxF& a, const BoxF& b) {
+-  BoxF result = a;
++OpaqueBoxF UnionBoxes(const OpaqueBoxF& a, const OpaqueBoxF& b) {
++  OpaqueBoxF result = a;
+   result.Union(b);
+   return result;
+ }
+--- a/ui/gfx/geometry/box_f.h
++++ b/ui/gfx/geometry/box_f.h
+@@ -15,31 +15,31 @@ namespace gfx {
+ 
+ // A 3d version of gfx::RectF, with the positive z-axis pointed towards
+ // the camera.
+-class GFX_EXPORT BoxF {
++class GFX_EXPORT OpaqueBoxF {
+  public:
+-  BoxF()
++  OpaqueBoxF()
+       : width_(0.f),
+         height_(0.f),
+         depth_(0.f) {}
+ 
+-  BoxF(float width, float height, float depth)
++  OpaqueBoxF(float width, float height, float depth)
+       : width_(width < 0 ? 0 : width),
+         height_(height < 0 ? 0 : height),
+         depth_(depth < 0 ? 0 : depth) {}
+ 
+-  BoxF(float x, float y, float z, float width, float height, float depth)
++  OpaqueBoxF(float x, float y, float z, float width, float height, float depth)
+       : origin_(x, y, z),
+         width_(width < 0 ? 0 : width),
+         height_(height < 0 ? 0 : height),
+         depth_(depth < 0 ? 0 : depth) {}
+ 
+-  BoxF(const Point3F& origin, float width, float height, float depth)
++  OpaqueBoxF(const Point3F& origin, float width, float height, float depth)
+       : origin_(origin),
+         width_(width < 0 ? 0 : width),
+         height_(height < 0 ? 0 : height),
+         depth_(depth < 0 ? 0 : depth) {}
+ 
+-  ~BoxF() {}
++  ~OpaqueBoxF() {}
+ 
+   // Scales all three axes by the given scale.
+   void Scale(float scale) {
+@@ -62,7 +62,7 @@ class GFX_EXPORT BoxF {
+ 
+   // Computes the union of this box with the given box. The union is the
+   // smallest box that contains both boxes.
+-  void Union(const BoxF& box);
++  void Union(const OpaqueBoxF& box);
+ 
+   std::string ToString() const;
+ 
+@@ -105,7 +105,7 @@ class GFX_EXPORT BoxF {
+   // Expands |this| to contain the given box, if necessary. Please note, even
+   // if |this| is empty, after the function |this| will continue to contain its
+   // |origin_|.
+-  void ExpandTo(const BoxF& box);
++  void ExpandTo(const OpaqueBoxF& box);
+ 
+  private:
+   // Expands the box to contain the two given points. It is required that each
+@@ -122,13 +122,13 @@ class GFX_EXPORT BoxF {
+   float depth_;
+ };
+ 
+-GFX_EXPORT BoxF UnionBoxes(const BoxF& a, const BoxF& b);
++GFX_EXPORT OpaqueBoxF UnionBoxes(const OpaqueBoxF& a, const OpaqueBoxF& b);
+ 
+-inline BoxF ScaleBox(const BoxF& b,
++inline OpaqueBoxF ScaleBox(const OpaqueBoxF& b,
+                      float x_scale,
+                      float y_scale,
+                      float z_scale) {
+-  return BoxF(b.x() * x_scale,
++  return OpaqueBoxF(b.x() * x_scale,
+               b.y() * y_scale,
+               b.z() * z_scale,
+               b.width() * x_scale,
+@@ -136,21 +136,21 @@ inline BoxF ScaleBox(const BoxF& b,
+               b.depth() * z_scale);
+ }
+ 
+-inline BoxF ScaleBox(const BoxF& b, float scale) {
++inline OpaqueBoxF ScaleBox(const OpaqueBoxF& b, float scale) {
+   return ScaleBox(b, scale, scale, scale);
+ }
+ 
+-inline bool operator==(const BoxF& a, const BoxF& b) {
++inline bool operator==(const OpaqueBoxF& a, const OpaqueBoxF& b) {
+   return a.origin() == b.origin() && a.width() == b.width() &&
+          a.height() == b.height() && a.depth() == b.depth();
+ }
+ 
+-inline bool operator!=(const BoxF& a, const BoxF& b) {
++inline bool operator!=(const OpaqueBoxF& a, const OpaqueBoxF& b) {
+   return !(a == b);
+ }
+ 
+-inline BoxF operator+(const BoxF& b, const Vector3dF& v) {
+-  return BoxF(b.x() + v.x(),
++inline OpaqueBoxF operator+(const OpaqueBoxF& b, const Vector3dF& v) {
++  return OpaqueBoxF(b.x() + v.x(),
+               b.y() + v.y(),
+               b.z() + v.z(),
+               b.width(),
+@@ -161,7 +161,22 @@ inline BoxF operator+(const BoxF& b, con
+ // This is declared here for use in gtest-based unit tests but is defined in
+ // the gfx_test_support target. Depend on that to use this in your unit test.
+ // This should not be used in production code - call ToString() instead.
+-void PrintTo(const BoxF& box, ::std::ostream* os);
++void PrintTo(const OpaqueBoxF& box, ::std::ostream* os);
++
++class GFX_EXPORT BoxF : public OpaqueBoxF {
++public:
++  BoxF() : OpaqueBoxF() { }
++  BoxF(float width, float height, float depth) : OpaqueBoxF(width, height, depth) { }
++  BoxF(float x, float y, float z, float width, float height, float depth) : OpaqueBoxF(x, y, z, width, height, depth) { }
++  BoxF(const Point3F& origin, float width, float height, float depth) : OpaqueBoxF(origin, width, height, depth) { }
++};
++class GFX_EXPORT DeviceBoxF : public OpaqueBoxF {
++public:
++  DeviceBoxF() : OpaqueBoxF() { }
++  DeviceBoxF(float width, float height, float depth) : OpaqueBoxF(width, height, depth) { }
++  DeviceBoxF(float x, float y, float z, float width, float height, float depth) : OpaqueBoxF(x, y, z, width, height, depth) { }
++  DeviceBoxF(const Point3F& origin, float width, float height, float depth) : OpaqueBoxF(origin, width, height, depth) { }
++};
+ 
+ }  // namespace gfx
+ 
+--- a/ui/gfx/geometry/matrix3_f.cc
++++ b/ui/gfx/geometry/matrix3_f.cc
+@@ -30,7 +30,7 @@ enum MatrixCoordinates {
+ 
+ template<typename T>
+ double Determinant3x3(T data[M_END]) {
+-  // This routine is separated from the Matrix3F::Determinant because in
++  // This routine is separated from the OpaqueMatrix3F::Determinant because in
+   // computing inverse we do want higher precision afforded by the explicit
+   // use of 'double'.
+   return
+@@ -49,47 +49,47 @@ double Determinant3x3(T data[M_END]) {
+ 
+ namespace gfx {
+ 
+-Matrix3F::Matrix3F() {
++OpaqueMatrix3F::OpaqueMatrix3F() {
+ }
+ 
+-Matrix3F::~Matrix3F() {
++OpaqueMatrix3F::~OpaqueMatrix3F() {
+ }
+ 
+ // static
+-Matrix3F Matrix3F::Zeros() {
+-  Matrix3F matrix;
++OpaqueMatrix3F OpaqueMatrix3F::Zeros() {
++  OpaqueMatrix3F matrix;
+   matrix.set(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+   return matrix;
+ }
+ 
+ // static
+-Matrix3F Matrix3F::Ones() {
+-  Matrix3F matrix;
++OpaqueMatrix3F OpaqueMatrix3F::Ones() {
++  OpaqueMatrix3F matrix;
+   matrix.set(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+   return matrix;
+ }
+ 
+ // static
+-Matrix3F Matrix3F::Identity() {
+-  Matrix3F matrix;
++OpaqueMatrix3F OpaqueMatrix3F::Identity() {
++  OpaqueMatrix3F matrix;
+   matrix.set(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+   return matrix;
+ }
+ 
+ // static
+-Matrix3F Matrix3F::FromOuterProduct(const Vector3dF& a, const Vector3dF& bt) {
+-  Matrix3F matrix;
++OpaqueMatrix3F OpaqueMatrix3F::FromOuterProduct(const Vector3dF& a, const Vector3dF& bt) {
++  OpaqueMatrix3F matrix;
+   matrix.set(a.x() * bt.x(), a.x() * bt.y(), a.x() * bt.z(),
+              a.y() * bt.x(), a.y() * bt.y(), a.y() * bt.z(),
+              a.z() * bt.x(), a.z() * bt.y(), a.z() * bt.z());
+   return matrix;
+ }
+ 
+-bool Matrix3F::IsEqual(const Matrix3F& rhs) const {
++bool OpaqueMatrix3F::IsEqual(const OpaqueMatrix3F& rhs) const {
+   return 0 == memcmp(data_, rhs.data_, sizeof(data_));
+ }
+ 
+-bool Matrix3F::IsNear(const Matrix3F& rhs, float precision) const {
++bool OpaqueMatrix3F::IsNear(const OpaqueMatrix3F& rhs, float precision) const {
+   DCHECK(precision >= 0);
+   for (int i = 0; i < M_END; ++i) {
+     if (std::abs(data_[i] - rhs.data_[i]) > precision)
+@@ -98,8 +98,8 @@ bool Matrix3F::IsNear(const Matrix3F& rh
+   return true;
+ }
+ 
+-Matrix3F Matrix3F::Inverse() const {
+-  Matrix3F inverse = Matrix3F::Zeros();
++OpaqueMatrix3F OpaqueMatrix3F::Inverse() const {
++  OpaqueMatrix3F inverse = OpaqueMatrix3F::Zeros();
+   double determinant = Determinant3x3(data_);
+   if (std::numeric_limits<float>::epsilon() > std::abs(determinant))
+     return inverse;  // Singular matrix. Return Zeros().
+@@ -126,11 +126,11 @@ Matrix3F Matrix3F::Inverse() const {
+   return inverse;
+ }
+ 
+-float Matrix3F::Determinant() const {
++float OpaqueMatrix3F::Determinant() const {
+   return static_cast<float>(Determinant3x3(data_));
+ }
+ 
+-Vector3dF Matrix3F::SolveEigenproblem(Matrix3F* eigenvectors) const {
++OpaqueVector3dF OpaqueMatrix3F::SolveEigenproblem(OpaqueMatrix3F* eigenvectors) const {
+   // The matrix must be symmetric.
+   const float epsilon = std::numeric_limits<float>::epsilon();
+   if (std::abs(data_[M01] - data_[M10]) > epsilon ||
+@@ -160,7 +160,7 @@ Vector3dF Matrix3F::SolveEigenproblem(Ma
+     p = std::sqrt(p / 6);
+ 
+     // The computation below puts B as (A - qI) / p, where A is *this.
+-    Matrix3F matrix_b(*this);
++    OpaqueMatrix3F matrix_b(*this);
+     matrix_b.data_[M00] -= q;
+     matrix_b.data_[M11] -= q;
+     matrix_b.data_[M22] -= q;
+@@ -215,15 +215,15 @@ Vector3dF Matrix3F::SolveEigenproblem(Ma
+     for (int i = 0; i < 3; ++i) {
+       float l = eigenvalues[i];
+       // B = A - l * I
+-      Matrix3F matrix_b(*this);
++      OpaqueMatrix3F matrix_b(*this);
+       matrix_b.data_[M00] -= l;
+       matrix_b.data_[M11] -= l;
+       matrix_b.data_[M22] -= l;
+-      Vector3dF e1 = CrossProduct(matrix_b.get_column(0),
++      OpaqueVector3dF e1 = CrossProduct(matrix_b.get_column(0),
+                                   matrix_b.get_column(1));
+-      Vector3dF e2 = CrossProduct(matrix_b.get_column(1),
++      OpaqueVector3dF e2 = CrossProduct(matrix_b.get_column(1),
+                                   matrix_b.get_column(2));
+-      Vector3dF e3 = CrossProduct(matrix_b.get_column(2),
++      OpaqueVector3dF e3 = CrossProduct(matrix_b.get_column(2),
+                                   matrix_b.get_column(0));
+ 
+       // e1, e2 and e3 should point in the same direction.
+@@ -233,14 +233,14 @@ Vector3dF Matrix3F::SolveEigenproblem(Ma
+       if (DotProduct(e1, e3) < 0)
+         e3 = -e3;
+ 
+-      Vector3dF eigvec = e1 + e2 + e3;
++      OpaqueVector3dF eigvec = e1 + e2 + e3;
+       // Normalize.
+       eigvec.Scale(1.0f / eigvec.Length());
+       eigenvectors->set_column(i, eigvec);
+     }
+   }
+ 
+-  return Vector3dF(eigenvalues[0], eigenvalues[1], eigenvalues[2]);
++  return OpaqueVector3dF(eigenvalues[0], eigenvalues[1], eigenvalues[2]);
+ }
+ 
+ }  // namespace gfx
+--- a/ui/gfx/geometry/matrix3_f.h
++++ b/ui/gfx/geometry/matrix3_f.h
+@@ -10,19 +10,19 @@
+ 
+ namespace gfx {
+ 
+-class GFX_EXPORT Matrix3F {
++class GFX_EXPORT OpaqueMatrix3F {
+  public:
+-  ~Matrix3F();
++  ~OpaqueMatrix3F();
+ 
+-  static Matrix3F Zeros();
+-  static Matrix3F Ones();
+-  static Matrix3F Identity();
+-  static Matrix3F FromOuterProduct(const Vector3dF& a, const Vector3dF& bt);
++  static OpaqueMatrix3F Zeros();
++  static OpaqueMatrix3F Ones();
++  static OpaqueMatrix3F Identity();
++  static OpaqueMatrix3F FromOuterProduct(const Vector3dF& a, const Vector3dF& bt);
+ 
+-  bool IsEqual(const Matrix3F& rhs) const;
++  bool IsEqual(const OpaqueMatrix3F& rhs) const;
+ 
+   // Element-wise comparison with given precision.
+-  bool IsNear(const Matrix3F& rhs, float precision) const;
++  bool IsNear(const OpaqueMatrix3F& rhs, float precision) const;
+ 
+   float get(int i, int j) const {
+     return data_[MatrixToArrayCoords(i, j)];
+@@ -46,14 +46,14 @@ class GFX_EXPORT Matrix3F {
+     data_[8] = m22;
+   }
+ 
+-  Vector3dF get_column(int i) const {
+-    return Vector3dF(
++  OpaqueVector3dF get_column(int i) const {
++    return OpaqueVector3dF(
+       data_[MatrixToArrayCoords(0, i)],
+       data_[MatrixToArrayCoords(1, i)],
+       data_[MatrixToArrayCoords(2, i)]);
+   }
+ 
+-  void set_column(int i, const Vector3dF& c) {
++  void set_column(int i, const OpaqueVector3dF& c) {
+     data_[MatrixToArrayCoords(0, i)] = c.x();
+     data_[MatrixToArrayCoords(1, i)] = c.y();
+     data_[MatrixToArrayCoords(2, i)] = c.z();
+@@ -61,7 +61,7 @@ class GFX_EXPORT Matrix3F {
+ 
+   // Returns an inverse of this if the matrix is non-singular, zero (== Zero())
+   // otherwise.
+-  Matrix3F Inverse() const;
++  OpaqueMatrix3F Inverse() const;
+ 
+   // Value of the determinant of the matrix.
+   float Determinant() const;
+@@ -85,10 +85,10 @@ class GFX_EXPORT Matrix3F {
+   // NaNs in vectors which cannot be computed.
+   // Eigenvectors are placed as column in |eigenvectors| in order corresponding
+   // to eigenvalues.
+-  Vector3dF SolveEigenproblem(Matrix3F* eigenvectors) const;
++  OpaqueVector3dF SolveEigenproblem(OpaqueMatrix3F* eigenvectors) const;
+ 
+  private:
+-  Matrix3F();  // Uninitialized default.
++  OpaqueMatrix3F();  // Uninitialized default.
+ 
+   static int MatrixToArrayCoords(int i, int j) {
+     DCHECK(i >= 0 && i < 3);
+@@ -99,10 +99,19 @@ class GFX_EXPORT Matrix3F {
+   float data_[9];
+ };
+ 
+-inline bool operator==(const Matrix3F& lhs, const Matrix3F& rhs) {
++inline bool operator==(const OpaqueMatrix3F& lhs, const OpaqueMatrix3F& rhs) {
+   return lhs.IsEqual(rhs);
+ }
+ 
++class GFX_EXPORT Matrix3F : public OpaqueMatrix3F {
++private:
++  Matrix3F();  // Uninitialized default.
++};
++class GFX_EXPORT DeviceMatrix3F : public OpaqueMatrix3F {
++private:
++  DeviceMatrix3F();  // Uninitialized default.
++};
++
+ }  // namespace gfx
+ 
+ #endif  // UI_GFX_GEOMETRY_MATRIX3_F_H_
+--- a/ui/gfx/geometry/point.cc
++++ b/ui/gfx/geometry/point.cc
+@@ -13,22 +13,22 @@
+ namespace gfx {
+ 
+ #if defined(OS_WIN)
+-Point::Point(DWORD point) {
++OpaquePoint::OpaquePoint(DWORD point) {
+   POINTS points = MAKEPOINTS(point);
+   x_ = points.x;
+   y_ = points.y;
+ }
+ 
+-Point::Point(const POINT& point) : x_(point.x), y_(point.y) {
++OpaquePoint::OpaquePoint(const POINT& point) : x_(point.x), y_(point.y) {
+ }
+ 
+-Point& Point::operator=(const POINT& point) {
++OpaquePoint& OpaquePoint::operator=(const POINT& point) {
+   x_ = point.x;
+   y_ = point.y;
+   return *this;
+ }
+ 
+-POINT Point::ToPOINT() const {
++POINT OpaquePoint::ToPOINT() const {
+   POINT p;
+   p.x = x();
+   p.y = y();
+@@ -36,17 +36,17 @@ POINT Point::ToPOINT() const {
+ }
+ #endif
+ 
+-void Point::SetToMin(const Point& other) {
++void OpaquePoint::SetToMin(const OpaquePoint& other) {
+   x_ = x_ <= other.x_ ? x_ : other.x_;
+   y_ = y_ <= other.y_ ? y_ : other.y_;
+ }
+ 
+-void Point::SetToMax(const Point& other) {
++void OpaquePoint::SetToMax(const OpaquePoint& other) {
+   x_ = x_ >= other.x_ ? x_ : other.x_;
+   y_ = y_ >= other.y_ ? y_ : other.y_;
+ }
+ 
+-std::string Point::ToString() const {
++std::string OpaquePoint::ToString() const {
+   return base::StringPrintf("%d,%d", x(), y());
+ }
+ 
+--- a/ui/gfx/geometry/point.h
++++ b/ui/gfx/geometry/point.h
+@@ -24,27 +24,27 @@ typedef struct tagPOINT POINT;
+ namespace gfx {
+ 
+ // A point has an x and y coordinate.
+-class GFX_EXPORT Point {
++class GFX_EXPORT OpaquePoint {
+  public:
+-  Point() : x_(0), y_(0) {}
+-  Point(int x, int y) : x_(x), y_(y) {}
++  OpaquePoint() : x_(0), y_(0) {}
++  OpaquePoint(int x, int y) : x_(x), y_(y) {}
+ #if defined(OS_WIN)
+   // |point| is a DWORD value that contains a coordinate.  The x-coordinate is
+   // the low-order short and the y-coordinate is the high-order short.  This
+   // value is commonly acquired from GetMessagePos/GetCursorPos.
+-  explicit Point(DWORD point);
+-  explicit Point(const POINT& point);
+-  Point& operator=(const POINT& point);
++  explicit OpaquePoint(DWORD point);
++  explicit OpaquePoint(const POINT& point);
++  OpaquePoint& operator=(const POINT& point);
+ #elif defined(OS_MACOSX)
+-  explicit Point(const CGPoint& point) : x_(point.x), y_(point.y) {}
++  explicit OpaquePoint(const CGOpaquePoint& point) : x_(point.x), y_(point.y) {}
+ #endif
+ 
+-  ~Point() {}
++  ~OpaquePoint() {}
+ 
+ #if defined(OS_WIN)
+   POINT ToPOINT() const;
+ #elif defined(OS_MACOSX)
+-  CGPoint ToCGPoint() const { return CGPointMake(x(), y()); }
++  CGOpaquePoint ToCGOpaquePoint() const { return CGOpaquePointMake(x(), y()); }
+ #endif
+ 
+   int x() const { return x_; }
+@@ -72,8 +72,8 @@ class GFX_EXPORT Point {
+     y_ -= vector.y();
+   }
+ 
+-  void SetToMin(const Point& other);
+-  void SetToMax(const Point& other);
++  void SetToMin(const OpaquePoint& other);
++  void SetToMax(const OpaquePoint& other);
+ 
+   bool IsOrigin() const { return x_ == 0 && y_ == 0; }
+ 
+@@ -83,14 +83,14 @@ class GFX_EXPORT Point {
+   // to the origin. If the y-values are the same, then point with
+   // the x-value closer to the origin is considered less than the
+   // other.
+-  // This comparison is required to use Point in sets, or sorted
++  // This comparison is required to use OpaquePoint in sets, or sorted
+   // vectors.
+-  bool operator<(const Point& rhs) const {
++  bool operator<(const OpaquePoint& rhs) const {
+     return (y_ == rhs.y_) ? (x_ < rhs.x_) : (y_ < rhs.y_);
+   }
+ 
+-  operator PointF() const {
+-    return PointF(static_cast<float>(x()), static_cast<float>(y()));
++  operator OpaquePointF() const {
++    return OpaquePointF(static_cast<float>(x()), static_cast<float>(y()));
+   }
+ 
+   // Returns a string representation of point.
+@@ -101,38 +101,49 @@ class GFX_EXPORT Point {
+   int y_;
+ };
+ 
+-inline bool operator==(const Point& lhs, const Point& rhs) {
++inline bool operator==(const OpaquePoint& lhs, const OpaquePoint& rhs) {
+   return lhs.x() == rhs.x() && lhs.y() == rhs.y();
+ }
+ 
+-inline bool operator!=(const Point& lhs, const Point& rhs) {
++inline bool operator!=(const OpaquePoint& lhs, const OpaquePoint& rhs) {
+   return !(lhs == rhs);
+ }
+ 
+-inline Point operator+(const Point& lhs, const Vector2d& rhs) {
+-  Point result(lhs);
++inline OpaquePoint operator+(const OpaquePoint& lhs, const Vector2d& rhs) {
++  OpaquePoint result(lhs);
+   result += rhs;
+   return result;
+ }
+ 
+-inline Point operator-(const Point& lhs, const Vector2d& rhs) {
+-  Point result(lhs);
++inline OpaquePoint operator-(const OpaquePoint& lhs, const Vector2d& rhs) {
++  OpaquePoint result(lhs);
+   result -= rhs;
+   return result;
+ }
+ 
+-inline Vector2d operator-(const Point& lhs, const Point& rhs) {
++inline Vector2d operator-(const OpaquePoint& lhs, const OpaquePoint& rhs) {
+   return Vector2d(lhs.x() - rhs.x(), lhs.y() - rhs.y());
+ }
+ 
+-inline Point PointAtOffsetFromOrigin(const Vector2d& offset_from_origin) {
+-  return Point(offset_from_origin.x(), offset_from_origin.y());
++inline OpaquePoint OpaquePointAtOffsetFromOrigin(const Vector2d& offset_from_origin) {
++  return OpaquePoint(offset_from_origin.x(), offset_from_origin.y());
+ }
+ 
+ // This is declared here for use in gtest-based unit tests but is defined in
+ // the gfx_test_support target. Depend on that to use this in your unit test.
+ // This should not be used in production code - call ToString() instead.
+-void PrintTo(const Point& point, ::std::ostream* os);
++void PrintTo(const OpaquePoint& point, ::std::ostream* os);
++
++class GFX_EXPORT Point : public OpaquePoint {
++ public:
++  Point() : OpaquePoint() {}
++  Point(int x, int y) : OpaquePoint(x, y) {}
++};
++class GFX_EXPORT DevicePoint : public OpaquePoint {
++ public:
++  DevicePoint() : OpaquePoint() {}
++  DevicePoint(int x, int y) : OpaquePoint(x, y) {}
++};
+ 
+ }  // namespace gfx
+ 
+--- a/ui/gfx/geometry/point3_f.cc
++++ b/ui/gfx/geometry/point3_f.cc
+@@ -8,29 +8,29 @@
+ 
+ namespace gfx {
+ 
+-std::string Point3F::ToString() const {
++std::string OpaquePoint3F::ToString() const {
+   return base::StringPrintf("%f,%f,%f", x_, y_, z_);
+ }
+ 
+-Point3F operator+(const Point3F& lhs, const Vector3dF& rhs) {
++OpaquePoint3F operator+(const OpaquePoint3F& lhs, const Vector3dF& rhs) {
+   float x = lhs.x() + rhs.x();
+   float y = lhs.y() + rhs.y();
+   float z = lhs.z() + rhs.z();
+-  return Point3F(x, y, z);
++  return OpaquePoint3F(x, y, z);
+ }
+ 
+ // Subtract a vector from a point, producing a new point offset by the vector's
+ // inverse.
+-Point3F operator-(const Point3F& lhs, const Vector3dF& rhs) {
++OpaquePoint3F operator-(const OpaquePoint3F& lhs, const Vector3dF& rhs) {
+   float x = lhs.x() - rhs.x();
+   float y = lhs.y() - rhs.y();
+   float z = lhs.z() - rhs.z();
+-  return Point3F(x, y, z);
++  return OpaquePoint3F(x, y, z);
+ }
+ 
+ // Subtract one point from another, producing a vector that represents the
+ // distances between the two points along each axis.
+-Vector3dF operator-(const Point3F& lhs, const Point3F& rhs) {
++Vector3dF operator-(const OpaquePoint3F& lhs, const OpaquePoint3F& rhs) {
+   float x = lhs.x() - rhs.x();
+   float y = lhs.y() - rhs.y();
+   float z = lhs.z() - rhs.z();
+--- a/ui/gfx/geometry/point3_f.h
++++ b/ui/gfx/geometry/point3_f.h
+@@ -15,15 +15,15 @@
+ namespace gfx {
+ 
+ // A point has an x, y and z coordinate.
+-class GFX_EXPORT Point3F {
++class GFX_EXPORT OpaquePoint3F {
+  public:
+-  Point3F() : x_(0), y_(0), z_(0) {}
++  OpaquePoint3F() : x_(0), y_(0), z_(0) {}
+ 
+-  Point3F(float x, float y, float z) : x_(x), y_(y), z_(z) {}
++  OpaquePoint3F(float x, float y, float z) : x_(x), y_(y), z_(z) {}
+ 
+-  explicit Point3F(const PointF& point) : x_(point.x()), y_(point.y()), z_(0) {}
++  explicit OpaquePoint3F(const PointF& point) : x_(point.x()), y_(point.y()), z_(0) {}
+ 
+-  ~Point3F() {}
++  ~OpaquePoint3F() {}
+ 
+   void Scale(float scale) {
+     Scale(scale, scale, scale);
+@@ -62,7 +62,7 @@ class GFX_EXPORT Point3F {
+   }
+ 
+   // Returns the squared euclidean distance between two points.
+-  float SquaredDistanceTo(const Point3F& other) const {
++  float SquaredDistanceTo(const OpaquePoint3F& other) const {
+     float dx = x_ - other.x_;
+     float dy = y_ - other.y_;
+     float dz = z_ - other.z_;
+@@ -82,44 +82,57 @@ class GFX_EXPORT Point3F {
+   // copy/assign are allowed.
+ };
+ 
+-inline bool operator==(const Point3F& lhs, const Point3F& rhs) {
++inline bool operator==(const OpaquePoint3F& lhs, const OpaquePoint3F& rhs) {
+   return lhs.x() == rhs.x() && lhs.y() == rhs.y() && lhs.z() == rhs.z();
+ }
+ 
+-inline bool operator!=(const Point3F& lhs, const Point3F& rhs) {
++inline bool operator!=(const OpaquePoint3F& lhs, const OpaquePoint3F& rhs) {
+   return !(lhs == rhs);
+ }
+ 
+ // Add a vector to a point, producing a new point offset by the vector.
+-GFX_EXPORT Point3F operator+(const Point3F& lhs, const Vector3dF& rhs);
++GFX_EXPORT OpaquePoint3F operator+(const OpaquePoint3F& lhs, const Vector3dF& rhs);
+ 
+ // Subtract a vector from a point, producing a new point offset by the vector's
+ // inverse.
+-GFX_EXPORT Point3F operator-(const Point3F& lhs, const Vector3dF& rhs);
++GFX_EXPORT OpaquePoint3F operator-(const OpaquePoint3F& lhs, const Vector3dF& rhs);
+ 
+ // Subtract one point from another, producing a vector that represents the
+ // distances between the two points along each axis.
+-GFX_EXPORT Vector3dF operator-(const Point3F& lhs, const Point3F& rhs);
++GFX_EXPORT Vector3dF operator-(const OpaquePoint3F& lhs, const OpaquePoint3F& rhs);
+ 
+-inline Point3F PointAtOffsetFromOrigin(const Vector3dF& offset) {
+-  return Point3F(offset.x(), offset.y(), offset.z());
++inline OpaquePoint3F PointAtOffsetFromOrigin(const Vector3dF& offset) {
++  return OpaquePoint3F(offset.x(), offset.y(), offset.z());
+ }
+ 
+-inline Point3F ScalePoint(const Point3F& p,
++inline OpaquePoint3F ScalePoint(const OpaquePoint3F& p,
+                           float x_scale,
+                           float y_scale,
+                           float z_scale) {
+-  return Point3F(p.x() * x_scale, p.y() * y_scale, p.z() * z_scale);
++  return OpaquePoint3F(p.x() * x_scale, p.y() * y_scale, p.z() * z_scale);
+ }
+ 
+-inline Point3F ScalePoint(const Point3F& p, float scale) {
++inline OpaquePoint3F ScalePoint(const OpaquePoint3F& p, float scale) {
+   return ScalePoint(p, scale, scale, scale);
+ }
+ 
+ // This is declared here for use in gtest-based unit tests but is defined in
+ // the gfx_test_support target. Depend on that to use this in your unit test.
+ // This should not be used in production code - call ToString() instead.
+-void PrintTo(const Point3F& point, ::std::ostream* os);
++void PrintTo(const OpaquePoint3F& point, ::std::ostream* os);
++
++class GFX_EXPORT Point3F : public OpaquePoint3F {
++public:
++  Point3F() : OpaquePoint3F() {}
++  Point3F(float x, float y, float z) : OpaquePoint3F(x, y, z) {}
++  explicit Point3F(const PointF& point) : OpaquePoint3F(point) {}
++};
++class GFX_EXPORT DevicePoint3F : public OpaquePoint3F {
++public:
++  DevicePoint3F() : OpaquePoint3F() {}
++  DevicePoint3F(float x, float y, float z) : OpaquePoint3F(x, y, z) {}
++  explicit DevicePoint3F(const PointF& point) : OpaquePoint3F(point) {}
++};
+ 
+ }  // namespace gfx
+ 
+--- a/ui/gfx/geometry/point_f.cc
++++ b/ui/gfx/geometry/point_f.cc
+@@ -8,22 +8,22 @@
+ 
+ namespace gfx {
+ 
+-void PointF::SetToMin(const PointF& other) {
++void OpaquePointF::SetToMin(const OpaquePointF& other) {
+   x_ = x_ <= other.x_ ? x_ : other.x_;
+   y_ = y_ <= other.y_ ? y_ : other.y_;
+ }
+ 
+-void PointF::SetToMax(const PointF& other) {
++void OpaquePointF::SetToMax(const OpaquePointF& other) {
+   x_ = x_ >= other.x_ ? x_ : other.x_;
+   y_ = y_ >= other.y_ ? y_ : other.y_;
+ }
+ 
+-std::string PointF::ToString() const {
++std::string OpaquePointF::ToString() const {
+   return base::StringPrintf("%f,%f", x(), y());
+ }
+ 
+-PointF ScalePoint(const PointF& p, float x_scale, float y_scale) {
+-  PointF scaled_p(p);
++OpaquePointF ScalePoint(const OpaquePointF& p, float x_scale, float y_scale) {
++  OpaquePointF scaled_p(p);
+   scaled_p.Scale(x_scale, y_scale);
+   return scaled_p;
+ }
+--- a/ui/gfx/geometry/point_f.h
++++ b/ui/gfx/geometry/point_f.h
+@@ -14,11 +14,11 @@
+ namespace gfx {
+ 
+ // A floating version of gfx::Point.
+-class GFX_EXPORT PointF {
++class GFX_EXPORT OpaquePointF {
+  public:
+-  PointF() : x_(0.f), y_(0.f) {}
+-  PointF(float x, float y) : x_(x), y_(y) {}
+-  ~PointF() {}
++  OpaquePointF() : x_(0.f), y_(0.f) {}
++  OpaquePointF(float x, float y) : x_(x), y_(y) {}
++  ~OpaquePointF() {}
+ 
+   float x() const { return x_; }
+   float y() const { return y_; }
+@@ -45,8 +45,8 @@ class GFX_EXPORT PointF {
+     y_ -= vector.y();
+   }
+ 
+-  void SetToMin(const PointF& other);
+-  void SetToMax(const PointF& other);
++  void SetToMin(const OpaquePointF& other);
++  void SetToMax(const OpaquePointF& other);
+ 
+   bool IsOrigin() const { return x_ == 0 && y_ == 0; }
+ 
+@@ -56,9 +56,9 @@ class GFX_EXPORT PointF {
+   // to the origin. If the y-values are the same, then point with
+   // the x-value closer to the origin is considered less than the
+   // other.
+-  // This comparison is required to use PointF in sets, or sorted
++  // This comparison is required to use OpaquePointF in sets, or sorted
+   // vectors.
+-  bool operator<(const PointF& rhs) const {
++  bool operator<(const OpaquePointF& rhs) const {
+     return (y_ == rhs.y_) ? (x_ < rhs.x_) : (y_ < rhs.y_);
+   }
+ 
+@@ -78,44 +78,55 @@ class GFX_EXPORT PointF {
+   float y_;
+ };
+ 
+-inline bool operator==(const PointF& lhs, const PointF& rhs) {
++inline bool operator==(const OpaquePointF& lhs, const OpaquePointF& rhs) {
+   return lhs.x() == rhs.x() && lhs.y() == rhs.y();
+ }
+ 
+-inline bool operator!=(const PointF& lhs, const PointF& rhs) {
++inline bool operator!=(const OpaquePointF& lhs, const OpaquePointF& rhs) {
+   return !(lhs == rhs);
+ }
+ 
+-inline PointF operator+(const PointF& lhs, const Vector2dF& rhs) {
+-  PointF result(lhs);
++inline OpaquePointF operator+(const OpaquePointF& lhs, const Vector2dF& rhs) {
++  OpaquePointF result(lhs);
+   result += rhs;
+   return result;
+ }
+ 
+-inline PointF operator-(const PointF& lhs, const Vector2dF& rhs) {
+-  PointF result(lhs);
++inline OpaquePointF operator-(const OpaquePointF& lhs, const Vector2dF& rhs) {
++  OpaquePointF result(lhs);
+   result -= rhs;
+   return result;
+ }
+ 
+-inline Vector2dF operator-(const PointF& lhs, const PointF& rhs) {
++inline Vector2dF operator-(const OpaquePointF& lhs, const OpaquePointF& rhs) {
+   return Vector2dF(lhs.x() - rhs.x(), lhs.y() - rhs.y());
+ }
+ 
+-inline PointF PointAtOffsetFromOrigin(const Vector2dF& offset_from_origin) {
+-  return PointF(offset_from_origin.x(), offset_from_origin.y());
++inline OpaquePointF PointAtOffsetFromOrigin(const Vector2dF& offset_from_origin) {
++  return OpaquePointF(offset_from_origin.x(), offset_from_origin.y());
+ }
+ 
+-GFX_EXPORT PointF ScalePoint(const PointF& p, float x_scale, float y_scale);
++GFX_EXPORT OpaquePointF ScalePoint(const OpaquePointF& p, float x_scale, float y_scale);
+ 
+-inline PointF ScalePoint(const PointF& p, float scale) {
++inline OpaquePointF ScalePoint(const OpaquePointF& p, float scale) {
+   return ScalePoint(p, scale, scale);
+ }
+ 
+ // This is declared here for use in gtest-based unit tests but is defined in
+ // the gfx_test_support target. Depend on that to use this in your unit test.
+ // This should not be used in production code - call ToString() instead.
+-void PrintTo(const PointF& point, ::std::ostream* os);
++void PrintTo(const OpaquePointF& point, ::std::ostream* os);
++
++class GFX_EXPORT PointF : public OpaquePointF {
++ public:
++  PointF() : OpaquePointF() {}
++  PointF(float x, float y) : OpaquePointF(x, y) {}
++};
++class GFX_EXPORT DevicePointF : public OpaquePointF {
++ public:
++  DevicePointF() : OpaquePointF() {}
++  DevicePointF(float x, float y) : OpaquePointF(x, y) {}
++};
+ 
+ }  // namespace gfx
+ 
+--- a/ui/gfx/geometry/quad_f.cc
++++ b/ui/gfx/geometry/quad_f.cc
+@@ -10,14 +10,14 @@
+ 
+ namespace gfx {
+ 
+-void QuadF::operator=(const RectF& rect) {
++void OpaqueQuadF::operator=(const RectF& rect) {
+   p1_ = PointF(rect.x(), rect.y());
+   p2_ = PointF(rect.right(), rect.y());
+   p3_ = PointF(rect.right(), rect.bottom());
+   p4_ = PointF(rect.x(), rect.bottom());
+ }
+ 
+-std::string QuadF::ToString() const {
++std::string OpaqueQuadF::ToString() const {
+   return base::StringPrintf("%s;%s;%s;%s",
+                             p1_.ToString().c_str(),
+                             p2_.ToString().c_str(),
+@@ -29,7 +29,7 @@ static inline bool WithinEpsilon(float a
+   return std::abs(a - b) < std::numeric_limits<float>::epsilon();
+ }
+ 
+-bool QuadF::IsRectilinear() const {
++bool OpaqueQuadF::IsRectilinear() const {
+   return
+       (WithinEpsilon(p1_.x(), p2_.x()) && WithinEpsilon(p2_.y(), p3_.y()) &&
+        WithinEpsilon(p3_.x(), p4_.x()) && WithinEpsilon(p4_.y(), p1_.y())) ||
+@@ -37,7 +37,7 @@ bool QuadF::IsRectilinear() const {
+        WithinEpsilon(p3_.y(), p4_.y()) && WithinEpsilon(p4_.x(), p1_.x()));
+ }
+ 
+-bool QuadF::IsCounterClockwise() const {
++bool OpaqueQuadF::IsCounterClockwise() const {
+   // This math computes the signed area of the quad. Positive area
+   // indicates the quad is clockwise; negative area indicates the quad is
+   // counter-clockwise. Note carefully: this is backwards from conventional
+@@ -86,40 +86,40 @@ static inline bool PointIsInTriangle(con
+   return (u >= 0) && (v >= 0) && (w >= 0);
+ }
+ 
+-bool QuadF::Contains(const PointF& point) const {
++bool OpaqueQuadF::Contains(const PointF& point) const {
+   return PointIsInTriangle(point, p1_, p2_, p3_)
+       || PointIsInTriangle(point, p1_, p3_, p4_);
+ }
+ 
+-void QuadF::Scale(float x_scale, float y_scale) {
++void OpaqueQuadF::Scale(float x_scale, float y_scale) {
+   p1_.Scale(x_scale, y_scale);
+   p2_.Scale(x_scale, y_scale);
+   p3_.Scale(x_scale, y_scale);
+   p4_.Scale(x_scale, y_scale);
+ }
+ 
+-void QuadF::operator+=(const Vector2dF& rhs) {
++void OpaqueQuadF::operator+=(const Vector2dF& rhs) {
+   p1_ += rhs;
+   p2_ += rhs;
+   p3_ += rhs;
+   p4_ += rhs;
+ }
+ 
+-void QuadF::operator-=(const Vector2dF& rhs) {
++void OpaqueQuadF::operator-=(const Vector2dF& rhs) {
+   p1_ -= rhs;
+   p2_ -= rhs;
+   p3_ -= rhs;
+   p4_ -= rhs;
+ }
+ 
+-QuadF operator+(const QuadF& lhs, const Vector2dF& rhs) {
+-  QuadF result = lhs;
++OpaqueQuadF operator+(const OpaqueQuadF& lhs, const Vector2dF& rhs) {
++  OpaqueQuadF result = lhs;
+   result += rhs;
+   return result;
+ }
+ 
+-QuadF operator-(const QuadF& lhs, const Vector2dF& rhs) {
+-  QuadF result = lhs;
++OpaqueQuadF operator-(const OpaqueQuadF& lhs, const Vector2dF& rhs) {
++  OpaqueQuadF result = lhs;
+   result -= rhs;
+   return result;
+ }
+--- a/ui/gfx/geometry/quad_f.h
++++ b/ui/gfx/geometry/quad_f.h
+@@ -18,16 +18,16 @@ namespace gfx {
+ 
+ // A Quad is defined by four corners, allowing it to have edges that are not
+ // axis-aligned, unlike a Rect.
+-class GFX_EXPORT QuadF {
++class GFX_EXPORT OpaqueQuadF {
+  public:
+-  QuadF() {}
+-  QuadF(const PointF& p1, const PointF& p2, const PointF& p3, const PointF& p4)
++  OpaqueQuadF() {}
++  OpaqueQuadF(const PointF& p1, const PointF& p2, const PointF& p3, const PointF& p4)
+       : p1_(p1),
+         p2_(p2),
+         p3_(p3),
+         p4_(p4) {}
+ 
+-  explicit QuadF(const RectF& rect)
++  explicit OpaqueQuadF(const RectF& rect)
+       : p1_(rect.x(), rect.y()),
+         p2_(rect.right(), rect.y()),
+         p3_(rect.right(), rect.bottom()),
+@@ -89,26 +89,29 @@ class GFX_EXPORT QuadF {
+   PointF p4_;
+ };
+ 
+-inline bool operator==(const QuadF& lhs, const QuadF& rhs) {
++inline bool operator==(const OpaqueQuadF& lhs, const OpaqueQuadF& rhs) {
+   return
+       lhs.p1() == rhs.p1() && lhs.p2() == rhs.p2() &&
+       lhs.p3() == rhs.p3() && lhs.p4() == rhs.p4();
+ }
+ 
+-inline bool operator!=(const QuadF& lhs, const QuadF& rhs) {
++inline bool operator!=(const OpaqueQuadF& lhs, const OpaqueQuadF& rhs) {
+   return !(lhs == rhs);
+ }
+ 
+ // Add a vector to a quad, offseting each point in the quad by the vector.
+-GFX_EXPORT QuadF operator+(const QuadF& lhs, const Vector2dF& rhs);
++GFX_EXPORT OpaqueQuadF operator+(const OpaqueQuadF& lhs, const Vector2dF& rhs);
+ // Subtract a vector from a quad, offseting each point in the quad by the
+ // inverse of the vector.
+-GFX_EXPORT QuadF operator-(const QuadF& lhs, const Vector2dF& rhs);
++GFX_EXPORT OpaqueQuadF operator-(const OpaqueQuadF& lhs, const Vector2dF& rhs);
+ 
+ // This is declared here for use in gtest-based unit tests but is defined in
+ // the gfx_test_support target. Depend on that to use this in your unit test.
+ // This should not be used in production code - call ToString() instead.
+-void PrintTo(const QuadF& quad, ::std::ostream* os);
++void PrintTo(const OpaqueQuadF& quad, ::std::ostream* os);
++
++class GFX_EXPORT QuadF : public OpaqueQuadF { };
++class GFX_EXPORT DeviceQuadF : public OpaqueQuadF { };
+ 
+ }  // namespace gfx
+ 
+--- a/ui/gfx/geometry/r_tree_base.cc
++++ b/ui/gfx/geometry/r_tree_base.cc
+@@ -15,7 +15,7 @@ namespace {
+ 
+ // Returns a Vector2d to allow us to do arithmetic on the result such as
+ // computing distances between centers.
+-gfx::Vector2d CenterOfRect(const gfx::Rect& rect) {
++gfx::OpaqueVector2d CenterOfRect(const gfx::OpaqueRect& rect) {
+   return rect.OffsetFromOrigin() +
+       gfx::Vector2d(rect.width() / 2, rect.height() / 2);
+ }
+@@ -25,70 +25,70 @@ gfx::Vector2d CenterOfRect(const gfx::Re
+ namespace gfx {
+ 
+ 
+-// RTreeBase::NodeBase --------------------------------------------------------
++// OpaqueRTreeBase::NodeBase --------------------------------------------------------
+ 
+-RTreeBase::NodeBase::~NodeBase() {
++OpaqueRTreeBase::NodeBase::~NodeBase() {
+ }
+ 
+-void RTreeBase::NodeBase::RecomputeBoundsUpToRoot() {
++void OpaqueRTreeBase::NodeBase::RecomputeBoundsUpToRoot() {
+   RecomputeLocalBounds();
+   if (parent_)
+     parent_->RecomputeBoundsUpToRoot();
+ }
+ 
+-RTreeBase::NodeBase::NodeBase(const Rect& rect, NodeBase* parent)
++OpaqueRTreeBase::NodeBase::NodeBase(const OpaqueRect& rect, NodeBase* parent)
+     : rect_(rect),
+       parent_(parent) {
+ }
+ 
+-void RTreeBase::NodeBase::RecomputeLocalBounds() {
++void OpaqueRTreeBase::NodeBase::RecomputeLocalBounds() {
+ }
+ 
+-// RTreeBase::RecordBase ------------------------------------------------------
++// OpaqueRTreeBase::RecordBase ------------------------------------------------------
+ 
+-RTreeBase::RecordBase::RecordBase(const Rect& rect) : NodeBase(rect, NULL) {
++OpaqueRTreeBase::RecordBase::RecordBase(const OpaqueRect& rect) : NodeBase(rect, NULL) {
+ }
+ 
+-RTreeBase::RecordBase::~RecordBase() {
++OpaqueRTreeBase::RecordBase::~RecordBase() {
+ }
+ 
+-void RTreeBase::RecordBase::AppendIntersectingRecords(
+-    const Rect& query_rect, Records* matches_out) const {
++void OpaqueRTreeBase::RecordBase::AppendIntersectingRecords(
++    const OpaqueRect& query_rect, Records* matches_out) const {
+   if (rect().Intersects(query_rect))
+     matches_out->push_back(this);
+ }
+ 
+-void RTreeBase::RecordBase::AppendAllRecords(Records* matches_out) const {
++void OpaqueRTreeBase::RecordBase::AppendAllRecords(Records* matches_out) const {
+   matches_out->push_back(this);
+ }
+ 
+-scoped_ptr<RTreeBase::NodeBase>
+-RTreeBase::RecordBase::RemoveAndReturnLastChild() {
++scoped_ptr<OpaqueRTreeBase::NodeBase>
++OpaqueRTreeBase::RecordBase::RemoveAndReturnLastChild() {
+   return scoped_ptr<NodeBase>();
+ }
+ 
+-int RTreeBase::RecordBase::Level() const {
++int OpaqueRTreeBase::RecordBase::Level() const {
+   return -1;
+ }
+ 
+ 
+-// RTreeBase::Node ------------------------------------------------------------
++// OpaqueRTreeBase::Node ------------------------------------------------------------
+ 
+-RTreeBase::Node::Node() : NodeBase(Rect(), NULL), level_(0) {
++OpaqueRTreeBase::Node::Node() : NodeBase(OpaqueRect(), NULL), level_(0) {
+ }
+ 
+-RTreeBase::Node::~Node() {
++OpaqueRTreeBase::Node::~Node() {
+ }
+ 
+-scoped_ptr<RTreeBase::Node> RTreeBase::Node::ConstructParent() {
++scoped_ptr<OpaqueRTreeBase::Node> OpaqueRTreeBase::Node::ConstructParent() {
+   DCHECK(!parent());
+   scoped_ptr<Node> new_parent(new Node(level_ + 1));
+   new_parent->AddChild(scoped_ptr<NodeBase>(this));
+   return new_parent.Pass();
+ }
+ 
+-void RTreeBase::Node::AppendIntersectingRecords(
+-    const Rect& query_rect, Records* matches_out) const {
++void OpaqueRTreeBase::Node::AppendIntersectingRecords(
++    const OpaqueRect& query_rect, Records* matches_out) const {
+   // Check own bounding box for intersection, can cull all children if no
+   // intersection.
+   if (!rect().Intersects(query_rect))
+@@ -107,19 +107,19 @@ void RTreeBase::Node::AppendIntersecting
+     (*i)->AppendIntersectingRecords(query_rect, matches_out);
+ }
+ 
+-void RTreeBase::Node::AppendAllRecords(Records* matches_out) const {
++void OpaqueRTreeBase::Node::AppendAllRecords(Records* matches_out) const {
+   for (Nodes::const_iterator i = children_.begin(); i != children_.end(); ++i)
+     (*i)->AppendAllRecords(matches_out);
+ }
+ 
+-void RTreeBase::Node::RemoveNodesForReinsert(size_t number_to_remove,
++void OpaqueRTreeBase::Node::RemoveNodesForReinsert(size_t number_to_remove,
+                                              Nodes* nodes) {
+   DCHECK_LE(number_to_remove, children_.size());
+ 
+   std::partial_sort(children_.begin(),
+                     children_.begin() + number_to_remove,
+                     children_.end(),
+-                    &RTreeBase::Node::CompareCenterDistanceFromParent);
++                    &OpaqueRTreeBase::Node::CompareCenterDistanceFromParent);
+ 
+   // Move the lowest-distance nodes to the returned vector.
+   nodes->insert(
+@@ -127,7 +127,7 @@ void RTreeBase::Node::RemoveNodesForRein
+   children_.weak_erase(children_.begin(), children_.begin() + number_to_remove);
+ }
+ 
+-scoped_ptr<RTreeBase::NodeBase> RTreeBase::Node::RemoveChild(
++scoped_ptr<OpaqueRTreeBase::NodeBase> OpaqueRTreeBase::Node::RemoveChild(
+     NodeBase* child_node, Nodes* orphans) {
+   DCHECK_EQ(this, child_node->parent());
+ 
+@@ -144,7 +144,7 @@ scoped_ptr<RTreeBase::NodeBase> RTreeBas
+   return scoped_ptr<NodeBase>(child_node);
+ }
+ 
+-scoped_ptr<RTreeBase::NodeBase> RTreeBase::Node::RemoveAndReturnLastChild() {
++scoped_ptr<OpaqueRTreeBase::NodeBase> OpaqueRTreeBase::Node::RemoveAndReturnLastChild() {
+   if (children_.empty())
+     return scoped_ptr<NodeBase>();
+ 
+@@ -154,7 +154,7 @@ scoped_ptr<RTreeBase::NodeBase> RTreeBas
+   return last_child.Pass();
+ }
+ 
+-RTreeBase::Node* RTreeBase::Node::ChooseSubtree(NodeBase* node) {
++OpaqueRTreeBase::Node* OpaqueRTreeBase::Node::ChooseSubtree(NodeBase* node) {
+   DCHECK(node);
+   // Should never be called on a node at equal or lower level in the tree than
+   // the node to insert.
+@@ -188,7 +188,7 @@ RTreeBase::Node* RTreeBase::Node::Choose
+   return best_candidate->ChooseSubtree(node);
+ }
+ 
+-size_t RTreeBase::Node::AddChild(scoped_ptr<NodeBase> node) {
++size_t OpaqueRTreeBase::Node::AddChild(scoped_ptr<NodeBase> node) {
+   DCHECK(node);
+   // Sanity-check that the level of the child being added is one less than ours.
+   DCHECK_EQ(level_ - 1, node->Level());
+@@ -198,7 +198,7 @@ size_t RTreeBase::Node::AddChild(scoped_
+   return children_.size();
+ }
+ 
+-scoped_ptr<RTreeBase::NodeBase> RTreeBase::Node::Split(size_t min_children,
++scoped_ptr<OpaqueRTreeBase::NodeBase> OpaqueRTreeBase::Node::Split(size_t min_children,
+                                                        size_t max_children) {
+   // We should have too many children to begin with.
+   DCHECK_EQ(max_children + 1, children_.size());
+@@ -208,10 +208,10 @@ scoped_ptr<RTreeBase::NodeBase> RTreeBas
+   std::vector<NodeBase*> horizontal_sort(children_.get());
+   std::sort(vertical_sort.begin(),
+             vertical_sort.end(),
+-            &RTreeBase::Node::CompareVertical);
++            &OpaqueRTreeBase::Node::CompareVertical);
+   std::sort(horizontal_sort.begin(),
+             horizontal_sort.end(),
+-            &RTreeBase::Node::CompareHorizontal);
++            &OpaqueRTreeBase::Node::CompareHorizontal);
+ 
+   Rects low_vertical_bounds;
+   Rects low_horizontal_bounds;
+@@ -253,40 +253,40 @@ scoped_ptr<RTreeBase::NodeBase> RTreeBas
+   return DivideChildren(low_bounds, high_bounds, sort, split_index);
+ }
+ 
+-int RTreeBase::Node::Level() const {
++int OpaqueRTreeBase::Node::Level() const {
+   return level_;
+ }
+ 
+-RTreeBase::Node::Node(int level) : NodeBase(Rect(), NULL), level_(level) {
++OpaqueRTreeBase::Node::Node(int level) : NodeBase(OpaqueRect(), NULL), level_(level) {
+ }
+ 
+ // static
+-bool RTreeBase::Node::CompareVertical(const NodeBase* a, const NodeBase* b) {
+-  const Rect& a_rect = a->rect();
+-  const Rect& b_rect = b->rect();
++bool OpaqueRTreeBase::Node::CompareVertical(const NodeBase* a, const NodeBase* b) {
++  const OpaqueRect& a_rect = a->rect();
++  const OpaqueRect& b_rect = b->rect();
+   return (a_rect.y() < b_rect.y()) ||
+          ((a_rect.y() == b_rect.y()) && (a_rect.height() < b_rect.height()));
+ }
+ 
+ // static
+-bool RTreeBase::Node::CompareHorizontal(const NodeBase* a, const NodeBase* b) {
+-  const Rect& a_rect = a->rect();
+-  const Rect& b_rect = b->rect();
++bool OpaqueRTreeBase::Node::CompareHorizontal(const NodeBase* a, const NodeBase* b) {
++  const OpaqueRect& a_rect = a->rect();
++  const OpaqueRect& b_rect = b->rect();
+   return (a_rect.x() < b_rect.x()) ||
+          ((a_rect.x() == b_rect.x()) && (a_rect.width() < b_rect.width()));
+ }
+ 
+ // static
+-bool RTreeBase::Node::CompareCenterDistanceFromParent(const NodeBase* a,
++bool OpaqueRTreeBase::Node::CompareCenterDistanceFromParent(const NodeBase* a,
+                                                       const NodeBase* b) {
+   const NodeBase* p = a->parent();
+ 
+   DCHECK(p);
+   DCHECK_EQ(p, b->parent());
+ 
+-  Vector2d p_center = CenterOfRect(p->rect());
+-  Vector2d a_center = CenterOfRect(a->rect());
+-  Vector2d b_center = CenterOfRect(b->rect());
++  OpaqueVector2d p_center = CenterOfRect(p->rect());
++  OpaqueVector2d a_center = CenterOfRect(a->rect());
++  OpaqueVector2d b_center = CenterOfRect(b->rect());
+ 
+   // We don't bother with square roots because we are only comparing the two
+   // values for sorting purposes.
+@@ -295,12 +295,12 @@ bool RTreeBase::Node::CompareCenterDista
+ }
+ 
+ // static
+-void RTreeBase::Node::BuildLowBounds(
++void OpaqueRTreeBase::Node::BuildLowBounds(
+     const std::vector<NodeBase*>& vertical_sort,
+     const std::vector<NodeBase*>& horizontal_sort,
+     Rects* vertical_bounds,
+     Rects* horizontal_bounds) {
+-  Rect vertical_bounds_rect;
++  OpaqueRect vertical_bounds_rect;
+   vertical_bounds->reserve(vertical_sort.size());
+   for (std::vector<NodeBase*>::const_iterator i = vertical_sort.begin();
+        i != vertical_sort.end();
+@@ -309,7 +309,7 @@ void RTreeBase::Node::BuildLowBounds(
+     vertical_bounds->push_back(vertical_bounds_rect);
+   }
+ 
+-  Rect horizontal_bounds_rect;
++  OpaqueRect horizontal_bounds_rect;
+   horizontal_bounds->reserve(horizontal_sort.size());
+   for (std::vector<NodeBase*>::const_iterator i = horizontal_sort.begin();
+        i != horizontal_sort.end();
+@@ -320,12 +320,12 @@ void RTreeBase::Node::BuildLowBounds(
+ }
+ 
+ // static
+-void RTreeBase::Node::BuildHighBounds(
++void OpaqueRTreeBase::Node::BuildHighBounds(
+     const std::vector<NodeBase*>& vertical_sort,
+     const std::vector<NodeBase*>& horizontal_sort,
+     Rects* vertical_bounds,
+     Rects* horizontal_bounds) {
+-  Rect vertical_bounds_rect;
++  OpaqueRect vertical_bounds_rect;
+   vertical_bounds->reserve(vertical_sort.size());
+   for (std::vector<NodeBase*>::const_reverse_iterator i =
+            vertical_sort.rbegin();
+@@ -336,7 +336,7 @@ void RTreeBase::Node::BuildHighBounds(
+   }
+   std::reverse(vertical_bounds->begin(), vertical_bounds->end());
+ 
+-  Rect horizontal_bounds_rect;
++  OpaqueRect horizontal_bounds_rect;
+   horizontal_bounds->reserve(horizontal_sort.size());
+   for (std::vector<NodeBase*>::const_reverse_iterator i =
+            horizontal_sort.rbegin();
+@@ -348,7 +348,7 @@ void RTreeBase::Node::BuildHighBounds(
+   std::reverse(horizontal_bounds->begin(), horizontal_bounds->end());
+ }
+ 
+-size_t RTreeBase::Node::ChooseSplitIndex(size_t start_index,
++size_t OpaqueRTreeBase::Node::ChooseSplitIndex(size_t start_index,
+                                          size_t end_index,
+                                          const Rects& low_bounds,
+                                          const Rects& high_bounds) {
+@@ -379,7 +379,7 @@ size_t RTreeBase::Node::ChooseSplitIndex
+ }
+ 
+ // static
+-int RTreeBase::Node::SmallestMarginSum(size_t start_index,
++int OpaqueRTreeBase::Node::SmallestMarginSum(size_t start_index,
+                                        size_t end_index,
+                                        const Rects& low_bounds,
+                                        const Rects& high_bounds) {
+@@ -398,17 +398,17 @@ int RTreeBase::Node::SmallestMarginSum(s
+   return smallest_sum;
+ }
+ 
+-void RTreeBase::Node::RecomputeLocalBounds() {
+-  Rect bounds;
++void OpaqueRTreeBase::Node::RecomputeLocalBounds() {
++  OpaqueRect bounds;
+   for (size_t i = 0; i < children_.size(); ++i)
+     bounds.Union(children_[i]->rect());
+ 
+   set_rect(bounds);
+ }
+ 
+-int RTreeBase::Node::OverlapIncreaseToAdd(const Rect& rect,
++int OpaqueRTreeBase::Node::OverlapIncreaseToAdd(const OpaqueRect& rect,
+                                           const NodeBase* candidate_node,
+-                                          const Rect& expanded_rect) const {
++                                          const OpaqueRect& expanded_rect) const {
+   DCHECK(candidate_node);
+ 
+   // Early-out when |rect| is contained completely within |candidate|.
+@@ -427,7 +427,7 @@ int RTreeBase::Node::OverlapIncreaseToAd
+     NodeBase* overlap_node = (*it);
+     total_original_overlap += IntersectRects(
+         candidate_node->rect(), overlap_node->rect()).size().GetArea();
+-    Rect expanded_overlap_rect = expanded_rect;
++    OpaqueRect expanded_overlap_rect = expanded_rect;
+     expanded_overlap_rect.Intersect(overlap_node->rect());
+     total_expanded_overlap += expanded_overlap_rect.size().GetArea();
+   }
+@@ -435,7 +435,7 @@ int RTreeBase::Node::OverlapIncreaseToAd
+   return total_expanded_overlap - total_original_overlap;
+ }
+ 
+-scoped_ptr<RTreeBase::NodeBase> RTreeBase::Node::DivideChildren(
++scoped_ptr<OpaqueRTreeBase::NodeBase> OpaqueRTreeBase::Node::DivideChildren(
+     const Rects& low_bounds,
+     const Rects& high_bounds,
+     const std::vector<NodeBase*>& sorted_children,
+@@ -466,8 +466,8 @@ scoped_ptr<RTreeBase::NodeBase> RTreeBas
+   return sibling.Pass();
+ }
+ 
+-RTreeBase::Node* RTreeBase::Node::LeastOverlapIncrease(
+-    const Rect& node_rect,
++OpaqueRTreeBase::Node* OpaqueRTreeBase::Node::LeastOverlapIncrease(
++    const OpaqueRect& node_rect,
+     const Rects& expanded_rects) {
+   NodeBase* best_node = children_.front();
+   int least_overlap_increase =
+@@ -493,8 +493,8 @@ RTreeBase::Node* RTreeBase::Node::LeastO
+   return static_cast<Node*>(best_node);
+ }
+ 
+-RTreeBase::Node* RTreeBase::Node::LeastAreaEnlargement(
+-    const Rect& node_rect,
++OpaqueRTreeBase::Node* OpaqueRTreeBase::Node::LeastAreaEnlargement(
++    const OpaqueRect& node_rect,
+     const Rects& expanded_rects) {
+   DCHECK(!children_.empty());
+   DCHECK_EQ(children_.size(), expanded_rects.size());
+@@ -524,9 +524,9 @@ RTreeBase::Node* RTreeBase::Node::LeastA
+ }
+ 
+ 
+-// RTreeBase ------------------------------------------------------------------
++// OpaqueRTreeBase ------------------------------------------------------------------
+ 
+-RTreeBase::RTreeBase(size_t min_children, size_t max_children)
++OpaqueRTreeBase::OpaqueRTreeBase(size_t min_children, size_t max_children)
+     : root_(new Node()),
+       min_children_(min_children),
+       max_children_(max_children) {
+@@ -534,10 +534,10 @@ RTreeBase::RTreeBase(size_t min_children
+   DCHECK_LE(min_children_, max_children_ / 2U);
+ }
+ 
+-RTreeBase::~RTreeBase() {
++OpaqueRTreeBase::~OpaqueRTreeBase() {
+ }
+ 
+-void RTreeBase::InsertNode(
++void OpaqueRTreeBase::InsertNode(
+     scoped_ptr<NodeBase> node, int* highest_reinsert_level) {
+   // Find the most appropriate parent to insert node into.
+   Node* parent = root_->ChooseSubtree(node.get());
+@@ -594,7 +594,7 @@ void RTreeBase::InsertNode(
+   }
+ }
+ 
+-scoped_ptr<RTreeBase::NodeBase> RTreeBase::RemoveNode(NodeBase* node) {
++scoped_ptr<OpaqueRTreeBase::NodeBase> OpaqueRTreeBase::RemoveNode(NodeBase* node) {
+   // We need to remove this node from its parent.
+   Node* parent = static_cast<Node*>(node->parent());
+   // Record nodes are never allowed as the root, so we should always have a
+@@ -641,7 +641,7 @@ scoped_ptr<RTreeBase::NodeBase> RTreeBas
+   return removed_node.Pass();
+ }
+ 
+-void RTreeBase::PruneRootIfNecessary() {
++void OpaqueRTreeBase::PruneRootIfNecessary() {
+   if (root()->count() == 1 && root()->Level() > 0) {
+     // Awkward reset(cast(release)) pattern here because there's no better way
+     // to downcast the scoped_ptr from RemoveAndReturnLastChild() from NodeBase
+@@ -651,7 +651,7 @@ void RTreeBase::PruneRootIfNecessary() {
+   }
+ }
+ 
+-void RTreeBase::ResetRoot() {
++void OpaqueRTreeBase::ResetRoot() {
+   root_.reset(new Node());
+ }
+ 
+--- a/ui/gfx/geometry/r_tree_base.h
++++ b/ui/gfx/geometry/r_tree_base.h
+@@ -23,7 +23,7 @@
+ 
+ namespace gfx {
+ 
+-class GFX_EXPORT RTreeBase {
++class GFX_EXPORT OpaqueRTreeBase {
+  protected:
+   class NodeBase;
+   class RecordBase;
+@@ -31,8 +31,8 @@ class GFX_EXPORT RTreeBase {
+   typedef std::vector<const RecordBase*> Records;
+   typedef ScopedVector<NodeBase> Nodes;
+ 
+-  RTreeBase(size_t min_children, size_t max_children);
+-  ~RTreeBase();
++  OpaqueRTreeBase(size_t min_children, size_t max_children);
++  ~OpaqueRTreeBase();
+ 
+   // Protected data structure class for storing internal Nodes or leaves with
+   // Records.
+@@ -43,7 +43,7 @@ class GFX_EXPORT RTreeBase {
+     // Appends to |records_out| the set of Records in this subtree with rects
+     // that intersect |query_rect|.  Avoids clearing |records_out| so that it
+     // can be called recursively.
+-    virtual void AppendIntersectingRecords(const Rect& query_rect,
++    virtual void AppendIntersectingRecords(const OpaqueRect& query_rect,
+                                            Records* records_out) const = 0;
+ 
+     // Returns all records stored in the subtree rooted at this node. Appends to
+@@ -67,11 +67,11 @@ class GFX_EXPORT RTreeBase {
+     NodeBase* parent() { return parent_; }
+     const NodeBase* parent() const { return parent_; }
+     void set_parent(NodeBase* parent) { parent_ = parent; }
+-    const Rect& rect() const { return rect_; }
+-    void set_rect(const Rect& rect) { rect_ = rect; }
++    const OpaqueRect& rect() const { return rect_; }
++    void set_rect(const OpaqueRect& rect) { rect_ = rect; }
+ 
+    protected:
+-    NodeBase(const Rect& rect, NodeBase* parent);
++    NodeBase(const OpaqueRect& rect, NodeBase* parent);
+ 
+     // Bounds recomputation without calling parents to do the same.
+     virtual void RecomputeLocalBounds();
+@@ -81,7 +81,7 @@ class GFX_EXPORT RTreeBase {
+     friend class RTreeNodeTest;
+ 
+     // This Node's bounding rectangle.
+-    Rect rect_;
++    OpaqueRect rect_;
+ 
+     // A weak pointer to our parent Node in the RTree. The root node will have a
+     // NULL value for |parent_|.
+@@ -92,10 +92,10 @@ class GFX_EXPORT RTreeBase {
+ 
+   class GFX_EXPORT RecordBase : public NodeBase {
+    public:
+-    explicit RecordBase(const Rect& rect);
++    explicit RecordBase(const OpaqueRect& rect);
+     ~RecordBase() override;
+ 
+-    void AppendIntersectingRecords(const Rect& query_rect,
++    void AppendIntersectingRecords(const OpaqueRect& query_rect,
+                                    Records* records_out) const override;
+     void AppendAllRecords(Records* records_out) const override;
+     scoped_ptr<NodeBase> RemoveAndReturnLastChild() override;
+@@ -114,7 +114,7 @@ class GFX_EXPORT RTreeBase {
+     Node();
+     ~Node() override;
+ 
+-    void AppendIntersectingRecords(const Rect& query_rect,
++    void AppendIntersectingRecords(const OpaqueRect& query_rect,
+                                    Records* records_out) const override;
+     scoped_ptr<NodeBase> RemoveAndReturnLastChild() override;
+     int Level() const override;
+@@ -161,7 +161,7 @@ class GFX_EXPORT RTreeBase {
+     NodeBase* child(size_t i) { return children_[i]; }
+ 
+    private:
+-    typedef std::vector<Rect> Rects;
++    typedef std::vector<OpaqueRect> Rects;
+ 
+     explicit Node(int level);
+ 
+@@ -226,9 +226,9 @@ class GFX_EXPORT RTreeBase {
+     // (excepting the candidate child) with the argument rectangle. Here the
+     // |candidate_node| is one of our |children_|, and |expanded_rect| is the
+     // already-computed union of the candidate's rect and |rect|.
+-    int OverlapIncreaseToAdd(const Rect& rect,
++    int OverlapIncreaseToAdd(const OpaqueRect& rect,
+                              const NodeBase* candidate_node,
+-                             const Rect& expanded_rect) const;
++                             const OpaqueRect& expanded_rect) const;
+ 
+     // Returns a new node containing children [split_index, count()) within
+     // |sorted_children|.  Children before |split_index| remain with |this|.
+@@ -248,7 +248,7 @@ class GFX_EXPORT RTreeBase {
+     // the new rectangle to their bounding box will result in the least overlap
+     // with the other rectangles, thus trying to preserve the usefulness of the
+     // bounding rectangle by keeping it from covering too much redundant area.
+-    Node* LeastOverlapIncrease(const Rect& node_rect,
++    Node* LeastOverlapIncrease(const OpaqueRect& node_rect,
+                                const Rects& expanded_rects);
+ 
+     // Returns a pointer to the child node that will result in the least area
+@@ -256,7 +256,7 @@ class GFX_EXPORT RTreeBase {
+     // node's bounding box. Requires a precomputed vector of expanded rectangles
+     // where the ith rectangle in the vector is the union of children_[i] and
+     // |node_rect|.
+-    Node* LeastAreaEnlargement(const Rect& node_rect,
++    Node* LeastAreaEnlargement(const OpaqueRect& node_rect,
+                                const Rects& expanded_rects);
+ 
+     const int level_;
+@@ -301,9 +301,12 @@ class GFX_EXPORT RTreeBase {
+   const size_t min_children_;
+   const size_t max_children_;
+ 
+-  DISALLOW_COPY_AND_ASSIGN(RTreeBase);
++  DISALLOW_COPY_AND_ASSIGN(OpaqueRTreeBase);
+ };
+ 
++class GFX_EXPORT RTreeBase : public OpaqueRTreeBase { };
++class GFX_EXPORT DeviceRTreeBase : public OpaqueRTreeBase { };
++
+ }  // namespace gfx
+ 
+ #endif  // UI_GFX_GEOMETRY_R_TREE_BASE_H_
+--- a/ui/gfx/geometry/rect.cc
++++ b/ui/gfx/geometry/rect.cc
+@@ -17,18 +17,18 @@
+ namespace gfx {
+ 
+ #if defined(OS_WIN)
+-Rect::Rect(const RECT& r)
++OpaqueRect::OpaqueRect(const RECT& r)
+     : origin_(r.left, r.top),
+       size_(std::abs(r.right - r.left), std::abs(r.bottom - r.top)) {
+ }
+ #elif defined(OS_MACOSX)
+-Rect::Rect(const CGRect& r)
++OpaqueRect::OpaqueRect(const CGOpaqueRect& r)
+     : origin_(r.origin.x, r.origin.y), size_(r.size.width, r.size.height) {
+ }
+ #endif
+ 
+ #if defined(OS_WIN)
+-RECT Rect::ToRECT() const {
++RECT OpaqueRect::ToRECT() const {
+   RECT r;
+   r.left = x();
+   r.right = right();
+@@ -37,8 +37,8 @@ RECT Rect::ToRECT() const {
+   return r;
+ }
+ #elif defined(OS_MACOSX)
+-CGRect Rect::ToCGRect() const {
+-  return CGRectMake(x(), y(), width(), height());
++CGOpaqueRect OpaqueRect::ToCGOpaqueRect() const {
++  return CGOpaqueRectMake(x(), y(), width(), height());
+ }
+ #endif
+ 
+@@ -54,36 +54,36 @@ void AdjustAlongAxis(int dst_origin, int
+ 
+ namespace gfx {
+ 
+-void Rect::Inset(const Insets& insets) {
++void OpaqueRect::Inset(const Insets& insets) {
+   Inset(insets.left(), insets.top(), insets.right(), insets.bottom());
+ }
+ 
+-void Rect::Inset(int left, int top, int right, int bottom) {
++void OpaqueRect::Inset(int left, int top, int right, int bottom) {
+   origin_ += Vector2d(left, top);
+   set_width(std::max(width() - left - right, static_cast<int>(0)));
+   set_height(std::max(height() - top - bottom, static_cast<int>(0)));
+ }
+ 
+-void Rect::Offset(int horizontal, int vertical) {
++void OpaqueRect::Offset(int horizontal, int vertical) {
+   origin_ += Vector2d(horizontal, vertical);
+ }
+ 
+-void Rect::operator+=(const Vector2d& offset) {
++void OpaqueRect::operator+=(const Vector2d& offset) {
+   origin_ += offset;
+ }
+ 
+-void Rect::operator-=(const Vector2d& offset) {
++void OpaqueRect::operator-=(const Vector2d& offset) {
+   origin_ -= offset;
+ }
+ 
+-Insets Rect::InsetsFrom(const Rect& inner) const {
++Insets OpaqueRect::InsetsFrom(const OpaqueRect& inner) const {
+   return Insets(inner.y() - y(),
+                 inner.x() - x(),
+                 bottom() - inner.bottom(),
+                 right() - inner.right());
+ }
+ 
+-bool Rect::operator<(const Rect& other) const {
++bool OpaqueRect::operator<(const OpaqueRect& other) const {
+   if (origin_ == other.origin_) {
+     if (width() == other.width()) {
+       return height() < other.height();
+@@ -95,22 +95,22 @@ bool Rect::operator<(const Rect& other)
+   }
+ }
+ 
+-bool Rect::Contains(int point_x, int point_y) const {
++bool OpaqueRect::Contains(int point_x, int point_y) const {
+   return (point_x >= x()) && (point_x < right()) && (point_y >= y()) &&
+          (point_y < bottom());
+ }
+ 
+-bool Rect::Contains(const Rect& rect) const {
++bool OpaqueRect::Contains(const OpaqueRect& rect) const {
+   return (rect.x() >= x() && rect.right() <= right() && rect.y() >= y() &&
+           rect.bottom() <= bottom());
+ }
+ 
+-bool Rect::Intersects(const Rect& rect) const {
++bool OpaqueRect::Intersects(const OpaqueRect& rect) const {
+   return !(IsEmpty() || rect.IsEmpty() || rect.x() >= right() ||
+            rect.right() <= x() || rect.y() >= bottom() || rect.bottom() <= y());
+ }
+ 
+-void Rect::Intersect(const Rect& rect) {
++void OpaqueRect::Intersect(const OpaqueRect& rect) {
+   if (IsEmpty() || rect.IsEmpty()) {
+     SetRect(0, 0, 0, 0);
+     return;
+@@ -127,7 +127,7 @@ void Rect::Intersect(const Rect& rect) {
+   SetRect(rx, ry, rr - rx, rb - ry);
+ }
+ 
+-void Rect::Union(const Rect& rect) {
++void OpaqueRect::Union(const OpaqueRect& rect) {
+   if (IsEmpty()) {
+     *this = rect;
+     return;
+@@ -143,7 +143,7 @@ void Rect::Union(const Rect& rect) {
+   SetRect(rx, ry, rr - rx, rb - ry);
+ }
+ 
+-void Rect::Subtract(const Rect& rect) {
++void OpaqueRect::Subtract(const OpaqueRect& rect) {
+   if (!Intersects(rect))
+     return;
+   if (rect.Contains(*this)) {
+@@ -174,7 +174,7 @@ void Rect::Subtract(const Rect& rect) {
+   SetRect(rx, ry, rr - rx, rb - ry);
+ }
+ 
+-void Rect::AdjustToFit(const Rect& rect) {
++void OpaqueRect::AdjustToFit(const OpaqueRect& rect) {
+   int new_x = x();
+   int new_y = y();
+   int new_width = width();
+@@ -184,11 +184,11 @@ void Rect::AdjustToFit(const Rect& rect)
+   SetRect(new_x, new_y, new_width, new_height);
+ }
+ 
+-Point Rect::CenterPoint() const {
++Point OpaqueRect::CenterPoint() const {
+   return Point(x() + width() / 2, y() + height() / 2);
+ }
+ 
+-void Rect::ClampToCenteredSize(const Size& size) {
++void OpaqueRect::ClampToCenteredSize(const Size& size) {
+   int new_width = std::min(width(), size.width());
+   int new_height = std::min(height(), size.height());
+   int new_x = x() + (width() - new_width) / 2;
+@@ -196,7 +196,7 @@ void Rect::ClampToCenteredSize(const Siz
+   SetRect(new_x, new_y, new_width, new_height);
+ }
+ 
+-void Rect::SplitVertically(Rect* left_half, Rect* right_half) const {
++void OpaqueRect::SplitVertically(OpaqueRect* left_half, OpaqueRect* right_half) const {
+   DCHECK(left_half);
+   DCHECK(right_half);
+ 
+@@ -205,14 +205,14 @@ void Rect::SplitVertically(Rect* left_ha
+       left_half->right(), y(), width() - left_half->width(), height());
+ }
+ 
+-bool Rect::SharesEdgeWith(const Rect& rect) const {
++bool OpaqueRect::SharesEdgeWith(const OpaqueRect& rect) const {
+   return (y() == rect.y() && height() == rect.height() &&
+           (x() == rect.right() || right() == rect.x())) ||
+          (x() == rect.x() && width() == rect.width() &&
+           (y() == rect.bottom() || bottom() == rect.y()));
+ }
+ 
+-int Rect::ManhattanDistanceToPoint(const Point& point) const {
++int OpaqueRect::ManhattanDistanceToPoint(const Point& point) const {
+   int x_distance =
+       std::max<int>(0, std::max(x() - point.x(), point.x() - right()));
+   int y_distance =
+@@ -221,8 +221,8 @@ int Rect::ManhattanDistanceToPoint(const
+   return x_distance + y_distance;
+ }
+ 
+-int Rect::ManhattanInternalDistance(const Rect& rect) const {
+-  Rect c(*this);
++int OpaqueRect::ManhattanInternalDistance(const OpaqueRect& rect) const {
++  OpaqueRect c(*this);
+   c.Union(rect);
+ 
+   static const int kEpsilon = std::numeric_limits<int>::is_integer
+@@ -234,20 +234,20 @@ int Rect::ManhattanInternalDistance(cons
+   return x + y;
+ }
+ 
+-std::string Rect::ToString() const {
++std::string OpaqueRect::ToString() const {
+   return base::StringPrintf("%s %s",
+                             origin().ToString().c_str(),
+                             size().ToString().c_str());
+ }
+ 
+-Rect operator+(const Rect& lhs, const Vector2d& rhs) {
+-  Rect result(lhs);
++OpaqueRect operator+(const OpaqueRect& lhs, const Vector2d& rhs) {
++  OpaqueRect result(lhs);
+   result += rhs;
+   return result;
+ }
+ 
+-Rect operator-(const Rect& lhs, const Vector2d& rhs) {
+-  Rect result(lhs);
++OpaqueRect operator-(const OpaqueRect& lhs, const Vector2d& rhs) {
++  OpaqueRect result(lhs);
+   result -= rhs;
+   return result;
+ }
+@@ -258,24 +258,60 @@ Rect IntersectRects(const Rect& a, const
+   return result;
+ }
+ 
++DeviceRect IntersectRects(const DeviceRect& a, const DeviceRect& b) {
++  DeviceRect result = a;
++  result.Intersect(b);
++  return result;
++}
++
++OpaqueRect IntersectRects(const OpaqueRect& a, const OpaqueRect& b) {
++  OpaqueRect result = a;
++  result.Intersect(b);
++  return result;
++}
++
++OpaqueRect UnionRects(const OpaqueRect& a, const OpaqueRect& b) {
++  OpaqueRect result = a;
++  result.Union(b);
++  return result;
++}
++
++DeviceRect UnionRects(const DeviceRect& a, const DeviceRect& b) {
++  DeviceRect result = a;
++  result.Union(b);
++  return result;
++}
++
+ Rect UnionRects(const Rect& a, const Rect& b) {
+-  Rect result = a;
++  OpaqueRect result = a;
+   result.Union(b);
+   return result;
+ }
+ 
++OpaqueRect SubtractRects(const OpaqueRect& a, const OpaqueRect& b) {
++  OpaqueRect result = a;
++  result.Subtract(b);
++  return result;
++}
++
++DeviceRect SubtractRects(const DeviceRect& a, const DeviceRect& b) {
++  DeviceRect result = a;
++  result.Subtract(b);
++  return result;
++}
++
+ Rect SubtractRects(const Rect& a, const Rect& b) {
+-  Rect result = a;
++  OpaqueRect result = a;
+   result.Subtract(b);
+   return result;
+ }
+ 
+-Rect BoundingRect(const Point& p1, const Point& p2) {
++OpaqueRect BoundingRect(const Point& p1, const Point& p2) {
+   int rx = std::min(p1.x(), p2.x());
+   int ry = std::min(p1.y(), p2.y());
+   int rr = std::max(p1.x(), p2.x());
+   int rb = std::max(p1.y(), p2.y());
+-  return Rect(rx, ry, rr - rx, rb - ry);
++  return OpaqueRect(rx, ry, rr - rx, rb - ry);
+ }
+ 
+ }  // namespace gfx
+--- a/ui/gfx/geometry/rect.h
++++ b/ui/gfx/geometry/rect.h
+@@ -34,33 +34,33 @@ namespace gfx {
+ 
+ class Insets;
+ 
+-class GFX_EXPORT Rect {
++class GFX_EXPORT OpaqueRect {
+  public:
+-  Rect() {}
+-  Rect(int width, int height) : size_(width, height) {}
+-  Rect(int x, int y, int width, int height)
++  OpaqueRect() {}
++  OpaqueRect(int width, int height) : size_(width, height) {}
++  OpaqueRect(int x, int y, int width, int height)
+       : origin_(x, y), size_(width, height) {}
+-  explicit Rect(const Size& size) : size_(size) {}
+-  Rect(const Point& origin, const Size& size) : origin_(origin), size_(size) {}
++  explicit OpaqueRect(const Size& size) : size_(size) {}
++  OpaqueRect(const Point& origin, const Size& size) : origin_(origin), size_(size) {}
+ 
+ #if defined(OS_WIN)
+-  explicit Rect(const RECT& r);
++  explicit OpaqueRect(const RECT& r);
+ #elif defined(OS_MACOSX)
+-  explicit Rect(const CGRect& r);
++  explicit OpaqueRect(const CGOpaqueRect& r);
+ #endif
+ 
+-  ~Rect() {}
++  ~OpaqueRect() {}
+ 
+ #if defined(OS_WIN)
+   // Construct an equivalent Win32 RECT object.
+   RECT ToRECT() const;
+ #elif defined(OS_MACOSX)
+   // Construct an equivalent CoreGraphics object.
+-  CGRect ToCGRect() const;
++  CGOpaqueRect ToCGOpaqueRect() const;
+ #endif
+ 
+-  operator RectF() const {
+-    return RectF(static_cast<float>(x()), static_cast<float>(y()),
++  operator OpaqueRectF() const {
++    return OpaqueRectF(static_cast<float>(x()), static_cast<float>(y()),
+                  static_cast<float>(width()), static_cast<float>(height()));
+   }
+ 
+@@ -113,7 +113,7 @@ class GFX_EXPORT Rect {
+   void operator+=(const Vector2d& offset);
+   void operator-=(const Vector2d& offset);
+ 
+-  Insets InsetsFrom(const Rect& inner) const;
++  Insets InsetsFrom(const OpaqueRect& inner) const;
+ 
+   // Returns true if the area of the rectangle is zero.
+   bool IsEmpty() const { return size_.IsEmpty(); }
+@@ -122,9 +122,9 @@ class GFX_EXPORT Rect {
+   // the other rect's origin. If the origins are equal, then the
+   // shortest rect is less than the other. If the origin and the
+   // height are equal, then the narrowest rect is less than.
+-  // This comparison is required to use Rects in sets, or sorted
++  // This comparison is required to use OpaqueRects in sets, or sorted
+   // vectors.
+-  bool operator<(const Rect& other) const;
++  bool operator<(const OpaqueRect& other) const;
+ 
+   // Returns true if the point identified by point_x and point_y falls inside
+   // this rectangle.  The point (x, y) is inside the rectangle, but the
+@@ -137,29 +137,29 @@ class GFX_EXPORT Rect {
+   }
+ 
+   // Returns true if this rectangle contains the specified rectangle.
+-  bool Contains(const Rect& rect) const;
++  bool Contains(const OpaqueRect& rect) const;
+ 
+   // Returns true if this rectangle intersects the specified rectangle.
+   // An empty rectangle doesn't intersect any rectangle.
+-  bool Intersects(const Rect& rect) const;
++  bool Intersects(const OpaqueRect& rect) const;
+ 
+   // Computes the intersection of this rectangle with the given rectangle.
+-  void Intersect(const Rect& rect);
++  void Intersect(const OpaqueRect& rect);
+ 
+   // Computes the union of this rectangle with the given rectangle.  The union
+   // is the smallest rectangle containing both rectangles.
+-  void Union(const Rect& rect);
++  void Union(const OpaqueRect& rect);
+ 
+   // Computes the rectangle resulting from subtracting |rect| from |*this|,
+   // i.e. the bounding rect of |Region(*this) - Region(rect)|.
+-  void Subtract(const Rect& rect);
++  void Subtract(const OpaqueRect& rect);
+ 
+   // Fits as much of the receiving rectangle into the supplied rectangle as
+   // possible, becoming the result. For example, if the receiver had
+   // a x-location of 2 and a width of 4, and the supplied rectangle had
+   // an x-location of 0 with a width of 5, the returned rectangle would have
+   // an x-location of 1 with a width of 4.
+-  void AdjustToFit(const Rect& rect);
++  void AdjustToFit(const OpaqueRect& rect);
+ 
+   // Returns the center of this rectangle.
+   Point CenterPoint() const;
+@@ -169,11 +169,11 @@ class GFX_EXPORT Rect {
+   void ClampToCenteredSize(const Size& size);
+ 
+   // Splits |this| in two halves, |left_half| and |right_half|.
+-  void SplitVertically(Rect* left_half, Rect* right_half) const;
++  void SplitVertically(OpaqueRect* left_half, OpaqueRect* right_half) const;
+ 
+   // Returns true if this rectangle shares an entire edge (i.e., same width or
+   // same height) with the given rectangle, and the rectangles do not overlap.
+-  bool SharesEdgeWith(const Rect& rect) const;
++  bool SharesEdgeWith(const OpaqueRect& rect) const;
+ 
+   // Returns the manhattan distance from the rect to the point. If the point is
+   // inside the rect, returns 0.
+@@ -183,7 +183,7 @@ class GFX_EXPORT Rect {
+   // contents of the given rect. That is, if the intersection of the two rects
+   // is non-empty then the function returns 0. If the rects share a side, it
+   // returns the smallest non-zero value appropriate for int.
+-  int ManhattanInternalDistance(const Rect& rect) const;
++  int ManhattanInternalDistance(const OpaqueRect& rect) const;
+ 
+   std::string ToString() const;
+ 
+@@ -192,23 +192,46 @@ class GFX_EXPORT Rect {
+   gfx::Size size_;
+ };
+ 
+-inline bool operator==(const Rect& lhs, const Rect& rhs) {
++class GFX_EXPORT Rect : public OpaqueRect {
++public:
++  Rect() : OpaqueRect() {}
++  Rect(int width, int height) : OpaqueRect(width, height) {}
++  Rect(int x, int y, int width, int height) : OpaqueRect(x, y, width, height) {}
++  explicit Rect(const Size& size) : OpaqueRect(size) {}
++  Rect(const Point& origin, const Size& size) : OpaqueRect(origin, size) {}
++};
++class GFX_EXPORT DeviceRect : public OpaqueRect {
++public:
++  DeviceRect() : OpaqueRect() {}
++  DeviceRect(int width, int height) : OpaqueRect(width, height) {}
++  DeviceRect(int x, int y, int width, int height) : OpaqueRect(x, y, width, height) {}
++  explicit DeviceRect(const Size& size) : OpaqueRect(size) {}
++  DeviceRect(const Point& origin, const Size& size) : OpaqueRect(origin, size) {}
++};
++
++inline bool operator==(const OpaqueRect& lhs, const OpaqueRect& rhs) {
+   return lhs.origin() == rhs.origin() && lhs.size() == rhs.size();
+ }
+ 
+-inline bool operator!=(const Rect& lhs, const Rect& rhs) {
++inline bool operator!=(const OpaqueRect& lhs, const OpaqueRect& rhs) {
+   return !(lhs == rhs);
+ }
+ 
+-GFX_EXPORT Rect operator+(const Rect& lhs, const Vector2d& rhs);
+-GFX_EXPORT Rect operator-(const Rect& lhs, const Vector2d& rhs);
++GFX_EXPORT OpaqueRect operator+(const OpaqueRect& lhs, const Vector2d& rhs);
++GFX_EXPORT OpaqueRect operator-(const OpaqueRect& lhs, const Vector2d& rhs);
+ 
+-inline Rect operator+(const Vector2d& lhs, const Rect& rhs) {
++inline OpaqueRect operator+(const Vector2d& lhs, const OpaqueRect& rhs) {
+   return rhs + lhs;
+ }
+ 
++GFX_EXPORT DeviceRect IntersectRects(const DeviceRect& a, const DeviceRect& b);
++GFX_EXPORT OpaqueRect IntersectRects(const OpaqueRect& a, const OpaqueRect& b);
+ GFX_EXPORT Rect IntersectRects(const Rect& a, const Rect& b);
++GFX_EXPORT DeviceRect UnionRects(const DeviceRect& a, const DeviceRect& b);
++GFX_EXPORT OpaqueRect UnionRects(const OpaqueRect& a, const OpaqueRect& b);
+ GFX_EXPORT Rect UnionRects(const Rect& a, const Rect& b);
++GFX_EXPORT DeviceRect SubtractRects(const DeviceRect& a, const DeviceRect& b);
++GFX_EXPORT OpaqueRect SubtractRects(const OpaqueRect& a, const OpaqueRect& b);
+ GFX_EXPORT Rect SubtractRects(const Rect& a, const Rect& b);
+ 
+ // Constructs a rectangle with |p1| and |p2| as opposite corners.
+@@ -217,9 +240,9 @@ GFX_EXPORT Rect SubtractRects(const Rect
+ // points", except that we consider points on the right/bottom edges of the
+ // rect to be outside the rect.  So technically one or both points will not be
+ // contained within the rect, because they will appear on one of these edges.
+-GFX_EXPORT Rect BoundingRect(const Point& p1, const Point& p2);
++GFX_EXPORT OpaqueRect BoundingRect(const Point& p1, const Point& p2);
+ 
+-inline Rect ScaleToEnclosingRect(const Rect& rect,
++inline OpaqueRect ScaleToEnclosingRect(const OpaqueRect& rect,
+                                  float x_scale,
+                                  float y_scale) {
+   // These next functions cast instead of using e.g. ToFlooredInt() because we
+@@ -240,14 +263,14 @@ inline Rect ScaleToEnclosingRect(const R
+       x : static_cast<int>(std::ceil(rect.right() * x_scale));
+   int b = rect.height() == 0 ?
+       y : static_cast<int>(std::ceil(rect.bottom() * y_scale));
+-  return Rect(x, y, r - x, b - y);
++  return OpaqueRect(x, y, r - x, b - y);
+ }
+ 
+-inline Rect ScaleToEnclosingRect(const Rect& rect, float scale) {
++inline OpaqueRect ScaleToEnclosingRect(const OpaqueRect& rect, float scale) {
+   return ScaleToEnclosingRect(rect, scale, scale);
+ }
+ 
+-inline Rect ScaleToEnclosedRect(const Rect& rect,
++inline OpaqueRect ScaleToEnclosedRect(const OpaqueRect& rect,
+                                 float x_scale,
+                                 float y_scale) {
+   DCHECK(base::IsValueInRangeForNumericType<int>(
+@@ -264,17 +287,17 @@ inline Rect ScaleToEnclosedRect(const Re
+       x : static_cast<int>(std::floor(rect.right() * x_scale));
+   int b = rect.height() == 0 ?
+       y : static_cast<int>(std::floor(rect.bottom() * y_scale));
+-  return Rect(x, y, r - x, b - y);
++  return OpaqueRect(x, y, r - x, b - y);
+ }
+ 
+-inline Rect ScaleToEnclosedRect(const Rect& rect, float scale) {
++inline OpaqueRect ScaleToEnclosedRect(const OpaqueRect& rect, float scale) {
+   return ScaleToEnclosedRect(rect, scale, scale);
+ }
+ 
+ // This is declared here for use in gtest-based unit tests but is defined in
+ // the gfx_test_support target. Depend on that to use this in your unit test.
+ // This should not be used in production code - call ToString() instead.
+-void PrintTo(const Rect& rect, ::std::ostream* os);
++void PrintTo(const OpaqueRect& rect, ::std::ostream* os);
+ 
+ }  // namespace gfx
+ 
+--- a/ui/gfx/geometry/rect_f.cc
++++ b/ui/gfx/geometry/rect_f.cc
+@@ -24,36 +24,36 @@ static void AdjustAlongAxis(float dst_or
+     *origin = std::min(dst_origin + dst_size, *origin + *size) - *size;
+ }
+ 
+-void RectF::Inset(const InsetsF& insets) {
++void OpaqueRectF::Inset(const InsetsF& insets) {
+   Inset(insets.left(), insets.top(), insets.right(), insets.bottom());
+ }
+ 
+-void RectF::Inset(float left, float top, float right, float bottom) {
++void OpaqueRectF::Inset(float left, float top, float right, float bottom) {
+   origin_ += Vector2dF(left, top);
+   set_width(std::max(width() - left - right, static_cast<float>(0)));
+   set_height(std::max(height() - top - bottom, static_cast<float>(0)));
+ }
+ 
+-void RectF::Offset(float horizontal, float vertical) {
++void OpaqueRectF::Offset(float horizontal, float vertical) {
+   origin_ += Vector2dF(horizontal, vertical);
+ }
+ 
+-void RectF::operator+=(const Vector2dF& offset) {
++void OpaqueRectF::operator+=(const Vector2dF& offset) {
+   origin_ += offset;
+ }
+ 
+-void RectF::operator-=(const Vector2dF& offset) {
++void OpaqueRectF::operator-=(const Vector2dF& offset) {
+   origin_ -= offset;
+ }
+ 
+-InsetsF RectF::InsetsFrom(const RectF& inner) const {
++InsetsF OpaqueRectF::InsetsFrom(const OpaqueRectF& inner) const {
+   return InsetsF(inner.y() - y(),
+                  inner.x() - x(),
+                  bottom() - inner.bottom(),
+                  right() - inner.right());
+ }
+ 
+-bool RectF::operator<(const RectF& other) const {
++bool OpaqueRectF::operator<(const OpaqueRectF& other) const {
+   if (origin_ == other.origin_) {
+     if (width() == other.width()) {
+       return height() < other.height();
+@@ -65,22 +65,22 @@ bool RectF::operator<(const RectF& other
+   }
+ }
+ 
+-bool RectF::Contains(float point_x, float point_y) const {
++bool OpaqueRectF::Contains(float point_x, float point_y) const {
+   return (point_x >= x()) && (point_x < right()) && (point_y >= y()) &&
+          (point_y < bottom());
+ }
+ 
+-bool RectF::Contains(const RectF& rect) const {
++bool OpaqueRectF::Contains(const OpaqueRectF& rect) const {
+   return (rect.x() >= x() && rect.right() <= right() && rect.y() >= y() &&
+           rect.bottom() <= bottom());
+ }
+ 
+-bool RectF::Intersects(const RectF& rect) const {
++bool OpaqueRectF::Intersects(const OpaqueRectF& rect) const {
+   return !(IsEmpty() || rect.IsEmpty() || rect.x() >= right() ||
+            rect.right() <= x() || rect.y() >= bottom() || rect.bottom() <= y());
+ }
+ 
+-void RectF::Intersect(const RectF& rect) {
++void OpaqueRectF::Intersect(const OpaqueRectF& rect) {
+   if (IsEmpty() || rect.IsEmpty()) {
+     SetRect(0, 0, 0, 0);
+     return;
+@@ -97,7 +97,7 @@ void RectF::Intersect(const RectF& rect)
+   SetRect(rx, ry, rr - rx, rb - ry);
+ }
+ 
+-void RectF::Union(const RectF& rect) {
++void OpaqueRectF::Union(const OpaqueRectF& rect) {
+   if (IsEmpty()) {
+     *this = rect;
+     return;
+@@ -113,10 +113,10 @@ void RectF::Union(const RectF& rect) {
+   SetRect(rx, ry, rr - rx, rb - ry);
+ }
+ 
+-void RectF::Subtract(const RectF& rect) {
++void OpaqueRectF::Subtract(const OpaqueRectF& rect) {
+   if (!Intersects(rect))
+     return;
+-  if (rect.Contains(*static_cast<const RectF*>(this))) {
++  if (rect.Contains(*static_cast<const OpaqueRectF*>(this))) {
+     SetRect(0, 0, 0, 0);
+     return;
+   }
+@@ -144,7 +144,7 @@ void RectF::Subtract(const RectF& rect)
+   SetRect(rx, ry, rr - rx, rb - ry);
+ }
+ 
+-void RectF::AdjustToFit(const RectF& rect) {
++void OpaqueRectF::AdjustToFit(const OpaqueRectF& rect) {
+   float new_x = x();
+   float new_y = y();
+   float new_width = width();
+@@ -154,11 +154,11 @@ void RectF::AdjustToFit(const RectF& rec
+   SetRect(new_x, new_y, new_width, new_height);
+ }
+ 
+-PointF RectF::CenterPoint() const {
++PointF OpaqueRectF::CenterPoint() const {
+   return PointF(x() + width() / 2, y() + height() / 2);
+ }
+ 
+-void RectF::ClampToCenteredSize(const SizeF& size) {
++void OpaqueRectF::ClampToCenteredSize(const OpaqueSizeF& size) {
+   float new_width = std::min(width(), size.width());
+   float new_height = std::min(height(), size.height());
+   float new_x = x() + (width() - new_width) / 2;
+@@ -166,7 +166,7 @@ void RectF::ClampToCenteredSize(const Si
+   SetRect(new_x, new_y, new_width, new_height);
+ }
+ 
+-void RectF::SplitVertically(RectF* left_half, RectF* right_half) const {
++void OpaqueRectF::SplitVertically(OpaqueRectF* left_half, OpaqueRectF* right_half) const {
+   DCHECK(left_half);
+   DCHECK(right_half);
+ 
+@@ -175,14 +175,14 @@ void RectF::SplitVertically(RectF* left_
+       left_half->right(), y(), width() - left_half->width(), height());
+ }
+ 
+-bool RectF::SharesEdgeWith(const RectF& rect) const {
++bool OpaqueRectF::SharesEdgeWith(const OpaqueRectF& rect) const {
+   return (y() == rect.y() && height() == rect.height() &&
+           (x() == rect.right() || right() == rect.x())) ||
+          (x() == rect.x() && width() == rect.width() &&
+           (y() == rect.bottom() || bottom() == rect.y()));
+ }
+ 
+-float RectF::ManhattanDistanceToPoint(const PointF& point) const {
++float OpaqueRectF::ManhattanDistanceToPoint(const PointF& point) const {
+   float x_distance =
+       std::max<float>(0, std::max(x() - point.x(), point.x() - right()));
+   float y_distance =
+@@ -191,8 +191,8 @@ float RectF::ManhattanDistanceToPoint(co
+   return x_distance + y_distance;
+ }
+ 
+-float RectF::ManhattanInternalDistance(const RectF& rect) const {
+-  RectF c(*this);
++float OpaqueRectF::ManhattanInternalDistance(const OpaqueRectF& rect) const {
++  OpaqueRectF c(*this);
+   c.Union(rect);
+ 
+   static const float kEpsilon = std::numeric_limits<float>::is_integer
+@@ -205,42 +205,42 @@ float RectF::ManhattanInternalDistance(c
+   return x + y;
+ }
+ 
+-bool RectF::IsExpressibleAsRect() const {
++bool OpaqueRectF::IsExpressibleAsRect() const {
+   return IsExpressibleAsInt(x()) && IsExpressibleAsInt(y()) &&
+       IsExpressibleAsInt(width()) && IsExpressibleAsInt(height()) &&
+       IsExpressibleAsInt(right()) && IsExpressibleAsInt(bottom());
+ }
+ 
+-std::string RectF::ToString() const {
++std::string OpaqueRectF::ToString() const {
+   return base::StringPrintf("%s %s",
+                             origin().ToString().c_str(),
+                             size().ToString().c_str());
+ }
+ 
+-RectF IntersectRects(const RectF& a, const RectF& b) {
+-  RectF result = a;
++OpaqueRectF IntersectRects(const OpaqueRectF& a, const OpaqueRectF& b) {
++  OpaqueRectF result = a;
+   result.Intersect(b);
+   return result;
+ }
+ 
+-RectF UnionRects(const RectF& a, const RectF& b) {
+-  RectF result = a;
++OpaqueRectF UnionRects(const OpaqueRectF& a, const OpaqueRectF& b) {
++  OpaqueRectF result = a;
+   result.Union(b);
+   return result;
+ }
+ 
+-RectF SubtractRects(const RectF& a, const RectF& b) {
+-  RectF result = a;
++OpaqueRectF SubtractRects(const OpaqueRectF& a, const OpaqueRectF& b) {
++  OpaqueRectF result = a;
+   result.Subtract(b);
+   return result;
+ }
+ 
+-RectF BoundingRect(const PointF& p1, const PointF& p2) {
++OpaqueRectF BoundingRect(const PointF& p1, const PointF& p2) {
+   float rx = std::min(p1.x(), p2.x());
+   float ry = std::min(p1.y(), p2.y());
+   float rr = std::max(p1.x(), p2.x());
+   float rb = std::max(p1.y(), p2.y());
+-  return RectF(rx, ry, rr - rx, rb - ry);
++  return OpaqueRectF(rx, ry, rr - rx, rb - ry);
+ }
+ 
+ }  // namespace gfx
+--- a/ui/gfx/geometry/rect_f.h
++++ b/ui/gfx/geometry/rect_f.h
+@@ -17,17 +17,17 @@ namespace gfx {
+ class InsetsF;
+ 
+ // A floating version of gfx::Rect.
+-class GFX_EXPORT RectF {
++class GFX_EXPORT OpaqueRectF {
+  public:
+-  RectF() {}
+-  RectF(float width, float height) : size_(width, height) {}
+-  RectF(float x, float y, float width, float height)
++  OpaqueRectF() {}
++  OpaqueRectF(float width, float height) : size_(width, height) {}
++  OpaqueRectF(float x, float y, float width, float height)
+       : origin_(x, y), size_(width, height) {}
+-  explicit RectF(const SizeF& size) : size_(size) {}
+-  RectF(const PointF& origin, const SizeF& size)
++  explicit OpaqueRectF(const OpaqueSizeF& size) : size_(size) {}
++  OpaqueRectF(const PointF& origin, const OpaqueSizeF& size)
+       : origin_(origin), size_(size) {}
+ 
+-  ~RectF() {}
++  ~OpaqueRectF() {}
+ 
+   float x() const { return origin_.x(); }
+   void set_x(float x) { origin_.set_x(x); }
+@@ -41,20 +41,20 @@ class GFX_EXPORT RectF {
+   float height() const { return size_.height(); }
+   void set_height(float height) { size_.set_height(height); }
+ 
+-  const PointF& origin() const { return origin_; }
+-  void set_origin(const PointF& origin) { origin_ = origin; }
++  const OpaquePointF& origin() const { return origin_; }
++  void set_origin(const OpaquePointF& origin) { origin_ = origin; }
+ 
+-  const SizeF& size() const { return size_; }
+-  void set_size(const SizeF& size) { size_ = size; }
++  const OpaqueSizeF& size() const { return size_; }
++  void set_size(const OpaqueSizeF& size) { size_ = size; }
+ 
+   float right() const { return x() + width(); }
+   float bottom() const { return y() + height(); }
+ 
+-  PointF top_right() const { return PointF(right(), y()); }
+-  PointF bottom_left() const { return PointF(x(), bottom()); }
+-  PointF bottom_right() const { return PointF(right(), bottom()); }
++  OpaquePointF top_right() const { return OpaquePointF(right(), y()); }
++  OpaquePointF bottom_left() const { return OpaquePointF(x(), bottom()); }
++  OpaquePointF bottom_right() const { return OpaquePointF(right(), bottom()); }
+ 
+-  Vector2dF OffsetFromOrigin() const { return Vector2dF(x(), y()); }
++  OpaqueVector2dF OffsetFromOrigin() const { return OpaqueVector2dF(x(), y()); }
+ 
+   void SetRect(float x, float y, float width, float height) {
+     origin_.SetPoint(x, y);
+@@ -78,7 +78,7 @@ class GFX_EXPORT RectF {
+   void operator+=(const Vector2dF& offset);
+   void operator-=(const Vector2dF& offset);
+ 
+-  InsetsF InsetsFrom(const RectF& inner) const;
++  InsetsF InsetsFrom(const OpaqueRectF& inner) const;
+ 
+   // Returns true if the area of the rectangle is zero.
+   bool IsEmpty() const { return size_.IsEmpty(); }
+@@ -89,7 +89,7 @@ class GFX_EXPORT RectF {
+   // height are equal, then the narrowest rect is less than.
+   // This comparison is required to use Rects in sets, or sorted
+   // vectors.
+-  bool operator<(const RectF& other) const;
++  bool operator<(const OpaqueRectF& other) const;
+ 
+   // Returns true if the point identified by point_x and point_y falls inside
+   // this rectangle.  The point (x, y) is inside the rectangle, but the
+@@ -102,43 +102,43 @@ class GFX_EXPORT RectF {
+   }
+ 
+   // Returns true if this rectangle contains the specified rectangle.
+-  bool Contains(const RectF& rect) const;
++  bool Contains(const OpaqueRectF& rect) const;
+ 
+   // Returns true if this rectangle intersects the specified rectangle.
+   // An empty rectangle doesn't intersect any rectangle.
+-  bool Intersects(const RectF& rect) const;
++  bool Intersects(const OpaqueRectF& rect) const;
+ 
+   // Computes the intersection of this rectangle with the given rectangle.
+-  void Intersect(const RectF& rect);
++  void Intersect(const OpaqueRectF& rect);
+ 
+   // Computes the union of this rectangle with the given rectangle.  The union
+   // is the smallest rectangle containing both rectangles.
+-  void Union(const RectF& rect);
++  void Union(const OpaqueRectF& rect);
+ 
+   // Computes the rectangle resulting from subtracting |rect| from |*this|,
+   // i.e. the bounding rect of |Region(*this) - Region(rect)|.
+-  void Subtract(const RectF& rect);
++  void Subtract(const OpaqueRectF& rect);
+ 
+   // Fits as much of the receiving rectangle into the supplied rectangle as
+   // possible, becoming the result. For example, if the receiver had
+   // a x-location of 2 and a width of 4, and the supplied rectangle had
+   // an x-location of 0 with a width of 5, the returned rectangle would have
+   // an x-location of 1 with a width of 4.
+-  void AdjustToFit(const RectF& rect);
++  void AdjustToFit(const OpaqueRectF& rect);
+ 
+   // Returns the center of this rectangle.
+   PointF CenterPoint() const;
+ 
+   // Becomes a rectangle that has the same center point but with a size capped
+   // at given |size|.
+-  void ClampToCenteredSize(const SizeF& size);
++  void ClampToCenteredSize(const OpaqueSizeF& size);
+ 
+   // Splits |this| in two halves, |left_half| and |right_half|.
+-  void SplitVertically(RectF* left_half, RectF* right_half) const;
++  void SplitVertically(OpaqueRectF* left_half, OpaqueRectF* right_half) const;
+ 
+   // Returns true if this rectangle shares an entire edge (i.e., same width or
+   // same height) with the given rectangle, and the rectangles do not overlap.
+-  bool SharesEdgeWith(const RectF& rect) const;
++  bool SharesEdgeWith(const OpaqueRectF& rect) const;
+ 
+   // Returns the manhattan distance from the rect to the point. If the point is
+   // inside the rect, returns 0.
+@@ -148,7 +148,7 @@ class GFX_EXPORT RectF {
+   // contents of the given rect. That is, if the intersection of the two rects
+   // is non-empty then the function returns 0. If the rects share a side, it
+   // returns the smallest non-zero value appropriate for float.
+-  float ManhattanInternalDistance(const RectF& rect) const;
++  float ManhattanInternalDistance(const OpaqueRectF& rect) const;
+ 
+   // Scales the rectangle by |scale|.
+   void Scale(float scale) {
+@@ -160,8 +160,8 @@ class GFX_EXPORT RectF {
+     set_size(ScaleSize(size(), x_scale, y_scale));
+   }
+ 
+-  // This method reports if the RectF can be safely converted to an integer
+-  // Rect. When it is false, some dimension of the RectF is outside the bounds
++  // This method reports if the OpaqueRectF can be safely converted to an integer
++  // Rect. When it is false, some dimension of the OpaqueRectF is outside the bounds
+   // of what an integer can represent, and converting it to a Rect will require
+   // clamping.
+   bool IsExpressibleAsRect() const;
+@@ -169,42 +169,42 @@ class GFX_EXPORT RectF {
+   std::string ToString() const;
+ 
+  private:
+-  PointF origin_;
+-  SizeF size_;
++  OpaquePointF origin_;
++  OpaqueSizeF size_;
+ };
+ 
+-inline bool operator==(const RectF& lhs, const RectF& rhs) {
++inline bool operator==(const OpaqueRectF& lhs, const OpaqueRectF& rhs) {
+   return lhs.origin() == rhs.origin() && lhs.size() == rhs.size();
+ }
+ 
+-inline bool operator!=(const RectF& lhs, const RectF& rhs) {
++inline bool operator!=(const OpaqueRectF& lhs, const OpaqueRectF& rhs) {
+   return !(lhs == rhs);
+ }
+ 
+-inline RectF operator+(const RectF& lhs, const Vector2dF& rhs) {
+-  return RectF(lhs.x() + rhs.x(), lhs.y() + rhs.y(),
++inline OpaqueRectF operator+(const OpaqueRectF& lhs, const Vector2dF& rhs) {
++  return OpaqueRectF(lhs.x() + rhs.x(), lhs.y() + rhs.y(),
+       lhs.width(), lhs.height());
+ }
+ 
+-inline RectF operator-(const RectF& lhs, const Vector2dF& rhs) {
+-  return RectF(lhs.x() - rhs.x(), lhs.y() - rhs.y(),
++inline OpaqueRectF operator-(const OpaqueRectF& lhs, const Vector2dF& rhs) {
++  return OpaqueRectF(lhs.x() - rhs.x(), lhs.y() - rhs.y(),
+       lhs.width(), lhs.height());
+ }
+ 
+-inline RectF operator+(const Vector2dF& lhs, const RectF& rhs) {
++inline OpaqueRectF operator+(const Vector2dF& lhs, const OpaqueRectF& rhs) {
+   return rhs + lhs;
+ }
+ 
+-GFX_EXPORT RectF IntersectRects(const RectF& a, const RectF& b);
+-GFX_EXPORT RectF UnionRects(const RectF& a, const RectF& b);
+-GFX_EXPORT RectF SubtractRects(const RectF& a, const RectF& b);
++GFX_EXPORT OpaqueRectF IntersectRects(const OpaqueRectF& a, const OpaqueRectF& b);
++GFX_EXPORT OpaqueRectF UnionRects(const OpaqueRectF& a, const OpaqueRectF& b);
++GFX_EXPORT OpaqueRectF SubtractRects(const OpaqueRectF& a, const OpaqueRectF& b);
+ 
+-inline RectF ScaleRect(const RectF& r, float x_scale, float y_scale) {
+-  return RectF(r.x() * x_scale, r.y() * y_scale,
++inline OpaqueRectF ScaleRect(const OpaqueRectF& r, float x_scale, float y_scale) {
++  return OpaqueRectF(r.x() * x_scale, r.y() * y_scale,
+        r.width() * x_scale, r.height() * y_scale);
+ }
+ 
+-inline RectF ScaleRect(const RectF& r, float scale) {
++inline OpaqueRectF ScaleRect(const OpaqueRectF& r, float scale) {
+   return ScaleRect(r, scale, scale);
+ }
+ 
+@@ -214,12 +214,29 @@ inline RectF ScaleRect(const RectF& r, f
+ // points", except that we consider points on the right/bottom edges of the
+ // rect to be outside the rect.  So technically one or both points will not be
+ // contained within the rect, because they will appear on one of these edges.
+-GFX_EXPORT RectF BoundingRect(const PointF& p1, const PointF& p2);
++GFX_EXPORT OpaqueRectF BoundingRect(const PointF& p1, const PointF& p2);
+ 
+ // This is declared here for use in gtest-based unit tests but is defined in
+ // the gfx_test_support target. Depend on that to use this in your unit test.
+ // This should not be used in production code - call ToString() instead.
+-void PrintTo(const RectF& rect, ::std::ostream* os);
++void PrintTo(const OpaqueRectF& rect, ::std::ostream* os);
++
++class GFX_EXPORT RectF : public OpaqueRectF {
++public:
++  RectF() : OpaqueRectF() {}
++  RectF(float width, float height) : OpaqueRectF(width, height) {}
++  RectF(float x, float y, float width, float height) : OpaqueRectF(x, y, width, height) {}
++  explicit RectF(const OpaqueSizeF& size) : OpaqueRectF(size) {}
++  RectF(const PointF& origin, const OpaqueSizeF& size) : OpaqueRectF(origin, size) {}
++};
++class GFX_EXPORT DeviceRectF : public OpaqueRectF {
++public:
++  DeviceRectF() : OpaqueRectF() {}
++  DeviceRectF(float width, float height) : OpaqueRectF(width, height) {}
++  DeviceRectF(float x, float y, float width, float height) : OpaqueRectF(x, y, width, height) {}
++  explicit DeviceRectF(const OpaqueSizeF& size) : OpaqueRectF(size) {}
++  DeviceRectF(const PointF& origin, const OpaqueSizeF& size) : OpaqueRectF(origin, size) {}
++};
+ 
+ }  // namespace gfx
+ 
+--- a/ui/gfx/geometry/size.cc
++++ b/ui/gfx/geometry/size.cc
+@@ -13,7 +13,7 @@
+ namespace gfx {
+ 
+ #if defined(OS_WIN)
+-SIZE Size::ToSIZE() const {
++SIZE OpaqueSize::ToSIZE() const {
+   SIZE s;
+   s.cx = width();
+   s.cy = height();
+@@ -22,32 +22,32 @@ SIZE Size::ToSIZE() const {
+ #endif
+ 
+ #if defined(OS_MACOSX)
+-Size& Size::operator=(const CGSize& s) {
++OpaqueSize& OpaqueSize::operator=(const CGOpaqueSize& s) {
+   set_width(s.width);
+   set_height(s.height);
+   return *this;
+ }
+ #endif
+ 
+-int Size::GetArea() const {
++int OpaqueSize::GetArea() const {
+   return width() * height();
+ }
+ 
+-void Size::Enlarge(int grow_width, int grow_height) {
++void OpaqueSize::Enlarge(int grow_width, int grow_height) {
+   SetSize(width() + grow_width, height() + grow_height);
+ }
+ 
+-void Size::SetToMin(const Size& other) {
++void OpaqueSize::SetToMin(const OpaqueSize& other) {
+   width_ = width() <= other.width() ? width() : other.width();
+   height_ = height() <= other.height() ? height() : other.height();
+ }
+ 
+-void Size::SetToMax(const Size& other) {
++void OpaqueSize::SetToMax(const OpaqueSize& other) {
+   width_ = width() >= other.width() ? width() : other.width();
+   height_ = height() >= other.height() ? height() : other.height();
+ }
+ 
+-std::string Size::ToString() const {
++std::string OpaqueSize::ToString() const {
+   return base::StringPrintf("%dx%d", width(), height());
+ }
+ 
+--- a/ui/gfx/geometry/size.h
++++ b/ui/gfx/geometry/size.h
+@@ -23,27 +23,27 @@ typedef struct tagSIZE SIZE;
+ namespace gfx {
+ 
+ // A size has width and height values.
+-class GFX_EXPORT Size {
++class GFX_EXPORT OpaqueSize {
+  public:
+-  Size() : width_(0), height_(0) {}
+-  Size(int width, int height)
++  OpaqueSize() : width_(0), height_(0) {}
++  OpaqueSize(int width, int height)
+       : width_(width < 0 ? 0 : width), height_(height < 0 ? 0 : height) {}
+ #if defined(OS_MACOSX)
+-  explicit Size(const CGSize& s)
++  explicit OpaqueSize(const CGOpaqueSize& s)
+       : width_(s.width < 0 ? 0 : s.width),
+         height_(s.height < 0 ? 0 : s.height) {}
+ #endif
+ 
+-  ~Size() {}
++  ~OpaqueSize() {}
+ 
+ #if defined(OS_MACOSX)
+-  Size& operator=(const CGSize& s);
++  OpaqueSize& operator=(const CGOpaqueSize& s);
+ #endif
+ 
+ #if defined(OS_WIN)
+   SIZE ToSIZE() const;
+ #elif defined(OS_MACOSX)
+-  CGSize ToCGSize() const { return CGSizeMake(width(), height()); }
++  CGOpaqueSize ToCGOpaqueSize() const { return CGOpaqueSizeMake(width(), height()); }
+ #endif
+ 
+   int width() const { return width_; }
+@@ -61,13 +61,13 @@ class GFX_EXPORT Size {
+ 
+   void Enlarge(int grow_width, int grow_height);
+ 
+-  void SetToMin(const Size& other);
+-  void SetToMax(const Size& other);
++  void SetToMin(const OpaqueSize& other);
++  void SetToMax(const OpaqueSize& other);
+ 
+   bool IsEmpty() const { return !width() || !height(); }
+ 
+-  operator SizeF() const {
+-    return SizeF(static_cast<float>(width()), static_cast<float>(height()));
++  operator OpaqueSizeF() const {
++    return OpaqueSizeF(static_cast<float>(width()), static_cast<float>(height()));
+   }
+ 
+   std::string ToString() const;
+@@ -77,18 +77,30 @@ class GFX_EXPORT Size {
+   int height_;
+ };
+ 
+-inline bool operator==(const Size& lhs, const Size& rhs) {
++class GFX_EXPORT Size : public OpaqueSize {
++ public:
++  Size() : OpaqueSize() {}
++  Size(int width, int height) : OpaqueSize(width, height) {}
++};
++
++class GFX_EXPORT DeviceSize : public OpaqueSize {
++ public:
++  DeviceSize() : OpaqueSize() {}
++  DeviceSize(int width, int height) : OpaqueSize(width, height) {}
++};
++
++inline bool operator==(const OpaqueSize& lhs, const OpaqueSize& rhs) {
+   return lhs.width() == rhs.width() && lhs.height() == rhs.height();
+ }
+ 
+-inline bool operator!=(const Size& lhs, const Size& rhs) {
++inline bool operator!=(const OpaqueSize& lhs, const OpaqueSize& rhs) {
+   return !(lhs == rhs);
+ }
+ 
+ // This is declared here for use in gtest-based unit tests but is defined in
+ // the gfx_test_support target. Depend on that to use this in your unit test.
+ // This should not be used in production code - call ToString() instead.
+-void PrintTo(const Size& size, ::std::ostream* os);
++void PrintTo(const OpaqueSize& size, ::std::ostream* os);
+ 
+ }  // namespace gfx
+ 
+--- a/ui/gfx/geometry/size_conversions.cc
++++ b/ui/gfx/geometry/size_conversions.cc
+@@ -8,22 +8,22 @@
+ 
+ namespace gfx {
+ 
+-Size ToFlooredSize(const SizeF& size) {
++OpaqueSize ToFlooredSize(const OpaqueSizeF& size) {
+   int w = ToFlooredInt(size.width());
+   int h = ToFlooredInt(size.height());
+-  return Size(w, h);
++  return OpaqueSize(w, h);
+ }
+ 
+-Size ToCeiledSize(const SizeF& size) {
++OpaqueSize ToCeiledSize(const OpaqueSizeF& size) {
+   int w = ToCeiledInt(size.width());
+   int h = ToCeiledInt(size.height());
+-  return Size(w, h);
++  return OpaqueSize(w, h);
+ }
+ 
+-Size ToRoundedSize(const SizeF& size) {
++OpaqueSize ToRoundedSize(const OpaqueSizeF& size) {
+   int w = ToRoundedInt(size.width());
+   int h = ToRoundedInt(size.height());
+-  return Size(w, h);
++  return OpaqueSize(w, h);
+ }
+ 
+ }  // namespace gfx
+--- a/ui/gfx/geometry/size_conversions.h
++++ b/ui/gfx/geometry/size_conversions.h
+@@ -11,13 +11,13 @@
+ namespace gfx {
+ 
+ // Returns a Size with each component from the input SizeF floored.
+-GFX_EXPORT Size ToFlooredSize(const SizeF& size);
++GFX_EXPORT OpaqueSize ToFlooredSize(const OpaqueSizeF& size);
+ 
+ // Returns a Size with each component from the input SizeF ceiled.
+-GFX_EXPORT Size ToCeiledSize(const SizeF& size);
++GFX_EXPORT OpaqueSize ToCeiledSize(const OpaqueSizeF& size);
+ 
+ // Returns a Size with each component from the input SizeF rounded.
+-GFX_EXPORT Size ToRoundedSize(const SizeF& size);
++GFX_EXPORT OpaqueSize ToRoundedSize(const OpaqueSizeF& size);
+ 
+ }  // namespace gfx
+ 
+--- a/ui/gfx/geometry/size_f.cc
++++ b/ui/gfx/geometry/size_f.cc
+@@ -8,30 +8,30 @@
+ 
+ namespace gfx {
+ 
+-float SizeF::GetArea() const {
++float OpaqueSizeF::GetArea() const {
+   return width() * height();
+ }
+ 
+-void SizeF::Enlarge(float grow_width, float grow_height) {
++void OpaqueSizeF::Enlarge(float grow_width, float grow_height) {
+   SetSize(width() + grow_width, height() + grow_height);
+ }
+ 
+-void SizeF::SetToMin(const SizeF& other) {
++void OpaqueSizeF::SetToMin(const OpaqueSizeF& other) {
+   width_ = width() <= other.width() ? width() : other.width();
+   height_ = height() <= other.height() ? height() : other.height();
+ }
+ 
+-void SizeF::SetToMax(const SizeF& other) {
++void OpaqueSizeF::SetToMax(const OpaqueSizeF& other) {
+   width_ = width() >= other.width() ? width() : other.width();
+   height_ = height() >= other.height() ? height() : other.height();
+ }
+ 
+-std::string SizeF::ToString() const {
++std::string OpaqueSizeF::ToString() const {
+   return base::StringPrintf("%fx%f", width(), height());
+ }
+ 
+-SizeF ScaleSize(const SizeF& s, float x_scale, float y_scale) {
+-  SizeF scaled_s(s);
++OpaqueSizeF ScaleSize(const OpaqueSizeF& s, float x_scale, float y_scale) {
++  OpaqueSizeF scaled_s(s);
+   scaled_s.Scale(x_scale, y_scale);
+   return scaled_s;
+ }
+--- a/ui/gfx/geometry/size_f.h
++++ b/ui/gfx/geometry/size_f.h
+@@ -15,12 +15,12 @@
+ namespace gfx {
+ 
+ // A floating version of gfx::Size.
+-class GFX_EXPORT SizeF {
++class GFX_EXPORT OpaqueSizeF {
+  public:
+-  SizeF() : width_(0.f), height_(0.f) {}
+-  SizeF(float width, float height)
++  OpaqueSizeF() : width_(0.f), height_(0.f) {}
++  OpaqueSizeF(float width, float height)
+       : width_(fmaxf(0, width)), height_(fmaxf(0, height)) {}
+-  ~SizeF() {}
++  ~OpaqueSizeF() {}
+ 
+   float width() const { return width_; }
+   float height() const { return height_; }
+@@ -37,8 +37,8 @@ class GFX_EXPORT SizeF {
+ 
+   void Enlarge(float grow_width, float grow_height);
+ 
+-  void SetToMin(const SizeF& other);
+-  void SetToMax(const SizeF& other);
++  void SetToMin(const OpaqueSizeF& other);
++  void SetToMax(const OpaqueSizeF& other);
+ 
+   bool IsEmpty() const { return !width() || !height(); }
+ 
+@@ -57,24 +57,35 @@ class GFX_EXPORT SizeF {
+   float height_;
+ };
+ 
+-inline bool operator==(const SizeF& lhs, const SizeF& rhs) {
++inline bool operator==(const OpaqueSizeF& lhs, const OpaqueSizeF& rhs) {
+   return lhs.width() == rhs.width() && lhs.height() == rhs.height();
+ }
+ 
+-inline bool operator!=(const SizeF& lhs, const SizeF& rhs) {
++inline bool operator!=(const OpaqueSizeF& lhs, const OpaqueSizeF& rhs) {
+   return !(lhs == rhs);
+ }
+ 
+-GFX_EXPORT SizeF ScaleSize(const SizeF& p, float x_scale, float y_scale);
++GFX_EXPORT OpaqueSizeF ScaleSize(const OpaqueSizeF& p, float x_scale, float y_scale);
+ 
+-inline SizeF ScaleSize(const SizeF& p, float scale) {
++inline OpaqueSizeF ScaleSize(const OpaqueSizeF& p, float scale) {
+   return ScaleSize(p, scale, scale);
+ }
+ 
+ // This is declared here for use in gtest-based unit tests but is defined in
+ // the gfx_test_support target. Depend on that to use this in your unit test.
+ // This should not be used in production code - call ToString() instead.
+-void PrintTo(const SizeF& size, ::std::ostream* os);
++void PrintTo(const OpaqueSizeF& size, ::std::ostream* os);
++
++class GFX_EXPORT SizeF : public OpaqueSizeF {
++public:
++  SizeF() : OpaqueSizeF() {}
++  SizeF(float width, float height) : OpaqueSizeF(width, height) {}
++};
++class GFX_EXPORT DeviceSizeF : public OpaqueSizeF {
++public:
++  DeviceSizeF() : OpaqueSizeF() {}
++  DeviceSizeF(float width, float height) : OpaqueSizeF(width, height) {}
++};
+ 
+ }  // namespace gfx
+ 
+--- a/ui/gfx/geometry/vector2d.cc
++++ b/ui/gfx/geometry/vector2d.cc
+@@ -10,29 +10,29 @@
+ 
+ namespace gfx {
+ 
+-bool Vector2d::IsZero() const {
++bool OpaqueVector2d::IsZero() const {
+   return x_ == 0 && y_ == 0;
+ }
+ 
+-void Vector2d::Add(const Vector2d& other) {
++void OpaqueVector2d::Add(const OpaqueVector2d& other) {
+   x_ += other.x_;
+   y_ += other.y_;
+ }
+ 
+-void Vector2d::Subtract(const Vector2d& other) {
++void OpaqueVector2d::Subtract(const OpaqueVector2d& other) {
+   x_ -= other.x_;
+   y_ -= other.y_;
+ }
+ 
+-int64 Vector2d::LengthSquared() const {
++int64 OpaqueVector2d::LengthSquared() const {
+   return static_cast<int64>(x_) * x_ + static_cast<int64>(y_) * y_;
+ }
+ 
+-float Vector2d::Length() const {
++float OpaqueVector2d::Length() const {
+   return static_cast<float>(std::sqrt(static_cast<double>(LengthSquared())));
+ }
+ 
+-std::string Vector2d::ToString() const {
++std::string OpaqueVector2d::ToString() const {
+   return base::StringPrintf("[%d %d]", x_, y_);
+ }
+ 
+--- a/ui/gfx/geometry/vector2d.h
++++ b/ui/gfx/geometry/vector2d.h
+@@ -19,10 +19,10 @@
+ 
+ namespace gfx {
+ 
+-class GFX_EXPORT Vector2d {
++class GFX_EXPORT OpaqueVector2d {
+  public:
+-  Vector2d() : x_(0), y_(0) {}
+-  Vector2d(int x, int y) : x_(x), y_(y) {}
++  OpaqueVector2d() : x_(0), y_(0) {}
++  OpaqueVector2d(int x, int y) : x_(x), y_(y) {}
+ 
+   int x() const { return x_; }
+   void set_x(int x) { x_ = x; }
+@@ -34,19 +34,19 @@ class GFX_EXPORT Vector2d {
+   bool IsZero() const;
+ 
+   // Add the components of the |other| vector to the current vector.
+-  void Add(const Vector2d& other);
++  void Add(const OpaqueVector2d& other);
+   // Subtract the components of the |other| vector from the current vector.
+-  void Subtract(const Vector2d& other);
++  void Subtract(const OpaqueVector2d& other);
+ 
+-  void operator+=(const Vector2d& other) { Add(other); }
+-  void operator-=(const Vector2d& other) { Subtract(other); }
++  void operator+=(const OpaqueVector2d& other) { Add(other); }
++  void operator-=(const OpaqueVector2d& other) { Subtract(other); }
+ 
+-  void SetToMin(const Vector2d& other) {
++  void SetToMin(const OpaqueVector2d& other) {
+     x_ = x_ <= other.x_ ? x_ : other.x_;
+     y_ = y_ <= other.y_ ? y_ : other.y_;
+   }
+ 
+-  void SetToMax(const Vector2d& other) {
++  void SetToMax(const OpaqueVector2d& other) {
+     x_ = x_ >= other.x_ ? x_ : other.x_;
+     y_ = y_ >= other.y_ ? y_ : other.y_;
+   }
+@@ -60,8 +60,8 @@ class GFX_EXPORT Vector2d {
+ 
+   std::string ToString() const;
+ 
+-  operator Vector2dF() const {
+-    return Vector2dF(static_cast<float>(x()), static_cast<float>(y()));
++  operator OpaqueVector2dF() const {
++    return OpaqueVector2dF(static_cast<float>(x()), static_cast<float>(y()));
+   }
+ 
+  private:
+@@ -69,22 +69,22 @@ class GFX_EXPORT Vector2d {
+   int y_;
+ };
+ 
+-inline bool operator==(const Vector2d& lhs, const Vector2d& rhs) {
++inline bool operator==(const OpaqueVector2d& lhs, const OpaqueVector2d& rhs) {
+   return lhs.x() == rhs.x() && lhs.y() == rhs.y();
+ }
+ 
+-inline Vector2d operator-(const Vector2d& v) {
+-  return Vector2d(-v.x(), -v.y());
++inline OpaqueVector2d operator-(const OpaqueVector2d& v) {
++  return OpaqueVector2d(-v.x(), -v.y());
+ }
+ 
+-inline Vector2d operator+(const Vector2d& lhs, const Vector2d& rhs) {
+-  Vector2d result = lhs;
++inline OpaqueVector2d operator+(const OpaqueVector2d& lhs, const OpaqueVector2d& rhs) {
++  OpaqueVector2d result = lhs;
+   result.Add(rhs);
+   return result;
+ }
+ 
+-inline Vector2d operator-(const Vector2d& lhs, const Vector2d& rhs) {
+-  Vector2d result = lhs;
++inline OpaqueVector2d operator-(const OpaqueVector2d& lhs, const OpaqueVector2d& rhs) {
++  OpaqueVector2d result = lhs;
+   result.Add(-rhs);
+   return result;
+ }
+@@ -92,7 +92,18 @@ inline Vector2d operator-(const Vector2d
+ // This is declared here for use in gtest-based unit tests but is defined in
+ // the gfx_test_support target. Depend on that to use this in your unit test.
+ // This should not be used in production code - call ToString() instead.
+-void PrintTo(const Vector2d& vector, ::std::ostream* os);
++void PrintTo(const OpaqueVector2d& vector, ::std::ostream* os);
++
++class GFX_EXPORT Vector2d : public OpaqueVector2d {
++ public:
++  Vector2d() : OpaqueVector2d() { }
++  Vector2d(int x, int y) : OpaqueVector2d(x, y) { }
++};
++class GFX_EXPORT DeviceVector2d : public OpaqueVector2d {
++ public:
++  DeviceVector2d() : OpaqueVector2d() { }
++  DeviceVector2d(int x, int y) : OpaqueVector2d(x, y) { }
++};
+ 
+ }  // namespace gfx
+ 
+--- a/ui/gfx/geometry/vector2d_f.cc
++++ b/ui/gfx/geometry/vector2d_f.cc
+@@ -10,49 +10,49 @@
+ 
+ namespace gfx {
+ 
+-std::string Vector2dF::ToString() const {
++std::string OpaqueVector2dF::ToString() const {
+   return base::StringPrintf("[%f %f]", x_, y_);
+ }
+ 
+-bool Vector2dF::IsZero() const {
++bool OpaqueVector2dF::IsZero() const {
+   return x_ == 0 && y_ == 0;
+ }
+ 
+-void Vector2dF::Add(const Vector2dF& other) {
++void OpaqueVector2dF::Add(const OpaqueVector2dF& other) {
+   x_ += other.x_;
+   y_ += other.y_;
+ }
+ 
+-void Vector2dF::Subtract(const Vector2dF& other) {
++void OpaqueVector2dF::Subtract(const OpaqueVector2dF& other) {
+   x_ -= other.x_;
+   y_ -= other.y_;
+ }
+ 
+-double Vector2dF::LengthSquared() const {
++double OpaqueVector2dF::LengthSquared() const {
+   return static_cast<double>(x_) * x_ + static_cast<double>(y_) * y_;
+ }
+ 
+-float Vector2dF::Length() const {
++float OpaqueVector2dF::Length() const {
+   return static_cast<float>(std::sqrt(LengthSquared()));
+ }
+ 
+-void Vector2dF::Scale(float x_scale, float y_scale) {
++void OpaqueVector2dF::Scale(float x_scale, float y_scale) {
+   x_ *= x_scale;
+   y_ *= y_scale;
+ }
+ 
+-double CrossProduct(const Vector2dF& lhs, const Vector2dF& rhs) {
++double CrossProduct(const OpaqueVector2dF& lhs, const OpaqueVector2dF& rhs) {
+   return static_cast<double>(lhs.x()) * rhs.y() -
+       static_cast<double>(lhs.y()) * rhs.x();
+ }
+ 
+-double DotProduct(const Vector2dF& lhs, const Vector2dF& rhs) {
++double DotProduct(const OpaqueVector2dF& lhs, const OpaqueVector2dF& rhs) {
+   return static_cast<double>(lhs.x()) * rhs.x() +
+       static_cast<double>(lhs.y()) * rhs.y();
+ }
+ 
+-Vector2dF ScaleVector2d(const Vector2dF& v, float x_scale, float y_scale) {
+-  Vector2dF scaled_v(v);
++OpaqueVector2dF ScaleVector2d(const OpaqueVector2dF& v, float x_scale, float y_scale) {
++  OpaqueVector2dF scaled_v(v);
+   scaled_v.Scale(x_scale, y_scale);
+   return scaled_v;
+ }
+--- a/ui/gfx/geometry/vector2d_f.h
++++ b/ui/gfx/geometry/vector2d_f.h
+@@ -17,10 +17,10 @@
+ 
+ namespace gfx {
+ 
+-class GFX_EXPORT Vector2dF {
++class GFX_EXPORT OpaqueVector2dF {
+  public:
+-  Vector2dF() : x_(0), y_(0) {}
+-  Vector2dF(float x, float y) : x_(x), y_(y) {}
++  OpaqueVector2dF() : x_(0), y_(0) {}
++  OpaqueVector2dF(float x, float y) : x_(x), y_(y) {}
+ 
+   float x() const { return x_; }
+   void set_x(float x) { x_ = x; }
+@@ -32,19 +32,19 @@ class GFX_EXPORT Vector2dF {
+   bool IsZero() const;
+ 
+   // Add the components of the |other| vector to the current vector.
+-  void Add(const Vector2dF& other);
++  void Add(const OpaqueVector2dF& other);
+   // Subtract the components of the |other| vector from the current vector.
+-  void Subtract(const Vector2dF& other);
++  void Subtract(const OpaqueVector2dF& other);
+ 
+-  void operator+=(const Vector2dF& other) { Add(other); }
+-  void operator-=(const Vector2dF& other) { Subtract(other); }
++  void operator+=(const OpaqueVector2dF& other) { Add(other); }
++  void operator-=(const OpaqueVector2dF& other) { Subtract(other); }
+ 
+-  void SetToMin(const Vector2dF& other) {
++  void SetToMin(const OpaqueVector2dF& other) {
+     x_ = x_ <= other.x_ ? x_ : other.x_;
+     y_ = y_ <= other.y_ ? y_ : other.y_;
+   }
+ 
+-  void SetToMax(const Vector2dF& other) {
++  void SetToMax(const OpaqueVector2dF& other) {
+     x_ = x_ >= other.x_ ? x_ : other.x_;
+     y_ = y_ >= other.y_ ? y_ : other.y_;
+   }
+@@ -67,51 +67,62 @@ class GFX_EXPORT Vector2dF {
+   float y_;
+ };
+ 
+-inline bool operator==(const Vector2dF& lhs, const Vector2dF& rhs) {
++inline bool operator==(const OpaqueVector2dF& lhs, const OpaqueVector2dF& rhs) {
+   return lhs.x() == rhs.x() && lhs.y() == rhs.y();
+ }
+ 
+-inline bool operator!=(const Vector2dF& lhs, const Vector2dF& rhs) {
++inline bool operator!=(const OpaqueVector2dF& lhs, const OpaqueVector2dF& rhs) {
+   return !(lhs == rhs);
+ }
+ 
+-inline Vector2dF operator-(const Vector2dF& v) {
+-  return Vector2dF(-v.x(), -v.y());
++inline OpaqueVector2dF operator-(const OpaqueVector2dF& v) {
++  return OpaqueVector2dF(-v.x(), -v.y());
+ }
+ 
+-inline Vector2dF operator+(const Vector2dF& lhs, const Vector2dF& rhs) {
+-  Vector2dF result = lhs;
++inline OpaqueVector2dF operator+(const OpaqueVector2dF& lhs, const OpaqueVector2dF& rhs) {
++  OpaqueVector2dF result = lhs;
+   result.Add(rhs);
+   return result;
+ }
+ 
+-inline Vector2dF operator-(const Vector2dF& lhs, const Vector2dF& rhs) {
+-  Vector2dF result = lhs;
++inline OpaqueVector2dF operator-(const OpaqueVector2dF& lhs, const OpaqueVector2dF& rhs) {
++  OpaqueVector2dF result = lhs;
+   result.Add(-rhs);
+   return result;
+ }
+ 
+ // Return the cross product of two vectors.
+-GFX_EXPORT double CrossProduct(const Vector2dF& lhs, const Vector2dF& rhs);
++GFX_EXPORT double CrossProduct(const OpaqueVector2dF& lhs, const OpaqueVector2dF& rhs);
+ 
+ // Return the dot product of two vectors.
+-GFX_EXPORT double DotProduct(const Vector2dF& lhs, const Vector2dF& rhs);
++GFX_EXPORT double DotProduct(const OpaqueVector2dF& lhs, const OpaqueVector2dF& rhs);
+ 
+ // Return a vector that is |v| scaled by the given scale factors along each
+ // axis.
+-GFX_EXPORT Vector2dF ScaleVector2d(const Vector2dF& v,
++GFX_EXPORT OpaqueVector2dF ScaleVector2d(const OpaqueVector2dF& v,
+                                    float x_scale,
+                                    float y_scale);
+ 
+ // Return a vector that is |v| scaled by the given scale factor.
+-inline Vector2dF ScaleVector2d(const Vector2dF& v, float scale) {
++inline OpaqueVector2dF ScaleVector2d(const OpaqueVector2dF& v, float scale) {
+   return ScaleVector2d(v, scale, scale);
+ }
+ 
+ // This is declared here for use in gtest-based unit tests but is defined in
+ // the gfx_test_support target. Depend on that to use this in your unit test.
+ // This should not be used in production code - call ToString() instead.
+-void PrintTo(const Vector2dF& vector, ::std::ostream* os);
++void PrintTo(const OpaqueVector2dF& vector, ::std::ostream* os);
++
++class GFX_EXPORT Vector2dF : public OpaqueVector2dF { 
++ public:
++  Vector2dF() : OpaqueVector2dF() {}
++  Vector2dF(float x, float y) : OpaqueVector2dF(x, y) {}
++};
++class GFX_EXPORT DeviceVector2dF : public OpaqueVector2dF {
++ public:
++  DeviceVector2dF() : OpaqueVector2dF() {}
++  DeviceVector2dF(float x, float y) : OpaqueVector2dF(x, y) {}
++};
+ 
+ }  // namespace gfx
+ 
+--- a/ui/gfx/geometry/vector3d_f.cc
++++ b/ui/gfx/geometry/vector3d_f.cc
+@@ -10,60 +10,60 @@
+ 
+ namespace gfx {
+ 
+-Vector3dF::Vector3dF()
++OpaqueVector3dF::OpaqueVector3dF()
+     : x_(0),
+       y_(0),
+       z_(0) {
+ }
+ 
+-Vector3dF::Vector3dF(float x, float y, float z)
++OpaqueVector3dF::OpaqueVector3dF(float x, float y, float z)
+     : x_(x),
+       y_(y),
+       z_(z) {
+ }
+ 
+-Vector3dF::Vector3dF(const Vector2dF& other)
++OpaqueVector3dF::OpaqueVector3dF(const Vector2dF& other)
+     : x_(other.x()),
+       y_(other.y()),
+       z_(0) {
+ }
+ 
+-std::string Vector3dF::ToString() const {
++std::string OpaqueVector3dF::ToString() const {
+   return base::StringPrintf("[%f %f %f]", x_, y_, z_);
+ }
+ 
+-bool Vector3dF::IsZero() const {
++bool OpaqueVector3dF::IsZero() const {
+   return x_ == 0 && y_ == 0 && z_ == 0;
+ }
+ 
+-void Vector3dF::Add(const Vector3dF& other) {
++void OpaqueVector3dF::Add(const OpaqueVector3dF& other) {
+   x_ += other.x_;
+   y_ += other.y_;
+   z_ += other.z_;
+ }
+ 
+-void Vector3dF::Subtract(const Vector3dF& other) {
++void OpaqueVector3dF::Subtract(const OpaqueVector3dF& other) {
+   x_ -= other.x_;
+   y_ -= other.y_;
+   z_ -= other.z_;
+ }
+ 
+-double Vector3dF::LengthSquared() const {
++double OpaqueVector3dF::LengthSquared() const {
+   return static_cast<double>(x_) * x_ + static_cast<double>(y_) * y_ +
+       static_cast<double>(z_) * z_;
+ }
+ 
+-float Vector3dF::Length() const {
++float OpaqueVector3dF::Length() const {
+   return static_cast<float>(std::sqrt(LengthSquared()));
+ }
+ 
+-void Vector3dF::Scale(float x_scale, float y_scale, float z_scale) {
++void OpaqueVector3dF::Scale(float x_scale, float y_scale, float z_scale) {
+   x_ *= x_scale;
+   y_ *= y_scale;
+   z_ *= z_scale;
+ }
+ 
+-void Vector3dF::Cross(const Vector3dF& other) {
++void OpaqueVector3dF::Cross(const OpaqueVector3dF& other) {
+   float x = y_ * other.z() - z_ * other.y();
+   float y = z_ * other.x() - x_ * other.z();
+   float z = x_ * other.y() - y_ * other.x();
+@@ -72,15 +72,15 @@ void Vector3dF::Cross(const Vector3dF& o
+   z_ = z;
+ }
+ 
+-float DotProduct(const Vector3dF& lhs, const Vector3dF& rhs) {
++float DotProduct(const OpaqueVector3dF& lhs, const OpaqueVector3dF& rhs) {
+   return lhs.x() * rhs.x() + lhs.y() * rhs.y() + lhs.z() * rhs.z();
+ }
+ 
+-Vector3dF ScaleVector3d(const Vector3dF& v,
++OpaqueVector3dF ScaleVector3d(const OpaqueVector3dF& v,
+                         float x_scale,
+                         float y_scale,
+                         float z_scale) {
+-  Vector3dF scaled_v(v);
++  OpaqueVector3dF scaled_v(v);
+   scaled_v.Scale(x_scale, y_scale, z_scale);
+   return scaled_v;
+ }
+--- a/ui/gfx/geometry/vector3d_f.h
++++ b/ui/gfx/geometry/vector3d_f.h
+@@ -18,12 +18,12 @@
+ 
+ namespace gfx {
+ 
+-class GFX_EXPORT Vector3dF {
++class GFX_EXPORT OpaqueVector3dF {
+  public:
+-  Vector3dF();
+-  Vector3dF(float x, float y, float z);
++  OpaqueVector3dF();
++  OpaqueVector3dF(float x, float y, float z);
+ 
+-  explicit Vector3dF(const Vector2dF& other);
++  explicit OpaqueVector3dF(const Vector2dF& other);
+ 
+   float x() const { return x_; }
+   void set_x(float x) { x_ = x; }
+@@ -38,20 +38,20 @@ class GFX_EXPORT Vector3dF {
+   bool IsZero() const;
+ 
+   // Add the components of the |other| vector to the current vector.
+-  void Add(const Vector3dF& other);
++  void Add(const OpaqueVector3dF& other);
+   // Subtract the components of the |other| vector from the current vector.
+-  void Subtract(const Vector3dF& other);
++  void Subtract(const OpaqueVector3dF& other);
+ 
+-  void operator+=(const Vector3dF& other) { Add(other); }
+-  void operator-=(const Vector3dF& other) { Subtract(other); }
++  void operator+=(const OpaqueVector3dF& other) { Add(other); }
++  void operator-=(const OpaqueVector3dF& other) { Subtract(other); }
+ 
+-  void SetToMin(const Vector3dF& other) {
++  void SetToMin(const OpaqueVector3dF& other) {
+     x_ = x_ <= other.x_ ? x_ : other.x_;
+     y_ = y_ <= other.y_ ? y_ : other.y_;
+     z_ = z_ <= other.z_ ? z_ : other.z_;
+   }
+ 
+-  void SetToMax(const Vector3dF& other) {
++  void SetToMax(const OpaqueVector3dF& other) {
+     x_ = x_ >= other.x_ ? x_ : other.x_;
+     y_ = y_ >= other.y_ ? y_ : other.y_;
+     z_ = z_ >= other.z_ ? z_ : other.z_;
+@@ -68,7 +68,7 @@ class GFX_EXPORT Vector3dF {
+   void Scale(float x_scale, float y_scale, float z_scale);
+ 
+   // Take the cross product of this vector with |other| and become the result.
+-  void Cross(const Vector3dF& other);
++  void Cross(const OpaqueVector3dF& other);
+ 
+   std::string ToString() const;
+ 
+@@ -78,52 +78,65 @@ class GFX_EXPORT Vector3dF {
+   float z_;
+ };
+ 
+-inline bool operator==(const Vector3dF& lhs, const Vector3dF& rhs) {
++inline bool operator==(const OpaqueVector3dF& lhs, const OpaqueVector3dF& rhs) {
+   return lhs.x() == rhs.x() && lhs.y() == rhs.y() && lhs.z() == rhs.z();
+ }
+ 
+-inline Vector3dF operator-(const Vector3dF& v) {
+-  return Vector3dF(-v.x(), -v.y(), -v.z());
++inline OpaqueVector3dF operator-(const OpaqueVector3dF& v) {
++  return OpaqueVector3dF(-v.x(), -v.y(), -v.z());
+ }
+ 
+-inline Vector3dF operator+(const Vector3dF& lhs, const Vector3dF& rhs) {
+-  Vector3dF result = lhs;
++inline OpaqueVector3dF operator+(const OpaqueVector3dF& lhs, const OpaqueVector3dF& rhs) {
++  OpaqueVector3dF result = lhs;
+   result.Add(rhs);
+   return result;
+ }
+ 
+-inline Vector3dF operator-(const Vector3dF& lhs, const Vector3dF& rhs) {
+-  Vector3dF result = lhs;
++inline OpaqueVector3dF operator-(const OpaqueVector3dF& lhs, const OpaqueVector3dF& rhs) {
++  OpaqueVector3dF result = lhs;
+   result.Add(-rhs);
+   return result;
+ }
+ 
+ // Return the cross product of two vectors.
+-inline Vector3dF CrossProduct(const Vector3dF& lhs, const Vector3dF& rhs) {
+-  Vector3dF result = lhs;
++inline OpaqueVector3dF CrossProduct(const OpaqueVector3dF& lhs, const OpaqueVector3dF& rhs) {
++  OpaqueVector3dF result = lhs;
+   result.Cross(rhs);
+   return result;
+ }
+ 
+ // Return the dot product of two vectors.
+-GFX_EXPORT float DotProduct(const Vector3dF& lhs, const Vector3dF& rhs);
++GFX_EXPORT float DotProduct(const OpaqueVector3dF& lhs, const OpaqueVector3dF& rhs);
+ 
+ // Return a vector that is |v| scaled by the given scale factors along each
+ // axis.
+-GFX_EXPORT Vector3dF ScaleVector3d(const Vector3dF& v,
++GFX_EXPORT OpaqueVector3dF ScaleVector3d(const OpaqueVector3dF& v,
+                                    float x_scale,
+                                    float y_scale,
+                                    float z_scale);
+ 
+ // Return a vector that is |v| scaled by the given scale factor.
+-inline Vector3dF ScaleVector3d(const Vector3dF& v, float scale) {
++inline OpaqueVector3dF ScaleVector3d(const OpaqueVector3dF& v, float scale) {
+   return ScaleVector3d(v, scale, scale, scale);
+ }
+ 
+ // This is declared here for use in gtest-based unit tests but is defined in
+ // the gfx_test_support target. Depend on that to use this in your unit test.
+ // This should not be used in production code - call ToString() instead.
+-void PrintTo(const Vector3dF& vector, ::std::ostream* os);
++void PrintTo(const OpaqueVector3dF& vector, ::std::ostream* os);
++
++class GFX_EXPORT Vector3dF : public OpaqueVector3dF {
++ public:
++  Vector3dF() : OpaqueVector3dF() { }
++  Vector3dF(float x, float y, float z) : OpaqueVector3dF(x, y, z) { }
++  explicit Vector3dF(const Vector2dF& other) : OpaqueVector3dF(other) { }
++};
++class GFX_EXPORT DeviceVector3dF : public OpaqueVector3dF {
++ public:
++  DeviceVector3dF() : OpaqueVector3dF() { }
++  DeviceVector3dF(float x, float y, float z) : OpaqueVector3dF(x, y, z) { }
++  explicit DeviceVector3dF(const Vector2dF& other) : OpaqueVector3dF(other) { }
++};
+ 
+ }  // namespace gfx
+ 

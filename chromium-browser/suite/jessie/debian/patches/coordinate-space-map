@@ -1,0 +1,433 @@
+--- a/chrome/browser/ui/libgtk2ui/gtk2_ui.cc
++++ b/chrome/browser/ui/libgtk2ui/gtk2_ui.cc
+@@ -678,6 +678,8 @@ Gtk2UI::GetDefaultPangoFontDescription()
+ }
+ 
+ double Gtk2UI::GetFontDPI() const {
++  return 108.0;  // Scale in display layer, not here. Use internal assumtpion of ~100DPI here.
++
+   GtkSettings* gtk_settings = gtk_settings_get_default();
+   CHECK(gtk_settings);
+   gint dpi = -1;
+--- a/ui/gfx/display.cc
++++ b/ui/gfx/display.cc
+@@ -140,7 +140,7 @@ void Display::SetScaleAndBounds(
+ #endif
+     device_scale_factor_ = device_scale_factor;
+   }
+-  device_scale_factor_ = std::max(1.0f, device_scale_factor_);
++  device_scale_factor_ = std::max(0.125f, device_scale_factor_);
+   bounds_ = gfx::Rect(
+       gfx::ToFlooredPoint(gfx::ScalePoint(bounds_in_pixel.origin(),
+                                           1.0f / device_scale_factor_)),
+--- a/ui/views/widget/desktop_aura/desktop_screen_x11.cc
++++ b/ui/views/widget/desktop_aura/desktop_screen_x11.cc
+@@ -135,7 +135,7 @@ gfx::Point DesktopScreenX11::GetCursorSc
+                 &win_y,
+                 &mask);
+ 
+-  return gfx::Point(root_x, root_y);
++  return ScreenToDIPPoint(gfx::Point(root_x, root_y));
+ }
+ 
+ gfx::NativeWindow DesktopScreenX11::GetWindowUnderCursor() {
+@@ -182,7 +182,8 @@ gfx::Display DesktopScreenX11::GetDispla
+ }
+ 
+ gfx::Display DesktopScreenX11::GetDisplayNearestPoint(
+-    const gfx::Point& point) const {
++    const gfx::Point& requested_point) const {
++  gfx::Point point = DIPToScreenPoint(requested_point);
+   for (std::vector<gfx::Display>::const_iterator it = displays_.begin();
+        it != displays_.end(); ++it) {
+     if (it->bounds().Contains(point))
+--- a/ui/views/widget/desktop_aura/desktop_window_tree_host_x11.cc
++++ b/ui/views/widget/desktop_aura/desktop_window_tree_host_x11.cc
+@@ -34,6 +34,7 @@
+ #include "ui/events/platform/x11/x11_event_source.h"
+ #include "ui/gfx/display.h"
+ #include "ui/gfx/geometry/insets.h"
++#include "ui/gfx/geometry/size_conversions.h"
+ #include "ui/gfx/image/image_skia.h"
+ #include "ui/gfx/image/image_skia_rep.h"
+ #include "ui/gfx/path.h"
+@@ -131,6 +132,46 @@ const char kX11WindowRoleBubble[] = "bub
+ 
+ }  // namespace
+ 
++float GetDeviceScaleFactor() {
++  gfx::Display display = gfx::Screen::GetNativeScreen()->GetPrimaryDisplay();
++  return display.device_scale_factor();
++}
++
++gfx::Point ScreenToDIPPoint(const gfx::Point& pixel_point) {
++  return ToFlooredPoint(ScalePoint(pixel_point, 1.0f / GetDeviceScaleFactor()));
++}
++
++gfx::Point DIPToScreenPoint(const gfx::Point& dip_point) {
++  return ToFlooredPoint(gfx::ScalePoint(dip_point, GetDeviceScaleFactor()));
++}
++
++gfx::Size ScreenToDIPSize(const gfx::Size& size_in_pixels) {
++  // Always ceil sizes. Otherwise we may be leaving off part of the bounds.
++  return gfx::ToCeiledSize(
++      gfx::ScaleSize(size_in_pixels, 1.0f / GetDeviceScaleFactor()));
++}
++
++gfx::Size DIPToScreenSize(const gfx::Size& dip_size) {
++  // Always ceil sizes. Otherwise we may be leaving off part of the bounds.
++  return gfx::ToCeiledSize(gfx::ScaleSize(dip_size, GetDeviceScaleFactor()));
++}
++
++gfx::Rect DIPToScreenRect(const gfx::Rect& dip_bounds) {
++  // See comment in ScreenToDIPRect for why we calculate size like this.
++  return gfx::Rect(DIPToScreenPoint(dip_bounds.origin()),
++                   DIPToScreenSize(dip_bounds.size()));
++}
++gfx::Rect ScreenToDIPRect(const gfx::Rect& pixel_bounds) {
++  // It's important we scale the origin and size separately. If we instead
++  // calculated the size from the floored origin and ceiled right the size could
++  // vary depending upon where the two points land. That would cause problems
++  // for the places this code is used (in particular mapping from native window
++  // bounds to DIPs).
++  return gfx::Rect(ScreenToDIPPoint(pixel_bounds.origin()),
++                   ScreenToDIPSize(pixel_bounds.size()));
++}
++
++
+ ////////////////////////////////////////////////////////////////////////////////
+ // DesktopWindowTreeHostX11, public:
+ 
+@@ -384,7 +425,7 @@ void DesktopWindowTreeHostX11::ShowMaxim
+     const gfx::Rect& restored_bounds) {
+   ShowWindowWithState(ui::SHOW_STATE_MAXIMIZED);
+   // Enforce |restored_bounds_| since calling Maximize() could have reset it.
+-  restored_bounds_ = restored_bounds;
++  restored_bounds_ = DIPToScreenRect(restored_bounds);
+ }
+ 
+ bool DesktopWindowTreeHostX11::IsVisible() const {
+@@ -392,7 +433,7 @@ bool DesktopWindowTreeHostX11::IsVisible
+ }
+ 
+ void DesktopWindowTreeHostX11::SetSize(const gfx::Size& requested_size) {
+-  gfx::Size size = AdjustSize(requested_size);
++  gfx::Size size = DIPToScreenSize(AdjustSize(requested_size));
+   bool size_changed = bounds_.size() != size;
+   XResizeWindow(xdisplay_, xwindow_, size.width(), size.height());
+   bounds_.set_size(size);
+@@ -406,7 +447,8 @@ void DesktopWindowTreeHostX11::StackAtTo
+   XRaiseWindow(xdisplay_, xwindow_);
+ }
+ 
+-void DesktopWindowTreeHostX11::CenterWindow(const gfx::Size& size) {
++void DesktopWindowTreeHostX11::CenterWindow(const gfx::Size& requested_size) {
++  gfx::Size size = DIPToScreenSize(requested_size);
+   gfx::Rect parent_bounds = GetWorkAreaBoundsInScreen();
+ 
+   // If |window_|'s transient parent bounds are big enough to contain |size|,
+@@ -451,7 +493,7 @@ void DesktopWindowTreeHostX11::GetWindow
+ }
+ 
+ gfx::Rect DesktopWindowTreeHostX11::GetWindowBoundsInScreen() const {
+-  return bounds_;
++  return ScreenToDIPRect(bounds_);
+ }
+ 
+ gfx::Rect DesktopWindowTreeHostX11::GetClientAreaBoundsInScreen() const {
+@@ -463,7 +505,7 @@ gfx::Rect DesktopWindowTreeHostX11::GetC
+   // Attempts to calculate the rect by asking the NonClientFrameView what it
+   // thought its GetBoundsForClientView() were broke combobox drop down
+   // placement.
+-  return bounds_;
++  return ScreenToDIPRect(bounds_);
+ }
+ 
+ gfx::Rect DesktopWindowTreeHostX11::GetRestoredBounds() const {
+@@ -472,7 +514,7 @@ gfx::Rect DesktopWindowTreeHostX11::GetR
+   // or restoring bounds, we can record the current bounds before we request
+   // maximization, and clear it when we detect a state change.
+   if (!restored_bounds_.IsEmpty())
+-    return restored_bounds_;
++    return ScreenToDIPRect(restored_bounds_);
+ 
+   return GetWindowBoundsInScreen();
+ }
+@@ -481,7 +523,7 @@ gfx::Rect DesktopWindowTreeHostX11::GetW
+   std::vector<int> value;
+   if (ui::GetIntArrayProperty(x_root_window_, "_NET_WORKAREA", &value) &&
+       value.size() >= 4) {
+-    return gfx::Rect(value[0], value[1], value[2], value[3]);
++    return ScreenToDIPRect(gfx::Rect(value[0], value[1], value[2], value[3]));
+   }
+ 
+   // Fetch the geometry of the root window.
+@@ -492,10 +534,10 @@ gfx::Rect DesktopWindowTreeHostX11::GetW
+   if (!XGetGeometry(xdisplay_, x_root_window_, &root, &x, &y,
+                     &width, &height, &border_width, &depth)) {
+     NOTIMPLEMENTED();
+-    return gfx::Rect(0, 0, 10, 10);
++    return ScreenToDIPRect(gfx::Rect(0, 0, 10, 10));
+   }
+ 
+-  return gfx::Rect(x, y, width, height);
++  return ScreenToDIPRect(gfx::Rect(x, y, width, height));
+ }
+ 
+ void DesktopWindowTreeHostX11::SetShape(gfx::NativeRegion native_region) {
+@@ -1060,8 +1102,8 @@ void DesktopWindowTreeHostX11::InitX11Wi
+     }
+   }
+ 
+-  bounds_ = gfx::Rect(params.bounds.origin(),
+-                      AdjustSize(params.bounds.size()));
++  bounds_ = gfx::Rect(DIPToScreenPoint(params.bounds.origin()),
++                      AdjustSize(DIPToScreenSize(params.bounds.size())));
+   xwindow_ = XCreateWindow(
+       xdisplay_, x_root_window_,
+       bounds_.x(), bounds_.y(),
+@@ -1449,7 +1491,7 @@ void DesktopWindowTreeHostX11::DispatchM
+   } else {
+     // Another DesktopWindowTreeHostX11 has installed itself as
+     // capture. Translate the event's location and dispatch to the other.
+-    event->ConvertLocationToTarget(window(), g_current_capture->window());
++    ConvertEventToDifferentHost(event, g_current_capture);
+     g_current_capture->SendEventToProcessor(event);
+   }
+ }
+@@ -1457,13 +1499,29 @@ void DesktopWindowTreeHostX11::DispatchM
+ void DesktopWindowTreeHostX11::DispatchTouchEvent(ui::TouchEvent* event) {
+   if (g_current_capture && g_current_capture != this &&
+       event->type() == ui::ET_TOUCH_PRESSED) {
+-    event->ConvertLocationToTarget(window(), g_current_capture->window());
++    ConvertEventToDifferentHost(event, g_current_capture);
+     g_current_capture->SendEventToProcessor(event);
+   } else {
+     SendEventToProcessor(event);
+   }
+ }
+ 
++void DesktopWindowTreeHostX11::ConvertEventToDifferentHost(
++    ui::LocatedEvent* located_event,
++    DesktopWindowTreeHostX11* host) {
++  DCHECK_NE(this, host);
++  const gfx::Display display_src =
++      gfx::Screen::GetNativeScreen()->GetDisplayNearestWindow(window());
++  const gfx::Display display_dest =
++      gfx::Screen::GetNativeScreen()->GetDisplayNearestWindow(host->window());
++  DCHECK_EQ(display_src.device_scale_factor(),
++            display_dest.device_scale_factor());
++  gfx::Vector2d offset = GetLocationOnNativeScreen() -
++                         host->GetLocationOnNativeScreen();
++  gfx::Point location_in_pixel_in_host = located_event->location() + offset;
++  located_event->set_location(location_in_pixel_in_host);
++}
++
+ void DesktopWindowTreeHostX11::ResetWindowRegion() {
+   // If a custom window shape was supplied then apply it.
+   if (custom_window_shape_) {
+--- a/ui/views/widget/desktop_aura/desktop_window_tree_host_x11.h
++++ b/ui/views/widget/desktop_aura/desktop_window_tree_host_x11.h
+@@ -166,6 +166,7 @@ class VIEWS_EXPORT DesktopWindowTreeHost
+   ui::EventProcessor* GetEventProcessor() override;
+ 
+  private:
++  friend class DesktopWindowTreeHostX11HighDPITest;
+   // Initializes our X11 surface to draw on. This method performs all
+   // initialization related to talking to the X11 server.
+   void InitX11Window(const Widget::InitParams& params);
+@@ -211,6 +212,11 @@ class VIEWS_EXPORT DesktopWindowTreeHost
+   // and dispatched to that host instead.
+   void DispatchTouchEvent(ui::TouchEvent* event);
+ 
++  // Updates the location of |located_event| to be in |host|'s coordinate system
++  // so that it can be dispatched to |host|.
++  void ConvertEventToDifferentHost(ui::LocatedEvent* located_event,
++                                   DesktopWindowTreeHostX11* host);
++
+   // Resets the window region for the current widget bounds if necessary.
+   void ResetWindowRegion();
+ 
+@@ -342,6 +348,13 @@ class VIEWS_EXPORT DesktopWindowTreeHost
+   DISALLOW_COPY_AND_ASSIGN(DesktopWindowTreeHostX11);
+ };
+ 
++gfx::Point ScreenToDIPPoint(const gfx::Point& pixel_point);
++gfx::Point DIPToScreenPoint(const gfx::Point& dip_point);
++gfx::Size ScreenToDIPSize(const gfx::Size& size_in_pixels);
++gfx::Size DIPToScreenSize(const gfx::Size& dip_size);
++gfx::Rect DIPToScreenRect(const gfx::Rect& dip_bounds);
++gfx::Rect ScreenToDIPRect(const gfx::Rect& pixel_bounds);
++
+ }  // namespace views
+ 
+ #endif  // UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_WINDOW_TREE_HOST_X11_H_
+--- a/ui/views/widget/desktop_aura/desktop_window_tree_host_x11_unittest.cc
++++ b/ui/views/widget/desktop_aura/desktop_window_tree_host_x11_unittest.cc
+@@ -32,6 +32,8 @@ namespace views {
+ 
+ namespace {
+ 
++const int kPointerDeviceId = 1;
++
+ // Blocks till the window state hint, |hint|, is set or unset.
+ class WMStateWaiter : public X11PropertyChangeWaiter {
+  public:
+@@ -454,4 +456,137 @@ TEST_F(DesktopWindowTreeHostX11Test, Tog
+   EXPECT_TRUE(widget.GetNativeWindow()->IsVisible());
+ }
+ 
++class MouseEventRecorder : public ui::EventHandler {
++ public:
++  MouseEventRecorder() {}
++  ~MouseEventRecorder() override {}
++
++  void Reset() { mouse_events_.clear(); }
++
++  const std::vector<ui::MouseEvent>& mouse_events() const {
++    return mouse_events_;
++  }
++
++ private:
++  // ui::EventHandler:
++  void OnMouseEvent(ui::MouseEvent* mouse) override {
++    mouse_events_.push_back(*mouse);
++  }
++
++  std::vector<ui::MouseEvent> mouse_events_;
++
++  DISALLOW_COPY_AND_ASSIGN(MouseEventRecorder);
++};
++
++// A custom event-source that can be used to directly dispatch synthetic X11
++// events.
++class CustomX11EventSource : public ui::X11EventSource {
++ public:
++  CustomX11EventSource() : X11EventSource(gfx::GetXDisplay()) {}
++  ~CustomX11EventSource() override {}
++
++  void DispatchSingleEvent(XEvent* xevent) {
++    PlatformEventSource::DispatchEvent(xevent);
++  }
++
++ private:
++  DISALLOW_COPY_AND_ASSIGN(CustomX11EventSource);
++};
++
++class DesktopWindowTreeHostX11HighDPITest
++    : public DesktopWindowTreeHostX11Test {
++ public:
++  DesktopWindowTreeHostX11HighDPITest() {}
++  ~DesktopWindowTreeHostX11HighDPITest() override {}
++
++  void DispatchSingleEventToWidget(XEvent* event, Widget* widget) {
++    DCHECK_EQ(GenericEvent, event->type);
++    XIDeviceEvent* device_event =
++        static_cast<XIDeviceEvent*>(event->xcookie.data);
++    device_event->event =
++        widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget();
++    event_source_.DispatchSingleEvent(event);
++  }
++
++  void PretendCapture(views::Widget* capture_widget) {
++    DesktopWindowTreeHostX11* capture_host = nullptr;
++    if (capture_widget) {
++      capture_host = static_cast<DesktopWindowTreeHostX11*>(
++          capture_widget->GetNativeWindow()->GetHost());
++    }
++    DesktopWindowTreeHostX11::g_current_capture = capture_host;
++    if (capture_widget)
++      capture_widget->GetNativeWindow()->SetCapture();
++  }
++
++ private:
++  void SetUp() override {
++    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "2");
++    std::vector<unsigned int> pointer_devices;
++    pointer_devices.push_back(kPointerDeviceId);
++    ui::TouchFactory::GetInstance()->SetPointerDeviceForTest(pointer_devices);
++
++    DesktopWindowTreeHostX11Test::SetUp();
++  }
++
++  CustomX11EventSource event_source_;
++  DISALLOW_COPY_AND_ASSIGN(DesktopWindowTreeHostX11HighDPITest);
++};
++
++TEST_F(DesktopWindowTreeHostX11HighDPITest, LocatedEventDispatchWithCapture) {
++  Widget first;
++  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
++  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
++  params.native_widget = new DesktopNativeWidgetAura(&first);
++  params.bounds = gfx::Rect(0, 0, 50, 50);
++  first.Init(params);
++  first.Show();
++
++  Widget second;
++  params = CreateParams(Widget::InitParams::TYPE_WINDOW);
++  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
++  params.native_widget = new DesktopNativeWidgetAura(&second);
++  params.bounds = gfx::Rect(50, 50, 50, 50);
++  second.Init(params);
++  second.Show();
++
++  ui::X11EventSource::GetInstance()->DispatchXEvents();
++
++  MouseEventRecorder first_recorder, second_recorder;
++  first.GetNativeWindow()->AddPreTargetHandler(&first_recorder);
++  second.GetNativeWindow()->AddPreTargetHandler(&second_recorder);
++
++  // Dispatch an event on |first|. Verify it gets the event.
++  ui::ScopedXI2Event event;
++  event.InitGenericButtonEvent(kPointerDeviceId, ui::ET_MOUSEWHEEL,
++                               gfx::Point(50, 50), ui::EF_NONE);
++  DispatchSingleEventToWidget(event, &first);
++  ASSERT_EQ(1u, first_recorder.mouse_events().size());
++  EXPECT_EQ(ui::ET_MOUSEWHEEL, first_recorder.mouse_events()[0].type());
++  EXPECT_EQ(gfx::Point(25, 25).ToString(),
++            first_recorder.mouse_events()[0].location().ToString());
++  ASSERT_EQ(0u, second_recorder.mouse_events().size());
++
++  first_recorder.Reset();
++  second_recorder.Reset();
++
++  // Set a capture on |second|, and dispatch the same event to |first|. This
++  // event should reach |second| instead.
++  PretendCapture(&second);
++  event.InitGenericButtonEvent(kPointerDeviceId, ui::ET_MOUSEWHEEL,
++                               gfx::Point(50, 50), ui::EF_NONE);
++  DispatchSingleEventToWidget(event, &first);
++
++  ASSERT_EQ(0u, first_recorder.mouse_events().size());
++  ASSERT_EQ(1u, second_recorder.mouse_events().size());
++  EXPECT_EQ(ui::ET_MOUSEWHEEL, second_recorder.mouse_events()[0].type());
++  EXPECT_EQ(gfx::Point(-25, -25).ToString(),
++            second_recorder.mouse_events()[0].location().ToString());
++
++  PretendCapture(nullptr);
++  first.GetNativeWindow()->RemovePreTargetHandler(&first_recorder);
++  second.GetNativeWindow()->RemovePreTargetHandler(&second_recorder);
++}
++
+ }  // namespace views
+--- a/ui/views/widget/desktop_aura/x11_topmost_window_finder.cc
++++ b/ui/views/widget/desktop_aura/x11_topmost_window_finder.cc
+@@ -21,7 +21,7 @@ X11TopmostWindowFinder::~X11TopmostWindo
+ aura::Window* X11TopmostWindowFinder::FindLocalProcessWindowAt(
+     const gfx::Point& screen_loc,
+     const std::set<aura::Window*>& ignore) {
+-  screen_loc_ = screen_loc;
++  screen_loc_ = DIPToScreenPoint(screen_loc);
+   ignore_ = ignore;
+ 
+   std::vector<aura::Window*> local_process_windows =
+@@ -41,7 +41,7 @@ aura::Window* X11TopmostWindowFinder::Fi
+ }
+ 
+ XID X11TopmostWindowFinder::FindWindowAt(const gfx::Point& screen_loc) {
+-  screen_loc_ = screen_loc;
++  screen_loc_ = DIPToScreenPoint(screen_loc);
+   ui::EnumerateTopLevelWindows(this);
+   return toplevel_;
+ }

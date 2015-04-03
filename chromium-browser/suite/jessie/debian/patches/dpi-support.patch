@@ -1,0 +1,171 @@
+--- a/chrome/browser/ui/gtk/tabs/tab_renderer_gtk.cc
++++ b/chrome/browser/ui/gtk/tabs/tab_renderer_gtk.cc
+@@ -43,6 +43,10 @@
+ #include "ui/gfx/platform_font_pango.h"
+ #include "ui/gfx/skbitmap_operations.h"
+ 
++#include <stdio.h>
++#include <unistd.h>
++#include <errno.h>
++
+ using content::WebContents;
+ 
+ namespace {
+@@ -1185,6 +1189,24 @@ gboolean TabRendererGtk::OnLeaveNotifyEv
+   return FALSE;
+ }
+ 
++static int getFontPixelSize(int screenNumber) {
++  char envvar[80];
++  snprintf(envvar, 79, "SCREEN%dDPISCALE=", screenNumber);
++
++  for (char **cursor=environ; cursor != NULL; cursor++) {
++    char *errorPosition;
++    if (strncmp(*cursor, envvar, strlen(envvar)) == 0) {
++	  errno = 0;
++      int result = (int) strtol(*cursor + strlen(envvar), &errorPosition, 10);
++      if (*errorPosition == '\0') {
++        return std::max(1, std::min(16, result)) * kFontPixelSize;  // Multiply by scaling factor.
++      }
++    }
++  }
++  printf("No useful environment var found. Using default.\n");
++  return kFontPixelSize;
++}
++
+ // static
+ void TabRendererGtk::InitResources() {
+   if (initialized_)
+@@ -1206,7 +1228,7 @@ void TabRendererGtk::InitResources() {
+   close_button_height_ = gdk_pixbuf_get_height(tab_close);
+ 
+   const gfx::Font& base_font = rb.GetFont(ui::ResourceBundle::BaseFont);
+-  title_font_ = new gfx::Font(base_font.GetFontName(), kFontPixelSize);
++  title_font_ = new gfx::Font(base_font.GetFontName(), getFontPixelSize(0));
+   title_font_height_ = title_font_->GetHeight();
+ 
+   initialized_ = true;
+--- a/ui/base/layout.cc
++++ b/ui/base/layout.cc
+@@ -4,6 +4,8 @@
+ 
+ #include "ui/base/layout.h"
+ 
++#include <stdio.h>
++
+ #include <algorithm>
+ #include <cmath>
+ #include <limits>
+@@ -91,6 +93,7 @@ void SetSupportedScaleFactors(
+           g_supported_scale_factors->begin();
+        it != g_supported_scale_factors->end(); ++it) {
+     scales.push_back(GetImageScale(*it));
++	printf("scale factor supported: %f\n", GetImageScale(*it));
+   }
+   gfx::ImageSkia::SetSupportedScales(scales);
+ }
+@@ -113,6 +116,7 @@ ScaleFactor GetSupportedScaleFactor(floa
+     }
+   }
+   DCHECK_NE(closest_match, SCALE_FACTOR_NONE);
++  printf("GetSupportedScaleFactor %f closest is %f\n", scale, closest_match);
+   return closest_match;
+ }
+ 
+@@ -151,8 +155,10 @@ ScopedSetSupportedScaleFactors::ScopedSe
+   if (g_supported_scale_factors) {
+     original_scale_factors_ =
+         new std::vector<ScaleFactor>(*g_supported_scale_factors);
++	printf("ScopedSetSupportedScaleFactors::ScopedSetSupportedScaleFactors not g_supported_scale_factors\n");
+   } else {
+     original_scale_factors_ = NULL;
++	printf("ScopedSetSupportedScaleFactors::ScopedSetSupportedScaleFactors YES g_supported_scale_factors\n");
+   }
+   SetSupportedScaleFactors(new_scale_factors);
+ }
+--- a/ui/base/resource/resource_bundle_gtk.cc
++++ b/ui/base/resource/resource_bundle_gtk.cc
+@@ -68,6 +68,10 @@ void ResourceBundle::LoadCommonResources
+   AddDataPackFromPath(GetResourcesPakFilePath(
+                       "chrome_100_percent.pak"),
+                       SCALE_FACTOR_100P);
++  if (ui::IsScaleFactorSupported(SCALE_FACTOR_200P)) {
++    AddOptionalDataPackFromPath(GetResourcesPakFilePath(
++        "chrome_200_percent.pak"), SCALE_FACTOR_200P);
++  }
+ }
+ 
+ gfx::Image& ResourceBundle::GetNativeImageNamed(int resource_id, ImageRTL rtl) {
+--- a/ui/gfx/display.cc
++++ b/ui/gfx/display.cc
+@@ -16,6 +16,10 @@
+ #include "ui/gfx/size_conversions.h"
+ #include "ui/gfx/switches.h"
+ 
++#include <stdio.h>
++#include <unistd.h>
++#include <errno.h>
++
+ namespace gfx {
+ namespace {
+ 
+@@ -26,12 +30,32 @@ bool HasForceDeviceScaleFactorImpl() {
+ 
+ float GetForcedDeviceScaleFactorImpl() {
+   double scale_in_double = 1.0;
++  printf("GetForcedDeviceScaleFactorImpl starting with scale %lf\n", scale_in_double);
++
++  char envvar[80];
++  snprintf(envvar, 79, "SCREEN%dDPISCALE=", 0); // zero?
++
++  for (char **cursor=environ; cursor != NULL; cursor++) {
++    char *errorPosition;
++    if (strncmp(*cursor, envvar, strlen(envvar)) == 0) {
++      errno = 0;
++      double result = strtold(*cursor + strlen(envvar), &errorPosition);
++      if (*errorPosition == '\0') {
++        scale_in_double = std::max(1.0, std::min(2.0, result));
++        printf("GetForcedDeviceScaleFactorImpl factor set to %lf from environment\n", scale_in_double);
++      }
++    }
++  }
++
++  printf("GetForcedDeviceScaleFactorImpl factor set from environment, not maybe overriding from command line\n");
+   if (HasForceDeviceScaleFactorImpl()) {
++    printf("GetForcedDeviceScaleFactorImpl has HasForceDeviceScaleFactorImpl\n");
+     std::string value = CommandLine::ForCurrentProcess()->
+         GetSwitchValueASCII(switches::kForceDeviceScaleFactor);
+     if (!base::StringToDouble(value, &scale_in_double))
+       LOG(ERROR) << "Failed to parse the default device scale factor:" << value;
+   }
++  printf("GetForcedDeviceScaleFactorImpl factor finally set to %lf\n", scale_in_double);
+   return static_cast<float>(scale_in_double);
+ }
+ 
+@@ -46,6 +70,7 @@ const int64 Display::kInvalidDisplayID =
+ float Display::GetForcedDeviceScaleFactor() {
+   static const float kForcedDeviceScaleFactor =
+       GetForcedDeviceScaleFactorImpl();
++
+   return kForcedDeviceScaleFactor;
+ }
+ 
+--- a/ui/gfx/screen_gtk.cc
++++ b/ui/gfx/screen_gtk.cc
+@@ -10,6 +10,8 @@
+ #include "base/logging.h"
+ #include "ui/gfx/display.h"
+ 
++#include <stdio.h>
++
+ namespace {
+ 
+ bool GetScreenWorkArea(gfx::Rect* out_rect) {
+@@ -182,6 +184,7 @@ class ScreenGtk : public gfx::Screen {
+   // Returns the primary display.
+   virtual gfx::Display GetPrimaryDisplay() const OVERRIDE {
+     GdkScreen* screen = gdk_screen_get_default();
++	if (screen == NULL) { printf("gdk_screen_get_default() returned NULL\n"); }
+     gint primary_monitor_index = gdk_screen_get_primary_monitor(screen);
+     // TODO(oshima): Implement Observer.
+     return GetDisplayForMonitorNum(screen, primary_monitor_index);

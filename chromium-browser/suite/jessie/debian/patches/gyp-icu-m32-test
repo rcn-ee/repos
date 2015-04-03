@@ -1,0 +1,15 @@
+Description: Avoid "echo |notexist" IO error.
+Author: Chad Miller <chad.miller@canonical.com>
+
+
+--- a/third_party/icu/icu.gyp
++++ b/third_party/icu/icu.gyp
+@@ -35,7 +35,7 @@
+         'target_conditions': [
+           ['_toolset=="host"', {
+             'variables': {
+-              'm32flag': '<!((echo | $(echo ${CXX_host:-$(which g++)}) -m32 -E - > /dev/null 2>&1) && echo "-m32" || true)',
++              'm32flag': '<!(($(echo ${CXX_host:-$(which g++)}) -m32 -E - </dev/null > /dev/null 2>&1) && echo "-m32" || true)',
+             },
+             'cflags': [ '<(m32flag)' ],
+             'ldflags': [ '<(m32flag)' ],

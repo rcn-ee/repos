@@ -1,0 +1,97 @@
+--- a/components/search_engines/prepopulated_engines.json
++++ b/components/search_engines/prepopulated_engines.json
+@@ -14,6 +14,7 @@
+ //    88, 89, 91+
+ //
+ // IDs > 1000 are reserved for distribution custom engines.
++// 1001: DuckDuckGo
+ //
+ // NOTES:
+ //   - CHANGE THE ABOVE NUMBERS IF YOU ADD A NEW ENGINE; ID conflicts = bad!
+@@ -26,7 +27,7 @@
+   "int_variables": {
+     // The following id is for UMA stats only. Please update it if you add new
+     // engines outside the current range or it will not be counted in stats.
+-    "kMaxPrepopulatedEngineID": 90,
++    "kMaxPrepopulatedEngineID": 1001,
+ 
+     // Increment this if you change the data in ways that mean users with
+     // existing data should get a new version.
+@@ -105,6 +106,16 @@
+       "id": 68
+     },
+ 
++    "duckduckgo": {
++      "name": "DuckDuckGo",
++      "keyword": "duckduckgo.com",
++      "favicon_url": "https://duckduckgo.com/favicon.ico",
++      "search_url": "https://duckduckgo.com/?q={searchTerms}&t=canonical",
++      "suggest_url": "https://duckduckgo.com/ac/?q={searchTerms}&type=list",
++      "type": "SEARCH_ENGINE_DUCKDUCKGO",
++      "id": 1001
++    },
++
+     "google": {
+       "name": "Google",
+       "keyword": "google.com",
+--- a/components/search_engines/search_engine_type.h
++++ b/components/search_engines/search_engine_type.h
+@@ -22,6 +22,7 @@ enum SearchEngineType {
+   SEARCH_ENGINE_DAUM,
+   SEARCH_ENGINE_DELFI,
+   SEARCH_ENGINE_DELTA,
++  SEARCH_ENGINE_DUCKDUCKGO,
+   SEARCH_ENGINE_FUNMOODS,
+   SEARCH_ENGINE_GOO,
+   SEARCH_ENGINE_GOOGLE,
+--- a/components/search_engines/template_url_prepopulate_data.cc
++++ b/components/search_engines/template_url_prepopulate_data.cc
+@@ -49,7 +49,7 @@ namespace {
+ 
+ // Default (for countries with no better engine set)
+ const PrepopulatedEngine* engines_default[] =
+-    { &google, &bing, &yahoo, };
++    { &google, &bing, &yahoo, &duckduckgo, };
+ 
+ // United Arab Emirates
+ const PrepopulatedEngine* engines_AE[] =
+@@ -141,7 +141,7 @@ const PrepopulatedEngine* engines_CZ[] =
+ 
+ // Germany
+ const PrepopulatedEngine* engines_DE[] =
+-    { &google, &bing, &yahoo_de };
++    { &google, &bing, &yahoo_de, &duckduckgo, };
+ 
+ // Denmark
+ const PrepopulatedEngine* engines_DK[] =
+@@ -181,11 +181,11 @@ const PrepopulatedEngine* engines_FI[] =
+ 
+ // France
+ const PrepopulatedEngine* engines_FR[] =
+-    { &google, &bing, &yahoo_fr, };
++    { &google, &bing, &yahoo_fr, &duckduckgo, };
+ 
+ // United Kingdom
+ const PrepopulatedEngine* engines_GB[] =
+-    { &google, &bing, &yahoo_uk, &ask_uk, };
++    { &google, &bing, &yahoo_uk, &ask_uk, &duckduckgo, };
+ 
+ // Greece
+ const PrepopulatedEngine* engines_GR[] =
+@@ -453,7 +453,7 @@ const PrepopulatedEngine* engines_UA[] =
+ 
+ // United States
+ const PrepopulatedEngine* engines_US[] =
+-    { &google, &bing, &yahoo, &aol, &ask, };
++    { &google, &bing, &yahoo, &aol, &ask, &duckduckgo, };
+ 
+ // Uruguay
+ const PrepopulatedEngine* engines_UY[] =
+@@ -481,6 +481,7 @@ const PrepopulatedEngine* engines_ZW[] =
+ 
+ // A list of all the engines that we know about.
+ const PrepopulatedEngine* kAllEngines[] = {
++  &duckduckgo,
+   // Prepopulated engines:
+   &aol,          &ask,          &ask_br,       &ask_uk,       &baidu,
+   &bing,         &daum,         &google,       &kvasir,       &mail_ru,

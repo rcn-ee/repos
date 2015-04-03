@@ -1,0 +1,323 @@
+description: don't set sse2 compiler flags on i386
+author: Michael Gilbert <mgilbert@debian.org>
+debian-bug: http://bugs.debian.org/750361
+
+--- a/build/common.gypi
++++ b/build/common.gypi
+@@ -3771,8 +3771,6 @@
+                 # http://crbug.com/313032 for an example where this has "bit"
+                 # us in the past.
+                 'cflags': [
+-                  '-msse2',
+-                  '-mfpmath=sse',
+                   '-mmmx',  # Allows mmintrin.h for MMX intrinsics.
+                   '-m32',
+                 ],
+--- a/media/base/sinc_resampler.cc
++++ b/media/base/sinc_resampler.cc
+@@ -83,7 +83,7 @@
+ 
+ #include "base/logging.h"
+ 
+-#if defined(ARCH_CPU_X86_FAMILY)
++#if defined(__x86_64__)
+ #include <xmmintrin.h>
+ #define CONVOLVE_FUNC Convolve_SSE
+ #elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
+@@ -334,7 +334,7 @@ float SincResampler::Convolve_C(const fl
+       kernel_interpolation_factor * sum2);
+ }
+ 
+-#if defined(ARCH_CPU_X86_FAMILY)
++#if defined(__x86_64__)
+ float SincResampler::Convolve_SSE(const float* input_ptr, const float* k1,
+                                   const float* k2,
+                                   double kernel_interpolation_factor) {
+--- a/media/base/sinc_resampler.h
++++ b/media/base/sinc_resampler.h
+@@ -89,7 +89,7 @@ class MEDIA_EXPORT SincResampler {
+   // ARM, NEON support is chosen at compile time based on compilation flags.
+   static float Convolve_C(const float* input_ptr, const float* k1,
+                           const float* k2, double kernel_interpolation_factor);
+-#if defined(ARCH_CPU_X86_FAMILY)
++#if defined(__x86_64__)
+   static float Convolve_SSE(const float* input_ptr, const float* k1,
+                             const float* k2,
+                             double kernel_interpolation_factor);
+--- a/media/base/sinc_resampler_perftest.cc
++++ b/media/base/sinc_resampler_perftest.cc
+@@ -21,7 +21,7 @@ static const double kKernelInterpolation
+ static void DoNothing(int frames, float* destination) {}
+ 
+ // Define platform independent function name for Convolve* tests.
+-#if defined(ARCH_CPU_X86_FAMILY)
++#if defined(__x86_64__)
+ #define CONVOLVE_FUNC Convolve_SSE
+ #elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
+ #define CONVOLVE_FUNC Convolve_NEON
+--- a/media/base/sinc_resampler_unittest.cc
++++ b/media/base/sinc_resampler_unittest.cc
+@@ -151,7 +151,7 @@ TEST(SincResamplerTest, DISABLED_SetRati
+ 
+ 
+ // Define platform independent function name for Convolve* tests.
+-#if defined(ARCH_CPU_X86_FAMILY)
++#if defined(__x86_64__)
+ #define CONVOLVE_FUNC Convolve_SSE
+ #elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
+ #define CONVOLVE_FUNC Convolve_NEON
+--- a/media/base/vector_math.cc
++++ b/media/base/vector_math.cc
+@@ -11,7 +11,7 @@
+ #include "build/build_config.h"
+ 
+ // NaCl does not allow intrinsics.
+-#if defined(ARCH_CPU_X86_FAMILY) && !defined(OS_NACL)
++#if defined(__x86_64__) && !defined(OS_NACL)
+ #include <xmmintrin.h>
+ // Don't use custom SSE versions where the auto-vectorized C version performs
+ // better, which is anywhere clang is used.
+@@ -89,7 +89,7 @@ std::pair<float, float> EWMAAndMaxPower_
+   return result;
+ }
+ 
+-#if defined(ARCH_CPU_X86_FAMILY) && !defined(OS_NACL)
++#if defined(__x86_64__) && !defined(OS_NACL)
+ void FMUL_SSE(const float src[], float scale, int len, float dest[]) {
+   const int rem = len % 4;
+   const int last_index = len - rem;
+--- a/media/base/vector_math_perftest.cc
++++ b/media/base/vector_math_perftest.cc
+@@ -80,7 +80,7 @@ class VectorMathPerfTest : public testin
+ };
+ 
+ // Define platform dependent function names for SIMD optimized methods.
+-#if defined(ARCH_CPU_X86_FAMILY)
++#if defined(__x86_64__)
+ #define FMAC_FUNC FMAC_SSE
+ #define FMUL_FUNC FMUL_SSE
+ #define EWMAAndMaxPower_FUNC EWMAAndMaxPower_SSE
+--- a/media/base/vector_math_testing.h
++++ b/media/base/vector_math_testing.h
+@@ -19,7 +19,7 @@ MEDIA_EXPORT void FMUL_C(const float src
+ MEDIA_EXPORT std::pair<float, float> EWMAAndMaxPower_C(
+     float initial_value, const float src[], int len, float smoothing_factor);
+ 
+-#if defined(ARCH_CPU_X86_FAMILY) && !defined(OS_NACL)
++#if defined(__x86_64__) && !defined(OS_NACL)
+ MEDIA_EXPORT void FMAC_SSE(const float src[], float scale, int len,
+                            float dest[]);
+ MEDIA_EXPORT void FMUL_SSE(const float src[], float scale, int len,
+--- a/media/base/vector_math_unittest.cc
++++ b/media/base/vector_math_unittest.cc
+@@ -73,7 +73,7 @@ TEST_F(VectorMathTest, FMAC) {
+     VerifyOutput(kResult);
+   }
+ 
+-#if defined(ARCH_CPU_X86_FAMILY)
++#if defined(__x86_64__)
+   {
+     SCOPED_TRACE("FMAC_SSE");
+     FillTestVectors(kInputFillValue, kOutputFillValue);
+@@ -114,7 +114,7 @@ TEST_F(VectorMathTest, FMUL) {
+     VerifyOutput(kResult);
+   }
+ 
+-#if defined(ARCH_CPU_X86_FAMILY)
++#if defined(__x86_64__)
+   {
+     SCOPED_TRACE("FMUL_SSE");
+     FillTestVectors(kInputFillValue, kOutputFillValue);
+@@ -222,7 +222,7 @@ class EWMATestScenario {
+       EXPECT_NEAR(expected_max_, result.second, 0.0000001f);
+     }
+ 
+-#if defined(ARCH_CPU_X86_FAMILY)
++#if defined(__x86_64__)
+     {
+       SCOPED_TRACE("EWMAAndMaxPower_SSE");
+       const std::pair<float, float>& result = vector_math::EWMAAndMaxPower_SSE(
+--- a/media/base/yuv_convert.cc
++++ b/media/base/yuv_convert.cc
+@@ -27,7 +27,7 @@
+ #include "media/base/simd/filter_yuv.h"
+ #include "media/base/simd/yuv_to_rgb_table.h"
+ 
+-#if defined(ARCH_CPU_X86_FAMILY)
++#if defined(__x86_64__)
+ #if defined(COMPILER_MSVC)
+ #include <intrin.h>
+ #else
+--- a/media/base/yuv_convert.h
++++ b/media/base/yuv_convert.h
+@@ -15,7 +15,7 @@
+ // hide the versions implemented with heavy use of MMX intrinsics.
+ // TODO(wolenetz): Use MMX intrinsics when compiling win64 with Visual
+ // Studio 2012? http://crbug.com/173450
+-#if defined(ARCH_CPU_X86_FAMILY) && \
++#if defined(__x86_64__) && \
+     !(defined(ARCH_CPU_X86_64) && defined(COMPILER_MSVC))
+ #define MEDIA_MMX_INTRINSICS_AVAILABLE
+ #endif
+--- a/media/base/yuv_convert_unittest.cc
++++ b/media/base/yuv_convert_unittest.cc
+@@ -886,6 +886,6 @@ TEST(YUVConvertTest, LinearScaleYUVToRGB
+ 
+ #endif  // defined(ARCH_CPU_X86_64)
+ 
+-#endif  // defined(ARCH_CPU_X86_FAMILY)
++#endif  // defined(__x86_64__)
+ 
+ }  // namespace media
+--- a/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp
++++ b/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp
+@@ -39,7 +39,7 @@
+ #include "platform/audio/VectorMath.h"
+ #include "wtf/CPU.h"
+ 
+-#if (CPU(X86) || CPU(X86_64)) && !(OS(MACOSX) || USE(WEBAUDIO_IPP))
++#if (CPU(X86_64)) && !(OS(MACOSX) || USE(WEBAUDIO_IPP))
+ #include <emmintrin.h>
+ #endif
+ 
+@@ -102,7 +102,7 @@ void DirectConvolver::process(AudioFloat
+ #endif // CPU(X86)
+ #else
+     size_t i = 0;
+-#if CPU(X86) || CPU(X86_64)
++#if CPU(X86_64)
+     // Convolution using SSE2. Currently only do this if both |kernelSize| and |framesToProcess|
+     // are multiples of 4. If not, use the straightforward loop below.
+ 
+@@ -412,7 +412,7 @@ void DirectConvolver::process(AudioFloat
+         }
+         destP[i++] = sum;
+     }
+-#if CPU(X86) || CPU(X86_64)
++#if CPU(X86_64)
+     }
+ #endif
+ #endif // OS(MACOSX)
+--- a/third_party/WebKit/Source/platform/audio/SincResampler.cpp
++++ b/third_party/WebKit/Source/platform/audio/SincResampler.cpp
+@@ -36,7 +36,7 @@
+ #include "wtf/CPU.h"
+ #include "wtf/MathExtras.h"
+ 
+-#if CPU(X86) || CPU(X86_64)
++#if CPU(X86_64)
+ #include <emmintrin.h>
+ #endif
+ 
+@@ -261,7 +261,7 @@ void SincResampler::process(AudioSourceP
+             {
+                 float input;
+ 
+-#if CPU(X86) || CPU(X86_64)
++#if CPU(X86_64)
+                 // If the sourceP address is not 16-byte aligned, the first several frames (at most three) should be processed seperately.
+                 while ((reinterpret_cast<uintptr_t>(inputP) & 0x0F) && n) {
+                     CONVOLVE_ONE_SAMPLE
+--- a/third_party/WebKit/Source/platform/audio/VectorMath.cpp
++++ b/third_party/WebKit/Source/platform/audio/VectorMath.cpp
+@@ -35,7 +35,7 @@
+ #include <Accelerate/Accelerate.h>
+ #endif
+ 
+-#if CPU(X86) || CPU(X86_64)
++#if CPU(X86_64)
+ #include <emmintrin.h>
+ #endif
+ 
+@@ -125,7 +125,7 @@ void vsma(const float* sourceP, int sour
+ {
+     int n = framesToProcess;
+ 
+-#if CPU(X86) || CPU(X86_64)
++#if CPU(X86_64)
+     if ((sourceStride == 1) && (destStride == 1)) {
+         float k = *scale;
+ 
+@@ -198,7 +198,7 @@ void vsmul(const float* sourceP, int sou
+ {
+     int n = framesToProcess;
+ 
+-#if CPU(X86) || CPU(X86_64)
++#if CPU(X86_64)
+     if ((sourceStride == 1) && (destStride == 1)) {
+         float k = *scale;
+ 
+@@ -269,7 +269,7 @@ void vsmul(const float* sourceP, int sou
+         sourceP += sourceStride;
+         destP += destStride;
+     }
+-#if CPU(X86) || CPU(X86_64)
++#if CPU(X86_64)
+     }
+ #endif
+ }
+@@ -278,7 +278,7 @@ void vadd(const float* source1P, int sou
+ {
+     int n = framesToProcess;
+ 
+-#if CPU(X86) || CPU(X86_64)
++#if CPU(X86_64)
+     if ((sourceStride1 ==1) && (sourceStride2 == 1) && (destStride == 1)) {
+         // If the sourceP address is not 16-byte aligned, the first several frames (at most three) should be processed separately.
+         while ((reinterpret_cast<size_t>(source1P) & 0x0F) && n) {
+@@ -381,7 +381,7 @@ void vadd(const float* source1P, int sou
+         source2P += sourceStride2;
+         destP += destStride;
+     }
+-#if CPU(X86) || CPU(X86_64)
++#if CPU(X86_64)
+     }
+ #endif
+ }
+@@ -391,7 +391,7 @@ void vmul(const float* source1P, int sou
+ 
+     int n = framesToProcess;
+ 
+-#if CPU(X86) || CPU(X86_64)
++#if CPU(X86_64)
+     if ((sourceStride1 == 1) && (sourceStride2 == 1) && (destStride == 1)) {
+         // If the source1P address is not 16-byte aligned, the first several frames (at most three) should be processed separately.
+         while ((reinterpret_cast<uintptr_t>(source1P) & 0x0F) && n) {
+@@ -464,7 +464,7 @@ void vmul(const float* source1P, int sou
+ void zvmul(const float* real1P, const float* imag1P, const float* real2P, const float* imag2P, float* realDestP, float* imagDestP, size_t framesToProcess)
+ {
+     unsigned i = 0;
+-#if CPU(X86) || CPU(X86_64)
++#if CPU(X86_64)
+     // Only use the SSE optimization in the very common case that all addresses are 16-byte aligned.
+     // Otherwise, fall through to the scalar code below.
+     if (!(reinterpret_cast<uintptr_t>(real1P) & 0x0F)
+@@ -522,7 +522,7 @@ void vsvesq(const float* sourceP, int so
+     int n = framesToProcess;
+     float sum = 0;
+ 
+-#if CPU(X86) || CPU(X86_64)
++#if CPU(X86_64)
+     if (sourceStride == 1) {
+         // If the sourceP address is not 16-byte aligned, the first several frames (at most three) should be processed separately.
+         while ((reinterpret_cast<uintptr_t>(sourceP) & 0x0F) && n) {
+@@ -587,7 +587,7 @@ void vmaxmgv(const float* sourceP, int s
+     int n = framesToProcess;
+     float max = 0;
+ 
+-#if CPU(X86) || CPU(X86_64)
++#if CPU(X86_64)
+     if (sourceStride == 1) {
+         // If the sourceP address is not 16-byte aligned, the first several frames (at most three) should be processed separately.
+         while ((reinterpret_cast<uintptr_t>(sourceP) & 0x0F) && n) {
+--- a/third_party/qcms/qcms.gyp
++++ b/third_party/qcms/qcms.gyp
+@@ -31,7 +31,7 @@
+       'msvs_disabled_warnings': [ 4018 ],
+ 
+       'conditions': [
+-        ['target_arch=="ia32" or target_arch=="x64"', {
++        ['target_arch=="x64"', {
+           'defines': [
+             'SSE2_ENABLE',
+           ],

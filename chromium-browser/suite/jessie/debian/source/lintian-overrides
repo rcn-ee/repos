@@ -1,0 +1,21 @@
+# Sandbox program is a security measure, and well trusted.
+chromium-browser source: setuid-binary usr/lib/chromium-browser/chromium-browser-sandbox 4755 root/root
+
+ancient-autotools-helper-file
+outdated-autotools-helper-file
+
+source-is-missing *.js
+source-is-missing *test*
+source-is-missing *sample*
+source-is-missing *Tests*
+source-is-missing *demos/google/*
+source-is-missing third_party/swig/linux/swig
+source-is-missing third_party/skia/platform_tools/android/bin/linux/*
+
+source-contains-unsafe-symlink third_party/mesa/src/src/gallium/state_trackers/d3d1x/w32api
+
+# Not a license. It's a warning about licenses.
+license-problem-non-free-RFC native_client/NOTICE
+# RFC text, not used in packaging.
+license-problem-non-free-RFC-BCP78 third_party/libsrtp/srtp/doc/rfc3711.txt
+

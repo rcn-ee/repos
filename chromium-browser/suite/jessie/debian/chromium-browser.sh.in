@@ -1,0 +1,205 @@
+#!/bin/bash
+
+# Chromium launcher
+
+# Authors:
+#  Chad Miller <chad.miller@canonical.com>
+#  Fabien Tassin <fta@sofaraway.org>
+# License: GPLv2 or later
+
+PLUGIN_PARAMETERS=""
+
+discover_registration () {
+	local FILE_NAME
+	local PLUGIN_NAME
+	local VERSION
+	local VISIBLE_VERSION
+	local DESCRIPTION
+	local MIME_TYPES
+
+	registration_file=$1
+	option_prefix=$2
+
+	test -f "${registration_file}" || return 1
+	. "${registration_file}" 
+
+	test "$VERSION" || return 2
+	test "$FILE_NAME" || return 3
+
+	echo "$PLUGIN_PARAMETERS" |grep -- "--${option_prefix}-path=" >/dev/null && return 4
+
+	PLUGIN_PARAMETERS="--${option_prefix}-path=${FILE_NAME} --${option_prefix}-version=${VERSION%%-*} ${PLUGIN_PARAMETERS}"
+	return 0
+}
+
+# Explicitly set the PATH to that of ENV_SUPATH in /etc/login.defs and unset
+# various other variables. (LP: #1045986). This can be removed once AppArmor
+# supports environment filtering (LP: #1045985)
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+export ENV=
+export BASH_ENV=
+export CDPATH=
+export GLOBIGNORE=
+export BASH_XTRACEFD=
+
+if grep -E -w ^Features\\s\*:.\*neon /proc/cpuinfo >/dev/null; then
+	export CPU_FEATURE_NEON=1
+fi
+if grep -E -w ^flags\\s\*:.\*sse /proc/cpuinfo >/dev/null; then
+	export CPU_FEATURE_SSE=1
+fi
+export CPU_FEATURES_TESTED=1
+
+readonly APPNAME=chromium-browser
+LIBDIR=/usr/lib/chromium-browser
+GDB=/usr/bin/gdb
+readonly BUILD_DIST="@BUILD_DIST@"
+readonly UPSTREAM_VERSION="@UPSTREAM_VERSION@"
+if test -x "${LIBDIR}/${UPSTREAM_VERSION}"/chromium-browser; then
+	LIBDIR="${LIBDIR}/${UPSTREAM_VERSION}"
+fi
+readonly LIBDIR
+
+usage () {
+  echo "$APPNAME [-h|--help] [-g|--debug] [--temp-profile] [--no-touch-pinch] [options] [URL]"
+  echo
+  echo "        -g or --debug           Start within $GDB"
+  echo "        -h or --help            This help screen"
+  echo "        --temp-profile          Start with a new and temporary profile"
+  echo "        --no-touch-pinch        Disable pinch gestures."
+  echo
+  echo " Other supported options are:"
+  MANWIDTH=80 man chromium-browser | sed -e '1,/OPTIONS/d; /ENVIRONMENT/,$d'
+  echo " See 'man chromium-browser' for more details"
+}
+
+# Work around crbug.com/415681
+lsmod |grep ^i915\  >/dev/null && export LIBGL_DRI3_DISABLE=1
+
+if [ -f /etc/$APPNAME/default ] ; then
+  . /etc/$APPNAME/default
+fi
+
+
+while read f; do
+	. "$f"
+done < <(run-parts --list -- /etc/$APPNAME/customizations)
+test -f ~/.chromium-browser.init && . ~/.chromium-browser.init
+
+# Prefer user defined CHROMIUM_USER_FLAGS (fron env) over system
+# default CHROMIUM_FLAGS (from /etc/$APPNAME/default)
+if test -n "$CHROMIUM_USER_FLAGS"; then
+	echo "WARNING: \$CHROMIUM_USER_FLAGS is deprecated. Instead, update CHROMIUM_FLAGS in ~/.chromium-browser.init or place configuration for all sers in /etc/$APPNAME/customizations/ ."
+	echo "WARNING: Ignoring system flags because \$CHROMIUM_USER_FLAGS is set."
+	echo "CHROMIUM_FLAGS=${CHROMIUM_FLAGS}"
+	echo "CHROMIUM_USER_FLAGS=${CHROMIUM_USER_FLAGS}"
+	CHROMIUM_FLAGS=${CHROMIUM_USER_FLAGS}
+fi
+
+# FFmpeg needs to know where its libs are located
+if [ "Z$LD_LIBRARY_PATH" != Z ] ; then
+  LD_LIBRARY_PATH=$LIBDIR:$LIBDIR/libs:$LD_LIBRARY_PATH
+else
+  LD_LIBRARY_PATH=$LIBDIR:$LIBDIR/libs
+fi
+
+export LD_LIBRARY_PATH
+
+# For the Default Browser detection to work, we need to give access
+# to xdg-settings if it's not present on the system (ensures that the system
+# xdg-utils is recent enough). Also set CHROME_WRAPPER in case xdg-settings is
+# not able to do anything useful
+if [ ! -e /usr/bin/xdg-settings ] ; then
+  export PATH="$LIBDIR:$PATH"
+fi
+export CHROME_WRAPPER="`readlink -f "$0"`"
+export CHROME_DESKTOP=$APPNAME.desktop
+
+# lsb_release is slow so try to source the static file /etc/lsb-release instead
+if [ -e /etc/lsb-release ] ; then
+  . /etc/lsb-release
+fi
+# Fall back to lsb_release if we didn't get the information we need
+if test -z "${DISTRIB_ID:-}"; then
+	DIST=$(lsb_release -si)
+	RELEASE=$(lsb_release -sr)
+else
+	DIST=${DISTRIB_ID}
+	RELEASE=${DISTRIB_RELEASE}
+fi
+
+# Set CHROME_VERSION_EXTRA visible in the About dialog and in about:version
+if [ "$DIST $RELEASE" = "$BUILD_DIST" ] ; then
+  export CHROME_VERSION_EXTRA="$DIST $RELEASE"
+else
+  export CHROME_VERSION_EXTRA="Built on $BUILD_DIST, running on $DIST $RELEASE"
+fi
+
+want_touch_pinch=1
+want_debug=0
+want_temp_profile=0
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -h | --help | -help )
+      usage
+      exit 0 ;;
+    -g | --debug )
+      want_debug=1
+      shift ;;
+    --no-touch-pinch )
+      want_touch_pinch=0
+      shift ;;
+    --temp-profile )
+      want_temp_profile=1
+      shift ;;
+    -- ) # Stop option prcessing
+      shift
+      break ;;
+    * )
+      break ;;
+  esac
+done
+
+discover_registration ${LIBDIR}/pepper/pepper-flash.info ppapi-flash && echo "Pepper Flash detected."
+
+CHROMIUM_FLAGS="${CHROMIUM_FLAGS} ${PLUGIN_PARAMETERS}"
+
+if [ $want_temp_profile -eq 1 ] ; then
+  TEMP_PROFILE=`mktemp -d`
+  CHROMIUM_FLAGS="$CHROMIUM_FLAGS --user-data-dir=$TEMP_PROFILE"
+fi
+
+if [ $want_touch_pinch -eq 1 ] ; then
+  CHROMIUM_FLAGS="$CHROMIUM_FLAGS --enable-pinch"
+fi
+
+if [ $want_debug -eq 1 ] ; then
+  if [ ! -x $GDB ] ; then
+    echo "Sorry, can't find usable $GDB. Please install it."
+    exit 1
+  fi
+  tmpfile=`mktemp /tmp/chromiumargs.XXXXXX` || { echo "Cannot create temporary file" >&2; exit 1; }
+  trap " [ -f \"$tmpfile\" ] && /bin/rm -f -- \"$tmpfile\"" 0 1 2 3 13 15
+  echo "set args $CHROMIUM_FLAGS ${1+"$@"}" > $tmpfile
+  echo "# Env:"
+  echo "#     LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+  echo "#                PATH=$PATH"
+  echo "#            GTK_PATH=$GTK_PATH"
+  echo "# CHROMIUM_USER_FLAGS=$CHROMIUM_USER_FLAGS"
+  echo "#      CHROMIUM_FLAGS=$CHROMIUM_FLAGS"
+  echo "$GDB $LIBDIR/$APPNAME -x $tmpfile"
+  $GDB "$LIBDIR/$APPNAME" -x $tmpfile
+  if [ $want_temp_profile -eq 1 ] ; then
+    rm -rf $TEMP_PROFILE
+  fi
+  exit $?
+else
+  if [ $want_temp_profile -eq 0 ] ; then
+    exec $LIBDIR/$APPNAME $CHROMIUM_FLAGS "$@"
+  else
+    # we can't exec here as we need to clean-up the temporary profile
+    $LIBDIR/$APPNAME $CHROMIUM_FLAGS "$@"
+    rm -rf $TEMP_PROFILE
+  fi
+fi
+

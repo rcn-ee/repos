@@ -1,0 +1,39 @@
+Description: Backport input method. crbug#349163 lp:#1311480 lp:#1309145
+
+--- a/ui/aura/window_targeter.cc
++++ b/ui/aura/window_targeter.cc
+@@ -49,7 +49,8 @@ ui::EventTarget* WindowTargeter::FindTar
+     Window* window = static_cast<Window*>(root);
+     Window* root_window = window->GetRootWindow();
+     const ui::KeyEvent& key = static_cast<const ui::KeyEvent&>(*event);
+-    if (key.key_code() == ui::VKEY_UNKNOWN)
++    if (key.key_code() == ui::VKEY_UNKNOWN &&
++        (key.flags() & ui::EF_IME_FABRICATED_KEY) == 0)
+       return NULL;
+     client::EventClient* event_client = client::GetEventClient(root_window);
+     client::FocusClient* focus_client = client::GetFocusClient(root_window);
+--- a/ui/events/event_constants.h
++++ b/ui/events/event_constants.h
+@@ -85,6 +85,9 @@ enum EventFlags {
+   EF_EXTENDED            = 1 << 8,  // Windows extended key (see WM_KEYDOWN doc)
+   EF_IS_SYNTHESIZED      = 1 << 9,
+   EF_ALTGR_DOWN          = 1 << 10,
++  EF_IME_FABRICATED_KEY  = 1 << 17,  // Key event fabricated by the underlying
++                                    // IME without a user action.
++                                    // (Linux X11 only)
+ };
+ 
+ // Flags specific to mouse events
+--- a/ui/events/x/events_x.cc
++++ b/ui/events/x/events_x.cc
+@@ -328,7 +328,9 @@ int EventFlagsFromNative(const base::Nat
+     case KeyPress:
+     case KeyRelease: {
+       XModifierStateWatcher::GetInstance()->UpdateStateFromEvent(native_event);
+-      return GetEventFlagsFromXState(native_event->xkey.state);
++      const bool fabricated_by_xim = (native_event->xkey.keycode == 0 && native_event->xkey.state == 0);
++      const int ime_fabricated_flag = fabricated_by_xim ? ui::EF_IME_FABRICATED_KEY : 0;
++      return GetEventFlagsFromXState(native_event->xkey.state) | ime_fabricated_flag;
+     }
+     case ButtonPress:
+     case ButtonRelease: {
