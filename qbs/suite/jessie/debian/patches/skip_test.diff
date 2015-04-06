@@ -2,15 +2,15 @@ Description: skip failing TestBlackbox::dependenciesProperty() test
 Author: Dmitry Shachnev <mitya57@debian.org>
 Bug: https://bugreports.qt-project.org/browse/QBS-695
 Forwarded: not-needed
-Last-Update: 2015-03-13
+Last-Update: 2014-10-07
 
 --- a/tests/auto/blackbox/tst_blackbox.cpp
 +++ b/tests/auto/blackbox/tst_blackbox.cpp
-@@ -398,6 +398,7 @@
+@@ -453,6 +453,7 @@
  
  void TestBlackbox::dependenciesProperty()
  {
-+    QSKIP("does not pass on most architectures");
++    SKIP_TEST("does not pass on most architectures");
      QDir::setCurrent(testDataDir + QLatin1String("/dependenciesProperty"));
      QCOMPARE(runQbs(), 0);
-     QFile depsFile(relativeProductBuildDir("product1") + QLatin1String("/product1.deps"));
+     QFile depsFile(productBuildDir("product1") + QLatin1String("/product1.deps"));
