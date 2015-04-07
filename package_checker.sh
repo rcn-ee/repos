@@ -60,37 +60,37 @@ qt5 () {
 	site="http://ftp.de.debian.org/debian/pool/main/e"
 	package_name="extra-cmake-modules" ; package_version="${package_name}_1.8.0-1" ; check_http
 
-	site="http://ftp.de.debian.org/debian/pool/main/q"
-	package_name="qtbase-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-2" ; check_http
-	package_name="qtchooser" ; package_version="${package_name}_52-gae5eeef-1" ; check_http
-	package_name="qtxmlpatterns-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-	package_name="qtdeclarative-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-	package_name="qtscript-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-3" ; check_http
+#	site="http://ftp.de.debian.org/debian/pool/main/q"
+#	package_name="qtbase-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-2" ; check_http
+#	package_name="qtchooser" ; package_version="${package_name}_52-gae5eeef-1" ; check_http
+#	package_name="qtxmlpatterns-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+#	package_name="qtdeclarative-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+#	package_name="qtscript-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-3" ; check_http
 
 	#qtwebkit takes about a half day build...
-	package_name="qtwebkit-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-3" ; check_http
-	package_name="qttools-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+#	package_name="qtwebkit-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-3" ; check_http
+#	package_name="qttools-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 
-	package_name="qtconnectivity-opensource-src" ; package_version="${package_name}_5.4.1-2" ; check_http
-	package_name="qtenginio-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-	package_name="qtgraphicaleffects-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-	package_name="qtimageformats-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-	package_name="qtlocation-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-	package_name="qtmultimedia-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-	package_name="qtquick1-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-	package_name="qtquickcontrols-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-	package_name="qtsensors-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-1" ; check_http
-	package_name="qtserialport-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-	package_name="qtsvg-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-	package_name="qttranslations-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-	package_name="qtwayland-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-	package_name="qtwebkit-examples-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-1" ; check_http
-	package_name="qtwebsockets-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-	package_name="qtx11extras-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
-	package_name="qtdoc-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+#	package_name="qtconnectivity-opensource-src" ; package_version="${package_name}_5.4.1-2" ; check_http
+#	package_name="qtenginio-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+#	package_name="qtgraphicaleffects-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+#	package_name="qtimageformats-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+#	package_name="qtlocation-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+#	package_name="qtmultimedia-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+#	package_name="qtquick1-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+#	package_name="qtquickcontrols-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+#	package_name="qtsensors-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-1" ; check_http
+#	package_name="qtserialport-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+#	package_name="qtsvg-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+#	package_name="qttranslations-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+#	package_name="qtwayland-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+#	package_name="qtwebkit-examples-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-1" ; check_http
+#	package_name="qtwebsockets-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+#	package_name="qtx11extras-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
+#	package_name="qtdoc-opensource-src" ; package_version="${package_name}_5.4.1-1" ; check_http
 
-	package_name="qbs" ; package_version="${package_name}_1.4~7fd456-1" ; check_http
-	package_name="qtcreator" ; package_version="${package_name}_3.3.1+dfsg-1" ; check_http
+#	package_name="qbs" ; package_version="${package_name}_1.4~7fd456-1" ; check_http
+#	package_name="qtcreator" ; package_version="${package_name}_3.3.1+dfsg-1" ; check_http
 }
 
 qt5_kde () {
