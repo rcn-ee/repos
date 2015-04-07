@@ -17,4 +17,4 @@ debian_version="${package_version}-1"
 debian_patch="${debian_pkg_name}_${debian_version}.debian.tar.xz"
 debian_diff=""
 
-jessie_version="~bpo80+20150330+1"
+jessie_version="~bpo80+20150407+1"
