@@ -19,5 +19,4 @@ dl_path="lxqt/pool/main/${reprepro_dir}/"
 debian_version="${package_version}-3"
 debian_patch=""
 
-wheezy_version="~bpo70+20140924+1"
 jessie_version="~bpo80+20150407+1"
