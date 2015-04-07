@@ -19,4 +19,4 @@ dl_path="lxqt/pool/main/${reprepro_dir}/"
 debian_version="${package_version}-9.1"
 debian_patch=""
 
-jessie_version="~bpo80+20150330+1"
+jessie_version="~bpo80+20150407+1"
