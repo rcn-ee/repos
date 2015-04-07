@@ -20,4 +20,4 @@ debian_version="${package_version}-3"
 debian_patch=""
 
 wheezy_version="~bpo70+20140924+1"
-jessie_version="~20150307+1"
+jessie_version="~bpo80+20150407+1"
