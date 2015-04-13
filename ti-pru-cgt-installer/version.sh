@@ -4,7 +4,7 @@
 
 package_name="ti-pru-cgt-installer"
 debian_pkg_name="${package_name}"
-package_version="2.1.0"
+package_version="2.1.1"
 package_source=""
 src_dir=""
 
@@ -17,6 +17,8 @@ debian_version="${package_version}-1"
 debian_untar=""
 debian_patch=""
 
-wheezy_version="~bpo70+20141201+1"
-jessie_version="~20141201+1"
-trusty_version="~20141201+1"
+wheezy_version="~bpo70+20150413+1"
+jessie_version="~bpo80+20150413+1"
+trusty_version="~bpo1404+20150413+1"
+utopic_version="~bpo1410+20150413+1"
+vivid_version="~bpo1504+20150413+1"

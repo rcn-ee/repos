@@ -4,6 +4,8 @@
 
 set -e
 
+package="ti-pru-cgt-installer"
+
 # summary of how this script can be called:
 #        * <prerm> `remove'
 #        * <old-prerm> `upgrade' <new-version>
@@ -48,6 +50,7 @@ remove_all() {
 	wfile="/usr/bin/strippru" ; remove_file
 	wfile="/usr/bin/xrefpru" ; remove_file
 
+	#2.1.1 added: /usr/share/doc/ti/cgt-pru/DefectHistory.txt
 	wdir="/usr/share/doc/ti/cgt-pru/" ; remove_dir
 
 	wfile="/usr/share/man/man1/abspru.1" ; remove_file
@@ -69,6 +72,9 @@ remove_all() {
 	wfile="/usr/share/man/man1/xrefpru.1" ; remove_file
 
 	wdir="/usr/share/ti/cgt-pru/" ; remove_dir
+
+	wdir="/var/cache/${package}/ti_cgt_pru_2.1.0_armlinuxa8hf_busybox_installer.sh" ; remove_file
+	#wdir="/var/cache/${package}/ti_cgt_pru_2.1.1_armlinuxa8hf_busybox_installer.sh" ; remove_file
 }
 
 case "$1" in
