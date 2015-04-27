@@ -68,6 +68,9 @@ setup_repo
 suite="jessie"
 setup_repo
 
+suite="stretch"
+setup_repo
+
 suite="sid"
 setup_repo
 
