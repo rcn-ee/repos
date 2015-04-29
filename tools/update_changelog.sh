@@ -13,6 +13,9 @@ run () {
 	if [ "x${suite}" = "xjessie" ] ; then
 		backport="bpo80+"
 	fi
+	if [ "x${suite}" = "xstretch" ] ; then
+		backport="bpo90+"
+	fi
 	if [ "x${suite}" = "xtrusty" ] ; then
 		backport="bpo1404+"
 	fi
@@ -58,6 +61,15 @@ if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${jessie_version}"
 	cat ${DIR}/version.sh | grep -v jessie_version > ${DIR}/new-version.sh
 	echo "jessie_version=\"~bpo80+${simple_date}+1\"" >> ${DIR}/new-version.sh
+	mv ${DIR}/new-version.sh ${DIR}/version.sh
+	run
+fi
+
+suite="stretch"
+if [ -d ${DIR}/suite/${suite}/ ] ; then
+	rcn_ee_version="${stretch_version}"
+	cat ${DIR}/version.sh | grep -v stretch_version > ${DIR}/new-version.sh
+	echo "stretch_version=\"~bpo90+${simple_date}+1\"" >> ${DIR}/new-version.sh
 	mv ${DIR}/new-version.sh ${DIR}/version.sh
 	run
 fi

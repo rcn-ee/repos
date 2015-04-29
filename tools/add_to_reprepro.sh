@@ -38,6 +38,14 @@ if [ -d suite/${suite}/ ] ; then
 	run
 fi
 
+suite="stretch"
+if [ -d suite/${suite}/ ] ; then
+	repo="${base}${dist}/"
+	deb_arch=armhf
+	rcn_ee_version="${stretch_version}"
+	run
+fi
+
 dist="ubuntu"
 suite="trusty"
 if [ -d suite/${suite}/ ] ; then
