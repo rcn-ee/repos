@@ -58,7 +58,7 @@ qt5 () {
 	package_name="pkg-kde-tools" ; package_version="${package_name}_0.15.16" ; check_http
 
 	site="http://ftp.de.debian.org/debian/pool/main/e"
-	package_name="extra-cmake-modules" ; package_version="${package_name}_1.8.0-1" ; check_http
+	package_name="extra-cmake-modules" ; package_version="${package_name}_5.9.0-1" ; check_http
 
 #	site="http://ftp.de.debian.org/debian/pool/main/q"
 #	package_name="qtbase-opensource-src" ; package_version="${package_name}_5.4.1+dfsg-2" ; check_http
@@ -97,7 +97,7 @@ qt5_kde () {
 	echo "qt5: kde:"
 
 	site="http://ftp.de.debian.org/debian/pool/main/s"
-	package_name="solid" ; package_version="${package_name}_5.8.0-1" ; check_http
+	package_name="solid" ; package_version="${package_name}_5.9.0-1" ; check_http
 
 	site="http://ftp.de.debian.org/debian/pool/main/k"
 	package_name="kcoreaddons" ; package_version="${package_name}_5.8.0-1" ; check_http
