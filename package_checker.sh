@@ -100,7 +100,7 @@ qt5_kde () {
 	package_name="solid" ; package_version="${package_name}_5.9.0-1" ; check_http
 
 	site="http://ftp.de.debian.org/debian/pool/main/k"
-	package_name="kcoreaddons" ; package_version="${package_name}_5.8.0-1" ; check_http
+	package_name="kcoreaddons" ; package_version="${package_name}_5.9.0-1" ; check_http
 	package_name="kguiaddons" ; package_version="${package_name}_5.8.0-1" ; check_http
 	package_name="kwindowsystem" ; package_version="${package_name}_5.8.0-1" ; check_http
 }
