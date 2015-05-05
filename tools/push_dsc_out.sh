@@ -41,3 +41,7 @@ if [ -d suite/${suite}/ ] ; then
 	run
 fi
 
+suite="wily"
+if [ -d suite/${suite}/ ] ; then
+	run
+fi

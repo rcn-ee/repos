@@ -50,3 +50,8 @@ dist="vivid"
 arch="armhf"
 options="--exclude=debfoster"
 setup_update_sbuild
+
+dist="wily"
+arch="armhf"
+options="--exclude=debfoster"
+setup_update_sbuild

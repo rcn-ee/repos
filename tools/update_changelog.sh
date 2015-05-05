@@ -25,7 +25,9 @@ run () {
 	if [ "x${suite}" = "xvivid" ] ; then
 		backport="bpo1504+"
 	fi
-
+	if [ "x${suite}" = "xwily" ] ; then
+		backport="bpo1510+"
+	fi
 
 	if [ "x${debian_version}" = "x" ] ; then
 		echo "${debian_pkg_name} (${package_version}~${backport}${simple_date}+1) ${suite}; urgency=low" > ${wfile}
@@ -98,6 +100,15 @@ if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${vivid_version}"
 	cat ${DIR}/version.sh | grep -v vivid_version > ${DIR}/new-version.sh
 	echo "vivid_version=\"~bpo1504+${simple_date}+1\"" >> ${DIR}/new-version.sh
+	mv ${DIR}/new-version.sh ${DIR}/version.sh
+	run
+fi
+
+suite="wily"
+if [ -d ${DIR}/suite/${suite}/ ] ; then
+	rcn_ee_version="${wily_version}"
+	cat ${DIR}/version.sh | grep -v wily_version > ${DIR}/new-version.sh
+	echo "wily_version=\"~bpo1510+${simple_date}+1\"" >> ${DIR}/new-version.sh
 	mv ${DIR}/new-version.sh ${DIR}/version.sh
 	run
 fi

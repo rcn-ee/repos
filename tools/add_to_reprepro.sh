@@ -71,3 +71,11 @@ if [ -d suite/${suite}/ ] ; then
 	run
 fi
 
+suite="wily"
+if [ -d suite/${suite}/ ] ; then
+	repo="${base}${dist}/"
+	deb_arch=armhf
+	rcn_ee_version="${wily_version}"
+	run
+fi
+

@@ -85,3 +85,6 @@ setup_repo
 
 suite="vivid"
 setup_repo
+
+suite="wily"
+setup_repo

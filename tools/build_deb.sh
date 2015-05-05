@@ -77,3 +77,9 @@ if [ -d suite/${suite}/ ] ; then
 	run
 fi
 
+suite="wily"
+if [ -d suite/${suite}/ ] ; then
+	deb_arch="armhf"
+	run
+fi
+
