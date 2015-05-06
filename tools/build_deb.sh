@@ -52,11 +52,11 @@ if [ -d suite/${suite}/ ] ; then
 	run
 fi
 
-#suite="stretch"
-#if [ -d suite/${suite}/ ] ; then
-#	deb_arch=armhf
-#	run
-#fi
+suite="stretch"
+if [ -d suite/${suite}/ ] ; then
+	deb_arch=armhf
+	run
+fi
 
 dist="ubuntu"
 suite="trusty"

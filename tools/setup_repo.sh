@@ -23,6 +23,7 @@ setup_repo () {
 	echo "ask-passphrase" >> ${apache_dir}/${dist}/conf/options
 
 	#53A22F89 key expires: 2015-07-02
+	#A4C46402 default on 2015-05-06
 	if [ -f ${apache_dir}/${dist}/conf/repos.rcn-ee.net.gpg.key ] ; then
 		rm -f ${apache_dir}/${dist}/conf/repos.rcn-ee.net.gpg.key || true
 	fi
@@ -60,7 +61,7 @@ if [ -f ${apache_dir}/${dist}/conf/distributions ] ; then
 fi
 
 dist="debian"
-key="53A22F89"
+key="A4C46402"
 
 suite="wheezy"
 setup_repo
