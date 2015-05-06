@@ -25,6 +25,11 @@ if [ -d suite/${suite}/ ] ; then
 	run
 fi
 
+suite="stretch"
+if [ -d suite/${suite}/ ] ; then
+	run
+fi
+
 dist="ubuntu"
 suite="trusty"
 if [ -d suite/${suite}/ ] ; then
