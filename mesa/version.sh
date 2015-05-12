@@ -6,7 +6,7 @@ package_name="mesa"
 debian_pkg_name="${package_name}"
 package_version="10.5.5"
 package_source="${package_name}_${package_version}.orig.tar.gz"
-src_dir="Mesa-${package_version}"
+src_dir="${package_name}-${package_version}"
 
 git_repo=""
 git_sha=""
