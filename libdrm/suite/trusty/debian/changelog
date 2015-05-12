@@ -1,8 +1,30 @@
-libdrm (2.4.60-1etnaviv1.1~bpo1404+20150320+1) trusty; urgency=low
+libdrm (2.4.60-3~bpo1404+20150512+1) trusty; urgency=low
 
   * Rebuild for repos.rcn-ee.net
 
- -- Robert Nelson <robertcnelson@gmail.com>  Fri, 20 Mar 2015 11:18:26 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Tue, 12 May 2015 08:34:14 -0500
+
+libdrm (2.4.60-3) unstable; urgency=medium
+
+  [ Timo Aaltonen ]
+  * control: Add a typo in libdrm-tegra0 description.
+
+  [ Julien Cristau ]
+  * Fix FTBFS on kfreebsd: include <sys/sysctl.h> for sysctlbyname, and use
+    -lbsd to make the tests build (they use getopt, and our libbsd-overlay
+    cflags redirect that to bsd_getopt).
+  * Bump shlibs for libraries with new symbols.
+  * Add missing dependency of libdrm-dev on libdrm-tegra0 on arm*.
+  * Let uscan verify tarball signatures.
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 26 Apr 2015 12:21:30 +0200
+
+libdrm (2.4.60-2) experimental; urgency=medium
+
+  [ Maarten Lankhorst ]
+  * Fix ftbfs on armhf.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 08 Apr 2015 09:21:00 +0300
 
 libdrm (2.4.60-1) experimental; urgency=medium
 

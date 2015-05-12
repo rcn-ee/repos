@@ -26,6 +26,7 @@ else
 	NOUVEAU = no
 	# kfreebsd mangles freebsd's sys/types.h
 	confflags += CFLAGS="$(shell pkg-config --cflags libbsd-overlay)"
+	confflags += LDFLAGS="$(shell pkg-config --libs libbsd-overlay)"
 endif
 
 # Intel is only on x86:
@@ -94,9 +95,9 @@ endif
 	dh_strip -s --remaining-packages
 
 override_dh_makeshlibs:
-	dh_makeshlibs -plibdrm2 -V'libdrm2 (>= 2.4.46)' --add-udeb=libdrm2-udeb -- -c4
+	dh_makeshlibs -plibdrm2 -V'libdrm2 (>= 2.4.60)' --add-udeb=libdrm2-udeb -- -c4
 ifeq ($(INTEL), yes)
-	dh_makeshlibs -plibdrm-intel1 -V'libdrm-intel1 (>= 2.4.57)' -- -c4
+	dh_makeshlibs -plibdrm-intel1 -V'libdrm-intel1 (>= 2.4.60)' -- -c4
 endif
 ifeq ($(NOUVEAU), yes)
 	dh_makeshlibs -plibdrm-nouveau2 -V'libdrm-nouveau2 (>= 2.4.38)' -- -c4
@@ -106,7 +107,7 @@ ifeq ($(ARM), yes)
 	dh_makeshlibs -plibdrm-omap1 -V'libdrm-omap1 (>= 2.4.38)' -- -c4
 	dh_makeshlibs -plibdrm-freedreno1 -V'libdrm-freedreno1 (>= 2.4.57)' -- -c4
 	dh_makeshlibs -plibdrm-etnaviv0 -V'libdrm-etnaviv0' -- -c4
-	dh_makeshlibs -plibdrm-exynos1 -V'libdrm-exynos1' -- -c4
+	dh_makeshlibs -plibdrm-exynos1 -V'libdrm-exynos1 (>= 2.4.60)' -- -c4
 	dh_makeshlibs -plibdrm-tegra0 -V'libdrm-tegra0' -- -c4
 endif
 
