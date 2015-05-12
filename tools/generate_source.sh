@@ -19,10 +19,14 @@ if [ ! "x${git_repo}" = "x" ] ; then
 else
 
 	if [ ! "x${dl_package_source}" = "x" ] ; then
-		wget -c ${mirror}/${dl_path}${dl_package_source}
+		wget -c ${mirror}/${dl_path}${dl_package_source} || true
 	else
 		if [ ! "x${package_source}" = "x" ] ; then
-			wget -c ${mirror}/${dl_path}${package_source}
+			wget -c ${mirror}/${dl_path}${package_source} || true
+			if [ ! -f ${package_source} ] ; then
+				wget -c ${incoming_mirror}/${dl_path}${package_source}
+			fi
+
 			if [ ! "x${debian_patch}" = "x" ] ; then
 				wget -c ${mirror}/${dl_path}${debian_patch} || true
 			fi
