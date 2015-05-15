@@ -4,7 +4,7 @@
 export QT_SELECT = 5
 
 %:
-	dh $@ --buildsystem=qmake --parallel
+	dh $@ --buildsystem=qmake --parallel 
 
 
 maintainer-clean:
@@ -17,7 +17,8 @@ maintainer-clean:
 	$(RM) *.upload
  
 checkout: maintainer-clean
-	git clone --depth=1 git@github.com:andrew-bibb/cmst.git checkout; \
+	# git clone --depth=1 git@github.com:andrew-bibb/cmst.git checkout; \
+	git clone --depth=1 git@github.com:siduction-upstream/cmst.git checkout; \
 	cd checkout; \
 	$(RM) -r debian; \
 	cp -a ../debian . ; \
