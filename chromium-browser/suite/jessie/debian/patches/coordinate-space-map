@@ -1,14 +1,3 @@
---- a/chrome/browser/ui/libgtk2ui/gtk2_ui.cc
-+++ b/chrome/browser/ui/libgtk2ui/gtk2_ui.cc
-@@ -678,6 +678,8 @@ Gtk2UI::GetDefaultPangoFontDescription()
- }
- 
- double Gtk2UI::GetFontDPI() const {
-+  return 108.0;  // Scale in display layer, not here. Use internal assumtpion of ~100DPI here.
-+
-   GtkSettings* gtk_settings = gtk_settings_get_default();
-   CHECK(gtk_settings);
-   gint dpi = -1;
 --- a/ui/gfx/display.cc
 +++ b/ui/gfx/display.cc
 @@ -140,7 +140,7 @@ void Display::SetScaleAndBounds(
@@ -51,7 +40,7 @@
  #include "ui/gfx/image/image_skia.h"
  #include "ui/gfx/image/image_skia_rep.h"
  #include "ui/gfx/path.h"
-@@ -131,6 +132,46 @@ const char kX11WindowRoleBubble[] = "bub
+@@ -132,6 +133,46 @@ const char kX11WindowRoleBubble[] = "bub
  
  }  // namespace
  
@@ -98,7 +87,7 @@
  ////////////////////////////////////////////////////////////////////////////////
  // DesktopWindowTreeHostX11, public:
  
-@@ -384,7 +425,7 @@ void DesktopWindowTreeHostX11::ShowMaxim
+@@ -385,7 +426,7 @@ void DesktopWindowTreeHostX11::ShowMaxim
      const gfx::Rect& restored_bounds) {
    ShowWindowWithState(ui::SHOW_STATE_MAXIMIZED);
    // Enforce |restored_bounds_| since calling Maximize() could have reset it.
@@ -107,7 +96,7 @@
  }
  
  bool DesktopWindowTreeHostX11::IsVisible() const {
-@@ -392,7 +433,7 @@ bool DesktopWindowTreeHostX11::IsVisible
+@@ -393,7 +434,7 @@ bool DesktopWindowTreeHostX11::IsVisible
  }
  
  void DesktopWindowTreeHostX11::SetSize(const gfx::Size& requested_size) {
@@ -116,7 +105,7 @@
    bool size_changed = bounds_.size() != size;
    XResizeWindow(xdisplay_, xwindow_, size.width(), size.height());
    bounds_.set_size(size);
-@@ -406,7 +447,8 @@ void DesktopWindowTreeHostX11::StackAtTo
+@@ -407,7 +448,8 @@ void DesktopWindowTreeHostX11::StackAtTo
    XRaiseWindow(xdisplay_, xwindow_);
  }
  
@@ -126,7 +115,7 @@
    gfx::Rect parent_bounds = GetWorkAreaBoundsInScreen();
  
    // If |window_|'s transient parent bounds are big enough to contain |size|,
-@@ -451,7 +493,7 @@ void DesktopWindowTreeHostX11::GetWindow
+@@ -452,7 +494,7 @@ void DesktopWindowTreeHostX11::GetWindow
  }
  
  gfx::Rect DesktopWindowTreeHostX11::GetWindowBoundsInScreen() const {
@@ -135,7 +124,7 @@
  }
  
  gfx::Rect DesktopWindowTreeHostX11::GetClientAreaBoundsInScreen() const {
-@@ -463,7 +505,7 @@ gfx::Rect DesktopWindowTreeHostX11::GetC
+@@ -464,7 +506,7 @@ gfx::Rect DesktopWindowTreeHostX11::GetC
    // Attempts to calculate the rect by asking the NonClientFrameView what it
    // thought its GetBoundsForClientView() were broke combobox drop down
    // placement.
@@ -144,7 +133,7 @@
  }
  
  gfx::Rect DesktopWindowTreeHostX11::GetRestoredBounds() const {
-@@ -472,7 +514,7 @@ gfx::Rect DesktopWindowTreeHostX11::GetR
+@@ -473,7 +515,7 @@ gfx::Rect DesktopWindowTreeHostX11::GetR
    // or restoring bounds, we can record the current bounds before we request
    // maximization, and clear it when we detect a state change.
    if (!restored_bounds_.IsEmpty())
@@ -153,7 +142,7 @@
  
    return GetWindowBoundsInScreen();
  }
-@@ -481,7 +523,7 @@ gfx::Rect DesktopWindowTreeHostX11::GetW
+@@ -482,7 +524,7 @@ gfx::Rect DesktopWindowTreeHostX11::GetW
    std::vector<int> value;
    if (ui::GetIntArrayProperty(x_root_window_, "_NET_WORKAREA", &value) &&
        value.size() >= 4) {
@@ -162,7 +151,7 @@
    }
  
    // Fetch the geometry of the root window.
-@@ -492,10 +534,10 @@ gfx::Rect DesktopWindowTreeHostX11::GetW
+@@ -493,10 +535,10 @@ gfx::Rect DesktopWindowTreeHostX11::GetW
    if (!XGetGeometry(xdisplay_, x_root_window_, &root, &x, &y,
                      &width, &height, &border_width, &depth)) {
      NOTIMPLEMENTED();
@@ -175,7 +164,7 @@
  }
  
  void DesktopWindowTreeHostX11::SetShape(gfx::NativeRegion native_region) {
-@@ -1060,8 +1102,8 @@ void DesktopWindowTreeHostX11::InitX11Wi
+@@ -1061,8 +1103,8 @@ void DesktopWindowTreeHostX11::InitX11Wi
      }
    }
  
@@ -186,69 +175,9 @@
    xwindow_ = XCreateWindow(
        xdisplay_, x_root_window_,
        bounds_.x(), bounds_.y(),
-@@ -1449,7 +1491,7 @@ void DesktopWindowTreeHostX11::DispatchM
-   } else {
-     // Another DesktopWindowTreeHostX11 has installed itself as
-     // capture. Translate the event's location and dispatch to the other.
--    event->ConvertLocationToTarget(window(), g_current_capture->window());
-+    ConvertEventToDifferentHost(event, g_current_capture);
-     g_current_capture->SendEventToProcessor(event);
-   }
- }
-@@ -1457,13 +1499,29 @@ void DesktopWindowTreeHostX11::DispatchM
- void DesktopWindowTreeHostX11::DispatchTouchEvent(ui::TouchEvent* event) {
-   if (g_current_capture && g_current_capture != this &&
-       event->type() == ui::ET_TOUCH_PRESSED) {
--    event->ConvertLocationToTarget(window(), g_current_capture->window());
-+    ConvertEventToDifferentHost(event, g_current_capture);
-     g_current_capture->SendEventToProcessor(event);
-   } else {
-     SendEventToProcessor(event);
-   }
- }
- 
-+void DesktopWindowTreeHostX11::ConvertEventToDifferentHost(
-+    ui::LocatedEvent* located_event,
-+    DesktopWindowTreeHostX11* host) {
-+  DCHECK_NE(this, host);
-+  const gfx::Display display_src =
-+      gfx::Screen::GetNativeScreen()->GetDisplayNearestWindow(window());
-+  const gfx::Display display_dest =
-+      gfx::Screen::GetNativeScreen()->GetDisplayNearestWindow(host->window());
-+  DCHECK_EQ(display_src.device_scale_factor(),
-+            display_dest.device_scale_factor());
-+  gfx::Vector2d offset = GetLocationOnNativeScreen() -
-+                         host->GetLocationOnNativeScreen();
-+  gfx::Point location_in_pixel_in_host = located_event->location() + offset;
-+  located_event->set_location(location_in_pixel_in_host);
-+}
-+
- void DesktopWindowTreeHostX11::ResetWindowRegion() {
-   // If a custom window shape was supplied then apply it.
-   if (custom_window_shape_) {
 --- a/ui/views/widget/desktop_aura/desktop_window_tree_host_x11.h
 +++ b/ui/views/widget/desktop_aura/desktop_window_tree_host_x11.h
-@@ -166,6 +166,7 @@ class VIEWS_EXPORT DesktopWindowTreeHost
-   ui::EventProcessor* GetEventProcessor() override;
- 
-  private:
-+  friend class DesktopWindowTreeHostX11HighDPITest;
-   // Initializes our X11 surface to draw on. This method performs all
-   // initialization related to talking to the X11 server.
-   void InitX11Window(const Widget::InitParams& params);
-@@ -211,6 +212,11 @@ class VIEWS_EXPORT DesktopWindowTreeHost
-   // and dispatched to that host instead.
-   void DispatchTouchEvent(ui::TouchEvent* event);
- 
-+  // Updates the location of |located_event| to be in |host|'s coordinate system
-+  // so that it can be dispatched to |host|.
-+  void ConvertEventToDifferentHost(ui::LocatedEvent* located_event,
-+                                   DesktopWindowTreeHostX11* host);
-+
-   // Resets the window region for the current widget bounds if necessary.
-   void ResetWindowRegion();
- 
-@@ -342,6 +348,13 @@ class VIEWS_EXPORT DesktopWindowTreeHost
+@@ -348,6 +348,13 @@ class VIEWS_EXPORT DesktopWindowTreeHost
    DISALLOW_COPY_AND_ASSIGN(DesktopWindowTreeHostX11);
  };
  
@@ -264,20 +193,19 @@
  #endif  // UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_WINDOW_TREE_HOST_X11_H_
 --- a/ui/views/widget/desktop_aura/desktop_window_tree_host_x11_unittest.cc
 +++ b/ui/views/widget/desktop_aura/desktop_window_tree_host_x11_unittest.cc
-@@ -32,6 +32,8 @@ namespace views {
+@@ -41,6 +41,8 @@ namespace {
  
- namespace {
+ const int kPointerDeviceId = 1;
  
 +const int kPointerDeviceId = 1;
 +
  // Blocks till the window state hint, |hint|, is set or unset.
  class WMStateWaiter : public X11PropertyChangeWaiter {
   public:
-@@ -454,4 +456,137 @@ TEST_F(DesktopWindowTreeHostX11Test, Tog
-   EXPECT_TRUE(widget.GetNativeWindow()->IsVisible());
+@@ -464,6 +466,139 @@ TEST_F(DesktopWindowTreeHostX11Test, Tog
  }
  
-+class MouseEventRecorder : public ui::EventHandler {
+ class MouseEventRecorder : public ui::EventHandler {
 + public:
 +  MouseEventRecorder() {}
 +  ~MouseEventRecorder() override {}
@@ -410,7 +338,10 @@
 +  second.GetNativeWindow()->RemovePreTargetHandler(&second_recorder);
 +}
 +
- }  // namespace views
++class MouseEventRecorder : public ui::EventHandler {
+  public:
+   MouseEventRecorder() {}
+   ~MouseEventRecorder() override {}
 --- a/ui/views/widget/desktop_aura/x11_topmost_window_finder.cc
 +++ b/ui/views/widget/desktop_aura/x11_topmost_window_finder.cc
 @@ -21,7 +21,7 @@ X11TopmostWindowFinder::~X11TopmostWindo

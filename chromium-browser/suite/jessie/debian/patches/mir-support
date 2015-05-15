@@ -32,7 +32,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
  UMALinuxWindowManager GetLinuxWindowManager() {
    switch (ui::GuessWindowManager()) {
      case ui::WM_UNKNOWN:
-@@ -243,7 +243,7 @@ void ChromeBrowserMainExtraPartsMetrics:
+@@ -244,7 +244,7 @@ void ChromeBrowserMainExtraPartsMetrics:
  
  void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
    RecordLinuxGlibcVersion();
@@ -168,7 +168,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_ROOT_WINDOW_HOST_OZONE_H_
 --- a/chrome/chrome_browser_ui.gypi
 +++ b/chrome/chrome_browser_ui.gypi
-@@ -2513,6 +2513,8 @@
+@@ -1319,6 +1319,8 @@
        'browser/ui/views/first_run_dialog.cc',
        'browser/ui/views/first_run_dialog.h',
        'browser/ui/views/frame/browser_desktop_window_tree_host.h',
@@ -176,10 +176,10 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +      'browser/ui/views/frame/browser_desktop_root_window_host_ozone.h',
        'browser/ui/views/frame/browser_desktop_window_tree_host_x11.cc',
        'browser/ui/views/frame/browser_desktop_window_tree_host_x11.h',
-       'browser/ui/views/frame/native_browser_frame_factory_auralinux.cc',
+       'browser/ui/views/frame/desktop_browser_frame_auralinux.cc',
 --- a/content/browser/browser_main_loop.cc
 +++ b/content/browser/browser_main_loop.cc
-@@ -128,6 +128,10 @@
+@@ -135,6 +135,10 @@
  #include "ui/gfx/x/x11_types.h"
  #endif
  
@@ -190,7 +190,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
  // One of the linux specific headers defines this as a macro.
  #ifdef DestroyAll
  #undef DestroyAll
-@@ -924,6 +928,11 @@ void BrowserMainLoop::ShutdownThreadsAnd
+@@ -980,6 +984,11 @@ void BrowserMainLoop::ShutdownThreadsAnd
      TRACE_EVENT0("shutdown", "BrowserMainLoop::Subsystem:GPUChannelFactory");
      if (BrowserGpuChannelHostFactory::instance())
        BrowserGpuChannelHostFactory::Terminate();
@@ -202,7 +202,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
    }
  
    // Must happen after the I/O thread is shutdown since this class lives on the
-@@ -1104,6 +1113,13 @@ int BrowserMainLoop::BrowserThreadsStart
+@@ -1165,6 +1174,13 @@ int BrowserMainLoop::BrowserThreadsStart
    }
  #endif  // defined(OS_MACOSX)
  
@@ -218,7 +218,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
    return result_code_;
 --- a/content/content_common.gypi
 +++ b/content/content_common.gypi
-@@ -829,6 +829,25 @@
+@@ -944,6 +944,25 @@
          },
       ]
      }],
@@ -247,7 +247,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 --- a/content/gpu/gpu_main.cc
 +++ b/content/gpu/gpu_main.cc
 @@ -63,6 +63,10 @@
- #include <sanitizer/asan_interface.h>
+ #include <sanitizer/common_interface_defs.h>
  #endif
  
 +#if defined(USE_OZONE)
@@ -257,7 +257,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
  const int kGpuTimeout = 10000;
  
  namespace content {
-@@ -372,6 +376,11 @@ int GpuMain(const MainFunctionParams& pa
+@@ -362,6 +366,11 @@ int GpuMain(const MainFunctionParams& pa
  
    {
      TRACE_EVENT0("gpu", "Run Message Loop");
@@ -596,43 +596,43 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +  EventConverterInProcess();
 +  virtual ~EventConverterInProcess();
 +
-+  virtual void MotionNotify(float x, float y) OVERRIDE;
++  virtual void MotionNotify(float x, float y) override;
 +  virtual void ButtonNotify(unsigned handle,
 +                            ui::EventType type,
 +                            ui::EventFlags flags,
 +                            float x,
-+                            float y) OVERRIDE;
++                            float y) override;
 +  virtual void AxisNotify(float x,
 +                          float y,
 +                          int xoffset,
-+                          int yoffset) OVERRIDE;
-+  virtual void PointerEnter(unsigned handle, float x, float y) OVERRIDE;
-+  virtual void PointerLeave(unsigned handle, float x, float y) OVERRIDE;
++                          int yoffset) override;
++  virtual void PointerEnter(unsigned handle, float x, float y) override;
++  virtual void PointerLeave(unsigned handle, float x, float y) override;
 +  virtual void KeyNotify(ui::EventType type,
 +                         unsigned code,
-+                         unsigned modifiers) OVERRIDE;
++                         unsigned modifiers) override;
 +  virtual void TouchNotify(ui::EventType type,
 +                           float x,
 +                           float y,
 +                           int32_t touch_id,
-+                           uint32_t time_stamp) OVERRIDE;
-+  virtual void CloseWidget(unsigned handle) OVERRIDE;
++                           uint32_t time_stamp) override;
++  virtual void CloseWidget(unsigned handle) override;
 +
-+  virtual void OutputSizeChanged(unsigned width, unsigned height) OVERRIDE;
++  virtual void OutputSizeChanged(unsigned width, unsigned height) override;
 +  virtual void WindowResized(unsigned windowhandle,
 +                             unsigned width,
-+                             unsigned height) OVERRIDE;
++                             unsigned height) override;
 +
-+  virtual void Commit(unsigned handle, const std::string& text) OVERRIDE;
++  virtual void Commit(unsigned handle, const std::string& text) override;
 +  virtual void PreeditChanged(unsigned handle, const std::string& text,
-+                              const std::string& commit) OVERRIDE;
-+  virtual void PreeditEnd() OVERRIDE;
-+  virtual void PreeditStart() OVERRIDE;
++                              const std::string& commit) override;
++  virtual void PreeditEnd() override;
++  virtual void PreeditStart() override;
 +
 +  virtual void SetWindowChangeObserver(
-+      ui::WindowChangeObserver* observer) OVERRIDE;
++      ui::WindowChangeObserver* observer) override;
 +  virtual void SetOutputChangeObserver(
-+      ui::OutputChangeObserver* observer) OVERRIDE;
++      ui::OutputChangeObserver* observer) override;
 +
 + private:
 +  static void NotifyMotion(EventConverterInProcess* data,
@@ -1006,7 +1006,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +  virtual ~OzoneChannel();
 +
 +  // IPC::Listener implementation.
-+  virtual bool OnMessageReceived(const IPC::Message& message) OVERRIDE;
++  virtual bool OnMessageReceived(const IPC::Message& message) override;
 +
 +  void Register();
 +  void OnWidgetStateChanged(unsigned handleid,
@@ -1290,11 +1290,11 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +
 +  // Implement |BrowserChildProcessObserver|.
 +  virtual void BrowserChildProcessHostConnected(
-+    const ChildProcessData& data) OVERRIDE;
++    const ChildProcessData& data) override;
 +  virtual void BrowserChildProcessHostDisconnected(
-+      const ChildProcessData& data) OVERRIDE;
++      const ChildProcessData& data) override;
 +  virtual void BrowserChildProcessCrashed(
-+      const ChildProcessData& data) OVERRIDE;
++      const ChildProcessData& data) override;
 +
 + private:
 +  void OnMessageReceived(const IPC::Message& message);
@@ -1639,39 +1639,39 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +  RemoteEventDispatcher();
 +  virtual ~RemoteEventDispatcher();
 +
-+  virtual void MotionNotify(float x, float y) OVERRIDE;
++  virtual void MotionNotify(float x, float y) override;
 +  virtual void ButtonNotify(unsigned handle,
 +                            ui::EventType type,
 +                            ui::EventFlags flags,
 +                            float x,
-+                            float y) OVERRIDE;
++                            float y) override;
 +  virtual void AxisNotify(float x,
 +                          float y,
 +                          int xoffset,
-+                          int yoffset) OVERRIDE;
-+  virtual void PointerEnter(unsigned handle, float x, float y) OVERRIDE;
-+  virtual void PointerLeave(unsigned handle, float x, float y) OVERRIDE;
++                          int yoffset) override;
++  virtual void PointerEnter(unsigned handle, float x, float y) override;
++  virtual void PointerLeave(unsigned handle, float x, float y) override;
 +  virtual void KeyNotify(ui::EventType type,
 +                         unsigned code,
-+                         unsigned modifiers) OVERRIDE;
++                         unsigned modifiers) override;
 +  virtual void TouchNotify(ui::EventType type,
 +                           float x,
 +                           float y,
 +                           int32_t touch_id,
-+                           uint32_t time_stamp) OVERRIDE;
++                           uint32_t time_stamp) override;
 +
-+  virtual void OutputSizeChanged(unsigned width, unsigned height) OVERRIDE;
++  virtual void OutputSizeChanged(unsigned width, unsigned height) override;
 +  virtual void WindowResized(unsigned handle,
 +                             unsigned width,
-+                             unsigned height) OVERRIDE;
-+  virtual void CloseWidget(unsigned handle) OVERRIDE;
++                             unsigned height) override;
++  virtual void CloseWidget(unsigned handle) override;
 +
-+  virtual void Commit(unsigned handle, const std::string& text) OVERRIDE;
++  virtual void Commit(unsigned handle, const std::string& text) override;
 +  virtual void PreeditChanged(unsigned handle,
 +                              const std::string& text,
-+                              const std::string& commit) OVERRIDE;
-+  virtual void PreeditEnd() OVERRIDE;
-+  virtual void PreeditStart() OVERRIDE;
++                              const std::string& commit) override;
++  virtual void PreeditEnd() override;
++  virtual void PreeditStart() override;
 +
 + private:
 +  static void SendMotionNotify(float x, float y);
@@ -1900,19 +1900,19 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +  virtual void SetWidgetState(unsigned widget,
 +                              ui::WidgetState state,
 +                              unsigned width = 0,
-+                              unsigned height = 0) OVERRIDE;
++                              unsigned height = 0) override;
 +  virtual void SetWidgetTitle(unsigned w,
-+                              const base::string16& title) OVERRIDE;
-+  virtual void SetWidgetCursor(int cursor_type) OVERRIDE;
++                              const base::string16& title) override;
++  virtual void SetWidgetCursor(int cursor_type) override;
 +  virtual void SetWidgetAttributes(unsigned widget,
 +                                   unsigned parent,
 +                                   unsigned x,
 +                                   unsigned y,
-+                                   ui::WidgetType type) OVERRIDE;
-+  virtual void ResetIme() OVERRIDE;
-+  virtual void ImeCaretBoundsChanged(gfx::Rect rect) OVERRIDE;
-+  virtual void ShowInputPanel() OVERRIDE;
-+  virtual void HideInputPanel() OVERRIDE;
++                                   ui::WidgetType type) override;
++  virtual void ResetIme() override;
++  virtual void ImeCaretBoundsChanged(gfx::Rect rect) override;
++  virtual void ShowInputPanel() override;
++  virtual void HideInputPanel() override;
 +
 + private:
 +  bool Send(IPC::Message* message);
@@ -2350,31 +2350,31 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +  virtual ~Display();
 +
 +  // gfx::OzoneDisplay
-+  //virtual HardwareState InitializeHardware() OVERRIDE;
-+  //virtual void ShutdownHardware() OVERRIDE;
-+  virtual intptr_t GetNativeDisplay() OVERRIDE;
++  //virtual HardwareState InitializeHardware() override;
++  //virtual void ShutdownHardware() override;
++  virtual intptr_t GetNativeDisplay() override;
 +
-+  //virtual gfx::AcceleratedWidget GetAcceleratedWidget() OVERRIDE;
-+  scoped_ptr<ui::SurfaceOzoneEGL> CreateEGLSurfaceForWidget(gfx::AcceleratedWidget w) OVERRIDE;
-+  virtual void LookAheadOutputGeometry() OVERRIDE;
++  //virtual gfx::AcceleratedWidget GetAcceleratedWidget() override;
++  scoped_ptr<ui::SurfaceOzoneEGL> CreateEGLSurfaceForWidget(gfx::AcceleratedWidget w) override;
++  virtual void LookAheadOutputGeometry() override;
 +  
 +  // ui::WindowStateChangeHandler
-+  virtual void SetWidgetState(unsigned widget, ui::WidgetState state, unsigned width = 0, unsigned height = 0) OVERRIDE;
++  virtual void SetWidgetState(unsigned widget, ui::WidgetState state, unsigned width = 0, unsigned height = 0) override;
 +  virtual void SetWidgetTitle(unsigned w,
-+                              const base::string16& title) OVERRIDE;
-+  virtual void SetWidgetCursor(int cursor_type) OVERRIDE;
++                              const base::string16& title) override;
++  virtual void SetWidgetCursor(int cursor_type) override;
 +  virtual void SetWidgetAttributes(unsigned widget,
 +                                   unsigned parent,
 +                                   unsigned x,
 +                                   unsigned y,
-+                                   ui::WidgetType type) OVERRIDE;
++                                   ui::WidgetType type) override;
 +
 +  virtual bool LoadEGLGLES2Bindings(
 +    ui::SurfaceFactoryOzone::AddGLLibraryCallback add_gl_library,
 +    ui::SurfaceFactoryOzone::SetGLGetProcAddressProcCallback
-+        proc_address) OVERRIDE;
++        proc_address) override;
 +  virtual const int32* GetEGLSurfaceProperties(
-+      const int32* desired_list) OVERRIDE;
++      const int32* desired_list) override;
 +
 +private:
 +  void Terminate();
@@ -3109,7 +3109,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +#ifndef OZONE_MIR_WINDOW_H_
 +#define OZONE_MIR_WINDOW_H_
 +
-+#include "ui/gfx/rect.h"
++#include "ui/gfx/geometry/rect.h"
 +#include "base/strings/string16.h"
 +#include "ui/ozone/public/surface_ozone_egl.h" // TODO: Forward decl?
 +
@@ -3312,27 +3312,27 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +
 +  virtual scoped_ptr<PlatformWindow> CreatePlatformWindow(
 +      PlatformWindowDelegate* delegate,
-+      const gfx::Rect& bounds) OVERRIDE {
++      const gfx::Rect& bounds) override {
 +    // FIXME(chad): implement
 +  }
 +
-+  virtual inline ui::SurfaceFactoryOzone* GetSurfaceFactoryOzone() OVERRIDE {
++  virtual inline ui::SurfaceFactoryOzone* GetSurfaceFactoryOzone() override {
 +      return &hardware_display_;
 +  }
 +
-+  virtual inline ui::CursorFactoryOzone* GetCursorFactoryOzone() OVERRIDE {
++  virtual inline ui::CursorFactoryOzone* GetCursorFactoryOzone() override {
 +    return NULL; // FIXME(chad)   def?    &cursor_factory_ozone_;
 +  }
 +
 +#if 0
-+  virtual inline ui::InputMethodContextFactoryOzone* GetInputMethodContextFactoryOzone() OVERRIDE {
++  virtual inline ui::InputMethodContextFactoryOzone* GetInputMethodContextFactoryOzone() override {
 +    return &input_method_context_factory_ozone_;
 +  }
 +#endif
 +
-+  virtual void InitializeGPU() OVERRIDE {}
++  virtual void InitializeGPU() override {}
 +
-+  virtual void InitializeUI() OVERRIDE {}
++  virtual void InitializeUI() override {}
 +
 +  virtual ui::GpuPlatformSupport* GetGpuPlatformSupport() { return NULL; }
 +
@@ -3394,14 +3394,14 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +  }
 +
 +  // OzonePlatform:
-+  virtual ui::SurfaceFactoryOzone* GetSurfaceFactoryOzone() OVERRIDE {
++  virtual ui::SurfaceFactoryOzone* GetSurfaceFactoryOzone() override {
 +    return wayland_display_.get();
 +  }
-+  virtual ui::CursorFactoryOzone* GetCursorFactoryOzone() OVERRIDE {
++  virtual ui::CursorFactoryOzone* GetCursorFactoryOzone() override {
 +    return cursor_factory_ozone_.get();
 +  }
 +
-+  virtual void InitializeUI() OVERRIDE {
++  virtual void InitializeUI() override {
 +    input_method_factory_.reset(
 +        new ui::InputMethodContextFactoryWayland());
 +    event_factory_ozone_.reset(
@@ -3410,16 +3410,16 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +    wayland_proxy_display_ = new ozonewayland::WaylandProxyDisplay();
 +  }
 +
-+  virtual GpuPlatformSupport* GetGpuPlatformSupport() OVERRIDE {
++  virtual GpuPlatformSupport* GetGpuPlatformSupport() override {
 +    return NULL;
 +    //return gpu_platform_support_.get();
 +  }
-+  virtual GpuPlatformSupportHost* GetGpuPlatformSupportHost() OVERRIDE {
++  virtual GpuPlatformSupportHost* GetGpuPlatformSupportHost() override {
 +    return NULL;
 +    //return gpu_platform_support_host_.get();
 +  }
 +
-+  virtual void InitializeGPU() OVERRIDE {
++  virtual void InitializeGPU() override {
 +    // We don't need proxy display in case of Single process.
 +    // TODO(kalyan): Find a better way to handle this.
 +    if (wayland_proxy_display_) {
@@ -3434,7 +3434,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +
 +  virtual scoped_ptr<PlatformWindow> CreatePlatformWindow(
 +      PlatformWindowDelegate* delegate,
-+      const gfx::Rect& bounds) OVERRIDE {
++      const gfx::Rect& bounds) override {
 +    // FIXME(chad): implement
 +  }
 +  //
@@ -3675,13 +3675,13 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +  CursorFactoryOzoneWayland();
 +  virtual ~CursorFactoryOzoneWayland();
 +
-+  virtual PlatformCursor GetDefaultCursor(int type) OVERRIDE;
++  virtual PlatformCursor GetDefaultCursor(int type) override;
 +  virtual PlatformCursor CreateImageCursor(const SkBitmap& bitmap,
-+                                           const gfx::Point& hotspot) OVERRIDE;
-+  virtual void RefImageCursor(PlatformCursor cursor) OVERRIDE;
-+  virtual void UnrefImageCursor(PlatformCursor cursor) OVERRIDE;
++                                           const gfx::Point& hotspot) override;
++  virtual void RefImageCursor(PlatformCursor cursor) override;
++  virtual void UnrefImageCursor(PlatformCursor cursor) override;
 +  //virtual void SetCursor(gfx::AcceleratedWidget widget,
-+                         //PlatformCursor cursor) OVERRIDE;
++                         //PlatformCursor cursor) override;
 +};
 +
 +}  // namespace ui
@@ -3792,13 +3792,13 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +      aura::Window* source_window,
 +      const gfx::Point& root_location,
 +      int operation,
-+      ui::DragDropTypes::DragEventSource source) OVERRIDE;
++      ui::DragDropTypes::DragEventSource source) override;
 +  virtual void DragUpdate(aura::Window* target,
-+                          const ui::LocatedEvent& event) OVERRIDE;
++                          const ui::LocatedEvent& event) override;
 +  virtual void Drop(aura::Window* target,
-+                    const ui::LocatedEvent& event) OVERRIDE;
-+  virtual void DragCancel() OVERRIDE;
-+  virtual bool IsDragDropInProgress() OVERRIDE;
++                    const ui::LocatedEvent& event) override;
++  virtual void DragCancel() override;
++  virtual bool IsDragDropInProgress() override;
 +
 + private:
 +  DISALLOW_COPY_AND_ASSIGN(DesktopDragDropClientWayland);
@@ -3886,11 +3886,11 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +  // views::DesktopFactoryOzone
 +  virtual DesktopWindowTreeHost* CreateWindowTreeHost(
 +      internal::NativeWidgetDelegate* native_widget_delegate,
-+      DesktopNativeWidgetAura* desktop_native_widget_aura) OVERRIDE;
++      DesktopNativeWidgetAura* desktop_native_widget_aura) override;
 +
-+  virtual gfx::Screen* CreateDesktopScreen() OVERRIDE;
++  virtual gfx::Screen* CreateDesktopScreen() override;
 +
-+  //virtual bool IsTranslucentWindowOpacitySupported() const OVERRIDE;
++  //virtual bool IsTranslucentWindowOpacitySupported() const override;
 +
 + private:
 +  DesktopScreenWayland* desktop_screen_;
@@ -4082,27 +4082,27 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +  virtual ~DesktopScreenWayland();
 +
 +  // OutputChangeObserver overrides.
-+  virtual void OnOutputSizeChanged(unsigned width, unsigned height) OVERRIDE;
++  virtual void OnOutputSizeChanged(unsigned width, unsigned height) override;
 +
 + private:
 +  void SetGeometry(const gfx::Rect& geometry);
 +  // Overridden from gfx::Screen:
-+  virtual bool IsDIPEnabled() OVERRIDE;
-+  virtual gfx::Point GetCursorScreenPoint() OVERRIDE;
-+  virtual gfx::NativeWindow GetWindowUnderCursor() OVERRIDE;
++  virtual bool IsDIPEnabled() override;
++  virtual gfx::Point GetCursorScreenPoint() override;
++  virtual gfx::NativeWindow GetWindowUnderCursor() override;
 +  virtual gfx::NativeWindow GetWindowAtScreenPoint(const gfx::Point& point)
-+      OVERRIDE;
-+  virtual int GetNumDisplays() const OVERRIDE;
-+  virtual std::vector<gfx::Display> GetAllDisplays() const OVERRIDE;
++      override;
++  virtual int GetNumDisplays() const override;
++  virtual std::vector<gfx::Display> GetAllDisplays() const override;
 +  virtual gfx::Display GetDisplayNearestWindow(
-+      gfx::NativeView window) const OVERRIDE;
++      gfx::NativeView window) const override;
 +  virtual gfx::Display GetDisplayNearestPoint(
-+      const gfx::Point& point) const OVERRIDE;
++      const gfx::Point& point) const override;
 +  virtual gfx::Display GetDisplayMatching(
-+      const gfx::Rect& match_rect) const OVERRIDE;
-+  virtual gfx::Display GetPrimaryDisplay() const OVERRIDE;
-+  virtual void AddObserver(gfx::DisplayObserver* observer) OVERRIDE;
-+  virtual void RemoveObserver(gfx::DisplayObserver* observer) OVERRIDE;
++      const gfx::Rect& match_rect) const override;
++  virtual gfx::Display GetPrimaryDisplay() const override;
++  virtual void AddObserver(gfx::DisplayObserver* observer) override;
++  virtual void RemoveObserver(gfx::DisplayObserver* observer) override;
 +
 +  gfx::Rect rect_;
 +  // The display objects we present to chrome.
@@ -4991,8 +4991,8 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +  // belongs to a particular window.
 +  gfx::Rect GetBoundsInScreen() const;
 +
-+  virtual void OnRootViewLayout() OVERRIDE;
-+  virtual void SizeConstraintsChanged() OVERRIDE;
++  virtual void OnRootViewLayout() override;
++  virtual void SizeConstraintsChanged() override;
 +
 + private:
 +  enum {
@@ -5018,82 +5018,82 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +  // Overridden from DesktopWindowTreeHost:
 +  virtual void Init(
 +      aura::Window* content_window,
-+      const views::Widget::InitParams& params) OVERRIDE;
++      const views::Widget::InitParams& params) override;
 +  virtual void OnNativeWidgetCreated(
-+      const views::Widget::InitParams& params) OVERRIDE;
-+  virtual scoped_ptr<views::corewm::Tooltip> CreateTooltip() OVERRIDE;
++      const views::Widget::InitParams& params) override;
++  virtual scoped_ptr<views::corewm::Tooltip> CreateTooltip() override;
 +  virtual scoped_ptr<aura::client::DragDropClient> CreateDragDropClient(
-+      views::DesktopNativeCursorManager* cursor_manager) OVERRIDE;
-+  virtual void Close() OVERRIDE;
-+  virtual void CloseNow() OVERRIDE;
-+  virtual aura::WindowTreeHost* AsWindowTreeHost() OVERRIDE;
-+  virtual void ShowWindowWithState(ui::WindowShowState show_state) OVERRIDE;
++      views::DesktopNativeCursorManager* cursor_manager) override;
++  virtual void Close() override;
++  virtual void CloseNow() override;
++  virtual aura::WindowTreeHost* AsWindowTreeHost() override;
++  virtual void ShowWindowWithState(ui::WindowShowState show_state) override;
 +  virtual void ShowMaximizedWithBounds(
-+      const gfx::Rect& restored_bounds) OVERRIDE;
-+  virtual bool IsVisible() const OVERRIDE;
-+  virtual void SetSize(const gfx::Size& size) OVERRIDE;
-+  virtual void StackAtTop() OVERRIDE;
-+  virtual void CenterWindow(const gfx::Size& size) OVERRIDE;
++      const gfx::Rect& restored_bounds) override;
++  virtual bool IsVisible() const override;
++  virtual void SetSize(const gfx::Size& size) override;
++  virtual void StackAtTop() override;
++  virtual void CenterWindow(const gfx::Size& size) override;
 +  virtual void GetWindowPlacement(
 +      gfx::Rect* bounds,
-+      ui::WindowShowState* show_state) const OVERRIDE;
-+  virtual gfx::Rect GetWindowBoundsInScreen() const OVERRIDE;
-+  virtual gfx::Rect GetClientAreaBoundsInScreen() const OVERRIDE;
-+  virtual gfx::Rect GetRestoredBounds() const OVERRIDE;
-+  virtual gfx::Rect GetWorkAreaBoundsInScreen() const OVERRIDE;
-+  virtual void SetShape(gfx::NativeRegion native_region) OVERRIDE;
-+  virtual void Activate() OVERRIDE;
-+  virtual void Deactivate() OVERRIDE;
-+  virtual bool IsActive() const OVERRIDE;
-+  virtual void Maximize() OVERRIDE;
-+  virtual void Minimize() OVERRIDE;
-+  virtual void Restore() OVERRIDE;
-+  virtual bool IsMaximized() const OVERRIDE;
-+  virtual bool IsMinimized() const OVERRIDE;
-+  virtual bool HasCapture() const OVERRIDE;
-+  virtual bool IsAlwaysOnTop() const OVERRIDE;
-+  virtual void SetVisibleOnAllWorkspaces(bool always_visible) OVERRIDE;
-+  virtual void SetAlwaysOnTop(bool always_on_top) OVERRIDE;
-+  virtual bool SetWindowTitle(const base::string16& title) OVERRIDE;
-+  virtual void ClearNativeFocus() OVERRIDE;
++      ui::WindowShowState* show_state) const override;
++  virtual gfx::Rect GetWindowBoundsInScreen() const override;
++  virtual gfx::Rect GetClientAreaBoundsInScreen() const override;
++  virtual gfx::Rect GetRestoredBounds() const override;
++  virtual gfx::Rect GetWorkAreaBoundsInScreen() const override;
++  virtual void SetShape(gfx::NativeRegion native_region) override;
++  virtual void Activate() override;
++  virtual void Deactivate() override;
++  virtual bool IsActive() const override;
++  virtual void Maximize() override;
++  virtual void Minimize() override;
++  virtual void Restore() override;
++  virtual bool IsMaximized() const override;
++  virtual bool IsMinimized() const override;
++  virtual bool HasCapture() const override;
++  virtual bool IsAlwaysOnTop() const override;
++  virtual void SetVisibleOnAllWorkspaces(bool always_visible) override;
++  virtual void SetAlwaysOnTop(bool always_on_top) override;
++  virtual bool SetWindowTitle(const base::string16& title) override;
++  virtual void ClearNativeFocus() override;
 +  virtual views::Widget::MoveLoopResult RunMoveLoop(
 +      const gfx::Vector2d& drag_offset,
 +      views::Widget::MoveLoopSource source,
-+      views::Widget::MoveLoopEscapeBehavior escape_behavior) OVERRIDE;
-+  virtual void EndMoveLoop() OVERRIDE;
-+  //virtual NonClientFrameView* CreateNonClientFrameView() OVERRIDE;
-+  virtual void SetVisibilityChangedAnimationsEnabled(bool value) OVERRIDE;
-+  virtual bool ShouldUseNativeFrame() const OVERRIDE;
-+  virtual bool ShouldWindowContentsBeTransparent() const OVERRIDE;
-+  virtual void FrameTypeChanged() OVERRIDE;
-+  virtual void SetFullscreen(bool fullscreen) OVERRIDE;
-+  virtual bool IsFullscreen() const OVERRIDE;
-+  virtual void SetOpacity(unsigned char opacity) OVERRIDE;
++      views::Widget::MoveLoopEscapeBehavior escape_behavior) override;
++  virtual void EndMoveLoop() override;
++  //virtual NonClientFrameView* CreateNonClientFrameView() override;
++  virtual void SetVisibilityChangedAnimationsEnabled(bool value) override;
++  virtual bool ShouldUseNativeFrame() const override;
++  virtual bool ShouldWindowContentsBeTransparent() const override;
++  virtual void FrameTypeChanged() override;
++  virtual void SetFullscreen(bool fullscreen) override;
++  virtual bool IsFullscreen() const override;
++  virtual void SetOpacity(unsigned char opacity) override;
 +  virtual void SetWindowIcons(const gfx::ImageSkia& window_icon,
-+                              const gfx::ImageSkia& app_icon) OVERRIDE;
-+  virtual void InitModalType(ui::ModalType modal_type) OVERRIDE;
-+  virtual void FlashFrame(bool flash_frame) OVERRIDE;
-+  //virtual void OnRootViewLayout() const OVERRIDE;
-+  virtual void OnNativeWidgetFocus() OVERRIDE;
-+  virtual void OnNativeWidgetBlur() OVERRIDE;
-+  virtual bool IsAnimatingClosed() const OVERRIDE;
++                              const gfx::ImageSkia& app_icon) override;
++  virtual void InitModalType(ui::ModalType modal_type) override;
++  virtual void FlashFrame(bool flash_frame) override;
++  //virtual void OnRootViewLayout() const override;
++  virtual void OnNativeWidgetFocus() override;
++  virtual void OnNativeWidgetBlur() override;
++  virtual bool IsAnimatingClosed() const override;
 +
 +  // Overridden from aura::WindowTreeHost:
-+  virtual ui::EventSource* GetEventSource() OVERRIDE;
-+  virtual gfx::AcceleratedWidget GetAcceleratedWidget() OVERRIDE;
-+  virtual void Show() OVERRIDE;
-+  virtual void Hide() OVERRIDE;
-+  virtual gfx::Rect GetBounds() const OVERRIDE;
-+  virtual void SetBounds(const gfx::Rect& bounds) OVERRIDE;
-+  virtual gfx::Point GetLocationOnNativeScreen() const OVERRIDE;
-+  virtual void SetCapture() OVERRIDE;
-+  virtual void ReleaseCapture() OVERRIDE;
-+  virtual void SetCursorNative(gfx::NativeCursor cursor) OVERRIDE;
-+  virtual void OnCursorVisibilityChangedNative(bool show) OVERRIDE;
-+  virtual void MoveCursorToNative(const gfx::Point& location) OVERRIDE;
-+  virtual void PostNativeEvent(const base::NativeEvent& native_event) OVERRIDE;
-+  //virtual void OnDeviceScaleFactorChanged(float device_scale_factor) OVERRIDE;
-+  virtual bool IsTranslucentWindowOpacitySupported() const OVERRIDE;
++  virtual ui::EventSource* GetEventSource() override;
++  virtual gfx::AcceleratedWidget GetAcceleratedWidget() override;
++  virtual void Show() override;
++  virtual void Hide() override;
++  virtual gfx::Rect GetBounds() const override;
++  virtual void SetBounds(const gfx::Rect& bounds) override;
++  virtual gfx::Point GetLocationOnNativeScreen() const override;
++  virtual void SetCapture() override;
++  virtual void ReleaseCapture() override;
++  virtual void SetCursorNative(gfx::NativeCursor cursor) override;
++  virtual void OnCursorVisibilityChangedNative(bool show) override;
++  virtual void MoveCursorToNative(const gfx::Point& location) override;
++  virtual void PostNativeEvent(const base::NativeEvent& native_event) override;
++  //virtual void OnDeviceScaleFactorChanged(float device_scale_factor) override;
++  virtual bool IsTranslucentWindowOpacitySupported() const override;
 +
 +  void HandleNativeWidgetActivationChanged(bool active);
 +  void HandleWindowResize(unsigned width, unsigned height);
@@ -5586,24 +5586,24 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +  const std::vector<aura::Window*>& GetAllOpenWindows();
 +
 +  // Overridden frm ui::EventSource
-+  virtual ui::EventProcessor* GetEventProcessor() OVERRIDE;
++  virtual ui::EventProcessor* GetEventProcessor() override;
 + private:
 +  // ui::PlatformEventDispatcher:
-+  virtual bool CanDispatchEvent(const ui::PlatformEvent& event) OVERRIDE;
-+  virtual uint32_t DispatchEvent(const ui::PlatformEvent& event) OVERRIDE;
++  virtual bool CanDispatchEvent(const ui::PlatformEvent& event) override;
++  virtual uint32_t DispatchEvent(const ui::PlatformEvent& event) override;
 +
 +  // Window Change Observer.
-+  virtual void OnWindowFocused(unsigned handle) OVERRIDE;
-+  virtual void OnWindowEnter(unsigned handle) OVERRIDE;
-+  virtual void OnWindowLeave(unsigned handle) OVERRIDE;
-+  virtual void OnWindowClose(unsigned handle) OVERRIDE;
++  virtual void OnWindowFocused(unsigned handle) override;
++  virtual void OnWindowEnter(unsigned handle) override;
++  virtual void OnWindowLeave(unsigned handle) override;
++  virtual void OnWindowClose(unsigned handle) override;
 +  virtual void OnWindowResized(unsigned windowhandle,
 +                               unsigned width,
-+                               unsigned height) OVERRIDE;
++                               unsigned height) override;
 +  virtual void OnPreeditChanged(unsigned handle,
 +                                const std::string& text,
-+                                const std::string& commit) OVERRIDE;
-+  virtual void OnCommit(unsigned handle, const std::string& text) OVERRIDE;
++                                const std::string& commit) override;
++  virtual void OnCommit(unsigned handle, const std::string& text) override;
 +
 +  // Dispatches a mouse event.
 +  void DispatchMouseEvent(ui::MouseEvent* event);
@@ -5614,7 +5614,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +  bool handle_event_ :1;
 +  bool stop_propogation_ :1;
 +
-+  //virtual NonClientFrameView* CreateNonClientFrameView() OVERRIDE;
++  //virtual NonClientFrameView* CreateNonClientFrameView() override;
 +
 +  // Current dispatcher.
 +  DesktopWindowTreeHostWayland* current_dispatcher_;
@@ -5949,7 +5949,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +
 +#include "base/basictypes.h"
 +#include "ozone/platform/ozone_export_wayland.h"
-+#include "ui/gfx/rect.h"
++#include "ui/gfx/geometry/rect.h"
 +
 +namespace ui {
 +
@@ -6875,22 +6875,22 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +  virtual void LookAheadOutputGeometry();
 +
 +  // Ozone Display implementation:
-+  //virtual ui::SurfaceFactoryOzone::HardwareState InitializeHardware() OVERRIDE;
-+  //virtual void ShutdownHardware() OVERRIDE;
-+  virtual intptr_t GetNativeDisplay() OVERRIDE;
++  //virtual ui::SurfaceFactoryOzone::HardwareState InitializeHardware() override;
++  //virtual void ShutdownHardware() override;
++  virtual intptr_t GetNativeDisplay() override;
 +
-+  //virtual gfx::AcceleratedWidget GetAcceleratedWidget() OVERRIDE;
++  //virtual gfx::AcceleratedWidget GetAcceleratedWidget() override;
 +
 +  // Ownership is passed to the caller.
 +  virtual scoped_ptr<ui::SurfaceOzoneEGL> CreateEGLSurfaceForWidget(
-+        gfx::AcceleratedWidget widget) OVERRIDE;
++        gfx::AcceleratedWidget widget) override;
 +
 +  virtual bool LoadEGLGLES2Bindings(
 +    ui::SurfaceFactoryOzone::AddGLLibraryCallback add_gl_library,
 +    ui::SurfaceFactoryOzone::SetGLGetProcAddressProcCallback
-+        proc_address) OVERRIDE;
++        proc_address) override;
 +  virtual const int32* GetEGLSurfaceProperties(
-+      const int32* desired_list) OVERRIDE;
++      const int32* desired_list) override;
 +
 + private:
 +  static OzoneDisplay* instance_;
@@ -6946,7 +6946,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +  explicit WaylandSyncProvider();
 +  virtual ~WaylandSyncProvider();
 +
-+  virtual void GetVSyncParameters(const UpdateVSyncCallback& callback) OVERRIDE;
++  virtual void GetVSyncParameters(const UpdateVSyncCallback& callback) override;
 +
 + private:
 +  DISALLOW_COPY_AND_ASSIGN(WaylandSyncProvider);
@@ -7034,7 +7034,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +  virtual ~InputMethodContextFactoryWayland();
 +
 +  virtual scoped_ptr<LinuxInputMethodContext> CreateInputMethodContext(
-+      ui::LinuxInputMethodContextDelegate* delegate) const OVERRIDE;
++      ui::LinuxInputMethodContextDelegate* delegate) const override;
 +};
 +
 +}  // namespace ui
@@ -7102,7 +7102,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +
 +#include "ozone/platform/ozone_export_wayland.h"
 +#include "ui/base/ime/linux/linux_input_method_context.h"
-+#include "ui/gfx/rect.h"
++#include "ui/gfx/geometry/rect.h"
 +
 +namespace ui {
 +
@@ -7116,11 +7116,11 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +  virtual ~InputMethodContextImplWayland();
 +
 +  // Overriden from ui::LinuxInputMethodContext
-+  virtual bool DispatchKeyEvent(const ui::KeyEvent& key_event) OVERRIDE;
-+  virtual void Reset() OVERRIDE;
++  virtual bool DispatchKeyEvent(const ui::KeyEvent& key_event) override;
++  virtual void Reset() override;
 +  virtual void OnTextInputTypeChanged(ui::TextInputType text_input_type)
-+      OVERRIDE;
-+  virtual void OnCaretBoundsChanged(const gfx::Rect& caret_bounds) OVERRIDE;
++      override;
++  virtual void OnCaretBoundsChanged(const gfx::Rect& caret_bounds) override;
 +
 + private:
 +  // Must not be NULL.
@@ -7663,36 +7663,36 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +  void FlushDisplay();
 +
 +  // Ozone Display implementation:
-+  //virtual ui::SurfaceFactoryOzone::HardwareState InitializeHardware() OVERRIDE;
-+  //virtual void ShutdownHardware() OVERRIDE;
-+  virtual intptr_t GetNativeDisplay() OVERRIDE;
++  //virtual ui::SurfaceFactoryOzone::HardwareState InitializeHardware() override;
++  //virtual void ShutdownHardware() override;
++  virtual intptr_t GetNativeDisplay() override;
 +
-+  //virtual gfx::AcceleratedWidget GetAcceleratedWidget() OVERRIDE;
++  //virtual gfx::AcceleratedWidget GetAcceleratedWidget() override;
 +
 +  // Ownership is passed to the caller.
 +  virtual scoped_ptr<ui::SurfaceOzoneEGL> CreateEGLSurfaceForWidget(
-+        gfx::AcceleratedWidget widget) OVERRIDE;
++        gfx::AcceleratedWidget widget) override;
 +
 +  virtual bool LoadEGLGLES2Bindings(
 +    ui::SurfaceFactoryOzone::AddGLLibraryCallback add_gl_library,
 +    ui::SurfaceFactoryOzone::SetGLGetProcAddressProcCallback
-+        proc_address) OVERRIDE;
++        proc_address) override;
 +  virtual const int32* GetEGLSurfaceProperties(
-+      const int32* desired_list) OVERRIDE;
++      const int32* desired_list) override;
 +
 +  // WindowStateChangeHandler implementation:
 +  virtual void SetWidgetState(unsigned widget,
 +                              ui::WidgetState state,
 +                              unsigned width = 0,
-+                              unsigned height = 0) OVERRIDE;
++                              unsigned height = 0) override;
 +  virtual void SetWidgetTitle(unsigned w,
-+                              const base::string16& title) OVERRIDE;
-+  virtual void SetWidgetCursor(int cursor_type) OVERRIDE;
++                              const base::string16& title) override;
++  virtual void SetWidgetCursor(int cursor_type) override;
 +  virtual void SetWidgetAttributes(unsigned widget,
 +                                   unsigned parent,
 +                                   unsigned x,
 +                                   unsigned y,
-+                                   ui::WidgetType type) OVERRIDE;
++                                   ui::WidgetType type) override;
 +
 + private:
 +  void InitializeDisplay();
@@ -8089,13 +8089,13 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +class SurfaceOzoneWayland : public ui::SurfaceOzoneEGL {
 +public:
 +  explicit SurfaceOzoneWayland(unsigned handle);
-+  virtual ~SurfaceOzoneWayland() OVERRIDE;
++  virtual ~SurfaceOzoneWayland() override;
 +
 +  // SurfaceOzone:
-+  virtual intptr_t GetNativeWindow() OVERRIDE;
-+  virtual bool ResizeNativeWindow(const gfx::Size& viewport_size) OVERRIDE;
-+  virtual bool OnSwapBuffers() OVERRIDE;
-+  virtual scoped_ptr<gfx::VSyncProvider> CreateVSyncProvider() OVERRIDE;
++  virtual intptr_t GetNativeWindow() override;
++  virtual bool ResizeNativeWindow(const gfx::Size& viewport_size) override;
++  virtual bool OnSwapBuffers() override;
++  virtual scoped_ptr<gfx::VSyncProvider> CreateVSyncProvider() override;
 +
 + private:
 +  unsigned handle_;
@@ -9336,7 +9336,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +#define OZONE_WAYLAND_INPUT_POINTER_H_
 +
 +#include "ozone/wayland/display.h"
-+#include "ui/gfx/point.h"
++#include "ui/gfx/geometry/point.h"
 +
 +namespace ui {
 +class EventConverterOzoneWayland;
@@ -10495,7 +10495,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +#define OZONE_WAYLAND_INPUT_TOUCHSCREEN_H_
 +
 +#include "ozone/wayland/display.h"
-+#include "ui/gfx/point.h"
++#include "ui/gfx/geometry/point.h"
 +
 +namespace ui {
 +class EventConverterOzoneWayland;
@@ -10835,10 +10835,10 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +  void SetGrabWindowHandle(unsigned windowhandle, uint32_t button);
 +  void SetCursorType(int cursor_type);
 +
-+  virtual void ResetIme() OVERRIDE;
-+  virtual void ImeCaretBoundsChanged(gfx::Rect rect) OVERRIDE;
-+  virtual void ShowInputPanel() OVERRIDE;
-+  virtual void HideInputPanel() OVERRIDE;
++  virtual void ResetIme() override;
++  virtual void ImeCaretBoundsChanged(gfx::Rect rect) override;
++  virtual void ShowInputPanel() override;
++  virtual void HideInputPanel() override;
 +
 + private:
 +  static void OnSeatCapabilities(void *data,
@@ -10979,7 +10979,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +  explicit WaylandProxyDisplay();
 +  virtual ~WaylandProxyDisplay();
 +
-+  virtual void LookAheadOutputGeometry() OVERRIDE;
++  virtual void LookAheadOutputGeometry() override;
 +
 + private:
 +  // This handler resolves only screen registration. In general you don't want
@@ -11086,8 +11086,8 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +#include <stdint.h>
 +
 +#include "base/basictypes.h"
-+#include "ui/gfx/point.h"
-+#include "ui/gfx/rect.h"
++#include "ui/gfx/geometry/point.h"
++#include "ui/gfx/geometry/rect.h"
 +
 +struct wl_output;
 +struct wl_registry;
@@ -11513,14 +11513,14 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +  WLShellSurface();
 +  virtual ~WLShellSurface();
 +
-+  virtual void InitializeShellSurface(WaylandWindow* window) OVERRIDE;
++  virtual void InitializeShellSurface(WaylandWindow* window) override;
 +  virtual void UpdateShellSurface(WaylandWindow::ShellType type,
 +                                  WaylandShellSurface* shell_parent,
 +                                  unsigned x,
-+                                  unsigned y) OVERRIDE;
-+  virtual void SetWindowTitle(const base::string16& title) OVERRIDE;
-+  virtual void Maximize() OVERRIDE;
-+  virtual void Minimize() OVERRIDE;
++                                  unsigned y) override;
++  virtual void SetWindowTitle(const base::string16& title) override;
++  virtual void Maximize() override;
++  virtual void Minimize() override;
 +
 +  static void HandleConfigure(void* data,
 +                              struct wl_shell_surface* shell_surface,
@@ -12356,14 +12356,14 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +  XDGShellSurface();
 +  virtual ~XDGShellSurface();
 +
-+  virtual void InitializeShellSurface(WaylandWindow* window) OVERRIDE;
++  virtual void InitializeShellSurface(WaylandWindow* window) override;
 +  virtual void UpdateShellSurface(WaylandWindow::ShellType type,
 +                                  WaylandShellSurface* shell_parent,
 +                                  unsigned x,
-+                                  unsigned y) OVERRIDE;
-+  virtual void SetWindowTitle(const base::string16& title) OVERRIDE;
-+  virtual void Maximize() OVERRIDE;
-+  virtual void Minimize() OVERRIDE;
++                                  unsigned y) override;
++  virtual void SetWindowTitle(const base::string16& title) override;
++  virtual void Maximize() override;
++  virtual void Minimize() override;
 +
 +  static void HandleConfigure(void* data,
 +                              struct xdg_surface* xdg_surface,
@@ -12422,7 +12422,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +      'target_name': 'wayland_toolkit',
 +      'type': 'static_library',
 +      'variables': {
-+        'WAYLAND_VERSION': '1.6.0',
++        'WAYLAND_VERSION': '1.7.0',
 +        'MESA_VERSION': '9.1.3',
 +        'wayland_packages': [
 +          'egl >= <(MESA_VERSION)',
@@ -12648,7 +12648,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +#include <wayland-client.h>
 +
 +#include "base/strings/string16.h"
-+#include "ui/gfx/rect.h"
++#include "ui/gfx/geometry/rect.h"
 +
 +namespace ozonewayland {
 +
@@ -12720,7 +12720,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
      # Sources lists shared with GN build.
      'views_sources': [
        'accessibility/native_view_accessibility.cc',
-@@ -658,6 +659,9 @@
+@@ -671,6 +672,9 @@
            'msvs_disabled_warnings': [ 4267, ],
          }],
          ['use_ozone==1', {

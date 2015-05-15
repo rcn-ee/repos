@@ -2,6 +2,31 @@ Description: Read display scaling from gsettings.
 Author: Chad MILLER <chad.miller@canonical.com>
 Forwarded: yes
 
+--- a/build/linux/system.gyp
++++ b/build/linux/system.gyp
+@@ -42,7 +42,12 @@
+       'g_settings_get_boolean',
+       'g_settings_get_int',
+       'g_settings_get_strv',
++      'g_settings_new_full',
+       'g_settings_list_schemas',
++      'g_settings_schema_source_get_default',
++      'g_settings_schema_source_lookup',
++      'g_settings_get',
++      'g_variant_lookup',
+     ],
+     'libpci_functions': [
+       'pci_alloc',
+--- a/ui/views/views.gyp
++++ b/ui/views/views.gyp
+@@ -679,6 +679,7 @@
+           'dependencies': [
+             '../../build/linux/system.gyp:x11',
+             '../../build/linux/system.gyp:xrandr',
++            '../../build/linux/system.gyp:gio',
+             '../events/devices/events_devices.gyp:events_devices',
+             '../events/platform/x11/x11_events_platform.gyp:x11_events_platform',
+             '../gfx/x/gfx_x11.gyp:gfx_x11',
 --- a/ui/views/widget/desktop_aura/desktop_screen_x11.cc
 +++ b/ui/views/widget/desktop_aura/desktop_screen_x11.cc
 @@ -7,7 +7,12 @@
@@ -17,7 +42,7 @@ Forwarded: yes
 +// It clashes with our RootWindow.
  #undef RootWindow
  
- #include "base/debug/trace_event.h"
+ #include "base/logging.h"
 @@ -266,6 +271,29 @@ std::vector<gfx::Display> DesktopScreenX
      return GetFallbackDisplayList();
    }

@@ -6,7 +6,7 @@ Bug-Ubuntu: 1084852
 
 --- a/third_party/webrtc/common_audio/common_audio.gyp
 +++ b/third_party/webrtc/common_audio/common_audio.gyp
-@@ -129,7 +129,7 @@
+@@ -135,7 +135,7 @@
              'signal_processing/spl_sqrt_floor.c',
            ],
            'conditions': [
@@ -15,7 +15,7 @@ Bug-Ubuntu: 1084852
                'dependencies': ['common_audio_neon',],
                'sources': [
                  'signal_processing/filter_ar_fast_q12_armv7.S',
-@@ -188,7 +188,7 @@
+@@ -194,7 +194,7 @@
          },
        ],  # targets
      }],
@@ -48,7 +48,7 @@ Bug-Ubuntu: 1084852
    filter = new FIRFilterC(coefficients, coefficients_length);
 --- a/third_party/webrtc/common_audio/resampler/sinc_resampler.cc
 +++ b/third_party/webrtc/common_audio/resampler/sinc_resampler.cc
-@@ -139,8 +139,7 @@ void SincResampler::InitializeCPUSpecifi
+@@ -138,8 +138,7 @@ void SincResampler::InitializeCPUSpecifi
  #define CONVOLVE_FUNC convolve_proc_
  
  void SincResampler::InitializeCPUSpecificFeatures() {
@@ -58,6 +58,26 @@ Bug-Ubuntu: 1084852
  }
  #endif
  #else
+--- a/third_party/webrtc/modules/audio_coding/codecs/isac/isacfix.gypi
++++ b/third_party/webrtc/modules/audio_coding/codecs/isac/isacfix.gypi
+@@ -80,7 +80,7 @@
+             'WEBRTC_LINUX',
+           ],
+         }],
+-        ['target_arch=="arm" and arm_version>=7', {
++        ['target_arch=="arm" and arm_version>=7 and arm_neon==1', {
+           'dependencies': [ 'isac_neon', ],
+           'sources': [
+             'fix/source/lattice_armv7.S',
+@@ -124,7 +124,7 @@
+     },
+   ],
+   'conditions': [
+-    ['target_arch=="arm" and arm_version>=7', {
++    ['target_arch=="arm" and arm_version>=7 and arm_neon==1', {
+       'targets': [
+         {
+           'target_name': 'isac_neon',
 --- a/third_party/webrtc/system_wrappers/source/cpu_features.cc
 +++ b/third_party/webrtc/system_wrappers/source/cpu_features.cc
 @@ -18,6 +18,47 @@

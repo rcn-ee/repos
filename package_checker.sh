@@ -175,7 +175,7 @@ qt5_apps
 qt5_lxqt
 
 site="http://ports.ubuntu.com/pool/universe/c"
-package_name="chromium-browser" ; package_version="${package_name}_41.0.2272.76-0ubuntu1.1134" ; check_http
+package_name="chromium-browser" ; package_version="${package_name}_42.0.2311.135-1ubuntu1.1160" ; check_http
 
 #really slow...
 #exit

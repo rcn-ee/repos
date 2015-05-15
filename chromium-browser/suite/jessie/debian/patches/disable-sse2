@@ -4,7 +4,7 @@ debian-bug: http://bugs.debian.org/750361
 
 --- a/build/common.gypi
 +++ b/build/common.gypi
-@@ -3771,8 +3771,6 @@
+@@ -3757,8 +3757,6 @@
                  # http://crbug.com/313032 for an example where this has "bit"
                  # us in the past.
                  'cflags': [
@@ -24,7 +24,7 @@ debian-bug: http://bugs.debian.org/750361
  #include <xmmintrin.h>
  #define CONVOLVE_FUNC Convolve_SSE
  #elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
-@@ -334,7 +334,7 @@ float SincResampler::Convolve_C(const fl
+@@ -342,7 +342,7 @@ float SincResampler::Convolve_C(const fl
        kernel_interpolation_factor * sum2);
  }
  
@@ -35,7 +35,7 @@ debian-bug: http://bugs.debian.org/750361
                                    double kernel_interpolation_factor) {
 --- a/media/base/sinc_resampler.h
 +++ b/media/base/sinc_resampler.h
-@@ -89,7 +89,7 @@ class MEDIA_EXPORT SincResampler {
+@@ -94,7 +94,7 @@ class MEDIA_EXPORT SincResampler {
    // ARM, NEON support is chosen at compile time based on compilation flags.
    static float Convolve_C(const float* input_ptr, const float* k1,
                            const float* k2, double kernel_interpolation_factor);
@@ -57,7 +57,7 @@ debian-bug: http://bugs.debian.org/750361
  #define CONVOLVE_FUNC Convolve_NEON
 --- a/media/base/sinc_resampler_unittest.cc
 +++ b/media/base/sinc_resampler_unittest.cc
-@@ -151,7 +151,7 @@ TEST(SincResamplerTest, DISABLED_SetRati
+@@ -150,7 +150,7 @@ TEST(SincResamplerTest, DISABLED_SetRati
  
  
  // Define platform independent function name for Convolve* tests.
@@ -139,9 +139,9 @@ debian-bug: http://bugs.debian.org/750361
        const std::pair<float, float>& result = vector_math::EWMAAndMaxPower_SSE(
 --- a/media/base/yuv_convert.cc
 +++ b/media/base/yuv_convert.cc
-@@ -27,7 +27,7 @@
+@@ -29,7 +29,7 @@
+ #include "media/base/simd/convert_yuv_to_rgb.h"
  #include "media/base/simd/filter_yuv.h"
- #include "media/base/simd/yuv_to_rgb_table.h"
  
 -#if defined(ARCH_CPU_X86_FAMILY)
 +#if defined(__x86_64__)
@@ -150,7 +150,7 @@ debian-bug: http://bugs.debian.org/750361
  #else
 --- a/media/base/yuv_convert.h
 +++ b/media/base/yuv_convert.h
-@@ -15,7 +15,7 @@
+@@ -14,7 +14,7 @@
  // hide the versions implemented with heavy use of MMX intrinsics.
  // TODO(wolenetz): Use MMX intrinsics when compiling win64 with Visual
  // Studio 2012? http://crbug.com/173450
@@ -161,7 +161,7 @@ debian-bug: http://bugs.debian.org/750361
  #endif
 --- a/media/base/yuv_convert_unittest.cc
 +++ b/media/base/yuv_convert_unittest.cc
-@@ -886,6 +886,6 @@ TEST(YUVConvertTest, LinearScaleYUVToRGB
+@@ -887,6 +887,6 @@ TEST(YUVConvertTest, LinearScaleYUVToRGB
  
  #endif  // defined(ARCH_CPU_X86_64)
  

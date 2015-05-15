@@ -12,6 +12,7 @@ DEBIAN_CODECS_NAME      := $(subst browser,codecs-ffmpeg,$(DEBIAN_NAME))
 DEBIAN_DRIVER_NAME      := $(subst browser,chromedriver,$(DEBIAN_NAME))
 
 DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
+export DEB_HOST_ARCH
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 DEB_HOST_ARCH_CPU ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_CPU)
 DEB_BUILD_ARCH ?= $(shell dpkg-architecture -qDEB_BUILD_ARCH)
@@ -24,6 +25,7 @@ BINARY_PACKAGE_COMPRESSION ?= xz
 FFMPEG_DIR     := third_party/ffmpeg
 FFMPEG_SRC_DIR := $(SRC_DIR)/$(FFMPEG_DIR)
 NINJA          := ninja
+SNAPPY_PKGR_TO_USE :=
 
 # Whitelist LP provided new langs only in release builds, PPAs ship them all
 WANT_ONLY_WHITELISTED_NEW_LANGS ?= 0
@@ -90,8 +92,8 @@ GYP_DEFINES += enable_touch_ui=1
 GYP_DEFINES += clang=0
 
 #GYP_DEFINES += use_ozone=1 ozone_auto_platforms=0 ozone_platform_mir=1 ozone_platform_wayland=0
-#GYP_DEFINES += use_ozone=1 #ozone_auto_platforms=1 #ozone_platform_mir=1 #ozone_platform_wayland=0
-#GYP_DEFINES += ozone_platform_mir=1 #ozone_platform_wayland=0
+#GYP_DEFINES += use_ozone=1
+#GYP_DEFINES += ozone_platform_mir=1
 
 # Intentional configuration, not bug work-arounds.
 ifeq (arm,$(DEB_HOST_ARCH_CPU))
@@ -289,6 +291,8 @@ override_dh_install-indep: local-install-indep compare-indep
 override_dh_shlibdeps:
 	dh_shlibdeps -l$(CURDIR)/debian/chromium-browser/usr/lib/chromium-browser/libs/ |grep -v "dpkg-shlibdeps: warning: can't extract name and version from library name" || true
 
+local-install-arch: S_CR_PATH := apps/chromium/current
+local-install-arch: SNAPPY_ROOT := debian/snappy/$(S_CR_PATH)
 local-install-arch: PKG_DIRS := $(addprefix debian/,$(shell dh_listpackages))
 local-install-arch: TRASH := .deps gen obj.host obj.target \*.lock obj build.\* .landmines mksnapshot.ia32 protoc pyproto re2c resources xdg-mime xdg-settings yasm \*.TOC \*.stamp product_logo_\*png gen\* lib/\* lib libvpx_obj_int_extract libffmpegsumo.so .ninja\* chrome-wrapper \*.breakpad.\* java_mojo dump_syms 
 local-install-arch:
@@ -299,6 +303,11 @@ local-install-arch:
 ifeq (1,$(COMPONENT_SHARED_LIB_BUILD))
 	mkdir -p debian/tmp/$(LIB_DIR)/libs
 	cp $(SRC_DIR)/out/$(BUILD_TYPE)/lib/*.so debian/tmp/$(LIB_DIR)/libs/
+endif
+
+ifneq ($(SNAPPY_PKGR_TO_USE),)
+	mkdir -p $(SNAPPY_ROOT)/private/libs
+	mkdir -p $(SNAPPY_ROOT)/meta
 endif
 
 	# Icons
@@ -313,14 +322,29 @@ endif
 	  fi; \
 	done
 	cp -a debian/chromium-browser.svg debian/chromium-browser/usr/share/icons/hicolor/scalable/apps
+ifneq ($(SNAPPY_PKGR_TO_USE),)
+	cp -a debian/chromium-browser.svg $(SNAPPY_ROOT)/meta/chromium.svg
+endif
 
 	##### Copy installed to package ####
 	(cd debian/tmp/$(LIB_DIR); tar cf - . --exclude=chromedriver;) | (cd debian/chromium-browser/$(LIB_DIR); tar xvf -;)
+ifneq ($(SNAPPY_PKGR_TO_USE),)
+	(cd debian/tmp/$(LIB_DIR); tar cf - .;) | (cd $(SNAPPY_ROOT)/private; tar xvf -;)
+endif
 	# prev missed "libs"
 	(cd debian/tmp/$(LIB_DIR)/libs; tar cf - .;) | (cd debian/chromium-browser/$(LIB_DIR)/libs/; tar xvf -;)
+ifneq ($(SNAPPY_PKGR_TO_USE),)
+	(cd debian/tmp/$(LIB_DIR)/libs; tar cf - .;) | (cd $(SNAPPY_ROOT)/private/libs; tar xvf -;)
+	(cd debian/tmp-extra/$(LIB_DIR); tar cf - .;) | (cd $(SNAPPY_ROOT)/private; tar xvf -;)
+endif
 
 ifeq (1,$(COMPONENT_SHARED_LIB_BUILD))
 	# Set the directory for looking up component libraries.
+ifneq ($(SNAPPY_PKGR_TO_USE),)
+	find $(SNAPPY_ROOT)/private/libs             -type f -name \*.so             -execdir chrpath --replace "\$$ORIGIN" {} \;
+	find $(SNAPPY_ROOT)/private      -maxdepth 1 -type f -name \*.so             -execdir chrpath --replace "\$$ORIGIN/libs" {} \;
+	find $(SNAPPY_ROOT)/private      -maxdepth 1 -type f             -executable -execdir chrpath --replace "\$$ORIGIN/libs" {} \;
+endif
 	find debian/*/$(LIB_DIR)/libs             -type f -name \*.so             -execdir chrpath --replace "\$$ORIGIN" {} \;
 	find debian/*/$(LIB_DIR)      -maxdepth 1 -type f -name \*.so             -execdir chrpath --replace "\$$ORIGIN/libs" {} \;
 	find debian/*/$(LIB_DIR)      -maxdepth 1 -type f             -executable -execdir chrpath --replace "\$$ORIGIN/libs" {} \;
@@ -328,7 +352,14 @@ endif
 
 	# Launcher script
 	cp -a debian/chromium-browser.sh debian/chromium-browser/usr/bin/chromium-browser
+ifneq ($(SNAPPY_PKGR_TO_USE),)
+	cp -a debian/chromium-browser.sh $(SNAPPY_ROOT)/chromium
+endif
 	chmod 755 debian/chromium-browser/usr/bin/chromium-browser
+ifneq ($(SNAPPY_PKGR_TO_USE),)
+	chmod 755 $(SNAPPY_ROOT)/chromium
+	sed -i -e 's,$(LIB_DIR),$(S_CR_PATH)/private,' $(SNAPPY_ROOT)/chromium
+endif
 
 	# Preferences
 	cp -a debian/chromium-browser.default debian/chromium-browser/etc/chromium-browser/default
@@ -337,16 +368,25 @@ endif
 	# chromium dereferences all symlinks before starting its children making
 	# the Gnome System Monitor confused with icons
 	mv debian/chromium-browser/$(LIB_DIR)/chrome debian/chromium-browser/$(LIB_DIR)/chromium-browser
+ifneq ($(SNAPPY_PKGR_TO_USE),)
+	mv $(SNAPPY_ROOT)/private/chrome $(SNAPPY_ROOT)/private/chromium-browser
+endif
 
 	# "you have to change the underscore from the build target into a hyphen".
 	# https://code.google.com/p/chromium/wiki/LinuxSUIDSandbox
 	mv debian/chromium-browser/$(LIB_DIR)/chrome_sandbox debian/chromium-browser/$(LIB_DIR)/chrome-sandbox
+ifneq ($(SNAPPY_PKGR_TO_USE),)
+	mv $(SNAPPY_ROOT)/private/chrome_sandbox $(SNAPPY_ROOT)/private/chrome-sandbox
+endif
 	chmod 4755 debian/chromium-browser/$(LIB_DIR)/chrome-sandbox
+ifneq ($(SNAPPY_PKGR_TO_USE),)
+	chmod 4755 $(SNAPPY_ROOT)/private/chrome-sandbox
+endif
 
 	# Manpage is for wrong program name, and it's in a weird place.  Use and destroy.
 	mkdir -p debian/chromium-browser/usr/share/man/man1
 	mv debian/chromium-browser/$(LIB_DIR)/chrome.1 debian/chromium-browser/usr/share/man/man1/chromium-browser.1
-	gzip -9 debian/chromium-browser/usr/share/man/man1/chromium-browser.1
+	gzip -f -9 debian/chromium-browser/usr/share/man/man1/chromium-browser.1
 
 	# NaCL may be blacklisted, so only include it when it's been built
 ifeq (,$(filter disable_nacl=1,$(GYP_DEFINES)))
@@ -378,18 +418,30 @@ endif
 
 	dh_listpackages -a |grep -v -- -dbg |while read pkg; do dh_strip --package=$$pkg --dbg-package=$${pkg}-dbg; done
 
+ifneq ($(SNAPPY_PKGR_TO_USE),)
+	DEB_HOST_ARCH="$(DEB_HOST_ARCH)" SNAPPY="$(SNAPPY_ROOT)" make -f debian/generate-snappy.mk
+	find $(SNAPPY_ROOT) -type f -exec strip {} \;
+	pushd $(SNAPPY_ROOT)/private/libs && for try in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do LC_ALL=C ldd *.so ../*.so ../*.a ../chromium-browser |grep -v " => not found" |grep " => " |cut -d\( -f1 |sort |uniq |while read want arrow foundat; do test -f "$$want" || test -z "$$foundat" || cp -v "$$foundat" ./; done; done
+	-popd
+
+	cd ..; $(SNAPPY_PKGR_TO_USE) build $(PWD)/$(SNAPPY_ROOT) || true
+endif
+
+
 local-install-indep:
 	@set -eux
 	dh_install -i
-	install --directory debian/tmp/etc/chromium-browser/customizations
-	install --owner=root --mode=0644 --no-target-directory debian/chromium-browser-customization-example debian/tmp/etc/chromium-browser/customizations/00-example
+	install --directory debian/chromium-browser/etc/chromium-browser/customizations
+	install --owner=root --mode=0644 --no-target-directory debian/chromium-browser-customization-example debian/chromium-browser/etc/chromium-browser/customizations/00-example
+	install --owner=root --mode=0644 --no-target-directory debian/chromium-browser-customization-flash-staleness debian/chromium-browser/etc/chromium-browser/customizations/09-flash-staleness-check
 	find debian/chromium-browser-l10n/$(LIB_DIR)/remoting_locales debian/chromium-browser-l10n/$(LIB_DIR)/locales -name en-US.pak -print -delete
 
 override_dh_clean:
 	@set -eux
 	test -d chrome
 	rm -rf $(DEB_TAR_SRCDIR)/out 
-	dh_clean debian/chromium-browser.sh debian/*-stamp debian/stamp-* debian/tmp-* build-stamp* $(subst_files) $(FFMPEG_SRC_DIR)/yasm $(FFMPEG_SRC_DIR)/*.mk $(DEB_TAR_SRCDIR)/tools/gn/bin/linux/gn
+	dh_clean debian/chromium-browser.sh debian/*-stamp debian/stamp-* debian/tmp-* build-stamp* $(subst_files) $(FFMPEG_SRC_DIR)/yasm
+	rm -rf debian/snappy
 
 	find $(DEB_TAR_SRCDIR) \( -name \*.pyc -o -name \*.pyo -name \*.o \) -delete
 	find $(DEB_TAR_SRCDIR) -regex '.*/\([^/]*\)/\1[^/]*\.\(Makefile\|\(target\|host\)\.mk\)' -delete
@@ -401,37 +453,6 @@ override_dh_clean:
 	echo VERIFICATION-
 	echo Compare to https://commondatastorage.googleapis.com/chromium-browser-official/chromium-$(DEBIAN_UPSTREAM_VERSION).tar.xz.hashes
 	echo
-
-# By default, Chromium expects a binary file that generates the build files. Fortunately,
-# the source files for gn (the binary) are present in the source tree. This section
-# disables the default behavior, falls back to gyp, builds gn, and use that as the binary.
-build-stamp-gn: GYP_ENV = GYP_DEFINES="$(GYP_DEFINES)"
-build-stamp-gn:
-	@set -eux
-	### configure
-	if [ ! -d $(DEB_TAR_SRCDIR) ]; then \
-		mv $(DEBIAN_NAME)-$(DEBIAN_UPSTREAM_VERSION)/$(DEB_TAR_SRCDIR) .; \
-		rm -r $(DEBIAN_NAME)-$(DEBIAN_UPSTREAM_VERSION); \
-	fi
-	
-	# Disable default behavior of using gn
-	test ! -f build/gyp_chromium.withgn || mv build/gyp_chromium.withgn build/gyp_chromium
-	sed -i.withgn -e '/^  if not RunG/,+1s,^,#,' build/gyp_chromium
-	
-	cd $(SRC_DIR) && $(GYP_ENV) $(CROSS_BUILD) python build/gyp_chromium tools/gn/gn.gyp $(GYP_PARAMS)
-	
-	# Re-enable behavior of using gn
-	mv build/gyp_chromium.withgn build/gyp_chromium
-
-	### build
-	$(NINJA) -C $(DEB_TAR_SRCDIR)/out/Release $(GN_BUILD_ARGS) gn
-	
-	# Copy the binary to the location expected by the build system
-	cp -v $(DEB_TAR_SRCDIR)/out/Release/gn $(DEB_TAR_SRCDIR)/tools/gn/bin/linux/
-	ln -s -v gn $(DEB_TAR_SRCDIR)/tools/gn/bin/linux/gn$(DEB_BUILD_ARCH_BITS)
-	rm -rf $(DEB_TAR_SRCDIR)/out
-	touch $@
-
 
 debian/chromium-browser.sh: debian/chromium-browser.sh.in
 	@set -eux
@@ -504,6 +525,7 @@ PACKAGED_NOT_FROM_TREE_MATCH += ^usr/share/doc/.\*/changelog.Debian.gz$$
 PACKAGED_NOT_FROM_TREE_MATCH += ^usr/bin/chromium-browser$$
 PACKAGED_NOT_FROM_TREE_MATCH += ^etc/chromium-browser/default$$
 PACKAGED_NOT_FROM_TREE_MATCH += ^etc/chromium-browser/customizations/00-example$$
+PACKAGED_NOT_FROM_TREE_MATCH += ^etc/chromium-browser/customizations/09-flash-staleness-check$$
 
 # Expressions to map filenames in the comparison logic so that a rename in
 # packaging is correctly handled.  No expression contains a space.  Each should

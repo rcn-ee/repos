@@ -12,6 +12,7 @@ Build-Depends:
 	pkg-config,
 	lsb-release,
 	quilt,
+	python,
 	bison,
 	gperf,
 	libpulse-dev,
@@ -37,9 +38,7 @@ Build-Depends:
 	chrpath,
 	gcc-4.9,
 	g++-4.9,
-	xdg-utils,
-	gyp,
-	python3
+	xdg-utils
 Standards-Version: 3.9.6
 
 Package: chromium-browser
@@ -47,13 +46,14 @@ Architecture: armhf armel i386 amd64
 Pre-Depends: dpkg (>= 1.15.6)
 Depends: ${shlibs:Depends}, ${misc:Depends},
 	bash (>= 4),
+	zenity,
 	libnss3,
 	xdg-utils,
 	chromium-codecs-ffmpeg-extra (>= 0.6) | chromium-codecs-ffmpeg (>= 0.6)
 Recommends: chromium-browser-l10n
 Suggests: webaccounts-chromium-extension,
 	unity-chromium-extension,
-	chromiumflashplugin
+	adobe-flashplugin
 Provides: www-browser, chromium-browser-inspector
 Replaces: chromium-browser-inspector
 Conflicts: chromium-browser-inspector
