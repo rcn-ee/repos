@@ -1,0 +1,20 @@
+#!/bin/sh -e
+
+case "$1" in
+    configure)
+        # Add the xenomai group unless it's already there
+        if ! getent group xenomai >/dev/null; then
+            addgroup --quiet --system xenomai || true
+        fi
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+#DEBHELPER#
