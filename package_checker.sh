@@ -177,6 +177,12 @@ qt5_lxqt
 site="http://ports.ubuntu.com/pool/universe/c"
 package_name="chromium-browser" ; package_version="${package_name}_42.0.2311.135-1ubuntu1.1160" ; check_http
 
+#machinekit: (temp repo)
+site="http://deb.dovetail-automata.com/deb-testing/pool/main/c"
+package_name="czmq" ; package_version="${package_name}_2.2.0-0.5%7e1jessie%7e1da" ; check_http
+site="http://deb.dovetail-automata.com/deb-testing/pool/main/libw"
+package_name="libwebsockets" ; package_version="${package_name}_1.3-1%7egit95a8abb%7e1431844465git95a8abb%7e1jessie%7e1da" ; check_http
+
 #really slow...
 #exit
 

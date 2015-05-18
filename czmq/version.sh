@@ -1,22 +1,19 @@
 #!/bin/bash -e
 
-mirror="http://ftp.de.debian.org/debian"
+#mirror="http://ftp.de.debian.org/debian"
+mirror="http://deb.dovetail-automata.com/deb-testing"
 
 package_name="czmq"
 debian_pkg_name="${package_name}"
 package_version="2.2.0"
-package_source="${package_name}_${package_version}.orig.tar.xz"
-src_dir="${package_name}_${package_version}"
 
-git_repo="https://github.com/zeromq/czmq"
-git_sha="b0e9b7f1448f9b0546c700ea0a46dc8bb0dd2ebd"
+git_repo=""
+git_sha=""
 reprepro_dir="c/${package_name}"
-dl_path=""
+dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-1"
-debian_untar=""
+debian_version="${package_version}-0.5~1jessie~1da"
+debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 
-trusty_version="~20141222+2"
-wheezy_version="~bpo70+20141222+3"
-jessie_version="~20150105+1"
+jessie_version="~20141124+1"
