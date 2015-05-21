@@ -14,17 +14,11 @@ run () {
 			reprepro -b ${repo} -C main include ${suite} ${wfile}
 		fi
 	fi
-
-	if [ "x${archive}" = "xenable" ] ; then
-		mkdir -p ${base}archive/${debian_pkg_name}/${suite}/${package_version}/
-		cp -v ${repo}pool/main/${reprepro_dir}/${debian_pkg_name}_${debian_version}${rcn_ee_version}_${deb_arch}.deb ${base}archive/${debian_pkg_name}/${suite}/${package_version}/
-	fi
 }
 
 dist="debian"
 suite="jessie"
 repo="${base}${dist}/"
 deb_arch=armhf
-rcn_ee_version="${jessie_version}"
 run
 
