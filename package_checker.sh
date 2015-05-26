@@ -13,7 +13,7 @@ check_http () {
 	sed -i -e 's/<a href="//g' /tmp/index.html
 	sed -i -e 's/"><\/a>//g' /tmp/index.html
 
-	version=$(cat /tmp/index.html | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+	version=$(cat /tmp/index.html | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
 	if [ ! "x${version}" = "x" ] ; then
 		if [ ! "x${package_version}" = "x${version}" ] ; then
 			echo "Change: ${package_name}: upstream:${version} local:${package_version}"
@@ -181,12 +181,27 @@ machinekit () {
 	package_name="xenomai" ; package_version="${package_name}_2.6.4-1%7e1jessie%7e1da" ; check_http
 }
 
+nodejs () {
+	echo "nodejs:"
+	site="http://ftp.de.debian.org/debian/pool/main/g"
+	package_name="gyp" ; package_version="${package_name}_0.1~svn1729-3" ; check_http
+
+	site="http://ftp.de.debian.org/debian/pool/main/libv"
+	package_name="libv8-3.14"; package_version="${package_name}_3.14.5.8-8"; check_http
+
+	site="http://ftp.de.debian.org/debian/pool/main/n"
+	package_name="nodejs"; package_version="${package_name}_0.10.29~dfsg-1"; check_http
+}
+
 mesa
 qt5
 qt5_kde
 qt5_apps
 qt5_lxqt
 machinekit
+nodejs
+
+echo "others"
 
 site="http://ports.ubuntu.com/pool/universe/c"
 package_name="chromium-browser" ; package_version="${package_name}_42.0.2311.135-1ubuntu1.1160" ; check_http
@@ -207,12 +222,8 @@ package_name="xserver-xorg-video-modesetting" ; package_version="0.9.0-1" ; chec
 
 suite="jessie"
 package_name="cython" ; package_version="0.19.1+git34-gac3e3a2-1" ; check
-
-package_name="gyp"; package_version="0.1~svn1729-3"; check
 package_name="jansson"; package_version="2.7-1"; check
 package_name="libsodium"; package_version="1.0.0-1"; check
-package_name="libv8-3.14"; package_version="3.14.5.8-8"; check
-package_name="nodejs"; package_version="0.10.29~dfsg-1"; check
 package_name="node-abbrev"; package_version="1.0.5-2"; check
 package_name="node-ansi"; package_version="0.3.0-2"; check
 package_name="node-ansi-color-table"; package_version="1.0.0-1"; check
