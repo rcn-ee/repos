@@ -190,7 +190,7 @@ nodejs () {
 	package_name="libv8-3.14"; package_version="${package_name}_3.14.5.8-8.1"; check_http
 
 	site="http://ftp.de.debian.org/debian/pool/main/n"
-	package_name="nodejs"; package_version="${package_name}_0.10.29~dfsg-1"; check_http
+	package_name="nodejs"; package_version="${package_name}_0.10.38~dfsg-1"; check_http
 }
 
 mesa

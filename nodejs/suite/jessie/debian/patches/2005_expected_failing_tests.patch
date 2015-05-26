@@ -1,0 +1,89 @@
+Description: Expected failing tests
+ There are three categories of failing tests:
+ 1 - the test is missing some network resource, or some unidentified resource
+     that is present on a minimal server install of debian.
+ 2 - the test assumes short timeouts or amounts of resources not available
+     at the moment of the test.
+ 3 - the test assumes some cli tool is compiled with options not available
+     on debian, but it doesn't affect the quality of nodejs (openssl).
+Forwarded: not-needed
+Author: Jérémy Lal <kapouer@melix.org>
+Last-Update: 2014-01-27
+--- a/test/simple/simple.status
++++ b/test/simple/simple.status
+@@ -1 +1,75 @@
+ prefix simple
++
++# only fail when some resources are not available
++test-http-dns-fail: PASS || FAIL
++test-net-connect-timeout: PASS || FAIL
++test-dgram-broadcast-multi-process: PASS || FAIL
++test-net-listen-fd0: PASS || FAIL
++test-child-process-fork-dgram: PASS || FAIL
++test-cluster-dgram-1: PASS || FAIL
++test-cluster-dgram-2: PASS || TIMEOUT || FAIL
++test-dgram-bind: PASS || FAIL
++test-dgram-bind-default-address: PASS || FAIL
++test-dgram-implicit-bind: PASS || FAIL
++test-dgram-listen-after-bind: PASS || FAIL
++test-dgram-multicast-setTTL: PASS || FAIL
++test-dgram-pingpong: PASS || FAIL
++test-dgram-udp4: PASS || FAIL
++test-dgram-unref: PASS || FAIL
++test-dgram-send-bad-arguments: PASS || FAIL
++test-tls-client-destroy-soon: PASS || FAIL
++test-stdout-close-unref: PASS || FAIL
++
++# slow platform doesn't fail when timeouts are raised
++# manually checked on qemu-armel
++test-cluster-disconnect: PASS || TIMEOUT
++test-force-repl: PASS || FAIL
++test-http-client-timeout-with-data: PASS || FAIL
++test-http-client-timeout-event: PASS || FAIL
++test-http-end-throw-socket-handling: PASS || FAIL
++test-http-exit-delay: PASS || FAIL
++test-http-pipeline-flood: PASS || FAIL
++test-net-GH-5504: PASS || FAIL
++test-net-server-unref: PASS || FAIL
++test-net-settimeout: PASS || FAIL
++test-next-tick-error-spin: PASS || FAIL
++test-pipe-unref: PASS || FAIL
++test-stream2-readable-empty-buffer-no-eof: PASS || FAIL
++test-tls-fast-writing: PASS || FAIL
++test-tls-zero-clear-in: PASS || FAIL
++test-next-tick-starvation: PASS || FAIL
++test-child-process-fork-net2: PASS || TIMEOUT
++test-signal-unregister: PASS || FAIL
++# this one is tricky but falls nonetheless in this category
++test-timers-unref: PASS || FAIL
++test-abort-fatal-error: PASS || TIMEOUT
++
++# ultra slow platform doesn't fail when timeouts are raised.
++# manually checked on qemu-mipsel
++test-cluster-master-error: PASS || FAIL
++test-fs-empty-readStream: PASS || FAIL
++test-http-1.0: PASS || FAIL
++test-http-many-keep-alive-connections: PASS || TIMEOUT
++test-https-agent: PASS || TIMEOUT
++test-net-pingpong: PASS || TIMEOUT
++test-net-socket-timeout: PASS || FAIL
++test-regress-GH-897: PASS || FAIL
++test-repl: PASS || FAIL
++test-repl-tab-complete: PASS || TIMEOUT
++test-stream-pipe-multi: PASS || TIMEOUT
++test-tls-request-timeout: PASS || FAIL
++
++# 512 bits keys fail with openssl 1.0.1 - node tests will use 1024 bits
++# keys : https://github.com/joyent/node/commit/ef046bf4
++# Let it fail until the real cause if found.
++test-tls-server-verify: PASS || FAIL
++
++# debugger tests can timeout, fail because of missing resources,
++# or fail because the debugger prompt changes on mipsel.
++test-debugger-repl-utf8: PASS || TIMEOUT || FAIL
++test-debugger-repl-break-in-module: PASS || TIMEOUT || FAIL
++test-debugger-repl: PASS || FAIL
++test-debugger-client: PASS || FAIL
++test-debugger-repl-restart: PASS || FAIL
++
++
