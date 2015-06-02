@@ -136,7 +136,7 @@ qt5_lxqt () {
 
 	site="http://packages.siduction.org/lxqt/pool/main/l"
 	package_name="lxqt-globalkeys" ; package_version="${package_name}_0.9.0-6%2bexp1" ; check_http
-	package_name="lxqt-notificationd" ; package_version="${package_name}_0.9.0-7%2bexp1" ; check_http
+	package_name="lxqt-notificationd" ; package_version="${package_name}_0.9.0-8%2bexp1" ; check_http
 	package_name="lxqt-sudo" ; package_version="${package_name}_x" ; check_http
 
 	site="http://packages.siduction.org/lxqt/pool/main/libs"
