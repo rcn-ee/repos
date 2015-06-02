@@ -1,0 +1,25 @@
+#!/usr/bin/make -f
+#export DH_VERBOSE=1
+
+
+%:
+	dh ${@} --buildsystem cmake --parallel
+
+
+
+maintainer-clean:
+	$(RM) -r checkout
+	$(RM) *.build
+	$(RM) *.changes
+	$(RM) *.deb
+	$(RM) *.dsc
+	$(RM) *.tar.gz
+	$(RM) *.upload
+
+checkout: maintainer-clean
+	git clone --depth=1 git://github.com/lxde/lxqt-sudo.git checkout; \
+	cd checkout; \
+	cp -a ../debian .; \
+	echo "";\
+	git log | head; \
+	echo ""; \
