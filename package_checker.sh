@@ -152,7 +152,7 @@ qt5_lxqt () {
 	package_name="lxqt-session" ; package_version="${package_name}_0.9.0-9%2bexp1" ; check_http
 	package_name="lxqt-runner" ; package_version="${package_name}_0.9.0-3" ; check_http
 	package_name="lxqt-policykit" ; package_version="${package_name}_0.9.0-3" ; check_http
-	package_name="lxqt-powermanagement" ; package_version="${package_name}_0.9.0-8%2bexp1" ; check_http
+	package_name="lxqt-powermanagement" ; package_version="${package_name}_0.9.0-9%2bexp1" ; check_http
 	package_name="lxqt-qtplugin" ; package_version="${package_name}_0.9.0-2%2bexp1" ; check_http
 	package_name="lximage-qt" ; package_version="${package_name}_0.4.0-1" ; check_http
 	package_name="lxqt-config" ; package_version="${package_name}_0.9.0-11%2bexp2" ; check_http
@@ -208,7 +208,7 @@ site="http://ports.ubuntu.com/pool/universe/c"
 package_name="chromium-browser" ; package_version="${package_name}_42.0.2311.135-1ubuntu1.1160" ; check_http
 
 #really slow...
-#exit
+exit
 
 suite="experimental"
 package_name="policykit-1" ; package_version="0.112-4" ; check
