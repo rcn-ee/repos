@@ -153,7 +153,7 @@ qt5_lxqt () {
 	package_name="lxqt-runner" ; package_version="${package_name}_0.9.0-4" ; check_http
 	package_name="lxqt-policykit" ; package_version="${package_name}_0.9.0-4" ; check_http
 	package_name="lxqt-powermanagement" ; package_version="${package_name}_0.9.0-9%2bexp1" ; check_http
-	package_name="lxqt-qtplugin" ; package_version="${package_name}_0.9.0-2%2bexp1" ; check_http
+	package_name="lxqt-qtplugin" ; package_version="${package_name}_0.9.0-3" ; check_http
 	package_name="lximage-qt" ; package_version="${package_name}_0.4.0-1" ; check_http
 	package_name="lxqt-config" ; package_version="${package_name}_0.9.0-11%2bexp2" ; check_http
 
