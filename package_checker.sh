@@ -13,7 +13,7 @@ check_http () {
 	sed -i -e 's/<a href="//g' /tmp/index.html
 	sed -i -e 's/"><\/a>//g' /tmp/index.html
 
-	version=$(cat /tmp/index.html | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+	version=$(cat /tmp/index.html | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
 	if [ ! "x${version}" = "x" ] ; then
 		if [ ! "x${package_version}" = "x${version}" ] ; then
 			echo "Change: ${package_name}: upstream:${version} local:${package_version}"
@@ -143,7 +143,7 @@ qt5_lxqt () {
 	package_name="libsysstat" ; package_version="${package_name}_0.3.0-2" ; check_http
 
 	site="http://packages.siduction.org/lxqt/pool/main/l"
-	package_name="lxqt-panel" ; package_version="${package_name}_0.9.0-9a" ; check_http
+	package_name="lxqt-panel" ; package_version="${package_name}_0.9.0-18" ; check_http
 
 	site="http://packages.siduction.org/lxqt/pool/main/p"
 	package_name="pcmanfm-qt" ; package_version="${package_name}_0.9.0-9%2bexp1" ; check_http
