@@ -5,6 +5,10 @@ set -e
 
 case "$1" in
 	configure|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+		expired_key=$(apt-key list | grep FADFB657 || true)
+		if [ ! "x${expired_key}" = "x" ] ; then
+			apt-key del FADFB657
+		fi
 		;;
 	*)
 		echo "postinst called with unknown argument \'$1'" >&2
