@@ -13,7 +13,7 @@ check_http () {
 	sed -i -e 's/<a href="//g' /tmp/index.html
 	sed -i -e 's/"><\/a>//g' /tmp/index.html
 
-	version=$(cat /tmp/index.html | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+	version=$(cat /tmp/index.html | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
 	if [ ! "x${version}" = "x" ] ; then
 		if [ ! "x${package_version}" = "x${version}" ] ; then
 			echo "Change: ${package_name}: upstream:${version} local:${package_version}"
