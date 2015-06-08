@@ -7,7 +7,7 @@ mirror="http://packages.siduction.org"
 package_name="libqtxdg"
 debian_pkg_name="${package_name}"
 package_version="1.2.0"
-package_source="${package_name}_${package_version}-3+exp2.tar.gz"
+package_source="${package_name}_${package_version}-3+exp3.tar.gz"
 src_dir="checkout"
 
 git_repo=""
@@ -15,7 +15,7 @@ git_sha=""
 reprepro_dir="libq/${package_name}"
 dl_path="lxqt/pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-3+exp2"
+debian_version="${package_version}-3+exp3"
 debian_patch=""
 
-jessie_version="~bpo80+20150515+1"
+jessie_version="~bpo80+20150608+1"
