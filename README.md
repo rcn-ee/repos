@@ -10,6 +10,12 @@ deb [arch=armhf] http://repos.rcn-ee.net/debian/ jessie main
 #deb-src [arch=armhf] http://repos.rcn-ee.net/debian/ jessie main
 ```
 
+Debian 9: (Stretch): http://repos.rcn-ee.net/debian/
+```
+deb [arch=armhf] http://repos.rcn-ee.net/debian/ stretch main
+#deb-src [arch=armhf] http://repos.rcn-ee.net/debian/ stretch main
+```
+
 Ubuntu 14.04 lts: (Trusty): http://repos.rcn-ee.net/ubuntu/
 ```
 deb [arch=armhf] http://repos.rcn-ee.net/ubuntu/ trusty main
@@ -26,6 +32,12 @@ Ubuntu 15.04: (Vivid): http://repos.rcn-ee.net/ubuntu/
 ```
 deb [arch=armhf] http://repos.rcn-ee.net/ubuntu/ vivid main
 #deb-src [arch=armhf] http://repos.rcn-ee.net/ubuntu/ vivid main
+```
+
+Ubuntu 15.10: (Wily): http://repos.rcn-ee.net/ubuntu/
+```
+deb [arch=armhf] http://repos.rcn-ee.net/ubuntu/ wily main
+#deb-src [arch=armhf] http://repos.rcn-ee.net/ubuntu/ wily main
 ```
 
 keyring:
