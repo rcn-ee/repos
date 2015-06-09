@@ -1,5 +1,29 @@
 #!/bin/bash
 
+check_http_exp () {
+	echo "Checking: ${package_name}"
+	if [ -f /tmp/index.html ] ; then
+		rm -f /tmp/index.html
+	fi
+	wget --no-verbose --directory-prefix=/tmp/ ${site}/${package_name}/ &> /dev/null
+	cat /tmp/index.html | grep "<a href=" > /tmp/temp.html
+	sed -i -e "s/<a href/\\n<a href/g" /tmp/temp.html
+	sed -i -e 's/\"/\"><\/a>\n/2' /tmp/temp.html
+	cat /tmp/temp.html | grep href | grep dsc > /tmp/index.html
+	sed -i -e 's/<a href="//g' /tmp/index.html
+	sed -i -e 's/"><\/a>//g' /tmp/index.html
+
+	version=$(cat /tmp/index.html | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+	if [ ! "x${version}" = "x" ] ; then
+		if [ ! "x${package_version}" = "x${version}" ] ; then
+			echo "Change: ${package_name}: upstream:${version} local:${package_version}"
+			echo ""
+		fi
+	else
+		echo ${output}
+	fi
+}
+
 check_http () {
 	echo "Checking: ${package_name}"
 	if [ -f /tmp/index.html ] ; then
@@ -109,14 +133,14 @@ qt5_apps () {
 	echo "connman/cmst:"
 
 	site="http://packages.siduction.org/extra/pool/main/c"
-	package_name="connman" ; package_version="connman_1.29-0%2bexp1" ; check_http
-	package_name="cmst" ; package_version="cmst_2015.04.22-1%2bexp2" ; check_http
+	package_name="connman" ; package_version="connman_1.29-0%2bexp1" ; check_http_exp
+	package_name="cmst" ; package_version="cmst_2015.04.22-1%2bexp2" ; check_http_exp
 
 	echo "qterminal:"
 
 	site="http://packages.siduction.org/lxqt/pool/main/q"
-	package_name="qtermwidget" ; package_version="qtermwidget_0.6.0-9" ; check_http
-	package_name="qterminal" ; package_version="qterminal_0.6.0-8" ; check_http
+	package_name="qtermwidget" ; package_version="qtermwidget_0.6.0-9" ; check_http_exp
+	package_name="qterminal" ; package_version="qterminal_0.6.0-8" ; check_http_exp
 }
 
 qt5_lxqt () {
@@ -155,7 +179,7 @@ qt5_lxqt () {
 	package_name="lxqt-powermanagement" ; package_version="${package_name}_0.9.0-9%2bexp1" ; check_http
 	package_name="lxqt-qtplugin" ; package_version="${package_name}_0.9.0-3" ; check_http
 	package_name="lximage-qt" ; package_version="${package_name}_0.4.0-2" ; check_http
-	package_name="lxqt-config" ; package_version="${package_name}_0.9.0-11%2bexp2" ; check_http
+	package_name="lxqt-config" ; package_version="${package_name}_0.9.0-14" ; check_http
 
 	site="http://packages.siduction.org/lxqt/pool/main/o"
 	package_name="obconf-qt" ; package_version="${package_name}_0.1.2-2" ; check_http
