@@ -14,7 +14,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
  #include <gnu/libc-version.h>
  
  #include "base/version.h"
-@@ -119,7 +119,7 @@ void RecordStartupMetricsOnBlockingPool(
+@@ -116,7 +116,7 @@ void RecordStartupMetricsOnBlockingPool(
  }
  
  void RecordLinuxGlibcVersion() {
@@ -23,7 +23,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
    Version version(gnu_get_libc_version());
  
    UMALinuxGlibcVersion glibc_version_result = UMA_LINUX_GLIBC_NOT_PARSEABLE;
-@@ -145,7 +145,7 @@ void RecordLinuxGlibcVersion() {
+@@ -140,7 +140,7 @@ void RecordLinuxGlibcVersion() {
  #endif
  }
  
@@ -32,7 +32,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
  UMALinuxWindowManager GetLinuxWindowManager() {
    switch (ui::GuessWindowManager()) {
      case ui::WM_UNKNOWN:
-@@ -244,7 +244,7 @@ void ChromeBrowserMainExtraPartsMetrics:
+@@ -239,7 +239,7 @@ void ChromeBrowserMainExtraPartsMetrics:
  
  void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
    RecordLinuxGlibcVersion();
@@ -168,7 +168,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
 +#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_ROOT_WINDOW_HOST_OZONE_H_
 --- a/chrome/chrome_browser_ui.gypi
 +++ b/chrome/chrome_browser_ui.gypi
-@@ -1319,6 +1319,8 @@
+@@ -1357,6 +1357,8 @@
        'browser/ui/views/first_run_dialog.cc',
        'browser/ui/views/first_run_dialog.h',
        'browser/ui/views/frame/browser_desktop_window_tree_host.h',
@@ -179,7 +179,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
        'browser/ui/views/frame/desktop_browser_frame_auralinux.cc',
 --- a/content/browser/browser_main_loop.cc
 +++ b/content/browser/browser_main_loop.cc
-@@ -135,6 +135,10 @@
+@@ -137,6 +137,10 @@
  #include "ui/gfx/x/x11_types.h"
  #endif
  
@@ -190,7 +190,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
  // One of the linux specific headers defines this as a macro.
  #ifdef DestroyAll
  #undef DestroyAll
-@@ -980,6 +984,11 @@ void BrowserMainLoop::ShutdownThreadsAnd
+@@ -983,6 +987,11 @@ void BrowserMainLoop::ShutdownThreadsAnd
      TRACE_EVENT0("shutdown", "BrowserMainLoop::Subsystem:GPUChannelFactory");
      if (BrowserGpuChannelHostFactory::instance())
        BrowserGpuChannelHostFactory::Terminate();
@@ -202,7 +202,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
    }
  
    // Must happen after the I/O thread is shutdown since this class lives on the
-@@ -1165,6 +1174,13 @@ int BrowserMainLoop::BrowserThreadsStart
+@@ -1179,6 +1188,13 @@ int BrowserMainLoop::BrowserThreadsStart
    }
  #endif  // defined(OS_MACOSX)
  
@@ -218,7 +218,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
    return result_code_;
 --- a/content/content_common.gypi
 +++ b/content/content_common.gypi
-@@ -944,6 +944,25 @@
+@@ -951,6 +951,25 @@
          },
       ]
      }],
@@ -246,8 +246,8 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
          '../media/media.gyp:media',
 --- a/content/gpu/gpu_main.cc
 +++ b/content/gpu/gpu_main.cc
-@@ -63,6 +63,10 @@
- #include <sanitizer/common_interface_defs.h>
+@@ -65,6 +65,10 @@
+ #include <sanitizer/coverage_interface.h>
  #endif
  
 +#if defined(USE_OZONE)
@@ -271,7 +271,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
  
 --- a/media/ozone/media_ozone_platform.cc
 +++ b/media/ozone/media_ozone_platform.cc
-@@ -40,6 +40,14 @@ MediaOzonePlatform* CreateMediaOzonePlat
+@@ -44,6 +44,14 @@ MediaOzonePlatform* CreateMediaOzonePlat
    return new MediaOzonePlatformStub;
  }
  
@@ -12720,7 +12720,7 @@ X-rev-id: 166346ab7a00e8dbd23a9f32ddb5741ad5afb41f
      # Sources lists shared with GN build.
      'views_sources': [
        'accessibility/native_view_accessibility.cc',
-@@ -671,6 +672,9 @@
+@@ -680,6 +681,9 @@
            'msvs_disabled_warnings': [ 4267, ],
          }],
          ['use_ozone==1', {

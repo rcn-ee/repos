@@ -4,8 +4,8 @@ Description: Avoid a linker bug where symbols are not found.
 
 --- a/build/common.gypi
 +++ b/build/common.gypi
-@@ -3617,7 +3617,7 @@
-                   '-fomit-frame-pointer',
+@@ -3662,7 +3662,7 @@
+                   '_LARGEFILE64_SOURCE',
                  ],
                }],
 -              ['OS=="linux" and target_arch=="ia32"', {
@@ -13,15 +13,7 @@ Description: Avoid a linker bug where symbols are not found.
                  'ldflags': [
                    '-Wl,--no-as-needed',
                  ],
-@@ -3665,7 +3665,6 @@
-               # Specifically tell the linker to perform optimizations.
-               # See http://lwn.net/Articles/192624/ .
-               '-Wl,-O1',
--              '-Wl,--as-needed',
-             ],
-             'conditions' : [
-               ['no_gc_sections==0', {
-@@ -3710,6 +3709,11 @@
+@@ -3769,6 +3769,11 @@
                  'cflags': ['-fno-unwind-tables', '-fno-asynchronous-unwind-tables'],
                  'defines': ['NO_UNWIND_TABLES'],
                }],

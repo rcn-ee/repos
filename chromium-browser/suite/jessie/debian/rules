@@ -88,6 +88,9 @@ GYP_DEFINES += use_aura=1
 GYP_DEFINES += enable_hidpi=1
 GYP_DEFINES += enable_touch_ui=1
 
+# add support and stubbed implementation of widevine (needed for EME)
+GYP_DEFINES += enable_widevine=1
+
 # Prefer gcc/g++ over clang until clang is better tested in Ubuntu.
 GYP_DEFINES += clang=0
 
@@ -424,7 +427,7 @@ ifneq ($(SNAPPY_PKGR_TO_USE),)
 	pushd $(SNAPPY_ROOT)/private/libs && for try in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do LC_ALL=C ldd *.so ../*.so ../*.a ../chromium-browser |grep -v " => not found" |grep " => " |cut -d\( -f1 |sort |uniq |while read want arrow foundat; do test -f "$$want" || test -z "$$foundat" || cp -v "$$foundat" ./; done; done
 	-popd
 
-	cd ..; $(SNAPPY_PKGR_TO_USE) build $(PWD)/$(SNAPPY_ROOT) || true
+	cd ..; $(SNAPPY_PKGR_TO_USE) build $(CURDIR)/$(SNAPPY_ROOT) || true
 endif
 
 
@@ -433,7 +436,6 @@ local-install-indep:
 	dh_install -i
 	install --directory debian/chromium-browser/etc/chromium-browser/customizations
 	install --owner=root --mode=0644 --no-target-directory debian/chromium-browser-customization-example debian/chromium-browser/etc/chromium-browser/customizations/00-example
-	install --owner=root --mode=0644 --no-target-directory debian/chromium-browser-customization-flash-staleness debian/chromium-browser/etc/chromium-browser/customizations/09-flash-staleness-check
 	find debian/chromium-browser-l10n/$(LIB_DIR)/remoting_locales debian/chromium-browser-l10n/$(LIB_DIR)/locales -name en-US.pak -print -delete
 
 override_dh_clean:
@@ -525,7 +527,6 @@ PACKAGED_NOT_FROM_TREE_MATCH += ^usr/share/doc/.\*/changelog.Debian.gz$$
 PACKAGED_NOT_FROM_TREE_MATCH += ^usr/bin/chromium-browser$$
 PACKAGED_NOT_FROM_TREE_MATCH += ^etc/chromium-browser/default$$
 PACKAGED_NOT_FROM_TREE_MATCH += ^etc/chromium-browser/customizations/00-example$$
-PACKAGED_NOT_FROM_TREE_MATCH += ^etc/chromium-browser/customizations/09-flash-staleness-check$$
 
 # Expressions to map filenames in the comparison logic so that a rename in
 # packaging is correctly handled.  No expression contains a space.  Each should

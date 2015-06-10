@@ -6,7 +6,7 @@ Bug-Ubuntu: 1084852
 
 --- a/third_party/webrtc/common_audio/common_audio.gyp
 +++ b/third_party/webrtc/common_audio/common_audio.gyp
-@@ -135,7 +135,7 @@
+@@ -144,7 +144,7 @@
              'signal_processing/spl_sqrt_floor.c',
            ],
            'conditions': [
@@ -15,15 +15,6 @@ Bug-Ubuntu: 1084852
                'dependencies': ['common_audio_neon',],
                'sources': [
                  'signal_processing/filter_ar_fast_q12_armv7.S',
-@@ -194,7 +194,7 @@
-         },
-       ],  # targets
-     }],
--    ['target_arch=="arm" and arm_version>=7', {
-+    ['target_arch=="arm" and arm_version>=7 and arm_neon==1', {
-       'targets': [
-         {
-           'target_name': 'common_audio_neon',
 --- a/third_party/webrtc/common_audio/fir_filter.cc
 +++ b/third_party/webrtc/common_audio/fir_filter.cc
 @@ -62,13 +62,13 @@ FIRFilter* FIRFilter::Create(const float
@@ -60,16 +51,7 @@ Bug-Ubuntu: 1084852
  #else
 --- a/third_party/webrtc/modules/audio_coding/codecs/isac/isacfix.gypi
 +++ b/third_party/webrtc/modules/audio_coding/codecs/isac/isacfix.gypi
-@@ -80,7 +80,7 @@
-             'WEBRTC_LINUX',
-           ],
-         }],
--        ['target_arch=="arm" and arm_version>=7', {
-+        ['target_arch=="arm" and arm_version>=7 and arm_neon==1', {
-           'dependencies': [ 'isac_neon', ],
-           'sources': [
-             'fix/source/lattice_armv7.S',
-@@ -124,7 +124,7 @@
+@@ -128,7 +128,7 @@
      },
    ],
    'conditions': [

@@ -4,7 +4,7 @@ Author: Chad Miller <chad.miller@canonical.com>
 
 --- a/chrome/common/chrome_paths.cc
 +++ b/chrome/common/chrome_paths.cc
-@@ -81,6 +81,8 @@ const base::FilePath::CharType kFilepath
+@@ -94,6 +94,8 @@ const base::FilePath::CharType kFilepath
  #else
      FILE_PATH_LITERAL("/usr/share/chromium/extensions");
  #endif  // defined(GOOGLE_CHROME_BUILD)
@@ -13,7 +13,7 @@ Author: Chad Miller <chad.miller@canonical.com>
  #endif  // defined(OS_LINUX)
  
  static base::LazyInstance<base::FilePath>
-@@ -466,6 +468,9 @@ bool PathProvider(int key, base::FilePat
+@@ -494,6 +496,9 @@ bool PathProvider(int key, base::FilePat
        cur = base::FilePath(FILE_PATH_LITERAL("/etc/opt/chrome/policies"));
  #else
        cur = base::FilePath(FILE_PATH_LITERAL("/etc/chromium/policies"));
@@ -23,7 +23,7 @@ Author: Chad Miller <chad.miller@canonical.com>
  #endif
        break;
      }
-@@ -496,6 +501,10 @@ bool PathProvider(int key, base::FilePat
+@@ -524,6 +529,10 @@ bool PathProvider(int key, base::FilePat
  #endif
  #if defined(OS_LINUX)
      case chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS: {
@@ -34,7 +34,7 @@ Author: Chad Miller <chad.miller@canonical.com>
        cur = base::FilePath(kFilepathSinglePrefExtensions);
        break;
      }
-@@ -546,6 +555,10 @@ bool PathProvider(int key, base::FilePat
+@@ -574,6 +583,10 @@ bool PathProvider(int key, base::FilePat
  #else
        cur = base::FilePath(FILE_PATH_LITERAL(
            "/etc/chromium/native-messaging-hosts"));

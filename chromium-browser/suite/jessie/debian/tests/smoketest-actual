@@ -17,12 +17,12 @@ SRCDIR=$1
 echo $SRCDIR
 
 which metacity
-metacity >windowmanager.out 2>windowmanager.err &
+metacity &
 windowmanager_pid=$!
 
 failures=""
 
-python3 -u -m http.server 0 >webserver-out 2>webserver-err &
+python3 -u -m http.server 0 &
 webserver_pid=$!
 
 trap "echo EXITING AT ERROR" ERR
@@ -55,7 +55,7 @@ echo -n "Test command-line URL retrieves page from server: "
 f=one$$.txt
 echo proc$$test >$f
 
-chromium-browser --window-size=1000,2200 --window-position=50,100 --user-data-dir=profile_storage --chromeless --new-window http://localhost:${webserver_port}/$f >browser_stdout 2>browser_stderr &
+chromium-browser --window-size=1000,2200 --window-position=50,100 --user-data-dir=profile_storage --chromeless --new-window http://localhost:${webserver_port}/$f &
 webclient_pid=$!
 trap "kill ${webclient_pid} && wait ${webclient_pid} || echo 'No client running.'" USR1
 
@@ -108,7 +108,7 @@ for sikulitest in $SRCDIR/debian/tests/testdata/*.sikuli; do
 	test -d $sikulitest
 	echo -n "Test $(basename ${testname}): "
 
-	sikuli $sikulitest &>${testname}-log
+	sikuli $sikulitest
 	if fgrep -q "[error]" ${testname}-log; then
 		failures="$(basename $testname)  $failures"
 		echo "BAD"

@@ -1,6 +1,6 @@
 --- a/chrome/app/generated_resources.grd
 +++ b/chrome/app/generated_resources.grd
-@@ -5207,6 +5207,35 @@ Keep your key file in a safe place. You
+@@ -5284,6 +5284,35 @@ Keep your key file in a safe place. You
          Hide Details
        </message>
  
@@ -33,10 +33,10 @@
 +        Add Integrated Website
 +      </message>
 +
-       <!-- Strings for the extensions permission dialog experiment -->
-       <!-- TODO(meacer): Remove these once the experiments are completed. -->
-       <message name="IDS_EXTENSION_PROMPT_EXPERIMENT_EXPLANATION1">
-@@ -12323,6 +12352,9 @@ Some features may be unavailable.  Pleas
+       <!-- Global error messages for extensions -->
+       <message name="IDS_EXTENSION_WARNINGS_WRENCH_MENU_ITEM" desc="The wrench menu item indicating that extensions caused problems.">
+         Extension error
+@@ -12519,6 +12548,9 @@ Some features may be unavailable.  Pleas
        <message name="IDS_OPTIONS_ADVANCED_SECTION_TITLE_CONTENT">
          Web content
        </message>
@@ -48,7 +48,7 @@
        </message>
 --- a/chrome/browser/resources/options/browser_options.html
 +++ b/chrome/browser/resources/options/browser_options.html
-@@ -554,6 +554,20 @@
+@@ -545,6 +545,20 @@
      </div>
    </section>
  </if>  <!-- chromeos -->
@@ -71,7 +71,7 @@
      <div class="checkbox controlled-setting-with-label">
 --- a/chrome/browser/resources/options/browser_options.js
 +++ b/chrome/browser/resources/options/browser_options.js
-@@ -618,6 +618,23 @@ cr.define('options', function() {
+@@ -613,6 +613,23 @@ cr.define('options', function() {
              [String(event.target.options[event.target.selectedIndex].value)]);
        };
  
@@ -95,7 +95,7 @@
        // Languages section.
        var showLanguageOptions = function(event) {
          PageManager.showPageByName('languages');
-@@ -1715,6 +1732,24 @@ cr.define('options', function() {
+@@ -1710,6 +1727,24 @@ cr.define('options', function() {
      },
  
      /**
@@ -120,7 +120,7 @@
       * Set the checked state of the metrics reporting checkbox.
       * @private
       */
-@@ -2169,6 +2204,7 @@ cr.define('options', function() {
+@@ -2164,6 +2199,7 @@ cr.define('options', function() {
    cr.makePublic(BrowserOptions, [
      'addBluetoothDevice',
      'deleteCurrentProfile',
@@ -128,7 +128,7 @@
      'enableCertificateButton',
      'enableDisplaySettings',
      'enableFactoryResetSection',
-@@ -2185,6 +2221,7 @@ cr.define('options', function() {
+@@ -2180,6 +2216,7 @@ cr.define('options', function() {
      'setBatteryStatusText',
      'setBluetoothState',
      'setCanSetTime',
@@ -579,7 +579,7 @@
                                  ContentSettings.getInstance(),
 --- a/chrome/browser/resources/options/options_bundle.js
 +++ b/chrome/browser/resources/options/options_bundle.js
-@@ -81,6 +81,8 @@ var CertificateImportErrorOverlay = opti
+@@ -82,6 +82,8 @@ var CertificateImportErrorOverlay = opti
  <include src="content_settings_ui.js">
  <include src="cookies_list.js">
  <include src="cookies_view.js">
@@ -973,7 +973,7 @@
 +#endif  // CHROME_BROWSER_UI_WEBUI_OPTIONS_DESKTOP_INTEGRATION_SETTINGS_HANDLER2_H_
 --- a/chrome/browser/ui/webui/options/options_ui.cc
 +++ b/chrome/browser/ui/webui/options/options_ui.cc
-@@ -107,6 +107,10 @@
+@@ -105,6 +105,10 @@
  #include "chrome/browser/ui/webui/options/geolocation_options_handler.h"
  #endif
  
@@ -984,7 +984,7 @@
  using content::RenderViewHost;
  
  namespace {
-@@ -281,6 +285,8 @@ OptionsUI::OptionsUI(content::WebUI* web
+@@ -279,6 +283,8 @@ OptionsUI::OptionsUI(content::WebUI* web
    AddOptionsPageUIHandler(localized_strings, new CookiesViewHandler());
    AddOptionsPageUIHandler(localized_strings, new CreateProfileHandler());
    AddOptionsPageUIHandler(localized_strings, new EasyUnlockHandler());
@@ -995,7 +995,7 @@
    AddOptionsPageUIHandler(localized_strings, new GeolocationOptionsHandler());
 --- a/chrome/chrome_browser_ui.gypi
 +++ b/chrome/chrome_browser_ui.gypi
-@@ -1739,6 +1739,8 @@
+@@ -1773,6 +1773,8 @@
        'browser/ui/webui/options/core_options_handler.h',
        'browser/ui/webui/options/create_profile_handler.cc',
        'browser/ui/webui/options/create_profile_handler.h',
@@ -1004,7 +1004,7 @@
        'browser/ui/webui/options/easy_unlock_handler.cc',
        'browser/ui/webui/options/easy_unlock_handler.h',
        'browser/ui/webui/options/font_settings_handler.cc',
-@@ -2876,6 +2878,7 @@
+@@ -2940,6 +2942,7 @@
            ],
          }],
          ['use_aura==1 and chromeos==0 and use_ozone==0 and OS=="linux"', {

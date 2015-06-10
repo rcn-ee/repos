@@ -63,6 +63,7 @@ readonly LIBDIR
 usage () {
   echo "$APPNAME [-h|--help] [-g|--debug] [--temp-profile] [--no-touch-pinch] [options] [URL]"
   echo
+  echo "        --verbose               Events logged to stderr."
   echo "        -g or --debug           Start within $GDB"
   echo "        -h or --help            This help screen"
   echo "        --temp-profile          Start with a new and temporary profile"
@@ -87,86 +88,17 @@ if test -d /etc/$APPNAME/customizations; then
 fi
 test -f ~/.chromium-browser.init && . ~/.chromium-browser.init
 
-# Always prefer param from FLASH_STALENESS_GOOD_PACKAGE. Remove others if dup.
-if test "$FLASH_STALENESS_GOOD_PACKAGE"; then
+FLASH_GOOD_PACKAGE="adobe-flashplugin"
+if test "$FLASH_GOOD_PACKAGE"; then
 	PREVIOUS_CANDIDATE=""
 	CANDIDATE="$CHROMIUM_FLAGS"
 	while test "$PREVIOUS_CANDIDATE" != "$CANDIDATE"; do  # Strip ppapi-flash-xxxx params off that are outside our known good params, for as long as we still make progress.
 		PREVIOUS_CANDIDATE="$CANDIDATE"
-		CANDIDATE=$(echo "$CANDIDATE" |sed -e "s,--ppapi-flash-\w*=\S*\s\(.*--ppapi-flash-path=/usr/lib/${FLASH_STALENESS_GOOD_PACKAGE}/libpepflashplayer.so --ppapi-flash-version=\),\1,")
-		CANDIDATE=$(echo "$CANDIDATE" |sed -e "s,\(.*--ppapi-flash-path=/usr/lib/${FLASH_STALENESS_GOOD_PACKAGE}/libpepflashplayer.so --ppapi-flash-version=.*\) --ppapi-flash-\w*=\S*,\1,")
+		CANDIDATE=$(echo "$CANDIDATE" |sed -e "s,--ppapi-flash-\w*=\S*\s\(.*--ppapi-flash-path=/usr/lib/${FLASH_GOOD_PACKAGE}/libpepflashplayer.so --ppapi-flash-version=\),\1,")
+		CANDIDATE=$(echo "$CANDIDATE" |sed -e "s,\(.*--ppapi-flash-path=/usr/lib/${FLASH_GOOD_PACKAGE}/libpepflashplayer.so --ppapi-flash-version=.*\) --ppapi-flash-\w*=\S*,\1,")
 	done
 	CHROMIUM_FLAGS="$CANDIDATE"
 fi
-
-###  Warn about Flash age and try to update.
-found_obselete=""
-while true; do  # dumb loop to make control easier inside for errors
-	if test "${FLASH_STALENESS_WARN_DIR}" && test "$FLASH_STALENESS_MAX_TRIES_PER_100_DAYS" && test "${FLASH_STALENESS_REWARN_AT_SOONEST}" && test "${FLASH_STALENESS_GOOD_PACKAGE}" && test "${FLASH_STALENESS_OBSELETE_PACKAGES}"; then 
-
-		mkdir -p "${FLASH_STALENESS_WARN_DIR}"
-		if find $FLASH_STALENESS_WARN_DIR -mtime -100 -type f |wc -l |xargs test $FLASH_STALENESS_MAX_TRIES_PER_100_DAYS -ge; then
-
-			if find "${FLASH_STALENESS_WARN_DIR}" -mtime "-${FLASH_STALENESS_REWARN_AT_SOONEST}" -type f |wc -l |xargs test 1 -gt; then   # not warned in N days
-				if id -Gn |grep \\bsudo\\b >/dev/null; then   # user could change things
-					for pkg in ${FLASH_STALENESS_OBSELETE_PACKAGES}; do
-						if test -f /var/lib/dpkg/info/${pkg}.list; then   # likely installed
-							dpkg -l flashplugin-installer >/dev/null && found_obselete="$pkg $found_obselete"
-						fi
-					done
-				else
-					echo "Even if we warned about this bad Flash, user can not update it."
-					zenity --info --text "Your computer has an outdated version of Flash plugin. You should install '$FLASH_STALENESS_GOOD_PACKAGE' package." &
-					echo >"${FLASH_STALENESS_WARN_DIR}/sudo-not-available"  # rate limited, but never grows count more than 1
-					break
-				fi
-			else
-				echo "Already warned about Flash in last $FLASH_STALENESS_REWARN_AT_SOONEST days. Skipping."
-				break
-			fi
-
-			if test "${found_obselete}"; then
-				# do we have a better suggestion?
-				have_better_package=""
-				apt-cache search "${FLASH_STALENESS_GOOD_PACKAGE}" 2>&1 >/dev/null && have_better_package=$FLASH_STALENESS_GOOD_PACKAGE
-				warn_file="${FLASH_STALENESS_WARN_DIR}/$(date +%Y%m%d)"
-				echo >"$warn_file"
-
-				zenity --question --text="The Flash player plugin you have installed is out of date. Do you wish to update it now?" --title="Update Flash Plugin?" --ok-label "Update" --cancel-label "Skip"
-				case $? in
-					0)
-					if test -z "$have_better_package"; then
-						zenity --info --text "When the software preferences opens, add 'Canonical Partners'." || true
-						software-properties-gtk --open-tab=1 || true
-					fi
-
-					if apt-cache show adobe-flashplugin; then
-						zenity --info --title="Install Flash plugin." --text "When the Software Center opens, install the replacement Flash plugin." || true
-						if which software-center 2>&1 >/dev/null; then
-							software-center adobe-flashplugin || true
-						else
-							xdg-open "apt://${FLASH_STALENESS_GOOD_PACKAGE}"
-							sleep 10  # give user the time to update.
-						fi
-						zenity --info --title="Available next time." --text "On your next run, the new Flash plugin should be available." || true
-					else
-						echo "Didn't discover the flash plugin."
-					fi
-					;;
-				esac
-
-			fi
-		else
-			echo "Already warned about Flash more than $FLASH_STALENESS_MAX_TRIES_PER_100_DAYS times in 100 days."
-		fi
-	else
-		echo "Not checking for flash player staleness."
-	fi
-	break  # Always break out.
-done
-
-
-
 
 # Prefer user defined CHROMIUM_USER_FLAGS (fron env) over system
 # default CHROMIUM_FLAGS (from /etc/$APPNAME/default)
@@ -220,11 +152,15 @@ fi
 want_touch_pinch=1
 want_debug=0
 want_temp_profile=0
+want_verbose=0
 while [ $# -gt 0 ]; do
   case "$1" in
     -h | --help | -help )
       usage
       exit 0 ;;
+    --verbose )
+      want_verbose=1
+      shift ;;
     -g | --debug )
       want_debug=1
       shift ;;
@@ -245,6 +181,10 @@ done
 discover_registration ${LIBDIR}/pepper/pepper-flash.info ppapi-flash && echo "Pepper Flash detected."
 
 CHROMIUM_FLAGS="${CHROMIUM_FLAGS} ${PLUGIN_PARAMETERS}"
+
+if [ $want_verbose -eq 1 ] ; then
+  CHROMIUM_FLAGS="${CHROMIUM_FLAGS} --enable-logging=stderr --v=${want_verbose}"
+fi
 
 if [ $want_temp_profile -eq 1 ] ; then
   TEMP_PROFILE=`mktemp -d`

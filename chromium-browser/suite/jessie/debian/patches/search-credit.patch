@@ -14,7 +14,7 @@ Author: Chad Miller <chad.miller@canonical.com>
      },
 --- a/components/search_engines/template_url.cc
 +++ b/components/search_engines/template_url.cc
-@@ -835,6 +835,9 @@ std::string TemplateURLRef::HandleReplac
+@@ -898,6 +898,9 @@ std::string TemplateURLRef::HandleReplac
  
    std::string url = parsed_url_;
  
@@ -24,7 +24,7 @@ Author: Chad Miller <chad.miller@canonical.com>
    // replacements_ is ordered in ascending order, as such we need to iterate
    // from the back.
    for (Replacements::reverse_iterator i = replacements_.rbegin();
-@@ -864,6 +867,7 @@ std::string TemplateURLRef::HandleReplac
+@@ -927,6 +930,7 @@ std::string TemplateURLRef::HandleReplac
  
        case GOOGLE_BASE_URL:
          DCHECK(!i->is_post_param);
@@ -32,7 +32,7 @@ Author: Chad Miller <chad.miller@canonical.com>
          HandleReplacement(
              std::string(), search_terms_data.GoogleBaseURLValue(), *i, &url);
          break;
-@@ -1039,7 +1043,8 @@ std::string TemplateURLRef::HandleReplac
+@@ -1102,7 +1106,8 @@ std::string TemplateURLRef::HandleReplac
  
        case GOOGLE_SEARCH_CLIENT: {
          DCHECK(!i->is_post_param);
@@ -42,7 +42,7 @@ Author: Chad Miller <chad.miller@canonical.com>
          if (!client.empty())
            HandleReplacement("client", client, *i, &url);
          break;
-@@ -1137,6 +1142,11 @@ std::string TemplateURLRef::HandleReplac
+@@ -1200,6 +1205,11 @@ std::string TemplateURLRef::HandleReplac
      }
    }
  

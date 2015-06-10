@@ -30,7 +30,7 @@
    views::NonClientFrameView* CreateNonClientFrameView() override;
 --- a/chrome/browser/ui/views/frame/browser_view.cc
 +++ b/chrome/browser/ui/views/frame/browser_view.cc
-@@ -698,6 +698,7 @@ void BrowserView::Show() {
+@@ -699,6 +699,7 @@ void BrowserView::Show() {
    force_location_bar_focus_ = false;
  
    browser()->OnWindowDidShow();
@@ -70,7 +70,7 @@
  }  // namespace client
 --- a/ui/aura/window_tree_host_x11.cc
 +++ b/ui/aura/window_tree_host_x11.cc
-@@ -479,6 +479,26 @@ gfx::AcceleratedWidget WindowTreeHostX11
+@@ -456,6 +456,26 @@ gfx::AcceleratedWidget WindowTreeHostX11
    return xwindow_;
  }
  
@@ -155,7 +155,7 @@
  #include "base/basictypes.h"
  #include "base/command_line.h"
  #include "base/strings/stringprintf.h"
-@@ -105,6 +107,7 @@ const char* kAtomsToCache[] = {
+@@ -106,6 +108,7 @@ const char* kAtomsToCache[] = {
    "_NET_WM_WINDOW_TYPE_NORMAL",
    "_NET_WM_WINDOW_TYPE_NOTIFICATION",
    "_NET_WM_WINDOW_TYPE_TOOLTIP",
@@ -163,7 +163,7 @@
    "XdndActionAsk",
    "XdndActionCopy"
    "XdndActionLink",
-@@ -1341,6 +1344,22 @@ void DesktopWindowTreeHostX11::UpdateMin
+@@ -1346,6 +1349,22 @@ void DesktopWindowTreeHostX11::UpdateMin
    XSetWMNormalHints(xdisplay_, xwindow_, &hints);
  }
  
@@ -188,7 +188,7 @@
    if (!IsActive())
 --- a/ui/views/widget/desktop_aura/desktop_window_tree_host_x11.h
 +++ b/ui/views/widget/desktop_aura/desktop_window_tree_host_x11.h
-@@ -85,6 +85,8 @@ class VIEWS_EXPORT DesktopWindowTreeHost
+@@ -86,6 +86,8 @@ class VIEWS_EXPORT DesktopWindowTreeHost
    // Deallocates the internal list of open windows.
    static void CleanUpWindowList();
  
