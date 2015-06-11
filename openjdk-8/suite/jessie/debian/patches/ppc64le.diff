@@ -1,0 +1,166 @@
+# DP: 
+
+Index: b/common/autoconf/generated-configure.sh
+===================================================================
+--- a/common/autoconf/generated-configure.sh
++++ b/common/autoconf/generated-configure.sh
+@@ -6844,7 +6844,7 @@ test -n "$target_alias" &&
+       VAR_CPU_ENDIAN=big
+       ;;
+     powerpc64le)
+-      VAR_CPU=ppc64
++      VAR_CPU=ppc64le
+       VAR_CPU_ARCH=ppc
+       VAR_CPU_BITS=64
+       VAR_CPU_ENDIAN=little
+@@ -6981,7 +6981,7 @@ $as_echo "$OPENJDK_BUILD_OS-$OPENJDK_BUI
+       VAR_CPU_ENDIAN=big
+       ;;
+     powerpc64le)
+-      VAR_CPU=ppc64
++      VAR_CPU=ppc64le
+       VAR_CPU_ARCH=ppc
+       VAR_CPU_BITS=64
+       VAR_CPU_ENDIAN=little
+@@ -7969,7 +7969,7 @@ $as_echo "$with_jvm_variants" >&6; }
+   if test "x$JVM_VARIANT_ZEROSHARK" = xtrue ; then
+     INCLUDE_SA=false
+   fi
+-  if test "x$VAR_CPU" = xppc64 ; then
++  if test "x$VAR_CPU" = xppc64 -o "x$VAR_CPU" = xppc64le ; then
+     INCLUDE_SA=false
+   fi
+   if test "x$OPENJDK_TARGET_CPU" = xaarch64; then
+@@ -29916,6 +29916,9 @@ fi
+   else
+     CCXXFLAGS_JDK="$CCXXFLAGS_JDK -D_BIG_ENDIAN"
+   fi
++  if test "x$OPENJDK_TARGET_CPU" = xppc64le; then
++    CCXXFLAGS_JDK="$CCXXFLAGS_JDK -DABI_ELFv2"
++  fi
+   if test "x$OPENJDK_TARGET_OS" = xlinux; then
+     CCXXFLAGS_JDK="$CCXXFLAGS_JDK -DLINUX"
+   fi
+Index: b/common/autoconf/hotspot-spec.gmk.in
+===================================================================
+--- a/common/autoconf/hotspot-spec.gmk.in
++++ b/common/autoconf/hotspot-spec.gmk.in
+@@ -71,6 +71,10 @@ ISA_DIR=$(OPENJDK_TARGET_CPU_ISADIR)
+ LIBARCH=$(OPENJDK_TARGET_CPU_LEGACY_LIB)
+ # Old name for OPENJDK_TARGET_CPU, uses i586 and amd64, instead of x86 and x86_64.
+ ARCH=$(OPENJDK_TARGET_CPU_LEGACY)
++# ppc64le uses the HotSpot ppc64 build
++ifeq ($(OPENJDK_TARGET_CPU), ppc64le)
++  ARCH=ppc64
++endif
+ # Legacy setting for building for a 64 bit machine.
+ # If yes then this expands to _LP64:=1
+ @LP64@
+Index: b/common/autoconf/jdk-options.m4
+===================================================================
+--- a/common/autoconf/jdk-options.m4
++++ b/common/autoconf/jdk-options.m4
+@@ -158,7 +158,7 @@ AC_DEFUN_ONCE([JDKOPT_SETUP_JVM_VARIANTS
+   if test "x$JVM_VARIANT_ZEROSHARK" = xtrue ; then
+     INCLUDE_SA=false
+   fi
+-  if test "x$VAR_CPU" = xppc64 ; then
++  if test "x$VAR_CPU" = xppc64 -o "x$VAR_CPU" = xppc64le ; then
+     INCLUDE_SA=false
+   fi
+   if test "x$OPENJDK_TARGET_CPU" = xaarch64; then
+Index: b/common/autoconf/platform.m4
+===================================================================
+--- a/common/autoconf/platform.m4
++++ b/common/autoconf/platform.m4
+@@ -115,7 +115,7 @@ AC_DEFUN([PLATFORM_EXTRACT_VARS_FROM_CPU
+       VAR_CPU_ENDIAN=big
+       ;;
+     powerpc64le)
+-      VAR_CPU=ppc64
++      VAR_CPU=ppc64le
+       VAR_CPU_ARCH=ppc
+       VAR_CPU_BITS=64
+       VAR_CPU_ENDIAN=little
+Index: b/common/autoconf/toolchain.m4
+===================================================================
+--- a/common/autoconf/toolchain.m4
++++ b/common/autoconf/toolchain.m4
+@@ -979,6 +979,9 @@ AC_DEFUN_ONCE([TOOLCHAIN_SETUP_COMPILER_
+   else
+     CCXXFLAGS_JDK="$CCXXFLAGS_JDK -D_BIG_ENDIAN"
+   fi
++  if test "x$OPENJDK_TARGET_CPU" = xppc64le; then
++    CCXXFLAGS_JDK="$CCXXFLAGS_JDK -DABI_ELFv2"
++  fi
+   if test "x$OPENJDK_TARGET_OS" = xlinux; then
+     CCXXFLAGS_JDK="$CCXXFLAGS_JDK -DLINUX"
+   fi
+Index: b/jdk/make/lib/SoundLibraries.gmk
+===================================================================
+--- a/jdk/make/lib/SoundLibraries.gmk
++++ b/jdk/make/lib/SoundLibraries.gmk
+@@ -143,6 +143,10 @@ else
+   ifeq ($(OPENJDK_TARGET_CPU), aarch64)
+ 	LIBJSOUND_CFLAGS += -DX_ARCH=X_AARCH64
+   endif
++
++  ifeq ($(OPENJDK_TARGET_CPU), ppc64le)
++       LIBJSOUND_CFLAGS += -DX_ARCH=X_PPC64LE
++  endif
+ endif
+ 
+ LIBJSOUND_CFLAGS += -DEXTRA_SOUND_JNI_LIBS='"$(EXTRA_SOUND_JNI_LIBS)"'
+Index: b/jdk/src/share/native/com/sun/media/sound/SoundDefs.h
+===================================================================
+--- a/jdk/src/share/native/com/sun/media/sound/SoundDefs.h
++++ b/jdk/src/share/native/com/sun/media/sound/SoundDefs.h
+@@ -43,7 +43,9 @@
+ #define X_ZERO          6
+ #define X_ARM           7
+ #define X_PPC           8
+-#define X_AARCH64	9
++#define X_PPC64         9
++#define X_PPC64LE      10
++#define X_AARCH64      11
+ 
+ // **********************************
+ // Make sure you set X_PLATFORM and X_ARCH defines correctly.
+Index: b/jdk/src/solaris/bin/ppc64le/jvm.cfg
+===================================================================
+--- /dev/null
++++ b/jdk/src/solaris/bin/ppc64le/jvm.cfg
+@@ -0,0 +1,33 @@
++# Copyright (c) 2011, Oracle and/or its affiliates. All rights reserved.
++# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
++#
++# This code is free software; you can redistribute it and/or modify it
++# under the terms of the GNU General Public License version 2 only, as
++# published by the Free Software Foundation.  Oracle designates this
++# particular file as subject to the "Classpath" exception as provided
++# by Oracle in the LICENSE file that accompanied this code.
++#
++# This code is distributed in the hope that it will be useful, but WITHOUT
++# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
++# version 2 for more details (a copy is included in the LICENSE file that
++# accompanied this code).
++#
++# You should have received a copy of the GNU General Public License version
++# 2 along with this work; if not, write to the Free Software Foundation,
++# Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
++#
++# Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
++# or visit www.oracle.com if you need additional information or have any
++# questions.
++#
++# List of JVMs that can be used as an option to java, javac, etc.
++# Order is important -- first in this list is the default JVM.
++# NOTE that this both this file and its format are UNSUPPORTED and
++# WILL GO AWAY in a future release.
++#
++# You may also select a JVM in an arbitrary location with the
++# "-XXaltjvm=<jvm_dir>" option, but that too is unsupported
++# and may not be available in a future release.
++#
++-server KNOWN

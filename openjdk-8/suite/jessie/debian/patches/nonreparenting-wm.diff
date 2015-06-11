@@ -10,12 +10,13 @@
      public String toString() {
          switch  (WMID) {
            case NO_WM:
-@@ -596,7 +597,7 @@
-     }
- 
-     static boolean isNonReparentingWM() {
--        return (XWM.getWMID() == XWM.COMPIZ_WM || XWM.getWMID() == XWM.LG3D_WM || XWM.getWMID() == XWM.CWM_WM);
-+        return (XWM.getWMID() == XWM.COMPIZ_WM || XWM.getWMID() == XWM.LG3D_WM || XWM.getWMID() == XWM.CWM_WM || XWM.getWMID() == XWM.OTHER_NONREPARENTING_WM);
+@@ -601,7 +601,8 @@
+             awtWMNonReparenting = (XToolkit.getEnv("_JAVA_AWT_WM_NONREPARENTING") != null) ? 1 : 0;
+         }
+         return (awtWMNonReparenting == 1 || XWM.getWMID() == XWM.COMPIZ_WM
+-                || XWM.getWMID() == XWM.LG3D_WM || XWM.getWMID() == XWM.CWM_WM);
++                || XWM.getWMID() == XWM.LG3D_WM || XWM.getWMID() == XWM.CWM_WM
++		|| XWM.getWMID() == XWM.OTHER_NONREPARENTING_WM);
      }
  
      /*

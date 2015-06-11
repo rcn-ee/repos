@@ -130,6 +130,10 @@ qt5_kde () {
 }
 
 qt5_apps () {
+	echo "qupzilla:"
+	site="http://ftp.de.debian.org/debian/pool/main/q"
+	package_name="qupzilla" ; package_version="${package_name}_1.8.6~dfsg1-2" ; check_http
+
 	echo "connman/cmst:"
 
 	site="http://packages.siduction.org/extra/pool/main/c"
@@ -231,6 +235,9 @@ echo "others"
 site="http://ports.ubuntu.com/pool/universe/c"
 package_name="chromium-browser" ; package_version="${package_name}_43.0.2357.81-0ubuntu1.1179" ; check_http
 
+site="http://ftp.de.debian.org/debian/pool/main/o"
+package_name="openjdk-8"; package_version="${package_name}_8u45-b14-3"; check_http
+
 #really slow...
 exit
 
@@ -238,7 +245,6 @@ suite="experimental"
 package_name="policykit-1" ; package_version="0.112-4" ; check
 
 suite="sid"
-package_name="openjdk-8-jdk" ; package_version="8u40~b09-1" ; check
 package_name="openjfx" ; package_version="8u20-b26-3" ; check
 package_name="waffle" ; package_version="1.5.1-1" ; check
 package_name="xinput-calibrator" ; package_version="0.7.5+git20140213-1" ; check

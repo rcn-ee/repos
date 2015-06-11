@@ -1,0 +1,13 @@
+# DP: Fix libjavajpeg build using the system jpeg library.
+
+--- a/jdk/make/lib/Awt2dLibraries.gmk
++++ b/jdk/make/lib/Awt2dLibraries.gmk
+@@ -740,7 +740,7 @@
+ ifeq ($(USE_EXTERNAL_LIBJPEG), true)
+   LIBJPEG_LIBS := -ljpeg
+   BUILD_LIBJAVAJPEG_INCLUDE_FILES := \
+-      imageIOJPEG.c \
++      imageioJPEG.c \
+       jpegdecoder.c
+   BUILD_LIBJAVAJPEG_HEADERS :=
+ else

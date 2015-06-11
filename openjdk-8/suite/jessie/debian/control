@@ -7,19 +7,19 @@ Build-Depends: debhelper (>= 5), quilt, m4, lsb-release, zip, unzip,
   sharutils, gawk, cpio, pkg-config, procps, time, wdiff, fastjar (>= 2:0.96-0ubuntu2),
   autoconf, automake, autotools-dev, ant, ant-optional,  libtool,
   g++-4.9,
-  openjdk-7-jdk | openjdk-8-jdk,
+  openjdk-8-jdk | openjdk-7-jdk,
   libxtst-dev, libxi-dev, libxt-dev, libxaw7-dev, libxrender-dev, libcups2-dev, libasound2-dev, liblcms2-dev, libfreetype6-dev (>= 2.2.1), libgtk2.0-dev, libxinerama-dev, libkrb5-dev, xsltproc, libpcsclite-dev,
   libffi-dev, 
   zlib1g-dev, libattr1-dev, libpng-dev, libjpeg-dev, libgif-dev, libpulse-dev (>= 0.9.12), systemtap-sdt-dev,
   libnss3-dev (>= 2:3.17.1), tzdata,
   mauve, jtreg, xvfb, xauth, xfonts-base, libgl1-mesa-dri [!x32], twm | metacity, twm | dbus-x11, x11-xkb-utils,
-Standards-Version: 3.9.5
+Standards-Version: 3.9.6
 Homepage: http://openjdk.java.net/
 Vcs-Bzr: http://bazaar.launchpad.net/~openjdk/openjdk/openjdk8
 Vcs-Browser: https://code.launchpad.net/~openjdk/openjdk/openjdk8
 
 Package: openjdk-8-jdk
-Architecture: alpha amd64 armel armhf arm64 i386 ia64 lpia mips mipsel mips64 mips64el powerpc powerpcspe ppc64 ppc64el m68k sh4 sparc sparc64 s390x x32 kfreebsd-i386 kfreebsd-amd64
+Architecture: alpha amd64 armel armhf arm64 i386 ia64 lpia mips64 mips64el powerpc powerpcspe ppc64 ppc64el m68k sh4 sparc sparc64 s390x x32 kfreebsd-i386 kfreebsd-amd64
 Multi-Arch: same
 Pre-Depends: ${dpkg:Depends}
 Depends: openjdk-8-jre (= ${binary:Version}),
@@ -36,7 +36,7 @@ Description: OpenJDK Development Kit (JDK)
  from the IcedTea project.
 
 Package: openjdk-8-jre-headless
-Architecture: alpha amd64 armel armhf arm64 i386 ia64 lpia mips mipsel mips64 mips64el powerpc powerpcspe ppc64 ppc64el m68k sh4 sparc sparc64 s390x x32 kfreebsd-i386 kfreebsd-amd64
+Architecture: alpha amd64 armel armhf arm64 i386 ia64 lpia mips64 mips64el powerpc powerpcspe ppc64 ppc64el m68k sh4 sparc sparc64 s390x x32 kfreebsd-i386 kfreebsd-amd64
 Multi-Arch: same
 Pre-Depends: ${dpkg:Depends}, ${multiarch:Depends}
 Depends: ${jredefault:Depends}, ${cacert:Depends},
@@ -52,14 +52,14 @@ Provides: java-runtime-headless, java2-runtime-headless,
   java7-runtime-headless, java8-runtime-headless,
   ${defaultvm:Provides}, ${jvm:Provides}
 Description: OpenJDK Java runtime, using ${vm:Name} (headless)
- Minimal Java runtime - needed for executing non GUI Java programs.
- Using ${vm:Name}.
+ Minimal Java runtime - needed for executing non GUI Java programs,
+ using ${vm:Name}.
  .
  The packages are built using the IcedTea build support and patches
  from the IcedTea project.
 
 Package: openjdk-8-jre
-Architecture: alpha amd64 armel armhf arm64 i386 ia64 lpia mips mipsel mips64 mips64el powerpc powerpcspe ppc64 ppc64el m68k sh4 sparc sparc64 s390x x32 kfreebsd-i386 kfreebsd-amd64
+Architecture: alpha amd64 armel armhf arm64 i386 ia64 lpia mips64 mips64el powerpc powerpcspe ppc64 ppc64el m68k sh4 sparc sparc64 s390x x32 kfreebsd-i386 kfreebsd-amd64
 Multi-Arch: same
 Pre-Depends: ${dpkg:Depends}
 Depends: openjdk-8-jre-headless (= ${binary:Version}),
@@ -74,13 +74,13 @@ Provides: java-runtime, java2-runtime,
   java7-runtime, java8-runtime
 Description: OpenJDK Java runtime, using ${vm:Name}
  Full Java runtime environment - needed for executing Java GUI and Webstart
- programs. Using ${vm:Name}.
+ programs, using ${vm:Name}.
  .
  The packages are built using the IcedTea build support and patches
  from the IcedTea project.
 
 Package: openjdk-8-demo
-Architecture: alpha amd64 armel armhf arm64 i386 ia64 lpia mips mipsel mips64 mips64el powerpc powerpcspe ppc64 ppc64el m68k sh4 sparc sparc64 s390x x32 kfreebsd-i386 kfreebsd-amd64
+Architecture: alpha amd64 armel armhf arm64 i386 ia64 lpia mips64 mips64el powerpc powerpcspe ppc64 ppc64el m68k sh4 sparc sparc64 s390x x32 kfreebsd-i386 kfreebsd-amd64
 Priority: extra
 Pre-Depends: ${dpkg:Depends}
 Depends: openjdk-8-jre (= ${binary:Version}),
@@ -126,7 +126,7 @@ Description: OpenJDK Development Kit (JDK) documentation
  from the IcedTea project.
 
 Package: openjdk-8-dbg
-Architecture: alpha amd64 armel armhf arm64 i386 ia64 lpia mips mipsel mips64 mips64el powerpc powerpcspe ppc64 ppc64el m68k sh4 sparc sparc64 s390x x32 kfreebsd-i386 kfreebsd-amd64
+Architecture: alpha amd64 armel armhf arm64 i386 ia64 lpia mips64 mips64el powerpc powerpcspe ppc64 ppc64el m68k sh4 sparc sparc64 s390x x32 kfreebsd-i386 kfreebsd-amd64
 Multi-Arch: same
 Priority: extra
 Section: debug
@@ -145,7 +145,7 @@ Description: Java runtime based on OpenJDK (debugging symbols)
  from the IcedTea project.
 
 Package: openjdk-8-jre-jamvm
-Architecture: amd64 armel armhf i386 lpia mips mipsel powerpc kfreebsd-i386 kfreebsd-amd64
+Architecture: amd64 armel armhf i386 lpia powerpc kfreebsd-i386 kfreebsd-amd64
 Multi-Arch: same
 Priority: extra
 Pre-Depends: ${dpkg:Depends}

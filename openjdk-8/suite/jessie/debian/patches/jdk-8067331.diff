@@ -1,0 +1,46 @@
+# DP: JDK-8067331, Zero: Atomic::xchg and Atomic::xchg_ptr need full memory barrier
+
+--- jdk8/hotspot/src/os_cpu/linux_zero/vm/atomic_linux_zero.inline.hpp
++++ jdk8/hotspot/src/os_cpu/linux_zero/vm/atomic_linux_zero.inline.hpp
+@@ -222,31 +222,35 @@
+ 
+ inline jint Atomic::xchg(jint exchange_value, volatile jint* dest) {
+ #ifdef ARM
+-  return arm_lock_test_and_set(dest, exchange_value);
++  jint result = arm_lock_test_and_set(dest, exchange_value);
+ #else
+ #ifdef M68K
+-  return m68k_lock_test_and_set(dest, exchange_value);
++  jint result = m68k_lock_test_and_set(dest, exchange_value);
+ #else
+   // __sync_lock_test_and_set is a bizarrely named atomic exchange
+   // operation.  Note that some platforms only support this with the
+   // limitation that the only valid value to store is the immediate
+   // constant 1.  There is a test for this in JNI_CreateJavaVM().
+-  return __sync_lock_test_and_set (dest, exchange_value);
++  jint result = __sync_lock_test_and_set (dest, exchange_value);
++  __sync_synchronize();
+ #endif // M68K
+ #endif // ARM
++  return result;
+ }
+ 
+ inline intptr_t Atomic::xchg_ptr(intptr_t exchange_value,
+                                  volatile intptr_t* dest) {
+ #ifdef ARM
+-  return arm_lock_test_and_set(dest, exchange_value);
++  intptr_t result = arm_lock_test_and_set(dest, exchange_value);
+ #else
+ #ifdef M68K
+-  return m68k_lock_test_and_set(dest, exchange_value);
++  intptr_t result = m68k_lock_test_and_set(dest, exchange_value);
+ #else
+-  return __sync_lock_test_and_set (dest, exchange_value);
++  intptr_t result = __sync_lock_test_and_set (dest, exchange_value);
++  __sync_synchronize();
+ #endif // M68K
+ #endif // ARM
++  return result;
+ }
+ 
+ inline void* Atomic::xchg_ptr(void* exchange_value, volatile void* dest) {
