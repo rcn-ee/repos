@@ -9,7 +9,6 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-
 %:
 	dh $@
 
@@ -36,7 +35,7 @@ override_dh_install:
 	# install libraries into libqupzilla1 package
 	# the path to the libraries is not the same for
 	# all architectures
-	for f in $$(find debian/tmp/usr/lib -name "libQupZilla.so.*"); do \
+	for f in $$(find debian/tmp/usr/lib -name "*.so*" | egrep -v 'libQupZilla.so$$'  ); do \
 	  p=$$(echo $$f | sed 's%debian/tmp/%%'); \
 	  d=$$(dirname $$p); \
 	  b=$$(basename $$p); \
