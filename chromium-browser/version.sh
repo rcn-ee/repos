@@ -18,4 +18,4 @@ debian_version="${package_version}-0ubuntu1.1179"
 debian_patch="${debian_pkg_name}_${package_version}-0ubuntu1.1179.debian.tar.xz"
 debian_diff=""
 
-jessie_version="~bpo80+20150610+1"
+jessie_version="~bpo80+20150611+1"
