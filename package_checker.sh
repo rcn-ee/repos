@@ -144,7 +144,7 @@ qt5_apps () {
 
 	site="http://packages.siduction.org/lxqt/pool/main/q"
 	package_name="qtermwidget" ; package_version="qtermwidget_0.6.0-9" ; check_http_exp
-	package_name="qterminal" ; package_version="qterminal_0.6.0-8" ; check_http_exp
+	package_name="qterminal" ; package_version="qterminal_0.6.0-8" ; check_http
 }
 
 qt5_lxqt () {
@@ -160,7 +160,7 @@ qt5_lxqt () {
 	package_name="libqtxdg" ; package_version="${package_name}_1.2.0-3%2bexp3" ; check_http
 
 	site="http://packages.siduction.org/lxqt/pool/main/libl"
-	package_name="liblxqt" ; package_version="${package_name}_0.9.0-13%2bexp1" ; check_http
+	package_name="liblxqt" ; package_version="${package_name}_0.9.0-14" ; check_http
 
 	site="http://packages.siduction.org/lxqt/pool/main/l"
 	package_name="lxqt-globalkeys" ; package_version="${package_name}_0.9.0-6%2bexp1" ; check_http
