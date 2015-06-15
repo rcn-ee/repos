@@ -3,13 +3,13 @@
 
 
 %:
-	dh ${@} --buildsystem cmake --parallel --dbg-package=lximage-qt-dbg
+	dh ${@} --buildsystem cmake --parallel
 
 
 override_dh_auto_install:
 	dh_auto_install -- DESTDIR=$(CURDIR)/debian/lximage-qt
 
-#override_dh_strip:
+override_dh_strip:
 	dh_strip --dbg-package=lximage-qt-dbg
 
 
