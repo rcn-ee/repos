@@ -9,7 +9,7 @@ DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 
 override_dh_install:
-	dh_install --list-missing --fail-missing --exclude=pcmanfm-qt.1
+	dh_install --exclude=pcmanfm-qt.1 --fail-missing  --list-missing
 
 override_dh_auto_configure:
 	dh_auto_configure  -- -DLIB_SUFFIX="/$(DEB_HOST_MULTIARCH)"
