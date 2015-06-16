@@ -4,7 +4,7 @@ mirror="http://ftp.de.debian.org/debian"
 
 package_name="mesa"
 debian_pkg_name="${package_name}"
-package_version="10.5.5"
+package_version="10.5.7"
 package_source="${package_name}_${package_version}.orig.tar.gz"
 src_dir="${package_name}-${package_version}"
 
@@ -17,4 +17,4 @@ debian_version="${package_version}-1"
 debian_untar=""
 debian_patch="${package_name}_${debian_version}.diff.gz"
 
-jessie_version="~bpo80+20150512+1"
+jessie_version="~bpo80+20150616+1"

@@ -2,7 +2,7 @@
 
 . version.sh
 
-incoming_mirror="http://incoming.debian.org/debian-buildd/"
+incoming_mirror="http://incoming.debian.org/debian-buildd"
 
 if [ ! "x${git_repo}" = "x" ] ; then
 	if [ -f ./git/.git/config ] ; then
