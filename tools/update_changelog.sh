@@ -35,7 +35,7 @@ run () {
 		echo "${debian_pkg_name} (${debian_version}~${backport}${simple_date}+1) ${suite}; urgency=low" > ${wfile}
 	fi
 	echo "" >> ${wfile}
-	echo "  * Rebuild for repos.rcn-ee.net" >> ${wfile}
+	echo "  * Rebuild for repos.rcn-ee.com" >> ${wfile}
 	echo "" >> ${wfile}
 	echo " -- Robert Nelson <robertcnelson@gmail.com>  ${new_date}" >> ${wfile}
 	echo "" >> ${wfile}
