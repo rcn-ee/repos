@@ -1,57 +1,39 @@
-libqtxdg (1.2.0-3+exp3~bpo80+20150608+1) jessie; urgency=low
+libqtxdg (1.2.0-4~bpo80+20150623+1) jessie; urgency=low
 
-  * Rebuild for repos.rcn-ee.net
+  * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Mon, 08 Jun 2015 12:57:35 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Tue, 23 Jun 2015 08:47:12 -0500
 
-libqtxdg (1.2.0-3+exp3) experimental; urgency=medium
+libqtxdg (1.2.0-4) unstable; urgency=medium
 
-  * rebuild only
+  * commit 5fc3ef738fe5c958a5722652454c9b6a31b04f01
+    Author: Michael Vetter <g.bluehut@gmail.com>
+    Date:   Thu Jun 18 22:30:19 2015 +0200
+    Remove trailing whitespaces
 
- -- Alf Gaida <agaida@siduction.org>  Thu, 04 Jun 2015 12:26:14 +0200
+ -- Alf Gaida <agaida@siduction.org>  Sat, 20 Jun 2015 23:21:00 +0200
 
-libqtxdg (1.2.0-3+exp2) experimental; urgency=medium
+libqtxdg (1.2.0-2) unstable; urgency=medium
 
   * new symbols added
-
- -- Alf Gaida <agaida@siduction.org>  Thu, 14 May 2015 00:50:05 +0200
-
-libqtxdg (1.2.0-3+exp1) experimental; urgency=medium
-
   * commit ab0f65cd6b5b695d24c5020c1b31104a989728d4
     Author: Luís Pereira <luis.artur.pereira@gmail.com>
     Date:   Thu Apr 2 16:25:59 2015 -0700
-
     Backports Fixed icons lookup in QIcon::fromTheme
-    
     We already supported multile directories. But we didn't support dashes to
     separate levels of specificity in icon names.
     Closes lxde/libqtxdg#54.
 
- -- Alf Gaida <agaida@siduction.org>  Thu, 14 May 2015 00:42:47 +0200
+ -- Alf Gaida <agaida@siduction.org>  Thu, 14 May 2015 00:50:05 +0200
 
-libqtxdg (1.2.0-2+exp3) experimental; urgency=medium
-
-  * rebuild 
-
- -- Alf Gaida <agaida@siduction.org>  Sun, 19 Apr 2015 13:37:39 +0200
-
-libqtxdg (1.2.0-2+exp2) experimental; urgency=medium
-
-  * commit d5bc16bfac0da2c630daf7449f92c14eeb7646ad
-    Adds XdgDirs tests
-    Closes lxde/libqtxdg#58. 
-
- -- Alf Gaida <agaida@siduction.org>  Wed, 15 Apr 2015 00:47:20 +0200
-
-libqtxdg (1.2.0-1+exp1) experimental; urgency=medium
+libqtxdg (1.2.0-1) unstable; urgency=medium
 
   * commit da936792f2376327db2c287348738ede394e7bcc
     Release 1.2.0
 
  -- Alf Gaida <agaida@siduction.org>  Sun, 29 Mar 2015 15:10:20 +0200
 
-libqtxdg (1.1.0-14+exp1) experimental; urgency=medium
+libqtxdg (1.1.0-14a) unstable; urgency=medium
 
   * fix https://github.com/lxde/lxqt/issues/563
   * commit d2c9635876eb054f5ee19de7c306a94539448caa
@@ -63,7 +45,7 @@ libqtxdg (1.1.0-14+exp1) experimental; urgency=medium
 
  -- Alf Gaida <agaida@siduction.org>  Sun, 29 Mar 2015 01:06:24 +0100
 
-libqtxdg (1.1.0-13+exp1) experimental; urgency=low
+libqtxdg (1.1.0-13) unstable; urgency=low
 
   * commit d3ba6ef8b248f5d80ce5b3c0c0cd7047eb8452d5
     Add QtDBus/Qt5DBus dependency
@@ -71,29 +53,29 @@ libqtxdg (1.1.0-13+exp1) experimental; urgency=low
 
  -- Alf Gaida <agaida@siduction.org>  Thu, 26 Mar 2015 01:33:02 +0100
 
-libqtxdg (1.1.0-12+exp1) experimental; urgency=medium
+libqtxdg (1.1.0-12) unstable; urgency=medium
 
   * commit 0a9abfeed2106ac7ab3c7ec8240bb68ffd5ae813
     Fixes an Qt4 FTBFS
     QProcess::nullDevice() is just sugar for "/dev/null" on everything except
     Windows.
-
- -- Alf Gaida <agaida@siduction.org>  Wed, 25 Mar 2015 00:22:25 +0100
-
-libqtxdg (1.1.0-11+exp) experimental; urgency=medium
-
   * qtbase5-private-dev added as build dependency 
 
- -- Alf Gaida <agaida@siduction.org>  Sat, 14 Mar 2015 21:52:45 +0100
-
-libqtxdg (1.1.0-10+exp) experimental; urgency=medium
-
-  * commit 641754a77b9692c3721128cde415ef13c770f88c
-    XdgDirs: Updates documentation.
-
  -- Alf Gaida <agaida@siduction.org>  Sat, 14 Mar 2015 21:44:53 +0100
+ 
+libqtxdg (1.1.0-9) unstable; urgency=medium
 
-libqtxdg (1.1.0-8+exp) experimental; urgency=medium
+  * commit 9bc56a68b53cab26a0b97abb218394cb1e3b082f
+    Adds a list of special non detachable execs
+    .   
+    Some executables (pkexec) don't work with QProcess::startDetached().
+    Instead of calling QProcess::start(), which in some situations can lead
+    to the executable being killed as an result of his parent kill, we maintain
+    a list of executables that don't cope with QProcess::startDetached() and
+
+ -- Alf Gaida <agaida@siduction.org>  Thu, 19 Mar 2015 17:53:09 +0100
+
+libqtxdg (1.1.0-8) unstable; urgency=medium
 
   * fix symbols
 
