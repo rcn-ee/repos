@@ -13,8 +13,8 @@ git_sha=""
 reprepro_dir="o/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-3"
+debian_version="${package_version}-4"
 debian_untar=""
 debian_patch="${package_name}_${debian_version}.diff.gz"
 
-jessie_version="~bpo80+20150611+2"
+jessie_version="~bpo80+20150623+1"
