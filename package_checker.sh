@@ -30,21 +30,18 @@ check_http_exp () {
 	generic_http
 	version=$(cat /tmp/index.html | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
 	generic_check
-	sleep 1
 }
 
 check_http () {
 	generic_http
 	version=$(cat /tmp/index.html | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
 	generic_check
-	sleep 1
 }
 
 check_http_machine () {
 	generic_http
 	version=$(cat /tmp/index.html | grep jessie | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
 	generic_check
-	sleep 1
 }
 
 check () {
@@ -188,7 +185,7 @@ qt5_lxqt () {
 	package_name="lxqt-config" ; package_version="${package_name}_0.9.0-18" ; check_http
 
 	site="http://packages.siduction.org/lxqt/pool/main/o"
-	package_name="obconf-qt" ; package_version="${package_name}_0.1.2-2" ; check_http
+	package_name="obconf-qt" ; package_version="${package_name}_0.1.2-3" ; check_http
 
 	site="http://packages.siduction.org/lxqt/pool/main/c"
 	package_name="compton-conf" ; package_version="${package_name}_0.1.2-6%2bexp1" ; check_http
