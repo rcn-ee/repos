@@ -188,7 +188,7 @@ qt5_lxqt () {
 	package_name="obconf-qt" ; package_version="${package_name}_0.1.2-3" ; check_http
 
 	site="http://packages.siduction.org/lxqt/pool/main/c"
-	package_name="compton-conf" ; package_version="${package_name}_0.1.2-6%2bexp1" ; check_http
+	package_name="compton-conf" ; package_version="${package_name}_0.1.2-7" ; check_http
 
 	site="http://packages.siduction.org/lxqt/pool/main/l"
 	package_name="lxqt-about" ; package_version="${package_name}_0.9.0-5" ; check_http
@@ -200,10 +200,10 @@ machinekit () {
 	echo "machinekit:"
 
 	site="http://deb.dovetail-automata.com/pool/main/c"
-	package_name="czmq" ; package_version="${package_name}_2.2.0-0.5%7e1jessie%7e1da" ; check_http
+	package_name="czmq" ; package_version="${package_name}_2.2.0-0.5%7e1jessie%7e1da" ; check_http_machine
 
 	site="http://deb.dovetail-automata.com/pool/main/libw"
-	package_name="libwebsockets" ; package_version="${package_name}_1.3-1%7egit95a8abb%7e1431844465git95a8abb%7e1jessie%7e1da" ; check_http
+	package_name="libwebsockets" ; package_version="${package_name}_1.3-1%7egit95a8abb%7e1431844465git95a8abb%7e1jessie%7e1da" ; check_http_machine
 
 	site="http://deb.dovetail-automata.com/deb-testing/pool/main/x"
 	package_name="xenomai" ; package_version="${package_name}_2.6.4-1%7e1jessie%7e1da" ; check_http
