@@ -1,31 +1,32 @@
 #!/usr/bin/make -f
 
+# Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-export DEB_BUILD_MAINT_OPTIONS=hardening=+all
-export DEB_CXXFLAGS_MAINT_APPEND = -fvisibility=hidden -fvisibility-inlines-hidden
-DPKG_EXPORT_BUILDFLAGS = 1
-include /usr/share/dpkg/buildflags.mk
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
-%:
-	dh $@ --with-cmake 
+dh = --list-missing
+
+include /usr/share/pkg-kde-tools/qt-kde-team/2/debian-qt-kde.mk
+
+export CFLAGS += -fvisibility=hidden -fvisibility-inlines-hidden
+export CXXFLAGS += -fvisibility=hidden -fvisibility-inlines-hidden
 
 override_dh_auto_clean:
-	dh_auto_clean
+	$(overridden_command)
 	rm -rf build-qt5
 
 override_dh_auto_configure:
-	dh_auto_configure -- -DUSE_QT4=1 
-	dh_auto_configure --builddirectory=build-qt5 
+	$(overridden_command) -- -DLIB_INSTALL_DIR=/usr/lib/$(DEB_HOST_MULTIARCH) -DUSE_QT4=True
+	$(overridden_command) --builddirectory=build-qt5 -- -DUSE_QT5=True
 
 override_dh_auto_build:
-	dh_auto_build
-	dh_auto_build --builddirectory=build-qt5
+	$(overridden_command)
+	$(overridden_command) --builddirectory=build-qt5
+
+override_dh_auto_test:
+	# Skip dh_auto_test
 
 override_dh_auto_install:
-	dh_auto_install
-	dh_auto_install --builddirectory=build-qt5
-
-override_dh_install:
-	dh_install --list-missing --fail-missing
-
+	$(overridden_command)
+	$(overridden_command) --builddirectory=build-qt5
