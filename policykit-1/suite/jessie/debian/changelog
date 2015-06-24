@@ -1,9 +1,33 @@
-policykit-1 (0.112-4.3~20150216+1) jessie; urgency=low
+policykit-1 (0.112-5~bpo80+20150624+1) jessie; urgency=low
 
-  * Rebuild for repos.rcn-ee.net
-  * libmozjs185-dev
+  * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Mon, 16 Feb 2015 12:30:26 -0600
+ -- Robert Nelson <robertcnelson@gmail.com>  Wed, 24 Jun 2015 10:46:16 -0500
+
+policykit-1 (0.112-5) experimental; urgency=medium
+
+  * Team upload.
+  * Go back to mozjs 1.8.5, like the version in unstable: mozjs 17 has
+    been removed from Debian, and mozjs 24 requires significant upstream
+    changes and no longer has a C API (Closes: #776744)
+  * Add a symlink so the old library can run the new agent helper
+    (Closes: #699447)
+  * Add patch from upstream to work around older versions of libpam-systemd
+    which would give root processes the real uid's XDG_RUNTIME_DIR
+    under su; it shouldn't be necessary any more, but is harmless
+    (Closes: #772125)
+  * Replace 03_complete_session.patch with a change from upstream
+    which seems like a more correct solution for LP#445303, LP#649939
+  * Add patches from upstream to treat background processes as part of
+    the same uid's active GUI session if any, fixing use of
+    dbus-user-session (Closes: #779988)
+  * Add patches from upstream to fix some memory leaks (Closes: #775158,
+    LP: #1417637)
+  * Add patch from upstream to fix redundant removal of an event source
+  * Add patch to use libsystemd instead of the libsystemd-login compat
+    library (Closes: #779756)
+
+ -- Simon McVittie <smcv@debian.org>  Tue, 31 Mar 2015 18:13:28 +0100
 
 policykit-1 (0.112-4) experimental; urgency=medium
 

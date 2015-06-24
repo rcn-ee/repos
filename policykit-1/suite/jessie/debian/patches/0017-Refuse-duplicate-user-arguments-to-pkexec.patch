@@ -1,0 +1,38 @@
+From: Miloslav Trmač <mitr@redhat.com>
+Date: Tue, 26 Aug 2014 17:59:47 +0200
+Subject: Refuse duplicate --user arguments to pkexec
+
+This usage is clearly errorneous, so we should tell the users they are
+making a mistake.
+
+Besides, this allows an attacker to cause a high number of heap
+allocations with attacker-controlled sizes (
+http://googleprojectzero.blogspot.cz/2014/08/the-poisoned-nul-byte-2014-edition.html
+), making some exploits easier.
+
+(To be clear, this is not a pkexec vulnerability, and we will not
+refuse attacker-affected malloc() usage as a matter of policy; but this
+commit is both user-friendly and adding some hardening.)
+
+Bug: https://bugs.freedesktop.org/show_bug.cgi?id=83093
+Origin: upstream, 0.113, commit:6c992bc8aefa195a41eaa41c07f46f17de18e25c
+---
+ src/programs/pkexec.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/src/programs/pkexec.c b/src/programs/pkexec.c
+index 96b1def..50de92c 100644
+--- a/src/programs/pkexec.c
++++ b/src/programs/pkexec.c
+@@ -549,6 +549,11 @@ main (int argc, char *argv[])
+               goto out;
+             }
+ 
++          if (opt_user != NULL)
++            {
++              g_printerr ("--user specified twice\n");
++              goto out;
++            }
+           opt_user = g_strdup (argv[n]);
+         }
+       else if (strcmp (argv[n], "--disable-internal-agent") == 0)

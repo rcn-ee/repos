@@ -153,6 +153,9 @@ qt5_lxqt () {
 	package_name="libdbusmenu-qt" ; package_version="${package_name}_0.9.3+15.10.20150604-1" ; check_http
 
 	site="http://ftp.de.debian.org/debian/pool/main/p"
+	package_name="policykit-1" ; package_version="0.112-5" ; check_http
+
+	site="http://ftp.de.debian.org/debian/pool/main/p"
 	package_name="polkit-qt-1" ; package_version="${package_name}_0.112.0-2" ; check_http
 
 	site="http://packages.siduction.org/lxqt/pool/main/libq"
@@ -241,7 +244,7 @@ package_name="openjdk-8"; package_version="${package_name}_8u45-b14-4"; check_ht
 exit
 
 suite="experimental"
-package_name="policykit-1" ; package_version="0.112-4" ; check
+
 
 suite="sid"
 package_name="openjfx" ; package_version="8u20-b26-3" ; check
