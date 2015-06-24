@@ -1,6 +1,6 @@
 #!/bin/bash
 
-check_http_exp () {
+generic_http () {
 	echo "Checking: ${package_name}"
 	if [ -f /tmp/index.html ] ; then
 		rm -f /tmp/index.html
@@ -12,40 +12,39 @@ check_http_exp () {
 	cat /tmp/temp.html | grep href | grep dsc > /tmp/index.html
 	sed -i -e 's/<a href="//g' /tmp/index.html
 	sed -i -e 's/"><\/a>//g' /tmp/index.html
+}
 
-	version=$(cat /tmp/index.html | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+generic_check () {
 	if [ ! "x${version}" = "x" ] ; then
 		if [ ! "x${package_version}" = "x${version}" ] ; then
 			echo "Change: ${package_name}: upstream:${version} local:${package_version}"
 			echo ""
 		fi
 	else
-		echo ${output}
+		echo "Fail: [${site}]"
+		echo ""
 	fi
 }
 
-check_http () {
-	echo "Checking: ${package_name}"
-	if [ -f /tmp/index.html ] ; then
-		rm -f /tmp/index.html
-	fi
-	wget --no-verbose --directory-prefix=/tmp/ ${site}/${package_name}/ &> /dev/null
-	cat /tmp/index.html | grep "<a href=" > /tmp/temp.html
-	sed -i -e "s/<a href/\\n<a href/g" /tmp/temp.html
-	sed -i -e 's/\"/\"><\/a>\n/2' /tmp/temp.html
-	cat /tmp/temp.html | grep href | grep dsc > /tmp/index.html
-	sed -i -e 's/<a href="//g' /tmp/index.html
-	sed -i -e 's/"><\/a>//g' /tmp/index.html
+check_http_exp () {
+	generic_http
+	version=$(cat /tmp/index.html | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+	generic_check
+	sleep 1
+}
 
+check_http () {
+	generic_http
 	version=$(cat /tmp/index.html | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
-	if [ ! "x${version}" = "x" ] ; then
-		if [ ! "x${package_version}" = "x${version}" ] ; then
-			echo "Change: ${package_name}: upstream:${version} local:${package_version}"
-			echo ""
-		fi
-	else
-		echo ${output}
-	fi
+	generic_check
+	sleep 1
+}
+
+check_http_machine () {
+	generic_http
+	version=$(cat /tmp/index.html | grep jessie | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+	generic_check
+	sleep 1
 }
 
 check () {
@@ -143,15 +142,15 @@ qt5_apps () {
 	echo "qterminal:"
 
 	site="http://packages.siduction.org/lxqt/pool/main/q"
-	package_name="qtermwidget" ; package_version="qtermwidget_0.6.0-9" ; check_http_exp
+	package_name="qtermwidget" ; package_version="qtermwidget_0.6.0-9" ; check_http
 	package_name="qterminal" ; package_version="qterminal_0.6.0-8" ; check_http
 }
 
 qt5_lxqt () {
 	echo "lxqt:"
 
-	site="http://packages.siduction.org/extra/pool/main/libd"
-	package_name="libdbusmenu-qt5" ; package_version="${package_name}_0.9.3-1siduction3" ; check_http
+	site="http://ftp.de.debian.org/debian/pool/main/libd"
+	package_name="libdbusmenu-qt" ; package_version="${package_name}_0.9.3+15.10.20150604-1" ; check_http
 
 	site="http://packages.siduction.org/lxqt/pool/main/p"
 	package_name="polkit-qt-1" ; package_version="${package_name}_0.112.0-2" ; check_http
@@ -200,10 +199,10 @@ qt5_lxqt () {
 machinekit () {
 	echo "machinekit:"
 
-	site="http://deb.dovetail-automata.com/deb-testing/pool/main/c"
+	site="http://deb.dovetail-automata.com/pool/main/c"
 	package_name="czmq" ; package_version="${package_name}_2.2.0-0.5%7e1jessie%7e1da" ; check_http
 
-	site="http://deb.dovetail-automata.com/deb-testing/pool/main/libw"
+	site="http://deb.dovetail-automata.com/pool/main/libw"
 	package_name="libwebsockets" ; package_version="${package_name}_1.3-1%7egit95a8abb%7e1431844465git95a8abb%7e1jessie%7e1da" ; check_http
 
 	site="http://deb.dovetail-automata.com/deb-testing/pool/main/x"
