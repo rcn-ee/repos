@@ -179,7 +179,7 @@ qt5_lxqt () {
 	package_name="pcmanfm-qt" ; package_version="${package_name}_0.9.0-12" ; check_http
 
 	site="http://packages.siduction.org/lxqt/pool/main/l"
-	package_name="lxqt-session" ; package_version="${package_name}_0.9.0-10" ; check_http
+	package_name="lxqt-session" ; package_version="${package_name}_0.9.0-12" ; check_http
 	package_name="lxqt-runner" ; package_version="${package_name}_0.9.0-5" ; check_http
 	package_name="lxqt-policykit" ; package_version="${package_name}_0.9.0-5" ; check_http
 	package_name="lxqt-powermanagement" ; package_version="${package_name}_0.9.0-9%2bexp1" ; check_http
