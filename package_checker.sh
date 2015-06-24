@@ -21,7 +21,7 @@ generic_check () {
 			echo ""
 		fi
 	else
-		echo "Fail: [${site}]"
+		echo "Fail: [${site}/${package_name}/]"
 		echo ""
 	fi
 }
@@ -176,7 +176,7 @@ qt5_lxqt () {
 	package_name="lxqt-panel" ; package_version="${package_name}_0.9.0-20" ; check_http
 
 	site="http://packages.siduction.org/lxqt/pool/main/p"
-	package_name="pcmanfm-qt" ; package_version="${package_name}_0.9.0-10" ; check_http
+	package_name="pcmanfm-qt" ; package_version="${package_name}_0.9.0-12" ; check_http
 
 	site="http://packages.siduction.org/lxqt/pool/main/l"
 	package_name="lxqt-session" ; package_version="${package_name}_0.9.0-10" ; check_http
