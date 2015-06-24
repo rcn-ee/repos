@@ -232,7 +232,7 @@ nodejs
 echo "others"
 
 site="http://ports.ubuntu.com/pool/universe/c"
-package_name="chromium-browser" ; package_version="${package_name}_43.0.2357.81-0ubuntu1.1179" ; check_http
+package_name="chromium-browser" ; package_version="${package_name}_43.0.2357.81-0ubuntu2" ; check_http
 
 site="http://ftp.de.debian.org/debian/pool/main/o"
 package_name="openjdk-8"; package_version="${package_name}_8u45-b14-4"; check_http

@@ -22,7 +22,7 @@ windowmanager_pid=$!
 
 failures=""
 
-python3 -u -m http.server 0 &
+python3 -u -m http.server 0 >webserver-out 2>webserver-err &
 webserver_pid=$!
 
 trap "echo EXITING AT ERROR" ERR

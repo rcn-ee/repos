@@ -14,8 +14,8 @@ git_sha=""
 reprepro_dir="c/${package_name}"
 dl_path="pool/universe/${reprepro_dir}/"
 
-debian_version="${package_version}-0ubuntu1.1179"
-debian_patch="${debian_pkg_name}_${package_version}-0ubuntu1.1179.debian.tar.xz"
+debian_version="${package_version}-0ubuntu2"
+debian_patch="${debian_pkg_name}_${package_version}-0ubuntu2.debian.tar.xz"
 debian_diff=""
 
-jessie_version="~bpo80+20150611+1"
+jessie_version="~bpo80+20150624+1"
