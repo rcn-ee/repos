@@ -112,7 +112,7 @@ qt5_apps () {
 }
 
 qt5_lxqt () {
-	echo "lxqt:"
+	echo "lxqt: debian"
 
 	site="http://ftp.de.debian.org/debian/pool/main/libd"
 	package_name="libdbusmenu-qt" ; package_version="${package_name}_0.9.3+15.10.20150604-1" ; check_http
@@ -122,6 +122,8 @@ qt5_lxqt () {
 
 	site="http://ftp.de.debian.org/debian/pool/main/p"
 	package_name="polkit-qt-1" ; package_version="${package_name}_0.112.0-2" ; check_http
+
+	echo "lxqt: siduction"
 
 	site="http://packages.siduction.org/lxqt/pool/main/libq"
 	package_name="libqtxdg" ; package_version="${package_name}_1.2.0-5" ; check_http
@@ -161,7 +163,7 @@ qt5_lxqt () {
 	site="http://packages.siduction.org/lxqt/pool/main/l"
 	package_name="lxqt-about" ; package_version="${package_name}_0.9.0-6" ; check_http
 	package_name="lxqt-admin" ; package_version="${package_name}_0.9.0-5" ; check_http
-	package_name="lxqt-common" ; package_version="${package_name}_0.9.1-13" ; check_http
+	package_name="lxqt-common" ; package_version="${package_name}_0.9.1-14" ; check_http
 }
 
 machinekit () {
