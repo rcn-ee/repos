@@ -38,4 +38,4 @@ checkout: maintainer-clean
 	cp -a ../debian .
 
 symbols:
-	find . -name symbols | xargs sed 's/ \(_.*\) \(.*\)/ (c++)"\1" \2/' | c++filt | uniq | tee debian/mangled
+	find . -name symbols | xargs sed 's/ \(_.*\) \(.*\)/ (c++)"\1" \2/' | c++filt | uniq > debian/mangled

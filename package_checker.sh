@@ -139,7 +139,7 @@ qt5_apps () {
 	echo "qterminal:"
 
 	site="http://packages.siduction.org/lxqt/pool/main/q"
-	package_name="qtermwidget" ; package_version="qtermwidget_0.6.0-9" ; check_http
+	package_name="qtermwidget" ; package_version="qtermwidget_0.6.0-10" ; check_http
 	package_name="qterminal" ; package_version="qterminal_0.6.0-8" ; check_http
 }
 
