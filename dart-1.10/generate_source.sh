@@ -9,22 +9,19 @@ fi
 if [ ! -d ./ignore/ ] ; then
 	mkdir ./ignore/
 	cd ./ignore/
-	svn co http://src.chromium.org/svn/trunk/tools/depot_tools
-
-	mkdir -p ./dart
-	cd ./dart/
-	svn ls https://dart.googlecode.com/svn/branches/${repo_branch}/
+	git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+	export PATH=$PATH:`pwd`//depot_tools
 
 	mkdir ./dart-repo
 	cd ./dart-repo
-	../../depot_tools/gclient config https://dart.googlecode.com/svn/branches/${repo_branch}/deps/all.deps
-	git svn clone -rHEAD https://dart.googlecode.com/svn/branches/${repo_branch}/dart dart
-	../../depot_tools/gclient sync -n
-	../../depot_tools/gclient runhooks
-	cd ./dart/
+	gclient config https://github.com/dart-lang/sdk.git
+	gclient sync --with_branch_heads --jobs 16
 
-	mkdir out
-	./tools/create_tarball.py
-	cp -v ./out/dart-*.tar.gz ../../../../
+#	cd sdk
+#	git checkout 1.10.1 -b tmp
+
+#	mkdir out
+#	./tools/create_tarball.py
+#	cp -v ./out/dart-*.tar.gz ../../../../
 fi
 
