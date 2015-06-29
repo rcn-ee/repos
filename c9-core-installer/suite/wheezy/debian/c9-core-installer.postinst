@@ -65,6 +65,10 @@ dl_install() {
 		tar xf ${wfile} -C ${extract_dir}
 		chown -R 1000:1000 ${extract_dir}
 
+		if [ ! -d /var/lib/cloud9 ] ; then
+			mkdir -p /var/lib/cloud9 || true
+		fi
+
 		systemctl --system daemon-reload || true
 	fi
 }
