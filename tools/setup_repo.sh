@@ -81,6 +81,7 @@ key="A4C46402"
 suite="trusty"
 setup_repo
 
+#eol: july 25 2015
 suite="utopic"
 setup_repo
 

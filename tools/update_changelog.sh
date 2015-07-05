@@ -19,9 +19,6 @@ run () {
 	if [ "x${suite}" = "xtrusty" ] ; then
 		backport="bpo1404+"
 	fi
-	if [ "x${suite}" = "xutopic" ] ; then
-		backport="bpo1410+"
-	fi
 	if [ "x${suite}" = "xvivid" ] ; then
 		backport="bpo1504+"
 	fi
@@ -82,15 +79,6 @@ if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${trusty_version}"
 	cat ${DIR}/version.sh | grep -v trusty_version > ${DIR}/new-version.sh
 	echo "trusty_version=\"~bpo1404+${simple_date}+1\"" >> ${DIR}/new-version.sh
-	mv ${DIR}/new-version.sh ${DIR}/version.sh
-	run
-fi
-
-suite="utopic"
-if [ -d ${DIR}/suite/${suite}/ ] ; then
-	rcn_ee_version="${utopic_version}"
-	cat ${DIR}/version.sh | grep -v utopic_version > ${DIR}/new-version.sh
-	echo "utopic_version=\"~bpo1410+${simple_date}+1\"" >> ${DIR}/new-version.sh
 	mv ${DIR}/new-version.sh ${DIR}/version.sh
 	run
 fi

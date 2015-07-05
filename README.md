@@ -22,12 +22,6 @@ deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ trusty main
 #deb-src [arch=armhf] http://repos.rcn-ee.com/ubuntu/ trusty main
 ```
 
-Ubuntu 14.10: (Utopic): http://repos.rcn-ee.com/ubuntu/
-```
-deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ utopic main
-#deb-src [arch=armhf] http://repos.rcn-ee.com/ubuntu/ utopic main
-```
-
 Ubuntu 15.04: (Vivid): http://repos.rcn-ee.com/ubuntu/
 ```
 deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ vivid main

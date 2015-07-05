@@ -55,14 +55,6 @@ if [ -d suite/${suite}/ ] ; then
 	run
 fi
 
-suite="utopic"
-if [ -d suite/${suite}/ ] ; then
-	repo="${base}${dist}/"
-	deb_arch=armhf
-	rcn_ee_version="${utopic_version}"
-	run
-fi
-
 suite="vivid"
 if [ -d suite/${suite}/ ] ; then
 	repo="${base}${dist}/"

@@ -65,12 +65,6 @@ if [ -d suite/${suite}/ ] ; then
 	run
 fi
 
-suite="utopic"
-if [ -d suite/${suite}/ ] ; then
-	deb_arch="armhf"
-	run
-fi
-
 suite="vivid"
 if [ -d suite/${suite}/ ] ; then
 	deb_arch="armhf"

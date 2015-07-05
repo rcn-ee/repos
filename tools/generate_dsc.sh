@@ -84,11 +84,6 @@ if [ -d suite/${suite}/ ] ; then
 	run
 fi
 
-suite="utopic"
-if [ -d suite/${suite}/ ] ; then
-	run
-fi
-
 suite="vivid"
 if [ -d suite/${suite}/ ] ; then
 	run
