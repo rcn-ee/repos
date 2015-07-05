@@ -9,6 +9,14 @@ case "$1" in
 		if [ ! "x${expired_key}" = "x" ] ; then
 			apt-key del FADFB657
 		fi
+
+		#July 2015:
+		#Closing down dreamhost's repos.rcn-ee.net in favor of linodes repos.rcn-ee.com
+		#will be doing a dns 301 redirect: repos.rcn-ee.net -> repos.rcn-ee.com
+		net_rcnee=$(cat /etc/apt/sources.list | grep repos.rcn-ee.net || true)
+		if [ ! "x${net_rcnee}" = "x" ] ; then
+			sed -i -e 's:repos.rcn-ee.net:repos.rcn-ee.com:g' /etc/apt/sources.list
+		fi
 		;;
 	*)
 		echo "postinst called with unknown argument \'$1'" >&2
