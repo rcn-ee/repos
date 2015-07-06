@@ -13,7 +13,7 @@ git_sha=""
 reprepro_dir="libd/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-1.1"
+debian_version="${package_version}-1.2"
 #debian_version="${package_version}-1etnaviv1"
 debian_untar=""
 debian_patch="${package_name}_${package_version}-1.diff.gz"
