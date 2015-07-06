@@ -16,7 +16,7 @@ dl_path="pool/main/${reprepro_dir}/"
 debian_version="${package_version}-1.1"
 #debian_version="${package_version}-1etnaviv1"
 debian_untar=""
-debian_patch="${package_name}_${debian_version}.diff.gz"
+debian_patch="${package_name}_${package_version}-1.diff.gz"
 
 wheezy_version="~bpo70+20150706+1"
 jessie_version="~bpo80+20150706+1"
