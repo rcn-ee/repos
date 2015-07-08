@@ -121,7 +121,7 @@ qt5_lxqt () {
 	package_name="policykit-1" ; package_version="${package_name}_0.113-1" ; check_http
 
 	site="http://ftp.de.debian.org/debian/pool/main/p"
-	package_name="polkit-qt-1" ; package_version="${package_name}_0.112.0-2" ; check_http
+	package_name="polkit-qt-1" ; package_version="${package_name}_0.112.0-3" ; check_http
 
 	echo "lxqt: siduction"
 
