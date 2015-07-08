@@ -75,7 +75,7 @@ qt5 () {
 	echo "qt5:"
 
 	site="http://ftp.de.debian.org/debian/pool/main/p"
-	package_name="pkg-kde-tools" ; package_version="${package_name}_0.15.17" ; check_http
+	package_name="pkg-kde-tools" ; package_version="${package_name}_0.15.18" ; check_http
 
 	site="http://ftp.de.debian.org/debian/pool/main/e"
 	package_name="extra-cmake-modules" ; package_version="${package_name}_5.11.0-1" ; check_http
