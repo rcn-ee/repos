@@ -131,10 +131,10 @@ qt5_lxqt () {
 	site="http://packages.siduction.org/lxqt/pool/main/libl"
 	package_name="liblxqt" ; package_version="${package_name}_0.9.0-19" ; check_http
 
+	echo "lxqt: stretch (place holder for dependices)"
 	site="http://packages.siduction.org/lxqt/pool/main/l"
 	package_name="lxqt-globalkeys" ; package_version="${package_name}_0.9.0-14" ; check_http
 	package_name="lxqt-notificationd" ; package_version="${package_name}_0.9.0-11" ; check_http
-	echo "lxqt: stretch (place holder for dependices)"
 	package_name="lxqt-sudo" ; package_version="${package_name}_0.1.0-6" ; check_http
 
 	site="http://packages.siduction.org/lxqt/pool/main/libs"
