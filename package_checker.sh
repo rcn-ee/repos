@@ -125,10 +125,10 @@ qt5_lxqt () {
 
 	echo "lxqt: siduction"
 
-	echo "lxqt: stretch (place holder for dependices)"
-
 	site="http://packages.siduction.org/lxqt/pool/main/libq"
-	package_name="libqtxdg" ; package_version="${package_name}_1.2.0-5" ; check_http
+	package_name="libqtxdg" ; package_version="${package_name}_1.2.0-6" ; check_http
+
+	echo "lxqt: stretch (place holder for dependices)"
 
 	site="http://packages.siduction.org/lxqt/pool/main/libl"
 	package_name="liblxqt" ; package_version="${package_name}_0.9.0-16" ; check_http
