@@ -58,6 +58,19 @@ check () {
 	fi
 }
 
+builds () {
+	echo "build tools:"
+
+	site="http://ftp.de.debian.org/debian/pool/main/c"
+	package_name="cmake" ; package_version="${package_name}_3.2.2-2" ; check_http
+
+	site="http://ftp.de.debian.org/debian/pool/main/p"
+	package_name="pkg-kde-tools" ; package_version="${package_name}_0.15.18" ; check_http
+
+	site="http://ftp.de.debian.org/debian/pool/main/e"
+	package_name="extra-cmake-modules" ; package_version="${package_name}_5.11.0-1" ; check_http
+}
+
 mesa () {
 	echo "llvm/mesa:"
 
@@ -69,16 +82,6 @@ mesa () {
 
 	site="http://ftp.de.debian.org/debian/pool/main/m"
 	package_name="mesa" ; package_version="${package_name}_10.5.9-1" ; check_http
-}
-
-qt5 () {
-	echo "qt5:"
-
-	site="http://ftp.de.debian.org/debian/pool/main/p"
-	package_name="pkg-kde-tools" ; package_version="${package_name}_0.15.18" ; check_http
-
-	site="http://ftp.de.debian.org/debian/pool/main/e"
-	package_name="extra-cmake-modules" ; package_version="${package_name}_5.11.0-1" ; check_http
 }
 
 qt5_kde () {
@@ -192,8 +195,8 @@ nodejs () {
 	package_name="nodejs"; package_version="${package_name}_0.10.38~dfsg-1"; check_http
 }
 
+builds
 mesa
-qt5
 qt5_kde
 qt5_apps
 qt5_lxqt

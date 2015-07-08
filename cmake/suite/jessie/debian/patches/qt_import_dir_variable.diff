@@ -1,0 +1,23 @@
+From: Jonathan Riddell <jriddell@ubuntu.com>
+Subject: FindQt4: define QT_IMPORTS_DIR variable even if it is not present on the system.
+Date: 2012-01-18 16:00:49 UTC
+Bug: http://public.kitware.com/Bug/view.php?id=14155
+Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/cmake/+bug/894805
+Forwarded: yes
+Origin: vendor
+
+This happens when there are no plugins currently installed.
+
+Index: cmake/Modules/FindQt4.cmake
+===================================================================
+--- cmake.orig/Modules/FindQt4.cmake
++++ cmake/Modules/FindQt4.cmake
+@@ -734,7 +734,7 @@ if (QT_QMAKE_EXECUTABLE AND
+   if (QT_LIBRARY_DIR AND NOT QT_IMPORTS_DIR OR QT_QMAKE_CHANGED)
+     _qt4_query_qmake(QT_INSTALL_IMPORTS qt_imports_dir)
+     if(qt_imports_dir)
+-      set(QT_IMPORTS_DIR NOTFOUND)
++      set(QT_IMPORTS_DIR "${qt_imports_dir}")
+       foreach(qt_cross_path ${CMAKE_FIND_ROOT_PATH})
+         set(qt_cross_paths ${qt_cross_paths} "${qt_cross_path}/imports")
+       endforeach()

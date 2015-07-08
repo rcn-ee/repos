@@ -1,0 +1,23 @@
+#!/bin/sh
+
+set -e
+
+if [ "$1" = "failed-upgrade" ] && dpkg --compare-versions "$2" le 2.6.2-1; then
+    # It is very likely that old-prerm failed due to emacsen-common being
+    # unconfigured at this stage. The error is harmless and cannot be avoided
+    # in a sane way.
+    #   ERROR: emacsen-common being used before being configured.
+    #   ERROR: This is likely a bug in the cmake package, which needs to
+    #   ERROR: add one of the appropriate dependencies.
+    #   ERROR: See /usr/share/doc/emacsen-common/debian-emacs-policy.gz
+    #   ERROR: for details
+    #
+    # Therefore tell the user to ignore the error and exit gracefully.
+    cat >&2 <<END
+NOTE: The emacsen-common error above is harmless and can be safely ignored.
+NOTE: Upgrade will continue as usual.
+END
+    exit 0
+fi
+
+#DEBHELPER#

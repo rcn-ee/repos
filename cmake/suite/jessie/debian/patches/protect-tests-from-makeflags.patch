@@ -1,0 +1,21 @@
+From 703e76252930429ac39d3ebf456e3e1e688d1982 Mon Sep 17 00:00:00 2001
+From: Brad King <brad.king@kitware.com>
+Date: Wed, 29 Apr 2015 16:13:50 -0400
+Subject: [PATCH] Tests: Protect RunCMake tests from MAKEFLAGS in environment
+ (#15542)
+
+---
+ Tests/RunCMake/RunCMake.cmake |    3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/Tests/RunCMake/RunCMake.cmake b/Tests/RunCMake/RunCMake.cmake
+index b24ae0b..70c0d6c 100644
+--- a/Tests/RunCMake/RunCMake.cmake
++++ b/Tests/RunCMake/RunCMake.cmake
+@@ -135,3 +135,6 @@ function(run_cmake_command test)
+   set(RunCMake_TEST_COMMAND "${ARGN}")
+   run_cmake(${test})
+ endfunction()
++
++# Protect RunCMake tests from calling environment.
++unset(ENV{MAKEFLAGS})

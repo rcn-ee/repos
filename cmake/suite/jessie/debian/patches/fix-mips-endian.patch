@@ -1,0 +1,40 @@
+From b1d560a0b9e6c545f65c170bdbbcf5da35123b58 Mon Sep 17 00:00:00 2001
+From: Brad King <brad.king@kitware.com>
+Date: Tue, 12 May 2015 11:38:02 -0400
+Subject: [PATCH] CPU: MIPS is biendian
+
+MIPS machines are biendian hence they can run both big endian kernels
+e.g. Debian mips architecture, and little endian kernels e.g. Debian
+mipsel architecture.  Use predefined macros to distinguish them.
+
+Change-Id: I75fccd3cb1ef7915c8754ebbb64cb52a948b4ad8
+Reported-by: Mathieu Malaterre <malat@debian.org>
+Inspired-by: Modestas Vainius <modax@debian.org>
+---
+ CPU.h.in | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/Source/kwsys/CPU.h.in b/Source/kwsys/CPU.h.in
+index 626914b..884d71a 100644
+--- a/Source/kwsys/CPU.h.in
++++ b/Source/kwsys/CPU.h.in
+@@ -76,7 +76,15 @@
+ #elif defined(__m68k__) || defined(M68000)
+ # define @KWSYS_NAMESPACE@_CPU_ENDIAN_ID @KWSYS_NAMESPACE@_CPU_ENDIAN_ID_BIG
+ 
+-/* MIPS */
++/* MIPSel (MIPS little endian) */
++#elif defined(__MIPSEL__) || defined(__MIPSEL) || defined(_MIPSEL)
++# define @KWSYS_NAMESPACE@_CPU_ENDIAN_ID @KWSYS_NAMESPACE@_CPU_ENDIAN_ID_LITTLE
++
++/* MIPSeb (MIPS big endian) */
++#elif defined(__MIPSEB__) || defined(__MIPSEB) || defined(_MIPSEB)
++# define @KWSYS_NAMESPACE@_CPU_ENDIAN_ID @KWSYS_NAMESPACE@_CPU_ENDIAN_ID_BIG
++
++/* MIPS (fallback, big endian) */
+ #elif defined(__mips) || defined(__mips__) || defined(__MIPS__)
+ # define @KWSYS_NAMESPACE@_CPU_ENDIAN_ID @KWSYS_NAMESPACE@_CPU_ENDIAN_ID_BIG
+ 
+-- 
+1.9.1
+
