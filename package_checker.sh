@@ -128,10 +128,10 @@ qt5_lxqt () {
 	site="http://packages.siduction.org/lxqt/pool/main/libq"
 	package_name="libqtxdg" ; package_version="${package_name}_1.2.0-6" ; check_http
 
-	echo "lxqt: stretch (place holder for dependices)"
-
 	site="http://packages.siduction.org/lxqt/pool/main/libl"
-	package_name="liblxqt" ; package_version="${package_name}_0.9.0-16" ; check_http
+	package_name="liblxqt" ; package_version="${package_name}_0.9.0-19" ; check_http
+
+	echo "lxqt: stretch (place holder for dependices)"
 
 	site="http://packages.siduction.org/lxqt/pool/main/l"
 	package_name="lxqt-globalkeys" ; package_version="${package_name}_0.9.0-8" ; check_http
