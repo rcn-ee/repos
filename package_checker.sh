@@ -145,10 +145,10 @@ qt5_lxqt () {
 	site="http://packages.siduction.org/lxqt/pool/main/l"
 	package_name="lxqt-panel" ; package_version="${package_name}_0.9.0-29" ; check_http
 
-	echo "lxqt: stretch (place holder for dependices)"
-
 	site="http://packages.siduction.org/lxqt/pool/main/p"
-	package_name="pcmanfm-qt" ; package_version="${package_name}_0.9.0-12" ; check_http
+	package_name="pcmanfm-qt" ; package_version="${package_name}_0.9.0-18" ; check_http
+
+	echo "lxqt: stretch (place holder for dependices)"
 
 	site="http://packages.siduction.org/lxqt/pool/main/l"
 	package_name="lxqt-session" ; package_version="${package_name}_0.9.0-13" ; check_http
