@@ -1,9 +1,9 @@
 # DP: Add missing build bits for AArch64 from the AArch64 branch.
 
-Index: b/common/autoconf/build-aux/config.sub
+Index: b/common/autoconf/build-aux/autoconf-config.sub
 ===================================================================
---- a/common/autoconf/build-aux/config.sub
-+++ b/common/autoconf/build-aux/config.sub
+--- a/common/autoconf/build-aux/autoconf-config.sub
++++ b/common/autoconf/build-aux/autoconf-config.sub
 @@ -264,6 +264,7 @@ case $basic_machine in
  	# Some are omitted here because they have special meanings below.
  	1750a | 580 \
@@ -24,8 +24,8 @@ Index: b/common/autoconf/generated-configure.sh
 ===================================================================
 --- a/common/autoconf/generated-configure.sh
 +++ b/common/autoconf/generated-configure.sh
-@@ -6818,6 +6818,12 @@ test -n "$target_alias" &&
-       VAR_CPU_BITS=32
+@@ -6835,6 +6835,12 @@ test -n "$target_alias" &&
+       VAR_CPU_BITS=64
        VAR_CPU_ENDIAN=little
        ;;
 +    aarch64)
@@ -37,8 +37,8 @@ Index: b/common/autoconf/generated-configure.sh
      powerpc)
        VAR_CPU=ppc
        VAR_CPU_ARCH=ppc
-@@ -6949,6 +6955,12 @@ $as_echo "$OPENJDK_BUILD_OS-$OPENJDK_BUI
-       VAR_CPU_BITS=32
+@@ -6972,6 +6978,12 @@ $as_echo "$OPENJDK_BUILD_OS-$OPENJDK_BUI
+       VAR_CPU_BITS=64
        VAR_CPU_ENDIAN=little
        ;;
 +    aarch64)
@@ -50,7 +50,7 @@ Index: b/common/autoconf/generated-configure.sh
      powerpc)
        VAR_CPU=ppc
        VAR_CPU_ARCH=ppc
-@@ -7909,11 +7921,6 @@ $as_echo "$with_jvm_variants" >&6; }
+@@ -7942,11 +7954,6 @@ $as_echo "$with_jvm_variants" >&6; }
    JVM_VARIANT_ZEROSHARK=`$ECHO "$JVM_VARIANTS" | $SED -e '/,zeroshark,/!s/.*/false/g' -e '/,zeroshark,/s/.*/true/g'`
    JVM_VARIANT_CORE=`$ECHO "$JVM_VARIANTS" | $SED -e '/,core,/!s/.*/false/g' -e '/,core,/s/.*/true/g'`
  
@@ -62,8 +62,8 @@ Index: b/common/autoconf/generated-configure.sh
    if test "x$JVM_VARIANT_KERNEL" = xtrue; then
      if test "x$OPENJDK_TARGET_CPU_BITS" = x64; then
        as_fn_error $? "You cannot build a kernel JVM for a 64-bit machine." "$LINENO" 5
-@@ -7953,6 +7960,9 @@ $as_echo "$with_jvm_variants" >&6; }
-   if test "x$VAR_CPU" = xppc64 ; then
+@@ -7989,6 +7996,9 @@ $as_echo "$with_jvm_variants" >&6; }
+   if test "x$OPENJDK_TARGET_CPU" = xaarch64; then
      INCLUDE_SA=false
    fi
 +  if test "x$OPENJDK_TARGET_CPU" = xaarch64; then
@@ -72,7 +72,7 @@ Index: b/common/autoconf/generated-configure.sh
  
  
    if test "x$OPENJDK_TARGET_OS" = "xmacosx"; then
-@@ -29712,7 +29722,7 @@ fi
+@@ -29654,7 +29664,7 @@ fi
    #
    case $COMPILER_NAME in
      gcc )
@@ -81,7 +81,7 @@ Index: b/common/autoconf/generated-configure.sh
        -pipe \
        -D_GNU_SOURCE -D_REENTRANT -D_LARGEFILE64_SOURCE"
        case $OPENJDK_TARGET_CPU_ARCH in
-@@ -29957,6 +29967,9 @@ fi
+@@ -29899,6 +29909,9 @@ fi
      s390)
        ZERO_ARCHFLAG="${COMPILER_TARGET_BITS_FLAG}31"
        ;;
@@ -95,8 +95,8 @@ Index: b/common/autoconf/jdk-options.m4
 ===================================================================
 --- a/common/autoconf/jdk-options.m4
 +++ b/common/autoconf/jdk-options.m4
-@@ -161,6 +156,9 @@ AC_DEFUN_ONCE([JDKOPT_SETUP_JVM_VARIANTS
-   if test "x$VAR_CPU" = xppc64 ; then
+@@ -164,6 +164,9 @@ AC_DEFUN_ONCE([JDKOPT_SETUP_JVM_VARIANTS
+   if test "x$OPENJDK_TARGET_CPU" = xaarch64; then
      INCLUDE_SA=false
    fi
 +  if test "x$OPENJDK_TARGET_CPU" = xaarch64; then
@@ -109,8 +109,8 @@ Index: b/common/autoconf/platform.m4
 ===================================================================
 --- a/common/autoconf/platform.m4
 +++ b/common/autoconf/platform.m4
-@@ -48,6 +48,12 @@ AC_DEFUN([PLATFORM_EXTRACT_VARS_FROM_CPU
-       VAR_CPU_BITS=32
+@@ -54,6 +54,12 @@ AC_DEFUN([PLATFORM_EXTRACT_VARS_FROM_CPU
+       VAR_CPU_BITS=64
        VAR_CPU_ENDIAN=little
        ;;
 +    aarch64)
@@ -126,7 +126,7 @@ Index: b/common/autoconf/toolchain.m4
 ===================================================================
 --- a/common/autoconf/toolchain.m4
 +++ b/common/autoconf/toolchain.m4
-@@ -878,7 +878,7 @@ AC_DEFUN_ONCE([TOOLCHAIN_SETUP_COMPILER_
+@@ -957,7 +957,7 @@ AC_DEFUN_ONCE([TOOLCHAIN_SETUP_COMPILER_
    #
    case $COMPILER_NAME in
      gcc )
@@ -135,7 +135,7 @@ Index: b/common/autoconf/toolchain.m4
        -pipe \
        -D_GNU_SOURCE -D_REENTRANT -D_LARGEFILE64_SOURCE"
        case $OPENJDK_TARGET_CPU_ARCH in
-@@ -1158,6 +1158,9 @@ AC_DEFUN_ONCE([TOOLCHAIN_SETUP_COMPILER_
+@@ -1237,6 +1237,9 @@ AC_DEFUN_ONCE([TOOLCHAIN_SETUP_COMPILER_
      s390)
        ZERO_ARCHFLAG="${COMPILER_TARGET_BITS_FLAG}31"
        ;;
@@ -149,7 +149,7 @@ Index: b/jdk/make/gensrc/GensrcMisc.gmk
 ===================================================================
 --- a/jdk/make/gensrc/GensrcMisc.gmk
 +++ b/jdk/make/gensrc/GensrcMisc.gmk
-@@ -95,7 +95,7 @@ $(eval $(call SetupNativeCompilation,BUI
+@@ -76,7 +76,7 @@ $(eval $(call SetupNativeCompilation,BUI
      INCLUDE_FILES := $(GENSRC_SOR_SRC_FILE), \
      LANG := C, \
      CC := $(BUILD_CC), \
@@ -185,6 +185,8 @@ Index: b/jdk/src/share/native/com/sun/media/sound/SoundDefs.h
  
  // **********************************
  // Make sure you set X_PLATFORM and X_ARCH defines correctly.
+Index: b/jdk/src/solaris/bin/aarch64/jvm.cfg
+===================================================================
 --- /dev/null
 +++ b/jdk/src/solaris/bin/aarch64/jvm.cfg
 @@ -0,0 +1,39 @@
@@ -227,4 +229,3 @@ Index: b/jdk/src/share/native/com/sun/media/sound/SoundDefs.h
 +-zero KNOWN
 +-shark ERROR
 +-jamvm ERROR
-+-avian KNOWN

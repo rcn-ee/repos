@@ -1,8 +1,10 @@
 # DP: Add support for x32
 
+Index: b/hotspot/src/os/linux/vm/os_linux.cpp
+===================================================================
 --- a/hotspot/src/os/linux/vm/os_linux.cpp
 +++ b/hotspot/src/os/linux/vm/os_linux.cpp
-@@ -1950,7 +1950,7 @@ void * os::dll_load(const char *filename
+@@ -1902,7 +1902,7 @@ void * os::dll_load(const char *filename
  
    #if  (defined IA32)
      static  Elf32_Half running_arch_code=EM_386;
@@ -11,6 +13,8 @@
      static  Elf32_Half running_arch_code=EM_X86_64;
    #elif  (defined IA64)
      static  Elf32_Half running_arch_code=EM_IA_64;
+Index: b/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c
+===================================================================
 --- a/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c
 +++ b/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c
 @@ -35,7 +35,6 @@
@@ -21,6 +25,8 @@
  #include <sys/utsname.h>
  #include <netinet/ip.h>
  
+Index: b/jdk/src/solaris/native/java/net/PlainSocketImpl.c
+===================================================================
 --- a/jdk/src/solaris/native/java/net/PlainSocketImpl.c
 +++ b/jdk/src/solaris/native/java/net/PlainSocketImpl.c
 @@ -43,7 +43,6 @@
@@ -31,6 +37,8 @@
  #endif
  
  #include "jvm.h"
+Index: b/common/autoconf/platform.m4
+===================================================================
 --- a/common/autoconf/platform.m4
 +++ b/common/autoconf/platform.m4
 @@ -31,10 +31,17 @@ AC_DEFUN([PLATFORM_EXTRACT_VARS_FROM_CPU
@@ -55,9 +63,9 @@
        ;;
      i?86)
        VAR_CPU=x86
-@@ -433,7 +440,13 @@ AC_DEFUN([PLATFORM_SETUP_LEGACY_VARS],
+@@ -440,7 +447,13 @@ AC_DEFUN([PLATFORM_SETUP_LEGACY_VARS],
+     ppc64)   ZERO_ARCHDEF=PPC64 ;;
      s390*)   ZERO_ARCHDEF=S390  ;;
-     sh*)   ZERO_ARCHDEF=sh  ;;
      sparc*)  ZERO_ARCHDEF=SPARC ;;
 -    x86_64*) ZERO_ARCHDEF=AMD64 ;;
 +    x86_64*)

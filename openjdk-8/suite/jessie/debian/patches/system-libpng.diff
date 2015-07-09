@@ -4,7 +4,7 @@ Index: b/common/autoconf/libraries.m4
 ===================================================================
 --- a/common/autoconf/libraries.m4
 +++ b/common/autoconf/libraries.m4
-@@ -679,6 +679,47 @@ AC_DEFUN_ONCE([LIB_SETUP_MISC_LIBS],
+@@ -666,6 +666,47 @@ AC_DEFUN_ONCE([LIB_SETUP_MISC_LIBS],
  
    ###############################################################################
    #
@@ -56,7 +56,7 @@ Index: b/common/autoconf/spec.gmk.in
 ===================================================================
 --- a/common/autoconf/spec.gmk.in
 +++ b/common/autoconf/spec.gmk.in
-@@ -555,6 +555,7 @@ endif
+@@ -563,6 +563,7 @@ endif
  ENABLE_JFR=@ENABLE_JFR@
  ENABLE_INTREE_EC=@ENABLE_INTREE_EC@
  USE_EXTERNAL_LIBJPEG:=@USE_EXTERNAL_LIBJPEG@
@@ -68,7 +68,7 @@ Index: b/jdk/make/lib/Awt2dLibraries.gmk
 ===================================================================
 --- a/jdk/make/lib/Awt2dLibraries.gmk
 +++ b/jdk/make/lib/Awt2dLibraries.gmk
-@@ -1213,7 +1213,6 @@ endif
+@@ -1204,7 +1204,6 @@ endif
  ifndef BUILD_HEADLESS_ONLY
    LIBSPLASHSCREEN_DIRS := \
      $(JDK_TOPDIR)/src/share/native/sun/awt/image/jpeg \
@@ -76,7 +76,7 @@ Index: b/jdk/make/lib/Awt2dLibraries.gmk
      $(JDK_TOPDIR)/src/share/native/sun/awt/splashscreen
  
    ifeq ($(USE_EXTERNAL_LIBGIF), true)
-@@ -1230,6 +1229,13 @@ ifndef BUILD_HEADLESS_ONLY
+@@ -1221,6 +1220,13 @@ ifndef BUILD_HEADLESS_ONLY
      LIBJPEG_CFLAGS := -I$(JDK_TOPDIR)/src/share/native/sun/awt/image/jpeg
    endif
  
@@ -90,7 +90,7 @@ Index: b/jdk/make/lib/Awt2dLibraries.gmk
    ifneq ($(OPENJDK_TARGET_OS), macosx)
      LIBSPLASHSCREEN_DIRS += $(JDK_TOPDIR)/src/$(OPENJDK_TARGET_OS_API_DIR)/native/sun/awt/splashscreen
    else
-@@ -1293,12 +1299,12 @@ ifndef BUILD_HEADLESS_ONLY
+@@ -1282,12 +1288,12 @@ ifndef BUILD_HEADLESS_ONLY
        LANG := C, \
        OPTIMIZATION := LOW, \
        CFLAGS := $(LIBSPLASHSCREEN_CFLAGS) $(CFLAGS_JDKLIB) \

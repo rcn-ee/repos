@@ -1,9 +1,11 @@
 Description: Include all source files in src.zip
 Origin: vendor, http://pkgs.fedoraproject.org/cgit/java-1.8.0-openjdk.git/plain/include-all-srcs.patch
 Forwarded: not-needed
+Index: b/jdk/make/CreateJars.gmk
+===================================================================
 --- a/jdk/make/CreateJars.gmk
 +++ b/jdk/make/CreateJars.gmk
-@@ -569,38 +569,12 @@
+@@ -580,38 +580,12 @@ $(eval $(call SetupArchive,BUILD_CT_SYM,
  ##########################################################################################
  
  SRC_ZIP_INCLUDES = \
@@ -47,7 +49,7 @@ Forwarded: not-needed
      #
  
  SRC_ZIP_SRCS = $(JDK_TOPDIR)/src/share/classes $(JDK_TOPDIR)/src/$(OPENJDK_TARGET_OS_API_DIR)/classes
-@@ -632,7 +606,6 @@
+@@ -643,7 +617,6 @@ $(eval $(call MakeDir, $(IMAGES_OUTPUTDI
  $(eval $(call SetupZipArchive,BUILD_SRC_ZIP, \
      SRC := $(SRC_ZIP_SRCS) $(IMAGES_OUTPUTDIR)/src, \
      INCLUDES := $(SRC_ZIP_INCLUDES) launcher, \

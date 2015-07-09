@@ -1,7 +1,8 @@
-diff --git jdk8/jdk/src/share/classes/sun/applet/AppletPanel.java jdk8/jdk/src/share/classes/sun/applet/AppletPanel.java
---- jdk8/jdk/src/share/classes/sun/applet/AppletPanel.java
-+++ jdk8/jdk/src/share/classes/sun/applet/AppletPanel.java
-@@ -68,7 +68,7 @@
+Index: b/jdk/src/share/classes/sun/applet/AppletPanel.java
+===================================================================
+--- a/jdk/src/share/classes/sun/applet/AppletPanel.java
++++ b/jdk/src/share/classes/sun/applet/AppletPanel.java
+@@ -61,7 +61,7 @@ abstract class AppletPanel extends Panel
      /**
       * The applet (if loaded).
       */
@@ -10,7 +11,7 @@ diff --git jdk8/jdk/src/share/classes/sun/applet/AppletPanel.java jdk8/jdk/src/s
  
      /**
       * Applet will allow initialization.  Should be
-@@ -162,7 +162,8 @@
+@@ -157,7 +157,8 @@ abstract class AppletPanel extends Panel
       * Creates a thread to run the applet. This method is called
       * each time an applet is loaded and reloaded.
       */
@@ -20,7 +21,7 @@ diff --git jdk8/jdk/src/share/classes/sun/applet/AppletPanel.java jdk8/jdk/src/s
          // Create a thread group for the applet, and start a new
          // thread to load the applet.
          String nm = "applet-" + getCode();
-@@ -306,7 +307,7 @@
+@@ -304,7 +305,7 @@ abstract class AppletPanel extends Panel
      /**
       * Get an event from the queue.
       */
@@ -29,7 +30,7 @@ diff --git jdk8/jdk/src/share/classes/sun/applet/AppletPanel.java jdk8/jdk/src/s
          while (queue == null || queue.isEmpty()) {
              wait();
          }
-@@ -692,7 +693,8 @@
+@@ -703,7 +704,8 @@ abstract class AppletPanel extends Panel
       * applet event processing so that it can be gracefully interrupted from
       * things like HotJava.
       */
@@ -39,10 +40,11 @@ diff --git jdk8/jdk/src/share/classes/sun/applet/AppletPanel.java jdk8/jdk/src/s
          if (status != APPLET_DISPOSE) {
              showAppletStatus("notdisposed");
              return;
-diff --git jdk8/jdk/src/share/classes/sun/applet/AppletViewerPanel.java jdk8/jdk/src/share/classes/sun/applet/AppletViewerPanel.java
---- jdk8/jdk/src/share/classes/sun/applet/AppletViewerPanel.java
-+++ jdk8/jdk/src/share/classes/sun/applet/AppletViewerPanel.java
-@@ -42,25 +42,25 @@
+Index: b/jdk/src/share/classes/sun/applet/AppletViewerPanel.java
+===================================================================
+--- a/jdk/src/share/classes/sun/applet/AppletViewerPanel.java
++++ b/jdk/src/share/classes/sun/applet/AppletViewerPanel.java
+@@ -42,25 +42,25 @@ import sun.tools.jar.*;
   *
   * @author      Arthur van Hoff
   */
@@ -73,7 +75,7 @@ diff --git jdk8/jdk/src/share/classes/sun/applet/AppletViewerPanel.java jdk8/jdk
  
      /*
       * JDK 1.1 serialVersionUID
-@@ -70,7 +70,7 @@
+@@ -70,7 +70,7 @@ class AppletViewerPanel extends AppletPa
      /**
       * Construct an applet viewer and start the applet.
       */
@@ -82,7 +84,7 @@ diff --git jdk8/jdk/src/share/classes/sun/applet/AppletViewerPanel.java jdk8/jdk
          this.documentURL = documentURL;
          this.atts = atts;
  
-@@ -106,7 +106,7 @@
+@@ -106,7 +106,7 @@ class AppletViewerPanel extends AppletPa
       * Get an applet parameter.
       */
      public String getParameter(String name) {
@@ -91,7 +93,7 @@ diff --git jdk8/jdk/src/share/classes/sun/applet/AppletViewerPanel.java jdk8/jdk
      }
  
      /**
-@@ -202,12 +202,12 @@
+@@ -202,12 +202,12 @@ class AppletViewerPanel extends AppletPa
          return (AppletContext)getParent();
      }
  
@@ -106,4 +108,3 @@ diff --git jdk8/jdk/src/share/classes/sun/applet/AppletViewerPanel.java jdk8/jdk
          if(debug) {
              t.printStackTrace();
              debug(s);
-

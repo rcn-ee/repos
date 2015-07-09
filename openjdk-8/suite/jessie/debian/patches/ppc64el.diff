@@ -22,7 +22,7 @@ Index: b/hotspot/src/os/linux/vm/os_linux.cpp
 ===================================================================
 --- a/hotspot/src/os/linux/vm/os_linux.cpp
 +++ b/hotspot/src/os/linux/vm/os_linux.cpp
-@@ -4767,6 +4767,7 @@ void os::init(void) {
+@@ -4727,6 +4727,7 @@ void os::init(void) {
  
    pthread_mutex_init(&dl_mutex, NULL);
  
@@ -30,7 +30,7 @@ Index: b/hotspot/src/os/linux/vm/os_linux.cpp
    // If the pagesize of the VM is greater than 8K determine the appropriate
    // number of initial guard pages.  The user can change this with the
    // command line arguments, if needed.
-@@ -4775,6 +4776,7 @@ void os::init(void) {
+@@ -4735,6 +4736,7 @@ void os::init(void) {
      StackRedPages = 1;
      StackShadowPages = round_to((StackShadowPages*Linux::vm_default_page_size()), vm_page_size()) / vm_page_size();
    }
@@ -38,7 +38,7 @@ Index: b/hotspot/src/os/linux/vm/os_linux.cpp
  }
  
  // To install functions for atexit system call
-@@ -4825,9 +4827,16 @@ jint os::init_2(void)
+@@ -4785,9 +4787,16 @@ jint os::init_2(void)
    // size.  Add a page for compiler2 recursion in main thread.
    // Add in 2*BytesPerWord times page size to account for VM stack during
    // class initialization depending on 32 or 64 bit VM.

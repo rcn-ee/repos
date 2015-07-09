@@ -5,10 +5,11 @@
 # Parent  1406789608b76d0906881979335d685855f44190
 Allow multiple PKCS11 library initialisation to be a non-critical error.
 
-diff -r 1406789608b7 -r e9c857dcb964 src/share/classes/sun/security/pkcs11/Config.java
---- jdk8/jdk/src/share/classes/sun/security/pkcs11/Config.java Tue Oct 30 13:05:14 2012 +0000
-+++ jdk8/jdk/src/share/classes/sun/security/pkcs11/Config.java Mon Nov 05 15:38:52 2012 +0000
-@@ -52,6 +52,7 @@
+Index: b/jdk/src/share/classes/sun/security/pkcs11/Config.java
+===================================================================
+--- a/jdk/src/share/classes/sun/security/pkcs11/Config.java
++++ b/jdk/src/share/classes/sun/security/pkcs11/Config.java
+@@ -52,6 +52,7 @@ final class Config {
      static final int ERR_HALT       = 1;
      static final int ERR_IGNORE_ALL = 2;
      static final int ERR_IGNORE_LIB = 3;
@@ -16,7 +17,7 @@ diff -r 1406789608b7 -r e9c857dcb964 src/share/classes/sun/security/pkcs11/Confi
  
      // same as allowSingleThreadedModules but controlled via a system property
      // and applied to all providers. if set to false, no SunPKCS11 instances
-@@ -980,6 +981,8 @@
+@@ -1000,6 +1001,8 @@ final class Config {
              handleStartupErrors = ERR_IGNORE_LIB;
          } else if (val.equals("halt")) {
              handleStartupErrors = ERR_HALT;
@@ -25,10 +26,11 @@ diff -r 1406789608b7 -r e9c857dcb964 src/share/classes/sun/security/pkcs11/Confi
          } else {
              throw excToken("Invalid value for handleStartupErrors:");
          }
-diff -r 1406789608b7 -r e9c857dcb964 src/share/classes/sun/security/pkcs11/SunPKCS11.java
---- jdk8/jdk/src/share/classes/sun/security/pkcs11/SunPKCS11.java  Tue Oct 30 13:05:14 2012 +0000
-+++ jdk8/jdk/src/share/classes/sun/security/pkcs11/SunPKCS11.java  Mon Nov 05 15:38:52 2012 +0000
-@@ -168,26 +168,37 @@
+Index: b/jdk/src/share/classes/sun/security/pkcs11/SunPKCS11.java
+===================================================================
+--- a/jdk/src/share/classes/sun/security/pkcs11/SunPKCS11.java
++++ b/jdk/src/share/classes/sun/security/pkcs11/SunPKCS11.java
+@@ -168,26 +168,37 @@ public final class SunPKCS11 extends Aut
                  String nssLibraryDirectory = config.getNssLibraryDirectory();
                  String nssSecmodDirectory = config.getNssSecmodDirectory();
                  boolean nssOptimizeSpace = config.getNssOptimizeSpace();

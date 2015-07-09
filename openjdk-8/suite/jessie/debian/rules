@@ -369,7 +369,6 @@ COMMON_PATCHES = \
 	make4-compatibility.diff \
 	aarch64.diff \
 	hotspot-set-compiler.diff \
-	hotspot-sparc-fix.diff \
 	ppc64el.diff \
 	system-libjpeg.diff \
 	system-libpng.diff \
@@ -401,13 +400,8 @@ COMMON_PATCHES = \
 	compare-pointer-with-literal.patch \
 	multiple-pkcs11-library-init.patch \
 	applet-hole.patch \
-	8017773.diff \
-	8067231.diff \
-	jdk-8067330.diff \
-	jdk-8067331.diff \
 	libjpeg-fix.diff \
-	jdk-freeNativeStringArray-decl.diff \
-	8074312.diff \
+	sparc-fixes.diff \
 
 # FIXME: update patches
 	#accessible-toolkit.patch # update for 8
@@ -2256,9 +2250,9 @@ endif
 	dh_builddeb -s $(nodemo) $(nojrec) $(nojrej) $(nojrez) #$(bd_options)
 
 is_release		=
-is_release		= yes
+#is_release		= yes
 hg_project		= jdk8u
-hg_tag			= jdk8u45-b14
+hg_tag			= jdk8u60-b22
 package_version		= $(subst jdk,,$(hg_tag))
 ifneq ($(is_release),yes)
   package_version	:= $(subst -,~,$(package_version))
