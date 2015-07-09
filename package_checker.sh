@@ -163,10 +163,9 @@ qt5_lxqt () {
 	site="http://packages.siduction.org/lxqt/pool/main/c"
 	package_name="compton-conf" ; package_version="${package_name}_0.1.2-8" ; check_http
 
-	echo "lxqt: stretch (place holder for dependices)"
-
 	site="http://packages.siduction.org/lxqt/pool/main/l"
-	package_name="lxqt-about" ; package_version="${package_name}_0.9.0-6" ; check_http
+	package_name="lxqt-about" ; package_version="${package_name}_0.9.0-7" ; check_http
+	echo "lxqt: stretch (place holder for dependices)"
 	package_name="lxqt-admin" ; package_version="${package_name}_0.9.0-5" ; check_http
 	package_name="lxqt-common" ; package_version="${package_name}_0.9.1-14" ; check_http
 }
