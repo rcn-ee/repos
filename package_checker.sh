@@ -153,8 +153,8 @@ qt5_lxqt () {
 	package_name="lxqt-runner" ; package_version="${package_name}_0.9.0-8" ; check_http
 	package_name="lxqt-policykit" ; package_version="${package_name}_0.9.0-9" ; check_http
 	package_name="lxqt-powermanagement" ; package_version="${package_name}_0.9.0-13" ; check_http
+	package_name="lxqt-qtplugin" ; package_version="${package_name}_0.9.0-6" ; check_http
 	echo "lxqt: stretch (place holder for dependices)"
-	package_name="lxqt-qtplugin" ; package_version="${package_name}_0.9.0-5" ; check_http
 	package_name="lximage-qt" ; package_version="${package_name}_0.4.0-3" ; check_http
 	package_name="lxqt-config" ; package_version="${package_name}_0.9.0-18" ; check_http
 
