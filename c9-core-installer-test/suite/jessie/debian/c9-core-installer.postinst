@@ -73,9 +73,69 @@ dl_install() {
 	fi
 }
 
+c9_directory () {
+	#Based on: https://github.com/c9/install
+	C9_DIR=/root/.c9
+	NPM=$C9_DIR/node/bin/npm
+	NODE=$C9_DIR/node/bin/node
+	PYTHON=python
+
+	VIRTUALENV_VERSION=virtualenv-12.0.7
+
+	mkdir -p "$C9_DIR"/bin
+	mkdir -p "$C9_DIR"/tmp
+	mkdir -p "$C9_DIR"/node_modules
+	cd "$C9_DIR"
+
+	#start install node tmux_install nak ptyjs vfsextend collab
+
+	#node:
+	mkdir -p "$C9_DIR"/node/bin
+	ln -sf $(which nodejs) "$C9_DIR"/node/bin/node
+	ln -sf $(which npm) "$C9_DIR"/node/bin/
+
+	# use local npm cache
+	"$NPM" config -g set cache  "$C9_DIR/tmp/.npm"
+	# node-gyp uses sytem node or fails with command not found if
+	# we don't bump this node up in the path
+	PATH="$C9_DIR/node/bin/:$C9_DIR/node_modules/.bin:$PATH"
+
+	tar xzf /var/cache/c9-core-installer/$VIRTUALENV_VERSION.tar.gz
+	mv $VIRTUALENV_VERSION virtualenv
+
+	"$PYTHON" virtualenv/virtualenv.py "$C9_DIR/python"
+
+	PYTHON="$C9_DIR/python/bin/python2"
+
+	"$NPM" config -g set python "$PYTHON"
+
+	#tmux_install
+	ln -sf $(which tmux) "$C9_DIR"/bin/tmux
+
+	#nak
+	echo :Installing Nak
+	"$NPM" install https://github.com/c9/nak/tarball/c9
+
+	#ptyjs
+	echo :Installing pty.js
+	"$NPM" install node-gyp
+	"$NPM" install pty.js@0.2.7-1
+
+	HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
+	if [ $HASPTY -ne 1 ]; then
+	  echo "Unknown exception installing pty.js"
+	  echo `"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))"`
+	  exit 100
+	fi
+
+
+# vfsextend collab
+}
+
 case "$1" in
     configure)
 	dl_install
+	c9_directory
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
