@@ -148,10 +148,11 @@ qt5_lxqt () {
 	site="http://packages.siduction.org/lxqt/pool/main/p"
 	package_name="pcmanfm-qt" ; package_version="${package_name}_0.9.0-18" ; check_http
 
+	site="http://packages.siduction.org/lxqt/pool/main/l"
+	package_name="lxqt-session" ; package_version="${package_name}_0.9.0-15" ; check_http
+
 	echo "lxqt: stretch (place holder for dependices)"
 
-	site="http://packages.siduction.org/lxqt/pool/main/l"
-	package_name="lxqt-session" ; package_version="${package_name}_0.9.0-13" ; check_http
 	package_name="lxqt-runner" ; package_version="${package_name}_0.9.0-5" ; check_http
 	package_name="lxqt-policykit" ; package_version="${package_name}_0.9.0-8" ; check_http
 	package_name="lxqt-powermanagement" ; package_version="${package_name}_0.9.0-11" ; check_http
@@ -210,7 +211,7 @@ site="http://ports.ubuntu.com/pool/universe/c"
 package_name="chromium-browser" ; package_version="${package_name}_43.0.2357.81-0ubuntu2" ; check_http
 
 site="http://ftp.de.debian.org/debian/pool/main/o"
-package_name="openjdk-8"; package_version="${package_name}_8u60-b22-1"; check_http
+package_name="openjdk-8"; package_version="${package_name}_8u60~b22-1"; check_http
 
 #really slow...
 exit
