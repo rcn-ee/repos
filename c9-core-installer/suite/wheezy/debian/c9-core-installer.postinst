@@ -6,8 +6,8 @@ set -e
 
 package="c9-core-installer"
 
-sha256sum_tgz="e832b80d48ec8faade8eeeb00e4d3f1fbe50ec24c3ef94bc4cc3e1868a38fa93"
-wfile="c9-core_3.0.1+git20150630-build.tar.xz"
+sha256sum_tgz="ada7e30646fde01b965526e7171fa266411782f83f773f6425d066fc438264a5"
+wfile="c9-core_3.0.1+git20150709-build.tar.xz"
 
 partner_url="https://rcn-ee.com/repos/pkgs/c9v3"
 extract_dir="/opt/cloud9/build/"
@@ -73,9 +73,89 @@ dl_install() {
 	fi
 }
 
+c9_directory () {
+	#FIXME: use npm install shrinkwrap
+	#Based on: https://github.com/c9/install
+	C9_DIR=/root/.c9
+	NPM=$C9_DIR/node/bin/npm
+	NODE=$C9_DIR/node/bin/node
+	PYTHON=python
+
+	VIRTUALENV_VERSION=virtualenv-12.0.7
+
+	mkdir -p "$C9_DIR"/bin
+	mkdir -p "$C9_DIR"/tmp
+	mkdir -p "$C9_DIR"/node_modules
+	cd "$C9_DIR"
+
+	#start install node tmux_install nak ptyjs vfsextend collab
+
+	#node:
+	mkdir -p "$C9_DIR"/node/bin
+	ln -sf $(which nodejs) "$C9_DIR"/node/bin/node
+	ln -sf $(which npm) "$C9_DIR"/node/bin/
+
+	# use local npm cache
+	"$NPM" config -g set cache  "$C9_DIR/tmp/.npm"
+	# node-gyp uses sytem node or fails with command not found if
+	# we don't bump this node up in the path
+	PATH="$C9_DIR/node/bin/:$C9_DIR/node_modules/.bin:$PATH"
+
+	if [ -d "$C9_DIR"/$VIRTUALENV_VERSION ] ; then
+		rm -rf "$C9_DIR"/$VIRTUALENV_VERSION
+	fi
+	tar xzf /var/cache/c9-core-installer/$VIRTUALENV_VERSION.tar.gz
+
+	if [ -d "$C9_DIR"/virtualenv ] ; then
+		rm -rf "$C9_DIR"/virtualenv
+	fi
+	mv $VIRTUALENV_VERSION virtualenv
+
+	echo ${package}:python
+	"$PYTHON" virtualenv/virtualenv.py "$C9_DIR/python"
+
+	PYTHON="$C9_DIR/python/bin/python2"
+
+	"$NPM" config -g set python "$PYTHON"
+
+	#tmux_install
+	ln -sf $(which tmux) "$C9_DIR"/bin/tmux
+
+	echo "${package}:Installing: colors-0.6.2.tgz (for nak)"
+	#npm pack colors@0.6.2
+	"$NPM" install /var/cache/${package}/colors-0.6.2.tgz
+
+	echo "${package}:Installing: isbinaryfile-2.0.0.tgz (for nak)"
+	#npm pack isbinaryfile@2.0.0
+	"$NPM" install /var/cache/${package}/isbinaryfile-2.0.0.tgz
+
+	echo "${package}:Installing: simplefunc-0.0.2.tgz (for nak)"
+	#npm pack simplefunc@0.0.2
+	"$NPM" install /var/cache/${package}/simplefunc-0.0.2.tgz
+
+	echo "${package}:Installing nak"
+	#npm pack https://github.com/c9/nak/tarball/c9
+	"$NPM" install /var/cache/${package}/nak-0.3.3.tgz
+
+	#ptyjs
+#	echo :Installing pty.js
+#	"$NPM" install node-gyp
+#	"$NPM" install pty.js@0.2.7-1
+
+#	HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
+#	if [ $HASPTY -ne 1 ]; then
+#	  echo "Unknown exception installing pty.js"
+#	  echo `"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))"`
+#	  exit 100
+#	fi
+
+# vfsextend collab
+}
+
 case "$1" in
     configure)
 	dl_install
+	c9_directory
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
