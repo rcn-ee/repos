@@ -1,50 +1,22 @@
-chromium-browser (43.0.2357.81-0ubuntu2~bpo80+20150624+1) jessie; urgency=low
+chromium-browser (43.0.2357.130-0ubuntu1.1188~bpo80+20150713+1) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Wed, 24 Jun 2015 15:34:46 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Mon, 13 Jul 2015 13:37:15 -0500
 
-chromium-browser (43.0.2357.81-0ubuntu2) wily; urgency=medium
+chromium-browser (43.0.2357.130-0ubuntu1.1188) wily; urgency=medium
 
-  * Test fixes.
-  * debian/tests/control: Add a test-dep on python3-httplib2 and dbus-x11
-    which are required by the testsuite.
-  * debian/tests/smoketest-actual: Redirect webserver-out and webserver-err so
-    that the test can read these.
+  * Upstream release 43.0.2357.130:
+    - CVE-2015-1266: Scheme validation error in WebUI.
+    - CVE-2015-1268: Cross-origin bypass in Blink.
+    - CVE-2015-1267: Cross-origin bypass in Blink.
+    - CVE-2015-1269: Normalization error in HSTS/HPKP preload list.
+  * debian/tests/smoketest-actual: Capture web-server log so we can
+    get port and test retreival. Fixes autopkgtest failures.
+  * debian/patches/widevine-other-locations: Search Chrome install 
+    location to find widevine plugins.
+  * Reenable GPU usage on Wily only. Silent disabling is probably a 
+    bad idea. On all other distros, default to off, but don't blacklist.
+  * Use new Flash plugin name in apport collector.
 
- -- Iain Lane <iain@orangesquash.org.uk>  Wed, 24 Jun 2015 13:40:23 +0100
-
-chromium-browser (43.0.2357.81-0ubuntu1.1179) wily; urgency=medium
-
-  * Upstream release 43.0.2357.81.
-    - "Icons not displaying properly on Linux" (LP: #1449063)
-  * Upstream release 43.0.2357.65:
-    - CVE-2015-1252: Sandbox escape in Chrome.
-    - CVE-2015-1253: Cross-origin bypass in DOM.
-    - CVE-2015-1254: Cross-origin bypass in Editing.
-    - CVE-2015-1255: Use-after-free in WebAudio.
-    - CVE-2015-1256: Use-after-free in SVG.
-    - CVE-2015-1251: Use-after-free in Speech.
-    - CVE-2015-1257: Container-overflow in SVG.
-    - CVE-2015-1258: Negative-size parameter in Libvpx. 
-    - CVE-2015-1259: Uninitialized value in PDFium.
-    - CVE-2015-1260: Use-after-free in WebRTC.
-    - CVE-2015-1261: URL bar spoofing.
-    - CVE-2015-1262: Uninitialized value in Blink.
-    - CVE-2015-1263: Insecure download of spellcheck dictionary. 
-    - CVE-2015-1264: Cross-site scripting in bookmarks.
-    - CVE-2015-1265: Various fixes from internal audits, fuzzing and other
-      initiatives.
-    - Multiple vulnerabilities in V8 fixed at the tip of the 4.3 branch
-      (currently 4.3.61.21).
-  * debian/patches/display-scaling-report-hardware-info: removed, unnecessary.
-  * debian/patches/coordinate-space-map: removed, unnecessary.
-  * debian/patches/enable_vaapi_on_linux.diff: Temporarily disable patch until
-    ARM works.
-  * debian/chromium-browser.sh.in: Add --verbose to get logging info.
-  * debian/patches/{notifications-nicer,mir-support}: disable unnecessary
-    patches.
-  * debian/control, debian/chromium-browser.sh.in: Prompt nothing about 
-    Flash plugin. Send Help clicks to Wiki instead.
-
- -- Chad MILLER <chad.miller@canonical.com>  Mon, 01 Jun 2015 15:29:04 -0400
+ -- Chad MILLER <chad.miller@canonical.com>  Mon, 29 Jun 2015 15:54:16 -0400

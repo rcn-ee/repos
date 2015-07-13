@@ -35,6 +35,7 @@ RELATED_PACKAGES = [
     'nspluginwrapper',
     # various plugins
     'adobe-flash-player',
+    'adobe-flashplugin',
     'chromiumflashplugin',
     'pepperflashplugin-nonfree',
     'pepflashplugin-nonfree',

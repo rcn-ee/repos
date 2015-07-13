@@ -17,7 +17,7 @@ SRCDIR=$1
 echo $SRCDIR
 
 which metacity
-metacity &
+metacity >windowmanager.out 2>windowmanager.err &
 windowmanager_pid=$!
 
 failures=""
@@ -43,7 +43,7 @@ while test "$retry" -lt "$retrylimit"; do
 done
 test "$retry" -lt ${retrylimit}
 
-mkdir profile_storage
+mkdir -p profile_storage
 
 # Now everything is set up for a series of tests.
 
@@ -55,7 +55,7 @@ echo -n "Test command-line URL retrieves page from server: "
 f=one$$.txt
 echo proc$$test >$f
 
-chromium-browser --window-size=1000,2200 --window-position=50,100 --user-data-dir=profile_storage --chromeless --new-window http://localhost:${webserver_port}/$f &
+chromium-browser --window-size=1000,2200 --window-position=50,100 --user-data-dir=profile_storage --chromeless --new-window http://localhost:${webserver_port}/$f >browser_stdout 2>browser_stderr &
 webclient_pid=$!
 trap "kill ${webclient_pid} && wait ${webclient_pid} || echo 'No client running.'" USR1
 
@@ -108,8 +108,8 @@ for sikulitest in $SRCDIR/debian/tests/testdata/*.sikuli; do
 	test -d $sikulitest
 	echo -n "Test $(basename ${testname}): "
 
-	sikuli $sikulitest
-	if fgrep -q "[error]" ${testname}-log; then
+	sikuli $sikulitest &>${testname}-log
+	if egrep -i "(exception|error)" ${testname}-log; then
 		failures="$(basename $testname)  $failures"
 		echo "BAD"
 		cat -n ${testname}-log

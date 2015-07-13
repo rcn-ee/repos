@@ -89,7 +89,7 @@ GYP_DEFINES += enable_hidpi=1
 GYP_DEFINES += enable_touch_ui=1
 
 # add support and stubbed implementation of widevine (needed for EME)
-GYP_DEFINES += enable_widevine=1
+GYP_DEFINES += enable_widevine=1 enable_pepper_cdms=1
 
 # Prefer gcc/g++ over clang until clang is better tested in Ubuntu.
 GYP_DEFINES += clang=0
@@ -627,3 +627,5 @@ SHELL := /bin/bash
 
 # This changes state for ALL rules in the makefile.
 .ONESHELL:
+
+.DEFAULT: build-stamp build-stamp-ffmpeg-extra
