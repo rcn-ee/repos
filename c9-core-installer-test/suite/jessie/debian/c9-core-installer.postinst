@@ -115,20 +115,20 @@ c9_directory () {
 
 	#nak
 	echo :Installing Nak
-	"$NPM" install https://github.com/c9/nak/tarball/c9
+	#npm pack https://github.com/c9/nak/tarball/c9
+	"$NPM" install /var/cache/${package}/nak-0.3.3.tgz
 
 	#ptyjs
-	echo :Installing pty.js
-	"$NPM" install node-gyp
-	"$NPM" install pty.js@0.2.7-1
+#	echo :Installing pty.js
+#	"$NPM" install node-gyp
+#	"$NPM" install pty.js@0.2.7-1
 
-	HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
-	if [ $HASPTY -ne 1 ]; then
-	  echo "Unknown exception installing pty.js"
-	  echo `"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))"`
-	  exit 100
-	fi
-
+#	HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
+#	if [ $HASPTY -ne 1 ]; then
+#	  echo "Unknown exception installing pty.js"
+#	  echo `"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))"`
+#	  exit 100
+#	fi
 
 # vfsextend collab
 }
