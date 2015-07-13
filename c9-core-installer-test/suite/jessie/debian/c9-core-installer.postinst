@@ -101,7 +101,14 @@ c9_directory () {
 	# we don't bump this node up in the path
 	PATH="$C9_DIR/node/bin/:$C9_DIR/node_modules/.bin:$PATH"
 
+	if [ -d "$C9_DIR"/$VIRTUALENV_VERSION ] ; then
+		rm -rf "$C9_DIR"/$VIRTUALENV_VERSION
+	fi
 	tar xzf /var/cache/c9-core-installer/$VIRTUALENV_VERSION.tar.gz
+
+	if [ -d "$C9_DIR"/virtualenv ] ; then
+		rm -rf "$C9_DIR"/virtualenv
+	fi
 	mv $VIRTUALENV_VERSION virtualenv
 
 	"$PYTHON" virtualenv/virtualenv.py "$C9_DIR/python"
