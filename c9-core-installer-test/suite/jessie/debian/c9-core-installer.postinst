@@ -111,6 +111,7 @@ c9_directory () {
 	fi
 	mv $VIRTUALENV_VERSION virtualenv
 
+	echo ${package}:python
 	"$PYTHON" virtualenv/virtualenv.py "$C9_DIR/python"
 
 	PYTHON="$C9_DIR/python/bin/python2"
@@ -120,8 +121,19 @@ c9_directory () {
 	#tmux_install
 	ln -sf $(which tmux) "$C9_DIR"/bin/tmux
 
-	#nak
-	echo :Installing Nak
+	echo "${package}:Installing: colors-0.6.2.tgz (for nak)"
+	#npm pack colors@0.6.2
+	"$NPM" install /var/cache/${package}/colors-0.6.2.tgz
+
+	echo "${package}:Installing: isbinaryfile-2.0.0.tgz (for nak)"
+	#npm pack isbinaryfile@2.0.0
+	"$NPM" install /var/cache/${package}/isbinaryfile-2.0.0.tgz
+
+	echo "${package}:Installing: simplefunc-0.0.2.tgz (for nak)"
+	#npm pack simplefunc@0.0.2
+	"$NPM" install /var/cache/${package}/simplefunc-0.0.2.tgz
+
+	echo "${package}:Installing nak"
 	#npm pack https://github.com/c9/nak/tarball/c9
 	"$NPM" install /var/cache/${package}/nak-0.3.3.tgz
 
