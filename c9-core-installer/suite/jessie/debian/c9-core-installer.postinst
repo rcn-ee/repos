@@ -411,7 +411,7 @@ c9_directory () {
 	#├── hawk@2.3.1 (cryptiles@2.0.4, sntp@1.0.9, boom@2.8.0, hoek@2.14.0)
 	#├── bl@0.9.4 (readable-stream@1.0.33)
 	#├── form-data@1.0.0-rc1 (async@1.3.0, mime-types@2.1.3)
-#└── har-validator@1.8.0 (bluebird@2.9.33, commander@2.8.1, is-my-json-valid@2.12.0, chalk@1.1.0)
+	#└── har-validator@1.8.0 (bluebird@2.9.33, commander@2.8.1, is-my-json-valid@2.12.0, chalk@1.1.0)
 
 	#npm pack caseless@0.10.0
 	pkg="caseless" ; ver="0.10.0" ; maybe_install_depend
@@ -501,7 +501,7 @@ c9_directory () {
 	#├── bluebird@2.9.33
 	#├── commander@2.8.1 (graceful-readlink@1.0.1)
 	#├── is-my-json-valid@2.12.0 (jsonpointer@1.1.0, generate-function@2.0.0, xtend@4.0.0, generate-object-property@1.2.0)
-#└── chalk@1.1.0 (escape-string-regexp@1.0.3, supports-color@2.0.0, ansi-styles@2.1.0, has-ansi@2.0.0, strip-ansi@3.0.0)
+	#└── chalk@1.1.0 (escape-string-regexp@1.0.3, supports-color@2.0.0, ansi-styles@2.1.0, has-ansi@2.0.0, strip-ansi@3.0.0)
 
 	#npm pack bluebird@2.9.33
 	pkg="bluebird" ; ver="2.9.33" ; maybe_install_depend
@@ -537,6 +537,41 @@ c9_directory () {
 	#npm pack is-my-json-valid@2.12.0
 	pkg="is-my-json-valid" ; ver="2.12.0" ; maybe_install_depend
 
+	#npm install chalk@1.1.0
+	#chalk@1.1.0 node_modules/chalk
+	#├── escape-string-regexp@1.0.3
+	#├── supports-color@2.0.0
+	#├── ansi-styles@2.1.0
+	#├── has-ansi@2.0.0 (ansi-regex@2.0.0)
+	#└── strip-ansi@3.0.0 (ansi-regex@2.0.0)
+
+	#npm install has-ansi@2.0.0
+	#has-ansi@2.0.0 node_modules/has-ansi
+	#└── ansi-regex@2.0.0
+
+	#npm pack ansi-regex@2.0.0
+	pkg="ansi-regex" ; ver="2.0.0" ; maybe_install_depend
+	#npm pack has-ansi@2.0.0
+	pkg="has-ansi" ; ver="2.0.0" ; maybe_install_depend
+	#npm pack strip-ansi@3.0.0
+	pkg="strip-ansi" ; ver="3.0.0" ; maybe_install_depend
+	#npm pack ansi-styles@2.1.0
+	pkg="ansi-styles" ; ver="2.1.0" ; maybe_install_depend
+	#npm pack supports-color@2.0.0
+	pkg="supports-color" ; ver="2.0.0" ; maybe_install_depend
+	#npm pack escape-string-regexp@1.0.3
+	pkg="escape-string-regexp" ; ver="1.0.3" ; maybe_install_depend
+
+	#npm pack chalk@1.1.0
+	pkg="chalk" ; ver="1.1.0" ; maybe_install_depend
+
+	#npm pack har-validator@1.8.0
+	pkg="har-validator" ; ver="1.8.0" ; maybe_install_depend
+
+	echo "${package}:Installing ${npm_project}"
+	#npm pack node-gyp@2.0.2
+	pkg="node-gyp" ; ver="2.0.2" ; maybe_install_depend
+	"$NPM" install /var/cache/${package}/${pkg}-${ver}.tgz
 
 #	echo :Installing pty.js
 #	"$NPM" install node-gyp
