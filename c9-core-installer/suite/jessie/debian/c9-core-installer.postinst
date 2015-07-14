@@ -101,6 +101,7 @@ c9_directory () {
 	mkdir -p "$C9_DIR"/bin
 	mkdir -p "$C9_DIR"/tmp
 	mkdir -p "$C9_DIR"/node_modules
+	mkdir -p "$C9_DIR"/npmbox
 	cd "$C9_DIR"
 
 	#start install node tmux_install nak ptyjs vfsextend collab
@@ -119,7 +120,7 @@ c9_directory () {
 	if [ -d "$C9_DIR"/$VIRTUALENV_VERSION ] ; then
 		rm -rf "$C9_DIR"/$VIRTUALENV_VERSION
 	fi
-	tar xzf /var/cache/c9-core-installer/$VIRTUALENV_VERSION.tar.gz
+	tar xzf /var/cache/${package}/$VIRTUALENV_VERSION.tar.gz
 
 	if [ -d "$C9_DIR"/virtualenv ] ; then
 		rm -rf "$C9_DIR"/virtualenv
@@ -156,98 +157,12 @@ c9_directory () {
 
 	npm_project="npmbox"
 
-	#npm install npmbox
-	#npmbox@2.7.0 node_modules/npmbox
-	#├── is@3.0.1
-	#├── optimist@0.6.1 (wordwrap@0.0.2, minimist@0.0.10)
-	#├── tar.gz@0.1.1 (commander@1.3.2, tar@0.1.20, fstream@0.1.31)
-	#├── rimraf@2.3.2 (glob@4.5.3)
-#├── decompress@2.3.0 (get-stdin@4.0.1, meow@3.1.0, vinyl-assign@1.1.0, concat-stream@1.4.8, buffer-to-vinyl@1.0.0, stream-combiner2@1.0.2, decompress-tarbz2@3.1.0, decompress-tar@3.1.0, decompress-targz@3.1.0, decompress-unzip@3.2.2, vinyl-fs@1.0.0)
-#└── npm@2.9.0
+	cd "$C9_DIR"/npmbox
+	cp /var/cache/${package}/npmbox.npmbox .
 
-	#npm pack is@3.0.1
-	pkg="is" ; ver="3.0.1" ; maybe_install_depend
-
-	#npm install optimist@0.6.1
-	#optimist@0.6.1 node_modules/optimist
-	#├── wordwrap@0.0.3
-	#└── minimist@0.0.10
-
-	#npm pack minimist@0.0.10
-	pkg="minimist" ; ver="0.0.10" ; maybe_install_depend
-	#npm pack wordwrap@0.0.3
-	pkg="wordwrap" ; ver="0.0.3" ; maybe_install_depend
-	#npm pack optimist@0.6.1
-	pkg="optimist" ; ver="0.6.1" ; maybe_install_depend
-
-	#npm install tar.gz@0.1.1
-	#tar.gz@0.1.1 node_modules/tar.gz
-	#├── commander@1.1.1 (keypress@0.1.0)
-	#├── tar@0.1.20 (block-stream@0.0.8, inherits@2.0.1)
-	#└── fstream@0.1.31 (inherits@2.0.1, graceful-fs@3.0.8, mkdirp@0.5.1, rimraf@2.4.1)
-
-	#npm pack keypress@0.1.0
-	pkg="keypress" ; ver="0.1.0" ; maybe_install_depend
-	#npm pack commander@1.1.1
-	pkg="commander" ; ver="1.1.1" ; maybe_install_depend
-
-	#npm install tar@0.1.20
-	#tar@0.1.20 node_modules/tar
-	#├── inherits@2.0.1
-	#├── block-stream@0.0.8
-	#└── fstream@0.1.31 (graceful-fs@3.0.8, mkdirp@0.5.1, rimraf@2.4.1)
-
-	#npm pack inherits@2.0.1
-	pkg="inherits" ; ver="2.0.1" ; maybe_install_depend
-	#npm pack block-stream@0.0.8
-	pkg="block-stream" ; ver="0.0.8" ; maybe_install_depend
-
-	#npm install fstream@0.1.31
-	#fstream@0.1.31 node_modules/fstream
-	#├── graceful-fs@3.0.8
-	#├── mkdirp@0.5.1 (minimist@0.0.8)
-	#└── rimraf@2.4.1 (glob@4.5.3)
-
-	#npm pack graceful-fs@3.0.8
-	pkg="graceful-fs" ; ver="3.0.8" ; maybe_install_depend
-	#npm pack minimist@0.0.8
-	pkg="minimist" ; ver="0.0.8" ; maybe_install_depend
-	#npm pack mkdirp@0.5.1
-	pkg="mkdirp" ; ver="0.5.1" ; maybe_install_depend
-
-	#npm pack minimist@0.0.10
-	pkg="minimist" ; ver="0.0.10" ; maybe_install_depend
-
-	#npm install glob@4.5.3
-	#glob@4.5.3 node_modules/glob
-	#├── inherits@2.0.1
-	#├── once@1.3.2 (wrappy@1.0.1)
-	#├── inflight@1.0.4 (wrappy@1.0.1)
-	#└── minimatch@2.0.8 (brace-expansion@1.1.0)
-
-	#npm pack inherits@2.0.1
-	pkg="inherits" ; ver="2.0.1" ; maybe_install_depend
-	#npm pack wrappy@1.0.1
-	pkg="wrappy" ; ver="1.0.1" ; maybe_install_depend
-	#npm pack once@1.3.2
-	pkg="once" ; ver="1.3.2" ; maybe_install_depend
-	#npm pack inflight@1.0.4
-	pkg="inflight" ; ver="1.0.4" ; maybe_install_depend
-
-	#npm install minimatch@2.0.8
-	#minimatch@2.0.8 node_modules/minimatch
-	#└── brace-expansion@1.1.0 (concat-map@0.0.1, balanced-match@0.2.0)
-
-	#npm pack concat-map@0.0.1
-	pkg="concat-map" ; ver="0.0.1" ; maybe_install_depend
-	#npm pack balanced-match@0.2.0
-	pkg="balanced-match" ; ver="0.2.0" ; maybe_install_depend
-	#npm pack minimatch@2.0.8
-	pkg="minimatch" ; ver="2.0.8" ; maybe_install_depend
-	#npm pack glob@4.5.3
-	pkg="glob" ; ver="4.5.3" ; maybe_install_depend
-	#npm pack fstream@0.1.31
-	pkg="fstream" ; ver="0.1.31" ; maybe_install_depend
+	cp /media/usb/npmbox.npmbox .
+	tar --no-same-owner --no-same-permissions -xvzf npmbox.npmbox
+	"$NPM" install --global --cache ./.npmbox.cache --optional --cache-min 99999 --shrinkwrap false npmbox
 
 #	echo :Installing pty.js
 #	"$NPM" install node-gyp
