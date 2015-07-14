@@ -154,31 +154,67 @@ c9_directory () {
 	#npm pack https://github.com/c9/nak/tarball/c9
 	"$NPM" install /var/cache/${package}/nak-0.3.3.tgz
 
-	#ptyjs
-	#"$NPM" install node-gyp
-	#├── rimraf@2.4.1
+	npm_project="npmbox"
+
+	#npm install npmbox
+	#npmbox@2.7.0 node_modules/npmbox
+	#├── is@3.0.1
+	#├── optimist@0.6.1 (wordwrap@0.0.2, minimist@0.0.10)
+	#├── tar.gz@0.1.1 (commander@1.3.2, tar@0.1.20, fstream@0.1.31)
+	#├── rimraf@2.3.2 (glob@4.5.3)
+#├── decompress@2.3.0 (get-stdin@4.0.1, meow@3.1.0, vinyl-assign@1.1.0, concat-stream@1.4.8, buffer-to-vinyl@1.0.0, stream-combiner2@1.0.2, decompress-tarbz2@3.1.0, decompress-tar@3.1.0, decompress-targz@3.1.0, decompress-unzip@3.2.2, vinyl-fs@1.0.0)
+#└── npm@2.9.0
+
+	#npm pack is@3.0.1
+	pkg="is" ; ver="3.0.1" ; maybe_install_depend
+
+	#npm install optimist@0.6.1
+	#optimist@0.6.1 node_modules/optimist
+	#├── wordwrap@0.0.3
+	#└── minimist@0.0.10
+
+	#npm pack minimist@0.0.10
+	pkg="minimist" ; ver="0.0.10" ; maybe_install_depend
+	#npm pack wordwrap@0.0.3
+	pkg="wordwrap" ; ver="0.0.3" ; maybe_install_depend
+	#npm pack optimist@0.6.1
+	pkg="optimist" ; ver="0.6.1" ; maybe_install_depend
+
+	#npm install tar.gz@0.1.1
+	#tar.gz@0.1.1 node_modules/tar.gz
+	#├── commander@1.1.1 (keypress@0.1.0)
+	#├── tar@0.1.20 (block-stream@0.0.8, inherits@2.0.1)
+	#└── fstream@0.1.31 (inherits@2.0.1, graceful-fs@3.0.8, mkdirp@0.5.1, rimraf@2.4.1)
+
+	#npm pack keypress@0.1.0
+	pkg="keypress" ; ver="0.1.0" ; maybe_install_depend
+	#npm pack commander@1.1.1
+	pkg="commander" ; ver="1.1.1" ; maybe_install_depend
+
+	#npm install tar@0.1.20
+	#tar@0.1.20 node_modules/tar
+	#├── inherits@2.0.1
+	#├── block-stream@0.0.8
+	#└── fstream@0.1.31 (graceful-fs@3.0.8, mkdirp@0.5.1, rimraf@2.4.1)
+
+	#npm pack inherits@2.0.1
+	pkg="inherits" ; ver="2.0.1" ; maybe_install_depend
+	#npm pack block-stream@0.0.8
+	pkg="block-stream" ; ver="0.0.8" ; maybe_install_depend
+
+	#npm install fstream@0.1.31
+	#fstream@0.1.31 node_modules/fstream
 	#├── graceful-fs@3.0.8
-	#├── semver@4.3.6
-	#├── nopt@3.0.3 (abbrev@1.0.7)
-	#├── fstream@1.0.7 (inherits@2.0.1)
-	#├── which@1.1.1 (is-absolute@0.1.7)
-	#├── osenv@0.1.3 (os-homedir@1.0.0, os-tmpdir@1.0.1)
-	#├── tar@1.0.3 (inherits@2.0.1, block-stream@0.0.8)
-	#├── minimatch@1.0.0 (sigmund@1.0.1, lru-cache@2.6.5)
 	#├── mkdirp@0.5.1 (minimist@0.0.8)
-	#├── glob@4.5.3 (inherits@2.0.1, once@1.3.2, inflight@1.0.4, minimatch@2.0.8)
-	#├── path-array@1.0.0 (array-index@0.1.1)
-	#├── npmlog@1.2.1 (ansi@0.3.0, are-we-there-yet@1.0.4, gauge@1.2.2)
-	#└── request@2.58.0 (caseless@0.10.0, aws-sign2@0.5.0, forever-agent@0.6.1, stringstream@0.0.4, tunnel-agent@0.4.1, oauth-sign@0.8.0, isstream@0.1.2, extend@2.0.1, json-stringify-safe@5.0.1, node-uuid@1.4.3, qs@3.1.0, bl@0.9.4, tough-cookie@2.0.0, combined-stream@1.0.5, mime-types@2.0.14, form-data@1.0.0-rc1, http-signature@0.11.0, hawk@2.3.1, har-validator@1.8.0)
+	#└── rimraf@2.4.1 (glob@4.5.3)
 
-	npm_project="node-gyp"
+	#npm pack graceful-fs@3.0.8
+	pkg="graceful-fs" ; ver="3.0.8" ; maybe_install_depend
+#	#npm pack minimist@0.0.8
+#	pkg="minimist" ; ver="0.0.8" ; maybe_install_depend
+	#npm pack mkdirp@0.5.1
+	pkg="mkdirp" ; ver="0.5.1" ; maybe_install_depend
 
-	#├── rimraf@2.4.1
-
-	#npm install rimraf@2.4.1
-	#rimraf@2.4.1 node_modules/rimraf
-	#└── glob@4.5.3 (inherits@2.0.1, once@1.3.2, inflight@1.0.4, minimatch@2.0.8)
-	
 	#npm install glob@4.5.3
 	#glob@4.5.3 node_modules/glob
 	#├── inherits@2.0.1
@@ -186,394 +222,29 @@ c9_directory () {
 	#├── inflight@1.0.4 (wrappy@1.0.1)
 	#└── minimatch@2.0.8 (brace-expansion@1.1.0)
 
-	#npm install once@1.3.2
-	#once@1.3.2 node_modules/once
-	#└── wrappy@1.0.1
-
-	#npm install inflight@1.0.4
-	#inflight@1.0.4 node_modules/inflight
-	#├── once@1.3.2
-	#└── wrappy@1.0.1
+	#npm pack inherits@2.0.1
+	pkg="inherits" ; ver="2.0.1" ; maybe_install_depend
+	#npm pack wrappy@1.0.1
+	pkg="wrappy" ; ver="1.0.1" ; maybe_install_depend
+	#npm pack once@1.3.2
+	pkg="once" ; ver="1.3.2" ; maybe_install_depend
+	#npm pack inflight@1.0.4
+	pkg="inflight" ; ver="1.0.4" ; maybe_install_depend
 
 	#npm install minimatch@2.0.8
 	#minimatch@2.0.8 node_modules/minimatch
 	#└── brace-expansion@1.1.0 (concat-map@0.0.1, balanced-match@0.2.0)
 
-	#npm install brace-expansion@1.1.0
-	#brace-expansion@1.1.0 node_modules/brace-expansion
-	#├── concat-map@0.0.1
-	#└── balanced-match@0.2.0
-
-	#rimraf: 1
-	#npm pack balanced-match@0.2.0
-	pkg="balanced-match" ; ver="0.2.0" ; maybe_install_depend
 	#npm pack concat-map@0.0.1
 	pkg="concat-map" ; ver="0.0.1" ; maybe_install_depend
-	#npm pack wrappy@1.0.1
-	pkg="wrappy" ; ver="1.0.1" ; maybe_install_depend
-
-	#rimraf: 2
-	#npm pack brace-expansion@1.1.0
-	pkg="brace-expansion" ; ver="1.1.0" ; maybe_install_depend
-	#npm pack once@1.3.2
-	pkg="once" ; ver="1.3.2" ; maybe_install_depend
-
-	#rimraf: 3
-	#npm pack inherits@2.0.1
-	pkg="inherits" ; ver="2.0.1" ; maybe_install_depend
-	#npm pack inflight@1.0.4
-	pkg="inflight" ; ver="1.0.4" ; maybe_install_depend
+	#npm pack balanced-match@0.2.0
+	pkg="balanced-match" ; ver="0.2.0" ; maybe_install_depend
 	#npm pack minimatch@2.0.8
 	pkg="minimatch" ; ver="2.0.8" ; maybe_install_depend
-
-	#rimraf: 4
 	#npm pack glob@4.5.3
 	pkg="glob" ; ver="4.5.3" ; maybe_install_depend
-
-	#rimraf: 5
-	#npm pack rimraf@2.4.1
-	pkg="rimraf" ; ver="2.4.1" ; maybe_install_depend
-
-	#├── graceful-fs@3.0.8
-	#npm pack graceful-fs@3.0.8
-	pkg="graceful-fs" ; ver="3.0.8" ; maybe_install_depend
-
-	#├── osenv@0.1.3 (os-tmpdir@1.0.1, os-homedir@1.0.0)
-	#npm pack os-homedir@1.0.0
-	pkg="os-homedir" ; ver="1.0.0" ; maybe_install_depend
-	#npm pack os-tmpdir@1.0.1
-	pkg="os-tmpdir" ; ver="1.0.1" ; maybe_install_depend
-	#npm pack osenv@0.1.3
-	pkg="osenv" ; ver="0.1.3" ; maybe_install_depend
-
-	#├── nopt@3.0.3 (abbrev@1.0.7)
-	#npm pack abbrev@1.0.7
-	pkg="abbrev" ; ver="1.0.7" ; maybe_install_depend
-	#npm pack nopt@3.0.3
-	pkg="nopt" ; ver="3.0.3" ; maybe_install_depend
-
-	#├── which@1.1.1 (is-absolute@0.1.7)
-	#npm pack is-relative@0.1.3
-	pkg="is-relative" ; ver="0.1.3" ; maybe_install_depend
-	#npm pack is-absolute@0.1.7
-	pkg="is-absolute" ; ver="0.1.7" ; maybe_install_depend
-	#npm pack which@1.1.1
-	pkg="which" ; ver="1.1.1" ; maybe_install_depend
-
-	#├── fstream@1.0.7 (inherits@2.0.1)
-
-	#npm install fstream@1.0.7
-	#├── inherits@2.0.1 (installed)
-	#├── graceful-fs@3.0.8 (installed)
-	#├── mkdirp@0.5.1 (minimist@0.0.8)
-	#└── rimraf@2.4.1 (glob@4.5.3) (installed)
-
-	#npm pack minimist@0.0.8
-	pkg="minimist" ; ver="0.0.8" ; maybe_install_depend
-	#npm pack mkdirp@0.5.1
-	pkg="mkdirp" ; ver="0.5.1" ; maybe_install_depend
-	#npm pack fstream@1.0.7
-	pkg="fstream" ; ver="1.0.7" ; maybe_install_depend
-
-	#├── semver@4.3.6
-	#npm pack semver@4.3.6
-	pkg="semver" ; ver="4.3.6" ; maybe_install_depend
-
-	#├── minimatch@1.0.0 (sigmund@1.0.1, lru-cache@2.6.5)
-	#├── mkdirp@0.5.1 (minimist@0.0.8)
-
-	#├── path-array@1.0.0 (array-index@0.1.1)
-
-	#npm install path-array@1.0.0
-	#path-array@1.0.0 node_modules/path-array
-	#└── array-index@0.1.1 (debug@2.2.0)
-	#npm install array-index@0.1.1
-	#array-index@0.1.1 node_modules/array-index
-	#└── debug@2.2.0 (ms@0.7.1)
-	#npm install debug@2.2.0
-	#debug@2.2.0 node_modules/debug
-	#└── ms@0.7.1
-	#npm install ms@0.7.1
-	#ms@0.7.1 node_modules/ms
-
-	#npm pack ms@0.7.1
-	pkg="ms" ; ver="0.7.1" ; maybe_install_depend
-	#npm pack debug@2.2.0
-	pkg="debug" ; ver="2.2.0" ; maybe_install_depend
-	#npm pack array-index@0.1.1
-	pkg="array-index" ; ver="0.1.1" ; maybe_install_depend
-	#npm pack path-array@1.0.0
-	pkg="path-array" ; ver="1.0.0" ; maybe_install_depend
-
-	#├── tar@1.0.3 (inherits@2.0.1, block-stream@0.0.8)
-
-	#npm install tar@1.0.3
-	#tar@1.0.3 node_modules/tar
-	#├── inherits@2.0.1 (installed)
-	#├── block-stream@0.0.8
-	#└── fstream@1.0.7 (graceful-fs@3.0.8, mkdirp@0.5.1, rimraf@2.4.1) (installed)
-
-	#npm pack block-stream@0.0.8
-	pkg="block-stream" ; ver="0.0.8" ; maybe_install_depend
-	#npm pack tar@1.0.3
-	pkg="tar" ; ver="1.0.3" ; maybe_install_depend
-
-	#├── glob@4.5.3 (inherits@2.0.1, once@1.3.2, inflight@1.0.4, minimatch@2.0.8)
-	#├── npmlog@1.2.1 (ansi@0.3.0, are-we-there-yet@1.0.4, gauge@1.2.2)
-
-	#npm installnpmlog@1.2.1
-	#├── ansi@0.3.0
-	#├── are-we-there-yet@1.0.4 (delegates@0.1.0, readable-stream@1.1.13)
-	#└── gauge@1.2.2 (has-unicode@1.0.0, lodash.padleft@3.1.1, lodash.pad@3.1.1, lodash.padright@3.1.1)
-
-	#npm pack ansi@0.3.0
-	pkg="ansi" ; ver="0.3.0" ; maybe_install_depend
-
-	#npm install are-we-there-yet@1.0.4
-	#are-we-there-yet@1.0.4 node_modules/are-we-there-yet
-	#├── delegates@0.1.0
-	#└── readable-stream@1.1.13 (isarray@0.0.1, inherits@2.0.1, string_decoder@0.10.31, core-util-is@1.0.1)
-
-	#npm pack delegates@0.1.0
-	pkg="delegates" ; ver="0.1.0" ; maybe_install_depend
-
-	#npm install readable-stream@1.1.13
-	#readable-stream@1.1.13 node_modules/readable-stream
-	#├── isarray@0.0.1
-	#├── inherits@2.0.1
-	#├── string_decoder@0.10.31
-	#└── core-util-is@1.0.1
-
-	#npm pack isarray@0.0.1
-	pkg="isarray" ; ver="0.0.1" ; maybe_install_depend
-	#npm pack inherits@2.0.1
-	pkg="inherits" ; ver="2.0.1" ; maybe_install_depend
-	#npm pack string_decoder@0.10.31
-	pkg="string_decoder" ; ver="0.10.31" ; maybe_install_depend
-	#npm pack core-util-is@1.0.1
-	pkg="core-util-is" ; ver="1.0.1" ; maybe_install_depend
-
-	#npm pack readable-stream@1.1.13
-	pkg="readable-stream" ; ver="1.1.13" ; maybe_install_depend
-
-	#npm pack are-we-there-yet@1.0.4
-	pkg="are-we-there-yet" ; ver="1.0.4" ; maybe_install_depend
-
-	#npm install gauge@1.2.2
-	#gauge@1.2.2 node_modules/gauge
-	#├── has-unicode@1.0.0
-	#├── ansi@0.3.0 (installed)
-	#├── lodash.padleft@3.1.1 (lodash._basetostring@3.0.1, lodash._createpadding@3.6.1)
-	#├── lodash.padright@3.1.1 (lodash._basetostring@3.0.1, lodash._createpadding@3.6.1)
-	#└── lodash.pad@3.1.1 (lodash._basetostring@3.0.1, lodash._createpadding@3.6.1)
-
-	#npm pack has-unicode@1.0.0
-	pkg="has-unicode" ; ver="1.0.0" ; maybe_install_depend
-
-	#npm install lodash.padleft@3.1.1
-	#lodash.padleft@3.1.1 node_modules/lodash.padleft
-	#├── lodash._basetostring@3.0.1
-	#└── lodash._createpadding@3.6.1 (lodash.repeat@3.0.1)
-
-	#npm pack lodash._basetostring@3.0.1
-	pkg="lodash._basetostring" ; ver="3.0.1" ; maybe_install_depend
-	#npm pack lodash.repeat@3.0.1
-	pkg="lodash.repeat" ; ver="3.0.1" ; maybe_install_depend
-	#npm pack lodash._createpadding@3.6.1
-	pkg="lodash._createpadding" ; ver="3.6.1" ; maybe_install_depend
-
-	#npm pack lodash.padleft@3.1.1
-	pkg="lodash.padleft" ; ver="3.1.1" ; maybe_install_depend
-	#npm pack lodash.padright@3.1.1
-	pkg="lodash.padright" ; ver="3.1.1" ; maybe_install_depend
-	#npm pack lodash.pad@3.1.1
-	pkg="lodash.pad" ; ver="3.1.1" ; maybe_install_depend
-
-	#└── request@2.58.0 (caseless@0.10.0, aws-sign2@0.5.0, forever-agent@0.6.1, stringstream@0.0.4, tunnel-agent@0.4.1, oauth-sign@0.8.0, isstream@0.1.2, extend@2.0.1, json-stringify-safe@5.0.1, node-uuid@1.4.3, combined-stream@1.0.5, qs@3.1.0, mime-types@2.0.14, http-signature@0.11.0, bl@0.9.4, form-data@1.0.0-rc1, tough-cookie@2.0.0, hawk@2.3.1, har-validator@1.8.0)
-
-	#npm install request@2.58.0
-	#request@2.58.0 node_modules/request
-	#├── caseless@0.10.0
-	#├── aws-sign2@0.5.0
-	#├── forever-agent@0.6.1
-	#├── stringstream@0.0.4
-	#├── oauth-sign@0.8.0
-	#├── tunnel-agent@0.4.1
-	#├── isstream@0.1.2
-	#├── extend@2.0.1
-	#├── json-stringify-safe@5.0.1
-	#├── node-uuid@1.4.3
-	#├── qs@3.1.0
-	#├── tough-cookie@2.0.0
-	#├── mime-types@2.0.14 (mime-db@1.12.0)
-	#├── http-signature@0.11.0 (assert-plus@0.1.5, asn1@0.1.11, ctype@0.5.3)
-	#├── combined-stream@1.0.5 (delayed-stream@1.0.0)
-	#├── hawk@2.3.1 (cryptiles@2.0.4, sntp@1.0.9, boom@2.8.0, hoek@2.14.0)
-	#├── bl@0.9.4 (readable-stream@1.0.33)
-	#├── form-data@1.0.0-rc1 (async@1.3.0, mime-types@2.1.3)
-	#└── har-validator@1.8.0 (bluebird@2.9.33, commander@2.8.1, is-my-json-valid@2.12.0, chalk@1.1.0)
-
-	#npm pack caseless@0.10.0
-	pkg="caseless" ; ver="0.10.0" ; maybe_install_depend
-	#npm pack aws-sign2@0.5.0
-	pkg="aws-sign2" ; ver="0.5.0" ; maybe_install_depend
-	#npm pack forever-agent@0.6.1
-	pkg="forever-agent" ; ver="0.6.1" ; maybe_install_depend
-	#npm pack stringstream@0.0.4
-	pkg="stringstream" ; ver="0.0.4" ; maybe_install_depend
-	#npm pack oauth-sign@0.8.0
-	pkg="oauth-sign" ; ver="0.8.0" ; maybe_install_depend
-	#npm pack tunnel-agent@0.4.1
-	pkg="tunnel-agent" ; ver="0.4.1" ; maybe_install_depend
-	#npm pack isstream@0.1.2
-	pkg="isstream" ; ver="0.1.2" ; maybe_install_depend
-	#npm pack extend@2.0.1
-	pkg="extend" ; ver="2.0.1" ; maybe_install_depend
-	#npm pack json-stringify-safe@5.0.1
-	pkg="json-stringify-safe" ; ver="5.0.1" ; maybe_install_depend
-	#npm pack node-uuid@1.4.3
-	pkg="node-uuid" ; ver="1.4.3" ; maybe_install_depend
-	#npm pack qs@3.1.0
-	pkg="qs" ; ver="3.1.0" ; maybe_install_depend
-	#npm pack tough-cookie@2.0.0
-	pkg="tough-cookie" ; ver="2.0.0" ; maybe_install_depend
-
-	#npm install mime-types@2.0.14
-	#mime-types@2.0.14 node_modules/mime-types
-	#└── mime-db@1.12.0
-
-	#npm pack mime-db@1.12.0
-	pkg="mime-db" ; ver="1.12.0" ; maybe_install_depend
-	#npm pack mime-types@2.0.14
-	pkg="mime-types" ; ver="2.0.14" ; maybe_install_depend
-
-	#npm install http-signature@0.11.0
-	#http-signature@0.11.0 node_modules/http-signature
-	#├── assert-plus@0.1.5
-	#├── asn1@0.1.11
-	#└── ctype@0.5.3
-
-	#npm pack assert-plus@0.1.5
-	pkg="assert-plus" ; ver="0.1.5" ; maybe_install_depend
-	#npm pack asn1@0.1.11
-	pkg="asn1" ; ver="0.1.11" ; maybe_install_depend
-	#npm pack ctype@0.5.3
-	pkg="ctype" ; ver="0.5.3" ; maybe_install_depend
-	#npm pack http-signature@0.11.0
-	pkg="http-signature" ; ver="0.11.0" ; maybe_install_depend
-
-	#npm install combined-stream@1.0.5
-	#combined-stream@1.0.5 node_modules/combined-stream
-	#└── delayed-stream@1.0.0
-
-	#npm pack delayed-stream@1.0.0
-	pkg="delayed-stream" ; ver="1.0.0" ; maybe_install_depend
-	#npm pack combined-stream@1.0.5
-	pkg="combined-stream" ; ver="1.0.5" ; maybe_install_depend
-
-	#hawk@2.3.1 node_modules/hawk
-	#├── cryptiles@2.0.4
-	#├── sntp@1.0.9
-	#├── boom@2.8.0
-	#└── hoek@2.14.0
-
-	#npm pack hoek@2.14.0
-	pkg="hoek" ; ver="2.14.0" ; maybe_install_depend
-	#npm pack boom@2.8.0
-	pkg="boom" ; ver="2.8.0" ; maybe_install_depend
-	#npm pack sntp@1.0.9
-	pkg="sntp" ; ver="1.0.9" ; maybe_install_depend
-	#npm pack cryptiles@2.0.4
-	pkg="cryptiles" ; ver="2.0.4" ; maybe_install_depend
-	#npm pack hawk@2.3.1
-	pkg="hawk" ; ver="2.3.1" ; maybe_install_depend
-
-	#npm pack readable-stream@1.0.33
-	pkg="readable-stream" ; ver="1.0.33" ; maybe_install_depend
-	#npm pack bl@0.9.4
-	pkg="bl" ; ver="0.9.4" ; maybe_install_depend
-
-	#npm pack async@1.3.0
-	pkg="async" ; ver="1.3.0" ; maybe_install_depend
-	#npm pack form-data@1.0.0-rc1
-	pkg="form-data" ; ver="1.0.0-rc1" ; maybe_install_depend
-
-	#npm install har-validator@1.8.0
-	#har-validator@1.8.0 node_modules/har-validator
-	#├── bluebird@2.9.33
-	#├── commander@2.8.1 (graceful-readlink@1.0.1)
-	#├── is-my-json-valid@2.12.0 (jsonpointer@1.1.0, generate-function@2.0.0, xtend@4.0.0, generate-object-property@1.2.0)
-	#└── chalk@1.1.0 (escape-string-regexp@1.0.3, supports-color@2.0.0, ansi-styles@2.1.0, has-ansi@2.0.0, strip-ansi@3.0.0)
-
-	#npm pack bluebird@2.9.33
-	pkg="bluebird" ; ver="2.9.33" ; maybe_install_depend
-
-	#npm pack graceful-readlink@1.0.1
-	pkg="graceful-readlink" ; ver="1.0.1" ; maybe_install_depend
-	#npm pack commander@2.8.1
-	pkg="commander" ; ver="2.8.1" ; maybe_install_depend
-
-	#npm install generate-object-property@1.2.0
-	#generate-object-property@1.2.0 node_modules/generate-object-property
-	#└── is-property@1.0.2
-
-	#npm pack is-property@1.0.2
-	pkg="is-property" ; ver="1.0.2" ; maybe_install_depend
-
-	#npm pack generate-object-property@1.2.0
-	pkg="generate-object-property" ; ver="1.2.0" ; maybe_install_depend
-
-	#npm install is-my-json-valid@2.12.0
-	#is-my-json-valid@2.12.0 node_modules/is-my-json-valid
-	#├── jsonpointer@1.1.0
-	#├── generate-function@2.0.0
-	#├── xtend@4.0.0
-	#└── generate-object-property@1.2.0 (is-property@1.0.2)
-
-	#npm pack jsonpointer@1.1.0
-	pkg="jsonpointer" ; ver="1.1.0" ; maybe_install_depend
-	#npm pack generate-function@2.0.0
-	pkg="generate-function" ; ver="2.0.0" ; maybe_install_depend
-	#npm pack xtend@4.0.0
-	pkg="xtend" ; ver="4.0.0" ; maybe_install_depend
-	#npm pack is-my-json-valid@2.12.0
-	pkg="is-my-json-valid" ; ver="2.12.0" ; maybe_install_depend
-
-	#npm install chalk@1.1.0
-	#chalk@1.1.0 node_modules/chalk
-	#├── escape-string-regexp@1.0.3
-	#├── supports-color@2.0.0
-	#├── ansi-styles@2.1.0
-	#├── has-ansi@2.0.0 (ansi-regex@2.0.0)
-	#└── strip-ansi@3.0.0 (ansi-regex@2.0.0)
-
-	#npm install has-ansi@2.0.0
-	#has-ansi@2.0.0 node_modules/has-ansi
-	#└── ansi-regex@2.0.0
-
-	#npm pack ansi-regex@2.0.0
-	pkg="ansi-regex" ; ver="2.0.0" ; maybe_install_depend
-	#npm pack has-ansi@2.0.0
-	pkg="has-ansi" ; ver="2.0.0" ; maybe_install_depend
-	#npm pack strip-ansi@3.0.0
-	pkg="strip-ansi" ; ver="3.0.0" ; maybe_install_depend
-	#npm pack ansi-styles@2.1.0
-	pkg="ansi-styles" ; ver="2.1.0" ; maybe_install_depend
-	#npm pack supports-color@2.0.0
-	pkg="supports-color" ; ver="2.0.0" ; maybe_install_depend
-	#npm pack escape-string-regexp@1.0.3
-	pkg="escape-string-regexp" ; ver="1.0.3" ; maybe_install_depend
-
-	#npm pack chalk@1.1.0
-	pkg="chalk" ; ver="1.1.0" ; maybe_install_depend
-
-	#npm pack har-validator@1.8.0
-	pkg="har-validator" ; ver="1.8.0" ; maybe_install_depend
-
-	echo "${package}:Installing ${npm_project}"
-	#npm pack node-gyp@2.0.2
-	pkg="node-gyp" ; ver="2.0.2"
-	"$NPM" install /var/cache/${package}/${pkg}-${ver}.tgz
+	#npm pack fstream@0.1.31
+	pkg="fstream" ; ver="0.1.31" ; maybe_install_depend
 
 #	echo :Installing pty.js
 #	"$NPM" install node-gyp
