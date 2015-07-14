@@ -150,7 +150,7 @@ c9_directory () {
 	#npm pack isbinaryfile@2.0.0
 	pkg="isbinaryfile" ; ver="2.0.0" ; maybe_install_depend
 
-	echo "${package}:Installing nak"
+	echo "${package}:Installing ${npm_project}"
 	#npm pack https://github.com/c9/nak/tarball/c9
 	"$NPM" install /var/cache/${package}/nak-0.3.3.tgz
 
@@ -488,6 +488,8 @@ c9_directory () {
 	#npm pack hawk@2.3.1
 	pkg="hawk" ; ver="2.3.1" ; maybe_install_depend
 
+	#npm pack readable-stream@1.0.33
+	pkg="readable-stream" ; ver="1.0.33" ; maybe_install_depend
 	#npm pack bl@0.9.4
 	pkg="bl" ; ver="0.9.4" ; maybe_install_depend
 
@@ -570,7 +572,7 @@ c9_directory () {
 
 	echo "${package}:Installing ${npm_project}"
 	#npm pack node-gyp@2.0.2
-	pkg="node-gyp" ; ver="2.0.2" ; maybe_install_depend
+	pkg="node-gyp" ; ver="2.0.2"
 	"$NPM" install /var/cache/${package}/${pkg}-${ver}.tgz
 
 #	echo :Installing pty.js
