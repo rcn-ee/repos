@@ -74,9 +74,17 @@ dl_install() {
 }
 
 maybe_install_depend () {
-	if [ ! -f "$C9_DIR/node_modules/${pkg}/package.json" ] ; then
+	if [ ! -f "$C9_DIR/node_modules/${pkg}/${package}.version" ] ; then
 		echo "${package}:Installing: ${pkg}-${ver}.tgz (for ${npm_project})"
 		"$NPM" install /var/cache/${package}/${pkg}-${ver}.tgz
+		echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
+	else
+		old_version=$(cat "$C9_DIR/node_modules/${pkg}/${package}.version")
+		if [ ! "x${old_version}" = "x${ver}" ] ; then
+			echo "${package}:Installing: ${pkg}-${ver}.tgz (for ${npm_project})"
+			"$NPM" install /var/cache/${package}/${pkg}-${ver}.tgz
+			echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
+		fi
 	fi
 }
 
