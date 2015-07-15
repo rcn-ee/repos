@@ -78,8 +78,8 @@ npmbox_dl_file () {
 	if [ ! -f ${rfile} ] ; then
 		if [ ! -f ${wfile} ] ; then
 			dl_file
-			mv ${wfile} ${rfile}
 		fi
+		mv ${wfile} ${rfile}
 	fi
 	wfile=${rfile}
 
@@ -195,7 +195,7 @@ c9_directory () {
 
 	cd "$C9_DIR"
 
-	echo :Installing npmbox
+	echo "${package}:Installing npmbox"
 
 	cd "$C9_DIR"/box_tmp
 
@@ -207,7 +207,7 @@ c9_directory () {
 	cd "$C9_DIR"/
 	rm -rf ./box_tmp || true
 
-	echo :Installing pty.js
+	echo "${package}:Installing pty.js"
 	"$NPMUNBOX" /var/cache/${package}/node-gyp.npmbox
 	"$NPMUNBOX" /var/cache/${package}/pty.js@0.2.7-1.npmbox
 
