@@ -101,7 +101,7 @@ c9_directory () {
 	mkdir -p "$C9_DIR"/bin
 	mkdir -p "$C9_DIR"/tmp
 	mkdir -p "$C9_DIR"/node_modules
-	mkdir -p "$C9_DIR"/npmbox
+	mkdir -p "$C9_DIR"/box_tmp
 	cd "$C9_DIR"
 
 	#start install node tmux_install nak ptyjs vfsextend collab
@@ -196,25 +196,28 @@ c9_directory () {
 
 	cd "$C9_DIR"
 
-	npm_project="npmbox"
+	echo :Installing npmbox
 
-#	cd "$C9_DIR"/npmbox
-#	cp /var/cache/${package}/npmbox-2.7.0.npmbox .
+	cd "$C9_DIR"/box-tmp
 
-#	cp /media/usb/npmbox.npmbox .
-#	tar --no-same-owner --no-same-permissions -xvzf npmbox.npmbox
-#	"$NPM" install --global --cache ./.npmbox.cache --optional --cache-min 99999 --shrinkwrap false npmbox
+	tar xvzf /var/cache/${package}/npmbox-2.7.0.npmbox ./
+	"$NPM" install --cache ./.npmbox.cache --optional --cache-min 99999 --shrinkwrap false npmbox
 
-#	echo :Installing pty.js
-#	"$NPM" install node-gyp
-#	"$NPM" install pty.js@0.2.7-1
+	NPMUNBOX=$C9_DIR/node_modules/npmbox/bin/npmunbox
 
-#	HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
-#	if [ $HASPTY -ne 1 ]; then
-#	  echo "Unknown exception installing pty.js"
-#	  echo `"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))"`
-#	  exit 100
-#	fi
+	cd "$C9_DIR"/
+	rm -rf box-tmp
+
+	echo :Installing pty.js
+	"$NPMUNBOX" /var/cache/${package}/node-gyp-2.0.2.npmbox
+	"$NPMUNBOX" /var/cache/${package}/pty.js@0.2.7-1.npmbox
+
+	HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
+	if [ $HASPTY -ne 1 ]; then
+	  echo "Unknown exception installing pty.js"
+	  echo `"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))"`
+	  exit 100
+	fi
 
 # vfsextend collab
 
