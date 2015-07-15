@@ -198,7 +198,7 @@ c9_directory () {
 
 	echo :Installing npmbox
 
-	cd "$C9_DIR"/box-tmp
+	cd "$C9_DIR"/box_tmp
 
 	tar xvzf /var/cache/${package}/npmbox-2.7.0.npmbox ./
 	"$NPM" install --cache ./.npmbox.cache --optional --cache-min 99999 --shrinkwrap false npmbox
@@ -206,7 +206,7 @@ c9_directory () {
 	NPMUNBOX=$C9_DIR/node_modules/npmbox/bin/npmunbox
 
 	cd "$C9_DIR"/
-	rm -rf box-tmp
+	rm -rf ./box_tmp || true
 
 	echo :Installing pty.js
 	"$NPMUNBOX" /var/cache/${package}/node-gyp-2.0.2.npmbox
