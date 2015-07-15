@@ -259,17 +259,14 @@ c9_directory () {
 
 	echo "${package}:Installing ${npm_project}"
 	#npm pack pty.js-0.2.7-1
-	"$NPM" install /var/cache/${package}/pty.js-0.2.7-1.tgz
+	"$NPM" install --unsafe-perm=true /var/cache/${package}/pty.js-0.2.7-1.tgz
 
-#pty.js needs work...
-#	wfile="pty.js@0.2.7-1.npmbox" pkg="pty.js" ; ver="0.2.7-1" ; maybe_npmunbox
-
-#	HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
-#	if [ $HASPTY -ne 1 ]; then
-#	  echo "Unknown exception installing pty.js"
-#	  echo `"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))"`
-#	  exit 100
-#	fi
+	HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
+	if [ $HASPTY -ne 1 ]; then
+	  echo "Unknown exception installing pty.js"
+	  echo `"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))"`
+	  exit 100
+	fi
 
 # vfsextend collab
 
