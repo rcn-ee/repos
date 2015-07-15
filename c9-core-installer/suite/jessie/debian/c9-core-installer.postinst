@@ -138,6 +138,20 @@ c9_directory () {
 	if [ -d "$C9_DIR"/$VIRTUALENV_VERSION ] ; then
 		rm -rf "$C9_DIR"/$VIRTUALENV_VERSION
 	fi
+
+	sha256sum_tgz="d681db1766cdc8aa1b37eb18252c264b775f971166c2bf658a9618c1f3d28741"
+	wfile="virtualenv-12.0.7.tar.gz"
+
+	cd /var/cache/${package}/
+	if [ ! -f ${wfile} ] ; then
+		dl_file
+	fi
+
+	if [ -f ${wfile} ] ; then
+		validdate_file
+	fi
+	cd "$C9_DIR"
+
 	tar xzf /var/cache/${package}/$VIRTUALENV_VERSION.tar.gz
 
 	if [ -d "$C9_DIR"/virtualenv ] ; then
