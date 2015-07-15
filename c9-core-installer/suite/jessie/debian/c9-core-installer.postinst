@@ -117,22 +117,20 @@ c9_directory () {
 	# we don't bump this node up in the path
 	PATH="$C9_DIR/node/bin/:$C9_DIR/node_modules/.bin:$PATH"
 
-	if [ -d "$C9_DIR"/$VIRTUALENV_VERSION ] ; then
-		rm -rf "$C9_DIR"/$VIRTUALENV_VERSION
-	fi
-	tar xzf /var/cache/${package}/$VIRTUALENV_VERSION.tar.gz
+#	if [ -d "$C9_DIR"/$VIRTUALENV_VERSION ] ; then
+#		rm -rf "$C9_DIR"/$VIRTUALENV_VERSION
+#	fi
+#	tar xzf /var/cache/${package}/$VIRTUALENV_VERSION.tar.gz
 
-	if [ -d "$C9_DIR"/virtualenv ] ; then
-		rm -rf "$C9_DIR"/virtualenv
-	fi
-	mv $VIRTUALENV_VERSION virtualenv
+#	if [ -d "$C9_DIR"/virtualenv ] ; then
+#		rm -rf "$C9_DIR"/virtualenv
+#	fi
+#	mv $VIRTUALENV_VERSION virtualenv
 
-	echo ${package}:python
-	"$PYTHON" virtualenv/virtualenv.py "$C9_DIR/python"
-
-	PYTHON="$C9_DIR/python/bin/python"
-
-	"$NPM" config -g set python "$PYTHON"
+#	echo ${package}:python
+#	"$PYTHON" virtualenv/virtualenv.py "$C9_DIR/python"
+#	PYTHON="$C9_DIR/python/bin/python"
+#	"$NPM" config -g set python "$PYTHON"
 
 	#tmux_install
 	ln -sf $(which tmux) "$C9_DIR"/bin/tmux
@@ -155,14 +153,54 @@ c9_directory () {
 	#npm pack https://github.com/c9/nak/tarball/c9
 	"$NPM" install /var/cache/${package}/nak-0.3.3.tgz
 
+
+	partner_url="https://rcn-ee.com/repos/git/archive/c9-npmbox"
+
+	#b164be30ee2896066696b15e184f1b1fb420dfb32608b060a6dc906232c01ec8  npmbox-2.7.0.npmbox
+	#d3781784149b85323c7ac3b4e4e8a090d2fecc4c747f83dd427590aaee24f7fa  node-gyp-2.0.2.npmbox
+	#35c29c2dc5c9abca141b0c33c405a3a2d2e802cbc8dfe4476fec18068090258f  pty.js@0.2.7-1.npmbox
+
+	sha256sum_tgz="b164be30ee2896066696b15e184f1b1fb420dfb32608b060a6dc906232c01ec8"
+	wfile="npmbox-2.7.0.npmbox"
+
+	if [ ! -f ${wfile} ] ; then
+		dl_file
+	fi
+
+	if [ -f ${wfile} ] ; then
+		validdate_file
+	fi
+
+	sha256sum_tgz="d3781784149b85323c7ac3b4e4e8a090d2fecc4c747f83dd427590aaee24f7fa"
+	wfile="node-gyp-2.0.2.npmbox"
+
+	if [ ! -f ${wfile} ] ; then
+		dl_file
+	fi
+
+	if [ -f ${wfile} ] ; then
+		validdate_file
+	fi
+
+	sha256sum_tgz="35c29c2dc5c9abca141b0c33c405a3a2d2e802cbc8dfe4476fec18068090258f"
+	wfile="pty.js@0.2.7-1.npmbox"
+
+	if [ ! -f ${wfile} ] ; then
+		dl_file
+	fi
+
+	if [ -f ${wfile} ] ; then
+		validdate_file
+	fi
+
 	npm_project="npmbox"
 
-	cd "$C9_DIR"/npmbox
-	cp /var/cache/${package}/npmbox.npmbox .
+#	cd "$C9_DIR"/npmbox
+#	cp /var/cache/${package}/npmbox-2.7.0.npmbox .
 
-	cp /media/usb/npmbox.npmbox .
-	tar --no-same-owner --no-same-permissions -xvzf npmbox.npmbox
-	"$NPM" install --global --cache ./.npmbox.cache --optional --cache-min 99999 --shrinkwrap false npmbox
+#	cp /media/usb/npmbox.npmbox .
+#	tar --no-same-owner --no-same-permissions -xvzf npmbox.npmbox
+#	"$NPM" install --global --cache ./.npmbox.cache --optional --cache-min 99999 --shrinkwrap false npmbox
 
 #	echo :Installing pty.js
 #	"$NPM" install node-gyp
