@@ -127,7 +127,7 @@ c9_directory () {
 	C9_DIR=/root/.c9
 	NPM=$C9_DIR/node/bin/npm
 	NODE=$C9_DIR/node/bin/node
-	PYTHON=python
+	PYTHON=python2.7
 
 	VIRTUALENV_VERSION=virtualenv-12.0.7
 
@@ -171,13 +171,12 @@ c9_directory () {
 
 	tar xzf /var/cache/${package}/$VIRTUALENV_VERSION.tar.gz
 
-	if [ -d "$C9_DIR"/virtualenv ] ; then
-		rm -rf "$C9_DIR"/virtualenv
+	if [ -d "$C9_DIR"/python ] ; then
+		rm -rf "$C9_DIR"/python
 	fi
-	mv $VIRTUALENV_VERSION virtualenv
 
 	echo ${package}:python
-	"$PYTHON" virtualenv/virtualenv.py "$C9_DIR/python"
+	"$PYTHON" virtualenv-12.0.7/virtualenv.py "$C9_DIR/python"
 	PYTHON="$C9_DIR/python/bin/python"
 	"$NPM" config -g set python "$PYTHON"
 
