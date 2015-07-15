@@ -79,7 +79,9 @@ npmbox_dl_file () {
 		if [ ! -f ${wfile} ] ; then
 			dl_file
 		fi
-		mv ${wfile} ${rfile}
+		if [ ! "x${wfile}" = "x${rfile}" ] ; then
+			mv ${wfile} ${rfile}
+		fi
 	fi
 	wfile=${rfile}
 
