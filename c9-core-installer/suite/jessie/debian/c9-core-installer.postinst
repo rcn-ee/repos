@@ -250,14 +250,16 @@ c9_directory () {
 	rm -rf ./box_tmp || true
 
 	wfile="node-gyp.npmbox" ; pkg="node-gyp" ; ver="2.0.2" ; maybe_npmunbox
-	wfile="pty.js@0.2.7-1.npmbox" pkg="pty.js" ; ver="0.2.7-1" ; maybe_npmunbox
 
-	HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
-	if [ $HASPTY -ne 1 ]; then
-	  echo "Unknown exception installing pty.js"
-	  echo `"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))"`
-	  exit 100
-	fi
+#pty.js needs work...
+#	wfile="pty.js@0.2.7-1.npmbox" pkg="pty.js" ; ver="0.2.7-1" ; maybe_npmunbox
+
+#	HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
+#	if [ $HASPTY -ne 1 ]; then
+#	  echo "Unknown exception installing pty.js"
+#	  echo `"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))"`
+#	  exit 100
+#	fi
 
 # vfsextend collab
 
