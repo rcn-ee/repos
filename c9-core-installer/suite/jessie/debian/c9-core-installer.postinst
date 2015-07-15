@@ -153,6 +153,7 @@ c9_directory () {
 	#npm pack https://github.com/c9/nak/tarball/c9
 	"$NPM" install /var/cache/${package}/nak-0.3.3.tgz
 
+	cd /var/cache/${package}/
 
 	partner_url="https://rcn-ee.com/repos/git/archive/c9-npmbox"
 
@@ -192,6 +193,8 @@ c9_directory () {
 	if [ -f ${wfile} ] ; then
 		validdate_file
 	fi
+
+	cd "$C9_DIR"
 
 	npm_project="npmbox"
 
