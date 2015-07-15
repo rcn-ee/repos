@@ -135,20 +135,20 @@ c9_directory () {
 	# we don't bump this node up in the path
 	PATH="$C9_DIR/node/bin/:$C9_DIR/node_modules/.bin:$PATH"
 
-#	if [ -d "$C9_DIR"/$VIRTUALENV_VERSION ] ; then
-#		rm -rf "$C9_DIR"/$VIRTUALENV_VERSION
-#	fi
-#	tar xzf /var/cache/${package}/$VIRTUALENV_VERSION.tar.gz
+	if [ -d "$C9_DIR"/$VIRTUALENV_VERSION ] ; then
+		rm -rf "$C9_DIR"/$VIRTUALENV_VERSION
+	fi
+	tar xzf /var/cache/${package}/$VIRTUALENV_VERSION.tar.gz
 
-#	if [ -d "$C9_DIR"/virtualenv ] ; then
-#		rm -rf "$C9_DIR"/virtualenv
-#	fi
-#	mv $VIRTUALENV_VERSION virtualenv
+	if [ -d "$C9_DIR"/virtualenv ] ; then
+		rm -rf "$C9_DIR"/virtualenv
+	fi
+	mv $VIRTUALENV_VERSION virtualenv
 
-#	echo ${package}:python
-#	"$PYTHON" virtualenv/virtualenv.py "$C9_DIR/python"
-#	PYTHON="$C9_DIR/python/bin/python"
-#	"$NPM" config -g set python "$PYTHON"
+	echo ${package}:python
+	"$PYTHON" virtualenv/virtualenv.py "$C9_DIR/python"
+	PYTHON="$C9_DIR/python/bin/python"
+	"$NPM" config -g set python "$PYTHON"
 
 	#tmux_install
 	ln -sf $(which tmux) "$C9_DIR"/bin/tmux
