@@ -250,6 +250,16 @@ c9_directory () {
 	rm -rf ./box_tmp || true
 
 	wfile="node-gyp.npmbox" ; pkg="node-gyp" ; ver="2.0.2" ; maybe_npmunbox
+	npm_project="pty.js-0.2.7-1"
+
+	#npm pack extend@1.2.1
+	pkg="extend" ; ver="1.2.1" ; maybe_install_depend
+	#npm pack nan@1.7.0
+	pkg="nan" ; ver="1.7.0" ; maybe_install_depend
+
+	echo "${package}:Installing ${npm_project}"
+	#npm pack pty.js-0.2.7-1
+	"$NPM" install /var/cache/${package}/pty.js-0.2.7-1.tgz
 
 #pty.js needs work...
 #	wfile="pty.js@0.2.7-1.npmbox" pkg="pty.js" ; ver="0.2.7-1" ; maybe_npmunbox
