@@ -106,6 +106,21 @@ maybe_install_depend () {
 	fi
 }
 
+maybe_npmunbox () {
+	if [ ! -f "$C9_DIR/node_modules/${pkg}/${package}.version" ] ; then
+		echo "${package}:Installing: ${pkg}"
+		"$NPMUNBOX" /var/cache/${package}/${wfile}
+		echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
+	else
+		old_version=$(cat "$C9_DIR/node_modules/${pkg}/${package}.version")
+		if [ ! "x${old_version}" = "x${ver}" ] ; then
+			echo "${package}:Installing: ${pkg}"
+			"$NPMUNBOX" /var/cache/${package}/${wfile}
+			echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
+		fi
+	fi
+}
+
 c9_directory () {
 	#FIXME: use npm install shrinkwrap
 	#Based on: https://github.com/c9/install
@@ -211,21 +226,32 @@ c9_directory () {
 
 	cd "$C9_DIR"
 
-	echo "${package}:Installing npmbox"
+	pkg="npmbox" ; ver="2.7.0"
 
-	cd "$C9_DIR"/box_tmp
-
-	tar xzf /var/cache/${package}/npmbox.npmbox
-	"$NPM" install --cache ./.npmbox.cache --optional --cache-min 99999 --shrinkwrap false npmbox
+	if [ ! -f "$C9_DIR/node_modules/${pkg}/${package}.version" ] ; then
+		echo "${package}:Installing npmbox"
+		cd "$C9_DIR"/box_tmp
+		tar xzf /var/cache/${package}/npmbox.npmbox
+		"$NPM" install --cache ./.npmbox.cache --optional --cache-min 99999 --shrinkwrap false npmbox
+		echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
+	else
+		old_version=$(cat "$C9_DIR/node_modules/${pkg}/${package}.version")
+		if [ ! "x${old_version}" = "x${ver}" ] ; then
+			echo "${package}:Installing npmbox"
+			cd "$C9_DIR"/box_tmp
+			tar xzf /var/cache/${package}/npmbox.npmbox
+			"$NPM" install --cache ./.npmbox.cache --optional --cache-min 99999 --shrinkwrap false npmbox
+			echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
+		fi
+	fi
 
 	NPMUNBOX=$C9_DIR/node_modules/npmbox/bin/npmunbox
 
 	cd "$C9_DIR"/
 	rm -rf ./box_tmp || true
 
-	echo "${package}:Installing pty.js"
-	"$NPMUNBOX" /var/cache/${package}/node-gyp.npmbox
-	"$NPMUNBOX" /var/cache/${package}/pty.js@0.2.7-1.npmbox
+	wfile="node-gyp.npmbox" ; pkg="node-gyp" ; ver="2.0.2" ; maybe_npmunbox
+	wfile="pty.js@0.2.7-1.npmbox" pkg="pty.js" ; ver="0.2.7-1" ; maybe_npmunbox
 
 	HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
 	if [ $HASPTY -ne 1 ]; then
