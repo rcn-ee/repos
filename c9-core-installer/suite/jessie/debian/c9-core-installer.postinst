@@ -139,6 +139,8 @@ c9_directory () {
 		rm -rf "$C9_DIR"/$VIRTUALENV_VERSION
 	fi
 
+	partner_url="https://rcn-ee.com/repos/git/archive/c9-npmbox"
+
 	sha256sum_tgz="d681db1766cdc8aa1b37eb18252c264b775f971166c2bf658a9618c1f3d28741"
 	wfile="virtualenv-12.0.7.tar.gz"
 
@@ -184,8 +186,6 @@ c9_directory () {
 	echo "${package}:Installing ${npm_project}"
 	#npm pack https://github.com/c9/nak/tarball/c9
 	"$NPM" install /var/cache/${package}/nak-0.3.3.tgz
-
-	partner_url="https://rcn-ee.com/repos/git/archive/c9-npmbox"
 
 	#b164be30ee2896066696b15e184f1b1fb420dfb32608b060a6dc906232c01ec8  npmbox-2.7.0.npmbox
 	#d3781784149b85323c7ac3b4e4e8a090d2fecc4c747f83dd427590aaee24f7fa  node-gyp-2.0.2.npmbox
