@@ -143,7 +143,7 @@ qt5_lxqt () {
 	package_name="libsysstat" ; package_version="${package_name}_0.3.0-4" ; check_http
 
 	site="http://packages.siduction.org/lxqt/pool/main/l"
-	package_name="lxqt-panel" ; package_version="${package_name}_0.9.0-29" ; check_http
+	package_name="lxqt-panel" ; package_version="${package_name}_0.9.0-31" ; check_http
 
 	site="http://packages.siduction.org/lxqt/pool/main/p"
 	package_name="pcmanfm-qt" ; package_version="${package_name}_0.9.0-18" ; check_http

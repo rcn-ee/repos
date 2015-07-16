@@ -14,6 +14,7 @@ override_dh_strip:
 
 maintainer-clean:
 	$(RM) -r checkout
+	$(RM) -r backport
 	$(RM) *.build
 	$(RM) *.changes
 	$(RM) *.deb
@@ -25,7 +26,9 @@ checkout: maintainer-clean
 	git clone git://github.com/lxde/lxqt-panel.git checkout; \
 	cd checkout; \
 	cp -a ../debian .; \
-	echo "";\
-	git log | head; \
 	echo ""; \
+	git log -1 | head; \
+	echo ""; 
 
+backport: checkout
+	mv checkout backport
