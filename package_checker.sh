@@ -81,14 +81,14 @@ mesa () {
 	package_name="libdrm" ; package_version="${package_name}_2.4.62-1" ; check_http
 
 	site="http://ftp.de.debian.org/debian/pool/main/m"
-	package_name="mesa" ; package_version="${package_name}_10.5.9-1" ; check_http
+	package_name="mesa" ; package_version="${package_name}_10.5.9-2" ; check_http
 }
 
 qt5_kde () {
 	echo "qt5: kde:"
 
 	site="http://ftp.de.debian.org/debian/pool/main/s"
-	package_name="solid" ; package_version="${package_name}_5.11.0-1" ; check_http
+	package_name="solid" ; package_version="${package_name}_5.12.0-1" ; check_http
 
 	site="http://ftp.de.debian.org/debian/pool/main/k"
 	package_name="kcoreaddons" ; package_version="${package_name}_5.11.0-1" ; check_http
