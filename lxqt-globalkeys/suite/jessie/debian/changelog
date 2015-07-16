@@ -1,8 +1,45 @@
-lxqt-globalkeys (0.9.0-14~bpo80+20150708+1) jessie; urgency=low
+lxqt-globalkeys (0.9.0-18~bpo80+20150716+1) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Wed, 08 Jul 2015 11:23:35 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Thu, 16 Jul 2015 12:39:14 -0500
+
+lxqt-globalkeys (0.9.0-18) unstable; urgency=medium
+
+  * LIB_SUFFIX removed, debian/rules modified 
+
+ -- Alf Gaida <agaida@siduction.org>  Sat, 11 Jul 2015 20:19:36 +0200
+
+lxqt-globalkeys (0.9.0-17) unstable; urgency=medium
+
+  * commit d2f45dbbc6c184d5bbadc9d334c035cea65dbd43
+    Author: Luís Pereira <luis.artur.pereira@gmail.com>
+    Date:   Sat Jul 11 08:33:20 2015 -0700
+    Drops LIB_SUFFIX. Use GNUInstallDirs.
+    Drops also custom create_pkg_config_file() and use
+    lxqt_create_pkg_config_file().
+    Closes lxde/lxqt#742 
+
+ -- Alf Gaida <agaida@siduction.org>  Sat, 11 Jul 2015 20:10:24 +0200
+
+lxqt-globalkeys (0.9.0-16) unstable; urgency=medium
+
+  * fix ftbfs
+
+ -- Alf Gaida <agaida@siduction.org>  Sat, 11 Jul 2015 18:02:08 +0200
+
+lxqt-globalkeys (0.9.0-15) unstable; urgency=medium
+
+  * commit b4d943946caa261593b8d70055e056ef1cdb233e
+    Author: Philipp Wiesemann <philipp.wiesemann@arcor.de>
+    Date:   Tue Jul 7 22:09:35 2015 +0200
+    Fix three memory leaks in daemon error handling
+    In three cases char arrays created on the heap were only deleted if no
+    error occurred afterwards. This was now fixed by removing the explicit
+    deletions and only referencing the arrays through smart pointers. These
+    make sure that the arrays are also deleted in the error handling paths.
+
+ -- Alf Gaida <agaida@siduction.org>  Fri, 10 Jul 2015 02:17:36 +0200
 
 lxqt-globalkeys (0.9.0-14) unstable; urgency=medium
 
