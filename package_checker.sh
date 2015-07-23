@@ -194,6 +194,13 @@ nodejs () {
 	package_name="nodejs"; package_version="${package_name}_0.10.38~dfsg-1"; check_http
 }
 
+dsp () {
+	echo "dsp:"
+	site="http://ppa.launchpad.net/ti-keystone-team/ti-keystone-ppa/ubuntu/pool/main/c"
+	package_name="cmem" ; package_version="${package_name}_4.00.02.10.eng-4~ppa4" ; check_http
+
+}
+
 builds
 mesa
 qt5_kde
@@ -201,6 +208,7 @@ qt5_apps
 qt5_lxqt
 machinekit
 nodejs
+dsp
 
 echo "others"
 
