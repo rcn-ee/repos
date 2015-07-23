@@ -16,3 +16,6 @@ dl_path="ti-keystone-team/ti-keystone-ppa/ubuntu/pool/main/${reprepro_dir}/"
 debian_version="${package_version}~ppa4"
 debian_patch=""
 
+wheezy_version="~bpo70+20150723+1"
+jessie_version="~bpo80+20150723+1"
+stretch_version="~bpo90+20150723+1"
