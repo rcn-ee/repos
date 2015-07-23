@@ -201,7 +201,8 @@ dsp () {
 
 	site="http://archive.canonical.com/pool/partner/g"
 	package_name="gdbserver-c6x" ; package_version="${package_name}_1.0.0-0ubuntu1" ; check_http
-
+	package_name="gdbproxy-mod-dkms" ; package_version="${package_name}_1.0.1-0ubuntu1" ; check_http
+	package_name="gdbc6x" ; package_version="${package_name}_1.0.0-0ubuntu2" ; check_http
 }
 
 builds
