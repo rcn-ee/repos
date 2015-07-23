@@ -224,7 +224,7 @@ dsp
 echo "others"
 
 site="http://ports.ubuntu.com/pool/universe/c"
-package_name="chromium-browser" ; package_version="${package_name}_43.0.2357.130-0ubuntu1.1188" ; check_http
+package_name="chromium-browser" ; package_version="${package_name}_43.0.2357.130-0ubuntu2" ; check_http
 
 site="http://ftp.de.debian.org/debian/pool/main/o"
 package_name="openjdk-8"; package_version="${package_name}_8u60~b22-1"; check_http

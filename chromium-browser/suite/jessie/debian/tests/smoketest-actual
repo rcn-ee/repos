@@ -103,13 +103,15 @@ export LOCALURL="http://localhost:${webserver_port}/"
 
 kill -USR1 $$
 
+OKAY_ERRORS="(libdc1394 error: Failed to initialize libdc1394|Couldn't load libexif.)"
+
 for sikulitest in $SRCDIR/debian/tests/testdata/*.sikuli; do
 	testname=${sikulitest#$SRCDIR/testdata/}
 	test -d $sikulitest
 	echo -n "Test $(basename ${testname}): "
 
 	sikuli $sikulitest &>${testname}-log
-	if egrep -i "(exception|error)" ${testname}-log; then
+	if egrep -i "(exception|error)" ${testname}-log | egrep -v "${OKAY_ERRORS}"; then
 		failures="$(basename $testname)  $failures"
 		echo "BAD"
 		cat -n ${testname}-log
