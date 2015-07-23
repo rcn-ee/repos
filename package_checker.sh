@@ -196,9 +196,8 @@ nodejs () {
 
 dsp () {
 	echo "dsp:"
-	site="http://ppa.launchpad.net/ti-keystone-team/ti-keystone-ppa/ubuntu/pool/main/c"
-	package_name="cmem-mod-dkms" ; package_version="${package_name}_4.00.02.10.eng-5~ppa5" ; check_http
-	package_name="cmem" ; package_version="${package_name}_4.00.02.10.eng-4~ppa4" ; check_http
+	site="http://archive.canonical.com/pool/partner/c"
+	package_name="cmem" ; package_version="${package_name}_4.00.03.14-0ubuntu1" ; check_http
 }
 
 builds

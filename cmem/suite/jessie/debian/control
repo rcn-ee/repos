@@ -1,11 +1,30 @@
 Source: cmem
-Section: misc
-Priority: optional
-Maintainer:  TI Keystone PPA <ti-keystone-ppa@list.ti.com>
-Build-Depends: debhelper (>= 8.0.0)
-Standards-Version: 3.9.4
+Section: partner/misc
+Priority: extra
+Maintainer: TI Keystone PPA <ti-keystone-ppa@list.ti.com>
+Build-Depends: debhelper (>= 9), dkms, dh-autoreconf
+Standards-Version: 3.9.5
 
-Package: cmem
+Package: libticmem1
+Section: partner/libs
 Architecture: any
-Depends: cmem-mod-dkms(>=4.00.02.10) , ${misc:Depends}
-Description: cmem : User space continuous memory allocate library interface
+Depends: cmem-mod-dkms (>=4.00.03.14), ${shlibs:Depends}, ${misc:Depends}
+Description: Userspace continuous memory allocate library interface
+ This package includes the userspace library for interfacing with TI's
+ CMEM kernel driver.
+
+Package: cmem-dev
+Section: partner/libdevel
+Architecture: any
+Depends: libticmem1 (= ${binary:Version}), ${misc:Depends}
+Description: Continuous memory allocation library interface - development
+ This package includes the development support files for interfacing with
+ TI's CMEM kernel driver.
+
+Package: cmem-mod-dkms
+Architecture: all
+Multi-Arch: foreign
+Depends: dkms (>= 1.95), linux-headers, ${misc:Depends}
+Description: cmem-mod driver in DKMS format.
+ This is the DKMS package for TI's cmem-mod driver, from
+ git://git.ti.com/ipc/ludev.git.
