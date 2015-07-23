@@ -198,6 +198,10 @@ dsp () {
 	echo "dsp:"
 	site="http://archive.canonical.com/pool/partner/c"
 	package_name="cmem" ; package_version="${package_name}_4.00.03.14-0ubuntu1" ; check_http
+
+	site="http://archive.canonical.com/pool/partner/g"
+	package_name="gdbserver-c6x" ; package_version="${package_name}_1.0.0-0ubuntu1" ; check_http
+
 }
 
 builds
