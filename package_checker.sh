@@ -81,7 +81,7 @@ mesa () {
 	package_name="libdrm" ; package_version="${package_name}_2.4.62-1" ; check_http
 
 	site="http://ftp.de.debian.org/debian/pool/main/m"
-	package_name="mesa" ; package_version="${package_name}_10.5.9-2" ; check_http
+	package_name="mesa" ; package_version="${package_name}_10.6.3-1" ; check_http
 }
 
 qt5_kde () {
