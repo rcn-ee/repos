@@ -15,6 +15,7 @@ override_dh_strip:
 
 maintainer-clean:
 	$(RM) -r checkout
+	$(RM) -r backport
 	$(RM) *.build
 	$(RM) *.changes
 	$(RM) *.deb
@@ -29,3 +30,6 @@ checkout: maintainer-clean
 	echo ""; \
 	git log | head; \
 	echo ""; 
+
+backport: checkout
+	mv checkout backport
