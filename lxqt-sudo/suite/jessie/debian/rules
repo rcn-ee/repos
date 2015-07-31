@@ -9,6 +9,7 @@
 
 maintainer-clean:
 	$(RM) -r checkout
+	$(RM) -r backport
 	$(RM) *.build
 	$(RM) *.changes
 	$(RM) *.deb
@@ -20,6 +21,9 @@ checkout: maintainer-clean
 	git clone --depth=1 git://github.com/lxde/lxqt-sudo.git checkout; \
 	cd checkout; \
 	cp -a ../debian .; \
-	echo "";\
-	git log | head; \
 	echo ""; \
+	git log | head; \
+	echo ""; 
+
+backport: checkout
+	mv checkout backport
