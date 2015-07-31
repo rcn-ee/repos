@@ -129,7 +129,7 @@ qt5_lxqt () {
 	echo "lxqt: siduction"
 
 	site="http://packages.siduction.org/lxqt/pool/main/libq"
-	package_name="libqtxdg" ; package_version="${package_name}_1.2.0-6" ; check_http
+	package_name="libqtxdg" ; package_version="${package_name}_1.2.0-7" ; check_http
 
 	site="http://packages.siduction.org/lxqt/pool/main/libl"
 	package_name="liblxqt" ; package_version="${package_name}_0.9.0-22" ; check_http

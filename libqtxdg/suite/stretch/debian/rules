@@ -10,6 +10,7 @@
 
 maintainer-clean:
 	$(RM) -r checkout
+	$(RM) -r backport
 	$(RM) *.build
 	$(RM) *.changes
 	$(RM) *.deb
@@ -21,9 +22,12 @@ checkout: maintainer-clean
 	git clone --depth 1 git://github.com/lxde/libqtxdg.git checkout; \
 	cd checkout; \
 	cp -a ../debian .; \
-	echo "";\
+	echo ""; \
 	git log | head; \
 	echo ""
-	
+
+backport: checkout
+	mv checkout backport	
+
 symbols:
 	find . -name symbols | xargs sed 's/ \(_.*\) \(.*\)/ (c++)"\1" \2/' | c++filt | uniq > debian/mangled
