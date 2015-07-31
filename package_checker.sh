@@ -150,7 +150,7 @@ qt5_lxqt () {
 
 	site="http://packages.siduction.org/lxqt/pool/main/l"
 	package_name="lxqt-session" ; package_version="${package_name}_0.9.0-15" ; check_http
-	package_name="lxqt-runner" ; package_version="${package_name}_0.9.0-8" ; check_http
+	package_name="lxqt-runner" ; package_version="${package_name}_0.9.0-9" ; check_http
 	package_name="lxqt-policykit" ; package_version="${package_name}_0.9.0-9" ; check_http
 	package_name="lxqt-powermanagement" ; package_version="${package_name}_0.9.0-13" ; check_http
 	package_name="lxqt-qtplugin" ; package_version="${package_name}_0.9.0-6" ; check_http
