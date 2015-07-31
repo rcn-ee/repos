@@ -1,6 +1,5 @@
 #!/usr/bin/make -f
 #export DH_VERBOSE=1
-export USE_QT5=1
 
 
 %:
@@ -13,6 +12,7 @@ override_dh_auto_install:
 
 maintainer-clean:
 	$(RM) -r checkout
+	$(RM) -r backport
 	$(RM) *.build
 	$(RM) *.changes
 	$(RM) *.deb
@@ -28,3 +28,5 @@ checkout: maintainer-clean
 	git log | head; \
 	echo ""; \
 
+backport: checkout
+	mv checkout backport
