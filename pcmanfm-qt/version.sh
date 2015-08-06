@@ -15,8 +15,8 @@ git_sha=""
 reprepro_dir="p/${package_name}"
 dl_path="lxqt/pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-22"
+debian_version="${package_version}-22.1"
 debian_patch=""
 
-jessie_version="~bpo80+20150731+1"
-stretch_version="~bpo90+20150731+1"
+jessie_version="~bpo80+20150806+1"
+stretch_version="~bpo90+20150806+1"
