@@ -76,6 +76,7 @@ mesa () {
 
 	site="http://ftp.de.debian.org/debian/pool/main/l"
 	package_name="llvm-toolchain-3.6" ; package_version="${package_name}_3.6.1-1" ; check_http
+	package_name="llvm-toolchain-3.7" ; package_version="${package_name}_3.7~+rc2-2" ; check_http
 
 	site="http://ftp.de.debian.org/debian/pool/main/libd"
 	package_name="libdrm" ; package_version="${package_name}_2.4.62-1" ; check_http
