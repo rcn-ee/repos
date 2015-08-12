@@ -6,8 +6,8 @@ set -e
 
 package="c9-core-installer"
 
-sha256sum_tgz="640c3b08ef09f5be2282da5900b74293ab2453eb1c0ccfbebbf57862466a4e40"
-wfile="c9-core_3.0.1+git20150715-build.tar.xz"
+sha256sum_tgz="9a182a4ef3656d3a745b71af43cb0e6859c86e524e8191a963b3d7ec3e6ba5bb"
+wfile="c9-core_3.0.1+git20150811-build.tar.xz"
 
 partner_url="https://rcn-ee.com/repos/pkgs/c9v3"
 extract_dir="/opt/cloud9/build/"
@@ -109,12 +109,24 @@ maybe_install_depend () {
 maybe_npmunbox () {
 	if [ ! -f "$C9_DIR/node_modules/${pkg}/${package}.version" ] ; then
 		echo "${package}:Installing: ${pkg}"
+
+		sha256sum_tgz="d3781784149b85323c7ac3b4e4e8a090d2fecc4c747f83dd427590aaee24f7fa"
+		wfile="node-gyp-2.0.2.npmbox"
+		rfile="node-gyp.npmbox"
+		npmbox_dl_file
+
 		"$NPMUNBOX" /var/cache/${package}/${wfile}
 		echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
 	else
 		old_version=$(cat "$C9_DIR/node_modules/${pkg}/${package}.version")
 		if [ ! "x${old_version}" = "x${ver}" ] ; then
 			echo "${package}:Installing: ${pkg}"
+
+			sha256sum_tgz="d3781784149b85323c7ac3b4e4e8a090d2fecc4c747f83dd427590aaee24f7fa"
+			wfile="node-gyp-2.0.2.npmbox"
+			rfile="node-gyp.npmbox"
+			npmbox_dl_file
+
 			"$NPMUNBOX" /var/cache/${package}/${wfile}
 			echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
 		fi
@@ -203,24 +215,15 @@ c9_directory () {
 	#b164be30ee2896066696b15e184f1b1fb420dfb32608b060a6dc906232c01ec8  npmbox-2.7.0.npmbox
 	#d3781784149b85323c7ac3b4e4e8a090d2fecc4c747f83dd427590aaee24f7fa  node-gyp-2.0.2.npmbox
 
-	sha256sum_tgz="b164be30ee2896066696b15e184f1b1fb420dfb32608b060a6dc906232c01ec8"
-	wfile="npmbox-2.7.0.npmbox"
-	rfile="npmbox.npmbox"
-
-	npmbox_dl_file
-
-	sha256sum_tgz="d3781784149b85323c7ac3b4e4e8a090d2fecc4c747f83dd427590aaee24f7fa"
-	wfile="node-gyp-2.0.2.npmbox"
-	rfile="node-gyp.npmbox"
-
-	npmbox_dl_file
-
-	cd "$C9_DIR"
-
 	pkg="npmbox" ; ver="2.7.0"
-
 	if [ ! -f "$C9_DIR/node_modules/${pkg}/${package}.version" ] ; then
 		echo "${package}:Installing npmbox"
+
+		sha256sum_tgz="b164be30ee2896066696b15e184f1b1fb420dfb32608b060a6dc906232c01ec8"
+		wfile="npmbox-2.7.0.npmbox"
+		rfile="npmbox.npmbox"
+		npmbox_dl_file
+
 		cd "$C9_DIR"/box_tmp
 		tar xzf /var/cache/${package}/npmbox.npmbox
 		"$NPM" install --cache ./.npmbox.cache --optional --cache-min 99999 --shrinkwrap false npmbox
@@ -229,6 +232,12 @@ c9_directory () {
 		old_version=$(cat "$C9_DIR/node_modules/${pkg}/${package}.version")
 		if [ ! "x${old_version}" = "x${ver}" ] ; then
 			echo "${package}:Installing npmbox"
+
+			sha256sum_tgz="b164be30ee2896066696b15e184f1b1fb420dfb32608b060a6dc906232c01ec8"
+			wfile="npmbox-2.7.0.npmbox"
+			rfile="npmbox.npmbox"
+			npmbox_dl_file
+
 			cd "$C9_DIR"/box_tmp
 			tar xzf /var/cache/${package}/npmbox.npmbox
 			"$NPM" install --cache ./.npmbox.cache --optional --cache-min 99999 --shrinkwrap false npmbox
