@@ -12,6 +12,8 @@ PATH=debian/tmp/usr/lib/chromium-browser:$PATH
 set -o errexit
 set -o nounset
 
+OKAY_ERRORS="(libdc1394 error: Failed to initialize libdc1394|Couldn't load libexif.)"
+
 SRCDIR=$1
 
 echo $SRCDIR
@@ -103,15 +105,13 @@ export LOCALURL="http://localhost:${webserver_port}/"
 
 kill -USR1 $$
 
-OKAY_ERRORS="(libdc1394 error: Failed to initialize libdc1394|Couldn't load libexif.)"
-
 for sikulitest in $SRCDIR/debian/tests/testdata/*.sikuli; do
 	testname=${sikulitest#$SRCDIR/testdata/}
 	test -d $sikulitest
 	echo -n "Test $(basename ${testname}): "
 
 	sikuli $sikulitest &>${testname}-log
-	if egrep -i "(exception|error)" ${testname}-log | egrep -v "${OKAY_ERRORS}"; then
+	if egrep -v "${OKAY_ERRORS}" ${testname}-log |egrep -i "(exception|error)"; then
 		failures="$(basename $testname)  $failures"
 		echo "BAD"
 		cat -n ${testname}-log

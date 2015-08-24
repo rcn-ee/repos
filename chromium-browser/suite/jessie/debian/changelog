@@ -1,30 +1,43 @@
-chromium-browser (43.0.2357.130-0ubuntu2~bpo80+20150723+1) jessie; urgency=low
+chromium-browser (44.0.2403.89-0ubuntu1.1195~bpo80+20150824+1) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Thu, 23 Jul 2015 18:27:49 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Mon, 24 Aug 2015 16:00:23 -0500
 
-chromium-browser (43.0.2357.130-0ubuntu2) wily; urgency=medium
+chromium-browser (44.0.2403.89-0ubuntu1.1195) wily; urgency=medium
 
-  * test-dep on imagemagick - we use 'convert'
-  * whitelist some "error" messages in the test runner which are actually
-    harmless.
+  * Upstream release 44.0.2403.89: (LP: #1477662)
+    - CVE-2015-1271: Heap-buffer-overflow in pdfium.
+    - CVE-2015-1273: Heap-buffer-overflow in pdfium.
+    - CVE-2015-1274: Settings allowed executable files to run immediately
+      after download.
+    - CVE-2015-1275: UXSS in Chrome for Android.
+    - CVE-2015-1276: Use-after-free in IndexedDB.
+    - CVE-2015-1279: Heap-buffer-overflow in pdfium.
+    - CVE-2015-1280: Memory corruption in skia.
+    - CVE-2015-1281: CSP bypass.
+    - CVE-2015-1282: Use-after-free in pdfium.
+    - CVE-2015-1283: Heap-buffer-overflow in expat.
+    - CVE-2015-1284: Use-after-free in blink.
+    - CVE-2015-1286: UXSS in blink.
+    - CVE-2015-1287: SOP bypass with CSS.
+    - CVE-2015-1270: Uninitialized memory read in ICU.
+    - CVE-2015-1272: Use-after-free related to unexpected GPU process
+      termination.
+    - CVE-2015-1277: Use-after-free in accessibility.
+    - CVE-2015-1278: URL spoofing using pdf files.
+    - CVE-2015-1285: Information leak in XSS auditor.
+    - CVE-2015-1288: Spell checking dictionaries fetched over HTTP.
+    - CVE-2015-1289: Various fixes from internal audits, fuzzing and other
+      initiatives.
+  * debian/rules, debian/chromium-codecs-ffmpeg{,-extra}.install: ffmpeg is a
+    first-class component library now, not a special snowflake. Still, build
+    it differently, but build flags are different. 
+  * debian/tests/smoketest-actual: Remove some innocuous mentions of "error"
+    before testing for actual errors.
+  * debian/control: codec library packages replace the libffmpeg.so that 
+    was in chromium packages before now.
+  * debian/control: codec packages can't reasonably be updated separately 
+    than chromium. Depend with version specification also.
 
- -- Iain Lane <iain@orangesquash.org.uk>  Thu, 23 Jul 2015 15:35:23 +0100
-
-chromium-browser (43.0.2357.130-0ubuntu1.1188) wily; urgency=medium
-
-  * Upstream release 43.0.2357.130:
-    - CVE-2015-1266: Scheme validation error in WebUI.
-    - CVE-2015-1268: Cross-origin bypass in Blink.
-    - CVE-2015-1267: Cross-origin bypass in Blink.
-    - CVE-2015-1269: Normalization error in HSTS/HPKP preload list.
-  * debian/tests/smoketest-actual: Capture web-server log so we can
-    get port and test retreival. Fixes autopkgtest failures.
-  * debian/patches/widevine-other-locations: Search Chrome install 
-    location to find widevine plugins.
-  * Reenable GPU usage on Wily only. Silent disabling is probably a 
-    bad idea. On all other distros, default to off, but don't blacklist.
-  * Use new Flash plugin name in apport collector.
-
- -- Chad MILLER <chad.miller@canonical.com>  Mon, 29 Jun 2015 15:54:16 -0400
+ -- Chad MILLER <chad.miller@canonical.com>  Tue, 28 Jul 2015 11:19:11 -0400

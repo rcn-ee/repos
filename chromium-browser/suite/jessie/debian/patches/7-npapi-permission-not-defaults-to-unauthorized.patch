@@ -1,6 +1,6 @@
 --- a/chrome/browser/browser_resources.grd
 +++ b/chrome/browser/browser_resources.grd
-@@ -240,6 +240,7 @@
+@@ -242,6 +242,7 @@
        </if>
        <if expr="desktop_linux or (is_android and enable_plugins)">
          <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_linux.json" type="BINDATA" />
@@ -10,8 +10,8 @@
          <include name="IDR_POLICY_CSS" file="resources\policy_android.css" type="BINDATA"/>
 --- a/chrome/browser/plugins/plugin_finder.cc
 +++ b/chrome/browser/plugins/plugin_finder.cc
-@@ -128,6 +128,29 @@ PluginMetadata* CreatePluginMetadata(
-   return plugin;
+@@ -151,13 +151,50 @@ void RecordBuiltInPluginListError(Plugin
+                             static_cast<int>(PluginListError::NUM_VALUES));
  }
  
 +base::DictionaryValue* LoadPlatformPluginListWithId(int resourceId) {
@@ -39,8 +39,12 @@
 +
  }  // namespace
  
++base::DictionaryValue* PluginFinder::LoadPlatformPluginList() {
++  return LoadPlatformPluginListWithId(IDR_PLATFORM_PLUGIN_DB_JSON);
++}
++
  // static
-@@ -135,6 +158,16 @@ void PluginFinder::RegisterPrefs(PrefReg
+ void PluginFinder::RegisterPrefs(PrefRegistrySimple* registry) {
    registry->RegisterBooleanPref(prefs::kDisablePluginFinder, false);
  }
  
@@ -57,37 +61,16 @@
  // static
  PluginFinder* PluginFinder::GetInstance() {
    // PluginFinder::GetInstance() is the only method that's allowed to call
-@@ -156,23 +189,13 @@ void PluginFinder::Init() {
- }
+@@ -186,6 +223,8 @@ void PluginFinder::Init() {
  
  // static
-+DictionaryValue* PluginFinder::LoadPlatformPluginList() {
-+  return LoadPlatformPluginListWithId(IDR_PLATFORM_PLUGIN_DB_JSON);
-+}
-+
-+// static
  base::DictionaryValue* PluginFinder::LoadBuiltInPluginList() {
--  base::StringPiece json_resource(
--      ResourceBundle::GetSharedInstance().GetRawDataResource(
--          IDR_PLUGIN_DB_JSON));
--  std::string error_str;
--  scoped_ptr<base::Value> value(base::JSONReader::ReadAndReturnError(
--      json_resource,
--      base::JSON_PARSE_RFC,
--      NULL,
--      &error_str));
--  if (!value.get()) {
--    DLOG(ERROR) << error_str;
--    return NULL;
--  }
--  if (value->GetType() != base::Value::TYPE_DICTIONARY)
--    return NULL;
--  return static_cast<base::DictionaryValue*>(value.release());
 +  return LoadPlatformPluginListWithId(IDR_PLUGIN_DB_JSON);
- }
- 
- PluginFinder::~PluginFinder() {
-@@ -252,15 +275,19 @@ void PluginFinder::ReinitializePlugins(
++
+   base::StringPiece json_resource(
+       ResourceBundle::GetSharedInstance().GetRawDataResource(
+           IDR_PLUGIN_DB_JSON));
+@@ -320,15 +359,19 @@ void PluginFinder::ReinitializePlugins(
    if (version <= version_)
      return;
  

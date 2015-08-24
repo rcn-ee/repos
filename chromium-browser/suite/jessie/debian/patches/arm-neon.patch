@@ -6,7 +6,7 @@ Bug-Ubuntu: 1084852
 
 --- a/third_party/webrtc/common_audio/common_audio.gyp
 +++ b/third_party/webrtc/common_audio/common_audio.gyp
-@@ -144,7 +144,7 @@
+@@ -146,7 +146,7 @@
              'signal_processing/spl_sqrt_floor.c',
            ],
            'conditions': [
@@ -51,15 +51,15 @@ Bug-Ubuntu: 1084852
  #else
 --- a/third_party/webrtc/modules/audio_coding/codecs/isac/isacfix.gypi
 +++ b/third_party/webrtc/modules/audio_coding/codecs/isac/isacfix.gypi
-@@ -128,7 +128,7 @@
-     },
-   ],
-   'conditions': [
--    ['target_arch=="arm" and arm_version>=7', {
-+    ['target_arch=="arm" and arm_version>=7 and arm_neon==1', {
-       'targets': [
-         {
-           'target_name': 'isac_neon',
+@@ -80,7 +80,7 @@
+             'WEBRTC_LINUX',
+           ],
+         }],
+-        ['target_arch=="arm" and arm_version>=7', {
++        ['target_arch=="arm" and arm_version>=7 and arm_neon==1', {
+           'sources': [
+             'fix/source/lattice_armv7.S',
+             'fix/source/pitch_filter_armv6.S',
 --- a/third_party/webrtc/system_wrappers/source/cpu_features.cc
 +++ b/third_party/webrtc/system_wrappers/source/cpu_features.cc
 @@ -18,6 +18,47 @@

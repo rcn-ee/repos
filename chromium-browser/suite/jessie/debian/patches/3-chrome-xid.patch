@@ -110,7 +110,7 @@
    gfx::AcceleratedWidget GetAcceleratedWidget() override;
 --- a/ui/views/widget/desktop_aura/desktop_native_widget_aura.cc
 +++ b/ui/views/widget/desktop_aura/desktop_native_widget_aura.cc
-@@ -593,6 +593,11 @@ void DesktopNativeWidgetAura::ViewRemove
+@@ -599,6 +599,11 @@ void DesktopNativeWidgetAura::ViewRemove
    drop_helper_->ResetTargetViewIfEquals(view);
  }
  
@@ -163,7 +163,7 @@
    "XdndActionAsk",
    "XdndActionCopy"
    "XdndActionLink",
-@@ -1346,6 +1349,22 @@ void DesktopWindowTreeHostX11::UpdateMin
+@@ -1368,6 +1371,22 @@ void DesktopWindowTreeHostX11::UpdateMin
    XSetWMNormalHints(xdisplay_, xwindow_, &hints);
  }
  
@@ -188,9 +188,9 @@
    if (!IsActive())
 --- a/ui/views/widget/desktop_aura/desktop_window_tree_host_x11.h
 +++ b/ui/views/widget/desktop_aura/desktop_window_tree_host_x11.h
-@@ -86,6 +86,8 @@ class VIEWS_EXPORT DesktopWindowTreeHost
-   // Deallocates the internal list of open windows.
-   static void CleanUpWindowList();
+@@ -87,6 +87,8 @@ class VIEWS_EXPORT DesktopWindowTreeHost
+   // internal list of open windows.
+   static void CleanUpWindowList(void (*func)(aura::Window* window));
  
 +  void SetSessionID(uint32 sessionid);
 +

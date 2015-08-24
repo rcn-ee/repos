@@ -1,6 +1,6 @@
 --- a/chrome/browser/about_flags.cc
 +++ b/chrome/browser/about_flags.cc
-@@ -986,7 +986,7 @@ const Experiment kExperiments[] = {
+@@ -1063,7 +1063,7 @@ const Experiment kExperiments[] = {
    { "disable-accelerated-video-decode",
      IDS_FLAGS_DISABLE_ACCELERATED_VIDEO_DECODE_NAME,
      IDS_FLAGS_DISABLE_ACCELERATED_VIDEO_DECODE_DESCRIPTION,
@@ -11,7 +11,7 @@
  #if defined(USE_ASH)
 --- a/content/common/gpu/media/gpu_video_decode_accelerator.cc
 +++ b/content/common/gpu/media/gpu_video_decode_accelerator.cc
-@@ -30,7 +30,7 @@
+@@ -33,7 +33,7 @@
  #include "content/common/gpu/media/dxva_video_decode_accelerator.h"
  #elif defined(OS_MACOSX)
  #include "content/common/gpu/media/vt_video_decode_accelerator.h"
@@ -20,7 +20,7 @@
  #if defined(USE_V4L2_CODEC)
  #include "content/common/gpu/media/v4l2_device.h"
  #include "content/common/gpu/media/v4l2_slice_video_decode_accelerator.h"
-@@ -342,7 +342,7 @@ void GpuVideoDecodeAccelerator::BindImag
+@@ -346,7 +346,7 @@ void GpuVideoDecodeAccelerator::BindImag
  scoped_ptr<media::VideoDecodeAccelerator>
  GpuVideoDecodeAccelerator::CreateVaapiVDA() {
    scoped_ptr<media::VideoDecodeAccelerator> decoder;
@@ -31,7 +31,7 @@
                                          base::Unretained(this))));
 --- a/content/common/gpu/media/vaapi_wrapper.cc
 +++ b/content/common/gpu/media/vaapi_wrapper.cc
-@@ -360,7 +360,7 @@ bool VaapiWrapper::IsEntrypointSupported
+@@ -378,7 +378,7 @@ bool VaapiWrapper::IsEntrypointSupported
    if (std::find(supported_entrypoints.begin(),
                  supported_entrypoints.end(),
                  entrypoint) == supported_entrypoints.end()) {
@@ -40,7 +40,7 @@
      return false;
    }
    return true;
-@@ -384,8 +384,8 @@ bool VaapiWrapper::AreAttribsSupported_L
+@@ -402,8 +402,8 @@ bool VaapiWrapper::AreAttribsSupported_L
      if (attribs[i].type != required_attribs[i].type ||
          (attribs[i].value & required_attribs[i].value) !=
              required_attribs[i].value) {
@@ -150,8 +150,8 @@
  }
 --- a/content/content_common.gypi
 +++ b/content/content_common.gypi
-@@ -818,7 +818,7 @@
-         },
+@@ -837,7 +837,7 @@
+         'common/gpu/media/vp8_picture.h',
        ],
      }],
 -    ['chromeos==1 and use_v4l2_codec==1', {
@@ -159,7 +159,7 @@
        'direct_dependent_settings': {
          'defines': [
            'USE_V4L2_CODEC'
-@@ -863,7 +863,7 @@
+@@ -873,7 +873,7 @@
          'common/gpu/media/tegra_v4l2_device.h',
        ],
      }],
@@ -181,7 +181,7 @@
        ],
 --- a/content/content_tests.gypi
 +++ b/content/content_tests.gypi
-@@ -1661,7 +1661,7 @@
+@@ -1652,7 +1652,7 @@
            },
          ]
      }],
@@ -189,10 +189,10 @@
 +    ['(chromeos==1 or desktop_linux==1) and target_arch != "arm"', {
        'targets': [
            {
-             'target_name': 'vaapi_h264_decoder_unittest',
+             'target_name': 'vaapi_jpeg_decoder_unittest',
 --- a/content/public/common/content_switches.cc
 +++ b/content/public/common/content_switches.cc
-@@ -935,7 +935,7 @@ const char kEnableAggressiveDOMStorageFl
+@@ -960,7 +960,7 @@ const char kEnableAggressiveDOMStorageFl
  // Disable web audio API.
  const char kDisableWebAudio[]               = "disable-webaudio";
  
@@ -203,7 +203,7 @@
  
 --- a/content/public/common/content_switches.h
 +++ b/content/public/common/content_switches.h
-@@ -269,7 +269,7 @@ CONTENT_EXPORT extern const char kRender
+@@ -273,7 +273,7 @@ CONTENT_EXPORT extern const char kRender
  
  CONTENT_EXPORT extern const char kDisableWebAudio[];
  
@@ -214,7 +214,7 @@
  #endif
 --- a/gpu/config/software_rendering_list_json.cc
 +++ b/gpu/config/software_rendering_list_json.cc
-@@ -481,17 +481,6 @@ const char kSoftwareRenderingListJson[]
+@@ -475,17 +475,6 @@ const char kSoftwareRenderingListJson[]
        ]
      },
      {
@@ -232,9 +232,9 @@
        "id": 49,
        "description": "NVidia GeForce GT 650M can cause the system to hang with flash 3D",
        "cr_bugs": [140175],
-@@ -1056,6 +1045,11 @@ LONG_STRING_CONST(
-           "os": {
-             "type": "android"
+@@ -1034,6 +1023,11 @@ LONG_STRING_CONST(
+             "op": ">=",
+             "value": "3.0"
            }
 +        },
 +        {
@@ -246,7 +246,7 @@
        "features": [
 --- a/media/media.gyp
 +++ b/media/media.gyp
-@@ -739,7 +739,7 @@
+@@ -701,7 +701,7 @@
            ],
          }],
          # For VaapiVideoEncodeAccelerator.

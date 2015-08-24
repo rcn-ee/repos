@@ -1,6 +1,6 @@
 --- a/chrome/app/generated_resources.grd
 +++ b/chrome/app/generated_resources.grd
-@@ -5284,6 +5284,35 @@ Keep your key file in a safe place. You
+@@ -5180,6 +5180,35 @@ Keep your key file in a safe place. You
          Hide Details
        </message>
  
@@ -36,7 +36,7 @@
        <!-- Global error messages for extensions -->
        <message name="IDS_EXTENSION_WARNINGS_WRENCH_MENU_ITEM" desc="The wrench menu item indicating that extensions caused problems.">
          Extension error
-@@ -12519,6 +12548,9 @@ Some features may be unavailable.  Pleas
+@@ -12484,6 +12513,9 @@ Some features may be unavailable.  Pleas
        <message name="IDS_OPTIONS_ADVANCED_SECTION_TITLE_CONTENT">
          Web content
        </message>
@@ -48,7 +48,7 @@
        </message>
 --- a/chrome/browser/resources/options/browser_options.html
 +++ b/chrome/browser/resources/options/browser_options.html
-@@ -545,6 +545,20 @@
+@@ -549,6 +549,20 @@
      </div>
    </section>
  </if>  <!-- chromeos -->
@@ -71,7 +71,7 @@
      <div class="checkbox controlled-setting-with-label">
 --- a/chrome/browser/resources/options/browser_options.js
 +++ b/chrome/browser/resources/options/browser_options.js
-@@ -613,6 +613,23 @@ cr.define('options', function() {
+@@ -618,6 +618,23 @@ cr.define('options', function() {
              [String(event.target.options[event.target.selectedIndex].value)]);
        };
  
@@ -95,7 +95,7 @@
        // Languages section.
        var showLanguageOptions = function(event) {
          PageManager.showPageByName('languages');
-@@ -1710,6 +1727,24 @@ cr.define('options', function() {
+@@ -1715,6 +1732,24 @@ cr.define('options', function() {
      },
  
      /**
@@ -120,7 +120,7 @@
       * Set the checked state of the metrics reporting checkbox.
       * @private
       */
-@@ -2164,6 +2199,7 @@ cr.define('options', function() {
+@@ -2169,6 +2204,7 @@ cr.define('options', function() {
    cr.makePublic(BrowserOptions, [
      'addBluetoothDevice',
      'deleteCurrentProfile',
@@ -128,7 +128,7 @@
      'enableCertificateButton',
      'enableDisplaySettings',
      'enableFactoryResetSection',
-@@ -2180,6 +2216,7 @@ cr.define('options', function() {
+@@ -2185,6 +2221,7 @@ cr.define('options', function() {
      'setBatteryStatusText',
      'setBluetoothState',
      'setCanSetTime',
@@ -590,7 +590,7 @@
  <include src="font_settings.js">
 --- a/chrome/browser/ui/webui/options/browser_options_handler.cc
 +++ b/chrome/browser/ui/webui/options/browser_options_handler.cc
-@@ -219,6 +219,8 @@ void BrowserOptionsHandler::GetLocalized
+@@ -220,6 +220,8 @@ void BrowserOptionsHandler::GetLocalized
      { "advancedSectionTitleCloudPrint", IDS_GOOGLE_CLOUD_PRINT },
      { "advancedSectionTitleContent",
        IDS_OPTIONS_ADVANCED_SECTION_TITLE_CONTENT },
@@ -599,7 +599,7 @@
      { "advancedSectionTitleLanguages",
        IDS_OPTIONS_ADVANCED_SECTION_TITLE_LANGUAGES },
      { "advancedSectionTitleNetwork",
-@@ -243,6 +245,8 @@ void BrowserOptionsHandler::GetLocalized
+@@ -244,6 +246,8 @@ void BrowserOptionsHandler::GetLocalized
      { "defaultFontSizeLabel", IDS_OPTIONS_DEFAULT_FONT_SIZE_LABEL },
      { "defaultSearchManageEngines", IDS_OPTIONS_DEFAULTSEARCH_MANAGE_ENGINES },
      { "defaultZoomFactorLabel", IDS_OPTIONS_DEFAULT_ZOOM_LEVEL_LABEL },
@@ -608,7 +608,7 @@
      { "disableWebServices", IDS_OPTIONS_DISABLE_WEB_SERVICES },
      { "doNotTrack", IDS_OPTIONS_ENABLE_DO_NOT_TRACK },
      { "doNotTrackConfirmDisable",
-@@ -324,6 +328,7 @@ void BrowserOptionsHandler::GetLocalized
+@@ -330,6 +334,7 @@ void BrowserOptionsHandler::GetLocalized
        IDS_PRODUCT_NAME },
      { "profilesSupervisedDashboardTip",
        IDS_PROFILES_SUPERVISED_USER_DASHBOARD_TIP },
@@ -995,7 +995,7 @@
    AddOptionsPageUIHandler(localized_strings, new GeolocationOptionsHandler());
 --- a/chrome/chrome_browser_ui.gypi
 +++ b/chrome/chrome_browser_ui.gypi
-@@ -1773,6 +1773,8 @@
+@@ -1851,6 +1851,8 @@
        'browser/ui/webui/options/core_options_handler.h',
        'browser/ui/webui/options/create_profile_handler.cc',
        'browser/ui/webui/options/create_profile_handler.h',
@@ -1004,7 +1004,7 @@
        'browser/ui/webui/options/easy_unlock_handler.cc',
        'browser/ui/webui/options/easy_unlock_handler.h',
        'browser/ui/webui/options/font_settings_handler.cc',
-@@ -2940,6 +2942,7 @@
+@@ -2923,6 +2925,7 @@
            ],
          }],
          ['use_aura==1 and chromeos==0 and use_ozone==0 and OS=="linux"', {
