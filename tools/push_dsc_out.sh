@@ -2,6 +2,8 @@
 
 . version.sh
 
+sudo mount -a
+
 run () {
 	wdir="/mnt/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}/"
 	if [ ! -d ${wdir} ] ; then
