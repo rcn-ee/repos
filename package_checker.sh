@@ -1,5 +1,7 @@
 #!/bin/bash
 
+debian_pool="http://ftp.de.debian.org/debian/pool"
+
 generic_http () {
 	echo "Checking: ${package_name}"
 	if [ -f /tmp/index.html ] ; then
@@ -61,37 +63,37 @@ check () {
 builds () {
 	echo "build tools:"
 
-	site="http://ftp.de.debian.org/debian/pool/main/c"
+	site="${debian_pool}/main/c"
 	package_name="cmake" ; package_version="${package_name}_3.2.2-2" ; check_http
 
-	site="http://ftp.de.debian.org/debian/pool/main/p"
+	site="${debian_pool}/main/p"
 	package_name="pkg-kde-tools" ; package_version="${package_name}_0.15.19" ; check_http
 
-	site="http://ftp.de.debian.org/debian/pool/main/e"
+	site="${debian_pool}/main/e"
 	package_name="extra-cmake-modules" ; package_version="${package_name}_5.13.0-1" ; check_http
 }
 
 mesa () {
 	echo "llvm/mesa:"
 
-	site="http://ftp.de.debian.org/debian/pool/main/l"
+	site="${debian_pool}/main/l"
 	package_name="llvm-toolchain-3.6" ; package_version="${package_name}_3.6.2-1" ; check_http
 	package_name="llvm-toolchain-3.7" ; package_version="${package_name}_3.7~+rc3-1" ; check_http
 
-	site="http://ftp.de.debian.org/debian/pool/main/libd"
+	site="${debian_pool}/main/libd"
 	package_name="libdrm" ; package_version="${package_name}_2.4.64-1" ; check_http
 
-	site="http://ftp.de.debian.org/debian/pool/main/m"
+	site="${debian_pool}/main/m"
 	package_name="mesa" ; package_version="${package_name}_10.6.4-1" ; check_http
 }
 
 qt5_kde () {
 	echo "qt5: kde:"
 
-	site="http://ftp.de.debian.org/debian/pool/main/s"
+	site="${debian_pool}/main/s"
 	package_name="solid" ; package_version="${package_name}_5.12.0-1" ; check_http
 
-	site="http://ftp.de.debian.org/debian/pool/main/k"
+	site="${debian_pool}/main/k"
 	package_name="kcoreaddons" ; package_version="${package_name}_5.12.0-1" ; check_http
 	package_name="kguiaddons" ; package_version="${package_name}_5.12.0-1" ; check_http
 	package_name="kwindowsystem" ; package_version="${package_name}_5.12.0-1" ; check_http
@@ -99,41 +101,45 @@ qt5_kde () {
 
 qt5_apps () {
 	echo "qupzilla:"
-	site="http://ftp.de.debian.org/debian/pool/main/q"
+	site="${debian_pool}/main/q"
 	package_name="qupzilla" ; package_version="${package_name}_1.8.6~dfsg1-2" ; check_http
 
-	echo "connman/cmst:"
-
-	site="http://packages.siduction.org/extra/pool/main/c"
-	package_name="connman" ; package_version="connman_1.29-0%2bexp1" ; check_http_exp
-	package_name="cmst" ; package_version="cmst_2015.07.01-1" ; check_http
-
 	echo "qterminal:"
-
 	site="http://packages.siduction.org/lxqt/pool/main/q"
 	package_name="qtermwidget" ; package_version="qtermwidget_0.6.0-10" ; check_http
 	package_name="qterminal" ; package_version="qterminal_0.6.0-10" ; check_http
+
+	echo "connman/cmst:"
+	site="http://packages.siduction.org/extra/pool/main/c"
+	package_name="connman" ; package_version="connman_1.29-0%2bexp1" ; check_http_exp
+	package_name="cmst" ; package_version="cmst_2015.07.01-1" ; check_http
 }
 
 qt5_lxqt () {
 	echo "lxqt: debian"
 
-	site="http://ftp.de.debian.org/debian/pool/main/libd"
+	site="${debian_pool}/main/libd"
 	package_name="libdbusmenu-qt" ; package_version="${package_name}_0.9.3+15.10.20150604-1" ; check_http
 
-	site="http://ftp.de.debian.org/debian/pool/main/p"
+	site="${debian_pool}/main/p"
 	package_name="policykit-1" ; package_version="${package_name}_0.113-1" ; check_http
 
-	site="http://ftp.de.debian.org/debian/pool/main/p"
+	site="${debian_pool}/main/p"
 	package_name="polkit-qt-1" ; package_version="${package_name}_0.112.0-3" ; check_http
 
-	echo "lxqt: siduction"
-
-	site="http://packages.siduction.org/lxqt/pool/main/libq"
+	echo "lxqt: new: debian"
+	site="${debian_pool}/main/libq"
 	package_name="libqtxdg" ; package_version="${package_name}_1.2.0-7" ; check_http
 
-	site="http://packages.siduction.org/lxqt/pool/main/libl"
+	site="${debian_pool}/main/libl"
 	package_name="liblxqt" ; package_version="${package_name}_0.9.0-23" ; check_http
+
+	echo "lxqt: siduction"
+#	site="http://packages.siduction.org/lxqt/pool/main/libq"
+#	package_name="libqtxdg" ; package_version="${package_name}_1.2.0-7" ; check_http
+
+#	site="http://packages.siduction.org/lxqt/pool/main/libl"
+#	package_name="liblxqt" ; package_version="${package_name}_0.9.0-23" ; check_http
 
 	site="http://packages.siduction.org/lxqt/pool/main/l"
 	package_name="lxqt-globalkeys" ; package_version="${package_name}_0.9.0-19" ; check_http
@@ -173,8 +179,8 @@ qt5_lxqt () {
 machinekit () {
 	echo "machinekit:"
 
-	site="http://deb.dovetail-automata.com/pool/main/c"
-	package_name="czmq" ; package_version="${package_name}_2.2.0-0.5%7e1jessie%7e1da" ; check_http_machine
+	site="${debian_pool}/main/c"
+	package_name="czmq" ; package_version="${package_name}_3.0.2-1" ; check_http
 
 	site="http://deb.dovetail-automata.com/pool/main/libw"
 	package_name="libwebsockets" ; package_version="${package_name}_1.3-1%7egit95a8abb%7e1431844465git95a8abb%7e1jessie%7e1da" ; check_http_machine
@@ -185,13 +191,13 @@ machinekit () {
 
 nodejs () {
 	echo "nodejs:"
-	site="http://ftp.de.debian.org/debian/pool/main/g"
+	site="${debian_pool}/main/g"
 	package_name="gyp" ; package_version="${package_name}_0.1~svn1729-3" ; check_http
 
-	site="http://ftp.de.debian.org/debian/pool/main/libv"
+	site="${debian_pool}/main/libv"
 	package_name="libv8-3.14"; package_version="${package_name}_3.14.5.8-8.1"; check_http
 
-	site="http://ftp.de.debian.org/debian/pool/main/n"
+	site="${debian_pool}/main/n"
 	package_name="nodejs"; package_version="${package_name}_0.10.38~dfsg-1"; check_http
 }
 
@@ -227,7 +233,7 @@ echo "others"
 site="http://ports.ubuntu.com/pool/universe/c"
 package_name="chromium-browser" ; package_version="${package_name}_43.0.2357.130-0ubuntu2" ; check_http
 
-site="http://ftp.de.debian.org/debian/pool/main/o"
+site="${debian_pool}/main/o"
 package_name="openjdk-8"; package_version="${package_name}_8u60~b22-1"; check_http
 
 #really slow...
