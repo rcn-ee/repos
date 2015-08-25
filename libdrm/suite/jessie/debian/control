@@ -28,10 +28,8 @@ Depends:
  libdrm-intel1 (= ${binary:Version}) [amd64 i386 kfreebsd-amd64 kfreebsd-i386 x32],
  libdrm-radeon1 (= ${binary:Version}),
  libdrm-nouveau2 (= ${binary:Version}) [linux-any],
- libdrm-amdgpu1 (= ${binary:Version}) [linux-any],
  libdrm-omap1 (= ${binary:Version}) [any-arm],
  libdrm-freedreno1 (= ${binary:Version}) [any-arm],
- libdrm-etnaviv0 (= ${binary:Version}) [any-arm],
  libdrm-exynos1 (= ${binary:Version}) [any-arm],
  libdrm-tegra0 (= ${binary:Version}) [any-arm],
  ${misc:Depends},
@@ -335,34 +333,3 @@ Description: Userspace interface to tegra-specific kernel DRM services -- debugg
  OpenGL drivers.
  .
  This package provides the debugging symbols for the libdrm-tegra0 package.
-
-Package: libdrm-amdgpu1
-Architecture: linux-any
-Depends:
- ${shlibs:Depends},
- ${misc:Depends},
-Pre-Depends: ${misc:Pre-Depends}
-Multi-Arch: same
-Description: Userspace interface to amdgpu-specific kernel DRM services -- runtime
- This library implements the userspace interface to the kernel DRM
- services.  DRM stands for "Direct Rendering Manager", which is the
- kernelspace portion of the "Direct Rendering Infrastructure" (DRI).
- The DRI is currently used on Linux to provide hardware-accelerated
- OpenGL drivers.
-
-Package: libdrm-amdgpu1-dbg
-Section: debug
-Priority: extra
-Architecture: linux-any
-Depends:
- libdrm-amdgpu1 (= ${binary:Version}),
- ${misc:Depends},
-Multi-Arch: same
-Description: Userspace interface to amdgpu-specific kernel DRM services -- debugging symbols
- This library implements the userspace interface to the kernel DRM
- services.  DRM stands for "Direct Rendering Manager", which is the
- kernelspace portion of the "Direct Rendering Infrastructure" (DRI).
- The DRI is currently used on Linux to provide hardware-accelerated
- OpenGL drivers.
- .
- This package provides the debugging symbols for the libdrm-amdgpu1 package.
