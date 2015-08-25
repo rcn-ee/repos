@@ -4,7 +4,7 @@ mirror="http://ftp.de.debian.org/debian"
 
 package_name="llvm-toolchain-3.6"
 debian_pkg_name="${package_name}"
-package_version="3.6.1"
+package_version="3.6.2"
 
 git_repo=""
 git_sha=""
