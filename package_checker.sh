@@ -194,7 +194,7 @@ nodejs () {
 	package_name="gyp" ; package_version="${package_name}_0.1~svn1729-3" ; check_http
 
 	site="${debian_pool}/main/libv"
-	package_name="libv8-3.14"; package_version="${package_name}_3.14.5.8-8.1"; check_http
+	package_name="libv8-3.14"; package_version="${package_name}_3.14.5.8-10"; check_http
 
 	site="${debian_pool}/main/n"
 	package_name="nodejs"; package_version="${package_name}_0.10.38~dfsg-1"; check_http
