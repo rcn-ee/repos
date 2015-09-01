@@ -111,7 +111,7 @@ qt5_apps () {
 
 	site="http://packages.siduction.org/extra/pool/main/c"
 	package_name="connman" ; package_version="connman_1.29-0%2bexp1" ; check_http_exp
-	package_name="cmst" ; package_version="cmst_2015.07.01-1" ; check_http
+	package_name="cmst" ; package_version="cmst_2015.07.13-1" ; check_http
 
 	echo "qterminal:"
 
