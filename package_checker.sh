@@ -78,7 +78,7 @@ mesa () {
 
 	site="${debian_pool}/main/l"
 	package_name="llvm-toolchain-3.6" ; package_version="${package_name}_3.6.2-1" ; check_http
-	package_name="llvm-toolchain-3.7" ; package_version="${package_name}_3.7~+rc4-1" ; check_http
+	package_name="llvm-toolchain-3.7" ; package_version="${package_name}_3.7-1" ; check_http
 
 	site="${debian_pool}/main/libd"
 	package_name="libdrm" ; package_version="${package_name}_2.4.64-1" ; check_http
