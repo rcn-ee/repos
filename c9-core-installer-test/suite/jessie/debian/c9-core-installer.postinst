@@ -216,43 +216,42 @@ c9_directory () {
 	#b164be30ee2896066696b15e184f1b1fb420dfb32608b060a6dc906232c01ec8  npmbox-2.7.0.npmbox
 	#d3781784149b85323c7ac3b4e4e8a090d2fecc4c747f83dd427590aaee24f7fa  node-gyp-2.0.2.npmbox
 
-#disable npmbox, as this was only needed for node-gyp
-#	pkg="npmbox" ; ver="2.7.0"
-#	if [ ! -f "$C9_DIR/node_modules/${pkg}/${package}.version" ] ; then
-#		echo "${package}:Installing npmbox"
+	pkg="npmbox" ; ver="2.7.0"
+	if [ ! -f "$C9_DIR/node_modules/${pkg}/${package}.version" ] ; then
+		echo "${package}:Installing npmbox"
 
-#		sha256sum_tgz="b164be30ee2896066696b15e184f1b1fb420dfb32608b060a6dc906232c01ec8"
-#		wfile="npmbox-2.7.0.npmbox"
-#		rfile="npmbox.npmbox"
-#		npmbox_dl_file
+		sha256sum_tgz="b164be30ee2896066696b15e184f1b1fb420dfb32608b060a6dc906232c01ec8"
+		wfile="npmbox-2.7.0.npmbox"
+		rfile="npmbox.npmbox"
+		npmbox_dl_file
 
-#		cd "$C9_DIR"/box_tmp
-#		tar xzf /var/cache/${package}/npmbox.npmbox
-#		"$NPM" install --cache ./.npmbox.cache --optional --cache-min 99999 --shrinkwrap false npmbox
-#		echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
-#	else
-#		old_version=$(cat "$C9_DIR/node_modules/${pkg}/${package}.version")
-#		if [ ! "x${old_version}" = "x${ver}" ] ; then
-#			echo "${package}:Installing npmbox"
+		cd "$C9_DIR"/box_tmp
+		tar xzf /var/cache/${package}/npmbox.npmbox
+		"$NPM" install --cache ./.npmbox.cache --optional --cache-min 99999 --shrinkwrap false npmbox
+		echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
+	else
+		old_version=$(cat "$C9_DIR/node_modules/${pkg}/${package}.version")
+		if [ ! "x${old_version}" = "x${ver}" ] ; then
+			echo "${package}:Installing npmbox"
 
-#			sha256sum_tgz="b164be30ee2896066696b15e184f1b1fb420dfb32608b060a6dc906232c01ec8"
-#			wfile="npmbox-2.7.0.npmbox"
-#			rfile="npmbox.npmbox"
-#			npmbox_dl_file
+			sha256sum_tgz="b164be30ee2896066696b15e184f1b1fb420dfb32608b060a6dc906232c01ec8"
+			wfile="npmbox-2.7.0.npmbox"
+			rfile="npmbox.npmbox"
+			npmbox_dl_file
 
-#			cd "$C9_DIR"/box_tmp
-#			tar xzf /var/cache/${package}/npmbox.npmbox
-#			"$NPM" install --cache ./.npmbox.cache --optional --cache-min 99999 --shrinkwrap false npmbox
-#			echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
-#		fi
-#	fi
+			cd "$C9_DIR"/box_tmp
+			tar xzf /var/cache/${package}/npmbox.npmbox
+			"$NPM" install --cache ./.npmbox.cache --optional --cache-min 99999 --shrinkwrap false npmbox
+			echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
+		fi
+	fi
 
-#	NPMUNBOX=$C9_DIR/node_modules/npmbox/bin/npmunbox
+	NPMUNBOX=$C9_DIR/node_modules/npmbox/bin/npmunbox
 
 	cd "$C9_DIR"/
 	rm -rf ./box_tmp || true
 
-#	wfile="node-gyp.npmbox" ; pkg="node-gyp" ; ver="2.0.2" ; maybe_npmunbox
+	wfile="node-gyp.npmbox" ; pkg="node-gyp" ; ver="2.0.2" ; maybe_npmunbox
 
 	npm_project="pty.js@0.2.8"
 	#pty.js@0.2.8 node_modules/pty.js
