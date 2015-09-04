@@ -19,14 +19,14 @@ Subject: search the vdpau module in multiple directories
  static VdpStatus _vdp_open_driver(
      Display *             display,
      int                   screen)
-@@ -113,6 +120,7 @@ static VdpStatus _vdp_open_driver(
+@@ -117,6 +127,7 @@ static VdpStatus _vdp_open_driver(
      char         vdpau_driver_lib[PATH_MAX];
      char const * vdpau_trace;
      char const * func_name;
 +    char const ** module_path;
  
-     vdpau_driver = getenv("VDPAU_DRIVER");
-     if (!vdpau_driver) {
+     vdpau_driver = secure_getenv("VDPAU_DRIVER");
+     if (vdpau_driver) {
 @@ -138,9 +146,11 @@ static VdpStatus _vdp_open_driver(
  
      /* Fallback to VDPAU_MODULEDIR when VDPAU_DRIVER_PATH is not set,

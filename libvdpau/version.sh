@@ -4,7 +4,7 @@ mirror="http://ftp.de.debian.org/debian"
 
 package_name="libvdpau"
 debian_pkg_name="${package_name}"
-package_version="1.1"
+package_version="1.1.1"
 package_source="${package_name}_${package_version}.orig.tar.bz2"
 src_dir="${package_name}-${package_version}"
 
@@ -17,4 +17,4 @@ debian_version="${package_version}-1"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 
-jessie_version="~bpo80+20150825+1"
+jessie_version="~bpo80+20150904+1"

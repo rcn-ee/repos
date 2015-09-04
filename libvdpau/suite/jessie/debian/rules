@@ -7,9 +7,8 @@ DEB_HOST_MULTIARCH  ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 # Used to enable documentation if dependencies are available
 define cond_enable
-	$(shell if test -x /usr/bin/doxygen && test -x /usr/bin/dot \
-		&& test -x /usr/bin/pdftex; then echo --enable-documentation; \
-		else echo --disable-documentation; fi )
+	$(shell if test -x /usr/bin/doxygen && test -x /usr/bin/dot; \
+		then echo --enable-documentation; else echo --disable-documentation; fi )
 endef
 
 CONFIGURE_OPTIONS ?= $(call cond_enable) \
@@ -29,12 +28,6 @@ override_dh_auto_configure:
 		--prefix=/usr --sysconfdir=/etc --libdir=/usr/lib/$(DEB_HOST_MULTIARCH) \
 		$(CONFIGURE_OPTIONS)
 
-override_dh_auto_build:
-	dh_auto_build
-
-override_dh_auto_install:
-	dh_auto_install
-
 override_dh_installdocs:
 	dh_installdocs -X.md5
 
@@ -47,6 +40,3 @@ override_dh_makeshlibs:
 
 override_dh_strip:
 	dh_strip --dbg-package=libvdpau1-dbg
-
-get-orig-source:
-	$(dir $_)libvdpau-get-orig-source
