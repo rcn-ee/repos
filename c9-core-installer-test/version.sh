@@ -18,5 +18,5 @@ debian_untar=""
 debian_patch=""
 
 wheezy_version="~bpo70+20150812+1"
-jessie_version="~bpo80+20150812+1"
 stretch_version="~bpo90+20150812+1"
+jessie_version="~bpo80+20150904+1"
