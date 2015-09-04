@@ -99,6 +99,7 @@ maybe_install_depend () {
 	else
 		old_version=$(cat "$C9_DIR/node_modules/${pkg}/${package}.version")
 		if [ ! "x${old_version}" = "x${ver}" ] ; then
+			rm -rf "$C9_DIR/node_modules/${pkg}/" || true
 			echo "${package}:Installing: ${pkg}-${ver}.tgz (for ${npm_project})"
 			"$NPM" install /var/cache/${package}/${pkg}-${ver}.tgz
 			echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
