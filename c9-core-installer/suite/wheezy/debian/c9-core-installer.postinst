@@ -6,8 +6,8 @@ set -e
 
 package="c9-core-installer"
 
-sha256sum_tgz="9a182a4ef3656d3a745b71af43cb0e6859c86e524e8191a963b3d7ec3e6ba5bb"
-wfile="c9-core_3.0.1+git20150811-build.tar.xz"
+sha256sum_tgz="ed28652e369ce04b61b1c13068c4383d0721cb2350a8c1e2567525a69eae182e"
+wfile="c9-core_3.0.2596+git20150904-build.tar.xz"
 
 partner_url="https://rcn-ee.com/repos/pkgs/c9v3"
 extract_dir="/opt/cloud9/build/"
@@ -157,6 +157,7 @@ c9_directory () {
 
 	# use local npm cache
 	"$NPM" config -g set cache  "$C9_DIR/tmp/.npm"
+
 	# node-gyp uses sytem node or fails with command not found if
 	# we don't bump this node up in the path
 	PATH="$C9_DIR/node/bin/:$C9_DIR/node_modules/.bin:$PATH"
@@ -251,17 +252,21 @@ c9_directory () {
 	rm -rf ./box_tmp || true
 
 	wfile="node-gyp.npmbox" ; pkg="node-gyp" ; ver="2.0.2" ; maybe_npmunbox
-	npm_project="pty.js-0.2.7-1"
+
+	npm_project="pty.js@0.2.8"
+	#pty.js@0.2.8 node_modules/pty.js
+	#├── extend@1.2.1
+	#└── nan@1.9.0
 
 	#npm pack extend@1.2.1
 	pkg="extend" ; ver="1.2.1" ; maybe_install_depend
-	#npm pack nan@1.7.0
-	pkg="nan" ; ver="1.7.0" ; maybe_install_depend
+	#npm pack nan@1.9.0
+	pkg="nan" ; ver="1.9.0" ; maybe_install_depend
 
 	echo "${package}:Installing ${npm_project}"
-	#npm pack pty.js-0.2.7-1
+	#npm pack pty.js@0.2.8
 	##stupid: "--unsafe-perm=true" npm actually wants you to install as root then thru sudo!!!
-	"$NPM" install --unsafe-perm=true /var/cache/${package}/pty.js-0.2.7-1.tgz
+	"$NPM" install --unsafe-perm=true /var/cache/${package}/pty.js-0.2.8.tgz
 
 	HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
 	if [ $HASPTY -ne 1 ]; then
