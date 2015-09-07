@@ -1,0 +1,14 @@
+ConnMan for Debian
+------------------
+
+ConnMan is a connection manager that will by default try to configure any
+available network interfaces. This causes it to interfere with other connection
+managers if installed, such as network-manager or wicd.
+
+Because of this, ConnMan is disabled by default if network-manager or wicd are
+found to be installed when the connman package is installed. To enable connman,
+first disable any other connection manager you may have running, then use:
+
+ # update-rc.d connman enable
+
+ -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Mon, 21 May 2012 12:49:55 -0400
