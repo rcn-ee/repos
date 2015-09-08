@@ -107,17 +107,15 @@ qt5_apps () {
 	site="${debian_pool}/main/q"
 	package_name="qupzilla" ; package_version="${package_name}_1.8.6~dfsg1-2" ; check_http
 
-	echo "connman/cmst:"
+	echo "qterminal:"
+	site="${debian_pool}/main/q"
+	package_name="qtermwidget" ; package_version="qtermwidget_0.6.0-10" ; check_http
+	package_name="qterminal" ; package_version="qterminal_0.6.0-10" ; check_http
 
+	echo "connman/cmst:"
 	site="http://packages.siduction.org/extra/pool/main/c"
 	package_name="connman" ; package_version="connman_1.30-1" ; check_http_exp
 	package_name="cmst" ; package_version="cmst_2015.07.13-1" ; check_http
-
-	echo "qterminal:"
-
-	site="http://packages.siduction.org/lxqt/pool/main/q"
-	package_name="qtermwidget" ; package_version="qtermwidget_0.6.0-10" ; check_http
-	package_name="qterminal" ; package_version="qterminal_0.6.0-10" ; check_http
 }
 
 qt5_lxqt () {
@@ -132,29 +130,27 @@ qt5_lxqt () {
 	site="${debian_pool}/main/p"
 	package_name="polkit-qt-1" ; package_version="${package_name}_0.112.0-3" ; check_http
 
-	echo "lxqt: siduction"
-
-	site="http://packages.siduction.org/lxqt/pool/main/libq"
+	site="${debian_pool}/main/libq"
 	package_name="libqtxdg" ; package_version="${package_name}_1.2.0-7" ; check_http
 
-	site="http://packages.siduction.org/lxqt/pool/main/libl"
+	site="${debian_pool}/main/libl"
 	package_name="liblxqt" ; package_version="${package_name}_0.9.0-23" ; check_http
 
-	site="http://packages.siduction.org/lxqt/pool/main/l"
+	site="${debian_pool}/main/l"
 	package_name="lxqt-globalkeys" ; package_version="${package_name}_0.9.0-19" ; check_http
 	package_name="lxqt-notificationd" ; package_version="${package_name}_0.9.0-11" ; check_http
 	package_name="lxqt-sudo" ; package_version="${package_name}_0.1.0-9" ; check_http
 
-	site="http://packages.siduction.org/lxqt/pool/main/libs"
+	site="${debian_pool}/main/libs"
 	package_name="libsysstat" ; package_version="${package_name}_0.3.0-5" ; check_http
 
-	site="http://packages.siduction.org/lxqt/pool/main/l"
+	site="${debian_pool}/main/l"
 	package_name="lxqt-panel" ; package_version="${package_name}_0.9.0-34" ; check_http
 
-	site="http://packages.siduction.org/lxqt/pool/main/p"
+	site="${debian_pool}/main/p"
 	package_name="pcmanfm-qt" ; package_version="${package_name}_0.9.0-22" ; check_http
 
-	site="http://packages.siduction.org/lxqt/pool/main/l"
+	site="${debian_pool}/main/l"
 	package_name="lxqt-session" ; package_version="${package_name}_0.9.0-15" ; check_http
 	package_name="lxqt-runner" ; package_version="${package_name}_0.9.0-9" ; check_http
 	package_name="lxqt-policykit" ; package_version="${package_name}_0.9.0-9" ; check_http
@@ -163,13 +159,13 @@ qt5_lxqt () {
 	package_name="lximage-qt" ; package_version="${package_name}_0.4.0-7" ; check_http
 	package_name="lxqt-config" ; package_version="${package_name}_0.9.0-21" ; check_http
 
-	site="http://packages.siduction.org/lxqt/pool/main/o"
+	site="${debian_pool}/main/o"
 	package_name="obconf-qt" ; package_version="${package_name}_0.1.2-8" ; check_http
 
-	site="http://packages.siduction.org/lxqt/pool/main/c"
+	site="${debian_pool}/main/c"
 	package_name="compton-conf" ; package_version="${package_name}_0.1.2-8" ; check_http
 
-	site="http://packages.siduction.org/lxqt/pool/main/l"
+	site="${debian_pool}/main/l"
 	package_name="lxqt-about" ; package_version="${package_name}_0.9.0-9" ; check_http
 	package_name="lxqt-admin" ; package_version="${package_name}_0.9.0-6" ; check_http
 	package_name="lxqt-common" ; package_version="${package_name}_0.9.1-17" ; check_http
