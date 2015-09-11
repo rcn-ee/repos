@@ -130,6 +130,9 @@ qt5_lxqt () {
 	site="${debian_pool}/main/p"
 	package_name="polkit-qt-1" ; package_version="${package_name}_0.112.0-3" ; check_http
 
+	site="${debian_pool}/main/o"
+	package_name="obconf-qt" ; package_version="${package_name}_0.1.2-8" ; check_http
+
 	site="${debian_pool}/main/libq"
 	package_name="libqtxdg" ; package_version="${package_name}_1.2.0-7" ; check_http
 
@@ -137,38 +140,38 @@ qt5_lxqt () {
 	package_name="liblxqt" ; package_version="${package_name}_0.9.0-23" ; check_http
 
 	site="${debian_pool}/main/l"
-	package_name="lxqt-globalkeys" ; package_version="${package_name}_0.9.0-19" ; check_http
+	package_name="lxqt-about" ; package_version="${package_name}_0.9.0-9" ; check_http
+	package_name="lxqt-admin" ; package_version="${package_name}_0.9.0-6" ; check_http
+	package_name="lxqt-common" ; package_version="${package_name}_0.9.1-17" ; check_http
 	package_name="lxqt-notificationd" ; package_version="${package_name}_0.9.0-11" ; check_http
-	package_name="lxqt-sudo" ; package_version="${package_name}_0.1.0-9" ; check_http
-
-	site="${debian_pool}/main/libs"
-	package_name="libsysstat" ; package_version="${package_name}_0.3.0-5" ; check_http
-
-	site="${debian_pool}/main/l"
-	package_name="lxqt-panel" ; package_version="${package_name}_0.9.0-34" ; check_http
-
-	site="${debian_pool}/main/p"
-	package_name="pcmanfm-qt" ; package_version="${package_name}_0.9.0-22" ; check_http
-
-	site="${debian_pool}/main/l"
-	package_name="lxqt-session" ; package_version="${package_name}_0.9.0-15" ; check_http
-	package_name="lxqt-runner" ; package_version="${package_name}_0.9.0-9" ; check_http
 	package_name="lxqt-policykit" ; package_version="${package_name}_0.9.0-9" ; check_http
 	package_name="lxqt-powermanagement" ; package_version="${package_name}_0.9.0-14" ; check_http
 	package_name="lxqt-qtplugin" ; package_version="${package_name}_0.9.0-6" ; check_http
-	package_name="lximage-qt" ; package_version="${package_name}_0.4.0-7" ; check_http
-	package_name="lxqt-config" ; package_version="${package_name}_0.9.0-21" ; check_http
 
-	site="${debian_pool}/main/o"
-	package_name="obconf-qt" ; package_version="${package_name}_0.1.2-8" ; check_http
+	site="${debian_pool}/main/l"
+	package_name="lxqt-openssh-askpass" ; package_version="${package_name}_0.9.0-1" ; check_http
+
+	site="${debian_pool}/main/p"
+	package_name="pcmanfm-qt" ; package_version="${package_name}_0.9.0-22" ; check_http
 
 	site="${debian_pool}/main/c"
 	package_name="compton-conf" ; package_version="${package_name}_0.1.2-8" ; check_http
 
 	site="${debian_pool}/main/l"
-	package_name="lxqt-about" ; package_version="${package_name}_0.9.0-9" ; check_http
-	package_name="lxqt-admin" ; package_version="${package_name}_0.9.0-6" ; check_http
-	package_name="lxqt-common" ; package_version="${package_name}_0.9.1-17" ; check_http
+	package_name="lxqt-session" ; package_version="${package_name}_0.9.0-15" ; check_http
+
+#
+	site="${debian_pool}/main/libs"
+	package_name="libsysstat" ; package_version="${package_name}_0.3.0-5" ; check_http
+
+	site="${debian_pool}/main/l"
+	package_name="lxqt-globalkeys" ; package_version="${package_name}_0.9.0-19" ; check_http
+	package_name="lxqt-sudo" ; package_version="${package_name}_0.1.0-9" ; check_http
+	package_name="lxqt-panel" ; package_version="${package_name}_0.9.0-34" ; check_http
+	package_name="lxqt-session" ; package_version="${package_name}_0.9.0-15" ; check_http
+	package_name="lxqt-runner" ; package_version="${package_name}_0.9.0-9" ; check_http
+	package_name="lximage-qt" ; package_version="${package_name}_0.4.0-7" ; check_http
+	package_name="lxqt-config" ; package_version="${package_name}_0.9.0-21" ; check_http
 }
 
 machinekit () {
