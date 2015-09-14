@@ -1,30 +1,15 @@
 #!/usr/bin/make -f
-#export DH_VERBOSE=1
+export DH_VERBOSE=1
 
-export QT_SELECT=5
-
+export QT_SELECT = 5
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
 %:
-	dh $@ --buildsystem=qmake --parallel
+	dh $@ --buildsystem=qmake --parallel 
 
+override_dh_install:
+	$(RM) -r $(CURDIR)/debian/tmp/usr/share/icons
+	dh_install
 
-maintainer-clean:
-	$(RM) -r checkout
-	$(RM) -r backport
-	$(RM) *.build
-	$(RM) *.changes
-	$(RM) *.deb
-	$(RM) *.dsc
-	$(RM) *.tar.gz
-	$(RM) *.upload
-
-checkout: maintainer-clean
-	git clone --depth 1 git://github.com/andrew-bibb/cmst.git checkout; \
-	cd checkout; \
-	cp -a ../debian .; \
-	echo ""; \
-	git log -1 | head; \
-	echo ""
-
-backport: checkout
-	mv checkout backport
+override_dh_strip:
+	dh_strip --dbg-package=cmst-dbg
