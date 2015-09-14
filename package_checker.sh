@@ -177,7 +177,7 @@ qt5_lxqt () {
 machinekit () {
 	echo "machinekit:"
 
-	site="http://deb.dovetail-automata.com/pool/main/c"
+	site="${debian_pool}/main/c"
 	package_name="czmq" ; package_version="${package_name}_2.2.0-0.5%7e1jessie%7e1da" ; check_http_machine
 
 	site="http://deb.dovetail-automata.com/pool/main/libw"
