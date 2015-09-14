@@ -115,7 +115,7 @@ qt5_apps () {
 	echo "connman/cmst:"
 	site="http://packages.siduction.org/extra/pool/main/c"
 	package_name="connman" ; package_version="connman_1.30-1" ; check_http_exp
-	package_name="cmst" ; package_version="cmst_2015.07.13-1" ; check_http
+	package_name="cmst" ; package_version="cmst_2015.09.10-1" ; check_http
 }
 
 qt5_lxqt () {
@@ -178,7 +178,7 @@ machinekit () {
 	echo "machinekit:"
 
 	site="${debian_pool}/main/c"
-	package_name="czmq" ; package_version="${package_name}_2.2.0-0.5%7e1jessie%7e1da" ; check_http_machine
+	package_name="czmq" ; package_version="${package_name}_3.0.2-1" ; check_http_machine
 
 	site="http://deb.dovetail-automata.com/pool/main/libw"
 	package_name="libwebsockets" ; package_version="${package_name}_1.3-1%7egit95a8abb%7e1431844465git95a8abb%7e1jessie%7e1da" ; check_http_machine
