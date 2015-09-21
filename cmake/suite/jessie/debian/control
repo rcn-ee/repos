@@ -1,14 +1,11 @@
 Source: cmake
 Section: devel
 Priority: optional
-Maintainer: Modestas Vainius <modax@debian.org>
-Uploaders: A. Maitland Bottoms <bottoms@debian.org>,
-           Kai Wasserbäch <curan@debian.org>,
-           Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>,
+Maintainer: Debian CMake Team <pkg-cmake-team@lists.alioth.debian.org>
+Uploaders: Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>,
            Felix Geyer <fgeyer@debian.org>,
            Mario Lang <mlang@debian.org>
-Build-Depends: bash-completion,
-               debhelper (>= 9.20131104),
+Build-Depends: debhelper (>= 9.20131104),
                libarchive-dev (>= 2.8.0),
                libbz2-dev,
                libcurl4-openssl-dev | libcurl-ssl-dev,
@@ -18,11 +15,11 @@ Build-Depends: bash-completion,
                libncurses5-dev,
                procps [!hurd-any],
                python-sphinx,
-               qtbase5-dev,
+               qtbase5-dev <!stage1>,
                zlib1g-dev
 Standards-Version: 3.9.6
-Vcs-Git: git://anonscm.debian.org/collab-maint/cmake.git
-Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/cmake.git;a=summary
+Vcs-Git: git://anonscm.debian.org/pkg-cmake/cmake.git
+Vcs-Browser: http://anonscm.debian.org/cgit/pkg-cmake/cmake.git/
 Homepage: http://cmake.org/
 
 Package: cmake
@@ -76,6 +73,7 @@ Description: curses based user interface for CMake (ccmake)
 
 Package: cmake-qt-gui
 Architecture: any
+Build-Profiles: <!stage1>
 Pre-Depends: dpkg (>= 1.17.5~)
 Depends: cmake (= ${binary:Version}), ${misc:Depends}, ${shlibs:Depends}
 Provides: cmake-gui

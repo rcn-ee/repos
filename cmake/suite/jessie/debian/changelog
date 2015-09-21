@@ -1,8 +1,49 @@
-cmake (3.2.2-2~bpo80+20150708+1) jessie; urgency=low
+cmake (3.3.2-1~bpo80+20150921+1) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Wed, 08 Jul 2015 14:40:19 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Mon, 21 Sep 2015 09:50:17 -0500
+
+cmake (3.3.2-1) unstable; urgency=medium
+
+  * Upload to unstable.
+  * New upstream release.
+  * Drop Debian menu entries.
+  * Make compiler feature testing more reliable.
+    - Fixes testsuite failure on alpha. (Closes: #789807)
+    - Features_Extract_strings_from_test_binary_more_reliably.patch
+  * Fix FindPkgConfig when no minimum version has been set.
+    - FindPkgConfig_remove_variable_dereference.patch
+  * Remove inactive uploaders from the list.
+
+ -- Felix Geyer <fgeyer@debian.org>  Sun, 20 Sep 2015 21:36:39 +0200
+
+cmake (3.3.1-2) experimental; urgency=medium
+
+  * Set the team mailing list as maintainer.
+  * Add a stage1 build profile that disables building cmake-qt-gui.
+    (Closes: #738161)
+  * Add autopkgtests which run the upstream testsuite against the system cmake.
+  * Add support for x32 in FindJNI. (Closes: #792262)
+    - FindJNI-Add-support-for-x32-architecture-on-Linux.patch
+
+ -- Felix Geyer <fgeyer@debian.org>  Fri, 28 Aug 2015 18:41:24 +0200
+
+cmake (3.3.1-1) experimental; urgency=medium
+
+  * New upstream release.
+    - Fixes bashism in Modules/Squish4RunTestCase.sh. (Closes: #772218)
+  * Drop patches that have been applied upstream:
+    - cpack-doc-typo.patch
+    - protect-tests-from-makeflags.patch
+    - custom-sphinx-flags.patch
+    - fix-mips-endian.patch
+    - openjdk-8-detection.patch
+  * Move bash_completion from /etc to /usr/share.
+    - Stop using dh_bash-completion. It still installs files to /etc and
+      dh_install works just fine.
+
+ -- Felix Geyer <fgeyer@debian.org>  Fri, 21 Aug 2015 11:57:13 +0200
 
 cmake (3.2.2-2) unstable; urgency=medium
 
