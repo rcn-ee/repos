@@ -1,43 +1,27 @@
-chromium-browser (44.0.2403.89-0ubuntu1.1195~bpo80+20150824+1) jessie; urgency=low
+chromium-browser (45.0.2454.85-0ubuntu1.1198~bpo80+20150924+1) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Mon, 24 Aug 2015 16:00:23 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Thu, 24 Sep 2015 12:27:07 -0500
 
-chromium-browser (44.0.2403.89-0ubuntu1.1195) wily; urgency=medium
+chromium-browser (45.0.2454.85-0ubuntu1.1198) wily; urgency=medium
 
-  * Upstream release 44.0.2403.89: (LP: #1477662)
-    - CVE-2015-1271: Heap-buffer-overflow in pdfium.
-    - CVE-2015-1273: Heap-buffer-overflow in pdfium.
-    - CVE-2015-1274: Settings allowed executable files to run immediately
-      after download.
-    - CVE-2015-1275: UXSS in Chrome for Android.
-    - CVE-2015-1276: Use-after-free in IndexedDB.
-    - CVE-2015-1279: Heap-buffer-overflow in pdfium.
-    - CVE-2015-1280: Memory corruption in skia.
-    - CVE-2015-1281: CSP bypass.
-    - CVE-2015-1282: Use-after-free in pdfium.
-    - CVE-2015-1283: Heap-buffer-overflow in expat.
-    - CVE-2015-1284: Use-after-free in blink.
-    - CVE-2015-1286: UXSS in blink.
-    - CVE-2015-1287: SOP bypass with CSS.
-    - CVE-2015-1270: Uninitialized memory read in ICU.
-    - CVE-2015-1272: Use-after-free related to unexpected GPU process
-      termination.
-    - CVE-2015-1277: Use-after-free in accessibility.
-    - CVE-2015-1278: URL spoofing using pdf files.
-    - CVE-2015-1285: Information leak in XSS auditor.
-    - CVE-2015-1288: Spell checking dictionaries fetched over HTTP.
-    - CVE-2015-1289: Various fixes from internal audits, fuzzing and other
+  * Upstream release 45.0.2454.85:
+    - CVE-2015-1291: Cross-origin bypass in DOM.
+    - CVE-2015-1292: Cross-origin bypass in ServiceWorker. 
+    - CVE-2015-1293: Cross-origin bypass in DOM.
+    - CVE-2015-1294: Use-after-free in Skia.
+    - CVE-2015-1295: Use-after-free in Printing.
+    - CVE-2015-1296: Character spoofing in omnibox.
+    - CVE-2015-1297: Permission scoping error in WebRequest. 
+    - CVE-2015-1298: URL validation error in extensions. 
+    - CVE-2015-1299: Use-after-free in Blink.
+    - CVE-2015-1300: Information leak in Blink.
+    - CVE-2015-1301: Various fixes from internal audits, fuzzing and other
       initiatives.
-  * debian/rules, debian/chromium-codecs-ffmpeg{,-extra}.install: ffmpeg is a
-    first-class component library now, not a special snowflake. Still, build
-    it differently, but build flags are different. 
-  * debian/tests/smoketest-actual: Remove some innocuous mentions of "error"
-    before testing for actual errors.
-  * debian/control: codec library packages replace the libffmpeg.so that 
-    was in chromium packages before now.
-  * debian/control: codec packages can't reasonably be updated separately 
-    than chromium. Depend with version specification also.
+  * debian/patches/search-credit.patch: Don't add GET param if search URL
+    doesn't already use them. (LP: #1490237)
+  * debian/source/lintian-overrides: Ignore new binaries in orig tar.
+  * debian/patches/disable-sse2: SSE exclusion is smarter now. Re-include.
 
- -- Chad MILLER <chad.miller@canonical.com>  Tue, 28 Jul 2015 11:19:11 -0400
+ -- Chad MILLER <chad.miller@canonical.com>  Mon, 14 Sep 2015 20:11:00 -0400

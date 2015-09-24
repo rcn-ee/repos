@@ -6,49 +6,27 @@ Bug-Ubuntu: 1084852
 
 --- a/third_party/webrtc/common_audio/common_audio.gyp
 +++ b/third_party/webrtc/common_audio/common_audio.gyp
-@@ -146,7 +146,7 @@
+@@ -149,7 +149,7 @@
              'signal_processing/spl_sqrt_floor.c',
            ],
            'conditions': [
 -            ['arm_version>=7', {
 +            ['arm_version>=7 and arm_neon==1', {
-               'dependencies': ['common_audio_neon',],
                'sources': [
                  'signal_processing/filter_ar_fast_q12_armv7.S',
---- a/third_party/webrtc/common_audio/fir_filter.cc
-+++ b/third_party/webrtc/common_audio/fir_filter.cc
-@@ -62,13 +62,13 @@ FIRFilter* FIRFilter::Create(const float
-   filter =
-       new FIRFilterNEON(coefficients, coefficients_length, max_input_length);
- #else
--  // ARM CPU detection required.
--  if (WebRtc_GetCPUFeaturesARM() & kCPUFeatureNEON) {
--    filter =
--        new FIRFilterNEON(coefficients, coefficients_length, max_input_length);
--  } else {
-+//  // ARM CPU detection required.
-+//  if (WebRtc_GetCPUFeaturesARM() & kCPUFeatureNEON) {
-+//    filter =
-+//        new FIRFilterNEON(coefficients, coefficients_length, max_input_length);
-+//  } else {
-     filter = new FIRFilterC(coefficients, coefficients_length);
--  }
-+//  }
- #endif
- #else
-   filter = new FIRFilterC(coefficients, coefficients_length);
+               ],
 --- a/third_party/webrtc/common_audio/resampler/sinc_resampler.cc
 +++ b/third_party/webrtc/common_audio/resampler/sinc_resampler.cc
 @@ -138,8 +138,7 @@ void SincResampler::InitializeCPUSpecifi
+ #elif defined(WEBRTC_DETECT_NEON)
  #define CONVOLVE_FUNC convolve_proc_
- 
  void SincResampler::InitializeCPUSpecificFeatures() {
 -  convolve_proc_ = WebRtc_GetCPUFeaturesARM() & kCPUFeatureNEON ?
 -      Convolve_NEON : Convolve_C;
 +  convolve_proc_ = Convolve_C;
  }
- #endif
  #else
+ // Unknown architecture.
 --- a/third_party/webrtc/modules/audio_coding/codecs/isac/isacfix.gypi
 +++ b/third_party/webrtc/modules/audio_coding/codecs/isac/isacfix.gypi
 @@ -80,7 +80,7 @@

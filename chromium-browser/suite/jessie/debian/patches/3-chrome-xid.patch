@@ -30,7 +30,7 @@
    views::NonClientFrameView* CreateNonClientFrameView() override;
 --- a/chrome/browser/ui/views/frame/browser_view.cc
 +++ b/chrome/browser/ui/views/frame/browser_view.cc
-@@ -699,6 +699,7 @@ void BrowserView::Show() {
+@@ -702,6 +702,7 @@ void BrowserView::Show() {
    force_location_bar_focus_ = false;
  
    browser()->OnWindowDidShow();
@@ -48,8 +48,8 @@
  DECLARE_EXPORTED_WINDOW_PROPERTY_TYPE(AURA_EXPORT, ui::ModalType)
  DECLARE_EXPORTED_WINDOW_PROPERTY_TYPE(AURA_EXPORT, gfx::Rect*)
  DECLARE_EXPORTED_WINDOW_PROPERTY_TYPE(AURA_EXPORT, ui::InputMethod*)
-@@ -37,6 +38,7 @@ DEFINE_WINDOW_PROPERTY_KEY(
- DEFINE_WINDOW_PROPERTY_KEY(ui::InputMethod*, kRootWindowInputMethodKey, NULL);
+@@ -36,6 +37,7 @@ DEFINE_WINDOW_PROPERTY_KEY(
+     ui::WindowShowState, kRestoreShowStateKey, ui::SHOW_STATE_DEFAULT);
  DEFINE_WINDOW_PROPERTY_KEY(
      ui::WindowShowState, kShowStateKey, ui::SHOW_STATE_DEFAULT);
 +DEFINE_WINDOW_PROPERTY_KEY(uint32, kSessionIdKey, 0);
@@ -58,7 +58,7 @@
  }  // namespace aura
 --- a/ui/aura/client/aura_constants.h
 +++ b/ui/aura/client/aura_constants.h
-@@ -65,6 +65,9 @@ AURA_EXPORT extern const WindowProperty<
+@@ -61,6 +61,9 @@ AURA_EXPORT extern const WindowProperty<
  AURA_EXPORT extern const WindowProperty<ui::WindowShowState>* const
      kShowStateKey;
  
@@ -68,38 +68,9 @@
  // Alphabetical sort.
  
  }  // namespace client
---- a/ui/aura/window_tree_host_x11.cc
-+++ b/ui/aura/window_tree_host_x11.cc
-@@ -456,6 +456,26 @@ gfx::AcceleratedWidget WindowTreeHostX11
-   return xwindow_;
- }
- 
-+#if 0
-+void WindowTreeHostX11::SetSessionID(uint32 session_id) {
-+  VLOG(1) << "BROKEN delete this session writer.";
-+
-+  if (session_id != 0) {
-+    XChangeProperty(xdisplay_,
-+                    xwindow_,
-+                    atom_cache_.GetAtom("CHROMIUM_LINUX_SESSION_ID_PROPERTY"),
-+                    XA_CARDINAL,
-+                    32,
-+                    PropModeReplace,
-+                    reinterpret_cast<unsigned char*>(session_id),
-+                    1);
-+    VLOG(1) << " DID  set session_id as window property because we have a session " << session_id;
-+  } else {
-+    VLOG(1) << "can't set session_id as window property because we don't have a session yet.";
-+  }
-+}
-+#endif
-+
- void WindowTreeHostX11::Show() {
-   if (!window_mapped_) {
-     // Before we map the window, set size hints. Otherwise, some window managers
 --- a/ui/aura/window_tree_host_x11.h
 +++ b/ui/aura/window_tree_host_x11.h
-@@ -41,6 +41,8 @@ class AURA_EXPORT WindowTreeHostX11 : pu
+@@ -39,6 +39,8 @@ class AURA_EXPORT WindowTreeHostX11 : pu
    bool CanDispatchEvent(const ui::PlatformEvent& event) override;
    uint32_t DispatchEvent(const ui::PlatformEvent& event) override;
  
@@ -110,7 +81,7 @@
    gfx::AcceleratedWidget GetAcceleratedWidget() override;
 --- a/ui/views/widget/desktop_aura/desktop_native_widget_aura.cc
 +++ b/ui/views/widget/desktop_aura/desktop_native_widget_aura.cc
-@@ -599,6 +599,11 @@ void DesktopNativeWidgetAura::ViewRemove
+@@ -597,6 +597,11 @@ void DesktopNativeWidgetAura::ViewRemove
    drop_helper_->ResetTargetViewIfEquals(view);
  }
  
@@ -124,7 +95,7 @@
    if (content_window_)
 --- a/ui/views/widget/desktop_aura/desktop_native_widget_aura.h
 +++ b/ui/views/widget/desktop_aura/desktop_native_widget_aura.h
-@@ -93,6 +93,8 @@ class VIEWS_EXPORT DesktopNativeWidgetAu
+@@ -87,6 +87,8 @@ class VIEWS_EXPORT DesktopNativeWidgetAu
    // we are being activated/deactivated.
    void HandleActivationChanged(bool active);
  
@@ -142,8 +113,8 @@
 +  virtual void SetSessionID(uint32 sessionid) = 0;
 +
    virtual void SetSize(const gfx::Size& size) = 0;
+   virtual void StackAbove(aura::Window* window) = 0;
    virtual void StackAtTop() = 0;
-   virtual void CenterWindow(const gfx::Size& size) = 0;
 --- a/ui/views/widget/desktop_aura/desktop_window_tree_host_x11.cc
 +++ b/ui/views/widget/desktop_aura/desktop_window_tree_host_x11.cc
 @@ -10,6 +10,8 @@
@@ -155,7 +126,7 @@
  #include "base/basictypes.h"
  #include "base/command_line.h"
  #include "base/strings/stringprintf.h"
-@@ -106,6 +108,7 @@ const char* kAtomsToCache[] = {
+@@ -105,6 +107,7 @@ const char* kAtomsToCache[] = {
    "_NET_WM_WINDOW_TYPE_NORMAL",
    "_NET_WM_WINDOW_TYPE_NOTIFICATION",
    "_NET_WM_WINDOW_TYPE_TOOLTIP",
@@ -163,7 +134,7 @@
    "XdndActionAsk",
    "XdndActionCopy"
    "XdndActionLink",
-@@ -1368,6 +1371,22 @@ void DesktopWindowTreeHostX11::UpdateMin
+@@ -1411,6 +1414,22 @@ void DesktopWindowTreeHostX11::UpdateMin
    XSetWMNormalHints(xdisplay_, xwindow_, &hints);
  }
  
@@ -188,7 +159,7 @@
    if (!IsActive())
 --- a/ui/views/widget/desktop_aura/desktop_window_tree_host_x11.h
 +++ b/ui/views/widget/desktop_aura/desktop_window_tree_host_x11.h
-@@ -87,6 +87,8 @@ class VIEWS_EXPORT DesktopWindowTreeHost
+@@ -85,6 +85,8 @@ class VIEWS_EXPORT DesktopWindowTreeHost
    // internal list of open windows.
    static void CleanUpWindowList(void (*func)(aura::Window* window));
  
@@ -210,7 +181,7 @@
  
 --- a/ui/views/widget/native_widget_aura.cc
 +++ b/ui/views/widget/native_widget_aura.cc
-@@ -60,6 +60,8 @@
+@@ -58,6 +58,8 @@
  #include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
  #endif
  
@@ -219,7 +190,7 @@
  namespace views {
  
  namespace {
-@@ -339,6 +341,11 @@ void NativeWidgetAura::CenterWindow(cons
+@@ -322,6 +324,11 @@ void NativeWidgetAura::CenterWindow(cons
    window_->SetBounds(window_bounds);
  }
  
@@ -233,7 +204,7 @@
      ui::WindowShowState* show_state) const {
 --- a/ui/views/widget/native_widget_aura.h
 +++ b/ui/views/widget/native_widget_aura.h
-@@ -50,6 +50,8 @@ class VIEWS_EXPORT NativeWidgetAura
+@@ -48,6 +48,8 @@ class VIEWS_EXPORT NativeWidgetAura
        internal::NativeWidgetPrivate* native_widget,
        aura::Window* window);
  

@@ -182,11 +182,9 @@ endif
 #	sed -i 's^\("/usr/lib/nss"\)^/*REM \1 REM*/"/usr/lib/$(DEB_HOST_MULTIARCH)/nss"/**/^' $(DEB_TAR_SRCDIR)/crypto/nss_util.cc
 #	perl $(CURDIR)/debian/enable-dist-patches.pl $(DEBIAN_DIST_VERSION) $(CURDIR)/debian/patches/series
 
-
 subst_files = \
 	debian/$(DEBIAN_NAME).sh \
 	$(NULL)
-
 
 # FFmpeg-mt
 # Don't build it as part of chromium. Build it separately twice, once with
@@ -408,6 +406,8 @@ endif
 	# Locales: only keep en-US in the main deb
 	# Discard everything except en-US
 	find debian/chromium-browser/$(LIB_DIR)/locales debian/chromium-browser/$(LIB_DIR)/remoting_locales -type f \! -name en-US.pak -print -delete
+	# this should find almost nothing
+	find debian/chromium-browser/$(LIB_DIR) -type f -name \*.pak -print
 
 
 ifneq (,$(findstring Ubuntu,$(DEBIAN_DIST)))
