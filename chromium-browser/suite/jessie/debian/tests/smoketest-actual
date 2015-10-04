@@ -105,21 +105,24 @@ export LOCALURL="http://localhost:${webserver_port}/"
 
 kill -USR1 $$
 
-for sikulitest in $SRCDIR/debian/tests/testdata/*.sikuli; do
-	testname=${sikulitest#$SRCDIR/testdata/}
-	test -d $sikulitest
-	echo -n "Test $(basename ${testname}): "
 
-	sikuli $sikulitest &>${testname}-log
-	if egrep -v "${OKAY_ERRORS}" ${testname}-log |egrep -i "(exception|error)"; then
-		failures="$(basename $testname)  $failures"
-		echo "BAD"
-		cat -n ${testname}-log
-		emit-screenshot ${testname}
-	else
-		echo "okay"
-	fi
-done
+if sikuli $SRCDIR/debian/tests/testdata/xx-test-tool-is-functional-if-this-prints-functional.sikuli |tee /dev/stderr |grep "is functional"; then
+	for sikulitest in $SRCDIR/debian/tests/testdata/?-*.sikuli; do
+		testname=${sikulitest#$SRCDIR/testdata/}
+		test -d $sikulitest
+		echo -n "Test $(basename ${testname}): "
+
+		sikuli $sikulitest &>${testname}-log
+		if egrep -v "${OKAY_ERRORS}" ${testname}-log |egrep -i "(exception|error)"; then
+			failures="$(basename $testname)  $failures"
+			echo "BAD"
+			cat -n ${testname}-log
+			emit-screenshot ${testname}
+		else
+			echo "okay"
+		fi
+	done
+fi
 
 webclient_pid=""
 

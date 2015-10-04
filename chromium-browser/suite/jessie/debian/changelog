@@ -1,27 +1,20 @@
-chromium-browser (45.0.2454.85-0ubuntu1.1198~bpo80+20150924+1) jessie; urgency=low
+chromium-browser (45.0.2454.101-0ubuntu1.1201~bpo80+20151003+1) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Thu, 24 Sep 2015 12:27:07 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Sat, 03 Oct 2015 20:52:33 -0500
 
-chromium-browser (45.0.2454.85-0ubuntu1.1198) wily; urgency=medium
+chromium-browser (45.0.2454.101-0ubuntu1.1201) wily; urgency=medium
 
-  * Upstream release 45.0.2454.85:
-    - CVE-2015-1291: Cross-origin bypass in DOM.
-    - CVE-2015-1292: Cross-origin bypass in ServiceWorker. 
-    - CVE-2015-1293: Cross-origin bypass in DOM.
-    - CVE-2015-1294: Use-after-free in Skia.
-    - CVE-2015-1295: Use-after-free in Printing.
-    - CVE-2015-1296: Character spoofing in omnibox.
-    - CVE-2015-1297: Permission scoping error in WebRequest. 
-    - CVE-2015-1298: URL validation error in extensions. 
-    - CVE-2015-1299: Use-after-free in Blink.
-    - CVE-2015-1300: Information leak in Blink.
-    - CVE-2015-1301: Various fixes from internal audits, fuzzing and other
-      initiatives.
-  * debian/patches/search-credit.patch: Don't add GET param if search URL
-    doesn't already use them. (LP: #1490237)
-  * debian/source/lintian-overrides: Ignore new binaries in orig tar.
-  * debian/patches/disable-sse2: SSE exclusion is smarter now. Re-include.
+  * Upstream release 45.0.2454.101:
+    - CVE-2015-1303: Cross-origin bypass in DOM.
+    - CVE-2015-1304: Cross-origin bypass in V8.
+  * debian/tests/testdata/xx-test-tool-is-functional-if-this-prints-functional.sikuli
+    Only use GUI test tool to test IF it works on its own.  If it is broken,
+    don't use that to test chromium.
+  * debian/rules: Include our own "xdg-settings" file until a bug is fixed.
+  * debian/patches/xdg-settings-multiexec-desktopfiles.patch : Locally fix
+    aforementioned bug. More than one Exec line in a destop file (like ours)
+    triggers a bug in badly-written shell code in portland xdg-utils-common.in
 
- -- Chad MILLER <chad.miller@canonical.com>  Mon, 14 Sep 2015 20:11:00 -0400
+ -- Chad MILLER <chad.miller@canonical.com>  Tue, 29 Sep 2015 08:06:37 -0400

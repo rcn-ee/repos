@@ -1,0 +1,701 @@
+Description: Make xdg utils work even when there are more than one Exec line in a desktop file.
+Author: Chad Miller <chad.miller@canonical.com>
+Bug-Upstream: https://bugs.freedesktop.org/show_bug.cgi?id=92170
+
+--- a/chrome/browser/shell_integration_linux.cc
++++ b/chrome/browser/shell_integration_linux.cc
+@@ -352,6 +352,7 @@ bool GetChromeVersionOfScript(const std:
+ 
+ // Value returned by xdg-settings if it can't understand our request.
+ const int EXIT_XDG_SETTINGS_SYNTAX_ERROR = 1;
++const int EXIT_XDG_SETTINGS_FILE_NOT_EXIST = 2;
+ 
+ // We delegate the difficulty of setting the default browser and default url
+ // scheme handler in Linux desktop environments to an xdg utility, xdg-settings.
+@@ -363,6 +364,11 @@ const int EXIT_XDG_SETTINGS_SYNTAX_ERROR
+ // system fails, as the system copy may be missing capabilities of the Chrome
+ // copy.
+ 
++// As of 2015-10 and earlier, xdg settings fails for desktop files that have
++// more than one Exec line. We catch this kind of failure and try our own
++// version of the script.
++// https://bugs.freedesktop.org/show_bug.cgi?id=92170
++
+ // If |protocol| is empty this function sets Chrome as the default browser,
+ // otherwise it sets Chrome as the default handler application for |protocol|.
+ bool SetDefaultWebClient(const std::string& protocol) {
+@@ -384,7 +390,7 @@ bool SetDefaultWebClient(const std::stri
+ 
+   int exit_code;
+   bool ran_ok = LaunchXdgUtility(argv, &exit_code);
+-  if (ran_ok && exit_code == EXIT_XDG_SETTINGS_SYNTAX_ERROR) {
++  if (ran_ok && ((exit_code == EXIT_XDG_SETTINGS_SYNTAX_ERROR) || (exit_code == EXIT_XDG_SETTINGS_FILE_NOT_EXIST))) {
+     if (GetChromeVersionOfScript(kXdgSettings, &argv[0])) {
+       ran_ok = LaunchXdgUtility(argv, &exit_code);
+     }
+@@ -421,7 +427,7 @@ ShellIntegration::DefaultWebClientState
+   int success_code;
+   bool ran_ok = base::GetAppOutputWithExitCode(base::CommandLine(argv), &reply,
+                                                &success_code);
+-  if (ran_ok && success_code == EXIT_XDG_SETTINGS_SYNTAX_ERROR) {
++  if (ran_ok && ((success_code == EXIT_XDG_SETTINGS_SYNTAX_ERROR) || (success_code == EXIT_XDG_SETTINGS_FILE_NOT_EXIST))) {
+     if (GetChromeVersionOfScript(kXdgSettings, &argv[0])) {
+       ran_ok = base::GetAppOutputWithExitCode(base::CommandLine(argv), &reply,
+                                               &success_code);
+--- a/third_party/xdg-utils/scripts/xdg-desktop-icon
++++ b/third_party/xdg-utils/scripts/xdg-desktop-icon
+@@ -231,11 +231,16 @@ first_word()
+ 
+ #-------------------------------------------------------------
+ # map a binary to a .desktop file
++# Search every desktop file in standard locations, and if one contains any
++# Exec line whose target (after resolving symlinks) is the same as the given
++# parameter file (after resolving symlinks), then print the name of that
++# desktop file. This only emits the first desktop file found. Luckily, wildcard
++# expansion is ordered, so the lexically-first filename of a match is returned.
+ binary_to_desktop_file()
+ {
+     search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+-    binary="`which "$1"`"
+-    binary="`readlink -f "$binary"`"
++    binary=$(which "$1")
++    binary=$(readlink -f "$binary")
+     base="`basename "$binary"`"
+     IFS=:
+     for dir in $search; do
+@@ -248,13 +253,17 @@ binary_to_desktop_file()
+             grep -q "^Exec.*$base" "$file" || continue
+             # Make sure it's a visible desktop file (e.g. not "preferred-web-browser.desktop").
+             grep -Eq "^(NoDisplay|Hidden)=true" "$file" && continue
+-            command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
+-            command="`which "$command"`"
+-            if [ x"`readlink -f "$command"`" = x"$binary" ]; then
+-                # Fix any double slashes that got added path composition
+-                echo "$file" | sed -e 's,//*,/,g'
+-                return
+-            fi
++
++            # "TryExec" isn't good enough. Only "Exec". Test every Exec in the file. Only use one.
++            grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | \
++                    while read command argumentlist; do
++                        command_full_path=$(which "$command")
++                        if [ $(readlink -f "$command_full_path") = "$binary" ]; then
++                            # Fix any double slashes that got added path composition
++                            echo "$file" | sed -e 's,//*,/,g'
++                            return  # That was out answer. Nothing else to do.
++                        fi
++                    done
+         done
+     done
+ }
+@@ -265,7 +274,7 @@ binary_to_desktop_file()
+ desktop_file_to_binary()
+ {
+     search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+-    desktop="`basename "$1"`"
++    desktop=$(basename "$1")
+     IFS=:
+     for dir in $search; do
+         unset IFS
+@@ -273,10 +282,13 @@ desktop_file_to_binary()
+         file="$dir/applications/$desktop"
+         [ -r "$file" ] || continue
+         # Remove any arguments (%F, %f, %U, %u, etc.).
+-        command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
+-        command="`which "$command"`"
+-        readlink -f "$command"
+-        return
++        grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | \
++                while read command argumentlist; do
++                    # Use while-read to process one line, not all lines.
++                    command_full_path=$(which "$command")
++                    readlink -f "$command_full_path"
++                    return  # Don't continue after the first.
++                done
+     done
+ }
+ 
+--- a/third_party/xdg-utils/scripts/xdg-desktop-menu
++++ b/third_party/xdg-utils/scripts/xdg-desktop-menu
+@@ -427,11 +427,16 @@ first_word()
+ 
+ #-------------------------------------------------------------
+ # map a binary to a .desktop file
++# Search every desktop file in standard locations, and if one contains any
++# Exec line whose target (after resolving symlinks) is the same as the given
++# parameter file (after resolving symlinks), then print the name of that
++# desktop file. This only emits the first desktop file found. Luckily, wildcard
++# expansion is ordered, so the lexically-first filename of a match is returned.
+ binary_to_desktop_file()
+ {
+     search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+-    binary="`which "$1"`"
+-    binary="`readlink -f "$binary"`"
++    binary=$(which "$1")
++    binary=$(readlink -f "$binary")
+     base="`basename "$binary"`"
+     IFS=:
+     for dir in $search; do
+@@ -444,13 +449,17 @@ binary_to_desktop_file()
+             grep -q "^Exec.*$base" "$file" || continue
+             # Make sure it's a visible desktop file (e.g. not "preferred-web-browser.desktop").
+             grep -Eq "^(NoDisplay|Hidden)=true" "$file" && continue
+-            command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
+-            command="`which "$command"`"
+-            if [ x"`readlink -f "$command"`" = x"$binary" ]; then
+-                # Fix any double slashes that got added path composition
+-                echo "$file" | sed -e 's,//*,/,g'
+-                return
+-            fi
++
++            # "TryExec" isn't good enough. Only "Exec". Test every Exec in the file. Only use one.
++            grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | \
++                    while read command argumentlist; do
++                        command_full_path=$(which "$command")
++                        if [ $(readlink -f "$command_full_path") = "$binary" ]; then
++                            # Fix any double slashes that got added path composition
++                            echo "$file" | sed -e 's,//*,/,g'
++                            return  # That was out answer. Nothing else to do.
++                        fi
++                    done
+         done
+     done
+ }
+@@ -461,7 +470,7 @@ binary_to_desktop_file()
+ desktop_file_to_binary()
+ {
+     search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+-    desktop="`basename "$1"`"
++    desktop=$(basename "$1")
+     IFS=:
+     for dir in $search; do
+         unset IFS
+@@ -469,10 +478,13 @@ desktop_file_to_binary()
+         file="$dir/applications/$desktop"
+         [ -r "$file" ] || continue
+         # Remove any arguments (%F, %f, %U, %u, etc.).
+-        command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
+-        command="`which "$command"`"
+-        readlink -f "$command"
+-        return
++        grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | \
++                while read command argumentlist; do
++                    # Use while-read to process one line, not all lines.
++                    command_full_path=$(which "$command")
++                    readlink -f "$command_full_path"
++                    return  # Don't continue after the first.
++                done
+     done
+ }
+ 
+--- a/third_party/xdg-utils/scripts/xdg-email
++++ b/third_party/xdg-utils/scripts/xdg-email
+@@ -183,11 +183,16 @@ first_word()
+ 
+ #-------------------------------------------------------------
+ # map a binary to a .desktop file
++# Search every desktop file in standard locations, and if one contains any
++# Exec line whose target (after resolving symlinks) is the same as the given
++# parameter file (after resolving symlinks), then print the name of that
++# desktop file. This only emits the first desktop file found. Luckily, wildcard
++# expansion is ordered, so the lexically-first filename of a match is returned.
+ binary_to_desktop_file()
+ {
+     search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+-    binary="`which "$1"`"
+-    binary="`readlink -f "$binary"`"
++    binary=$(which "$1")
++    binary=$(readlink -f "$binary")
+     base="`basename "$binary"`"
+     IFS=:
+     for dir in $search; do
+@@ -200,13 +205,17 @@ binary_to_desktop_file()
+             grep -q "^Exec.*$base" "$file" || continue
+             # Make sure it's a visible desktop file (e.g. not "preferred-web-browser.desktop").
+             grep -Eq "^(NoDisplay|Hidden)=true" "$file" && continue
+-            command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
+-            command="`which "$command"`"
+-            if [ x"`readlink -f "$command"`" = x"$binary" ]; then
+-                # Fix any double slashes that got added path composition
+-                echo "$file" | sed -e 's,//*,/,g'
+-                return
+-            fi
++
++            # "TryExec" isn't good enough. Only "Exec". Test every Exec in the file. Only use one.
++            grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | \
++                    while read command argumentlist; do
++                        command_full_path=$(which "$command")
++                        if [ $(readlink -f "$command_full_path") = "$binary" ]; then
++                            # Fix any double slashes that got added path composition
++                            echo "$file" | sed -e 's,//*,/,g'
++                            return  # That was out answer. Nothing else to do.
++                        fi
++                    done
+         done
+     done
+ }
+@@ -217,7 +226,7 @@ binary_to_desktop_file()
+ desktop_file_to_binary()
+ {
+     search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+-    desktop="`basename "$1"`"
++    desktop=$(basename "$1")
+     IFS=:
+     for dir in $search; do
+         unset IFS
+@@ -225,10 +234,13 @@ desktop_file_to_binary()
+         file="$dir/applications/$desktop"
+         [ -r "$file" ] || continue
+         # Remove any arguments (%F, %f, %U, %u, etc.).
+-        command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
+-        command="`which "$command"`"
+-        readlink -f "$command"
+-        return
++        grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | \
++                while read command argumentlist; do
++                    # Use while-read to process one line, not all lines.
++                    command_full_path=$(which "$command")
++                    readlink -f "$command_full_path"
++                    return  # Don't continue after the first.
++                done
+     done
+ }
+ 
+--- a/third_party/xdg-utils/scripts/xdg-icon-resource
++++ b/third_party/xdg-utils/scripts/xdg-icon-resource
+@@ -223,11 +223,16 @@ first_word()
+ 
+ #-------------------------------------------------------------
+ # map a binary to a .desktop file
++# Search every desktop file in standard locations, and if one contains any
++# Exec line whose target (after resolving symlinks) is the same as the given
++# parameter file (after resolving symlinks), then print the name of that
++# desktop file. This only emits the first desktop file found. Luckily, wildcard
++# expansion is ordered, so the lexically-first filename of a match is returned.
+ binary_to_desktop_file()
+ {
+     search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+-    binary="`which "$1"`"
+-    binary="`readlink -f "$binary"`"
++    binary=$(which "$1")
++    binary=$(readlink -f "$binary")
+     base="`basename "$binary"`"
+     IFS=:
+     for dir in $search; do
+@@ -240,13 +245,17 @@ binary_to_desktop_file()
+             grep -q "^Exec.*$base" "$file" || continue
+             # Make sure it's a visible desktop file (e.g. not "preferred-web-browser.desktop").
+             grep -Eq "^(NoDisplay|Hidden)=true" "$file" && continue
+-            command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
+-            command="`which "$command"`"
+-            if [ x"`readlink -f "$command"`" = x"$binary" ]; then
+-                # Fix any double slashes that got added path composition
+-                echo "$file" | sed -e 's,//*,/,g'
+-                return
+-            fi
++
++            # "TryExec" isn't good enough. Only "Exec". Test every Exec in the file. Only use one.
++            grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | \
++                    while read command argumentlist; do
++                        command_full_path=$(which "$command")
++                        if [ $(readlink -f "$command_full_path") = "$binary" ]; then
++                            # Fix any double slashes that got added path composition
++                            echo "$file" | sed -e 's,//*,/,g'
++                            return  # That was out answer. Nothing else to do.
++                        fi
++                    done
+         done
+     done
+ }
+@@ -257,7 +266,7 @@ binary_to_desktop_file()
+ desktop_file_to_binary()
+ {
+     search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+-    desktop="`basename "$1"`"
++    desktop=$(basename "$1")
+     IFS=:
+     for dir in $search; do
+         unset IFS
+@@ -265,10 +274,13 @@ desktop_file_to_binary()
+         file="$dir/applications/$desktop"
+         [ -r "$file" ] || continue
+         # Remove any arguments (%F, %f, %U, %u, etc.).
+-        command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
+-        command="`which "$command"`"
+-        readlink -f "$command"
+-        return
++        grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | \
++                while read command argumentlist; do
++                    # Use while-read to process one line, not all lines.
++                    command_full_path=$(which "$command")
++                    readlink -f "$command_full_path"
++                    return  # Don't continue after the first.
++                done
+     done
+ }
+ 
+--- a/third_party/xdg-utils/scripts/xdg-mime
++++ b/third_party/xdg-utils/scripts/xdg-mime
+@@ -253,11 +253,16 @@ first_word()
+ 
+ #-------------------------------------------------------------
+ # map a binary to a .desktop file
++# Search every desktop file in standard locations, and if one contains any
++# Exec line whose target (after resolving symlinks) is the same as the given
++# parameter file (after resolving symlinks), then print the name of that
++# desktop file. This only emits the first desktop file found. Luckily, wildcard
++# expansion is ordered, so the lexically-first filename of a match is returned.
+ binary_to_desktop_file()
+ {
+     search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+-    binary="`which "$1"`"
+-    binary="`readlink -f "$binary"`"
++    binary=$(which "$1")
++    binary=$(readlink -f "$binary")
+     base="`basename "$binary"`"
+     IFS=:
+     for dir in $search; do
+@@ -270,13 +275,17 @@ binary_to_desktop_file()
+             grep -q "^Exec.*$base" "$file" || continue
+             # Make sure it's a visible desktop file (e.g. not "preferred-web-browser.desktop").
+             grep -Eq "^(NoDisplay|Hidden)=true" "$file" && continue
+-            command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
+-            command="`which "$command"`"
+-            if [ x"`readlink -f "$command"`" = x"$binary" ]; then
+-                # Fix any double slashes that got added path composition
+-                echo "$file" | sed -e 's,//*,/,g'
+-                return
+-            fi
++
++            # "TryExec" isn't good enough. Only "Exec". Test every Exec in the file. Only use one.
++            grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | \
++                    while read command argumentlist; do
++                        command_full_path=$(which "$command")
++                        if [ $(readlink -f "$command_full_path") = "$binary" ]; then
++                            # Fix any double slashes that got added path composition
++                            echo "$file" | sed -e 's,//*,/,g'
++                            return  # That was out answer. Nothing else to do.
++                        fi
++                    done
+         done
+     done
+ }
+@@ -287,7 +296,7 @@ binary_to_desktop_file()
+ desktop_file_to_binary()
+ {
+     search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+-    desktop="`basename "$1"`"
++    desktop=$(basename "$1")
+     IFS=:
+     for dir in $search; do
+         unset IFS
+@@ -295,10 +304,13 @@ desktop_file_to_binary()
+         file="$dir/applications/$desktop"
+         [ -r "$file" ] || continue
+         # Remove any arguments (%F, %f, %U, %u, etc.).
+-        command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
+-        command="`which "$command"`"
+-        readlink -f "$command"
+-        return
++        grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | \
++                while read command argumentlist; do
++                    # Use while-read to process one line, not all lines.
++                    command_full_path=$(which "$command")
++                    readlink -f "$command_full_path"
++                    return  # Don't continue after the first.
++                done
+     done
+ }
+ 
+--- a/third_party/xdg-utils/scripts/xdg-open
++++ b/third_party/xdg-utils/scripts/xdg-open
+@@ -130,11 +130,16 @@ first_word()
+ 
+ #-------------------------------------------------------------
+ # map a binary to a .desktop file
++# Search every desktop file in standard locations, and if one contains any
++# Exec line whose target (after resolving symlinks) is the same as the given
++# parameter file (after resolving symlinks), then print the name of that
++# desktop file. This only emits the first desktop file found. Luckily, wildcard
++# expansion is ordered, so the lexically-first filename of a match is returned.
+ binary_to_desktop_file()
+ {
+     search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+-    binary="`which "$1"`"
+-    binary="`readlink -f "$binary"`"
++    binary=$(which "$1")
++    binary=$(readlink -f "$binary")
+     base="`basename "$binary"`"
+     IFS=:
+     for dir in $search; do
+@@ -147,13 +152,17 @@ binary_to_desktop_file()
+             grep -q "^Exec.*$base" "$file" || continue
+             # Make sure it's a visible desktop file (e.g. not "preferred-web-browser.desktop").
+             grep -Eq "^(NoDisplay|Hidden)=true" "$file" && continue
+-            command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
+-            command="`which "$command"`"
+-            if [ x"`readlink -f "$command"`" = x"$binary" ]; then
+-                # Fix any double slashes that got added path composition
+-                echo "$file" | sed -e 's,//*,/,g'
+-                return
+-            fi
++
++            # "TryExec" isn't good enough. Only "Exec". Test every Exec in the file. Only use one.
++            grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | \
++                    while read command argumentlist; do
++                        command_full_path=$(which "$command")
++                        if [ $(readlink -f "$command_full_path") = "$binary" ]; then
++                            # Fix any double slashes that got added path composition
++                            echo "$file" | sed -e 's,//*,/,g'
++                            return  # That was out answer. Nothing else to do.
++                        fi
++                    done
+         done
+     done
+ }
+@@ -164,7 +173,7 @@ binary_to_desktop_file()
+ desktop_file_to_binary()
+ {
+     search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+-    desktop="`basename "$1"`"
++    desktop=$(basename "$1")
+     IFS=:
+     for dir in $search; do
+         unset IFS
+@@ -172,10 +181,13 @@ desktop_file_to_binary()
+         file="$dir/applications/$desktop"
+         [ -r "$file" ] || continue
+         # Remove any arguments (%F, %f, %U, %u, etc.).
+-        command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
+-        command="`which "$command"`"
+-        readlink -f "$command"
+-        return
++        grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | \
++                while read command argumentlist; do
++                    # Use while-read to process one line, not all lines.
++                    command_full_path=$(which "$command")
++                    readlink -f "$command_full_path"
++                    return  # Don't continue after the first.
++                done
+     done
+ }
+ 
+--- a/third_party/xdg-utils/scripts/xdg-screensaver
++++ b/third_party/xdg-utils/scripts/xdg-screensaver
+@@ -158,11 +158,16 @@ first_word()
+ 
+ #-------------------------------------------------------------
+ # map a binary to a .desktop file
++# Search every desktop file in standard locations, and if one contains any
++# Exec line whose target (after resolving symlinks) is the same as the given
++# parameter file (after resolving symlinks), then print the name of that
++# desktop file. This only emits the first desktop file found. Luckily, wildcard
++# expansion is ordered, so the lexically-first filename of a match is returned.
+ binary_to_desktop_file()
+ {
+     search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+-    binary="`which "$1"`"
+-    binary="`readlink -f "$binary"`"
++    binary=$(which "$1")
++    binary=$(readlink -f "$binary")
+     base="`basename "$binary"`"
+     IFS=:
+     for dir in $search; do
+@@ -175,13 +180,17 @@ binary_to_desktop_file()
+             grep -q "^Exec.*$base" "$file" || continue
+             # Make sure it's a visible desktop file (e.g. not "preferred-web-browser.desktop").
+             grep -Eq "^(NoDisplay|Hidden)=true" "$file" && continue
+-            command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
+-            command="`which "$command"`"
+-            if [ x"`readlink -f "$command"`" = x"$binary" ]; then
+-                # Fix any double slashes that got added path composition
+-                echo "$file" | sed -e 's,//*,/,g'
+-                return
+-            fi
++
++            # "TryExec" isn't good enough. Only "Exec". Test every Exec in the file. Only use one.
++            grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | \
++                    while read command argumentlist; do
++                        command_full_path=$(which "$command")
++                        if [ $(readlink -f "$command_full_path") = "$binary" ]; then
++                            # Fix any double slashes that got added path composition
++                            echo "$file" | sed -e 's,//*,/,g'
++                            return  # That was out answer. Nothing else to do.
++                        fi
++                    done
+         done
+     done
+ }
+@@ -192,7 +201,7 @@ binary_to_desktop_file()
+ desktop_file_to_binary()
+ {
+     search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+-    desktop="`basename "$1"`"
++    desktop=$(basename "$1")
+     IFS=:
+     for dir in $search; do
+         unset IFS
+@@ -200,10 +209,13 @@ desktop_file_to_binary()
+         file="$dir/applications/$desktop"
+         [ -r "$file" ] || continue
+         # Remove any arguments (%F, %f, %U, %u, etc.).
+-        command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
+-        command="`which "$command"`"
+-        readlink -f "$command"
+-        return
++        grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | \
++                while read command argumentlist; do
++                    # Use while-read to process one line, not all lines.
++                    command_full_path=$(which "$command")
++                    readlink -f "$command_full_path"
++                    return  # Don't continue after the first.
++                done
+     done
+ }
+ 
+--- a/third_party/xdg-utils/scripts/xdg-settings
++++ b/third_party/xdg-utils/scripts/xdg-settings
+@@ -153,11 +153,16 @@ first_word()
+ 
+ #-------------------------------------------------------------
+ # map a binary to a .desktop file
++# Search every desktop file in standard locations, and if one contains any
++# Exec line whose target (after resolving symlinks) is the same as the given
++# parameter file (after resolving symlinks), then print the name of that
++# desktop file. This only emits the first desktop file found. Luckily, wildcard
++# expansion is ordered, so the lexically-first filename of a match is returned.
+ binary_to_desktop_file()
+ {
+     search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+-    binary="`which "$1"`"
+-    binary="`readlink -f "$binary"`"
++    binary=$(which "$1")
++    binary=$(readlink -f "$binary")
+     base="`basename "$binary"`"
+     IFS=:
+     for dir in $search; do
+@@ -170,13 +175,17 @@ binary_to_desktop_file()
+             grep -q "^Exec.*$base" "$file" || continue
+             # Make sure it's a visible desktop file (e.g. not "preferred-web-browser.desktop").
+             grep -Eq "^(NoDisplay|Hidden)=true" "$file" && continue
+-            command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
+-            command="`which "$command"`"
+-            if [ x"`readlink -f "$command"`" = x"$binary" ]; then
+-                # Fix any double slashes that got added path composition
+-                echo "$file" | sed -e 's,//*,/,g'
+-                return
+-            fi
++
++            # "TryExec" isn't good enough. Only "Exec". Test every Exec in the file. Only use one.
++            grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | \
++                    while read command argumentlist; do
++                        command_full_path=$(which "$command")
++                        if [ $(readlink -f "$command_full_path") = "$binary" ]; then
++                            # Fix any double slashes that got added path composition
++                            echo "$file" | sed -e 's,//*,/,g'
++                            return  # That was out answer. Nothing else to do.
++                        fi
++                    done
+         done
+     done
+ }
+@@ -187,7 +196,7 @@ binary_to_desktop_file()
+ desktop_file_to_binary()
+ {
+     search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+-    desktop="`basename "$1"`"
++    desktop=$(basename "$1")
+     IFS=:
+     for dir in $search; do
+         unset IFS
+@@ -195,10 +204,13 @@ desktop_file_to_binary()
+         file="$dir/applications/$desktop"
+         [ -r "$file" ] || continue
+         # Remove any arguments (%F, %f, %U, %u, etc.).
+-        command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
+-        command="`which "$command"`"
+-        readlink -f "$command"
+-        return
++        grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | \
++                while read command argumentlist; do
++                    # Use while-read to process one line, not all lines.
++                    command_full_path=$(which "$command")
++                    readlink -f "$command_full_path"
++                    return  # Don't continue after the first.
++                done
+     done
+ }
+ 
+--- a/third_party/xdg-utils/scripts/xdg-utils-common.in
++++ b/third_party/xdg-utils/scripts/xdg-utils-common.in
+@@ -20,11 +20,16 @@ first_word()
+ 
+ #-------------------------------------------------------------
+ # map a binary to a .desktop file
++# Search every desktop file in standard locations, and if one contains any
++# Exec line whose target (after resolving symlinks) is the same as the given
++# parameter file (after resolving symlinks), then print the name of that
++# desktop file. This only emits the first desktop file found. Luckily, wildcard
++# expansion is ordered, so the lexically-first filename of a match is returned.
+ binary_to_desktop_file()
+ {
+     search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+-    binary="`which "$1"`"
+-    binary="`readlink -f "$binary"`"
++    binary=$(which "$1")
++    binary=$(readlink -f "$binary")
+     base="`basename "$binary"`"
+     IFS=:
+     for dir in $search; do
+@@ -37,13 +42,17 @@ binary_to_desktop_file()
+             grep -q "^Exec.*$base" "$file" || continue
+             # Make sure it's a visible desktop file (e.g. not "preferred-web-browser.desktop").
+             grep -Eq "^(NoDisplay|Hidden)=true" "$file" && continue
+-            command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
+-            command="`which "$command"`"
+-            if [ x"`readlink -f "$command"`" = x"$binary" ]; then
+-                # Fix any double slashes that got added path composition
+-                echo "$file" | sed -e 's,//*,/,g'
+-                return
+-            fi
++
++            # "TryExec" isn't good enough. Only "Exec". Test every Exec in the file. Only use one.
++            grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | \
++                    while read command argumentlist; do
++                        command_full_path=$(which "$command")
++                        if [ $(readlink -f "$command_full_path") = "$binary" ]; then
++                            # Fix any double slashes that got added path composition
++                            echo "$file" | sed -e 's,//*,/,g'
++                            return  # That was out answer. Nothing else to do.
++                        fi
++                    done
+         done
+     done
+ }
+@@ -54,7 +63,7 @@ binary_to_desktop_file()
+ desktop_file_to_binary()
+ {
+     search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+-    desktop="`basename "$1"`"
++    desktop=$(basename "$1")
+     IFS=:
+     for dir in $search; do
+         unset IFS
+@@ -62,10 +71,13 @@ desktop_file_to_binary()
+         file="$dir/applications/$desktop"
+         [ -r "$file" ] || continue
+         # Remove any arguments (%F, %f, %U, %u, etc.).
+-        command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
+-        command="`which "$command"`"
+-        readlink -f "$command"
+-        return
++        grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | \
++                while read command argumentlist; do
++                    # Use while-read to process one line, not all lines.
++                    command_full_path=$(which "$command")
++                    readlink -f "$command_full_path"
++                    return  # Don't continue after the first.
++                done
+     done
+ }
+ 

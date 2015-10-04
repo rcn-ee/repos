@@ -315,6 +315,8 @@ ifeq (1,$(COMPONENT_SHARED_LIB_BUILD))
 	cp $(SRC_DIR)/out/$(BUILD_TYPE)-chromium/lib/*.so debian/tmp/$(LIB_DIR)/libs/
 endif
 
+	(cd $(SRC_DIR)/out/$(BUILD_TYPE)-chromium; tar cf - xdg-settings;) | (cd debian/tmp/$(LIB_DIR); tar xvf -;)
+
 ifneq ($(SNAPPY_PKGR_TO_USE),)
 	mkdir -p $(SNAPPY_ROOT)/private/libs
 	mkdir -p $(SNAPPY_ROOT)/meta
@@ -523,7 +525,8 @@ build-stamp-ffmpeg-%:
 #BUILT_UNUSED_MATCH += ^usr/lib/chromium-browser/plugins/libTestNetscapePlugIn.so$$
 #BUILT_UNUSED_MATCH += ^usr/lib/chromium-browser/ImageDiff$$
 ## xdg-utils install dep
-BUILT_UNUSED_MATCH += ^usr/lib/chromium-browser/xdg-\(mime\|settings\)$$
+#BUILT_UNUSED_MATCH += ^usr/lib/chromium-browser/xdg-settings$$
+BUILT_UNUSED_MATCH += ^usr/lib/chromium-browser/xdg-mime$$
 
 INDEP_MATCH = ^usr/lib/chromium-browser/.\*\(?\!\<pseudo-\)locales/.\*.pak$$
 
