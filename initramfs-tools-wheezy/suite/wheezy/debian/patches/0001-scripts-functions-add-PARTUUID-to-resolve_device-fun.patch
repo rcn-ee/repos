@@ -5,19 +5,20 @@ Subject: [PATCH] scripts/functions: add PARTUUID to resolve_device function
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- init | 2 ++
- 1 file changed, 2 insertions(+)
+ init | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/init b/init
-index cb832ff..2b4fa73 100755
+index cb832ff..2837f68 100755
 --- a/init
 +++ b/init
-@@ -97,6 +97,8 @@ for x in $(cat /proc/cmdline); do
+@@ -97,6 +97,9 @@ for x in $(cat /proc/cmdline); do
  			esac
  			ROOT="/dev/disk/by-label/${ROOT}"
  			;;
 +		PARTUUID=*)
 +			ROOT="/dev/disk/by-partuuid/${ROOT#PARTUUID=}"
++			;;
  		UUID=*)
  			ROOT="/dev/disk/by-uuid/${ROOT#UUID=}"
  			;;
