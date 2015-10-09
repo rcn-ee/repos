@@ -1,0 +1,26 @@
+From: WaLyong Cho <walyong.cho@samsung.com>
+Date: Thu, 28 Aug 2014 21:33:03 +0900
+Subject: journal: do server_vacuum for sigusr1
+
+runtime journal is migrated to system journal when only
+"/run/systemd/journal/flushed" exist. It's ok but according to this
+the system journal directory size(max use) can be over the config. If
+journal is not rotated during some time the journal directory can be
+remained as over the config(or default) size. To avoid, do
+server_vacuum just after the system journal migration from runtime.
+---
+ src/journal/journald-server.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/journal/journald-server.c b/src/journal/journald-server.c
+index 58410a2..1c69563 100644
+--- a/src/journal/journald-server.c
++++ b/src/journal/journald-server.c
+@@ -1224,6 +1224,7 @@ static int dispatch_sigusr1(sd_event_source *es, const struct signalfd_siginfo *
+         touch("/run/systemd/journal/flushed");
+         server_flush_to_var(s);
+         server_sync(s);
++        server_vacuum(s);
+ 
+         return 0;
+ }

@@ -1,0 +1,27 @@
+From: Michael Biebl <biebl@debian.org>
+Date: Fri, 5 Sep 2014 01:15:16 +0200
+Subject: Make /run/lock tmpfs an API fs
+
+The /run/lock directory is world-writable in Debian due to historic
+reasons. To avoid user processes filling up /run, we mount a separate
+tmpfs for /run/lock. As this directory needs to be available during
+early boot, we make it an API fs.
+
+Closes: #751392
+---
+ src/core/mount-setup.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/core/mount-setup.c b/src/core/mount-setup.c
+index 206f89a..e713338 100644
+--- a/src/core/mount-setup.c
++++ b/src/core/mount-setup.c
+@@ -91,6 +91,8 @@ static const MountPoint mount_table[] = {
+ #endif
+         { "tmpfs",      "/run",                      "tmpfs",      "mode=755", MS_NOSUID|MS_NODEV|MS_STRICTATIME,
+           NULL,       MNT_FATAL|MNT_IN_CONTAINER },
++        { "tmpfs",      "/run/lock",                 "tmpfs",      "mode=1777,size=5242880", MS_NOSUID|MS_NODEV|MS_NOEXEC,
++          NULL,       MNT_FATAL|MNT_IN_CONTAINER },
+         { "tmpfs",      "/sys/fs/cgroup",            "tmpfs",      "mode=755", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_STRICTATIME,
+           NULL,       MNT_FATAL|MNT_IN_CONTAINER },
+         { "cgroup",     "/sys/fs/cgroup/systemd",    "cgroup",     "none,name=systemd,xattr", MS_NOSUID|MS_NOEXEC|MS_NODEV,

@@ -1,0 +1,46 @@
+This documents udev integration Debian specifics. Please see man udev(7) and
+its referenced manpages for general documentation.
+
+Network Interfaces
+~~~~~~~~~~~~~~~~~~
+After receiving events about network interfaces, net.agent will call
+ifupdown using the --allow=hotplug option. This makes the program act
+only on interfaces marked with the "allow-hotplug" statement.
+E.g: "allow-hotplug eth0" instead of the usual "auto eth0".
+The loopback interface must always be configured with "auto lo".
+
+The persistent names of network interfaces by default are automatically
+written to /etc/udev/rules.d/70-persistent-net.rules .
+Users can add their own rules there or at any other place before 70.
+MAC addresses matching is literal, so they must be written in lower case.
+To disable persistent naming of network interfaces, create an empty
+/etc/udev/rules.d/75-persistent-net-generator.rules file to override
+the one in /lib/udev/rules.d/ and delete
+/etc/udev/rules.d/70-persistent-net.rules.
+
+Beware: programs which rename network interfaces like ifrename and nameif
+will let udev relay events for the old names and should not be used.
+
+Usually network interfaces are renamed after the root file system has
+been mounted, so if the root file system is mounted over the network
+then the 70-persistent-net.rules file must be copied to the initramfs.
+In most cases this is done automatically, but some setups may require
+explicitly setting "export NEED_PERSISTENT_NET=yes" in a file in
+/etc/initramfs-tools/conf.d/ .
+If 70-persistent-net.rules is copied to the initramfs then it must be
+updated every time a new interface is added.
+
+
+Using udev with LDAP or NIS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+If the rules files reference usernames or groups not present in the
+/etc/{passwd,group} files and the system is configured to use a
+network-based database like LDAP or NIS then udev may fail at boot time
+because users and groups are looked up well before the network has been
+initialized.
+A possible solution is to configure /etc/nsswitch.conf like this:
+
+  passwd:         files ldap [UNAVAIL=return]
+  group:          files ldap [UNAVAIL=return]
+
+The nsswitch.conf syntax is documented in the glibc manual.

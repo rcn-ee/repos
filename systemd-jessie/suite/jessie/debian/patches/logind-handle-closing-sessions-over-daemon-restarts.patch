@@ -1,0 +1,100 @@
+From: Martin Pitt <martin.pitt@ubuntu.com>
+Date: Wed, 28 Jan 2015 18:14:01 +0100
+Subject: logind: handle closing sessions over daemon restarts
+
+It may happen that you have several sessions with the same VT:
+
+ - Open a session c1 which leaves some processes around, and log out. The
+   session will stay in State=closing and become Active=no.
+ - Log back in on the same VT, get a new session "c2" which is State=active and
+   Active=yes.
+
+When restarting logind after that, the first session that matches the current
+VT becomes Active=yes, which will be c1; c2 thus is Active=no and does not get
+the usual polkit/device ACL privileges.
+
+Restore the "closing" state in session_load(), to avoid treating all restored
+sessions as State=active. In seat_active_vt_changed(), prefer active sessions
+over closing ones if more than one session matches the current VT.
+
+Finally, fix the confusing comment in session_load() and explain it a bit
+better.
+
+Bug-Debian: https://bugs.debian.org/759515
+Bug-Ubuntu: https://launchpad.net/bugs/1415104
+---
+ src/login/logind-seat.c    | 14 +++++++++++++-
+ src/login/logind-session.c | 11 +++++++++--
+ 2 files changed, 22 insertions(+), 3 deletions(-)
+
+diff --git a/src/login/logind-seat.c b/src/login/logind-seat.c
+index 9992195..40021bd 100644
+--- a/src/login/logind-seat.c
++++ b/src/login/logind-seat.c
+@@ -340,12 +340,24 @@ int seat_active_vt_changed(Seat *s, unsigned int vtnr) {
+ 
+         log_debug("VT changed to %u", vtnr);
+ 
++        /* we might have earlier closing sessions on the same VT, so try to
++         * find a running one first */
+         LIST_FOREACH(sessions_by_seat, i, s->sessions)
+-                if (i->vtnr == vtnr) {
++                if (i->vtnr == vtnr && !i->stopping) {
+                         new_active = i;
+                         break;
+                 }
+ 
++        if (!new_active) {
++                /* no running one? then we can't decide which one is the
++                 * active one, let the first one win */
++                LIST_FOREACH(sessions_by_seat, i, s->sessions)
++                        if (i->vtnr == vtnr) {
++                                new_active = i;
++                                break;
++                        }
++        }
++
+         r = seat_set_active(s, new_active);
+         manager_spawn_autovt(s->manager, vtnr);
+ 
+diff --git a/src/login/logind-session.c b/src/login/logind-session.c
+index fdeacb1..96d850b 100644
+--- a/src/login/logind-session.c
++++ b/src/login/logind-session.c
+@@ -318,6 +318,7 @@ int session_load(Session *s) {
+         _cleanup_free_ char *remote = NULL,
+                 *seat = NULL,
+                 *vtnr = NULL,
++                *state = NULL,
+                 *pos = NULL,
+                 *leader = NULL,
+                 *type = NULL,
+@@ -344,6 +345,7 @@ int session_load(Session *s) {
+                            "SERVICE",        &s->service,
+                            "DESKTOP",        &s->desktop,
+                            "VTNR",           &vtnr,
++                           "STATE",          &state,
+                            "POS",            &pos,
+                            "LEADER",         &leader,
+                            "TYPE",           &type,
+@@ -434,13 +436,18 @@ int session_load(Session *s) {
+                         s->class = c;
+         }
+ 
++        if (state && streq(state, "closing"))
++                s->stopping = true;
++
+         if (s->fifo_path) {
+                 int fd;
+ 
+                 /* If we open an unopened pipe for reading we will not
+                    get an EOF. to trigger an EOF we hence open it for
+-                   reading, but close it right-away which then will
+-                   trigger the EOF. */
++                   writing, but close it right away which then will
++                   trigger the EOF. This will happen immediately if no
++                   other process has the FIFO open for writing, i. e.
++                   when the session died before logind (re)started. */
+ 
+                 fd = session_create_fifo(s);
+                 safe_close(fd);

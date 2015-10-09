@@ -1,0 +1,41 @@
+From: Lennart Poettering <lennart@poettering.net>
+Date: Fri, 4 Jul 2014 03:10:09 +0200
+Subject: units: conditionalize configfs and debugfs with CAP_SYS_RAWIO
+
+We really don't want these in containers as they provide a too lowlevel
+look on the system.
+
+Conditionalize them with CAP_SYS_RAWIO since that's required to access
+/proc/kcore, /dev/kmem and similar, which feel similar in style. Also,
+npsawn containers lack that capability.
+
+(cherry picked from commit fa229d09281d435153b4cfd138a2a62fa66d889b)
+---
+ units/sys-kernel-config.mount | 1 +
+ units/sys-kernel-debug.mount  | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/units/sys-kernel-config.mount b/units/sys-kernel-config.mount
+index 020101c..21648ef 100644
+--- a/units/sys-kernel-config.mount
++++ b/units/sys-kernel-config.mount
+@@ -11,6 +11,7 @@ Documentation=https://www.kernel.org/doc/Documentation/filesystems/configfs/conf
+ Documentation=http://www.freedesktop.org/wiki/Software/systemd/APIFileSystems
+ DefaultDependencies=no
+ ConditionPathExists=/sys/kernel/config
++ConditionCapability=CAP_SYS_RAWIO
+ After=systemd-modules-load.service
+ Before=sysinit.target
+ 
+diff --git a/units/sys-kernel-debug.mount b/units/sys-kernel-debug.mount
+index 5369728..1e94387 100644
+--- a/units/sys-kernel-debug.mount
++++ b/units/sys-kernel-debug.mount
+@@ -11,6 +11,7 @@ Documentation=https://www.kernel.org/doc/Documentation/filesystems/debugfs.txt
+ Documentation=http://www.freedesktop.org/wiki/Software/systemd/APIFileSystems
+ DefaultDependencies=no
+ ConditionPathExists=/sys/kernel/debug
++ConditionCapability=CAP_SYS_RAWIO
+ Before=sysinit.target
+ 
+ [Mount]

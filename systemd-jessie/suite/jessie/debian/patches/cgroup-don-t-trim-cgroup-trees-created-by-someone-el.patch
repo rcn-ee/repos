@@ -1,0 +1,41 @@
+From: Michal Sekletar <msekleta@redhat.com>
+Date: Fri, 19 Sep 2014 17:14:10 +0200
+Subject: cgroup: don't trim cgroup trees created by someone else
+
+In cases when there is a cgroup tree in a controller hierarchy which was
+not created by us, but it looks like it was (i.e. cgroup path is the
+same as the one in systemd's named hierarchy) we shouldn't delete it.
+
+Origin: http://lists.freedesktop.org/archives/systemd-devel/2014-September/023276.html
+Bug-Debian: https://bugs.debian.org/777601
+---
+ src/core/cgroup.c        | 2 +-
+ src/shared/cgroup-util.c | 2 --
+ 2 files changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/src/core/cgroup.c b/src/core/cgroup.c
+index cd67963..91f2550 100644
+--- a/src/core/cgroup.c
++++ b/src/core/cgroup.c
+@@ -780,7 +780,7 @@ void unit_destroy_cgroup(Unit *u) {
+         if (!u->cgroup_path)
+                 return;
+ 
+-        r = cg_trim_everywhere(u->manager->cgroup_supported, u->cgroup_path, !unit_has_name(u, SPECIAL_ROOT_SLICE));
++        r = cg_trim_everywhere(u->cgroup_realized_mask, u->cgroup_path, !unit_has_name(u, SPECIAL_ROOT_SLICE));
+         if (r < 0)
+                 log_debug("Failed to destroy cgroup %s: %s", u->cgroup_path, strerror(-r));
+ 
+diff --git a/src/shared/cgroup-util.c b/src/shared/cgroup-util.c
+index c1c4d40..7bb2f67 100644
+--- a/src/shared/cgroup-util.c
++++ b/src/shared/cgroup-util.c
+@@ -1619,8 +1619,6 @@ int cg_create_everywhere(CGroupControllerMask supported, CGroupControllerMask ma
+         NULSTR_FOREACH(n, mask_names) {
+                 if (mask & bit)
+                         cg_create(n, path);
+-                else if (supported & bit)
+-                        cg_trim(n, path, true);
+ 
+                 bit <<= 1;
+         }

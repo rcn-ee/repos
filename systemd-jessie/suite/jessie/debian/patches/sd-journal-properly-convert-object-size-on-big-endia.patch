@@ -1,0 +1,37 @@
+From: =?utf-8?q?Zbigniew_J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sat, 23 Aug 2014 22:35:03 -0400
+Subject: sd-journal: properly convert object->size on big endian
+
+mmap code crashes when attempting to map an object of zero size.
+
+https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=758392
+https://bugs.freedesktop.org/show_bug.cgi?id=82894
+
+(cherry picked from commit 57cd09acf2c63a414aa2131c00a2b3f600eb0133)
+---
+ src/journal/journal-file.h | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/src/journal/journal-file.h b/src/journal/journal-file.h
+index 50dbe29..f13e4e8 100644
+--- a/src/journal/journal-file.h
++++ b/src/journal/journal-file.h
+@@ -210,14 +210,15 @@ static unsigned type_to_context(int type) {
+ 
+ static inline int journal_file_object_keep(JournalFile *f, Object *o, uint64_t offset) {
+         unsigned context = type_to_context(o->object.type);
++        uint64_t s = le64toh(o->object.size);
+ 
+         return mmap_cache_get(f->mmap, f->fd, f->prot, context, true,
+-                              offset, o->object.size, &f->last_stat, NULL);
++                              offset, s, &f->last_stat, NULL);
+ }
+ 
+ static inline int journal_file_object_release(JournalFile *f, Object *o, uint64_t offset) {
+         unsigned context = type_to_context(o->object.type);
++        uint64_t s = le64toh(o->object.size);
+ 
+-        return mmap_cache_release(f->mmap, f->fd, f->prot, context,
+-                                  offset, o->object.size);
++        return mmap_cache_release(f->mmap, f->fd, f->prot, context, offset, s);
+ }

@@ -1,0 +1,56 @@
+From: Christian Seiler <christian@iwakd.de>
+Date: Wed, 8 Apr 2015 11:11:46 +0200
+Subject: logind: handle runtime dir without CAP_SYS_ADMIN
+
+In (e.g. LXC) containers without CAP_SYS_ADMIN, logind fails to mount
+a tmpfs over /run/user/$UID (lacking mount permissions).
+
+Now, logind will resort to chown+chmod of the directory instead. This
+allows logind to still work in those environments, although without
+the guarantees it provides (i.e. users not being able to DoS /run or
+other users' /run/user/$UID space) when CAP_SYS_ADMIN is available.
+---
+ src/login/logind-user.c | 23 ++++++++++++++++++++---
+ 1 file changed, 20 insertions(+), 3 deletions(-)
+
+diff --git a/src/login/logind-user.c b/src/login/logind-user.c
+index fdbccb3..b5e58c1 100644
+--- a/src/login/logind-user.c
++++ b/src/login/logind-user.c
+@@ -332,8 +332,21 @@ static int user_mkdir_runtime_path(User *u) {
+ 
+                 r = mount("tmpfs", p, "tmpfs", MS_NODEV|MS_NOSUID, t);
+                 if (r < 0) {
+-                        log_error("Failed to mount per-user tmpfs directory %s: %s", p, strerror(-r));
+-                        goto fail;
++                        r = -errno;
++                        if (r != -EPERM) {
++                                log_error("Failed to mount per-user tmpfs directory %s: %m", p);
++                                goto fail;
++                        }
++
++                        /* Lacking permissions, maybe
++                         * CAP_SYS_ADMIN-less container? In this case,
++                         * just use a normal director. */
++
++                        r = chmod_and_chown(p, 0700, u->uid, u->gid);
++                        if (r < 0) {
++                                log_error("Failed to change runtime directory ownership and mode: %s", strerror(-r));
++                                goto fail;
++                        }
+                 }
+         }
+ 
+@@ -341,7 +354,11 @@ static int user_mkdir_runtime_path(User *u) {
+         return 0;
+ 
+ fail:
+-        free(p);
++        if (p) {
++                /* Try to clean up, but ignore errors */
++                (void) rmdir(p);
++                free(p);
++        }
+         u->runtime_path = NULL;
+         return r;
+ }
