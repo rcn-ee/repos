@@ -87,7 +87,7 @@ mesa () {
 	package_name="libdrm" ; package_version="${package_name}_2.4.64-1" ; check_http
 
 	site="${debian_pool}/main/libv"
-	package_name="libvdpau" ; package_version="${package_name}_1.1.1-1" ; check_http
+	package_name="libvdpau" ; package_version="${package_name}_1.1.1-2" ; check_http
 
 	site="${debian_pool}/main/m"
 	package_name="mesa" ; package_version="${package_name}_11.0.2-1" ; check_http
