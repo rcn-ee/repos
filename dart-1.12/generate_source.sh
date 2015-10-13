@@ -5,5 +5,6 @@
 server="https://storage.googleapis.com/dart-archive/channels/stable/release"
 
 wget -c ${server}/${package_version}/linux_packages/debian_wheezy/dart_${package_version}.orig.tar.gz
+cp dart_${package_version}.orig.tar.gz dart-1.12_${package_version}.orig.tar.gz
 wget -c ${server}/${package_version}/linux_packages/debian_wheezy/dart_${debian_version}.debian.tar.gz
 
