@@ -6,7 +6,7 @@ mirror="http://packages.siduction.org"
 
 package_name="cmst"
 debian_pkg_name="${package_name}"
-package_version="2015.09.10"
+package_version="2015.10.07"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}-${package_version}"
 
@@ -19,5 +19,5 @@ debian_version="${package_version}-1"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 
-jessie_version="~bpo80+20150914+1"
-stretch_version="~bpo90+20150914+1"
+jessie_version="~bpo80+20151013+1"
+stretch_version="~bpo90+20151013+1"

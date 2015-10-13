@@ -1,11 +1,11 @@
 #!/usr/bin/make -f
-export DH_VERBOSE=1
+#export DH_VERBOSE=1
 
 export QT_SELECT = 5
 export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
 %:
-	dh $@ --buildsystem=qmake --parallel 
+	dh $@ --buildsystem=qmake --parallel
 
 override_dh_install:
 	$(RM) -r $(CURDIR)/debian/tmp/usr/share/icons
