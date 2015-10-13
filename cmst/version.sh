@@ -18,6 +18,7 @@ dl_path="extra/pool/main/${reprepro_dir}/"
 debian_version="${package_version}-1"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
+local_patch="rcnee1"
 
 jessie_version="~bpo80+20151013+1"
 stretch_version="~bpo90+20151013+1"
