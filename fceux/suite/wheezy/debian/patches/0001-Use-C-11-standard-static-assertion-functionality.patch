@@ -1,0 +1,116 @@
+From: Joe Nahmias <joe@nahmias.net>
+Date: Sun, 2 Mar 2014 13:44:53 -0500
+Subject: Use C++11 standard static assertion functionality
+
+Use static_assert() provided by MSVC (>=2010) [released on 2010-04-12]
+and gcc (>=4.3) [released on 2008-03-05].  See also:
+<http://www.pixelbeat.org/programming/gcc/static_assert.html>
+
+Change all callers to provide an error message if the assertion fails as
+required by the standard.
+---
+ SConstruct         |  4 ++++
+ src/lua-engine.cpp |  4 ++--
+ src/types-des.h    |  4 ----
+ src/types.h        | 13 +++++++++++--
+ src/utils/endian.h |  4 ++--
+ 5 files changed, 19 insertions(+), 10 deletions(-)
+
+diff --git a/SConstruct b/SConstruct
+index 4d5b446..e834d71 100644
+--- a/SConstruct
++++ b/SConstruct
+@@ -77,6 +77,10 @@ if env['PLATFORM'] == 'cygwin':
+   env.Append(LINKFLAGS = " -mno-cygwin")
+   env['LIBS'] = ['wsock32'];
+ 
++# tell g++ to support c++0x, used for static_assert()
++if env['CXX'] == 'g++':
++  env.Append(CXXFLAGS = "-std=c++0x")
++
+ if env['PLATFORM'] == 'win32':
+   env.Append(CPPPATH = [".", "drivers/win/", "drivers/common/", "drivers/", "drivers/win/zlib", "drivers/win/directx", "drivers/win/lua/include"])
+   env.Append(CPPDEFINES = ["PSS_STYLE=2", "WIN32", "_USE_SHARED_MEMORY_", "NETWORK", "FCEUDEF_DEBUGGER", "NOMINMAX", "NEED_MINGW_HACKS", "_WIN32_IE=0x0600"])
+diff --git a/src/lua-engine.cpp b/src/lua-engine.cpp
+index 53774f7..0d0fd0e 100644
+--- a/src/lua-engine.cpp
++++ b/src/lua-engine.cpp
+@@ -241,7 +241,7 @@ static const char* luaCallIDStrings [] =
+ };
+ 
+ //make sure we have the right number of strings
+-CTASSERT(sizeof(luaCallIDStrings)/sizeof(*luaCallIDStrings) == LUACALL_COUNT)
++CTASSERT(sizeof(luaCallIDStrings)/sizeof(*luaCallIDStrings) == LUACALL_COUNT, "luaCallIDStrings doesn't have the correct number of strings");
+ 
+ static const char* luaMemHookTypeStrings [] =
+ {
+@@ -255,7 +255,7 @@ static const char* luaMemHookTypeStrings [] =
+ };
+ 
+ //make sure we have the right number of strings
+-CTASSERT(sizeof(luaMemHookTypeStrings)/sizeof(*luaMemHookTypeStrings) ==  LUAMEMHOOK_COUNT)
++CTASSERT(sizeof(luaMemHookTypeStrings)/sizeof(*luaMemHookTypeStrings) ==  LUAMEMHOOK_COUNT, "luaMemHookTypeStrings doesn't have the correct number of strings");
+ 
+ static char* rawToCString(lua_State* L, int idx=0);
+ static const char* toCString(lua_State* L, int idx=0);
+diff --git a/src/types-des.h b/src/types-des.h
+index e94536b..76cd2d9 100644
+--- a/src/types-des.h
++++ b/src/types-des.h
+@@ -442,10 +442,6 @@ char (*BLAHBLAHBLAH( UNALIGNED T (&)[N] ))[N];
+ //B32(10000000,11111111,10101010,01010101) = 2164238933
+ //---------------------------
+ 
+-#ifndef CTASSERT
+-#define	CTASSERT(x)		typedef char __assert ## y[(x) ? 1 : -1]
+-#endif
+-
+ static const char hexValid[23] = {"0123456789ABCDEFabcdef"};
+ 
+ 
+diff --git a/src/types.h b/src/types.h
+index fca8d8f..d44730c 100644
+--- a/src/types.h
++++ b/src/types.h
+@@ -128,8 +128,17 @@ typedef uint32_t uint32;
+ typedef void (*writefunc)(uint32 A, uint8 V);
+ typedef uint8 (*readfunc)(uint32 A);
+ 
+-#ifndef CTASSERT
+-#define CTASSERT(x)  typedef char __assert ## y[(x) ? 1 : -1];
++// Use C++11 static_assert(), if available
++// See: http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2004/n1720.html
++#if 1600 <= _MSC_VER
++   // Visual Studio >= 2010
++#  define CTASSERT(expr, msg) static_assert(expr, msg)
++#elif ( 4 < __GNUC__ || (4 == __GNUC__ && 3 <= __GNUC_MINOR__) ) \
++  && defined __GXX_EXPERIMENTAL_CXX0X__
++   // g++ >= 4.3  (with -std=c++0x)
++#  define CTASSERT(expr, msg) static_assert(expr, msg)
++#else
++#  define CTASSERT(expr,msg) typedef static char __assert_ ## msg[(expr) ? 1 : -1];
+ #endif
+ 
+ #include "utils/endian.h"
+diff --git a/src/utils/endian.h b/src/utils/endian.h
+index 5bdbcde..6928d1c 100644
+--- a/src/utils/endian.h
++++ b/src/utils/endian.h
+@@ -82,7 +82,7 @@ inline int read_double_le(double *Bufo, EMUFILE*is) { uint64 temp; int ret = rea
+ template<typename T>
+ int readle(T *Bufo, EMUFILE*is)
+ {
+-	CTASSERT(sizeof(T)==1||sizeof(T)==2||sizeof(T)==4||sizeof(T)==8);
++	CTASSERT(sizeof(T)==1||sizeof(T)==2||sizeof(T)==4||sizeof(T)==8, "readle() called with bad Bufo size");
+ 	switch(sizeof(T)) {
+ 		case 1: return read8le((uint8*)Bufo,is);
+ 		case 2: return read16le((uint16*)Bufo,is);
+@@ -96,7 +96,7 @@ int readle(T *Bufo, EMUFILE*is)
+ template<typename T>
+ int writele(T *Bufo, EMUFILE*os)
+ {
+-	CTASSERT(sizeof(T)==1||sizeof(T)==2||sizeof(T)==4||sizeof(T)==8);
++	CTASSERT(sizeof(T)==1||sizeof(T)==2||sizeof(T)==4||sizeof(T)==8, "writele() called with bad Bufo size");
+ 	switch(sizeof(T)) {
+ 		case 1: return write8le(*(uint8*)Bufo,os);
+ 		case 2: return write16le(*(uint16*)Bufo,os);
