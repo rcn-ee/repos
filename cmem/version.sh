@@ -1,22 +1,22 @@
 #!/bin/bash -e
 
-mirror="http://archive.canonical.com"
+#http://git.ti.com/gitweb/?p=ipc/ludev.git;a=summary
 
 package_name="cmem"
 debian_pkg_name="${package_name}"
-package_version="4.00.03.14"
-package_source="${package_name}_${package_version}.orig.tar.gz"
-src_dir="${package_name}-${package_version}"
+package_version="4.10.02.03-git20150921"
+package_source="${package_name}_${package_version}.orig.tar.xz"
+src_dir="${package_name}_${package_version}"
 
-git_repo=""
-git_sha=""
+git_repo="git://git.ti.com/ipc/ludev.git"
+git_sha="d47ac635699da6bee6daff31b87b0123e13af4ac"
 reprepro_dir="c/${package_name}"
-dl_path="pool/partner/${reprepro_dir}/"
+dl_path=""
 
-debian_version="${package_version}-0ubuntu1"
-debian_untar=""
-debian_patch="${package_name}_${debian_version}.diff.gz"
+debian_version="${package_version}-1"
+debian_patch=""
+debian_diff=""
 
-wheezy_version="~bpo70+20150723+2"
-jessie_version="~bpo80+20150723+2"
-stretch_version="~bpo90+20150723+2"
+wheezy_version="~bpo70+20151015+1"
+jessie_version="~bpo80+20151015+1"
+stretch_version="~bpo90+20151015+1"
