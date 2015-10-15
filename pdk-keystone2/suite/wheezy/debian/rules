@@ -1,0 +1,57 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# Sample debian/rules that uses debhelper.
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+
+# Uncomment this to turn on verbose mode.
+export DH_VERBOSE=1
+
+export DEVICE=k2h
+export ARMV7LIBDIR=$(CURDIR)/lib/armv7
+export PDK_INSTALL_PATH=$(CURDIR)
+export SA_INSTALL_PATH=$(CURDIR)
+export ARMV7SALIBDIR=$(SA_INSTALL_PATH)/ti/drv/sa/lib/armv7
+
+export ARMV7BINDIR=$(CURDIR)/bin/$(DEVICE)/armv7
+export ARMV7OBJDIR=$(CURDIR)/obj/$(DEVICE)/armv7
+
+export NWAL_INSTALL_PATH=$PDK_INSTALL_PATH
+export PKTLIB_INSTALL_PATH=$PDK_INSTALL_PATH
+
+export CORE=armv7
+
+export QMSS_SRC_DIR=$(CURDIR)/ti/drv/qmss
+export CPPI_SRC_DIR=$(CURDIR)/ti/drv/cppi
+export PA_SRC_DIR=$(CURDIR)/ti/drv/pa
+export NWAL_SRC_DIR=$(CURDIR)/ti/drv/nwal
+export RM_SRC_DIR=$(CURDIR)/ti/drv/rm
+export HYPLNK_SRC_DIR=$(CURDIR)/ti/drv/hyplnk
+export MMAP_SRC_DIR=$(CURDIR)/ti/runtime/mmap
+
+export INSTALL_INC_BASE_DIR=$(CURDIR)/install/include
+export INSTALL_LIB_BASE_DIR=$(CURDIR)/install/lib
+
+DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+ifeq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
+    CC = gcc
+    AR = ar
+else
+    CC = $(DEB_HOST_GNU_TYPE)-gcc
+    AR = $(DEB_HOST_GNU_TYPE)-ar
+endif
+
+%:
+	dh $@
+
+override_dh_auto_clean:
+	$(MAKE) -f makefile clean
+	rm -rf lib obj bin
+
+override_dh_auto_build:
+	$(MAKE) -f makefile lib CC=$(CC) AR=$(AR)
+	$(MAKE) -C ti/drv/rm  -f makefile_armv7 rmserver
+ 
