@@ -204,9 +204,6 @@ nodejs () {
 
 dsp () {
 	echo "dsp:"
-	site="http://archive.canonical.com/pool/partner/c"
-	package_name="cmem" ; package_version="${package_name}_4.00.03.14-0ubuntu1" ; check_http
-
 	site="http://archive.canonical.com/pool/partner/g"
 	package_name="gdbserver-c6x" ; package_version="${package_name}_1.0.0-0ubuntu1" ; check_http
 	package_name="gdbproxy-mod-dkms" ; package_version="${package_name}_1.0.1-0ubuntu1" ; check_http
@@ -218,10 +215,6 @@ dsp () {
 	site="http://archive.canonical.com/pool/partner/d"
 	package_name="debugss-mod-dkms" ; package_version="${package_name}_1.0.1-0ubuntu1" ; check_http
 	package_name="dsptop" ; package_version="${package_name}_1.1.5-0ubuntu1" ; check_http
-
-	site="http://archive.canonical.com/pool/partner/p"
-	package_name="pdk-keystone2" ; package_version="${package_name}_03.00.04.19-0ubuntu1" ; check_http
-
 }
 
 builds
