@@ -202,21 +202,6 @@ nodejs () {
 	package_name="nodejs"; package_version="${package_name}_0.10.38~dfsg-1"; check_http
 }
 
-dsp () {
-	echo "dsp:"
-	site="http://archive.canonical.com/pool/partner/g"
-	package_name="gdbserver-c6x" ; package_version="${package_name}_1.0.0-0ubuntu1" ; check_http
-	package_name="gdbproxy-mod-dkms" ; package_version="${package_name}_1.0.1-0ubuntu1" ; check_http
-	package_name="gdbc6x" ; package_version="${package_name}_1.0.0-0ubuntu2" ; check_http
-
-	site="http://archive.canonical.com/pool/partner/t"
-	package_name="temperature-mod-dkms" ; package_version="${package_name}_1.0.1-0ubuntu2" ; check_http
-
-	site="http://archive.canonical.com/pool/partner/d"
-	package_name="debugss-mod-dkms" ; package_version="${package_name}_1.0.1-0ubuntu1" ; check_http
-	package_name="dsptop" ; package_version="${package_name}_1.1.5-0ubuntu1" ; check_http
-}
-
 builds
 mesa
 qt5_kde
@@ -224,7 +209,6 @@ qt5_apps
 qt5_lxqt
 machinekit
 nodejs
-dsp
 
 echo "others"
 
