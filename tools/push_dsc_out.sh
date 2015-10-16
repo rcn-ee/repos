@@ -14,6 +14,7 @@ run () {
 	cp -v ${suite}/*.gz ${wdir} || true
 	cp -v ${suite}/*.bz2 ${wdir} || true
 	cp -v ${suite}/*.xz ${wdir} || true
+	echo "*******************************"
 }
 
 dist="debian"
