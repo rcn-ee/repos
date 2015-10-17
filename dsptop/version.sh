@@ -4,7 +4,7 @@
 
 package_name="dsptop"
 debian_pkg_name="${package_name}"
-package_version="1.1.5-git20150710"
+package_version="1.2.0-git20150710"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
@@ -17,6 +17,6 @@ debian_version="${package_version}-1"
 debian_patch=""
 debian_diff=""
 
-wheezy_version="~bpo70+20151015+1"
-jessie_version="~bpo80+20151015+1"
-stretch_version="~bpo90+20151015+1"
+wheezy_version="~bpo70+20151016+1"
+jessie_version="~bpo80+20151016+1"
+stretch_version="~bpo90+20151016+1"
