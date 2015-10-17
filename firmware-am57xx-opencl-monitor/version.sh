@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-package_name="firmware-opencl-monitor"
+package_name="firmware-am57xx-opencl-monitor"
 debian_pkg_name="${package_name}"
 package_version="1.1.6-r3.0.tisdk1"
 package_source=""
