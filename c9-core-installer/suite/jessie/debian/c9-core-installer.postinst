@@ -107,6 +107,11 @@ maybe_install_depend () {
 	fi
 }
 
+npmboxfail () {
+	"$NPM" install ${pkg}@${ver}
+	echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
+}
+
 maybe_npmunbox () {
 	if [ ! -f "$C9_DIR/node_modules/${pkg}/${package}.version" ] ; then
 		echo "${package}:Installing: ${pkg}"
@@ -116,7 +121,7 @@ maybe_npmunbox () {
 		rfile="node-gyp.npmbox"
 		npmbox_dl_file
 
-		"$NPMUNBOX" /var/cache/${package}/${wfile}
+		"$NPMUNBOX" /var/cache/${package}/${wfile} || npmboxfail
 		echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
 	else
 		old_version=$(cat "$C9_DIR/node_modules/${pkg}/${package}.version")
@@ -128,7 +133,7 @@ maybe_npmunbox () {
 			rfile="node-gyp.npmbox"
 			npmbox_dl_file
 
-			"$NPMUNBOX" /var/cache/${package}/${wfile}
+			"$NPMUNBOX" /var/cache/${package}/${wfile} || npmboxfail
 			echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
 		fi
 	fi
