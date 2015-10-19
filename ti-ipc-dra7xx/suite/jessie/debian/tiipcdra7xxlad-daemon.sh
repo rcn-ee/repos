@@ -2,8 +2,8 @@
 
 ### BEGIN INIT INFO
 # Provides:          tiipcdra7xxlad_daemon.sh
-# Required-Start:    $local_fs
-# Required-Stop:     $local_fs
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: Start daemon at boot time
