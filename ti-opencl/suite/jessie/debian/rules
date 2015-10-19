@@ -3,13 +3,12 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
-confflags=-DBUILD_TARGET=ARM_AM57
-
 %:
 	dh $@
 
-override_dh_auto_configure:
-	./configure $(confflags)
+override_dh_auto_build:
+	dh_auto_build -- BUILD_AM57=1
+
 
 # A bug in pkgbinarymangle causes it to try to strip foreign-arch objects
 # located in /usr/share.
