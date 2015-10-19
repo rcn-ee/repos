@@ -1,4 +1,11 @@
 #!/usr/bin/make -f
 
+confflags=--prefix=/usr \
+          PLATFORM=DRA7XX \
+          AF_RPMSG=4.1
+
 %:
 	dh $@ --with autoreconf
+
+override_dh_auto_configure:
+	./configure $(confflags)
