@@ -1,6 +1,7 @@
 #!/usr/bin/make -f
 
-export DH_VERBOSE=1
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
 
 confflags=--prefix=/usr \
           PLATFORM=DRA7XX \
@@ -11,3 +12,6 @@ confflags=--prefix=/usr \
 
 override_dh_auto_configure:
 	./configure $(confflags)
+
+override_dh_strip:
+	dh_strip --dbg-package=ti-ipc-dra7xx-dbg
