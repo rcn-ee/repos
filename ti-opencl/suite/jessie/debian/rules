@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+%:
+	dh $@
+
+# A bug in pkgbinarymangle causes it to try to strip foreign-arch objects
+# located in /usr/share.
+override_dh_strip:
+	NO_PKG_MANGLE=1 dh_strip
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -rf llvm33-build llvm33-install-arm opencl/clocl/x86
