@@ -22,6 +22,9 @@ run () {
 				sbuild ${options} http://httphost/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}/${dsc_file}
 
 				if [ -f *.changes ] ; then
+					if [ -d ${out_dir} ] ; then
+						rm -rf ${out_dir}
+					fi
 					mkdir -p ${out_dir}
 					cp -v *orig* ${out_dir} || true
 					cp -v *debian* ${out_dir} || true

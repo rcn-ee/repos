@@ -6,9 +6,10 @@ sudo mount -a
 
 run () {
 	wdir="/mnt/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}/"
-	if [ ! -d ${wdir} ] ; then
-		mkdir -p ${wdir}
+	if [ -d ${wdir} ] ; then
+		rm -rf ${wdir}
 	fi
+	mkdir -p ${wdir} || true
 
 	cp -v ${suite}/*.dsc ${wdir} || true
 	cp -v ${suite}/*.gz ${wdir} || true
