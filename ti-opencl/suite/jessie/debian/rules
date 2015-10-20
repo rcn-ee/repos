@@ -9,6 +9,8 @@ export DH_VERBOSE=1
 override_dh_auto_build:
 	dh_auto_build -- BUILD_AM57=1 ARM_LLVM_DIR=/opt/ti-llvm-3.3
 
+override_dh_auto_install:
+	dh_auto_install -- DESTDIR=$(CURDIR)/debian/ti-opencl
 
 # A bug in pkgbinarymangle causes it to try to strip foreign-arch objects
 # located in /usr/share.
