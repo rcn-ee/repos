@@ -7,6 +7,10 @@ export DH_VERBOSE=1
 	dh $@
 
 override_dh_auto_build:
+	cp -v /usr/share/ti/opencl/dsp.out ./monitor_vayu/dsp0.out
+	cp -v /usr/share/ti/opencl/dsp.syms ./monitor_vayu/dsp0.syms
+	cp -v /usr/share/ti/opencl/dsp.syms.obj ./monitor_vayu/dsp0.syms.obj
+	cp -v /lib/firmware/dra7-dsp2-fw.xe66 ./monitor_vayu/dsp1.out
 	dh_auto_build -- BUILD_OUTPUT=lib BUILD_AM57=1 ARM_LLVM_DIR=/opt/ti-llvm-3.3 DESTDIR=$(CURDIR)/debian/ti-opencl
 
 # A bug in pkgbinarymangle causes it to try to strip foreign-arch objects
