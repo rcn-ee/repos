@@ -53,6 +53,6 @@ setup_update_sbuild
 
 dist="xenial"
 arch="armhf"
-options="--exclude=debfoster  --keyring=\"\""
+options="--exclude=debfoster"
 setup_update_sbuild
 #
