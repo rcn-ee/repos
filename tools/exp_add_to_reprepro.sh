@@ -20,7 +20,7 @@ dist="debian"
 suite="jessie"
 if [ -d suite/${suite}/ ] ; then
 	repo="${base}${dist}-exp/"
-	deb_arch=armhf
+	deb_arch="armhf"
 	rcn_ee_version="${jessie_version}"
 	run
 fi

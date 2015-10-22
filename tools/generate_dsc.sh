@@ -94,3 +94,8 @@ if [ -d suite/${suite}/ ] ; then
 	run
 fi
 
+suite="xenial"
+if [ -d suite/${suite}/ ] ; then
+	run
+fi
+#

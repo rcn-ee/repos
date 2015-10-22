@@ -92,3 +92,7 @@ setup_repo
 
 suite="wily"
 setup_repo
+
+suite="xenial"
+setup_repo
+#
