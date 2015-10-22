@@ -2,7 +2,7 @@
 
 package_name="bb-customizations"
 debian_pkg_name="${package_name}"
-package_version="1.20150616"
+package_version="1.20151008"
 package_source=""
 src_dir=""
 
@@ -16,10 +16,9 @@ debian_untar=""
 debian_patch=""
 
 
-wheezy_version="~bpo70+20150616+1"
-jessie_version="~bpo80+20150616+1"
-stretch_version="~bpo90+20150616+1"
-trusty_version="~bpo1404+20150616+1"
-utopic_version="~bpo1410+20150616+1"
-vivid_version="~bpo1504+20150616+1"
-wily_version="~bpo1510+20150616+1"
+wheezy_version="~bpo70+20151008+1"
+jessie_version="~bpo80+20151008+1"
+stretch_version="~bpo90+20151008+1"
+trusty_version="~bpo1404+20151008+1"
+vivid_version="~bpo1504+20151008+1"
+wily_version="~bpo1510+20151008+1"

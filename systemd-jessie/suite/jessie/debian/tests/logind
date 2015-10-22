@@ -1,0 +1,69 @@
+#!/bin/sh
+set -e
+
+echo " * cgroup is mounted"
+mountpoint -q /sys/fs/cgroup/systemd
+echo " * daemon is started"
+# should start at boot, not with D-BUS activation
+pidof systemd-logind > /dev/null
+
+# loginctl should succeed
+echo " * loginctl succeeds"
+OUT=`loginctl`
+
+if ! echo "$OUT" | grep -q "seat0"; then
+    echo "Skipping ACL tests, as there is no seat"
+    exit 0
+fi
+
+# determine user
+USER=`echo "$OUT" | grep seat0 | awk '{print $3}'`
+echo "seat user: $USER"
+
+# scsi_debug should not be loaded yet
+! test -d /sys/bus/pseudo/drivers/scsi_debug/adapter*/host*/target*/*:*/block
+
+# we use scsi_debug to create new devices which we can put ACLs on
+# tell udev about the tagging, so that logind can pick it up
+mkdir -p /run/udev/rules.d/
+cat <<EOF > /run/udev/rules.d/60-scsi_debug-user.rules
+SUBSYSTEM=="block", ATTRS{model}=="scsi_debug*", TAG+="uaccess"
+EOF
+trap "rm -f /run/udev/rules.d/60-scsi_debug-user.rules; pkill -HUP udevd || pkill -HUP systemd-udevd; rmmod scsi_debug 2>/dev/null || ( sleep 2; rmmod scsi_debug ) || true" 0 INT QUIT TERM PIPE
+sync
+pkill -HUP udevd || pkill -HUP systemd-udevd
+
+echo " * coldplug: logind started with existing device"
+killall systemd-logind
+modprobe scsi_debug
+while ! dev=/dev/`ls /sys/bus/pseudo/drivers/scsi_debug/adapter*/host*/target*/*:*/block 2>/dev/null`; do sleep 0.1; done
+test -b $dev
+echo "got block device $dev"
+udevadm settle
+# trigger logind
+loginctl > /dev/null
+sleep 1
+if getfacl -p $dev | grep -q "user:$USER:rw-"; then
+    echo "$dev has ACL for user $USER"
+else
+    echo "$dev has no ACL for user $USER:" >&2
+    getfacl -p $dev >&2
+    exit 1
+fi
+
+rmmod scsi_debug
+
+echo " * hotplug: new device appears while logind is running"
+modprobe scsi_debug
+while ! dev=/dev/`ls /sys/bus/pseudo/drivers/scsi_debug/adapter*/host*/target*/*:*/block`; do sleep 0.1; done
+test -b $dev
+echo "got block device $dev"
+udevadm settle
+sleep 1
+if getfacl -p $dev | grep -q "user:$USER:rw-"; then
+    echo "$dev has ACL for user $USER"
+else
+    echo "$dev has no ACL for user $USER:" >&2
+    getfacl -p $dev >&2
+    exit 1
+fi

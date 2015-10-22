@@ -1,0 +1,29 @@
+From: Modestas Vainius <modax@debian.org>
+Subject: Fix FTBFS on GNU/kFreeBSD (and likely Gnu/Hurd)
+Forwarded: yes
+Origin: vendor
+
+The original failure [1] was caused by the fact that cxxabi.h execinfo.h etc.
+includes where guarded more restrictively (e.g. additionally by  __linux) than
+the code which needs them (just by e.g.
+KWSYS_SYSTEMINFORMATION_HAS_CPP_DEMANGLE).  kFreeGNU has some of these headers
+hence extend __linux ifdef to kFreeBSD and GNU Hurd as well.
+
+Ideally, the code should be fixed to have the same level of ifdef protection in
+all places.
+
+[1] https://buildd.debian.org/status/fetch.php?pkg=cmake&arch=kfreebsd-amd64&ver=2.8.12-1&stamp=1383507045
+
+Index: cmake/Source/kwsys/SystemInformation.cxx
+===================================================================
+--- cmake.orig/Source/kwsys/SystemInformation.cxx
++++ cmake/Source/kwsys/SystemInformation.cxx
+@@ -125,7 +125,7 @@ typedef int siginfo_t;
+ # endif
+ #endif
+ 
+-#ifdef __linux
++#if defined(__linux__) || defined(__GLIBC__) || defined(__GNU__)
+ # include <fenv.h>
+ # include <sys/socket.h>
+ # include <netdb.h>

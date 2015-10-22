@@ -1,0 +1,49 @@
+From: Joe Nahmias <jello@debian.org>
+Date: Sun, 2 Mar 2014 13:38:59 -0500
+Subject: install to games instead of bin
+
+Install fceux and the server to /usr/games to follow Debian policy and the FHS.
+Update the desktop file to use this location (instead of /usr/bin).
+---
+ SConstruct    | 2 +-
+ fceux.desktop | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/SConstruct b/SConstruct
+index c5288cc..ce56cff 100644
+--- a/SConstruct
++++ b/SConstruct
+@@ -227,7 +227,7 @@ image_src = 'fceux.png'
+ 
+ desktop_src = 'fceux.desktop'
+ 
+-env.Install(prefix + "/bin/", [fceux, fceux_net_server_src])
++env.Install(prefix + "/games/", [fceux, fceux_net_server_src])
+ env.InstallAs(prefix + '/share/fceux/', share_src)
+ env.Install(prefix + '/share/fceux/', auxlib_src)
+ env.Install(prefix + '/share/pixmaps/', image_src)
+diff --git a/fceux.desktop b/fceux.desktop
+index 60aecf2..912d4c4 100644
+--- a/fceux.desktop
++++ b/fceux.desktop
+@@ -5,7 +5,7 @@ Name=Fceux
+ GenericName=NES/Famicom emulator
+ NoDisplay=false
+ Comment=Emulate NES ROMs
+-Exec=/usr/bin/fceux
++Exec=/usr/games/fceux
+ Icon=/usr/share/pixmaps/fceux.png
+ Terminal=false
+ MimeType=application/x-nes-rom
+@@ -14,9 +14,9 @@ Encoding=UTF-8
+ Actions=Fullscreen;DefaultConfig;
+ [Desktop Action Fullscreen]
+ Name=Open in Fullscreen
+-Exec=fceux -f 1
++Exec=/usr/games/fceux -f 1
+ OnlyShowIn=Unity
+ [Desktop Action DefaultConfig]
+ Name=Start With the Default Configuration
+-Exec=fceux --no-config 1
++Exec=/usr/games/fceux --no-config 1
+ OnlyShowIn=Unity

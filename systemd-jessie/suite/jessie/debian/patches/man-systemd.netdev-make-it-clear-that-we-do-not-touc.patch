@@ -1,0 +1,29 @@
+From: Tom Gundersen <teg@jklm.no>
+Date: Mon, 14 Jul 2014 12:25:42 +0200
+Subject: man: systemd.netdev - make it clear that we do not touch preexisting
+ netdevs
+
+We will happily use bridges/bonds as master devices, but we will not change their settings if they were created by
+someone else.
+
+(cherry picked from commit 7c1cff4ff79f3121189403a8c1b7c350925b3aaa)
+---
+ man/systemd.netdev.xml | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/man/systemd.netdev.xml b/man/systemd.netdev.xml
+index 857221f..347f80e 100644
+--- a/man/systemd.netdev.xml
++++ b/man/systemd.netdev.xml
+@@ -60,7 +60,10 @@
+ 
+                 <para>Virtual Network Device files must have the extension
+                 <filename>.netdev</filename>; other extensions are ignored. Virtual
+-                network devices are created as soon as networkd is started.</para>
++                network devices are created as soon as networkd is started. If a netdev
++                with the specified name already exists, networkd will use that as-is
++                rather than create its own. Note that the settings of the pre-existing
++                netdev will not be changed by networkd.</para>
+ 
+                 <para>The <filename>.netdev</filename> files are read from the files located in the
+                 system network directory <filename>/usr/lib/systemd/network</filename>,

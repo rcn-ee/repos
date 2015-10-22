@@ -1,0 +1,48 @@
+#!/bin/sh
+# This script should be run before building the package every time a new
+# kernel is released.
+#
+# You should pass the name of the modules directory for a 486 flavour
+# kernel, as that has the most framebuffer modules.
+#
+# Also, obsolete modules should not be removed from the list until after
+# at least one stable release.
+
+set -e
+
+if [ $# = 0 ]; then
+  MODULES_DIR=/lib/modules/$(uname -r)
+else
+  MODULES_DIR="$1"
+fi
+
+BL='fbdev-blacklist.conf'
+
+if [ -e extra/$BL ]; then cd extra; fi
+
+{
+printf "# This file blacklists most old-style PCI framebuffer drivers.\n\n"
+
+find "$MODULES_DIR"/kernel/drivers/video -type f | sort | \
+while read file; do
+  name="$(basename $file .ko)"
+  case $name in
+    lxfb)
+      # This is needed for text consoles on OLPC XO-1, and it used to be
+      # built-in anyway.
+      ;;
+    viafb) ;; # Needed by OLPC XO-1.5
+    *)
+      /sbin/modinfo $file | grep -q '^alias: *pci:' \
+	&& echo blacklist $name || true
+      ;;
+  esac
+done
+} > $BL.tmp
+
+if diff --unified=0 $BL $BL.tmp; then
+  rm $BL.tmp
+else
+  printf "\n\n\n$BL.tmp has changes!\n\n\n\n"
+fi
+

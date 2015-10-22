@@ -1,0 +1,22 @@
+From: Michal Schmidt <mschmidt@redhat.com>
+Date: Tue, 8 Jul 2014 15:17:36 +0200
+Subject: systemctl: fix visual alignment for lines prefixed with color dots
+
+(cherry picked from commit b7bbdabeb4a5b66fdbcdfed0d097109cfb39c43e)
+---
+ src/systemctl/systemctl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/systemctl/systemctl.c b/src/systemctl/systemctl.c
+index 03720f4..8086e1e 100644
+--- a/src/systemctl/systemctl.c
++++ b/src/systemctl/systemctl.c
+@@ -456,7 +456,7 @@ static int output_units_list(const UnitInfo *unit_infos, unsigned c) {
+                 }
+ 
+                 if (circle_len > 0)
+-                        printf("%s%s%s", on_circle, circle ? draw_special_char(DRAW_BLACK_CIRCLE) : "  ", off_circle);
++                        printf("%s%s%s ", on_circle, circle ? draw_special_char(DRAW_BLACK_CIRCLE) : " ", off_circle);
+ 
+                 printf("%s%-*s%s %s%-*s%s %s%-*s %-*s%s %-*s",
+                        on_active, id_len, id, off_active,

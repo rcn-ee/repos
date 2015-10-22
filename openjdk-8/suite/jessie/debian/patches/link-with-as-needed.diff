@@ -1,5 +1,7 @@
 # DP: Fix build failures with -Wl,--as-needed, don't explicitly link with -lc
 
+Index: b/jdk/make/CompileLaunchers.gmk
+===================================================================
 --- a/jdk/make/CompileLaunchers.gmk
 +++ b/jdk/make/CompileLaunchers.gmk
 @@ -427,7 +427,7 @@ endif
@@ -23,9 +25,11 @@
      OBJECT_DIR := $(JDK_OUTPUTDIR)/objs/unpackexe$(OUTPUT_SUBDIR), \
      OUTPUT_DIR := $(JDK_OUTPUTDIR)/objs/unpackexe$(OUTPUT_SUBDIR), \
      PROGRAM := unpack200, \
+Index: b/jdk/make/lib/Awt2dLibraries.gmk
+===================================================================
 --- a/jdk/make/lib/Awt2dLibraries.gmk
 +++ b/jdk/make/lib/Awt2dLibraries.gmk
-@@ -762,10 +762,10 @@ $(eval $(call SetupNativeCompilation,BUI
+@@ -759,10 +759,10 @@ $(eval $(call SetupNativeCompilation,BUI
          $(BUILD_LIBJAVAJPEG_CLOSED_INCLUDES) \
          $(BUILD_LIBJAVAJPEG_HEADERS), \
      MAPFILE := $(BUILD_LIBJAVAJPEG_MAPFILE), \

@@ -22,6 +22,9 @@ run () {
 				sbuild ${options} http://httphost/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}/${dsc_file}
 
 				if [ -f *.changes ] ; then
+					if [ -d ${out_dir} ] ; then
+						rm -rf ${out_dir}
+					fi
 					mkdir -p ${out_dir}
 					cp -v *orig* ${out_dir} || true
 					cp -v *debian* ${out_dir} || true
@@ -31,6 +34,7 @@ run () {
 					cp -v *.dsc ${out_dir} || true
 					cp -v *.udeb ${out_dir} || true
 					cp -v *.diff.gz ${out_dir} || true
+					cp -v *${deb_arch}.build ${out_dir} || true
 				fi
 			fi
 		fi
@@ -65,12 +69,6 @@ if [ -d suite/${suite}/ ] ; then
 	run
 fi
 
-suite="utopic"
-if [ -d suite/${suite}/ ] ; then
-	deb_arch="armhf"
-	run
-fi
-
 suite="vivid"
 if [ -d suite/${suite}/ ] ; then
 	deb_arch="armhf"
@@ -83,3 +81,9 @@ if [ -d suite/${suite}/ ] ; then
 	run
 fi
 
+suite="xenial"
+if [ -d suite/${suite}/ ] ; then
+	deb_arch="armhf"
+	run
+fi
+#

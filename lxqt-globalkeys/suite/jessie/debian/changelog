@@ -1,8 +1,104 @@
-lxqt-globalkeys (0.9.0-8~bpo80+20150624+1) jessie; urgency=low
+lxqt-globalkeys (0.9.0-19~bpo80+20150731+1) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Wed, 24 Jun 2015 11:50:52 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Fri, 31 Jul 2015 10:45:31 -0500
+
+lxqt-globalkeys (0.9.0-19) unstable; urgency=medium
+
+  * commit 34e794531fa907b47adc087a0ac8bf33e81faed2
+    Author: Luís Pereira <luis.artur.pereira@gmail.com>
+    Date:   Wed Jul 15 11:41:01 2015 -0700
+    Merge pull request #20 from lxde/fix-ui-compromised-749
+    Install lxqt-globalkeysd to where it belongs
+
+ -- Alf Gaida <agaida@siduction.org>  Sun, 19 Jul 2015 22:47:43 +0200
+
+lxqt-globalkeys (0.9.0-18) unstable; urgency=medium
+
+  * LIB_SUFFIX removed, debian/rules modified 
+
+ -- Alf Gaida <agaida@siduction.org>  Sat, 11 Jul 2015 20:19:36 +0200
+
+lxqt-globalkeys (0.9.0-17) unstable; urgency=medium
+
+  * commit d2f45dbbc6c184d5bbadc9d334c035cea65dbd43
+    Author: Luís Pereira <luis.artur.pereira@gmail.com>
+    Date:   Sat Jul 11 08:33:20 2015 -0700
+    Drops LIB_SUFFIX. Use GNUInstallDirs.
+    Drops also custom create_pkg_config_file() and use
+    lxqt_create_pkg_config_file().
+    Closes lxde/lxqt#742 
+
+ -- Alf Gaida <agaida@siduction.org>  Sat, 11 Jul 2015 20:10:24 +0200
+
+lxqt-globalkeys (0.9.0-16) unstable; urgency=medium
+
+  * fix ftbfs
+
+ -- Alf Gaida <agaida@siduction.org>  Sat, 11 Jul 2015 18:02:08 +0200
+
+lxqt-globalkeys (0.9.0-15) unstable; urgency=medium
+
+  * commit b4d943946caa261593b8d70055e056ef1cdb233e
+    Author: Philipp Wiesemann <philipp.wiesemann@arcor.de>
+    Date:   Tue Jul 7 22:09:35 2015 +0200
+    Fix three memory leaks in daemon error handling
+    In three cases char arrays created on the heap were only deleted if no
+    error occurred afterwards. This was now fixed by removing the explicit
+    deletions and only referencing the arrays through smart pointers. These
+    make sure that the arrays are also deleted in the error handling paths.
+
+ -- Alf Gaida <agaida@siduction.org>  Fri, 10 Jul 2015 02:17:36 +0200
+
+lxqt-globalkeys (0.9.0-14) unstable; urgency=medium
+
+  * fix symbols for liblxqt-globalkeys0.symbols
+
+ -- Alf Gaida <agaida@siduction.org>  Fri, 03 Jul 2015 19:38:15 +0200
+
+lxqt-globalkeys (0.9.0-13) unstable; urgency=medium
+
+  * second set of fixes for $foo-dev.install 
+
+ -- Alf Gaida <agaida@siduction.org>  Fri, 03 Jul 2015 19:28:54 +0200
+
+lxqt-globalkeys (0.9.0-12) unstable; urgency=medium
+
+  * fix $foo-dev.install 
+
+ -- Alf Gaida <agaida@siduction.org>  Fri, 03 Jul 2015 18:52:47 +0200
+
+lxqt-globalkeys (0.9.0-11) unstable; urgency=medium
+
+  * commit 3e6a3eee8cc78ac89cbd9f5b027b7bac0dde9e27
+    Author: Paulo Lieuthier <paulolieuthier@gmail.com>
+    Date:   Fri Jul 3 13:13:40 2015 -0300                                                                                                                                                 
+    Fix FTBFS after new CMake Targets
+
+ -- Alf Gaida <agaida@siduction.org>  Fri, 03 Jul 2015 18:37:56 +0200
+
+lxqt-globalkeys (0.9.0-10) unstable; urgency=medium
+
+  * commit b84374d1c23d16c6ba8776b0626a411ad65cbabf
+    Author: Luís Pereira <luis.artur.pereira@gmail.com>
+    Date:   Fri Jul 3 03:52:31 2015 -0700
+    Merge branch 'targets'
+    * targets:
+      Adds intree/superbuild support
+      Generate -config-version.cmake files
+      Drops xxx_use.cmake files. Adopt Targets 
+
+ -- Alf Gaida <agaida@siduction.org>  Fri, 03 Jul 2015 16:23:04 +0200
+
+lxqt-globalkeys (0.9.0-9) unstable; urgency=medium
+
+  * commit c163211d2ecb6a79c21d8b7758e36208f7a81288
+    Author: Palo Kisa <palo.kisa@gmail.com>
+    Date:   Thu Jul 2 13:45:38 2015 +0200
+    main: use standard liblxqt unix signal handling to quit
+
+ -- Alf Gaida <agaida@siduction.org>  Thu, 02 Jul 2015 21:50:18 +0200
 
 lxqt-globalkeys (0.9.0-8) unstable; urgency=medium
 

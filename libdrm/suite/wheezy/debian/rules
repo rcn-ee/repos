@@ -18,11 +18,13 @@ ifeq (linux, $(DEB_HOST_ARCH_OS))
 	confflags += --enable-udev
 	confflags += --enable-vmwgfx
 	confflags += --enable-nouveau
+	confflags += --enable-amdgpu
 	NOUVEAU = yes
 else
 	confflags += --disable-udev
 	confflags += --disable-vmwgfx
 	confflags += --disable-nouveau
+	confflags += --disable-amdgpu
 	NOUVEAU = no
 	# kfreebsd mangles freebsd's sys/types.h
 	confflags += CFLAGS="$(shell pkg-config --cflags libbsd-overlay)"
@@ -83,6 +85,7 @@ ifeq ($(INTEL), yes)
 endif
 ifeq ($(NOUVEAU), yes)
 	dh_strip -plibdrm-nouveau2 --dbg-package=libdrm-nouveau2-dbg
+	dh_strip -plibdrm-amdgpu1 --dbg-package=libdrm-amdgpu1-dbg
 endif
 	dh_strip -plibdrm-radeon1 --dbg-package=libdrm-radeon1-dbg
 ifeq ($(ARM), yes)
@@ -95,17 +98,18 @@ endif
 	dh_strip -s --remaining-packages
 
 override_dh_makeshlibs:
-	dh_makeshlibs -plibdrm2 -V'libdrm2 (>= 2.4.60)' --add-udeb=libdrm2-udeb -- -c4
+	dh_makeshlibs -plibdrm2 -V'libdrm2 (>= 2.4.62)' --add-udeb=libdrm2-udeb -- -c4
 ifeq ($(INTEL), yes)
 	dh_makeshlibs -plibdrm-intel1 -V'libdrm-intel1 (>= 2.4.60)' -- -c4
 endif
 ifeq ($(NOUVEAU), yes)
 	dh_makeshlibs -plibdrm-nouveau2 -V'libdrm-nouveau2 (>= 2.4.38)' -- -c4
+	dh_makeshlibs -plibdrm-amdgpu1 -V'libdrm-amdgpu1 (>= 2.4.63)' -- -c4
 endif
 	dh_makeshlibs -plibdrm-radeon1 -V'libdrm-radeon1 (>= 2.4.39)' -- -c4
 ifeq ($(ARM), yes)
 	dh_makeshlibs -plibdrm-omap1 -V'libdrm-omap1 (>= 2.4.38)' -- -c4
-	dh_makeshlibs -plibdrm-freedreno1 -V'libdrm-freedreno1 (>= 2.4.57)' -- -c4
+	dh_makeshlibs -plibdrm-freedreno1 -V'libdrm-freedreno1 (>= 2.4.64)' -- -c4
 	dh_makeshlibs -plibdrm-etnaviv0 -V'libdrm-etnaviv0' -- -c4
 	dh_makeshlibs -plibdrm-exynos1 -V'libdrm-exynos1 (>= 2.4.60)' -- -c4
 	dh_makeshlibs -plibdrm-tegra0 -V'libdrm-tegra0' -- -c4

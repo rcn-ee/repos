@@ -25,7 +25,7 @@ dist="debian"
 suite="wheezy"
 if [ -d suite/${suite}/ ] ; then
 	repo="${base}${dist}/"
-	deb_arch=armhf
+	deb_arch="armhf"
 	rcn_ee_version="${wheezy_version}"
 	run
 fi
@@ -33,7 +33,7 @@ fi
 suite="jessie"
 if [ -d suite/${suite}/ ] ; then
 	repo="${base}${dist}/"
-	deb_arch=armhf
+	deb_arch="armhf"
 	rcn_ee_version="${jessie_version}"
 	run
 fi
@@ -41,7 +41,7 @@ fi
 suite="stretch"
 if [ -d suite/${suite}/ ] ; then
 	repo="${base}${dist}/"
-	deb_arch=armhf
+	deb_arch="armhf"
 	rcn_ee_version="${stretch_version}"
 	run
 fi
@@ -50,23 +50,15 @@ dist="ubuntu"
 suite="trusty"
 if [ -d suite/${suite}/ ] ; then
 	repo="${base}${dist}/"
-	deb_arch=armhf
+	deb_arch="armhf"
 	rcn_ee_version="${trusty_version}"
-	run
-fi
-
-suite="utopic"
-if [ -d suite/${suite}/ ] ; then
-	repo="${base}${dist}/"
-	deb_arch=armhf
-	rcn_ee_version="${utopic_version}"
 	run
 fi
 
 suite="vivid"
 if [ -d suite/${suite}/ ] ; then
 	repo="${base}${dist}/"
-	deb_arch=armhf
+	deb_arch="armhf"
 	rcn_ee_version="${vivid_version}"
 	run
 fi
@@ -74,8 +66,16 @@ fi
 suite="wily"
 if [ -d suite/${suite}/ ] ; then
 	repo="${base}${dist}/"
-	deb_arch=armhf
+	deb_arch="armhf"
 	rcn_ee_version="${wily_version}"
 	run
 fi
 
+suite="xenial"
+if [ -d suite/${suite}/ ] ; then
+	repo="${base}${dist}/"
+	deb_arch="armhf"
+	rcn_ee_version="${xenial_version}"
+	run
+fi
+#

@@ -24,6 +24,8 @@ Summary: NewGlobalRef/DeleteGlobalRef as needed.
 Reviewed-by:
 Contributed-by: yamauchi@google.com
 
+Index: b/jdk/make/mapfiles/libfontmanager/mapfile-vers.openjdk
+===================================================================
 --- a/jdk/make/mapfiles/libfontmanager/mapfile-vers.openjdk
 +++ b/jdk/make/mapfiles/libfontmanager/mapfile-vers.openjdk
 @@ -29,6 +29,7 @@
@@ -34,6 +36,8 @@ Contributed-by: yamauchi@google.com
                  getSunFontIDs;
                  newLayoutTableCache;
                  freeLayoutTableCache;
+Index: b/jdk/src/share/native/sun/font/freetypeScaler.c
+===================================================================
 --- a/jdk/src/share/native/sun/font/freetypeScaler.c
 +++ b/jdk/src/share/native/sun/font/freetypeScaler.c
 @@ -48,16 +48,6 @@
@@ -53,7 +57,7 @@ Contributed-by: yamauchi@google.com
      FT_Library library;
      FT_Face face;
      jobject font2D;
-@@ -90,6 +80,13 @@
+@@ -90,6 +80,13 @@ int z_verbose;
  void z_error(char *s) {}
  #endif
  
@@ -67,7 +71,7 @@ Contributed-by: yamauchi@google.com
  /**************** Error handling utilities *****************/
  
  static jmethodID invalidateScalerMID;
-@@ -120,6 +117,10 @@
+@@ -120,6 +117,10 @@ static void freeNativeResources(JNIEnv *
      FT_Done_Face(scalerInfo->face);
      FT_Done_FreeType(scalerInfo->library);
  
@@ -78,19 +82,7 @@ Contributed-by: yamauchi@google.com
      if (scalerInfo->directBuffer != NULL) {
          (*env)->DeleteGlobalRef(env, scalerInfo->directBuffer);
      }
-@@ -147,10 +148,9 @@
- 
- #define FILEDATACACHESIZE 1024
- 
--/* NB: is it ever called? */
- static void CloseTTFontFileFunc(FT_Stream stream) {
-+    JNIEnv* env = (JNIEnv*) JNU_GetEnv(jvm, JNI_VERSION_1_2);
-     FTScalerInfo *scalerInfo = (FTScalerInfo *) stream->pathname.pointer;
--    JNIEnv* env = scalerInfo->env;
-     jclass tmpClass = (*env)->FindClass(env, "sun/font/TrueTypeFont");
-     jfieldID platNameField =
-          (*env)->GetFieldID(env, tmpClass, "platName", "Ljava/lang/String;");
-@@ -166,8 +166,8 @@
+@@ -152,8 +153,8 @@ static unsigned long ReadTTFontFileFunc(
                                          unsigned char* destBuffer,
                                          unsigned long numBytes)
  {
@@ -100,7 +92,7 @@ Contributed-by: yamauchi@google.com
      jobject bBuffer;
      int bread = 0;
  
-@@ -260,8 +260,7 @@
+@@ -229,8 +230,7 @@ Java_sun_font_FreetypeFontScaler_initNat
      if (scalerInfo == NULL)
          return 0;
  
@@ -110,7 +102,7 @@ Contributed-by: yamauchi@google.com
      scalerInfo->fontDataOffset = 0;
      scalerInfo->fontDataLength = 0;
      scalerInfo->fileSize = filesize;
-@@ -278,6 +277,7 @@
+@@ -247,6 +247,7 @@ Java_sun_font_FreetypeFontScaler_initNat
      */
      error = FT_Init_FreeType(&scalerInfo->library);
      if (error) {
@@ -118,7 +110,7 @@ Contributed-by: yamauchi@google.com
          free(scalerInfo);
          return 0;
      }
-@@ -348,6 +348,7 @@
+@@ -317,6 +318,7 @@ Java_sun_font_FreetypeFontScaler_initNat
          }
          if (scalerInfo->fontData != NULL)
              free(scalerInfo->fontData);
@@ -126,7 +118,7 @@ Contributed-by: yamauchi@google.com
          free(scalerInfo);
          return 0;
      }
-@@ -408,8 +409,10 @@
+@@ -377,8 +379,10 @@ static int setupFTContext(JNIEnv *env,
                            FTScalerContext *context) {
      int errCode = 0;
  

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -e
+
+SRCDIR="$(pwd)"
+
+cd $ADTTMP
+
+cmake -DCMake_TEST_EXTERNAL_CMAKE=/usr/bin $SRCDIR
+make VERBOSE=1
+CTEST_OUTPUT_ON_FAILURE=1 make test ARGS="-E CTestTestUpload -E BootstrapTest"

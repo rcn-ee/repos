@@ -16,23 +16,7 @@ Forwarded: yes
          }
        }
        pointer_device_lookup_[devinfo.deviceid] = true;
-@@ -128,8 +131,14 @@ void TouchFactory::UpdateDeviceList(Disp
-           XITouchClassInfo* tci =
-               reinterpret_cast<XITouchClassInfo*>(xiclassinfo);
-           // Only care direct touch device (such as touch screen) right now
--          if (tci->mode == XIDirectTouch)
-+          if (tci->mode == XIDirectTouch) {
-+            touch_device_lookup_[devinfo.deviceid] = true;
-+            touch_device_list_[devinfo.deviceid] = true;
-             CacheTouchscreenIds(devinfo.deviceid);
-+            VLOG(1) << "addding floating/slave device " << devinfo.deviceid << ", it has mode " << tci->mode;
-+	  } else {
-+            VLOG(1) << "ignoring floating/slave device " << devinfo.deviceid << " because it has mode " << tci->mode;
-+          }
-         }
-       }
-     }
-@@ -303,8 +312,12 @@ void TouchFactory::CacheTouchscreenIds(i
+@@ -316,8 +319,12 @@ void TouchFactory::CacheTouchscreenIds(i
                       return touchscreen.id == device_id;
                     });
    // Internal displays will have a vid and pid of 0. Ignore them.

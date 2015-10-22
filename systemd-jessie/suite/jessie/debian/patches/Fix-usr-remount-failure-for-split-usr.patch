@@ -1,0 +1,64 @@
+From: Michael Biebl <biebl@debian.org>
+Date: Tue, 13 Jan 2015 08:25:00 +0100
+Subject: Fix /usr remount failure for split /usr
+
+Fix systemd-remount-fs.service to not fail on remounting /usr if /usr isn't
+mounted yet. This happens with initramfs-tools < 0.118 which we might not get
+into Jessie any more.
+
+This can be dropped when /usr always gets mounted from initramfs.
+
+Bug-Debian: https://bugs.debian.org/742048
+---
+ src/remount-fs/remount-fs.c | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+
+diff --git a/src/remount-fs/remount-fs.c b/src/remount-fs/remount-fs.c
+index 847637a..82a1596 100644
+--- a/src/remount-fs/remount-fs.c
++++ b/src/remount-fs/remount-fs.c
+@@ -34,6 +34,32 @@
+ #include "mount-setup.h"
+ #include "exit-status.h"
+ 
++static bool is_mounted(const char *dev_path) {
++        _cleanup_free_ char *parent_path = NULL;
++        struct stat st, pst;
++        int r;
++
++        parent_path = strjoin(dev_path, "/..", NULL);
++
++        r = stat(dev_path, &st);
++        if (r < 0)
++                return false;
++
++        r = stat(parent_path, &pst);
++        if (r < 0)
++                return false;
++
++        /*
++         * This code to check if a given path is a mountpoint is
++         * borrowed from util-linux' mountpoint tool.
++         */
++        if ((st.st_dev != pst.st_dev) ||
++            (st.st_dev == pst.st_dev && st.st_ino == pst.st_ino))
++                return true;
++
++        return false;
++}
++
+ /* Goes through /etc/fstab and remounts all API file systems, applying
+  * options that are in /etc/fstab that systemd might not have
+  * respected */
+@@ -83,6 +109,11 @@ int main(int argc, char *argv[]) {
+                     !path_equal(me->mnt_dir, "/usr"))
+                         continue;
+ 
++                /* Skip /usr if it hasn't been mounted by the initrd */
++                if (path_equal(me->mnt_dir, "/usr") &&
++                    !is_mounted("/usr"))
++                        continue;
++
+                 log_debug("Remounting %s", me->mnt_dir);
+ 
+                 pid = fork();

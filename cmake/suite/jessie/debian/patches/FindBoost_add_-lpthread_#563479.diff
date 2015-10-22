@@ -1,0 +1,46 @@
+Subject: Add -lpthread when using Boost::Thread.
+Author: Philip Lowman <debian@carbon-project.org>
+Author: Modestas Vainius <modax@debian.org>
+Origin: other, http://public.kitware.com/Bug/file_download.php?file_id=3929&type=bug
+Last-Update: 2013-03-16
+Bug: http://cmake.org/Bug/view.php?id=10692
+Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=563479
+Forwarded: http://cmake.org/Bug/file_download.php?file_id=3629&type=bug
+
+Index: cmake/Modules/FindBoost.cmake
+===================================================================
+--- cmake.orig/Modules/FindBoost.cmake
++++ cmake/Modules/FindBoost.cmake
+@@ -447,6 +447,22 @@ function(_Boost_GUESS_COMPILER_PREFIX _r
+   set(${_ret} ${_boost_COMPILER} PARENT_SCOPE)
+ endfunction()
+ 
++function(_Boost_consider_adding_pthreads _outvar)
++  # On Unix platforms (excluding cygwin) add pthreads to Boost_LIBRARIES
++  # if the user is searching for the boost-thread component.
++  if(UNIX AND NOT CYGWIN)
++    list(FIND Boost_FIND_COMPONENTS thread _using_boost_thread)
++    if(_using_boost_thread GREATER -1)
++      find_library(BOOST_THREAD_LIBRARY NAMES pthread
++                   DOC "The threading library used by boost-thread"
++      )
++      if(BOOST_THREAD_LIBRARY)
++        set(${_outvar} ${ARGN} ${BOOST_THREAD_LIBRARY} PARENT_SCOPE)
++      endif()
++    endif()
++  endif()
++endfunction()
++
+ #
+ # End functions/macros
+ #
+@@ -1177,6 +1193,9 @@ if(Boost_FOUND)
+       list(APPEND Boost_LIBRARIES ${Boost_${UPPERCOMPONENT}_LIBRARY})
+     endif()
+   endforeach()
++
++  # Add pthread library on UNIX if thread component was found
++  _Boost_consider_adding_pthreads(Boost_LIBRARIES ${Boost_LIBRARIES})
+ else()
+   if(Boost_FIND_REQUIRED)
+     message(SEND_ERROR "Unable to find the requested Boost libraries.\n${Boost_ERROR_REASON}")

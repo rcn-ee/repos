@@ -1,0 +1,57 @@
+Source: libv8-__API__
+Priority: optional
+Maintainer: Debian Javascript Maintainers <pkg-javascript-devel@lists.alioth.debian.org>
+Uploaders: Jérémy Lal <kapouer@melix.org>,
+ Jonas Smedegaard <dr@jones.dk>
+Build-Depends: @cdbs@,
+ gyp
+Standards-Version: 3.9.5
+Section: libs
+Homepage: http://code.google.com/p/v8/
+Vcs-Browser: http://anonscm.debian.org/git/collab-maint/libv8.git
+Vcs-Git: git://anonscm.debian.org/collab-maint/libv8.git
+
+Package: libv8-dev
+Section: libdevel
+Architecture: __ARCHS__
+Depends: libv8-__ABI__ (= ${binary:Version}), ${misc:Depends}
+Conflicts: libv8-legacy-dev, libv8-3.14-dev
+Replaces: libv8-legacy-dev, libv8-3.14-dev
+Description: V8 JavaScript engine - development files for latest branch
+ V8 is a high performance JavaScript engine written in C++.  It is used
+ in the web browser Chromium.
+ .
+ This package provide development headers for latest V8 branch.
+
+Package: libv8-__API__-dev
+Section: libdevel
+Architecture: __ARCHS__
+Depends: libv8-__ABI__ (= ${binary:Version}), ${misc:Depends}
+Provides: libv8-legacy-dev, libv8-dev
+Conflicts: libv8-dev
+Replaces: libv8-dev
+Description: V8 JavaScript engine - development files for __API__ branch
+ V8 is a high performance JavaScript engine written in C++.  It is used
+ in the web browser Chromium.
+ .
+ This package provide development headers for V8 __API__ branch.
+
+Package: libv8-__ABI__
+Architecture: __ARCHS__
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: V8 JavaScript engine - runtime library
+ V8 is a high performance JavaScript engine written in C++.  It is used
+ in the web browser Chromium.
+ .
+ This package provides the dynamic library for V8.
+
+Package: libv8-__API__-dbg
+Priority: extra
+Section: debug
+Architecture: __ARCHS__
+Depends: libv8-__ABI__ (= ${binary:Version}), ${misc:Depends}
+Description: V8 JavaScript engine - debugging symbols
+ V8 is a high performance JavaScript engine written in C++.  It is used
+ in the web browser Chromium.
+ .
+ This package provides the debugging symbols for the library.

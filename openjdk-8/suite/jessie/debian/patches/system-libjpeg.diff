@@ -6,7 +6,7 @@ Index: b/common/autoconf/generated-configure.sh
 ===================================================================
 --- a/common/autoconf/generated-configure.sh
 +++ b/common/autoconf/generated-configure.sh
-@@ -1058,6 +1058,7 @@ enable_freetype_bundling
+@@ -1065,6 +1065,7 @@ enable_freetype_bundling
  with_alsa
  with_alsa_include
  with_alsa_lib
@@ -14,7 +14,7 @@ Index: b/common/autoconf/generated-configure.sh
  with_giflib
  with_zlib
  with_stdc__lib
-@@ -1828,6 +1829,8 @@ Optional Packages:
+@@ -1838,6 +1839,8 @@ Optional Packages:
                            headers under PATH/include)
    --with-alsa-include     specify directory for the alsa include files
    --with-alsa-lib         specify directory for the alsa library
@@ -23,7 +23,7 @@ Index: b/common/autoconf/generated-configure.sh
    --with-giflib           use giflib from build system or OpenJDK source
                            (system, bundled) [bundled]
    --with-zlib             use zlib from build system or OpenJDK source
-@@ -7921,6 +7924,11 @@ $as_echo "$with_jvm_variants" >&6; }
+@@ -7954,6 +7957,11 @@ $as_echo "$with_jvm_variants" >&6; }
    JVM_VARIANT_ZEROSHARK=`$ECHO "$JVM_VARIANTS" | $SED -e '/,zeroshark,/!s/.*/false/g' -e '/,zeroshark,/s/.*/true/g'`
    JVM_VARIANT_CORE=`$ECHO "$JVM_VARIANTS" | $SED -e '/,core,/!s/.*/false/g' -e '/,core,/s/.*/true/g'`
  
@@ -35,7 +35,7 @@ Index: b/common/autoconf/generated-configure.sh
    if test "x$JVM_VARIANT_KERNEL" = xtrue; then
      if test "x$OPENJDK_TARGET_CPU_BITS" = x64; then
        as_fn_error $? "You cannot build a kernel JVM for a 64-bit machine." "$LINENO" 5
-@@ -34924,10 +34932,43 @@ done
+@@ -34850,10 +34858,43 @@ done
    # Check for the jpeg library
    #
  
@@ -83,7 +83,7 @@ Index: b/common/autoconf/generated-configure.sh
    $as_echo_n "(cached) " >&6
  else
    ac_check_lib_save_LIBS=$LIBS
-@@ -34935,27 +34976,33 @@ LIBS="-ljpeg  $LIBS"
+@@ -34861,27 +34902,33 @@ LIBS="-ljpeg  $LIBS"
  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
  /* end confdefs.h.  */
  
@@ -124,7 +124,7 @@ Index: b/common/autoconf/generated-configure.sh
    cat >>confdefs.h <<_ACEOF
  #define HAVE_LIBJPEG 1
  _ACEOF
-@@ -34963,13 +35010,16 @@ _ACEOF
+@@ -34889,13 +34936,16 @@ _ACEOF
    LIBS="-ljpeg $LIBS"
  
  else
@@ -149,7 +149,7 @@ Index: b/common/autoconf/libraries.m4
 ===================================================================
 --- a/common/autoconf/libraries.m4
 +++ b/common/autoconf/libraries.m4
-@@ -608,11 +608,36 @@ AC_DEFUN_ONCE([LIB_SETUP_MISC_LIBS],
+@@ -595,11 +595,36 @@ AC_DEFUN_ONCE([LIB_SETUP_MISC_LIBS],
    # Check for the jpeg library
    #
  
@@ -195,7 +195,7 @@ Index: b/jdk/make/lib/Awt2dLibraries.gmk
 ===================================================================
 --- a/jdk/make/lib/Awt2dLibraries.gmk
 +++ b/jdk/make/lib/Awt2dLibraries.gmk
-@@ -704,21 +704,24 @@ $(BUILD_LIBLCMS): $(BUILD_LIBAWT)
+@@ -702,21 +702,24 @@ $(BUILD_LIBLCMS): $(BUILD_LIBAWT)
  
  ##########################################################################################
  
@@ -226,7 +226,7 @@ Index: b/jdk/make/lib/Awt2dLibraries.gmk
  # Suppress gcc warnings like "variable might be clobbered by 'longjmp'
  # or 'vfork'": this warning indicates that some variable is placed to
  # a register by optimized compiler and it's value might be lost on longjmp().
-@@ -730,37 +733,50 @@ endif
+@@ -728,37 +731,50 @@ endif
  #      $(shell $(EXPR) $(CC_MAJORVER) \> 4 \| \
  #          \( $(CC_MAJORVER) = 4 \& $(CC_MINORVER) \>= 3 \) )
  #  ifeq ($(CC_43_OR_NEWER), 1)
@@ -291,7 +291,7 @@ Index: b/jdk/make/lib/Awt2dLibraries.gmk
  
  ##########################################################################################
  
-@@ -1206,6 +1222,13 @@ ifndef BUILD_HEADLESS_ONLY
+@@ -1198,6 +1214,13 @@ ifndef BUILD_HEADLESS_ONLY
      GIFLIB_CFLAGS := -I$(JDK_TOPDIR)/src/share/native/sun/awt/giflib
    endif
  
@@ -305,7 +305,7 @@ Index: b/jdk/make/lib/Awt2dLibraries.gmk
    ifneq ($(OPENJDK_TARGET_OS), macosx)
      LIBSPLASHSCREEN_DIRS += $(JDK_TOPDIR)/src/$(OPENJDK_TARGET_OS_API_DIR)/native/sun/awt/splashscreen
    else
-@@ -1268,11 +1291,13 @@ ifndef BUILD_HEADLESS_ONLY
+@@ -1258,11 +1281,13 @@ ifndef BUILD_HEADLESS_ONLY
        EXCLUDE_FILES := imageioJPEG.c jpegdecoder.c pngtest.c, \
        LANG := C, \
        OPTIMIZATION := LOW, \
@@ -338,7 +338,7 @@ Index: b/jdk/src/share/classes/com/sun/imageio/plugins/jpeg/JPEGImageWriter.java
 ===================================================================
 --- a/jdk/src/share/classes/com/sun/imageio/plugins/jpeg/JPEGImageWriter.java
 +++ b/jdk/src/share/classes/com/sun/imageio/plugins/jpeg/JPEGImageWriter.java
-@@ -179,7 +179,7 @@ public class JPEGImageWriter extends Ima
+@@ -177,7 +177,7 @@ public class JPEGImageWriter extends Ima
          java.security.AccessController.doPrivileged(
              new java.security.PrivilegedAction<Void>() {
                  public Void run() {

@@ -1,0 +1,25 @@
+From: Lennart Poettering <lennart@poettering.net>
+Date: Tue, 9 Dec 2014 02:12:11 +0100
+Subject: units: make sure container-getty@.service stops restarting when the
+ pts device it is bound to is gone
+
+We only want to restart the getty as long as the pts device is still
+around. As soon as it is gone, the service should be removed to.
+
+http://lists.freedesktop.org/archives/systemd-devel/2014-December/026048.html
+---
+ units/container-getty@.service.m4.in | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/units/container-getty@.service.m4.in b/units/container-getty@.service.m4.in
+index 4f7794b..5120466 100644
+--- a/units/container-getty@.service.m4.in
++++ b/units/container-getty@.service.m4.in
+@@ -14,6 +14,7 @@ After=rc-local.service
+ )m4_dnl
+ Before=getty.target
+ IgnoreOnIsolate=yes
++ConditionPathExists=/dev/pts/%I
+ 
+ [Service]
+ ExecStart=-/sbin/agetty --noclear --keep-baud pts/%I 115200,38400,9600 $TERM

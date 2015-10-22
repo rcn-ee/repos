@@ -12,12 +12,14 @@ PATH=debian/tmp/usr/lib/chromium-browser:$PATH
 set -o errexit
 set -o nounset
 
+OKAY_ERRORS="(libdc1394 error: Failed to initialize libdc1394|Couldn't load libexif.)"
+
 SRCDIR=$1
 
 echo $SRCDIR
 
 which metacity
-metacity &
+metacity >windowmanager.out 2>windowmanager.err &
 windowmanager_pid=$!
 
 failures=""
@@ -43,7 +45,7 @@ while test "$retry" -lt "$retrylimit"; do
 done
 test "$retry" -lt ${retrylimit}
 
-mkdir profile_storage
+mkdir -p profile_storage
 
 # Now everything is set up for a series of tests.
 
@@ -55,7 +57,7 @@ echo -n "Test command-line URL retrieves page from server: "
 f=one$$.txt
 echo proc$$test >$f
 
-chromium-browser --window-size=1000,2200 --window-position=50,100 --user-data-dir=profile_storage --chromeless --new-window http://localhost:${webserver_port}/$f &
+chromium-browser --window-size=1000,2200 --window-position=50,100 --user-data-dir=profile_storage --chromeless --new-window http://localhost:${webserver_port}/$f >browser_stdout 2>browser_stderr &
 webclient_pid=$!
 trap "kill ${webclient_pid} && wait ${webclient_pid} || echo 'No client running.'" USR1
 
@@ -103,21 +105,24 @@ export LOCALURL="http://localhost:${webserver_port}/"
 
 kill -USR1 $$
 
-for sikulitest in $SRCDIR/debian/tests/testdata/*.sikuli; do
-	testname=${sikulitest#$SRCDIR/testdata/}
-	test -d $sikulitest
-	echo -n "Test $(basename ${testname}): "
 
-	sikuli $sikulitest
-	if fgrep -q "[error]" ${testname}-log; then
-		failures="$(basename $testname)  $failures"
-		echo "BAD"
-		cat -n ${testname}-log
-		emit-screenshot ${testname}
-	else
-		echo "okay"
-	fi
-done
+if sikuli $SRCDIR/debian/tests/testdata/xx-test-tool-is-functional-if-this-prints-functional.sikuli |tee /dev/stderr |grep "is functional"; then
+	for sikulitest in $SRCDIR/debian/tests/testdata/?-*.sikuli; do
+		testname=${sikulitest#$SRCDIR/testdata/}
+		test -d $sikulitest
+		echo -n "Test $(basename ${testname}): "
+
+		sikuli $sikulitest &>${testname}-log
+		if egrep -v "${OKAY_ERRORS}" ${testname}-log |egrep -i "(exception|error)"; then
+			failures="$(basename $testname)  $failures"
+			echo "BAD"
+			cat -n ${testname}-log
+			emit-screenshot ${testname}
+		else
+			echo "okay"
+		fi
+	done
+fi
 
 webclient_pid=""
 

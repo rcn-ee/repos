@@ -1,0 +1,442 @@
+ti-opencl (01.01.06.00-1~bpo90+20151020+1) stretch; urgency=low
+
+  * Rebuild for repos.rcn-ee.com
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Tue, 20 Oct 2015 15:08:20 -0500
+
+ti-opencl (01.01.06.00-0ubuntu0~ppa1) trusty; urgency=medium
+
+  * Added L1D scratchpad management functions
+  * Updated documentation
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Thu, 10 Sep 2015 16:00:09 -0500
+
+ti-opencl (01.01.05.00-0ubuntu0~ppa1) trusty; urgency=medium
+
+  * Defects fixed:
+    - Update KernelEvent to properly ref_counts memory objects
+    - Perform cache wbInv before updating MAR registers
+    - Send response to host on EXIT to ensure DSP exit is complete
+  * Updated documentation
+  * Fixed sgemm example
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Fri, 21 Aug 2015 15:31:21 -0500
+
+ti-opencl (01.01.04.00-0ubuntu0~ppa1) UNRELEASED; urgency=medium
+
+  * Added an example, float_compute
+  * Removed busy waiting in the host runtime and fixed a race condition
+    related to mailbox communication 
+
+ -- Ajay Jayaraj <ajayj@uda0323430>  Mon, 15 Jun 2015 11:18:04 -0500
+
+ti-opencl (01.01.02.00-0ubuntu0~ppa1) trusty; urgency=medium
+
+  * AM57x : enabled dispatch of out of order tasks to both DSP cores
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Wed, 20 May 2015 10:38:59 -0500
+
+ti-opencl (01.01.01.02-0ubuntu0~ppa1) trusty; urgency=medium
+
+  * Give larger alignment to buffers allocated in extended memory to help MPAX
+    allocation.
+
+  * Provide better error reporting when error occurs in OpenCL runtime.
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Tue, 12 May 2015 15:40:53 -0500
+
+ti-opencl (01.01.01.01-0ubuntu0~ppa1) trusty; urgency=medium
+
+  * Make __malloc/free_ddr/msmc() thread safe, use Lock to guard the
+    bookkeeping map accesses.
+
+  * Update to always flush buffers after kernel execution, even when kernel
+    has only WRITE_ONLY buffers
+
+  * Update MPX examples to query available memory and allocate buffers
+    accordingly
+
+  * Add OSAL critical section support in RM client code that allocates QMSS
+    resources.
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Fri, 17 Apr 2015 15:48:32 -0500
+
+ti-opencl (01.01.00.03-0ubuntu0~ppa1) trusty; urgency=medium
+
+  * Added signal handler in opencl to cleanup if user hits ctrl-c during
+    OpenCL execution.
+
+  * Updated ARM makefile install to include new monitor file 'dsp_syms.obj'.
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Tue, 14 Apr 2015 15:03:01 -0500
+
+ti-opencl (01.01.00.02-0ubuntu0~ppa1) trusty; urgency=medium
+
+  * Modified the monitor mechanism for mapping builtin functions names to
+    address from being text based to being object based.  This speeds link
+    time significantly.
+
+  * Update version scheme for debian packaging to ww.xx.yy.zz format.
+    Where:
+        ww.xx - Maps to supported OpenCL specification version. Currently 1.1.
+        yy    - TI release
+        zz    - TI patch release
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Fri, 10 Apr 2015 15:38:44 -0500
+
+ti-opencl (01.01.00.01-0ubuntu0~ppa1) trusty; urgency=medium
+
+  * Make OpenCL use Resource Manager (RM) to allocate QMSS resources on the
+    ARM side and pass to DSP for QMSS use.
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Mon, 23 Mar 2015 16:04:26 -0500
+
+ti-opencl (01.01.00.00-0ubuntu0~ppa3) trusty; urgency=medium
+
+  * Fixed a C++ global objects destruction ordering problem that can cause
+    segmentation fault at OpenCL application exit.
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Thu, 05 Mar 2015 09:38:59 -0600
+
+ti-opencl (01.01.00.00-0ubuntu0~ppa2) trusty; urgency=medium
+
+  * Change use of QMSS resources to avoid conflicts with mpi.
+  * Fix clocl issue where incorrect path was specified for the intermediate
+    .bc file when clocl invoked the C6x compiler.
+  * Added the -a/--alias option to clocl. This option must be enabled when the
+    user creates overlapping buffers via USE_HOST_PTR on pointers pointing to
+    an object allocated via __malloc_ddr or __malloc_msmc.
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Wed, 04 Mar 2015 14:17:42 -0600
+
+ti-opencl (01.01.00.00-0ubuntu0~ppa1) trusty; urgency=medium
+
+  * Update version scheme for debian packaging to ww.xx.yy.zz format.
+    Where:
+        ww.xx - Maps to supported OpenCL specification version. Currently 1.1.
+        yy    - TI release
+        zz    - TI patch release
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Sun, 15 Feb 2015 13:21:14 -0600
+
+ti-opencl (1.0.0-0ubuntu0~ppa3) trusty; urgency=medium
+
+  * Bump version to ppa3 because of failed build.
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Fri, 30 Jan 2015 14:12:42 -0600
+
+ti-opencl (1.0.0-0ubuntu0~ppa2) trusty; urgency=medium
+
+  * Change 'matmpy' OpenCL examples to use less MSMC memory.
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Thu, 29 Jan 2015 15:49:48 -0600
+
+ti-opencl (1.0.0-0ubuntu0~ppa1) trusty; urgency=medium
+
+  * Faster workgroup handling on the dsp
+  * The file /var/lock/opencl will now be locked just in time within a process
+    at the point when OpenCL is first used. Previously, the lock was created at
+    startup of the process, even if OpenCL was not invoked for some time.
+  * The OpenCL library creates a host cpu thread to monitor traffic to and from
+    the DSP device. Previously that thread would consume a host CPU. It has
+    been improved to not consume any CPU resources unless there is an OpenCL
+    active kernel on the DSP device. When there is an active kernel on the DSP
+    device, it will consume resources at a nice level of 4. This can reduce the
+    CPU impact of the monitoring thread. Additionally an environment variable
+    TI_OCL_WORKER_SLEEP can be set to a non-negative number that represents the
+    number of micro seconds that the monitoring thread should sleep after each
+    device check. This will reduce the cpu overhead of the monitor thread but
+    will increase the round trip time for any given kernel by the sleep value
+    specified plus approximately an additional 70 micro seconds. A value of 100
+    microseconds is sufficient to lower the thread overhead to near 0%.
+  * Caching of kernel compiles by the OpenCL library are now off by default and
+    enabled by the environment variable TI_OCL_KERNEL_CACHE. Previously,
+    caching was enabled by default and was disabled by the environment
+    variable TI_OCL_CACHE_KERNELS_OFF.
+  * Double-precision floating point support is no longer enabled by default in
+    the OpenCL library and OpenCL C compiler. It can be re-enabled with the
+    environment variable TI_OCL_ENABLE_FP64.  Without double-precision support,
+    the TI OpenCL implementation passes all Khronos OpenCL conformance tests
+    and will be submitted for acceptance. When double-precision is enabled with
+    TI_OCL_ENABLE_FP64, the double-precision builtin functions are not
+    conformant to the OpenCL spec. This is primarily due to the spec
+    requirement that double-precision operations handle sub-normal values
+    properly and the DSP hardware does not support sub-normals. The DSP
+    hardware implements flush to zero behavior for subnormals.
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Mon, 26 Jan 2015 10:18:53 -0600
+
+ti-opencl (0.15.2-0ubuntu0~ppa1) trusty; urgency=medium
+
+  * Fix issue where __malloc_msmc() didn't return MSMC addresses
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Wed, 07 Jan 2015 13:39:38 -0600
+
+ti-opencl (0.15.1-0ubuntu0~ppa1) trusty; urgency=medium
+
+  * Add preinst script to check for and remove any existing clc.h.pch file
+    that may have been generated by a user and might be out of date with a
+    new OpenCL installation.
+
+  * Reduced the CPU load for the OpenCL thread that is created to monitor
+    communication traffic to and from the DSP device.  Previously that
+    thread would consume 100% of a CPU during the existence of the thread.
+    With this modification, the thread will only consume 100% of a CPU while
+    the DSP is currently executing kernels.  Otherwise, the thread will consume
+    minimal resources.
+
+  * Fix subbuffer alignment check.
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Fri, 19 Dec 2014 12:44:07 -0600
+
+ti-opencl (0.15.0-0ubuntu0~ppa1) trusty; urgency=medium
+
+  * Fix an MPAX allocation issue where subbuffers >= 1Gb could not be used.
+  * Fix issue compiling opencl kernels with barriers.
+  * Fix a dsptop issue by adding a ulm termination call.
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Tue, 14 Oct 2014 13:44:10 -0500
+
+ti-opencl (0.14.0-0ubuntu0~ppa2) trusty; urgency=medium
+
+  * Changed format of manifest from pdf to html
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Tue, 07 Oct 2014 15:57:39 -0500
+
+ti-opencl (0.14.0-0ubuntu0~ppa1) trusty; urgency=medium
+
+  * Performance improvements in OpenCL C compiled code
+  * Fixed a performance bug where no longer work group size is specified
+  * Improved performance and fixed bugs with async_work_group_copy fcns
+  * Improved the subnormal handling in several float OpenCL C math builtins
+
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Thu, 2 Oct 2014 15:53:47 -0500
+
+ti-opencl (0.13.0-0ubuntu0~ppa2) trusty; urgency=medium
+
+  * Fix format error in debian/changelog
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Fri, 26 Sep 2014 10:29:47 -0400
+
+ti-opencl (0.13.0-0ubuntu0~ppa1) trusty; urgency=medium
+
+  * Update version number to 0.13.0.
+  * Improve performance of kernels with barriers.
+  * Improve performance of kernels that use 'reqd_work_group_size' attribute.
+  * Fix clFlush() semantics, fix deadlock in event callback functions.
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Thu, 25 Sep 2014 09:42:40 -0500
+
+ti-opencl (0.12.0-0ubuntu5~ppa1) trusty; urgency=medium
+
+  [ Manoj Iyer ]
+  * Removed execute permission to debian/changelog.
+  * Renamed gdb-server to gdbserver-c6x in control file.
+
+  [ Steve Langasek ]
+  * Sourceful lintian overrides always go in debian/source.lintian-overrides,
+    not in debian/<package>.lintian-overrides.
+  * Add a lintian override for another valid sourceless file.
+  * Build-depend on libtiulm-dev, not libtiulm.
+
+ -- Steve Langasek <steve.langasek@canonical.com>  Fri, 12 Sep 2014 17:00:33 -0500
+
+ti-opencl (0.12.0-5ubuntu0~ppa3) trusty; urgency=high
+
+  * Updated changelog to trigger build. Required to pick up ulm library update.
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Thu, 11 Sep 2014 10:32:18 -0500
+
+ti-opencl (0.12.0-5ubuntu0~ppa2) trusty; urgency=high
+
+  * Fix race condition handling instantaneous (non-execution) events.
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Mon, 08 Sep 2014 15:36:06 -0500
+
+ti-opencl (0.12.0-5ubuntu0~ppa1) trusty; urgency=high
+
+  * Added missing install rule for /usr/bin/clocl
+
+  * Updated dependent package names to reflect latest changes
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Fri, 29 Aug 2014 12:43:32 -0500
+
+ti-opencl (0.12.0-4~ppa4) trusty; urgency=critical
+
+  * Updated control file for ti-cgtc6x name change to ti-cgt-c6x.
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Thu, 28 Aug 2014 14:51:40 -0500
+
+ti-opencl (0.12.0-3~ppa3) trusty; urgency=critical
+
+  * Add gdbc6x as a dependency. 
+
+  * Update OpenCL debugging help message to reflect gdb name change to 'gdbc6x'.
+
+  * Updated control file for mpm-transport name change to libmpmtransport.
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Thu, 28 Aug 2014 13:31:05 -0500
+
+ti-opencl (0.12.0-2~ppa2) trusty; urgency=critical
+
+  * Add ti-cgt6x as a dependency
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Mon, 25 Aug 2014 09:10:06 -0500
+
+ti-opencl (0.12.0-1~ppa1) trusty; urgency=critical
+
+  * Update version number to 0.12.0
+
+  * Update debian files
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Fri, 15 Aug 2014 14:16:46 -0500
+
+ti-opencl (0.11.0-2~ppa2) precise; urgency=critical
+
+  * Remove fftlib_offload example pending makefile fixes.
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Mon, 04 Aug 2014 20:48:40 -0500
+
+ti-opencl (0.11.0-1~ppa1) precise; urgency=critical
+
+  * Update version number to 0.11.0
+
+  * Update library makefile to remove building the TI version of the LLVM
+    binaries/libraries to reflect that TI LLVM has been moved into a separate
+    package. Update debian/control to add ti-llvm-3.3 package dependency.
+
+  * Update debian/copyright for compliance with copyright-format 1.0. Changes
+    based on feedback from Canonical.
+
+  * Added opencl/openmp examples: sgemm, dgemm, fftlib_offload
+
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Mon, 14 Jul 2014 16:05:18 -0500
+
+ti-opencl (0.10.0-3~ppa3) precise; urgency=critical
+
+  * Fix typo in debian/docs
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Sun, 29 Jun 2014 15:09:20 -0400
+
+ti-opencl (0.10.0-2~ppa2) precise; urgency=critical
+
+  * Update examples list
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Fri, 27 Jun 2014 10:45:06 -0500
+
+ti-opencl (0.10.0-1~ppa1) precise; urgency=critical
+
+  * The environment variable used to enable OpenCL kernel debugging has been
+    changed from TI_OCL_DEBUG_KERNEL to TI_OCL_DEBUG.
+
+  * Added host memory allocation functions __malloc_ddr(), __free_ddr(),
+    __malloc_msmc(), and __free_msmc().  These functions have the same
+    interface as standard malloc/free but manages memory from
+    host+dsp shareable memory.  These can be used within the host application.
+
+  * Added dsp memory allocation functions __malloc_ddr(), __free_ddr(),
+    __malloc_msmc(), __free_msmc(), __malloc_l2(), and __free_l2().
+    These functions are available from dsp kernel code to manage memory from
+    the dsp heaps.
+
+    The OpenCL example 'dspheap' has been added to illustrate how the dsp
+    heap memory can be allocated and managed between kernel invocations.
+
+  * Significantly improved OpenCL performance on cache coherency operations
+    for buffer sizes of 4MB and above.
+
+  * The async_workgroup_copy and async_workgroup_strided_copy functions are
+    now implemented to use EDMA channels when available.
+
+  * The number/size of Kernel arguments are now fully compliant with the
+    OpenCL 1.1 spec. Up to 1024 bytes of arguments are supported and vector
+    types can be passed as standalone arguments.
+
+  * On the dsp, the standard malloc() function will now allocate from an
+    8M pool of DDR.
+
+  * The OpenCL package version number can now be obtained by either invoking
+    'clocl --version' or making a standard OpenCL platform query.  The OpenCL
+    'platform' example illustrates how to make an OpenCL platform query.
+
+  * Setting the environment variable TI_OCL_CGT_INSTALL is not required if
+    the C6000 compiler runtime library and header files are located in
+    the ppa package default install path.  TI_OCL_CGT_INSTALL can still be
+    used to specify an alternate search path.
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Fri, 20 Jun 2014 15:22:22 -0500
+
+ti-opencl (0.9.0-0ubuntu3) trusty; urgency=medium
+
+  * Modify the Breaks field to make ti-opencl installable.
+
+ -- Steve Langasek <steve.langasek@ubuntu.com>  Tue, 01 Jul 2014 06:31:51 +0000
+
+ti-opencl (0.9.0-0ubuntu2) trusty; urgency=medium
+
+  * Add missing build-dependency on python, overlooked when building in local
+    chroots.
+
+ -- Steve Langasek <steve.langasek@ubuntu.com>  Mon, 30 Jun 2014 23:08:33 +0000
+
+ti-opencl (0.9.0-0ubuntu1) trusty; urgency=medium
+
+  * Upload to the partner archive.
+  * Update to Standards-Version 3.9.5.
+  * Drop spurious build-dependencies on build-essential and unused packages.
+  * Fix build-dependencies on SDK packages to use final names from the
+    Ubuntu archive.
+  * Build-depend on zlib1g-dev, not zlib1g.
+  * Fix debian/copyright to comply with copyright-format 1.0.
+  * opencl/CMakeLists.txt: add an explict (but unused) binary directory for
+    OCL_BUILTINS_DIR, as required by more recent cmake.
+  * Update debian/copyright for compliance with copyright-format 1.0 and to
+    document the copyright and license for the complete source.
+  * Split binary package into runtime library package and devel package.
+  * Add Conflicts to opencl-headers.
+
+ -- Steve Langasek <steve.langasek@ubuntu.com>  Mon, 23 Jun 2014 17:49:20 -0700
+
+ti-opencl (0.9.0-1~ppa1) precise; urgency=critical
+
+  * Update version number to 0.9.0. Change install path for dsp.out,dsp.syms
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Mon, 07 Apr 2014 10:51:38 -0500
+
+ti-opencl (0.8.2-6~ppa6) precise; urgency=critical
+
+  * Added 'mesa-common-dev' to package Depends.
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Thu, 03 Apr 2014 07:53:34 -0400
+
+ti-opencl (0.8.2-5~ppa5) precise; urgency=critical
+
+  * Update version of mpm-transport
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Fri, 28 Mar 2014 12:41:36 -0400
+
+ti-opencl (0.8.2-4~ppa4) precise; urgency=critical
+
+  * Update to use opencl source code from MCSDK-HPC 174-2014-03-28_09-51-58 nightly
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Fri, 28 Mar 2014 11:28:06 -0400
+
+ti-opencl (0.8.2-3~ppa3) precise; urgency=high
+
+  * Add more dependent packages in Build-Depends
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Thu, 27 Mar 2014 11:48:25 -0400
+
+ti-opencl (0.8.2-2~ppa2) precise; urgency=high
+
+  * Add debhelper in debian/control: Build-Depends
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Wed, 26 Mar 2014 18:48:12 -0400
+
+ti-opencl (0.8.2-1~ppa1) precise; urgency=high
+
+  * Initial release
+
+ -- TI Keystone PPA <ti-keystone-ppa@list.ti.com>  Wed, 26 Mar 2014 11:07:01 -0400

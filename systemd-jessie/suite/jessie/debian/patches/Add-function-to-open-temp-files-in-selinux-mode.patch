@@ -1,0 +1,110 @@
+From: =?utf-8?q?Zbigniew_J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sun, 13 Jul 2014 21:10:38 -0400
+Subject: Add function to open temp files in selinux mode
+
+(cherry picked from commit f7f628b5db770feb8b18990436baefaec55c460b)
+---
+ src/shared/fileio-label.c | 20 ++++++++++++++++++--
+ src/shared/fileio-label.h |  2 ++
+ src/sysusers/sysusers.c   | 15 ++++-----------
+ 3 files changed, 24 insertions(+), 13 deletions(-)
+
+diff --git a/src/shared/fileio-label.c b/src/shared/fileio-label.c
+index 0711826..417ca56 100644
+--- a/src/shared/fileio-label.c
++++ b/src/shared/fileio-label.c
+@@ -25,12 +25,13 @@
+ 
+ #include "fileio-label.h"
+ #include "label.h"
++#include "util.h"
+ 
+ int write_string_file_atomic_label(const char *fn, const char *line) {
+         int r;
+ 
+         r = label_context_set(fn, S_IFREG);
+-        if (r  < 0)
++        if (r < 0)
+                 return r;
+ 
+         write_string_file_atomic(fn, line);
+@@ -44,7 +45,7 @@ int write_env_file_label(const char *fname, char **l) {
+         int r;
+ 
+         r = label_context_set(fname, S_IFREG);
+-        if (r  < 0)
++        if (r < 0)
+                 return r;
+ 
+         write_env_file(fname, l);
+@@ -53,3 +54,18 @@ int write_env_file_label(const char *fname, char **l) {
+ 
+         return r;
+ }
++
++int fopen_temporary_label(const char *target,
++                          const char *path, FILE **f, char **temp_path) {
++        int r;
++
++        r = label_context_set("/etc/passwd", S_IFREG);
++        if (r < 0)
++                return r;
++
++        r = fopen_temporary(path, f, temp_path);
++
++        label_context_clear();
++
++        return r;
++}
+diff --git a/src/shared/fileio-label.h b/src/shared/fileio-label.h
+index fce4fe0..25fa351 100644
+--- a/src/shared/fileio-label.h
++++ b/src/shared/fileio-label.h
+@@ -27,3 +27,5 @@
+ 
+ int write_string_file_atomic_label(const char *fn, const char *line);
+ int write_env_file_label(const char *fname, char **l);
++int fopen_temporary_label(const char *target,
++                          const char *path, FILE **f, char **temp_path);
+diff --git a/src/sysusers/sysusers.c b/src/sysusers/sysusers.c
+index 6ec22cc..bf2fbbc 100644
+--- a/src/sysusers/sysusers.c
++++ b/src/sysusers/sysusers.c
+@@ -35,6 +35,8 @@
+ #include "conf-files.h"
+ #include "copy.h"
+ #include "utf8.h"
++#include "label.h"
++#include "fileio-label.h"
+ 
+ typedef enum ItemType {
+         ADD_USER = 'u',
+@@ -312,11 +314,7 @@ static int write_files(void) {
+                 _cleanup_fclose_ FILE *original = NULL;
+ 
+                 group_path = fix_root("/etc/group");
+-                r = label_context_set("/etc/group", S_IFREG);
+-                if (r < 0)
+-                        goto finish;
+-                r = fopen_temporary(group_path, &group, &group_tmp);
+-                label_context_clear();
++                r = fopen_temporary_label("/etc/group", group_path, &group, &group_tmp);
+                 if (r < 0)
+                         goto finish;
+ 
+@@ -392,14 +390,9 @@ static int write_files(void) {
+                 _cleanup_fclose_ FILE *original = NULL;
+ 
+                 passwd_path = fix_root("/etc/passwd");
+-                r = label_context_set("/etc/passwd", S_IFREG);
++                r = fopen_temporary_label("/etc/passwd", passwd_path, &passwd, &passwd_tmp);
+                 if (r < 0)
+                         goto finish;
+-                r = fopen_temporary(passwd_path, &passwd, &passwd_tmp);
+-                label_context_clear();
+-                if (r < 0) {
+-                        goto finish;
+-                }
+ 
+                 if (fchmod(fileno(passwd), 0644) < 0) {
+                         r = -errno;

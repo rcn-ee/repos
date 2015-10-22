@@ -1,0 +1,204 @@
+libqtxdg (1.2.0-7~bpo90+20150731+1) stretch; urgency=low
+
+  * Rebuild for repos.rcn-ee.com
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Fri, 31 Jul 2015 10:20:54 -0500
+
+libqtxdg (1.2.0-7) unstable; urgency=medium
+
+  * commit 194df9fc35ebe77597a62983bb42ad7ac20a023a
+    Author: Luís Pereira <luis.artur.pereira@gmail.com> 
+    Date:   Mon Jul 13 13:40:57 2015 -0700
+    CMake: Adds Runtime install COMPONENT
+    There are two install components:
+        * Devel Contains all the development files;
+        * Runtime Contains all the runtime needed files.
+
+ -- Alf Gaida <agaida@siduction.org>  Sun, 19 Jul 2015 22:27:48 +0200
+
+libqtxdg (1.2.0-6) unstable; urgency=medium
+
+  * commit b656ffa55f798762150a4e546779b61836a90d7f
+    Author: Luís Pereira <luis.artur.pereira@gmail.com>
+    Date:   Fri Jul 3 03:43:04 2015 -0700
+    Merge branch 'targets'
+    * targets:
+      Drops find_package(), use find_dependency()
+      Marks link libraries as PUBLIC
+      Handles in-tree builds headers the right way. 
+
+ -- Alf Gaida <agaida@siduction.org>  Fri, 03 Jul 2015 15:57:21 +0200
+
+libqtxdg (1.2.0-5) unstable; urgency=medium
+
+  * rebuild  with Qt 5.4.2 
+
+ -- Alf Gaida <agaida@siduction.org>  Tue, 23 Jun 2015 19:23:31 +0200
+
+libqtxdg (1.2.0-4) unstable; urgency=medium
+
+  * commit 5fc3ef738fe5c958a5722652454c9b6a31b04f01
+    Author: Michael Vetter <g.bluehut@gmail.com>
+    Date:   Thu Jun 18 22:30:19 2015 +0200
+    Remove trailing whitespaces
+
+ -- Alf Gaida <agaida@siduction.org>  Sat, 20 Jun 2015 23:21:00 +0200
+
+libqtxdg (1.2.0-2) unstable; urgency=medium
+
+  * new symbols added
+  * commit ab0f65cd6b5b695d24c5020c1b31104a989728d4
+    Author: Luís Pereira <luis.artur.pereira@gmail.com>
+    Date:   Thu Apr 2 16:25:59 2015 -0700
+    Backports Fixed icons lookup in QIcon::fromTheme
+    We already supported multile directories. But we didn't support dashes to
+    separate levels of specificity in icon names.
+    Closes lxde/libqtxdg#54.
+
+ -- Alf Gaida <agaida@siduction.org>  Thu, 14 May 2015 00:50:05 +0200
+
+libqtxdg (1.2.0-1) unstable; urgency=medium
+
+  * commit da936792f2376327db2c287348738ede394e7bcc
+    Release 1.2.0
+
+ -- Alf Gaida <agaida@siduction.org>  Sun, 29 Mar 2015 15:10:20 +0200
+
+libqtxdg (1.1.0-14a) unstable; urgency=medium
+
+  * fix https://github.com/lxde/lxqt/issues/563
+  * commit d2c9635876eb054f5ee19de7c306a94539448caa
+    Fixes XdgDesktop::isShow() caching mechanism
+    The cache mechanism was totally broken. It stored the last mIsShow value.
+    And that's it. It didn't take into account the environment.
+    It didn't work with straightforward code like this:
+    for (int i = 0; i < N; ++i)
+
+ -- Alf Gaida <agaida@siduction.org>  Sun, 29 Mar 2015 01:06:24 +0100
+
+libqtxdg (1.1.0-13) unstable; urgency=low
+
+  * commit d3ba6ef8b248f5d80ce5b3c0c0cd7047eb8452d5
+    Add QtDBus/Qt5DBus dependency
+    We depend on it for the DBusActivation support.
+
+ -- Alf Gaida <agaida@siduction.org>  Thu, 26 Mar 2015 01:33:02 +0100
+
+libqtxdg (1.1.0-12) unstable; urgency=medium
+
+  * commit 0a9abfeed2106ac7ab3c7ec8240bb68ffd5ae813
+    Fixes an Qt4 FTBFS
+    QProcess::nullDevice() is just sugar for "/dev/null" on everything except
+    Windows.
+  * qtbase5-private-dev added as build dependency 
+
+ -- Alf Gaida <agaida@siduction.org>  Sat, 14 Mar 2015 21:44:53 +0100
+ 
+libqtxdg (1.1.0-9) unstable; urgency=medium
+
+  * commit 9bc56a68b53cab26a0b97abb218394cb1e3b082f
+    Adds a list of special non detachable execs
+    .   
+    Some executables (pkexec) don't work with QProcess::startDetached().
+    Instead of calling QProcess::start(), which in some situations can lead
+    to the executable being killed as an result of his parent kill, we maintain
+    a list of executables that don't cope with QProcess::startDetached() and
+
+ -- Alf Gaida <agaida@siduction.org>  Thu, 19 Mar 2015 17:53:09 +0100
+
+libqtxdg (1.1.0-8) unstable; urgency=medium
+
+  * fix symbols
+
+ -- Alf Gaida <agaida@siduction.org>  Sun, 08 Mar 2015 20:38:52 +0100
+
+libqtxdg (1.1.0-7) unstable; urgency=medium
+
+  * commit 90775840a6223540e93cacc9ca41b2e896bfae5b
+    Replace empty quotes by QString()
+    It's faster. 
+
+ -- Alf Gaida <agaida@siduction.org>  Sat, 07 Mar 2015 02:02:52 +0100
+
+libqtxdg (1.1.0-6) unstable; urgency=medium
+
+  * some fixes in debian foo 
+
+ -- Alf Gaida <agaida@siduction.org>  Thu, 05 Mar 2015 01:00:59 +0100
+
+libqtxdg (1.1.0-5) unstable; urgency=medium
+
+  * commit 5058cd61611a712ed11ba6e998e9444e041b5d43
+    Ignore empty dirs in xdgDirList()
+    We also don't append the postfix. It just doesn't make sense.
+
+ -- Alf Gaida <agaida@siduction.org>  Wed, 04 Mar 2015 23:35:37 +0100
+
+libqtxdg (1.1.0-4) unstable; urgency=medium
+
+  * commit dce043f2c29c096f950f9d04d71ad2e8e705f36b
+    Makes needed helper functions available to tests
+    Commits f2fde114628bf85fe107363532f67f49a5a3ccf9 and it's Clang equivalent:
+    e082464be5cd48d16c43c6de1cfd4366fb1bed37 hide unneeded symbols.                                                                  
+    The tests need these two functions tough. We export them only if the tests
+
+ -- Alf Gaida <agaida@siduction.org>  Mon, 02 Mar 2015 19:35:42 +0100
+
+libqtxdg (1.1.0-3) unstable; urgency=medium
+
+  * commit 6a546bce19bc7fecc040c5c198e8cd854f119684
+    Merge branch 'sync-qiconloader'
+  * set urgency to low
+  * fixed symbols
+
+ -- Alf Gaida <agaida@siduction.org>  Thu, 12 Feb 2015 00:31:46 +0100
+
+libqtxdg (1.1.0-1) unstable; urgency=low
+
+  * RELEASE 1.1.0
+
+ -- Alf Gaida <agaida@siduction.org>  Sun, 08 Feb 2015 16:45:51 +0100
+
+libqtxdg (1.0.0-16) experimental; urgency=medium
+
+  * qiconloader branch taken
+
+ -- Alf Gaida <agaida@siduction.org>  Tue, 03 Feb 2015 20:31:23 +0100
+
+libqtxdg (1.0.0-15) experimental; urgency=medium
+
+  * commit d98585a5519e0aba2c6290ddb652953515170b2f
+    Makes the Qt5 build the default
+    Drops USE_QT5 option. Adds an USE_QT4 option.
+
+ -- Alf Gaida <agaida@siduction.org>  Sun, 18 Jan 2015 20:31:59 +0100
+
+libqtxdg (1.0.0-14) experimental; urgency=medium
+
+  * fix symbols
+  * commit 0dece06c9688da9c601a55b90dbf21a4118255a5
+    XdgDesktopFileCache::getFile(): Don't insert/removes non existent files
+    We have to check if fileName really exists. Fixes #39
+
+ -- Alf Gaida <agaida@siduction.org>  Tue, 13 Jan 2015 01:35:54 +0100
+
+libqtxdg (1.0.0-3) unstable; urgency=medium
+
+  * bump standards to 3.9.6
+  * remove the not needed build dependency libegl1-mesa-dev, needed
+    because of a now fixed bug in Qt 5.3.1
+  * set min Qt 5 version to 5.3.2  in build dependencies
+
+ -- Alf Gaida <agaida@siduction.org>  Tue, 14 Oct 2014 22:12:13 +0200
+
+libqtxdg (1.0.0-2) unstable; urgency=medium
+
+  * qiconfix copyright fixed
+
+ -- Alf Gaida <agaida@siduction.org>  Tue, 14 Oct 2014 22:06:21 +0200
+
+libqtxdg (1.0.0-1) unstable; urgency=low
+
+  * Initial release (Closes: #757133)
+
+ -- ChangZhuo Chen (陳昌倬) <czchen@gmail.com>  Sun, 07 Sep 2014 18:23:11 +0800

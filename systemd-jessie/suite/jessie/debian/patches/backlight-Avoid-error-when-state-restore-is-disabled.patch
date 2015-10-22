@@ -1,0 +1,31 @@
+From: Michael Biebl <biebl@debian.org>
+Date: Thu, 11 Sep 2014 00:49:36 +0200
+Subject: backlight: Avoid error when state restore is disabled
+
+When the state restore is disabled, we would print:
+"Unknown verb: load" instead of simply skipping loading the
+state.
+
+(cherry picked from commit b76388e123e8d73ded1fd53937d816b314948517)
+---
+ src/backlight/backlight.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/backlight/backlight.c b/src/backlight/backlight.c
+index 4d94ebf..0a2bac6 100644
+--- a/src/backlight/backlight.c
++++ b/src/backlight/backlight.c
+@@ -372,9 +372,12 @@ int main(int argc, char *argv[]) {
+          * device probing should be complete), so that the validity
+          * check at boot time doesn't have to be reliable. */
+ 
+-        if (streq(argv[1], "load") && shall_restore_state()) {
++        if (streq(argv[1], "load")) {
+                 _cleanup_free_ char *value = NULL;
+ 
++                if (!shall_restore_state())
++                        return EXIT_SUCCESS;
++
+                 if (!validate_device(udev, device))
+                         return EXIT_SUCCESS;
+ 

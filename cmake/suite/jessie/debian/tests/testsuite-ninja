@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -e
+
+SRCDIR="$(pwd)"
+
+cd $ADTTMP
+
+cmake -DCMake_TEST_EXTERNAL_CMAKE=/usr/bin -GNinja $SRCDIR
+ninja -v
+CTEST_OUTPUT_ON_FAILURE=1 ctest -E CTestTestUpload -E BootstrapTest

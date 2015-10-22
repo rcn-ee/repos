@@ -1,37 +1,43 @@
-From 5a42f6856354627a82f27b85d9806307c0027414 Mon Sep 17 00:00:00 2001
+From 035c8b059a46be439379588f05dd93d55a50d8f8 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Fri, 20 Mar 2015 11:27:24 -0500
+Date: Tue, 25 Aug 2015 15:10:47 -0500
 Subject: [PATCH] add etnaviv
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  Makefile.am                     |    5 +
  configure.ac                    |   14 +
- etnaviv/Makefile.am             |   22 +
+ etnaviv/Android.mk              |   18 +
+ etnaviv/Makefile.am             |   26 +
+ etnaviv/Makefile.sources        |    9 +
  etnaviv/etnaviv_bo.c            |  327 +++++++++
- etnaviv/etnaviv_cmd_stream.c    |  265 +++++++
+ etnaviv/etnaviv_cmd_stream.c    |  261 +++++++
  etnaviv/etnaviv_device.c        |   99 +++
- etnaviv/etnaviv_drm.h           |  214 ++++++
- etnaviv/etnaviv_drmif.h         |  150 ++++
- etnaviv/etnaviv_pipe.c          |  182 +++++
- etnaviv/etnaviv_priv.h          |  169 +++++
+ etnaviv/etnaviv_drm.h           |  232 ++++++
+ etnaviv/etnaviv_drmif.h         |  156 +++++
+ etnaviv/etnaviv_gpu.c           |  161 +++++
+ etnaviv/etnaviv_pipe.c          |   74 ++
+ etnaviv/etnaviv_priv.h          |  174 +++++
  etnaviv/libdrm_etnaviv.pc.in    |   11 +
  etnaviv/list.h                  |  137 ++++
  tests/Makefile.am               |    4 +
  tests/etnaviv/Makefile.am       |   17 +
  tests/etnaviv/cmdstream.xml.h   |  218 ++++++
- tests/etnaviv/etnaviv_2d_test.c |  231 ++++++
+ tests/etnaviv/etnaviv_2d_test.c |  240 +++++++
  tests/etnaviv/state.xml.h       |  348 +++++++++
  tests/etnaviv/state_2d.xml.h    | 1473 +++++++++++++++++++++++++++++++++++++++
  tests/etnaviv/write_bmp.c       |  152 ++++
  tests/etnaviv/write_bmp.h       |   34 +
- 20 files changed, 4072 insertions(+)
+ 23 files changed, 4190 insertions(+)
+ create mode 100644 etnaviv/Android.mk
  create mode 100644 etnaviv/Makefile.am
+ create mode 100644 etnaviv/Makefile.sources
  create mode 100644 etnaviv/etnaviv_bo.c
  create mode 100644 etnaviv/etnaviv_cmd_stream.c
  create mode 100644 etnaviv/etnaviv_device.c
  create mode 100644 etnaviv/etnaviv_drm.h
  create mode 100644 etnaviv/etnaviv_drmif.h
+ create mode 100644 etnaviv/etnaviv_gpu.c
  create mode 100644 etnaviv/etnaviv_pipe.c
  create mode 100644 etnaviv/etnaviv_priv.h
  create mode 100644 etnaviv/libdrm_etnaviv.pc.in
@@ -45,10 +51,10 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  create mode 100644 tests/etnaviv/write_bmp.h
 
 diff --git a/Makefile.am b/Makefile.am
-index 42d3d7f..36bdb12 100644
+index 55e39a5..6d24798 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -73,6 +73,10 @@ if HAVE_TEGRA
+@@ -78,6 +78,10 @@ if HAVE_TEGRA
  TEGRA_SUBDIR = tegra
  endif
  
@@ -56,22 +62,22 @@ index 42d3d7f..36bdb12 100644
 +ETNAVIV_SUBDIR = etnaviv
 +endif
 +
- SUBDIRS = \
- 	. \
- 	$(LIBKMS_SUBDIR) \
-@@ -83,6 +87,7 @@ SUBDIRS = \
+ if BUILD_MANPAGES
+ if HAVE_MANPAGES_STYLESHEET
+ MAN_SUBDIR = man
+@@ -95,6 +99,7 @@ SUBDIRS = \
  	$(EXYNOS_SUBDIR) \
  	$(FREEDRENO_SUBDIR) \
  	$(TEGRA_SUBDIR) \
 +	$(ETNAVIV_SUBDIR) \
  	tests \
- 	man
+ 	$(MAN_SUBDIR)
  
 diff --git a/configure.ac b/configure.ac
-index 155d577..31de6e5 100644
+index f07507b..d5c0045 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -109,6 +109,11 @@ AC_ARG_ENABLE(tegra-experimental-api,
+@@ -126,6 +126,11 @@ AC_ARG_ENABLE(tegra-experimental-api,
  	      [Enable support for Tegra's experimental API (default: disabled)]),
  	      [TEGRA=$enableval], [TEGRA=no])
  
@@ -83,7 +89,7 @@ index 155d577..31de6e5 100644
  AC_ARG_ENABLE(install-test-programs,
  		  AS_HELP_STRING([--enable-install-test-programs],
  		  [Install test programs (default: no)]),
-@@ -341,6 +346,11 @@ if test "x$TEGRA" = xyes; then
+@@ -391,6 +396,11 @@ if test "x$TEGRA" = xyes; then
  	AC_DEFINE(HAVE_TEGRA, 1, [Have Tegra support])
  fi
  
@@ -95,7 +101,7 @@ index 155d577..31de6e5 100644
  AM_CONDITIONAL(HAVE_INSTALL_TESTS, [test "x$INSTALL_TESTS" = xyes])
  if test "x$INSTALL_TESTS" = xyes; then
  	AC_DEFINE(HAVE_INSTALL_TESTS, 1, [Install test programs])
-@@ -442,6 +452,8 @@ AC_CONFIG_FILES([
+@@ -496,6 +506,8 @@ AC_CONFIG_FILES([
  	freedreno/libdrm_freedreno.pc
  	tegra/Makefile
  	tegra/libdrm_tegra.pc
@@ -104,7 +110,7 @@ index 155d577..31de6e5 100644
  	tests/Makefile
  	tests/modeprint/Makefile
  	tests/modetest/Makefile
-@@ -452,6 +464,7 @@ AC_CONFIG_FILES([
+@@ -507,6 +519,7 @@ AC_CONFIG_FILES([
  	tests/exynos/Makefile
  	tests/tegra/Makefile
  	tests/nouveau/Makefile
@@ -112,18 +118,45 @@ index 155d577..31de6e5 100644
  	man/Makefile
  	libdrm.pc])
  AC_OUTPUT
-@@ -468,4 +481,5 @@ echo "  OMAP API       $OMAP"
+@@ -524,4 +537,5 @@ echo "  OMAP API       $OMAP"
  echo "  EXYNOS API     $EXYNOS"
  echo "  Freedreno API  $FREEDRENO (kgsl: $FREEDRENO_KGSL)"
  echo "  Tegra API      $TEGRA"
 +echo "  Etnaviv API    $ETNAVIV"
  echo ""
+diff --git a/etnaviv/Android.mk b/etnaviv/Android.mk
+new file mode 100644
+index 0000000..980ed90
+--- /dev/null
++++ b/etnaviv/Android.mk
+@@ -0,0 +1,18 @@
++LOCAL_PATH := $(call my-dir)
++include $(CLEAR_VARS)
++
++# Import variables LIBDRM_ETNAVIV_FILES, LIBDRM_ETNAVIV_H_FILES
++include $(LOCAL_PATH)/Makefile.sources
++
++LOCAL_MODULE := libdrm_etnaviv
++LOCAL_MODULE_TAGS := optional
++
++LOCAL_SHARED_LIBRARIES := libdrm
++
++LOCAL_SRC_FILES := $(LIBDRM_ETNAVIV_FILES)
++LOCAL_EXPORT_C_INCLUDE_DIRS := $(LOCAL_PATH)
++
++LOCAL_CFLAGS := \
++	-DHAVE_LIBDRM_ATOMIC_PRIMITIVES=1
++
++include $(BUILD_SHARED_LIBRARY)
 diff --git a/etnaviv/Makefile.am b/etnaviv/Makefile.am
 new file mode 100644
-index 0000000..8b0bc41
+index 0000000..c8ad0a9
 --- /dev/null
 +++ b/etnaviv/Makefile.am
-@@ -0,0 +1,22 @@
+@@ -0,0 +1,26 @@
++AUTOMAKE_OPTIONS=subdir-objects
++include Makefile.sources
++
 +AM_CFLAGS = \
 +	$(WARN_CFLAGS) \
 +	-I$(top_srcdir) \
@@ -133,19 +166,35 @@ index 0000000..8b0bc41
 +libdrm_etnaviv_ladir = $(libdir)
 +libdrm_etnaviv_la_LTLIBRARIES = libdrm_etnaviv.la
 +libdrm_etnaviv_la_LDFLAGS = -version-number 0:0:0 -no-undefined
-+libdrm_etnaviv_la_LIBADD = ../libdrm.la @PTHREADSTUBS_LIBS@
++libdrm_etnaviv_la_LIBADD = \
++	../libdrm.la \
++	@PTHREADSTUBS_LIBS@ \
++	@CLOCK_LIB@
 +
-+libdrm_etnaviv_la_SOURCES = \
++libdrm_etnaviv_la_SOURCES = $(LIBDRM_ETNAVIV_FILES)
++
++libdrm_etnavivincludedir = ${includedir}/libdrm
++libdrm_etnavivinclude_HEADERS = $(LIBDRM_ETNAVIV_H_FILES)
++
++pkgconfigdir = @pkgconfigdir@
++pkgconfig_DATA = libdrm_etnaviv.pc
++
++EXTRA_DIST = Android.mk
+diff --git a/etnaviv/Makefile.sources b/etnaviv/Makefile.sources
+new file mode 100644
+index 0000000..e880b26
+--- /dev/null
++++ b/etnaviv/Makefile.sources
+@@ -0,0 +1,9 @@
++LIBDRM_ETNAVIV_FILES := \
 +	etnaviv_device.c \
++	etnaviv_gpu.c \
 +	etnaviv_bo.c \
 +	etnaviv_pipe.c \
 +	etnaviv_cmd_stream.c
 +
-+libdrm_etnavivincludedir = ${includedir}/libdrm
-+libdrm_etnavivinclude_HEADERS = etnaviv_drmif.h
-+
-+pkgconfigdir = @pkgconfigdir@
-+pkgconfig_DATA = libdrm_etnaviv.pc
++LIBDRM_ETNAVIV_H_FILES := \
++	etnaviv_drmif.h
 diff --git a/etnaviv/etnaviv_bo.c b/etnaviv/etnaviv_bo.c
 new file mode 100644
 index 0000000..81f0d3c
@@ -481,10 +530,10 @@ index 0000000..81f0d3c
 +
 diff --git a/etnaviv/etnaviv_cmd_stream.c b/etnaviv/etnaviv_cmd_stream.c
 new file mode 100644
-index 0000000..1e38ae4
+index 0000000..2c695d8
 --- /dev/null
 +++ b/etnaviv/etnaviv_cmd_stream.c
-@@ -0,0 +1,265 @@
+@@ -0,0 +1,261 @@
 +/*
 + * Copyright (C) 2014-2015 Etnaviv Project
 + *
@@ -559,7 +608,7 @@ index 0000000..1e38ae4
 +
 +	for (i = 0; i < NUM_CMD_STREAMS; i++) {
 +		void *tmp;
-+		stream->stream[i] = etna_bo_new(pipe->dev, CMD_STREAM_SIZE, ETNA_BO_CMDSTREAM);
++		stream->stream[i] = etna_bo_new(pipe->gpu->dev, CMD_STREAM_SIZE, ETNA_BO_CMDSTREAM);
 +
 +		if (!stream->stream[i]) {
 +			ERROR_MSG("allocation failed");
@@ -681,27 +730,29 @@ index 0000000..1e38ae4
 +static void flush(struct etna_cmd_stream *stream)
 +{
 +	int ret, id = stream->pipe->id;
++	struct etna_gpu *gpu = stream->pipe->gpu;
 +	struct etna_bo *etna_bo = NULL, *tmp;
 +	struct drm_etnaviv_gem_submit_cmd *cmd = NULL;
-+
-+	struct drm_etnaviv_gem_submit req = {
-+			.pipe = stream->pipe->id,
-+	};
++	struct drm_etnaviv_gem_submit req;
 +
 +	/* we are done with cpu access */
 +	etna_bo_cpu_fini(stream->stream[stream->current_stream]);
 +
 +	cmd = stream->submit_cmd;
++	cmd->type = ETNA_SUBMIT_CMD_BUF;
 +	cmd->submit_idx = bo2idx(stream, stream->stream[stream->current_stream], ETNA_RELOC_READ);
 +	cmd->size = stream->offset * 4; /* in bytes */
 +	cmd->relocs = VOID2U64(stream->relocs);
 +	cmd->nr_relocs = stream->nr_relocs;
 +
-+	req.cmd = VOID2U64(cmd);
++	req.pipe = gpu->core;
++	req.exec_state = id;
++	req.cmds = VOID2U64(cmd);
++	req.nr_cmds = 1;
 +	req.bos = VOID2U64(stream->bos);
 +	req.nr_bos = stream->nr_bos;
 +
-+	ret = drmCommandWriteRead(stream->pipe->dev->fd, DRM_ETNAVIV_GEM_SUBMIT,
++	ret = drmCommandWriteRead(gpu->dev->fd, DRM_ETNAVIV_GEM_SUBMIT,
 +			&req, sizeof(req));
 +
 +	if (ret) {
@@ -740,15 +791,9 @@ index 0000000..1e38ae4
 +
 +	reloc->reloc_idx = bo2idx(stream, r->bo, r->flags);
 +	reloc->reloc_offset = r->offset;
-+	reloc->or = r->or;
-+	reloc->shift = r->shift;
 +	reloc->submit_offset = stream->offset * 4; /* in bytes */
 +
-+	if (r->shift < 0)
-+		addr >>= -r->shift;
-+	else
-+		addr <<= r->shift;
-+	etna_cmd_stream_emit(stream, addr | r->or);
++	etna_cmd_stream_emit(stream, addr);
 +}
 diff --git a/etnaviv/etnaviv_device.c b/etnaviv/etnaviv_device.c
 new file mode 100644
@@ -857,13 +902,12 @@ index 0000000..506e851
 +
 diff --git a/etnaviv/etnaviv_drm.h b/etnaviv/etnaviv_drm.h
 new file mode 100644
-index 0000000..009dfe9
+index 0000000..ddc7b20
 --- /dev/null
 +++ b/etnaviv/etnaviv_drm.h
-@@ -0,0 +1,214 @@
+@@ -0,0 +1,232 @@
 +/*
-+ * Copyright (C) 2013 Red Hat
-+ * Author: Rob Clark <robdclark@gmail.com>
++ * Copyright (C) 2015 Etnaviv Project
 + *
 + * This program is free software; you can redistribute it and/or modify it
 + * under the terms of the GNU General Public License version 2 as published by
@@ -881,14 +925,11 @@ index 0000000..009dfe9
 +#ifndef __ETNAVIV_DRM_H__
 +#define __ETNAVIV_DRM_H__
 +
-+#define __user
-+
-+#include <stddef.h>
 +#include "drm.h"
 +
 +/* Please note that modifications to all structs defined here are
 + * subject to backwards-compatibility constraints:
-+ *  1) Do not use pointers, use uint64_t instead for 32 bit / 64 bit
++ *  1) Do not use pointers, use __u64 instead for 32 bit / 64 bit
 + *     user/kernel compatibility
 + *  2) Keep fields aligned to their size
 + *  3) Because of how drm_ioctl() works, we can add new fields at
@@ -899,19 +940,13 @@ index 0000000..009dfe9
 + *     fields.. so that has to be somehow ok.
 + */
 +
-+#define ETNA_PIPE_3D      0x00
-+#define ETNA_PIPE_2D      0x01
-+#define ETNA_PIPE_VG      0x02
-+
-+#define ETNA_MAX_PIPES    3
-+
 +/* timeouts are specified in clock-monotonic absolute times (to simplify
 + * restarting interrupted ioctls).  The following struct is logically the
 + * same as 'struct timespec' but 32/64b ABI safe.
 + */
 +struct drm_etnaviv_timespec {
-+	int64_t tv_sec;          /* seconds */
-+	int64_t tv_nsec;         /* nanoseconds */
++	__s64 tv_sec;          /* seconds */
++	__s64 tv_nsec;         /* nanoseconds */
 +};
 +
 +#define ETNAVIV_PARAM_GPU_MODEL                     0x01
@@ -933,12 +968,12 @@ index 0000000..009dfe9
 +#define ETNAVIV_PARAM_GPU_INSTRUCTION_COUNT         0x18
 +#define ETNAVIV_PARAM_GPU_NUM_CONSTANTS             0x19
 +
-+//#define MSM_PARAM_GMEM_SIZE  0x02
++#define ETNA_MAX_PIPES 4
 +
 +struct drm_etnaviv_param {
-+	uint32_t pipe;           /* in, ETNA_PIPE_x */
-+	uint32_t param;          /* in, ETNAVIV_PARAM_x */
-+	uint64_t value;          /* out (get_param) or in (set_param) */
++	__u32 pipe;           /* in */
++	__u32 param;          /* in, ETNAVIV_PARAM_x */
++	__u64 value;          /* out (get_param) or in (set_param) */
 +};
 +
 +/*
@@ -946,23 +981,24 @@ index 0000000..009dfe9
 + */
 +
 +#define ETNA_BO_CMDSTREAM    0x00000001
-+#define ETNA_BO_SCANOUT      0x00000002
 +#define ETNA_BO_CACHE_MASK   0x000f0000
 +/* cache modes */
 +#define ETNA_BO_CACHED       0x00010000
 +#define ETNA_BO_WC           0x00020000
 +#define ETNA_BO_UNCACHED     0x00040000
++/* map flags */
++#define ETNA_BO_FORCE_MMU    0x00100000
 +
 +struct drm_etnaviv_gem_new {
-+	uint64_t size;           /* in */
-+	uint32_t flags;          /* in, mask of ETNA_BO_x */
-+	uint32_t handle;         /* out */
++	__u64 size;           /* in */
++	__u32 flags;          /* in, mask of ETNA_BO_x */
++	__u32 handle;         /* out */
 +};
 +
 +struct drm_etnaviv_gem_info {
-+	uint32_t handle;         /* in */
-+	uint32_t pad;
-+	uint64_t offset;         /* out, offset to pass to mmap() */
++	__u32 handle;         /* in */
++	__u32 pad;
++	__u64 offset;         /* out, offset to pass to mmap() */
 +};
 +
 +#define ETNA_PREP_READ        0x01
@@ -970,13 +1006,13 @@ index 0000000..009dfe9
 +#define ETNA_PREP_NOSYNC      0x04
 +
 +struct drm_etnaviv_gem_cpu_prep {
-+	uint32_t handle;         /* in */
-+	uint32_t op;             /* in, mask of ETNA_PREP_x */
++	__u32 handle;         /* in */
++	__u32 op;             /* in, mask of ETNA_PREP_x */
 +	struct drm_etnaviv_timespec timeout;   /* in */
 +};
 +
 +struct drm_etnaviv_gem_cpu_fini {
-+	uint32_t handle;         /* in */
++	__u32 handle;         /* in */
 +};
 +
 +/*
@@ -984,30 +1020,32 @@ index 0000000..009dfe9
 + */
 +
 +/* The value written into the cmdstream is logically:
-+ *
-+ *   ((relocbuf->gpuaddr + reloc_offset) << shift) | or
-+ *
-+ * When we have GPU's w/ >32bit ptrs, it should be possible to deal
-+ * with this by emit'ing two reloc entries with appropriate shift
-+ * values.  Or a new ETNA_SUBMIT_CMD_x type would also be an option.
++ * relocbuf->gpuaddr + reloc_offset
 + *
 + * NOTE that reloc's must be sorted by order of increasing submit_offset,
 + * otherwise EINVAL.
 + */
 +struct drm_etnaviv_gem_submit_reloc {
-+	uint32_t submit_offset;  /* in, offset from submit_bo */
-+	uint32_t or;             /* in, value OR'd with result */
-+	int32_t  shift;          /* in, amount of left shift (can be negative) */
-+	uint32_t reloc_idx;      /* in, index of reloc_bo buffer */
-+	uint64_t reloc_offset;   /* in, offset from start of reloc_bo */
++	__u32 submit_offset;  /* in, offset from submit_bo */
++	__u32 reloc_idx;      /* in, index of reloc_bo buffer */
++	__u64 reloc_offset;   /* in, offset from start of reloc_bo */
 +};
 +
++/* submit-types:
++ *   BUF - this cmd buffer is executed normally.
++ *   CTX_RESTORE_BUF - only executed if there has been a GPU context
++ *      switch since the last SUBMIT ioctl
++ */
++#define ETNA_SUBMIT_CMD_BUF             0x0001
++#define ETNA_SUBMIT_CMD_CTX_RESTORE_BUF 0x0002
 +struct drm_etnaviv_gem_submit_cmd {
-+	uint32_t submit_idx;     /* in, index of submit_bo cmdstream buffer */
-+	uint32_t size;           /* in, cmdstream size */
-+	uint32_t pad;
-+	uint32_t nr_relocs;      /* in, number of submit_reloc's */
-+	uint64_t __user relocs;  /* in, ptr to array of submit_reloc's */
++	__u32 type;           /* in, one of ETNA_SUBMIT_CMD_x */
++	__u32 submit_idx;     /* in, index of submit_bo cmdstream buffer */
++	__u32 submit_offset;  /* in, offset into submit_bo */
++	__u32 size;           /* in, cmdstream size */
++	__u32 pad;
++	__u32 nr_relocs;      /* in, number of submit_reloc's */
++	__u64 relocs;         /* in, ptr to array of submit_reloc's */
 +};
 +
 +/* Each buffer referenced elsewhere in the cmdstream submit (ie. the
@@ -1024,21 +1062,27 @@ index 0000000..009dfe9
 +#define ETNA_SUBMIT_BO_READ             0x0001
 +#define ETNA_SUBMIT_BO_WRITE            0x0002
 +struct drm_etnaviv_gem_submit_bo {
-+	uint32_t flags;          /* in, mask of ETNA_SUBMIT_BO_x */
-+	uint32_t handle;         /* in, GEM handle */
++	__u32 flags;          /* in, mask of ETNA_SUBMIT_BO_x */
++	__u32 handle;         /* in, GEM handle */
++	__u64 presumed;       /* in/out, presumed buffer address */
 +};
 +
 +/* Each cmdstream submit consists of a table of buffers involved, and
 + * one or more cmdstream buffers.  This allows for conditional execution
 + * (context-restore), and IB buffers needed for per tile/bin draw cmds.
 + */
++#define ETNA_PIPE_3D      0x00
++#define ETNA_PIPE_2D      0x01
++#define ETNA_PIPE_VG      0x02
 +struct drm_etnaviv_gem_submit {
-+	uint32_t pipe;           /* in, ETNA_PIPE_x */
-+	uint32_t fence;          /* out */
-+	uint32_t nr_bos;         /* in, number of submit_bo's */
-+	uint32_t pad;
-+	uint64_t __user cmd;     /* in, ptr to submit_cmd */
-+	uint64_t __user bos;     /* in, ptr to array of submit_bo's */
++	__u32 pipe;           /* in */
++	__u32 exec_state;     /* in, initial execution state (ETNA_PIPE_x) */
++	__u32 fence;          /* out */
++	__u32 nr_bos;         /* in, number of submit_bo's */
++	__u32 nr_cmds;        /* in, number of submit_cmd's */
++	__u32 pad;
++	__u64 bos;            /* in, ptr to array of submit_bo's */
++	__u64 cmds;           /* in, ptr to array of submit_cmd's */
 +};
 +
 +/* The normal way to synchronize with the GPU is just to CPU_PREP on
@@ -1049,14 +1093,29 @@ index 0000000..009dfe9
 + * APIs without requiring a dummy bo to synchronize on.
 + */
 +struct drm_etnaviv_wait_fence {
-+	uint32_t pipe;           /* in, ETNA_PIPE_x */
-+	uint32_t fence;          /* in */
++	__u32 pipe;           /* in */
++	__u32 fence;          /* in */
 +	struct drm_etnaviv_timespec timeout;   /* in */
++};
++
++#define ETNA_USERPTR_READ	0x01
++#define ETNA_USERPTR_WRITE	0x02
++struct drm_etnaviv_gem_userptr {
++	__u64 user_ptr;	/* in, page aligned user pointer */
++	__u64 user_size;	/* in, page aligned user size */
++	__u32 flags;		/* in, flags */
++	__u32 handle;	/* out, non-zero handle */
++};
++
++struct drm_etnaviv_gem_wait {
++	__u32 pipe;				/* in */
++	__u32 handle;				/* in, bo to be waited for */
++	struct drm_etnaviv_timespec timeout;	/* in */
 +};
 +
 +#define DRM_ETNAVIV_GET_PARAM          0x00
 +/* placeholder:
-+#define DRM_MSM_SET_PARAM              0x01
++#define DRM_ETNAVIV_SET_PARAM          0x01
 + */
 +#define DRM_ETNAVIV_GEM_NEW            0x02
 +#define DRM_ETNAVIV_GEM_INFO           0x03
@@ -1064,23 +1123,27 @@ index 0000000..009dfe9
 +#define DRM_ETNAVIV_GEM_CPU_FINI       0x05
 +#define DRM_ETNAVIV_GEM_SUBMIT         0x06
 +#define DRM_ETNAVIV_WAIT_FENCE         0x07
-+#define DRM_ETNAVIV_NUM_IOCTLS         0x08
++#define DRM_ETNAVIV_GEM_USERPTR        0x08
++#define DRM_ETNAVIV_GEM_WAIT           0x09
++#define DRM_ETNAVIV_NUM_IOCTLS         0x0a
 +
 +#define DRM_IOCTL_ETNAVIV_GET_PARAM    DRM_IOWR(DRM_COMMAND_BASE + DRM_ETNAVIV_GET_PARAM, struct drm_etnaviv_param)
 +#define DRM_IOCTL_ETNAVIV_GEM_NEW      DRM_IOWR(DRM_COMMAND_BASE + DRM_ETNAVIV_GEM_NEW, struct drm_etnaviv_gem_new)
 +#define DRM_IOCTL_ETNAVIV_GEM_INFO     DRM_IOWR(DRM_COMMAND_BASE + DRM_ETNAVIV_GEM_INFO, struct drm_etnaviv_gem_info)
-+#define DRM_IOCTL_ETNAVIV_GEM_CPU_PREP DRM_IOW (DRM_COMMAND_BASE + DRM_ETNAVIV_GEM_CPU_PREP, struct drm_etnaviv_gem_cpu_prep)
-+#define DRM_IOCTL_ETNAVIV_GEM_CPU_FINI DRM_IOW (DRM_COMMAND_BASE + DRM_ETNAVIV_GEM_CPU_FINI, struct drm_etnaviv_gem_cpu_fini)
++#define DRM_IOCTL_ETNAVIV_GEM_CPU_PREP DRM_IOW(DRM_COMMAND_BASE + DRM_ETNAVIV_GEM_CPU_PREP, struct drm_etnaviv_gem_cpu_prep)
++#define DRM_IOCTL_ETNAVIV_GEM_CPU_FINI DRM_IOW(DRM_COMMAND_BASE + DRM_ETNAVIV_GEM_CPU_FINI, struct drm_etnaviv_gem_cpu_fini)
 +#define DRM_IOCTL_ETNAVIV_GEM_SUBMIT   DRM_IOWR(DRM_COMMAND_BASE + DRM_ETNAVIV_GEM_SUBMIT, struct drm_etnaviv_gem_submit)
-+#define DRM_IOCTL_ETNAVIV_WAIT_FENCE   DRM_IOW (DRM_COMMAND_BASE + DRM_ETNAVIV_WAIT_FENCE, struct drm_etnaviv_wait_fence)
++#define DRM_IOCTL_ETNAVIV_WAIT_FENCE   DRM_IOW(DRM_COMMAND_BASE + DRM_ETNAVIV_WAIT_FENCE, struct drm_etnaviv_wait_fence)
++#define DRM_IOCTL_ETNAVIV_GEM_USERPTR  DRM_IOWR(DRM_COMMAND_BASE + DRM_ETNAVIV_GEM_USERPTR, struct drm_etnaviv_gem_userptr)
++#define DRM_IOCTL_ETNAVIV_GEM_WAIT     DRM_IOW(DRM_COMMAND_BASE + DRM_ETNAVIV_GEM_WAIT, struct drm_etnaviv_gem_wait)
 +
 +#endif /* __ETNAVIV_DRM_H__ */
 diff --git a/etnaviv/etnaviv_drmif.h b/etnaviv/etnaviv_drmif.h
 new file mode 100644
-index 0000000..cc9dfbd
+index 0000000..ecf0d23
 --- /dev/null
 +++ b/etnaviv/etnaviv_drmif.h
-@@ -0,0 +1,150 @@
+@@ -0,0 +1,156 @@
 +/*
 + * Copyright (C) 2014-2015 Etnaviv Project
 + *
@@ -1115,6 +1178,7 @@ index 0000000..cc9dfbd
 +
 +struct etna_bo;
 +struct etna_pipe;
++struct etna_gpu;
 +struct etna_device;
 +struct etna_cmd_stream;
 +
@@ -1148,12 +1212,13 @@ index 0000000..cc9dfbd
 +
 +/* bo flags: */
 +#define DRM_ETNA_GEM_TYPE_CMDSTREAM     0x00000001
-+#define DRM_ETNA_GEM_TYPE_SCANOUT       0x00000002
 +#define DRM_ETNA_GEM_TYPE_MEM_MASK      0x0000000f
 +#define DRM_ETNA_GEM_CACHE_CACHED       0x00010000
 +#define DRM_ETNA_GEM_CACHE_WC           0x00020000
 +#define DRM_ETNA_GEM_CACHE_UNCACHED     0x00040000
 +#define DRM_ETNA_GEM_CACHE_MASK         0x000f0000
++/* map flags */
++#define DRM_ETNA_BO_FORCE_MMU           0x00100000
 +
 +/* bo access flags: (keep aligned to MSM_PREP_x) */
 +#define DRM_FREEDRENO_PREP_READ           0x01
@@ -1168,14 +1233,20 @@ index 0000000..cc9dfbd
 +struct etna_device * etna_device_ref(struct etna_device *dev);
 +void etna_device_del(struct etna_device *dev);
 +
++/* gpu functions:
++ */
++
++struct etna_gpu * etna_gpu_new(struct etna_device *dev, unsigned int core);
++void etna_gpu_del(struct etna_gpu *gpu);
++int etna_gpu_get_param(struct etna_gpu *gpu, enum etna_param_id param,
++		uint64_t *value);
++
 +
 +/* pipe functions:
 + */
 +
-+struct etna_pipe * etna_pipe_new(struct etna_device *dev, enum etna_pipe_id id);
++struct etna_pipe * etna_pipe_new(struct etna_gpu *gpu, enum etna_pipe_id id);
 +void etna_pipe_del(struct etna_pipe *pipe);
-+int etna_pipe_get_param(struct etna_pipe *pipe, enum etna_param_id param,
-+		uint64_t *value);
 +int etna_pipe_wait(struct etna_pipe *pipe, uint32_t timestamp, uint32_t ms);
 +
 +
@@ -1224,21 +1295,186 @@ index 0000000..cc9dfbd
 +#define ETNA_RELOC_WRITE            0x0002
 +	uint32_t flags;
 +	uint32_t offset;
-+	uint32_t or;
-+	int32_t  shift;
 +};
 +
 +void etna_cmd_stream_reloc(struct etna_cmd_stream *stream, const struct etna_reloc *r);
 +
 +#endif /* ETNAVIV_DRMIF_H_ */
+diff --git a/etnaviv/etnaviv_gpu.c b/etnaviv/etnaviv_gpu.c
+new file mode 100644
+index 0000000..26cc05c
+--- /dev/null
++++ b/etnaviv/etnaviv_gpu.c
+@@ -0,0 +1,161 @@
++/*
++ * Copyright (C) 2015 Etnaviv Project
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a
++ * copy of this software and associated documentation files (the "Software"),
++ * to deal in the Software without restriction, including without limitation
++ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
++ * and/or sell copies of the Software, and to permit persons to whom the
++ * Software is furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice (including the next
++ * paragraph) shall be included in all copies or substantial portions of the
++ * Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
++ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++ * SOFTWARE.
++ *
++ * Authors:
++ *    Christian Gmeiner <christian.gmeiner@gmail.com>
++ */
++
++#ifdef HAVE_CONFIG_H
++# include <config.h>
++#endif
++
++#include "etnaviv_priv.h"
++#include "etnaviv_drmif.h"
++
++static uint64_t get_param(struct etna_device *dev, uint32_t core, uint32_t param)
++{
++	struct drm_etnaviv_param req = {
++			.pipe = core,
++			.param = param,
++	};
++	int ret;
++
++	ret = drmCommandWriteRead(dev->fd, DRM_ETNAVIV_GET_PARAM, &req, sizeof(req));
++	if (ret) {
++		ERROR_MSG("get-param failed! %d (%s)", ret, strerror(errno));
++		return 0;
++	}
++
++	return req.value;
++}
++
++struct etna_gpu * etna_gpu_new(struct etna_device *dev, unsigned int core)
++{
++	struct etna_gpu *gpu = NULL;
++
++	gpu = calloc(1, sizeof(*gpu));
++	if (!gpu) {
++		ERROR_MSG("allocation failed");
++		goto fail;
++	}
++
++	gpu->dev = dev;
++	gpu->core = core;
++
++	/* get specs from kernel space */
++	gpu->specs.model    	= get_param(dev, core, ETNAVIV_PARAM_GPU_MODEL);
++	gpu->specs.revision 	= get_param(dev, core, ETNAVIV_PARAM_GPU_REVISION);
++	gpu->specs.features[0] = get_param(dev, core, ETNAVIV_PARAM_GPU_FEATURES_0);
++	gpu->specs.features[1] = get_param(dev, core, ETNAVIV_PARAM_GPU_FEATURES_1);
++	gpu->specs.features[2] = get_param(dev, core, ETNAVIV_PARAM_GPU_FEATURES_2);
++	gpu->specs.features[3] = get_param(dev, core, ETNAVIV_PARAM_GPU_FEATURES_3);
++	gpu->specs.stream_count = get_param(dev, core, ETNA_GPU_STREAM_COUNT);
++	gpu->specs.register_max = get_param(dev, core, ETNA_GPU_REGISTER_MAX);
++	gpu->specs.thread_count = get_param(dev, core, ETNA_GPU_THREAD_COUNT);
++	gpu->specs.vertex_cache_size = get_param(dev, core, ETNA_GPU_VERTEX_CACHE_SIZE);
++	gpu->specs.shader_core_count = get_param(dev, core, ETNA_GPU_SHADER_CORE_COUNT);
++	gpu->specs.pixel_pipes = get_param(dev, core, ETNA_GPU_PIXEL_PIPES);
++	gpu->specs.vertex_output_buffer_size = get_param(dev, core, ETNA_GPU_VERTEX_OUTPUT_BUFFER_SIZE);
++	gpu->specs.buffer_size = get_param(dev, core, ETNA_GPU_BUFFER_SIZE);
++	gpu->specs.instruction_count = get_param(dev, core, ETNA_GPU_INSTRUCTION_COUNT);
++	gpu->specs.num_constants = get_param(dev, core, ETNA_GPU_NUM_CONSTANTS);
++
++	if (!gpu->specs.model)
++		goto fail;
++
++	INFO_MSG(" GPU model:          0x%x (rev %x)", gpu->specs.model, gpu->specs.revision);
++
++	return gpu;
++fail:
++	if (gpu)
++		etna_gpu_del(gpu);
++	return NULL;
++}
++
++void etna_gpu_del(struct etna_gpu *gpu)
++{
++	free(gpu);
++}
++
++int etna_gpu_get_param(struct etna_gpu *gpu,
++		enum etna_param_id param, uint64_t *value)
++{
++	switch(param) {
++	case ETNA_GPU_MODEL:
++		*value = gpu->specs.model;
++		return 0;
++	case ETNA_GPU_REVISION:
++		*value = gpu->specs.revision;
++		return 0;
++	case ETNA_GPU_FEATURES_0:
++		*value = gpu->specs.features[0];
++		return 0;
++	case ETNA_GPU_FEATURES_1:
++		*value = gpu->specs.features[1];
++		return 0;
++	case ETNA_GPU_FEATURES_2:
++		*value = gpu->specs.features[2];
++		return 0;
++	case ETNA_GPU_FEATURES_3:
++		*value = gpu->specs.features[3];
++		return 0;
++	case ETNA_GPU_FEATURES_4:
++		*value = gpu->specs.features[4];
++		return 0;
++	case ETNA_GPU_STREAM_COUNT:
++		*value = gpu->specs.stream_count;
++		return 0;
++	case ETNA_GPU_REGISTER_MAX:
++		*value = gpu->specs.register_max;
++		return 0;
++	case ETNA_GPU_THREAD_COUNT:
++		*value = gpu->specs.thread_count;
++		return 0;
++	case ETNA_GPU_VERTEX_CACHE_SIZE:
++		*value = gpu->specs.vertex_cache_size;
++		return 0;
++	case ETNA_GPU_SHADER_CORE_COUNT:
++		*value = gpu->specs.shader_core_count;
++		return 0;
++	case ETNA_GPU_PIXEL_PIPES:
++		*value = gpu->specs.pixel_pipes;
++		return 0;
++	case ETNA_GPU_VERTEX_OUTPUT_BUFFER_SIZE:
++		*value = gpu->specs.vertex_output_buffer_size;
++		return 0;
++	case ETNA_GPU_BUFFER_SIZE:
++		*value = gpu->specs.buffer_size;
++		return 0;
++	case ETNA_GPU_INSTRUCTION_COUNT:
++		*value = gpu->specs.instruction_count;
++		return 0;
++	case ETNA_GPU_NUM_CONSTANTS:
++		*value = gpu->specs.num_constants;
++		return 0;
++
++	default:
++		ERROR_MSG("invalid param id: %d", param);
++		return -1;
++	}
++
++	return 0;
++}
 diff --git a/etnaviv/etnaviv_pipe.c b/etnaviv/etnaviv_pipe.c
 new file mode 100644
-index 0000000..16d2de3
+index 0000000..9d281f5
 --- /dev/null
 +++ b/etnaviv/etnaviv_pipe.c
-@@ -0,0 +1,182 @@
+@@ -0,0 +1,74 @@
 +/*
-+ * Copyright (C) 2014 Etnaviv Project
++ * Copyright (C) 2014-2015 Etnaviv Project
 + *
 + * Permission is hereby granted, free of charge, to any person obtaining a
 + * copy of this software and associated documentation files (the "Software"),
@@ -1269,75 +1505,11 @@ index 0000000..16d2de3
 +
 +#include "etnaviv_priv.h"
 +
-+int etna_pipe_get_param(struct etna_pipe *pipe,
-+		enum etna_param_id param, uint64_t *value)
-+{
-+	switch(param) {
-+	case ETNA_GPU_MODEL:
-+		*value = pipe->specs.model;
-+		return 0;
-+	case ETNA_GPU_REVISION:
-+		*value = pipe->specs.revision;
-+		return 0;
-+	case ETNA_GPU_FEATURES_0:
-+		*value = pipe->specs.features[0];
-+		return 0;
-+	case ETNA_GPU_FEATURES_1:
-+		*value = pipe->specs.features[1];
-+		return 0;
-+	case ETNA_GPU_FEATURES_2:
-+		*value = pipe->specs.features[2];
-+		return 0;
-+	case ETNA_GPU_FEATURES_3:
-+		*value = pipe->specs.features[3];
-+		return 0;
-+	case ETNA_GPU_FEATURES_4:
-+		*value = pipe->specs.features[4];
-+		return 0;
-+	case ETNA_GPU_STREAM_COUNT:
-+		*value = pipe->specs.stream_count;
-+		return 0;
-+	case ETNA_GPU_REGISTER_MAX:
-+		*value = pipe->specs.register_max;
-+		return 0;
-+	case ETNA_GPU_THREAD_COUNT:
-+		*value = pipe->specs.thread_count;
-+		return 0;
-+	case ETNA_GPU_VERTEX_CACHE_SIZE:
-+		*value = pipe->specs.vertex_cache_size;
-+		return 0;
-+	case ETNA_GPU_SHADER_CORE_COUNT:
-+		*value = pipe->specs.shader_core_count;
-+		return 0;
-+	case ETNA_GPU_PIXEL_PIPES:
-+		*value = pipe->specs.pixel_pipes;
-+		return 0;
-+	case ETNA_GPU_VERTEX_OUTPUT_BUFFER_SIZE:
-+		*value = pipe->specs.vertex_output_buffer_size;
-+		return 0;
-+	case ETNA_GPU_BUFFER_SIZE:
-+		*value = pipe->specs.buffer_size;
-+		return 0;
-+	case ETNA_GPU_INSTRUCTION_COUNT:
-+		*value = pipe->specs.instruction_count;
-+		return 0;
-+	case ETNA_GPU_NUM_CONSTANTS:
-+		*value = pipe->specs.num_constants;
-+		return 0;
-+
-+	default:
-+		ERROR_MSG("invalid param id: %d", param);
-+		return -1;
-+	}
-+
-+	return 0;
-+}
-+
 +int etna_pipe_wait(struct etna_pipe *pipe, uint32_t timestamp, uint32_t ms)
 +{
-+	struct etna_device *dev = pipe->dev;
++	struct etna_device *dev = pipe->gpu->dev;
 +	struct drm_etnaviv_wait_fence req = {
-+			.pipe = pipe->id,
++			.pipe = pipe->gpu->core,
 +			.fence = timestamp,
 +	};
 +	int ret;
@@ -1358,24 +1530,7 @@ index 0000000..16d2de3
 +	free(pipe);
 +}
 +
-+static uint64_t get_param(struct etna_device *dev, uint32_t pipe, uint32_t param)
-+{
-+	struct drm_etnaviv_param req = {
-+			.pipe = pipe,
-+			.param = param,
-+	};
-+	int ret;
-+
-+	ret = drmCommandWriteRead(dev->fd, DRM_ETNAVIV_GET_PARAM, &req, sizeof(req));
-+	if (ret) {
-+		ERROR_MSG("get-param failed! %d (%s)", ret, strerror(errno));
-+		return 0;
-+	}
-+
-+	return req.value;
-+}
-+
-+struct etna_pipe * etna_pipe_new(struct etna_device *dev, enum etna_pipe_id id)
++struct etna_pipe * etna_pipe_new(struct etna_gpu *gpu, enum etna_pipe_id id)
 +{
 +	struct etna_pipe *pipe = NULL;
 +
@@ -1386,47 +1541,20 @@ index 0000000..16d2de3
 +	}
 +
 +	pipe->id = id;
-+	pipe->dev = dev;
-+
-+	/* get specs from kernel space */
-+	pipe->specs.model    	= get_param(dev, id, ETNAVIV_PARAM_GPU_MODEL);
-+	pipe->specs.revision 	= get_param(dev, id, ETNAVIV_PARAM_GPU_REVISION);
-+	pipe->specs.features[0] = get_param(dev, id, ETNAVIV_PARAM_GPU_FEATURES_0);
-+	pipe->specs.features[1] = get_param(dev, id, ETNAVIV_PARAM_GPU_FEATURES_1);
-+	pipe->specs.features[2] = get_param(dev, id, ETNAVIV_PARAM_GPU_FEATURES_2);
-+	pipe->specs.features[3] = get_param(dev, id, ETNAVIV_PARAM_GPU_FEATURES_3);
-+	pipe->specs.stream_count = get_param(dev, id, ETNA_GPU_STREAM_COUNT);
-+	pipe->specs.register_max = get_param(dev, id, ETNA_GPU_REGISTER_MAX);
-+	pipe->specs.thread_count = get_param(dev, id, ETNA_GPU_THREAD_COUNT);
-+	pipe->specs.vertex_cache_size = get_param(dev, id, ETNA_GPU_VERTEX_CACHE_SIZE);
-+	pipe->specs.shader_core_count = get_param(dev, id, ETNA_GPU_SHADER_CORE_COUNT);
-+	pipe->specs.pixel_pipes = get_param(dev, id, ETNA_GPU_PIXEL_PIPES);
-+	pipe->specs.vertex_output_buffer_size = get_param(dev, id, ETNA_GPU_VERTEX_OUTPUT_BUFFER_SIZE);
-+	pipe->specs.buffer_size = get_param(dev, id, ETNA_GPU_BUFFER_SIZE);
-+	pipe->specs.instruction_count = get_param(dev, id, ETNA_GPU_INSTRUCTION_COUNT);
-+	pipe->specs.num_constants = get_param(dev, id, ETNA_GPU_NUM_CONSTANTS);
-+
-+
-+	if (!pipe->specs.model)
-+		goto fail;
-+
-+	INFO_MSG("Pipe Info:");
-+	INFO_MSG(" GPU model:          0x%x (rev %x)", pipe->specs.model, pipe->specs.revision);
++	pipe->gpu = gpu;
 +
 +	return pipe;
 +fail:
-+	if (pipe)
-+		etna_pipe_del(pipe);
 +	return NULL;
 +}
 diff --git a/etnaviv/etnaviv_priv.h b/etnaviv/etnaviv_priv.h
 new file mode 100644
-index 0000000..71b8813
+index 0000000..c26d9d0
 --- /dev/null
 +++ b/etnaviv/etnaviv_priv.h
-@@ -0,0 +1,169 @@
+@@ -0,0 +1,174 @@
 +/*
-+ * Copyright (C) 2014 Etnaviv Project
++ * Copyright (C) 2014-2015 Etnaviv Project
 + *
 + * Permission is hereby granted, free of charge, to any person obtaining a
 + * copy of this software and associated documentation files (the "Software"),
@@ -1465,7 +1593,7 @@ index 0000000..71b8813
 +#include <stdio.h>
 +#include <assert.h>
 +
-+#include "libdrm.h"
++#include "libdrm_macros.h"
 +#include "xf86drm.h"
 +#include "xf86atomic.h"
 +
@@ -1533,10 +1661,15 @@ index 0000000..71b8813
 +	struct list_head list[ETNA_MAX_PIPES];
 +};
 +
-+struct etna_pipe {
-+	enum etna_pipe_id id;
++struct etna_gpu {
 +	struct etna_device *dev;
 +	struct etna_specs specs;
++	uint32_t core;
++};
++
++struct etna_pipe {
++	enum etna_pipe_id id;
++	struct etna_gpu *gpu;
 +};
 +
 +
@@ -1755,12 +1888,12 @@ index 0000000..27e0761
 +
 +#endif /*_U_DOUBLE_LIST_H_*/
 diff --git a/tests/Makefile.am b/tests/Makefile.am
-index 10f54e3..cfe49b6 100644
+index 9a2d932..02d6df4 100644
 --- a/tests/Makefile.am
 +++ b/tests/Makefile.am
-@@ -35,6 +35,10 @@ if HAVE_NOUVEAU
- SUBDIRS += nouveau
- endif
+@@ -42,6 +42,10 @@ TESTS = \
+ 	hash \
+ 	random
  
 +#if HAVE_ETNAVIV
 +#SUBDIRS += etnaviv
@@ -2018,12 +2151,12 @@ index 0000000..844f829
 +#endif /* CMDSTREAM_XML */
 diff --git a/tests/etnaviv/etnaviv_2d_test.c b/tests/etnaviv/etnaviv_2d_test.c
 new file mode 100644
-index 0000000..246f90d
+index 0000000..dc77955
 --- /dev/null
 +++ b/tests/etnaviv/etnaviv_2d_test.c
-@@ -0,0 +1,231 @@
+@@ -0,0 +1,240 @@
 +/*
-+ * Copyright (C) 2014 Etnaviv Project
++ * Copyright (C) 2014-2015 Etnaviv Project
 + *
 + * Permission is hereby granted, free of charge, to any person obtaining a
 + * copy of this software and associated documentation files (the "Software"),
@@ -2095,8 +2228,6 @@ index 0000000..246f90d
 +		.bo = bo,
 +		.flags = ETNA_RELOC_READ,
 +		.offset = 0,
-+		.or = 0,
-+		.shift = 0,
 +	});
 +}
 +
@@ -2185,6 +2316,7 @@ index 0000000..246f90d
 +	const size_t bmp_size = width * height * 4;
 +
 +	struct etna_device *dev;
++	struct etna_gpu *gpu;
 +	struct etna_pipe *pipe;
 +	struct etna_bo *bmp;
 +	struct etna_cmd_stream *stream;
@@ -2212,15 +2344,22 @@ index 0000000..246f90d
 +		goto fail;
 +	}
 +
-+	pipe = etna_pipe_new(dev, ETNA_PIPE_2D);
-+	if (!pipe) {
++	/* TODO: we assume that core 0 is a 2D capable one */
++	gpu = etna_gpu_new(dev, 0);
++	if (!gpu) {
 +		ret = 3;
++		goto fail;
++	}
++
++	pipe = etna_pipe_new(gpu, ETNA_PIPE_2D);
++	if (!pipe) {
++		ret = 4;
 +		goto fail;
 +	}
 +
 +	bmp = etna_bo_new(dev, bmp_size, ETNA_BO_WC);
 +	if (!bmp) {
-+		ret = 4;
++		ret = 5;
 +		goto fail;
 +	}
 +	memset(etna_bo_map(bmp), 0, bmp_size);
@@ -2228,7 +2367,7 @@ index 0000000..246f90d
 +
 +	stream = etna_cmd_stream_new(pipe);
 +	if (!stream) {
-+		ret = 5;
++		ret = 6;
 +		goto fail;
 +	}
 +
@@ -2245,6 +2384,9 @@ index 0000000..246f90d
 +
 +	if (pipe)
 +		etna_pipe_del(pipe);
++
++	if (gpu)
++		etna_gpu_del(gpu);
 +
 +	if (dev)
 +		etna_device_del(dev);
@@ -4285,5 +4427,5 @@ index 0000000..667fa87
 +
 +#endif /* BMP_DUMP_H */
 -- 
-2.1.4
+2.5.0
 

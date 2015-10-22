@@ -1,8 +1,48 @@
-libdrm (2.4.60-3~bpo1404+20150512+1) trusty; urgency=low
+libdrm (2.4.64-1.2~bpo1404+20150824+1) trusty; urgency=low
 
-  * Rebuild for repos.rcn-ee.net
+  * Rebuild for repos.rcn-ee.com
+  * fix omap
 
- -- Robert Nelson <robertcnelson@gmail.com>  Tue, 12 May 2015 08:34:14 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Mon, 24 Aug 2015 10:40:39 -0500
+
+libdrm (2.4.64-1) unstable; urgency=medium
+
+  [ Robert Hooker ]
+  * New upstream release.
+  * Bump symbols file and shlibs for libdrm-freedreno1.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 19 Aug 2015 07:52:50 +0300
+
+libdrm (2.4.63-1) unstable; urgency=medium
+
+  [ Robert Hooker ]
+  * New upstream release.
+    - Drop Fix-headers-inclusion-in-xf86drmMode.c.diff, upstream.
+  * Add new libdrm-amdgpu1 package.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Sat, 15 Aug 2015 18:55:57 +0300
+
+libdrm (2.4.62-1) unstable; urgency=medium
+
+  [ Sven Joachim ]
+  * New upstream release.
+    - nouveau: restore check that avoids multiple user bos per kernel bo
+      (Closes: #789759).
+  * Update symbols file and bump shlibs for libdrm2.
+  * Refresh the patch from 2.4.60-3 after upstream changes.
+  * Remove duplicate Section fields from debian/control.
+  * Update debian/upstream/signing-key.asc.
+  * Bump Standards-Version to 3.9.6, no changes needed.
+
+  [ Julien Cristau ]
+  * Update debian/upstream/signing-key.asc.
+  * Fix kfreebsd patch that caused an FTBFS on Linux/x32: only include
+    <sys/sysctl.h> if configure detects it (closes: #787496).  Thanks,
+    Thorsten Glaser.
+  * Add build-dep on xutils-dev for xorg-macros.
+  * Cherry-pick upstream patch to let valgrind auto-detection work.
+
+ -- Julien Cristau <jcristau@debian.org>  Thu, 02 Jul 2015 21:11:21 +0200
 
 libdrm (2.4.60-3) unstable; urgency=medium
 

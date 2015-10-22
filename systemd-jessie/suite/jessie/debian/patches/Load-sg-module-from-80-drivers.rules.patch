@@ -1,0 +1,23 @@
+From: Martin Pitt <martin.pitt@ubuntu.com>
+Date: Sat, 26 Apr 2014 14:16:06 +0200
+Subject: Load sg module from 80-drivers.rules
+
+Taken from the Debian specific rules, this is the remaining difference over the
+upstream 80-drivers.rules.
+
+Bug-Debian: http://bugs.debian.org/657948
+---
+ rules/80-drivers.rules | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/rules/80-drivers.rules b/rules/80-drivers.rules
+index 8551f47..f764075 100644
+--- a/rules/80-drivers.rules
++++ b/rules/80-drivers.rules
+@@ -9,5 +9,6 @@ SUBSYSTEM=="memstick", RUN{builtin}+="kmod load ms_block mspro_block"
+ SUBSYSTEM=="i2o", RUN{builtin}+="kmod load i2o_block"
+ SUBSYSTEM=="module", KERNEL=="parport_pc", RUN{builtin}+="kmod load ppdev"
+ KERNEL=="mtd*ro", ENV{MTD_FTL}=="smartmedia", RUN{builtin}+="kmod load sm_ftl"
++SUBSYSTEM=="scsi", ENV{DEVTYPE}=="scsi_device", TEST!="[module/sg]", RUN{builtin}+="kmod load sg"
+ 
+ LABEL="drivers_end"

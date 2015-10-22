@@ -13,9 +13,9 @@ git_sha=""
 reprepro_dir="libv/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-8.1"
+debian_version="${package_version}-10"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 
-jessie_version="~20141124+1"
-wheezy_version="~bpo70+20150526+1"
+wheezy_version="~bpo70+20150831+1"
+jessie_version="~bpo80+20150831+1"

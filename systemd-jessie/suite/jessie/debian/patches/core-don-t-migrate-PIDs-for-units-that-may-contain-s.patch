@@ -1,0 +1,59 @@
+From: Lennart Poettering <lennart@poettering.net>
+Date: Thu, 26 Mar 2015 12:45:03 +0100
+Subject: core: don't migrate PIDs for units that may contain subcgroups,
+ do this only for leaf units
+
+Otherwise a slice or delegation unit might move PIDs around ignoring
+the fact that it is attached to a subcgroup.
+
+This backport of the original commit does not include the part about
+delegate units that was introduced into the systemd source code at
+commit a931ad47a8623163a29d898224d8a8c1177ffdaf, since that is  not
+part of systemd 215.
+
+Origin: backport (0cd385d31814c)
+Bug-Redhat: https://bugzilla.redhat.com/show_bug.cgi?id=1139223
+Bug-Debian: https://bugs.debian.org/777164
+---
+ src/core/cgroup.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
+
+diff --git a/src/core/cgroup.c b/src/core/cgroup.c
+index cd67963..77acd2e 100644
+--- a/src/core/cgroup.c
++++ b/src/core/cgroup.c
+@@ -594,10 +594,15 @@ static const char *migrate_callback(CGroupControllerMask mask, void *userdata) {
+ 
+ static int unit_create_cgroups(Unit *u, CGroupControllerMask mask) {
+         _cleanup_free_ char *path = NULL;
++        CGroupContext *c;
+         int r;
+ 
+         assert(u);
+ 
++        c = unit_get_cgroup_context(u);
++        if (!c)
++                return 0;
++
+         path = unit_default_cgroup_path(u);
+         if (!path)
+                 return log_oom();
+@@ -623,10 +628,14 @@ static int unit_create_cgroups(Unit *u, CGroupControllerMask mask) {
+         u->cgroup_realized = true;
+         u->cgroup_realized_mask = mask;
+ 
+-        /* Then, possibly move things over */
+-        r = cg_migrate_everywhere(u->manager->cgroup_supported, u->cgroup_path, u->cgroup_path, migrate_callback, u);
+-        if (r < 0)
+-                log_warning("Failed to migrate cgroup from to %s: %s", u->cgroup_path, strerror(-r));
++        /* Then, possibly move things over, but not if
++         * subgroups may contain processes, which is the case
++         * for slice units. */
++        if (u->type != UNIT_SLICE) {
++                r = cg_migrate_everywhere(u->manager->cgroup_supported, u->cgroup_path, u->cgroup_path, migrate_callback, u);
++                if (r < 0)
++                        log_warning("Failed to migrate cgroup from to %s: %s", u->cgroup_path, strerror(-r));
++        }
+ 
+         return 0;
+ }

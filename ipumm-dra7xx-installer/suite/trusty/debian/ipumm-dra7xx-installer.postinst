@@ -6,12 +6,12 @@ set -e
 
 package="ipumm-dra7xx-installer"
 
-version="3.00.07.02"
+version="3.00.09.01"
 
-sha256sum_tgz="0f07176e313a692a05fa6bfe9f7920b677b0924287121945c6e22b3f4408670c"
-filename="ipumm-dra7xx-evm-${version}.tar.gz"
+sha256sum_tgz="e70a38b62e3e4d11d5ce68f0980de4df5256bd597068f179e220fa5afcd065fe"
+filename="ipumm-dra7xx-evm-3.00.09.01.tar.gz"
 
-partner_url="http://downloads.ti.com/dsps/dsps_public_sw/glsdk/ipumm/3_00_07_02/exports/"
+partner_url="http://downloads.ti.com/infotainment/esd/jacinto6/glsdk/ipumm/3_00_09_01/exports/"
 extract_dir="/lib/firmware/"
 
 # summary of how this script can be called:
@@ -63,7 +63,14 @@ dl_install() {
 
 		echo "extracting: ${filename}"
 		tar xf ${filename} -C /var/cache/${package}/
+		if [ -f ${extract_dir}dra7-ipu2-fw.xem4 ] ; then
+			rm -f ${extract_dir}dra7-ipu2-fw.xem4 || true
+		fi
+		if [ -f ${extract_dir}dra7xx-m4-ipu2.xem4 ] ; then
+			rm -f ${extract_dir}dra7xx-m4-ipu2.xem4 || true
+		fi
 		cp -v /var/cache/${package}/ipumm-dra7xx-evm-${version}/firmware/dra7-ipu2-fw.xem4 ${extract_dir}
+		cp -v /var/cache/${package}/ipumm-dra7xx-evm-${version}/firmware/dra7xx-m4-ipu2.xem4 ${extract_dir}
 		rm -rf /var/cache/${package}/ipumm-dra7xx-evm-${version}/
 	fi
 }

@@ -60,9 +60,9 @@ if [ -f ${apache_dir}/${dist}/conf/distributions ] ; then
 	rm -f ${apache_dir}/${dist}/conf/distributions || true
 fi
 
-dist="debian"
 key="A4C46402"
 
+dist="debian"
 suite="wheezy"
 setup_repo
 
@@ -75,12 +75,15 @@ setup_repo
 suite="sid"
 setup_repo
 
-dist="ubuntu"
-key="A4C46402"
+dist="debian-exp"
+suite="jessie"
+setup_repo
 
+dist="ubuntu"
 suite="trusty"
 setup_repo
 
+#eol: july 25 2015
 suite="utopic"
 setup_repo
 
@@ -89,3 +92,7 @@ setup_repo
 
 suite="wily"
 setup_repo
+
+suite="xenial"
+setup_repo
+#

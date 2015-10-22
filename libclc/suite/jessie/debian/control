@@ -1,0 +1,53 @@
+Source: libclc
+Section: libs
+Priority: extra
+Maintainer: Debian OpenCL team <pkg-opencl-devel@lists.alioth.debian.org>
+Uploaders:
+ Michael Gilbert <mgilbert@debian.org>,
+Build-Depends:
+ debhelper (>= 9),
+ python,
+ clang-3.7,
+ llvm-3.7-dev (>= 3.7),
+ zlib1g-dev,
+ libedit-dev,
+Standards-Version: 3.9.6
+Homepage: http://libclc.llvm.org
+Vcs-Git: git://anonscm.debian.org/pkg-opencl/libclc.git
+Vcs-Browser: https://anonscm.debian.org/cgit/pkg-opencl/libclc.git
+
+Package: libclc-ptx
+Architecture: all
+Depends:
+ ${misc:Depends},
+ libclc-dev (= ${binary:Version}),
+ libclang-common-3.7-dev,
+Description: OpenCL C language implementation - ptx support
+ libclc is an open implementation of the OpenCL C programming language,
+ as specified by the OpenCL 1.1 Specification.
+ .
+ This package contains support for the PTX platform.
+
+Package: libclc-r600
+Architecture: all
+Depends:
+ ${misc:Depends},
+ libclc-dev (= ${binary:Version}),
+ libclang-common-3.7-dev,
+Description: OpenCL C language implementation - r600 support
+ libclc is an open implementation of the OpenCL C programming language,
+ as specified by the OpenCL 1.1 Specification.
+ .
+ This package contains support for the r600 (AMD GPU) platform.
+ Supported GPU families: Evergreen and Northern Islands.
+
+Package: libclc-dev
+Section: libdevel
+Architecture: all
+Depends:
+ ${misc:Depends},
+Description: OpenCL C language implementation - development files
+ libclc is an open implementation of the OpenCL C programming language,
+ as specified by the OpenCL 1.1 Specification.
+ .
+ This package contains development header files.

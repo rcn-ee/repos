@@ -1,6 +1,8 @@
+Index: b/jdk/src/solaris/classes/sun/awt/X11/XWM.java
+===================================================================
 --- a/jdk/src/solaris/classes/sun/awt/X11/XWM.java
 +++ b/jdk/src/solaris/classes/sun/awt/X11/XWM.java
-@@ -104,7 +104,8 @@
+@@ -104,7 +104,8 @@ final class XWM
          COMPIZ_WM = 12,
          LG3D_WM = 13,
          CWM_WM = 14,
@@ -10,7 +12,7 @@
      public String toString() {
          switch  (WMID) {
            case NO_WM:
-@@ -601,7 +601,8 @@
+@@ -601,7 +602,8 @@ final class XWM
              awtWMNonReparenting = (XToolkit.getEnv("_JAVA_AWT_WM_NONREPARENTING") != null) ? 1 : 0;
          }
          return (awtWMNonReparenting == 1 || XWM.getWMID() == XWM.COMPIZ_WM
@@ -20,7 +22,7 @@
      }
  
      /*
-@@ -791,9 +792,17 @@
+@@ -796,9 +798,17 @@ final class XWM
               * supports WIN or _NET wm spec.
               */
              else if (l_net_protocol.active()) {
@@ -40,7 +42,7 @@
              }
              /*
               * Check for legacy WMs.
-@@ -804,6 +813,8 @@
+@@ -809,6 +819,8 @@ final class XWM
                  awt_wmgr = XWM.MOTIF_WM;
              } else if (isOpenLook()) {
                  awt_wmgr = XWM.OPENLOOK_WM;
@@ -49,7 +51,7 @@
              } else {
                  awt_wmgr = XWM.OTHER_WM;
              }
-@@ -1332,6 +1343,7 @@
+@@ -1337,6 +1349,7 @@ final class XWM
                    res = new Insets(28, 6, 6, 6);
                    break;
                case NO_WM:

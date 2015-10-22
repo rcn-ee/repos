@@ -1,0 +1,59 @@
+From: Michael Biebl <biebl@debian.org>
+Date: Sat, 27 Sep 2014 04:04:32 +0200
+Subject: login: don't overmount /run/user/<UID> on upgrades
+
+Since v215, logind uses a per-user tmpfs for $XDG_RUNTIME_DIR.  When
+upgrading from older versions, we don't want to overmount existing user
+data, so if that directory already exists, we skip the step where we
+mount the per-user tmpfs.
+
+This patch is only necessary for upgrades from pre v215 versions and
+should be removed in jessie+1.
+
+Closes: #762041
+---
+ src/login/logind-user.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/src/login/logind-user.c b/src/login/logind-user.c
+index fdbccb3..2f29905 100644
+--- a/src/login/logind-user.c
++++ b/src/login/logind-user.c
+@@ -20,6 +20,7 @@
+ ***/
+ 
+ #include <sys/mount.h>
++#include <sys/stat.h>
+ #include <string.h>
+ #include <unistd.h>
+ #include <errno.h>
+@@ -305,6 +306,7 @@ int user_load(User *u) {
+ static int user_mkdir_runtime_path(User *u) {
+         char *p;
+         int r;
++        struct stat sb;
+ 
+         assert(u);
+ 
+@@ -320,6 +322,12 @@ static int user_mkdir_runtime_path(User *u) {
+         } else
+                 p = u->runtime_path;
+ 
++        /* If the directory already exists, don't mount a tmpfs over it */
++        if (stat(p, &sb) == 0 && S_ISDIR(sb.st_mode)) {
++               u->runtime_path = p;
++               return 0;
++        }
++
+         if (path_is_mount_point(p, false) <= 0) {
+                 _cleanup_free_ char *t = NULL;
+ 
+@@ -506,7 +514,7 @@ static int user_remove_runtime_path(User *u) {
+         if (r < 0)
+                 log_error("Failed to remove runtime directory %s: %s", u->runtime_path, strerror(-r));
+ 
+-        if (umount2(u->runtime_path, MNT_DETACH) < 0)
++        if (path_is_mount_point(u->runtime_path, false) && umount2(u->runtime_path, MNT_DETACH) < 0)
+                 log_error("Failed to unmount user runtime directory %s: %m", u->runtime_path);
+ 
+         r = rm_rf(u->runtime_path, false, true, false);

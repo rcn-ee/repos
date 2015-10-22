@@ -16,10 +16,12 @@ try:
 
     # first assertion: default search is Google
     wait("google-text.png", 10)
+    #wait("query-start.png", 10)
+    
 
     # second assertion: search url contains our token
     just_below_refresh_button.type("l", KeyModifier.CTRL)
-    just_below_refresh_button.type("x", KeyModifier.CTRL)
+    just_below_refresh_button.type("c", KeyModifier.CTRL)
     location_bar_contents = Env.getClipboard()
 
     assert test_value in location_bar_contents, "Hrm, logic is wrong. " + location_bar_contents
@@ -28,11 +30,13 @@ try:
 
 except:
     if app.pid:
-        os.kill(app.pid, signal.SIGTERM)
-        app.wait()
+        #os.kill(app.pid, signal.SIGTERM)
+        #app.wait()
+        pass
     else:
         # Jython python2.5 hackey. So so sorry.
-        app._process.destroy()
+        #app._process.destroy()
+        pass
     raise
 
 print "Success!"
