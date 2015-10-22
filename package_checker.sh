@@ -78,7 +78,7 @@ mesa () {
 
 	site="${debian_pool}/main/l"
 	package_name="llvm-toolchain-3.6" ; package_version="${package_name}_3.6.2-3" ; check_http
-	package_name="llvm-toolchain-3.7" ; package_version="${package_name}_3.7-2" ; check_http
+	package_name="llvm-toolchain-3.7" ; package_version="${package_name}_3.7-4" ; check_http
 
 	site="${debian_pool}/main/libc"
 	package_name="libclc" ; package_version="${package_name}_0.2.0+git20150813-1" ; check_http

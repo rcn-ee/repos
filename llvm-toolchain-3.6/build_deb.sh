@@ -2,6 +2,8 @@
 
 . version.sh
 
+sudo mount -a
+
 localdir="/mnt/farm"
 
 run () {
