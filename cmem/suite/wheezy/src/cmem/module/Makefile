@@ -11,7 +11,7 @@ TARGET = cmemk.ko
 
 obj-m += cmemk.o
 
-EXTRA_CFLAGS +=	-I $(ABS_ROOTDIR)/include -Wno-error=date-time
+EXTRA_CFLAGS +=	-I$(ABS_ROOTDIR)/include -Wno-error=date-time
 
 MAKE_ENV = ARCH=$(ARCH) CROSS_COMPILE=$(TOOLCHAIN_PREFIX)
 
