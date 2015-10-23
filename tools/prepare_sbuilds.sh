@@ -38,21 +38,21 @@ setup_update_sbuild
 mirror="http://${proxy}${ubuntu_server}"
 dist="trusty"
 arch="armhf"
-options="--exclude=debfoster"
+options="--exclude=debfoster --keyring=/usr/share/keyrings/ubuntu-archive-keyring.gpg"
 setup_update_sbuild
 
 dist="vivid"
 arch="armhf"
-options="--exclude=debfoster"
+options="--exclude=debfoster --keyring=/usr/share/keyrings/ubuntu-archive-keyring.gpg"
 setup_update_sbuild
 
 dist="wily"
 arch="armhf"
-options="--exclude=debfoster"
+options="--exclude=debfoster --keyring=/usr/share/keyrings/ubuntu-archive-keyring.gpg"
 setup_update_sbuild
 
 dist="xenial"
 arch="armhf"
-options="--exclude=debfoster"
+options="--exclude=debfoster --keyring=/usr/share/keyrings/ubuntu-archive-keyring.gpg"
 setup_update_sbuild
 #
