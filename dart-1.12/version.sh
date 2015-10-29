@@ -4,7 +4,7 @@
 
 package_name="dart-1.12"
 debian_pkg_name="${package_name}"
-package_version="1.12.1"
+package_version="1.12.2"
 package_source="${package_name}_${package_version}.orig.tar.gz"
 src_dir="dart-${package_version}"
 
@@ -17,8 +17,6 @@ debian_version="${package_version}-1"
 debian_untar="dart_${debian_version}.debian.tar.gz"
 debian_patch=""
 
-jessie_version="~bpo80+20151013+1"
-stretch_version="~bpo90+20151013+1"
-trusty_version="~bpo1404+20151013+1"
-vivid_version="~bpo1504+20151013+1"
-wily_version="~bpo1510+20151013+1"
+jessie_version="~bpo80+20151028+1"
+trusty_version="~bpo1404+20151028+1"
+vivid_version="~bpo1504+20151028+1"
