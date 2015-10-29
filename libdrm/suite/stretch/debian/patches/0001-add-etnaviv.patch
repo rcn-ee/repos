@@ -1,57 +1,5 @@
-From 035c8b059a46be439379588f05dd93d55a50d8f8 Mon Sep 17 00:00:00 2001
-From: Robert Nelson <robertcnelson@gmail.com>
-Date: Tue, 25 Aug 2015 15:10:47 -0500
-Subject: [PATCH] add etnaviv
-
-Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
----
- Makefile.am                     |    5 +
- configure.ac                    |   14 +
- etnaviv/Android.mk              |   18 +
- etnaviv/Makefile.am             |   26 +
- etnaviv/Makefile.sources        |    9 +
- etnaviv/etnaviv_bo.c            |  327 +++++++++
- etnaviv/etnaviv_cmd_stream.c    |  261 +++++++
- etnaviv/etnaviv_device.c        |   99 +++
- etnaviv/etnaviv_drm.h           |  232 ++++++
- etnaviv/etnaviv_drmif.h         |  156 +++++
- etnaviv/etnaviv_gpu.c           |  161 +++++
- etnaviv/etnaviv_pipe.c          |   74 ++
- etnaviv/etnaviv_priv.h          |  174 +++++
- etnaviv/libdrm_etnaviv.pc.in    |   11 +
- etnaviv/list.h                  |  137 ++++
- tests/Makefile.am               |    4 +
- tests/etnaviv/Makefile.am       |   17 +
- tests/etnaviv/cmdstream.xml.h   |  218 ++++++
- tests/etnaviv/etnaviv_2d_test.c |  240 +++++++
- tests/etnaviv/state.xml.h       |  348 +++++++++
- tests/etnaviv/state_2d.xml.h    | 1473 +++++++++++++++++++++++++++++++++++++++
- tests/etnaviv/write_bmp.c       |  152 ++++
- tests/etnaviv/write_bmp.h       |   34 +
- 23 files changed, 4190 insertions(+)
- create mode 100644 etnaviv/Android.mk
- create mode 100644 etnaviv/Makefile.am
- create mode 100644 etnaviv/Makefile.sources
- create mode 100644 etnaviv/etnaviv_bo.c
- create mode 100644 etnaviv/etnaviv_cmd_stream.c
- create mode 100644 etnaviv/etnaviv_device.c
- create mode 100644 etnaviv/etnaviv_drm.h
- create mode 100644 etnaviv/etnaviv_drmif.h
- create mode 100644 etnaviv/etnaviv_gpu.c
- create mode 100644 etnaviv/etnaviv_pipe.c
- create mode 100644 etnaviv/etnaviv_priv.h
- create mode 100644 etnaviv/libdrm_etnaviv.pc.in
- create mode 100644 etnaviv/list.h
- create mode 100644 tests/etnaviv/Makefile.am
- create mode 100644 tests/etnaviv/cmdstream.xml.h
- create mode 100644 tests/etnaviv/etnaviv_2d_test.c
- create mode 100644 tests/etnaviv/state.xml.h
- create mode 100644 tests/etnaviv/state_2d.xml.h
- create mode 100644 tests/etnaviv/write_bmp.c
- create mode 100644 tests/etnaviv/write_bmp.h
-
 diff --git a/Makefile.am b/Makefile.am
-index 55e39a5..6d24798 100644
+index a7a0cca..f2bdede 100644
 --- a/Makefile.am
 +++ b/Makefile.am
 @@ -78,6 +78,10 @@ if HAVE_TEGRA
@@ -74,7 +22,7 @@ index 55e39a5..6d24798 100644
  	$(MAN_SUBDIR)
  
 diff --git a/configure.ac b/configure.ac
-index f07507b..d5c0045 100644
+index cf10ef2..61a6f59 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -126,6 +126,11 @@ AC_ARG_ENABLE(tegra-experimental-api,
@@ -197,10 +145,10 @@ index 0000000..e880b26
 +	etnaviv_drmif.h
 diff --git a/etnaviv/etnaviv_bo.c b/etnaviv/etnaviv_bo.c
 new file mode 100644
-index 0000000..81f0d3c
+index 0000000..8b5466e
 --- /dev/null
 +++ b/etnaviv/etnaviv_bo.c
-@@ -0,0 +1,327 @@
+@@ -0,0 +1,325 @@
 +/*
 + * Copyright (C) 2014 Etnaviv Project
 + *
@@ -372,24 +320,23 @@ index 0000000..81f0d3c
 +struct etna_bo * etna_bo_from_dmabuf(struct etna_device *dev, int fd)
 +{
 +	struct etna_bo *bo = NULL;
-+	struct drm_prime_handle req = {
-+			.fd = fd,
-+	};
 +	int ret, size;
++	uint32_t handle;
 +
 +	pthread_mutex_lock(&table_lock);
 +
-+	ret = drmIoctl(dev->fd, DRM_IOCTL_PRIME_FD_TO_HANDLE, &req);
++	ret = drmPrimeFDToHandle(dev->fd, fd, &handle);
 +	if (ret) {
 +		goto fail;
 +	}
 +
-+	/* hmm, would be nice if we had a way to figure out the size.. */
-+	size = 0;
++	/* lseek() to get bo size */
++	size = lseek(fd, 0, SEEK_END);
++	lseek(fd, 0, SEEK_CUR);
 +
-+	bo = lookup_bo(dev, req.handle);
++	bo = lookup_bo(dev, handle);
 +	if (!bo) {
-+		bo = bo_from_handle(dev, size, req.handle);
++		bo = bo_from_handle(dev, size, handle);
 +	}
 +
 +	pthread_mutex_unlock(&table_lock);
@@ -414,8 +361,10 @@ index 0000000..81f0d3c
 +	if (bo->map)
 +		drm_munmap(bo->map, bo->size);
 +
-+	if (bo->fd)
++	if (bo->fd >= 0) {
 +		close(bo->fd);
++		bo->fd = -1;
++	}
 +
 +	if (bo->handle) {
 +		struct drm_gem_close req = {
@@ -464,19 +413,16 @@ index 0000000..81f0d3c
 + */
 +int etna_bo_dmabuf(struct etna_bo *bo)
 +{
-+	if (!bo->fd) {
-+		struct drm_prime_handle req = {
-+				.handle = bo->handle,
-+				.flags = DRM_CLOEXEC,
-+		};
-+		int ret;
++	if (bo->fd < 0) {
++		int ret, prime_fd;
 +
-+		ret = drmIoctl(bo->dev->fd, DRM_IOCTL_PRIME_HANDLE_TO_FD, &req);
++		ret = drmPrimeHandleToFD(bo->dev->fd, bo->handle, DRM_CLOEXEC,
++					&prime_fd);
 +		if (ret) {
 +			return ret;
 +		}
 +
-+		bo->fd = req.fd;
++		bo->fd = prime_fd;
 +	}
 +	return dup(bo->fd);
 +}
@@ -530,10 +476,10 @@ index 0000000..81f0d3c
 +
 diff --git a/etnaviv/etnaviv_cmd_stream.c b/etnaviv/etnaviv_cmd_stream.c
 new file mode 100644
-index 0000000..2c695d8
+index 0000000..b75fe9f
 --- /dev/null
 +++ b/etnaviv/etnaviv_cmd_stream.c
-@@ -0,0 +1,261 @@
+@@ -0,0 +1,228 @@
 +/*
 + * Copyright (C) 2014-2015 Etnaviv Project
 + *
@@ -589,10 +535,11 @@ index 0000000..2c695d8
 +	(x)->nr_ ## name ++; \
 +})
 +
-+struct etna_cmd_stream * etna_cmd_stream_new(struct etna_pipe *pipe)
++struct etna_cmd_stream *etna_cmd_stream_new(struct etna_pipe *pipe,
++		void (*reset_notify)(struct etna_cmd_stream *stream, void *priv),
++		void *priv)
 +{
 +	struct etna_cmd_stream *stream;
-+	int i;
 +
 +	stream = calloc(1, sizeof(*stream));
 +	if (!stream) {
@@ -600,32 +547,17 @@ index 0000000..2c695d8
 +		goto fail;
 +	}
 +
-+	stream->submit_cmd = calloc(1, sizeof(*stream->submit_cmd));
-+	if (!stream->submit_cmd) {
++	stream->buffer = malloc(CMD_STREAM_SIZE);
++	if (!stream->buffer) {
 +		ERROR_MSG("allocation failed");
 +		goto fail;
 +	}
 +
-+	for (i = 0; i < NUM_CMD_STREAMS; i++) {
-+		void *tmp;
-+		stream->stream[i] = etna_bo_new(pipe->gpu->dev, CMD_STREAM_SIZE, ETNA_BO_CMDSTREAM);
-+
-+		if (!stream->stream[i]) {
-+			ERROR_MSG("allocation failed");
-+			goto fail;
-+		}
-+
-+		tmp = etna_bo_map(stream->stream[i]);
-+		if (!tmp) {
-+			ERROR_MSG("mmap failed");
-+			goto fail;
-+		}
-+	}
-+
 +	list_inithead(&stream->submit_list);
 +
-+	stream->cmd = stream->stream[0]->map;
 +	stream->pipe = pipe;
++	stream->reset_notify = reset_notify;
++	stream->reset_notify_priv = priv;
 +
 +	return stream;
 +
@@ -637,29 +569,19 @@ index 0000000..2c695d8
 +
 +void etna_cmd_stream_del(struct etna_cmd_stream *stream)
 +{
-+	int i;
-+
-+	for (i = 0; i < NUM_CMD_STREAMS; i++) {
-+		etna_bo_del(stream->stream[i]);
-+	}
-+
-+	free(stream->submit_cmd);
++	free(stream->buffer);
 +	free(stream->relocs);
 +	free(stream);
 +}
 +
-+static void switch_to_next_buffer(struct etna_cmd_stream *stream)
++static void reset_buffer(struct etna_cmd_stream *stream)
 +{
-+	int cmd_steam_idx = (stream->current_stream + 1) % NUM_CMD_STREAMS;
-+
-+	stream->current_stream = cmd_steam_idx;
 +	stream->offset = 0;
-+	stream->cmd = stream->stream[cmd_steam_idx]->map;
 +	stream->nr_bos = 0;
 +	stream->nr_relocs = 0;
 +
-+	/* make sure we can access the new cmd stream bo */
-+	etna_bo_cpu_prep(stream->stream[cmd_steam_idx], ETNA_PREP_WRITE);
++	if (stream->reset_notify)
++		stream->reset_notify(stream, stream->reset_notify_priv);
 +}
 +
 +void etna_cmd_stream_reserve(struct etna_cmd_stream *stream, size_t n)
@@ -672,23 +594,23 @@ index 0000000..2c695d8
 +	}
 +
 +	etna_cmd_stream_flush(stream);
-+	switch_to_next_buffer(stream);
++	reset_buffer(stream);
 +}
 +
 +void etna_cmd_stream_emit(struct etna_cmd_stream *stream, uint32_t data)
 +{
-+	stream->cmd[stream->offset++] = data;
++	stream->buffer[stream->offset++] = data;
 +}
 +
 +uint32_t etna_cmd_stream_get(struct etna_cmd_stream *stream, uint32_t offset)
 +{
-+	return stream->cmd[offset];
++	return stream->buffer[offset];
 +}
 +
 +void etna_cmd_stream_set(struct etna_cmd_stream *stream, uint32_t offset,
 +		uint32_t data)
 +{
-+	stream->cmd[offset] = data;
++	stream->buffer[offset] = data;
 +}
 +
 +uint32_t etna_cmd_stream_offset(struct etna_cmd_stream *stream)
@@ -732,25 +654,16 @@ index 0000000..2c695d8
 +	int ret, id = stream->pipe->id;
 +	struct etna_gpu *gpu = stream->pipe->gpu;
 +	struct etna_bo *etna_bo = NULL, *tmp;
-+	struct drm_etnaviv_gem_submit_cmd *cmd = NULL;
 +	struct drm_etnaviv_gem_submit req;
-+
-+	/* we are done with cpu access */
-+	etna_bo_cpu_fini(stream->stream[stream->current_stream]);
-+
-+	cmd = stream->submit_cmd;
-+	cmd->type = ETNA_SUBMIT_CMD_BUF;
-+	cmd->submit_idx = bo2idx(stream, stream->stream[stream->current_stream], ETNA_RELOC_READ);
-+	cmd->size = stream->offset * 4; /* in bytes */
-+	cmd->relocs = VOID2U64(stream->relocs);
-+	cmd->nr_relocs = stream->nr_relocs;
 +
 +	req.pipe = gpu->core;
 +	req.exec_state = id;
-+	req.cmds = VOID2U64(cmd);
-+	req.nr_cmds = 1;
 +	req.bos = VOID2U64(stream->bos);
 +	req.nr_bos = stream->nr_bos;
++	req.relocs = VOID2U64(stream->relocs);
++	req.nr_relocs = stream->nr_relocs;
++	req.stream = VOID2U64(stream->buffer);
++	req.stream_size = stream->offset * 4; /* in bytes */
 +
 +	ret = drmCommandWriteRead(gpu->dev->fd, DRM_ETNAVIV_GEM_SUBMIT,
 +			&req, sizeof(req));
@@ -771,14 +684,14 @@ index 0000000..2c695d8
 +void etna_cmd_stream_flush(struct etna_cmd_stream *stream)
 +{
 +	flush(stream);
-+	switch_to_next_buffer(stream);
++	reset_buffer(stream);
 +}
 +
 +void etna_cmd_stream_finish(struct etna_cmd_stream *stream)
 +{
 +	flush(stream);
 +	etna_pipe_wait(stream->pipe, stream->last_timestamp, 5000);
-+	switch_to_next_buffer(stream);
++	reset_buffer(stream);
 +}
 +
 +void etna_cmd_stream_reloc(struct etna_cmd_stream *stream, const struct etna_reloc *r)
@@ -902,10 +815,10 @@ index 0000000..506e851
 +
 diff --git a/etnaviv/etnaviv_drm.h b/etnaviv/etnaviv_drm.h
 new file mode 100644
-index 0000000..ddc7b20
+index 0000000..3521da0
 --- /dev/null
 +++ b/etnaviv/etnaviv_drm.h
-@@ -0,0 +1,232 @@
+@@ -0,0 +1,215 @@
 +/*
 + * Copyright (C) 2015 Etnaviv Project
 + *
@@ -980,7 +893,6 @@ index 0000000..ddc7b20
 + * GEM buffers:
 + */
 +
-+#define ETNA_BO_CMDSTREAM    0x00000001
 +#define ETNA_BO_CACHE_MASK   0x000f0000
 +/* cache modes */
 +#define ETNA_BO_CACHED       0x00010000
@@ -1031,23 +943,6 @@ index 0000000..ddc7b20
 +	__u64 reloc_offset;   /* in, offset from start of reloc_bo */
 +};
 +
-+/* submit-types:
-+ *   BUF - this cmd buffer is executed normally.
-+ *   CTX_RESTORE_BUF - only executed if there has been a GPU context
-+ *      switch since the last SUBMIT ioctl
-+ */
-+#define ETNA_SUBMIT_CMD_BUF             0x0001
-+#define ETNA_SUBMIT_CMD_CTX_RESTORE_BUF 0x0002
-+struct drm_etnaviv_gem_submit_cmd {
-+	__u32 type;           /* in, one of ETNA_SUBMIT_CMD_x */
-+	__u32 submit_idx;     /* in, index of submit_bo cmdstream buffer */
-+	__u32 submit_offset;  /* in, offset into submit_bo */
-+	__u32 size;           /* in, cmdstream size */
-+	__u32 pad;
-+	__u32 nr_relocs;      /* in, number of submit_reloc's */
-+	__u64 relocs;         /* in, ptr to array of submit_reloc's */
-+};
-+
 +/* Each buffer referenced elsewhere in the cmdstream submit (ie. the
 + * cmdstream buffer(s) themselves or reloc entries) has one (and only
 + * one) entry in the submit->bos[] table.
@@ -1075,14 +970,15 @@ index 0000000..ddc7b20
 +#define ETNA_PIPE_2D      0x01
 +#define ETNA_PIPE_VG      0x02
 +struct drm_etnaviv_gem_submit {
++	__u32 fence;          /* out */
 +	__u32 pipe;           /* in */
 +	__u32 exec_state;     /* in, initial execution state (ETNA_PIPE_x) */
-+	__u32 fence;          /* out */
 +	__u32 nr_bos;         /* in, number of submit_bo's */
-+	__u32 nr_cmds;        /* in, number of submit_cmd's */
-+	__u32 pad;
++	__u32 nr_relocs;      /* in, number of submit_reloc's */
++	__u32 stream_size;    /* in, cmdstream size */
 +	__u64 bos;            /* in, ptr to array of submit_bo's */
-+	__u64 cmds;           /* in, ptr to array of submit_cmd's */
++	__u64 relocs;         /* in, ptr to array of submit_reloc's */
++	__u64 stream;         /* in, ptr to cmdstream */
 +};
 +
 +/* The normal way to synchronize with the GPU is just to CPU_PREP on
@@ -1140,10 +1036,10 @@ index 0000000..ddc7b20
 +#endif /* __ETNAVIV_DRM_H__ */
 diff --git a/etnaviv/etnaviv_drmif.h b/etnaviv/etnaviv_drmif.h
 new file mode 100644
-index 0000000..ecf0d23
+index 0000000..601624e
 --- /dev/null
 +++ b/etnaviv/etnaviv_drmif.h
-@@ -0,0 +1,156 @@
+@@ -0,0 +1,154 @@
 +/*
 + * Copyright (C) 2014-2015 Etnaviv Project
 + *
@@ -1220,10 +1116,10 @@ index 0000000..ecf0d23
 +/* map flags */
 +#define DRM_ETNA_BO_FORCE_MMU           0x00100000
 +
-+/* bo access flags: (keep aligned to MSM_PREP_x) */
-+#define DRM_FREEDRENO_PREP_READ           0x01
-+#define DRM_FREEDRENO_PREP_WRITE          0x02
-+#define DRM_FREEDRENO_PREP_NOSYNC         0x04
++/* bo access flags: (keep aligned to ETNA_PREP_x) */
++#define DRM_ETNA_PREP_READ              0x01
++#define DRM_ETNA_PREP_WRITE             0x02
++#define DRM_ETNA_PREP_NOSYNC            0x04
 +
 +/* device functions:
 + */
@@ -1255,10 +1151,6 @@ index 0000000..ecf0d23
 +
 +struct etna_bo * etna_bo_new(struct etna_device *dev,
 +		uint32_t size, uint32_t flags);
-+#if 0
-+struct etna_bo * fd_bo_from_fbdev(struct fd_pipe *pipe,
-+		int fbfd, uint32_t size);
-+#endif
 +struct etna_bo *etna_bo_from_handle(struct etna_device *dev,
 +		uint32_t handle, uint32_t size);
 +struct etna_bo * etna_bo_from_name(struct etna_device *dev, uint32_t name);
@@ -1277,7 +1169,9 @@ index 0000000..ecf0d23
 +/* cmd stream functions:
 + */
 +
-+struct etna_cmd_stream * etna_cmd_stream_new(struct etna_pipe *pipe);
++struct etna_cmd_stream * etna_cmd_stream_new(struct etna_pipe *pipe,
++		void (*reset_notify)(struct etna_cmd_stream *stream, void *priv),
++		void *priv);
 +void etna_cmd_stream_del(struct etna_cmd_stream *stream);
 +void etna_cmd_stream_reserve(struct etna_cmd_stream *stream, size_t n);
 +void etna_cmd_stream_emit(struct etna_cmd_stream *stream, uint32_t data);
@@ -1549,10 +1443,10 @@ index 0000000..9d281f5
 +}
 diff --git a/etnaviv/etnaviv_priv.h b/etnaviv/etnaviv_priv.h
 new file mode 100644
-index 0000000..c26d9d0
+index 0000000..326dc55
 --- /dev/null
 +++ b/etnaviv/etnaviv_priv.h
-@@ -0,0 +1,174 @@
+@@ -0,0 +1,171 @@
 +/*
 + * Copyright (C) 2014-2015 Etnaviv Project
 + *
@@ -1672,20 +1566,13 @@ index 0000000..c26d9d0
 +	struct etna_gpu *gpu;
 +};
 +
-+
-+#define NUM_CMD_STREAMS 	5
-+
 +struct etna_cmd_stream {
 +	struct etna_pipe *pipe;
-+	struct etna_bo *stream[NUM_CMD_STREAMS];
-+	int current_stream;
-+	uint32_t *cmd;
++	uint32_t *buffer;
 +	uint32_t offset;
 +
 +	struct list_head submit_list;
 +	uint32_t last_timestamp;
-+
-+	struct drm_etnaviv_gem_submit_cmd *submit_cmd;
 +
 +	/* bo's table: */
 +	struct drm_etnaviv_gem_submit_bo *bos;
@@ -1694,6 +1581,10 @@ index 0000000..c26d9d0
 +	/* reloc's table: */
 +	struct drm_etnaviv_gem_submit_reloc *relocs;
 +	uint32_t nr_relocs, max_relocs;
++
++	/* notify callback if buffer reset happend */
++	void (*reset_notify)(struct etna_cmd_stream *stream, void *priv);
++	void *reset_notify_priv;
 +};
 +
 +#define ALIGN(v,a) (((v) + (a) - 1) & ~((a) - 1))
@@ -1888,20 +1779,20 @@ index 0000000..27e0761
 +
 +#endif /*_U_DOUBLE_LIST_H_*/
 diff --git a/tests/Makefile.am b/tests/Makefile.am
-index 9a2d932..02d6df4 100644
+index a511d28..e4a3696 100644
 --- a/tests/Makefile.am
 +++ b/tests/Makefile.am
-@@ -42,6 +42,10 @@ TESTS = \
- 	hash \
- 	random
+@@ -22,6 +22,10 @@ if HAVE_TEGRA
+ SUBDIRS += tegra
+ endif
  
 +#if HAVE_ETNAVIV
 +#SUBDIRS += etnaviv
 +#endif
 +
- if HAVE_LIBUDEV
- 
- check_LTLIBRARIES = libdrmtest.la
+ AM_CFLAGS = \
+ 	$(WARN_CFLAGS)\
+ 	-I $(top_srcdir)/include/drm \
 diff --git a/tests/etnaviv/Makefile.am b/tests/etnaviv/Makefile.am
 new file mode 100644
 index 0000000..b46d5c4
@@ -2151,10 +2042,10 @@ index 0000000..844f829
 +#endif /* CMDSTREAM_XML */
 diff --git a/tests/etnaviv/etnaviv_2d_test.c b/tests/etnaviv/etnaviv_2d_test.c
 new file mode 100644
-index 0000000..dc77955
+index 0000000..edc892c
 --- /dev/null
 +++ b/tests/etnaviv/etnaviv_2d_test.c
-@@ -0,0 +1,240 @@
+@@ -0,0 +1,239 @@
 +/*
 + * Copyright (C) 2014-2015 Etnaviv Project
 + *
@@ -2357,15 +2248,14 @@ index 0000000..dc77955
 +		goto fail;
 +	}
 +
-+	bmp = etna_bo_new(dev, bmp_size, ETNA_BO_WC);
++	bmp = etna_bo_new(dev, bmp_size, ETNA_BO_UNCACHED);
 +	if (!bmp) {
 +		ret = 5;
 +		goto fail;
 +	}
 +	memset(etna_bo_map(bmp), 0, bmp_size);
 +
-+
-+	stream = etna_cmd_stream_new(pipe);
++	stream = etna_cmd_stream_new(pipe, NULL, NULL);
 +	if (!stream) {
 +		ret = 6;
 +		goto fail;
@@ -4426,6 +4316,3 @@ index 0000000..667fa87
 +void bmp_dump32_ex(char *buffer, unsigned width, unsigned height, bool flip, bool bgra, bool alpha, const char *filename);
 +
 +#endif /* BMP_DUMP_H */
--- 
-2.5.0
-
