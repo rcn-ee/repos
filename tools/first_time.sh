@@ -1,3 +1,3 @@
 #!/bin/bash
 
-sudo apt-get install sbuild dh-autoreconf quilt gobject-introspection scons
+sudo apt-get install sbuild dh-autoreconf quilt gobject-introspection scons xserver-xorg-dev
