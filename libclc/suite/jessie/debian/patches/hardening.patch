@@ -1,0 +1,42 @@
+description: enable build hardening flags
+author: Michael Gilbert <mgilbert@debian.org>
+
+--- a/configure.py
++++ b/configure.py
+@@ -81,6 +81,13 @@ llvm_core_libs = llvm_config(['--libs',
+ llvm_cxxflags = llvm_config(['--cxxflags']) + ' -fno-exceptions -fno-rtti'
+ llvm_libdir = llvm_config(['--libdir'])
+ 
++# add in debian buildflags
++proc_ldflags = Popen(("dpkg-buildflags","--get","LDFLAGS"), stdout=PIPE)
++proc_cxxflags = Popen(("dpkg-buildflags","--get","CXXFLAGS"), stdout=PIPE)
++llvm_core_libs += " " + proc_ldflags.communicate()[0].strip("\n")
++llvm_cxxflags = llvm_cxxflags.replace(" -fPIC","")
++llvm_cxxflags += " " + proc_cxxflags.communicate()[0].strip("\n")
++
+ llvm_clang = os.path.join(llvm_bindir, 'clang')
+ llvm_link = os.path.join(llvm_bindir, 'llvm-link')
+ llvm_opt = os.path.join(llvm_bindir, 'opt')
+@@ -187,6 +194,11 @@ for target in targets:
+                      "-emit-llvm" % (target, clang_cl_includes)
+     if device['gpu'] != '':
+       clang_bc_flags += ' -mcpu=' + device['gpu']
++
++    # add in debian build flags
++    proc_cflags = Popen(("dpkg-buildflags","--get","CFLAGS"), stdout=PIPE)
++    clang_bc_flags += " " + proc_cflags.communicate()[0].strip("\n")
++
+     clang_bc_rule = "CLANG_CL_BC_" + target + "_" + device['gpu']
+     c_compiler_rule(b, clang_bc_rule, "LLVM-CC", llvm_clang, clang_bc_flags)
+ 
+--- a/build/metabuild.py
++++ b/build/metabuild.py
+@@ -48,7 +48,7 @@ endif
+ 
+     r = self.rules[rule]
+     command = subst(r['command'])
+-    if r['description']:
++    if False:
+       desc = subst(r['description'])
+       self.output.write('\t@echo %s\n\t$(Verb) %s\n' % (desc, command))
+     else:
