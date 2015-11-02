@@ -118,11 +118,20 @@ qt5_apps () {
 	echo "connman/cmst:"
 	site="http://packages.siduction.org/extra/pool/main/c"
 	package_name="connman" ; package_version="connman_1.30-1" ; check_http_exp
+	site="${debian_pool}/main/c"
 	package_name="cmst" ; package_version="cmst_2015.10.07-1" ; check_http
 }
 
 qt5_lxqt () {
 	echo "lxqt: debian"
+
+	#https://tracker.debian.org/pkg/libqtxdg
+	site="${debian_pool}/main/libq"
+	package_name="libqtxdg" ; package_version="${package_name}_1.3.0-1" ; check_http
+
+	#https://tracker.debian.org/pkg/libsysstat
+	site="${debian_pool}/main/libs"
+	package_name="libsysstat" ; package_version="${package_name}_0.3.0-5" ; check_http
 
 	site="${debian_pool}/main/libd"
 	package_name="libdbusmenu-qt" ; package_version="${package_name}_0.9.3+15.10.20150604-1" ; check_http
@@ -135,9 +144,6 @@ qt5_lxqt () {
 
 	site="${debian_pool}/main/o"
 	package_name="obconf-qt" ; package_version="${package_name}_0.1.2-8" ; check_http
-
-	site="${debian_pool}/main/libq"
-	package_name="libqtxdg" ; package_version="${package_name}_1.2.0-7" ; check_http
 
 	site="${debian_pool}/main/libl"
 	package_name="liblxqt" ; package_version="${package_name}_0.9.0-23" ; check_http
@@ -162,10 +168,6 @@ qt5_lxqt () {
 
 	site="${debian_pool}/main/l"
 	package_name="lxqt-session" ; package_version="${package_name}_0.9.0-15" ; check_http
-
-#
-	site="${debian_pool}/main/libs"
-	package_name="libsysstat" ; package_version="${package_name}_0.3.0-5" ; check_http
 
 	site="${debian_pool}/main/l"
 	package_name="lxqt-globalkeys" ; package_version="${package_name}_0.9.0-19" ; check_http
