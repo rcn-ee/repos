@@ -131,7 +131,7 @@ qt5_lxqt () {
 
 	#https://tracker.debian.org/pkg/libsysstat
 	site="${debian_pool}/main/libs"
-	package_name="libsysstat" ; package_version="${package_name}_0.3.0-5" ; check_http
+	package_name="libsysstat" ; package_version="${package_name}_0.3.1-1" ; check_http
 
 	site="${debian_pool}/main/libd"
 	package_name="libdbusmenu-qt" ; package_version="${package_name}_0.9.3+15.10.20150604-1" ; check_http
