@@ -150,7 +150,7 @@ qt5_lxqt () {
 
 	#https://tracker.debian.org/pkg/liblxqt
 	site="${debian_pool}/main/libl"
-	package_name="liblxqt" ; package_version="${package_name}_0.9.0-23" ; check_http
+	package_name="liblxqt" ; package_version="${package_name}_0.10.0-0" ; check_http
 
 	#libqt5xdg-dev
 	#liblxqt0-dev
@@ -160,7 +160,7 @@ qt5_lxqt () {
 
 	#https://tracker.debian.org/pkg/lxqt-about
 	site="${debian_pool}/main/l"
-	package_name="lxqt-about" ; package_version="${package_name}_0.9.0-9" ; check_http
+	package_name="lxqt-about" ; package_version="${package_name}_0.10.0-0" ; check_http
 
 	#libqt5xdg-dev
 	#liblxqt0-dev
@@ -171,7 +171,7 @@ qt5_lxqt () {
 
 	#https://tracker.debian.org/pkg/lxqt-admin
 	site="${debian_pool}/main/l"
-	package_name="lxqt-admin" ; package_version="${package_name}_0.9.0-6" ; check_http
+	package_name="lxqt-admin" ; package_version="${package_name}_0.10.0-0" ; check_http
 
 	site="${debian_pool}/main/libd"
 	package_name="libdbusmenu-qt" ; package_version="${package_name}_0.9.3+15.10.20150604-1" ; check_http
