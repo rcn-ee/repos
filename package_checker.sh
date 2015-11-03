@@ -125,6 +125,16 @@ qt5_apps () {
 qt5_lxqt () {
 	echo "lxqt: debian"
 
+	#common:
+	#debhelper
+	#cmake (stretch = 3.3.2-1, (jessie = backported))
+	#pkg-config (jessie/stretch = 0.28-1)
+	#qttools5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
+	#qttools5-dev-tools (jessie = 5.3.2-2, stretch = 5.5.1-3)
+
+	#libmagic-dev (jessie = 5.22+15-2, stretch = 5.25-2)
+	#qtbase5-private-dev (jessie = 5.3.2+dfsg-4+deb8u1, stretch = 5.5.1+dfsg-5)
+
 	#https://tracker.debian.org/pkg/libqtxdg
 	site="${debian_pool}/main/libq"
 	package_name="libqtxdg" ; package_version="${package_name}_1.3.0-1" ; check_http
@@ -132,6 +142,36 @@ qt5_lxqt () {
 	#https://tracker.debian.org/pkg/libsysstat
 	site="${debian_pool}/main/libs"
 	package_name="libsysstat" ; package_version="${package_name}_0.3.1-1" ; check_http
+
+	#libqt5xdg-dev
+	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
+	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
+	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
+
+	#https://tracker.debian.org/pkg/liblxqt
+	site="${debian_pool}/main/libl"
+	package_name="liblxqt" ; package_version="${package_name}_0.9.0-23" ; check_http
+
+	#libqt5xdg-dev
+	#liblxqt0-dev
+	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
+	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
+	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
+
+	#https://tracker.debian.org/pkg/lxqt-about
+	site="${debian_pool}/main/l"
+	package_name="lxqt-about" ; package_version="${package_name}_0.9.0-9" ; check_http
+
+	#libqt5xdg-dev
+	#liblxqt0-dev
+	#liboobs-1-dev (jessie/stretch = 3.0.0-2)
+	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
+	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
+	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
+
+	#https://tracker.debian.org/pkg/lxqt-admin
+	site="${debian_pool}/main/l"
+	package_name="lxqt-admin" ; package_version="${package_name}_0.9.0-6" ; check_http
 
 	site="${debian_pool}/main/libd"
 	package_name="libdbusmenu-qt" ; package_version="${package_name}_0.9.3+15.10.20150604-1" ; check_http
@@ -145,12 +185,7 @@ qt5_lxqt () {
 	site="${debian_pool}/main/o"
 	package_name="obconf-qt" ; package_version="${package_name}_0.1.2-8" ; check_http
 
-	site="${debian_pool}/main/libl"
-	package_name="liblxqt" ; package_version="${package_name}_0.9.0-23" ; check_http
-
 	site="${debian_pool}/main/l"
-	package_name="lxqt-about" ; package_version="${package_name}_0.9.0-9" ; check_http
-	package_name="lxqt-admin" ; package_version="${package_name}_0.9.0-6" ; check_http
 	package_name="lxqt-common" ; package_version="${package_name}_0.9.1-17" ; check_http
 	package_name="lxqt-notificationd" ; package_version="${package_name}_0.9.0-11" ; check_http
 	package_name="lxqt-policykit" ; package_version="${package_name}_0.9.0-9" ; check_http
