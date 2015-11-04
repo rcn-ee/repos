@@ -133,7 +133,7 @@ qt5_lxqt () {
 	package_name="policykit-1" ; package_version="${package_name}_0.113-2" ; check_http
 
 	site="${debian_pool}/main/p"
-	package_name="polkit-qt-1" ; package_version="${package_name}_0.112.0-3" ; check_http
+	package_name="polkit-qt-1" ; package_version="${package_name}_0.112.0-4" ; check_http
 
 	#common:
 	#debhelper
