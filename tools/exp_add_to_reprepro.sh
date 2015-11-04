@@ -24,4 +24,4 @@ if [ -d suite/${suite}/ ] ; then
 	rcn_ee_version="${jessie_version}"
 	run
 fi
-
+#
