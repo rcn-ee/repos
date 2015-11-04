@@ -183,6 +183,26 @@ qt5_lxqt () {
 	site="${debian_pool}/main/l"
 	package_name="lxqt-common" ; package_version="${package_name}_0.10.0-0" ; check_http
 
+	#libqt5xdg-dev
+	#liblxqt0-dev
+	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
+	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
+	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
+
+	#https://tracker.debian.org/pkg/lxqt-globalkeys
+	site="${debian_pool}/main/l"
+	package_name="lxqt-globalkeys" ; package_version="${package_name}_0.10.0-0" ; check_http
+
+	#libqt5xdg-dev
+	#liblxqt0-dev
+	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
+	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
+	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
+
+	#https://tracker.debian.org/pkg/lxqt-openssh-askpass
+	site="${debian_pool}/main/l"
+	package_name="lxqt-openssh-askpass" ; package_version="${package_name}_0.10.0-0" ; check_http
+
 	site="${debian_pool}/main/libd"
 	package_name="libdbusmenu-qt" ; package_version="${package_name}_0.9.3+15.10.20150604-1" ; check_http
 
@@ -201,9 +221,6 @@ qt5_lxqt () {
 	package_name="lxqt-powermanagement" ; package_version="${package_name}_0.9.0-14" ; check_http
 	package_name="lxqt-qtplugin" ; package_version="${package_name}_0.9.0-6" ; check_http
 
-	site="${debian_pool}/main/l"
-	package_name="lxqt-openssh-askpass" ; package_version="${package_name}_0.9.0-1" ; check_http
-
 	site="${debian_pool}/main/p"
 	package_name="pcmanfm-qt" ; package_version="${package_name}_0.9.0-22" ; check_http
 
@@ -214,7 +231,6 @@ qt5_lxqt () {
 	package_name="lxqt-session" ; package_version="${package_name}_0.9.0-15" ; check_http
 
 	site="${debian_pool}/main/l"
-	package_name="lxqt-globalkeys" ; package_version="${package_name}_0.9.0-19" ; check_http
 	package_name="lxqt-sudo" ; package_version="${package_name}_0.1.0-9" ; check_http
 	package_name="lxqt-panel" ; package_version="${package_name}_0.9.0-34" ; check_http
 	package_name="lxqt-session" ; package_version="${package_name}_0.9.0-15" ; check_http
