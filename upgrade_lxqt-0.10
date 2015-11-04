@@ -1,9 +1,10 @@
 #!/bin/bash
 
-cd ./liblxqt/
-../tools/add_to_reprepro.sh
-cd ../
+run () {
+	cd ./${pkg}/
+	../tools/add_to_reprepro.sh
+	cd ../
+}
 
-cd ./libsysstat/
-../tools/add_to_reprepro.sh
-cd ../
+pkg="liblxqt" ; run
+pkg="lxqt-about" ; run
