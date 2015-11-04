@@ -1,8 +1,23 @@
-policykit-1 (0.113-1~bpo90+20150708+1) stretch; urgency=low
+policykit-1 (0.113-2~bpo90+20151104+1) stretch; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Wed, 08 Jul 2015 10:02:39 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Wed, 04 Nov 2015 12:04:06 -0600
+
+policykit-1 (0.113-2) experimental; urgency=medium
+
+  [ Simon McVittie ]
+  * policykit-1.links: statically alias polkit.service (upstream's name)
+    as polkitd.service (Debian's historical name)
+
+  [ Martin Pitt ]
+  * debian/policykit-1.{pre,pos}inst: Temporarily mask polkitd.service while
+    policykit-1 is unpackaged but not yet configured. During that time we
+    don't yet have our D-Bus policy in /etc so that polkitd cannot work yet.
+    This can be dropped once the D-Bus policy moves to /usr.
+    (Closes: #794723, LP: #1447654)
+
+ -- Martin Pitt <mpitt@debian.org>  Wed, 21 Oct 2015 08:28:11 +0200
 
 policykit-1 (0.113-1) experimental; urgency=medium
 

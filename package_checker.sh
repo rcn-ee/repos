@@ -125,6 +125,16 @@ qt5_apps () {
 qt5_lxqt () {
 	echo "lxqt: debian"
 
+#backports:
+	site="${debian_pool}/main/libd"
+	package_name="libdbusmenu-qt" ; package_version="${package_name}_0.9.3+15.10.20150604-1" ; check_http
+
+	site="${debian_pool}/main/p"
+	package_name="policykit-1" ; package_version="${package_name}_0.113-2" ; check_http
+
+	site="${debian_pool}/main/p"
+	package_name="polkit-qt-1" ; package_version="${package_name}_0.112.0-3" ; check_http
+
 	#common:
 	#debhelper
 	#cmake (stretch = 3.3.2-1, (jessie = backported))
@@ -216,14 +226,14 @@ qt5_lxqt () {
 
 	#libqt5xdg-dev
 	#liblxqt0-dev
-#adep: libkf5solid-dev
+	#libkf5solid-dev (stretch = 5.15.0-1, (jessie = backported))
 	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
-#adep: libqt5svg5-dev
-#adep: libqt5x11extras5-dev
+	#libqt5svg5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
+	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
 	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
-#adep: libx11-xcb-dev
-#adep: libxcb-dpms0-dev
-#adep: libxcb-screensaver0-dev
+	#libx11-xcb-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
+	#adep: libxcb-dpms0-dev (jessie = 1.10-3, stretch = 1.10-3)
+	#adep: libxcb-screensaver0-dev (jessie = 1.10-3, stretch = 1.10-3)
 	#qtbase5-private-dev (jessie = 5.3.2+dfsg-4+deb8u1, stretch = 5.5.1+dfsg-5)
 
 	#https://tracker.debian.org/pkg/lxqt-powermanagement
@@ -232,31 +242,31 @@ qt5_lxqt () {
 
 	#libqt5xdg-dev
 	#liblxqt0-dev
-#adep: libpolkit-agent-1-dev
+	#libpolkit-agent-1-dev (sid = 0.113-2,  (jessie = backported))
 	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
 	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
-#adep: libpolkit-qt5-1-dev
-#adep: libqt5x11extras5-dev
+	#libpolkit-qt5-1-dev (stretch = 0.112.0-4, (jessie = backported))
+	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
 
 	#https://tracker.debian.org/pkg/lxqt-policykit
 	site="${debian_pool}/main/l"
 	package_name="lxqt-policykit" ; package_version="${package_name}_0.10.0-0" ; check_http
 
+	#libqt5xdg-dev
+	#liblxqt0-dev
+	#libdbusmenu-qt5-dev  (stretch = 0.9.3+15.10.20150604-1, (jessie = backported))
+	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
+	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
+	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
+	#qtbase5-private-dev (jessie = 5.3.2+dfsg-4+deb8u1, stretch = 5.5.1+dfsg-5)
 
-	site="${debian_pool}/main/libd"
-	package_name="libdbusmenu-qt" ; package_version="${package_name}_0.9.3+15.10.20150604-1" ; check_http
+	#https://tracker.debian.org/pkg/lxqt-qtplugin
+	site="${debian_pool}/main/l"
+	package_name="lxqt-qtplugin" ; package_version="${package_name}_0.10.0-0" ; check_http
 
-	site="${debian_pool}/main/p"
-	package_name="policykit-1" ; package_version="${package_name}_0.113-1" ; check_http
-
-	site="${debian_pool}/main/p"
-	package_name="polkit-qt-1" ; package_version="${package_name}_0.112.0-3" ; check_http
-
+#in progress..
 	site="${debian_pool}/main/o"
 	package_name="obconf-qt" ; package_version="${package_name}_0.1.2-8" ; check_http
-
-	site="${debian_pool}/main/l"
-	package_name="lxqt-qtplugin" ; package_version="${package_name}_0.9.0-6" ; check_http
 
 	site="${debian_pool}/main/p"
 	package_name="pcmanfm-qt" ; package_version="${package_name}_0.9.0-22" ; check_http
