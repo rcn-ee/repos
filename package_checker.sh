@@ -275,6 +275,16 @@ qt5_lxqt () {
 	site="${debian_pool}/main/l"
 	package_name="lxqt-session" ; package_version="${package_name}_0.10.0-0" ; check_http
 
+	#libqt5xdg-dev
+	#liblxqt0-dev
+	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
+	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
+	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
+
+	#https://tracker.debian.org/pkg/lxqt-sudo
+	site="${debian_pool}/main/l"
+	package_name="lxqt-sudo" ; package_version="${package_name}_0.10.0-0" ; check_http
+
 
 #in progress..
 	site="${debian_pool}/main/o"
@@ -290,7 +300,6 @@ qt5_lxqt () {
 	package_name="lxqt-session" ; package_version="${package_name}_0.9.0-15" ; check_http
 
 	site="${debian_pool}/main/l"
-	package_name="lxqt-sudo" ; package_version="${package_name}_0.1.0-9" ; check_http
 	package_name="lxqt-panel" ; package_version="${package_name}_0.9.0-34" ; check_http
 	package_name="lxqt-runner" ; package_version="${package_name}_0.9.0-9" ; check_http
 	package_name="lximage-qt" ; package_version="${package_name}_0.4.0-7" ; check_http
