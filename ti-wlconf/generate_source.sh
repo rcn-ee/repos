@@ -19,6 +19,15 @@ fi
 mkdir ignore
 tar xf temp.tar.xz -C ignore
 cd ./ignore/${package_name}_${package_version}/
+
+dos2unix -k wlconf/official_inis/WL1835MOD_INI_C2PC.ini
+dos2unix -k wlconf/official_inis/WL1835MOD_INI_C2PC.ini
+dos2unix -k wlconf/official_inis/WL1835MOD_INI.ini
+dos2unix -k wlconf/official_inis/WL1837MOD_INI_FCC_CE.ini
+dos2unix -k wlconf/official_inis/WL1837MOD_INI_FCC_CE_JP.ini
+dos2unix -k wlconf/official_inis/WL8_COB_INI.ini
+dos2unix -k wlconf/official_inis/WL8_TESTING_INI.ini
+
 mv wlconf/ ${package_name}_${package_version}
 tar cvfJ ../../${package_name}_${package_version}.orig.tar.xz ./${package_name}_${package_version}
 cd ../../

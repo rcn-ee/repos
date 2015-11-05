@@ -13,7 +13,7 @@ git_sha="d39cb9d35247ad6c06542fbac1d40a7c5bcb9856"
 reprepro_dir="t/${package_name}"
 dl_path=""
 
-debian_version="${package_version}-1"
+debian_version="${package_version}-1.1"
 debian_patch=""
 debian_diff=""
 
