@@ -1,8 +1,18 @@
 diff --git a/configure-device.sh b/configure-device.sh
-index 52a32dd..b9d120a 100755
+index 52a32dd..0255a50 100755
 --- a/configure-device.sh
 +++ b/configure-device.sh
-@@ -6,8 +6,7 @@ VERSION=1.2
+@@ -1,13 +1,17 @@
+ #!/bin/sh
+ # Script to run on the target to configure the wl18xx-conf.bin file to match the device capabilities
+ 
++if ! [ "$(id -u)" = 0 ] ; then
++	echo "$0 must be run as sudo user or root"
++	exit 1
++fi
++
+ # version
+ VERSION=1.2
  
  # defaults
  binary_name="/lib/firmware/ti-connectivity/wl18xx-conf.bin"
@@ -12,7 +22,7 @@ index 52a32dd..b9d120a 100755
  
  # function for printing help
  print_help()
-@@ -25,7 +24,7 @@ print_help()
+@@ -25,7 +29,7 @@ print_help()
  print_dump()
  {
  	echo "Saving wl18xx-conf.bin dump to wl18xx-conf-dump.txt"
@@ -21,7 +31,7 @@ index 52a32dd..b9d120a 100755
  }
  
  # function for printing summary
-@@ -253,15 +252,14 @@ rmmod wlcore_sdio
+@@ -253,15 +257,14 @@ rmmod wlcore_sdio
  
  
  # create clean file
