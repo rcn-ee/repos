@@ -1,9 +1,10 @@
 diff --git a/configure-device.sh b/configure-device.sh
-index 52a32dd..0255a50 100755
+index 52a32dd..63b1a72 100755
 --- a/configure-device.sh
 +++ b/configure-device.sh
-@@ -1,13 +1,17 @@
- #!/bin/sh
+@@ -1,13 +1,21 @@
+-#!/bin/sh
++#!/bin/bash
  # Script to run on the target to configure the wl18xx-conf.bin file to match the device capabilities
  
 +if ! [ "$(id -u)" = 0 ] ; then
@@ -19,10 +20,14 @@ index 52a32dd..0255a50 100755
 -wlconf_path="/usr/sbin/wlconf/"
 -ini_path="/usr/sbin/wlconf/official_inis"
 +ini_path="/usr/share/ti/wlconf/official_inis"
++
++if [ ! -f ${binary_name} ] ; then
++	cp /usr/share/ti/wlconf/wl18xx-conf-default.bin ${binary_name}
++fi
  
  # function for printing help
  print_help()
-@@ -25,7 +29,7 @@ print_help()
+@@ -25,7 +33,7 @@ print_help()
  print_dump()
  {
  	echo "Saving wl18xx-conf.bin dump to wl18xx-conf-dump.txt"
@@ -31,7 +36,7 @@ index 52a32dd..0255a50 100755
  }
  
  # function for printing summary
-@@ -253,15 +257,14 @@ rmmod wlcore_sdio
+@@ -253,15 +261,14 @@ rmmod wlcore_sdio
  
  
  # create clean file
