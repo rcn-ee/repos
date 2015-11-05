@@ -285,21 +285,27 @@ qt5_lxqt () {
 	site="${debian_pool}/main/l"
 	package_name="lxqt-sudo" ; package_version="${package_name}_0.10.0-0" ; check_http
 
+	#libqt5xdg-dev
+	#liblxqt0-dev
+	#libfm-dev (jessie = 1.2.3-1, stretch = 1.2.3-1)
+	#libglib2.0-dev (jessie = 2.42.1-1, stretch = 2.46.1-1)
+	#libmenu-cache-dev (jessie = 1.0.0-1, stretch = 1.0.0-1)
+	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
+	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
+
+	#https://tracker.debian.org/pkg/pcmanfm-qt
+	site="${debian_pool}/main/p"
+	package_name="pcmanfm-qt" ; package_version="${package_name}_0.10.0-0" ; check_http
 
 #in progress..
 	site="${debian_pool}/main/o"
 	package_name="obconf-qt" ; package_version="${package_name}_0.1.2-8" ; check_http
-
-	site="${debian_pool}/main/p"
-	package_name="pcmanfm-qt" ; package_version="${package_name}_0.9.0-22" ; check_http
 
 	site="${debian_pool}/main/c"
 	package_name="compton-conf" ; package_version="${package_name}_0.1.2-8" ; check_http
 
 	site="${debian_pool}/main/l"
 	package_name="lxqt-session" ; package_version="${package_name}_0.9.0-15" ; check_http
-
-	site="${debian_pool}/main/l"
 	package_name="lxqt-panel" ; package_version="${package_name}_0.9.0-34" ; check_http
 	package_name="lxqt-runner" ; package_version="${package_name}_0.9.0-9" ; check_http
 	package_name="lximage-qt" ; package_version="${package_name}_0.4.0-7" ; check_http
