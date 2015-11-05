@@ -4,6 +4,9 @@
 export DH_VERBOSE=1
 
 %:
+	dh $@
+
+override_dh_auto_build:
 	dos2unix -k official_inis/WL1835MOD_INI_C2PC.ini
 	dos2unix -k official_inis/WL1835MOD_INI_C2PC.ini
 	dos2unix -k official_inis/WL1835MOD_INI.ini
@@ -11,4 +14,4 @@ export DH_VERBOSE=1
 	dos2unix -k official_inis/WL1837MOD_INI_FCC_CE_JP.ini
 	dos2unix -k official_inis/WL8_COB_INI.ini
 	dos2unix -k official_inis/WL8_TESTING_INI.ini
-	dh $@
+	dh_auto_build
