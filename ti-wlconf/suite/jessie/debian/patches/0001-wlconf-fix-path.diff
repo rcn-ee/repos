@@ -57,6 +57,52 @@ index 52a32dd..63b1a72 100755
  
  print_summary
  
+diff --git a/wlconf-toggle-set.sh b/wlconf-toggle-set.sh
+index 2def567..2fe1587 100755
+--- a/wlconf-toggle-set.sh
++++ b/wlconf-toggle-set.sh
+@@ -1,4 +1,9 @@
+-#!/bin/sh
++#!/bin/bash
++
++if ! [ "$(id -u)" = 0 ] ; then
++	echo "$0 must be run as sudo user or root"
++	exit 1
++fi
+ 
+ # function for printing help
+ print_help()
+@@ -23,6 +28,9 @@ MODE=$3
+ 
+ if [ $1 == "def" ]; then
+ 	BIN_PATH="/lib/firmware/ti-connectivity/wl18xx-conf.bin"
++	if [ ! -f ${BIN_PATH} ] ; then
++		cp /usr/share/ti/wlconf/wl18xx-conf-default.bin ${BIN_PATH}
++	fi
+         echo ""
+ fi
+ 
+@@ -41,8 +49,7 @@ echo "Feature: "$2""
+ echo "Mode : "$3
+ echo ""
+ 
+-cd /usr/sbin/wlconf
+-./wlconf -i $BIN_PATH -g > org_conf.txt
++wlconf -i $BIN_PATH -g > org_conf.txt
+ 
+ #find feature place and replace with STUB
+ case $FEATURE in
+@@ -69,8 +76,8 @@ else
+ fi 
+ 
+ # Update the file
+-./wlconf -C updated_conf.txt -o $BIN_PATH 
+-./wlconf -i $BIN_PATH -g | grep sg
++wlconf -C updated_conf.txt -o $BIN_PATH 
++wlconf -i $BIN_PATH -g | grep sg
+ 
+ # Remove temp files
+ rm org_conf.txt
 diff --git a/wlconf.h b/wlconf.h
 index 9999fd9..74ab9f8 100644
 --- a/wlconf.h
