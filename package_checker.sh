@@ -123,7 +123,7 @@ qt5_apps () {
 
 	echo "qlipper:"
 	site="${debian_pool}/main/q"
-	package_name="qlipper" ; package_version="qlipper_6.0-10" ; check_http
+	package_name="qlipper" ; package_version="qlipper_5.0.0+20150823-2" ; check_http
 }
 
 qt5_lxqt () {
@@ -156,6 +156,16 @@ qt5_lxqt () {
 	#https://tracker.debian.org/pkg/libsysstat
 	site="${debian_pool}/main/libs"
 	package_name="libsysstat" ; package_version="${package_name}_0.3.1-1" ; check_http
+
+	#libqt5xdg-dev
+	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
+	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
+	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
+	#libqxt-dev (jessie = 0.6.2-1, stretch = 0.6.2-2)
+
+	#https://tracker.debian.org/pkg/screengrab
+	site="${debian_pool}/main/s"
+	package_name="screengrab" ; package_version="${package_name}_1.95+20150929-1" ; check_http
 
 	#libqt5xdg-dev
 	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
