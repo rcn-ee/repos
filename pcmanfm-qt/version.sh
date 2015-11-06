@@ -10,12 +10,12 @@ src_dir="${package_name}-${package_version}"
 
 git_repo=""
 git_sha=""
-reprepro_dir="l/${package_name}"
+reprepro_dir="p/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
 debian_version="${package_version}-1"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 
-jessie_version="~bpo80+20150806+1"
-stretch_version="~bpo90+20150806+1"
+jessie_version="~bpo80+20151106+1"
+stretch_version="~bpo90+20151106+1"
