@@ -5,8 +5,8 @@
 
 package_name="dart-1.13"
 debian_pkg_name="${package_name}"
-package_version="1.13.0~dev.7.9"
-real_package_version="1.13.0-dev.7.9"
+package_version="1.13.0~dev.7.10"
+real_package_version="1.13.0-dev.7.10"
 package_source="${package_name}_${package_version}.orig.tar.gz"
 src_dir="dart-${real_package_version}"
 
@@ -19,6 +19,6 @@ debian_version="${package_version}-1"
 debian_untar="dart_${debian_version}.debian.tar.gz"
 debian_patch=""
 
-jessie_version="~bpo80+20151105+1"
-stretch_version="~bpo90+20151105+1"
-xenial_version="~bpo1604+20151105+1"
+jessie_version="~bpo80+20151106+1"
+stretch_version="~bpo90+20151106+1"
+xenial_version="~bpo1604+20151106+1"
