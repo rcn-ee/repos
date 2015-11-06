@@ -11,17 +11,20 @@ DEB_HOST_ARCH_CPU ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_CPU)
 confflags = \
 	--enable-radeon \
 	--enable-amdgpu \
-	--disable-libkms \
 	$()
 
 # Linux vs. the rest:
 ifeq (linux, $(DEB_HOST_ARCH_OS))
 	confflags += --enable-udev
+	confflags += --enable-libkms
+	LIBKMS = yes
 	confflags += --enable-vmwgfx
 	confflags += --enable-nouveau
 	NOUVEAU = yes
 else
 	confflags += --disable-udev
+	confflags += --disable-libkms
+	LIBKMS = no
 	confflags += --disable-vmwgfx
 	confflags += --disable-nouveau
 	NOUVEAU = no
@@ -104,6 +107,9 @@ endif
 ifeq ($(FREEDRENO), yes)
 	dh_strip -plibdrm-freedreno1 --dbg-package=libdrm-freedreno1-dbg
 endif
+ifeq ($(LIBKMS), yes)
+	dh_strip -p libkms1 --dbg-package=libkms1-dbg
+endif
 	dh_strip -s --remaining-packages
 
 override_dh_makeshlibs:
@@ -124,6 +130,9 @@ ifeq ($(ARM), yes)
 endif
 ifeq ($(FREEDRENO), yes)
 	dh_makeshlibs -plibdrm-freedreno1 -V'libdrm-freedreno1 (>= 2.4.65)' -- -c4
+endif
+ifeq ($(LIBKMS), yes)
+	dh_makeshlibs -plibkms1 -V'libkms1' -- -c4
 endif
 
 %:

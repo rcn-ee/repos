@@ -145,10 +145,10 @@ index 0000000..e880b26
 +	etnaviv_drmif.h
 diff --git a/etnaviv/etnaviv_bo.c b/etnaviv/etnaviv_bo.c
 new file mode 100644
-index 0000000..8b5466e
+index 0000000..cc97796
 --- /dev/null
 +++ b/etnaviv/etnaviv_bo.c
-@@ -0,0 +1,325 @@
+@@ -0,0 +1,318 @@
 +/*
 + * Copyright (C) 2014 Etnaviv Project
 + *
@@ -361,11 +361,6 @@ index 0000000..8b5466e
 +	if (bo->map)
 +		drm_munmap(bo->map, bo->size);
 +
-+	if (bo->fd >= 0) {
-+		close(bo->fd);
-+		bo->fd = -1;
-+	}
-+
 +	if (bo->handle) {
 +		struct drm_gem_close req = {
 +				.handle = bo->handle,
@@ -413,18 +408,16 @@ index 0000000..8b5466e
 + */
 +int etna_bo_dmabuf(struct etna_bo *bo)
 +{
-+	if (bo->fd < 0) {
-+		int ret, prime_fd;
++	int ret, prime_fd;
 +
-+		ret = drmPrimeHandleToFD(bo->dev->fd, bo->handle, DRM_CLOEXEC,
-+					&prime_fd);
-+		if (ret) {
-+			return ret;
-+		}
-+
-+		bo->fd = prime_fd;
++	ret = drmPrimeHandleToFD(bo->dev->fd, bo->handle, DRM_CLOEXEC,
++				&prime_fd);
++	if (ret) {
++		ERROR_MSG("failed to get dmabuf fd: %d", ret);
++		return ret;
 +	}
-+	return dup(bo->fd);
++
++	return prime_fd;
 +}
 +
 +uint32_t etna_bo_size(struct etna_bo *bo)
@@ -476,10 +469,10 @@ index 0000000..8b5466e
 +
 diff --git a/etnaviv/etnaviv_cmd_stream.c b/etnaviv/etnaviv_cmd_stream.c
 new file mode 100644
-index 0000000..3153387
+index 0000000..43dfe3b
 --- /dev/null
 +++ b/etnaviv/etnaviv_cmd_stream.c
-@@ -0,0 +1,210 @@
+@@ -0,0 +1,216 @@
 +/*
 + * Copyright (C) 2014-2015 Etnaviv Project
 + *
@@ -515,8 +508,6 @@ index 0000000..3153387
 +#include "etnaviv_drmif.h"
 +#include "etnaviv_priv.h"
 +
-+#define CMD_STREAM_SIZE				0x8000
-+
 +static void *grow(void *ptr, uint32_t nr, uint32_t *max, uint32_t sz)
 +{
 +	if ((nr + 1) > *max) {
@@ -540,11 +531,16 @@ index 0000000..3153387
 +    return (struct etna_cmd_stream_priv *)stream;
 +}
 +
-+struct etna_cmd_stream *etna_cmd_stream_new(struct etna_pipe *pipe,
++struct etna_cmd_stream *etna_cmd_stream_new(struct etna_pipe *pipe, uint32_t size,
 +		void (*reset_notify)(struct etna_cmd_stream *stream, void *priv),
 +		void *priv)
 +{
-+	struct etna_cmd_stream_priv *stream;
++	struct etna_cmd_stream_priv *stream = NULL;
++
++	if (size == 0) {
++		ERROR_MSG("invalid size of 0");
++		goto fail;
++	}
 +
 +	stream = calloc(1, sizeof(*stream));
 +	if (!stream) {
@@ -552,7 +548,10 @@ index 0000000..3153387
 +		goto fail;
 +	}
 +
-+	stream->base.buffer = malloc(CMD_STREAM_SIZE * sizeof(uint32_t));
++	/* allocate even number of 32-bit words */
++	size = ALIGN(size, 2);
++
++	stream->base.buffer = malloc(size * sizeof(uint32_t));
 +	if (!stream->base.buffer) {
 +		ERROR_MSG("allocation failed");
 +		goto fail;
@@ -560,7 +559,7 @@ index 0000000..3153387
 +
 +	list_inithead(&stream->submit_list);
 +
-+	stream->base.size = CMD_STREAM_SIZE;
++	stream->base.size = size;
 +	stream->pipe = pipe;
 +	stream->reset_notify = reset_notify;
 +	stream->reset_notify_priv = priv;
@@ -1018,7 +1017,7 @@ index 0000000..3521da0
 +#endif /* __ETNAVIV_DRM_H__ */
 diff --git a/etnaviv/etnaviv_drmif.h b/etnaviv/etnaviv_drmif.h
 new file mode 100644
-index 0000000..94d4ed7
+index 0000000..d5b84ad
 --- /dev/null
 +++ b/etnaviv/etnaviv_drmif.h
 @@ -0,0 +1,188 @@
@@ -1153,11 +1152,11 @@ index 0000000..94d4ed7
 +
 +struct etna_cmd_stream {
 +	uint32_t *buffer;
-+	uint32_t offset;	/* dwords */
-+	uint32_t size;		/* bytes */
++	uint32_t offset;	/* in 32-bit words */
++	uint32_t size;		/* in 32-bit words */
 +};
 +
-+struct etna_cmd_stream * etna_cmd_stream_new(struct etna_pipe *pipe,
++struct etna_cmd_stream * etna_cmd_stream_new(struct etna_pipe *pipe, uint32_t size,
 +		void (*reset_notify)(struct etna_cmd_stream *stream, void *priv),
 +		void *priv);
 +void etna_cmd_stream_del(struct etna_cmd_stream *stream);
@@ -1167,9 +1166,9 @@ index 0000000..94d4ed7
 +
 +static inline uint32_t etna_cmd_stream_avail(struct etna_cmd_stream *stream)
 +{
-+	static const uint32_t END_CLEARANCE = 24; /* LINK op code */
++	static const uint32_t END_CLEARANCE = 2; /* LINK op code */
 +
-+	return stream->size - (stream->offset * 4) - END_CLEARANCE;
++	return stream->size - stream->offset - END_CLEARANCE;
 +}
 +
 +static inline void etna_cmd_stream_reserve(struct etna_cmd_stream *stream, size_t n)
@@ -1459,10 +1458,10 @@ index 0000000..9d281f5
 +}
 diff --git a/etnaviv/etnaviv_priv.h b/etnaviv/etnaviv_priv.h
 new file mode 100644
-index 0000000..8f07293
+index 0000000..9e585ac
 --- /dev/null
 +++ b/etnaviv/etnaviv_priv.h
-@@ -0,0 +1,170 @@
+@@ -0,0 +1,169 @@
 +/*
 + * Copyright (C) 2014-2015 Etnaviv Project
 + *
@@ -1507,7 +1506,7 @@ index 0000000..8f07293
 +#include "xf86drm.h"
 +#include "xf86atomic.h"
 +
-+#include "list.h"
++#include "util_double_list.h"
 +
 +#include "etnaviv_drmif.h"
 +//#include "drm.h"
@@ -1564,7 +1563,6 @@ index 0000000..8f07293
 +	uint32_t        handle;
 +	uint32_t        name;           /* flink global handle (DRI2 name) */
 +	uint64_t        offset;         /* offset to mmap() */
-+	int             fd;             /* dmabuf handle */
 +	atomic_t        refcnt;
 +
 +	uint32_t indexp1[ETNA_MAX_PIPES]; /* index plus 1 */
@@ -1650,149 +1648,6 @@ index 0000000..13fed01
 +Libs: -L${libdir} -ldrm_etnaviv
 +Cflags: -I${includedir} -I${includedir}/libdrm
 +Requires.private: libdrm
-diff --git a/etnaviv/list.h b/etnaviv/list.h
-new file mode 100644
-index 0000000..27e0761
---- /dev/null
-+++ b/etnaviv/list.h
-@@ -0,0 +1,137 @@
-+/*
-+ *
-+ * Copyright 2006 Tungsten Graphics, Inc., Bismarck, ND. USA.
-+ * All Rights Reserved.
-+ *
-+ * Permission is hereby granted, free of charge, to any person obtaining a
-+ * copy of this software and associated documentation files (the
-+ * "Software"), to deal in the Software without restriction, including
-+ * without limitation the rights to use, copy, modify, merge, publish,
-+ * distribute, sub license, and/or sell copies of the Software, and to
-+ * permit persons to whom the Software is furnished to do so, subject to
-+ * the following conditions:
-+ *
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+ * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
-+ * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
-+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ *
-+ * The above copyright notice and this permission notice (including the
-+ * next paragraph) shall be included in all copies or substantial portions
-+ * of the Software.
-+ *
-+ */
-+
-+/**
-+ * \file
-+ * List macros heavily inspired by the Linux kernel
-+ * list handling. No list looping yet.
-+ *
-+ * Is not threadsafe, so common operations need to
-+ * be protected using an external mutex.
-+ */
-+#ifndef _U_DOUBLE_LIST_H_
-+#define _U_DOUBLE_LIST_H_
-+
-+#include <stddef.h>
-+
-+struct list_head
-+{
-+    struct list_head *prev;
-+    struct list_head *next;
-+};
-+
-+static inline void list_inithead(struct list_head *item)
-+{
-+    item->prev = item;
-+    item->next = item;
-+}
-+
-+static inline void list_add(struct list_head *item, struct list_head *list)
-+{
-+    item->prev = list;
-+    item->next = list->next;
-+    list->next->prev = item;
-+    list->next = item;
-+}
-+
-+static inline void list_addtail(struct list_head *item, struct list_head *list)
-+{
-+    item->next = list;
-+    item->prev = list->prev;
-+    list->prev->next = item;
-+    list->prev = item;
-+}
-+
-+static inline void list_replace(struct list_head *from, struct list_head *to)
-+{
-+    to->prev = from->prev;
-+    to->next = from->next;
-+    from->next->prev = to;
-+    from->prev->next = to;
-+}
-+
-+static inline void list_del(struct list_head *item)
-+{
-+    item->prev->next = item->next;
-+    item->next->prev = item->prev;
-+}
-+
-+static inline void list_delinit(struct list_head *item)
-+{
-+    item->prev->next = item->next;
-+    item->next->prev = item->prev;
-+    item->next = item;
-+    item->prev = item;
-+}
-+
-+#define LIST_INITHEAD(__item) list_inithead(__item)
-+#define LIST_ADD(__item, __list) list_add(__item, __list)
-+#define LIST_ADDTAIL(__item, __list) list_addtail(__item, __list)
-+#define LIST_REPLACE(__from, __to) list_replace(__from, __to)
-+#define LIST_DEL(__item) list_del(__item)
-+#define LIST_DELINIT(__item) list_delinit(__item)
-+
-+#define LIST_ENTRY(__type, __item, __field)   \
-+    ((__type *)(((char *)(__item)) - offsetof(__type, __field)))
-+
-+#define LIST_IS_EMPTY(__list)                   \
-+    ((__list)->next == (__list))
-+
-+#ifndef container_of
-+#define container_of(ptr, sample, member)				\
-+    (void *)((char *)(ptr)						\
-+	     - ((char *)&(sample)->member - (char *)(sample)))
-+#endif
-+
-+#define LIST_FOR_EACH_ENTRY(pos, head, member)				\
-+   for (pos = container_of((head)->next, pos, member);			\
-+	&pos->member != (head);						\
-+	pos = container_of(pos->member.next, pos, member))
-+
-+#define LIST_FOR_EACH_ENTRY_SAFE(pos, storage, head, member)	\
-+   for (pos = container_of((head)->next, pos, member),			\
-+	storage = container_of(pos->member.next, pos, member);	\
-+	&pos->member != (head);						\
-+	pos = storage, storage = container_of(storage->member.next, storage, member))
-+
-+#define LIST_FOR_EACH_ENTRY_SAFE_REV(pos, storage, head, member)	\
-+   for (pos = container_of((head)->prev, pos, member),			\
-+	storage = container_of(pos->member.prev, pos, member);		\
-+	&pos->member != (head);						\
-+	pos = storage, storage = container_of(storage->member.prev, storage, member))
-+
-+#define LIST_FOR_EACH_ENTRY_FROM(pos, start, head, member)		\
-+   for (pos = container_of((start), pos, member);			\
-+	&pos->member != (head);						\
-+	pos = container_of(pos->member.next, pos, member))
-+
-+#define LIST_FOR_EACH_ENTRY_FROM_REV(pos, start, head, member)		\
-+   for (pos = container_of((start), pos, member);			\
-+	&pos->member != (head);						\
-+	pos = container_of(pos->member.prev, pos, member))
-+
-+#endif /*_U_DOUBLE_LIST_H_*/
 diff --git a/tests/Makefile.am b/tests/Makefile.am
 index a511d28..e4a3696 100644
 --- a/tests/Makefile.am
@@ -1810,10 +1665,10 @@ index a511d28..e4a3696 100644
  	-I $(top_srcdir)/include/drm \
 diff --git a/tests/etnaviv/Makefile.am b/tests/etnaviv/Makefile.am
 new file mode 100644
-index 0000000..b46d5c4
+index 0000000..0806aec
 --- /dev/null
 +++ b/tests/etnaviv/Makefile.am
-@@ -0,0 +1,17 @@
+@@ -0,0 +1,24 @@
 +AM_CFLAGS = \
 +	-I $(top_srcdir)/include/drm \
 +	-I $(top_srcdir)/libkms/ \
@@ -1821,7 +1676,8 @@ index 0000000..b46d5c4
 +	-I $(top_srcdir)
 +
 +noinst_PROGRAMS = \
-+	etnaviv_2d_test
++	etnaviv_2d_test \
++	etnaviv_cmd_stream_test
 +
 +etnaviv_2d_test_LDADD = \
 +	$(top_builddir)/libdrm.la \
@@ -1831,6 +1687,12 @@ index 0000000..b46d5c4
 +etnaviv_2d_test_SOURCES = \
 +	etnaviv_2d_test.c \
 +	write_bmp.c
++
++etnaviv_cmd_stream_test_LDADD = \
++	$(top_builddir)/etnaviv/libdrm_etnaviv.la
++
++etnaviv_cmd_stream_test_SOURCES = \
++	etnaviv_cmd_stream_test.c
 diff --git a/tests/etnaviv/cmdstream.xml.h b/tests/etnaviv/cmdstream.xml.h
 new file mode 100644
 index 0000000..844f829
@@ -2057,7 +1919,7 @@ index 0000000..844f829
 +#endif /* CMDSTREAM_XML */
 diff --git a/tests/etnaviv/etnaviv_2d_test.c b/tests/etnaviv/etnaviv_2d_test.c
 new file mode 100644
-index 0000000..edc892c
+index 0000000..47fba8b
 --- /dev/null
 +++ b/tests/etnaviv/etnaviv_2d_test.c
 @@ -0,0 +1,239 @@
@@ -2270,7 +2132,7 @@ index 0000000..edc892c
 +	}
 +	memset(etna_bo_map(bmp), 0, bmp_size);
 +
-+	stream = etna_cmd_stream_new(pipe, NULL, NULL);
++	stream = etna_cmd_stream_new(pipe, 0x300, NULL, NULL);
 +	if (!stream) {
 +		ret = 6;
 +		goto fail;
@@ -2299,6 +2161,135 @@ index 0000000..edc892c
 +	close(fd);
 +
 +	return ret;
++}
+diff --git a/tests/etnaviv/etnaviv_cmd_stream_test.c b/tests/etnaviv/etnaviv_cmd_stream_test.c
+new file mode 100644
+index 0000000..4188eff
+--- /dev/null
++++ b/tests/etnaviv/etnaviv_cmd_stream_test.c
+@@ -0,0 +1,123 @@
++/*
++ * Copyright (C) 2015 Etnaviv Project
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a
++ * copy of this software and associated documentation files (the "Software"),
++ * to deal in the Software without restriction, including without limitation
++ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
++ * and/or sell copies of the Software, and to permit persons to whom the
++ * Software is furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice (including the next
++ * paragraph) shall be included in all copies or substantial portions of the
++ * Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
++ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++ * SOFTWARE.
++ *
++ * Authors:
++ *    Christian Gmeiner <christian.gmeiner@gmail.com>
++ */
++
++#undef NDEBUG
++#include <assert.h>
++#include <string.h>
++#include <stdio.h>
++
++#include "etnaviv_drmif.h"
++
++static void test_avail()
++{
++	struct etna_cmd_stream *stream;
++
++	printf("testing etna_cmd_stream_avail ... ");
++
++	/* invalid size */
++	stream = etna_cmd_stream_new(NULL, 0, NULL, NULL);
++	assert(stream == NULL);
++
++	stream = etna_cmd_stream_new(NULL, 4, NULL, NULL);
++	assert(stream);
++	assert(etna_cmd_stream_avail(stream) == 2);
++	etna_cmd_stream_del(stream);
++	
++	stream = etna_cmd_stream_new(NULL, 20, NULL, NULL);
++	assert(stream);
++	assert(etna_cmd_stream_avail(stream) == 18);
++	etna_cmd_stream_del(stream);
++
++	/* odd number of 32 bit words */
++	stream = etna_cmd_stream_new(NULL, 1, NULL, NULL);
++	assert(stream);
++	assert(etna_cmd_stream_avail(stream) == 0);
++	etna_cmd_stream_del(stream);
++
++	stream = etna_cmd_stream_new(NULL, 23, NULL, NULL);
++	assert(stream);
++	assert(etna_cmd_stream_avail(stream) == 22);
++	etna_cmd_stream_del(stream);
++
++	printf("ok\n");
++}
++
++static void test_emit()
++{
++	struct etna_cmd_stream *stream;
++
++	printf("testing etna_cmd_stream_emit ... ");
++
++	stream = etna_cmd_stream_new(NULL, 6, NULL, NULL);
++	assert(stream);
++	assert(etna_cmd_stream_avail(stream) == 4);
++	
++	etna_cmd_stream_emit(stream, 0x1);
++	assert(etna_cmd_stream_avail(stream) == 3);
++
++	etna_cmd_stream_emit(stream, 0x2);
++	assert(etna_cmd_stream_avail(stream) == 2);
++
++	etna_cmd_stream_emit(stream, 0x3);
++	assert(etna_cmd_stream_avail(stream) == 1);
++
++	etna_cmd_stream_del(stream);
++
++	printf("ok\n");	
++}
++
++static void test_offset()
++{
++	struct etna_cmd_stream *stream;
++
++	printf("testing etna_cmd_stream_offset ... ");
++
++	stream = etna_cmd_stream_new(NULL, 6, NULL, NULL);
++	assert(etna_cmd_stream_offset(stream) == 0);
++
++	etna_cmd_stream_emit(stream, 0x1);
++	assert(etna_cmd_stream_offset(stream) == 1);
++
++	etna_cmd_stream_emit(stream, 0x2);
++	assert(etna_cmd_stream_offset(stream) == 2);
++
++	etna_cmd_stream_emit(stream, 0x3);
++	etna_cmd_stream_emit(stream, 0x4);
++	assert(etna_cmd_stream_offset(stream) == 4);
++
++	etna_cmd_stream_del(stream);
++
++	printf("ok\n");
++}
++
++int main(int argc, char *argv[])
++{
++	test_avail();
++	test_emit();
++	test_offset();
++
++	return 0;
 +}
 diff --git a/tests/etnaviv/state.xml.h b/tests/etnaviv/state.xml.h
 new file mode 100644

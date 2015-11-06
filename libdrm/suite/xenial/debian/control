@@ -35,6 +35,7 @@ Depends:
  libdrm-etnaviv0 (= ${binary:Version}) [any-arm],
  libdrm-exynos1 (= ${binary:Version}) [any-arm],
  libdrm-tegra0 (= ${binary:Version}) [any-arm],
+ libkms1 (= ${binary:Version}) [linux-any],
  ${misc:Depends},
 Multi-Arch: same
 Replaces:
@@ -367,3 +368,25 @@ Description: Userspace interface to amdgpu-specific kernel DRM services -- debug
  OpenGL drivers.
  .
  This package provides the debugging symbols for the libdrm-amdgpu1 package.
+
+Package: libkms1
+Section: libs
+Architecture: linux-any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Description: Userspace interface to kernel DRM buffer management
+ This library implements a unified userspace interface to the different buffer
+ management interfaces of the kernel DRM hardware drivers.
+
+Package: libkms1-dbg
+Section: debug
+Priority: extra
+Architecture: linux-any
+Depends: libkms1 (= ${binary:Version}), ${misc:Depends}
+Multi-Arch: same
+Description: Userspace interface to kernel DRM buffer management -- debugging symbols
+ This library implements a unified userspace interface to the different buffer
+ management interfaces of the kernel DRM hardware drivers.
+ .
+ This package provides the debugging symbols for the libkms1 package.
