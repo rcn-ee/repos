@@ -106,24 +106,20 @@ qt5_kde () {
 }
 
 qt5_apps () {
-	echo "qupzilla:"
+	echo "qt5: apps:"
+
 	site="${debian_pool}/main/q"
 	package_name="qupzilla" ; package_version="${package_name}_1.8.6~dfsg1-2" ; check_http
-
-	echo "qterminal:"
-	site="${debian_pool}/main/q"
-	package_name="qtermwidget" ; package_version="qtermwidget_0.6.0-10" ; check_http
-	package_name="qterminal" ; package_version="qterminal_0.6.0-10" ; check_http
+	package_name="qtermwidget" ; package_version="${package_name}_0.6.0-10" ; check_http
+	package_name="qterminal" ; package_version="${package_name}_0.6.0-10" ; check_http
+	package_name="qlipper" ; package_version="${package_name}_5.0.0+20150823-2" ; check_http
+	package_name="qps" ; package_version="${package_name}_1.10.16+20150823-1" ; check_http
 
 	echo "connman/cmst:"
 	site="http://packages.siduction.org/extra/pool/main/c"
-	package_name="connman" ; package_version="connman_1.30-1" ; check_http_exp
+	package_name="connman" ; package_version="${package_name}_1.30-1" ; check_http_exp
 	site="${debian_pool}/main/c"
-	package_name="cmst" ; package_version="cmst_2015.10.07-1" ; check_http
-
-	echo "qlipper:"
-	site="${debian_pool}/main/q"
-	package_name="qlipper" ; package_version="qlipper_5.0.0+20150823-2" ; check_http
+	package_name="cmst" ; package_version="${package_name}_2015.10.07-1" ; check_http
 }
 
 qt5_lxqt () {
