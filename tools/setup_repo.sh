@@ -84,6 +84,9 @@ dist="debian-exp"
 suite="jessie"
 setup_repo
 
+suite="stretch"
+setup_repo
+
 dist="ubuntu"
 suite="trusty"
 setup_repo
