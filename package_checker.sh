@@ -120,6 +120,10 @@ qt5_apps () {
 	package_name="connman" ; package_version="connman_1.30-1" ; check_http_exp
 	site="${debian_pool}/main/c"
 	package_name="cmst" ; package_version="cmst_2015.10.07-1" ; check_http
+
+	echo "qlipper:"
+	site="${debian_pool}/main/q"
+	package_name="qlipper" ; package_version="qlipper_6.0-10" ; check_http
 }
 
 qt5_lxqt () {
