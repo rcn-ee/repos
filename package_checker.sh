@@ -242,8 +242,8 @@ qt5_lxqt () {
 	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
 	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
 	#libx11-xcb-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
-	#adep: libxcb-dpms0-dev (jessie = 1.10-3, stretch = 1.10-3)
-	#adep: libxcb-screensaver0-dev (jessie = 1.10-3, stretch = 1.10-3)
+	#libxcb-dpms0-dev (jessie = 1.10-3, stretch = 1.10-3)
+	#libxcb-screensaver0-dev (jessie = 1.10-3, stretch = 1.10-3)
 	#qtbase5-private-dev (jessie = 5.3.2+dfsg-4+deb8u1, stretch = 5.5.1+dfsg-5)
 
 	#https://tracker.debian.org/pkg/lxqt-powermanagement
@@ -307,6 +307,22 @@ qt5_lxqt () {
 	site="${debian_pool}/main/p"
 	package_name="pcmanfm-qt" ; package_version="${package_name}_0.10.0-0" ; check_http
 
+	#libqt5xdg-dev
+	#liblxqt0-dev
+	#liblxqt-globalkeys0-dev
+	#liblxqt-globalkeys-ui0-dev
+
+	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
+	#libmenu-cache-dev (jessie = 1.0.0-1, stretch = 1.0.0-1)
+	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
+	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
+	#qtbase5-private-dev (jessie = 5.3.2+dfsg-4+deb8u1, stretch = 5.5.1+dfsg-5)
+	#qtscript5-dev (jessie = 5.3.2+dfsg-2, stretch = 5.5.1+dfsg-2)
+
+	#https://tracker.debian.org/pkg/lxqt-runner
+	site="${debian_pool}/main/l"
+	package_name="lxqt-runner" ; package_version="${package_name}_0.10.0-0" ; check_http
+
 #in progress..
 	site="${debian_pool}/main/o"
 	package_name="obconf-qt" ; package_version="${package_name}_0.1.2-8" ; check_http
@@ -317,7 +333,6 @@ qt5_lxqt () {
 	site="${debian_pool}/main/l"
 	package_name="lxqt-session" ; package_version="${package_name}_0.9.0-15" ; check_http
 	package_name="lxqt-panel" ; package_version="${package_name}_0.9.0-34" ; check_http
-	package_name="lxqt-runner" ; package_version="${package_name}_0.9.0-9" ; check_http
 	package_name="lximage-qt" ; package_version="${package_name}_0.4.0-7" ; check_http
 	package_name="lxqt-config" ; package_version="${package_name}_0.9.0-21" ; check_http
 }
