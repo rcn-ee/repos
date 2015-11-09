@@ -331,7 +331,6 @@ qt5_lxqt () {
 	package_name="compton-conf" ; package_version="${package_name}_0.1.2-8" ; check_http
 
 	site="${debian_pool}/main/l"
-	package_name="lxqt-session" ; package_version="${package_name}_0.9.0-15" ; check_http
 	package_name="lxqt-panel" ; package_version="${package_name}_0.9.0-34" ; check_http
 	package_name="lximage-qt" ; package_version="${package_name}_0.4.0-7" ; check_http
 	package_name="lxqt-config" ; package_version="${package_name}_0.9.0-21" ; check_http
@@ -341,7 +340,7 @@ machinekit () {
 	echo "machinekit:"
 
 	site="${debian_pool}/main/c"
-	package_name="czmq" ; package_version="${package_name}_3.0.2-1" ; check_http_machine
+	package_name="czmq" ; package_version="${package_name}_3.0.2-1" ; check_http
 
 	site="http://deb.dovetail-automata.com/pool/main/libw"
 	package_name="libwebsockets" ; package_version="${package_name}_1.3-1%7egit95a8abb%7e1431844465git95a8abb%7e1jessie%7e1da" ; check_http_machine
