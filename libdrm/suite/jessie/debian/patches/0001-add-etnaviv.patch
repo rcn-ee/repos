@@ -145,10 +145,10 @@ index 0000000..e880b26
 +	etnaviv_drmif.h
 diff --git a/etnaviv/etnaviv_bo.c b/etnaviv/etnaviv_bo.c
 new file mode 100644
-index 0000000..cc97796
+index 0000000..94dc943
 --- /dev/null
 +++ b/etnaviv/etnaviv_bo.c
-@@ -0,0 +1,318 @@
+@@ -0,0 +1,319 @@
 +/*
 + * Copyright (C) 2014 Etnaviv Project
 + *
@@ -438,6 +438,7 @@ index 0000000..cc97796
 +		bo->map = drm_mmap(0, bo->size, PROT_READ | PROT_WRITE,
 +				MAP_SHARED, bo->dev->fd, bo->offset);
 +		if (bo->map == MAP_FAILED) {
++			ERROR_MSG("mmap failed: %s", strerror(errno));
 +			bo->map = NULL;
 +		}
 +	}
@@ -691,10 +692,10 @@ index 0000000..43dfe3b
 +}
 diff --git a/etnaviv/etnaviv_device.c b/etnaviv/etnaviv_device.c
 new file mode 100644
-index 0000000..506e851
+index 0000000..37d46ce
 --- /dev/null
 +++ b/etnaviv/etnaviv_device.c
-@@ -0,0 +1,99 @@
+@@ -0,0 +1,77 @@
 +/*
 + * Copyright (C) 2014 Etnaviv Project
 + *
@@ -741,38 +742,17 @@ index 0000000..506e851
 +#include "etnaviv_drmif.h"
 +
 +static pthread_mutex_t table_lock = PTHREAD_MUTEX_INITIALIZER;
-+static void * dev_table;
-+
-+static struct etna_device * etna_device_new_impl(int fd)
-+{
-+	struct etna_device *dev = calloc(sizeof(*dev), 1);
-+	if (!dev)
-+		return NULL;
-+	dev->fd = fd;
-+	atomic_set(&dev->refcnt, 1);
-+	dev->handle_table = drmHashCreate();
-+	return dev;
-+}
 +
 +struct etna_device * etna_device_new(int fd)
 +{
-+	struct etna_device *dev = NULL;
++	struct etna_device *dev = calloc(sizeof(*dev), 1);
 +
-+	pthread_mutex_lock(&table_lock);
++	if (!dev)
++		return NULL;
 +
-+	if (!dev_table)
-+		dev_table = drmHashCreate();
-+
-+	if (drmHashLookup(dev_table, fd, (void **)&dev)) {
-+		/* not found, create new device */
-+		dev = etna_device_new_impl(fd);
-+		drmHashInsert(dev_table, fd, dev);
-+	} else {
-+		/* found, just incr refcnt */
-+		dev = etna_device_ref(dev);
-+	}
-+
-+	pthread_mutex_unlock(&table_lock);
++	atomic_set(&dev->refcnt, 1);
++	dev->fd = fd;
++	dev->handle_table = drmHashCreate();
 +
 +	return dev;
 +}
@@ -789,7 +769,6 @@ index 0000000..506e851
 +		return;
 +	pthread_mutex_lock(&table_lock);
 +	drmHashDestroy(dev->handle_table);
-+	drmHashDelete(dev_table, dev->fd);
 +	pthread_mutex_unlock(&table_lock);
 +	free(dev);
 +}
