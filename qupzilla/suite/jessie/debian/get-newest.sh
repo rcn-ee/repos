@@ -4,7 +4,7 @@ set -e
 package=qupzilla
 version=$2
 
-debian_orig_txz=${package}_${version}~dfsg1.orig.tarxz
+debian_orig_txz=${package}_${version}~dfsg1.orig.tar.xz
 debian_newdir=${package}-${version}~dfsg1
 upstream_archive=v${version}.tar.gz
 upstream_newdir=${package}-${version}

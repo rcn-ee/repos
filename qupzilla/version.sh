@@ -1,21 +1,20 @@
 #!/bin/bash -e
 
-#https://github.com/QupZilla/qupzilla/commits/v1.8
+mirror="http://ftp.de.debian.org/debian"
 
 package_name="qupzilla"
 debian_pkg_name="${package_name}"
-#package_version="1.8.4"
-package_version="1.8.6-git20150528"
+package_version="1.8.8~dfsg1"
 package_source="${package_name}_${package_version}.orig.tar.xz"
-src_dir="${package_name}_${package_version}"
+src_dir="${package_name}-${package_version}"
 
-git_repo="https://github.com/QupZilla/qupzilla"
-git_sha="61ef93396bc434a0159193bf31e039d1817716f8"
+git_repo=""
+git_sha=""
 reprepro_dir="q/${package_name}"
-dl_path=""
+dl_path="pool/main/${reprepro_dir}/"
 
 debian_version="${package_version}-1"
+debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
-debian_diff=""
 
-jessie_version="~bpo80+20150611+1"
+jessie_version="~bpo80+20151109+1"
