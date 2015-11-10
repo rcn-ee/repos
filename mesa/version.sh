@@ -17,4 +17,5 @@ debian_version="${package_version}-1"
 debian_untar=""
 debian_patch="${package_name}_${debian_version}.diff.gz"
 
-jessie_version="~bpo80+20151029+1"
+jessie_version="~bpo80+20151110+1"
+stretch_version="~bpo90+20151110+1"

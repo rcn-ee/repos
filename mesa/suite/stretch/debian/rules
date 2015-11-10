@@ -1,0 +1,277 @@
+#!/usr/bin/make -f
+# debian/rules for the Debian mesa package
+# Copyright © 2006 Thierry Reding <thierry@gilfi.de>
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+	NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+	MAKEFLAGS += -j$(NUMJOBS)
+endif
+
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+DEB_HOST_ARCH      ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
+DEB_HOST_ARCH_OS   ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
+DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+DEB_HOST_ARCH_CPU  ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_CPU)
+DEB_BUILD_DIR      ?= $(CURDIR)/build
+ifeq ($(DEB_BUILD_GNU_TYPE), $(DEB_HOST_GNU_TYPE))
+	confflags += --build=$(DEB_HOST_GNU_TYPE)
+else
+	confflags += --build=$(DEB_BUILD_GNU_TYPE) --host=$(DEB_HOST_GNU_TYPE)
+endif
+
+ifeq (,$(filter $(DEB_HOST_ARCH), armhf))
+buildflags = \
+	$(shell DEB_CFLAGS_MAINT_APPEND=-Wall DEB_CXXFLAGS_MAINT_APPEND=-Wall dpkg-buildflags --export=configure)
+else
+# Workaround for a variant of LP: #725126
+buildflags = \
+	$(shell DEB_CFLAGS_MAINT_APPEND="-Wall -fno-optimize-sibling-calls" DEB_CXXFLAGS_MAINT_APPEND="-Wall -fno-optimize-sibling-calls" dpkg-buildflags --export=configure)
+endif
+
+# keep a list of files we don't install (yet), but since it's a bit
+# large, use an external file:
+include debian/not-installed
+
+# build the following configurations by default
+CONFIGS = dri
+
+STAMP_DIR = debian/stamp
+STAMP = $(STAMP_DIR)/$(DEB_BUILD_GNU_TYPE)
+BUILD_STAMPS = $(addprefix $(STAMP)-build-, $(CONFIGS))
+
+QUILT_STAMPFN = $(STAMP_DIR)/patch
+include /usr/share/quilt/quilt.make
+
+DRI_DRIVERS =
+GALLIUM_DRIVERS =
+EGL_DISPLAYS = x11
+
+confflags_DRI3 = --disable-dri3
+
+# hurd doesn't do direct rendering
+ifeq ($(DEB_HOST_ARCH_OS), hurd)
+	confflags_DIRECT_RENDERING = --disable-driglx-direct
+	DRI_DRIVERS = swrast
+else
+  ifeq ($(DEB_HOST_ARCH_OS), linux)
+	confflags_DRI3 = --enable-dri3
+# Gallium drivers require libdrm-{nouveau,radeon}, only available on Linux
+	GALLIUM_DRIVERS += nouveau svga
+
+	# Freedreno requires arm in addition
+	ifneq (,$(filter arm,$(DEB_HOST_ARCH_CPU)))
+		GALLIUM_DRIVERS += freedreno
+	endif
+
+	# svga needs xa state tracker
+	confflags_GALLIUM += --enable-xa
+
+# Non-Linux ports also lack *_CLOEXEC and epoll, so wayland isn't ready yet:
+	EGL_DISPLAYS += wayland
+    ifeq (,$(filter $(DEB_HOST_ARCH), s390 s390x))
+	DRI_DRIVERS += nouveau
+    endif
+  endif
+
+	EGL_DISPLAYS += drm
+
+  # Build intel drivers on archs where libdrm-intel is installed
+  ifneq (,$(filter $(DEB_HOST_ARCH),amd64 i386 kfreebsd-amd64 kfreebsd-i386 x32))
+	DRI_DRIVERS += i915 i965
+  endif
+
+  ifeq (,$(filter $(DEB_HOST_ARCH), s390 s390x))
+    DRI_DRIVERS += r200 radeon
+    GALLIUM_DRIVERS += r600 r300
+  endif
+  ifneq (,$(filter $(DEB_HOST_ARCH),amd64 i386 armhf))
+	# opencl needs gallium-pipe-loader which needs udev,
+	# so no opencl on kfreebsd.
+	# opencl needs LLVM and Clang, so only build it on the subset
+	# of arches where we have LLVM enabled.
+	confflags_GALLIUM += --enable-opencl --enable-opencl-icd
+  endif
+
+  # LLVM is required for r300g, radeonsi and llvmpipe:
+  ifneq (,$(filter $(DEB_HOST_ARCH),amd64 i386 kfreebsd-amd64 kfreebsd-i386 armhf ppc64el))
+	GALLIUM_DRIVERS += radeonsi
+	confflags_GALLIUM += --enable-gallium-llvm
+	confflags_GALLIUM += ac_cv_path_LLVM_CONFIG=llvm-config-3.7
+	GALLIUM_DRIVERS += swrast
+  else
+	DRI_DRIVERS += swrast
+  endif
+
+	confflags_DIRECT_RENDERING = --enable-driglx-direct
+	confflags_GALLIUM += --enable-vdpau
+endif
+confflags_EGL = --with-egl-platforms="$(EGL_DISPLAYS)"
+confflags_GLES = --enable-gles1 --enable-gles2
+confflags_GALLIUM += --with-gallium-drivers="$(GALLIUM_DRIVERS)"
+
+confflags-dri = \
+	--enable-dri \
+	--with-dri-drivers="$(DRI_DRIVERS)" \
+	--with-dri-driverdir=/usr/lib/$(DEB_HOST_MULTIARCH)/dri \
+	--with-dri-searchpath='/usr/lib/$(DEB_HOST_MULTIARCH)/dri:\$$$${ORIGIN}/dri:/usr/lib/dri' \
+	--enable-osmesa \
+	--enable-glx-tls \
+	--enable-shared-glapi \
+	--enable-texture-float \
+	--disable-xvmc \
+	--disable-va \
+	--disable-omx \
+	$(confflags_DIRECT_RENDERING) \
+	$(confflags_DRI3) \
+	$(confflags_EGL) \
+	$(confflags_GALLIUM) \
+	$(confflags_GLES) \
+	$(buildflags)
+
+configure: $(QUILT_STAMPFN) configure.ac
+	autoreconf -vfi
+
+# list the configurations that will built
+configs:
+	@echo Building the following configurations: $(CONFIGS)
+
+$(STAMP_DIR)/stamp:
+	dh_testdir
+	mkdir -p $(STAMP_DIR)
+	>$@
+
+$(QUILT_STAMPFN): $(STAMP_DIR)/stamp
+
+build: build-stamp
+
+build-stamp: $(BUILD_STAMPS)
+	>$@
+
+$(STAMP)-build-%: configure
+	dh_testdir
+
+	mkdir -p $(DEB_BUILD_DIR)/$*
+
+	cd $(DEB_BUILD_DIR)/$* && \
+	../../configure --prefix=/usr --mandir=\$${prefix}/share/man \
+	             --infodir=\$${prefix}/share/info --sysconfdir=/etc \
+	             --libdir=\$${prefix}/lib/$(DEB_HOST_MULTIARCH) \
+	             --localstatedir=/var --disable-silent-rules \
+				 $(confflags) $(confflags-$*)
+	cd $(DEB_BUILD_DIR)/$* && $(MAKE)
+	>$@
+
+install: build
+	# Add here commands to install the package into debian/tmp
+	dh_testdir
+	dh_testroot
+	dh_prep
+	dh_installdirs
+	set -e; for config in $(filter-out dri, $(CONFIGS)); do \
+		$(MAKE) -C $(DEB_BUILD_DIR)/$$config DESTDIR=$(CURDIR)/debian/tmp install; \
+	done
+	$(MAKE) -C $(DEB_BUILD_DIR)/dri DESTDIR=$(CURDIR)/debian/tmp/dri install
+	for file in debian/*.in; \
+	do \
+		sed -e"s,\$${DEB_HOST_MULTIARCH},$(DEB_HOST_MULTIARCH),g" \
+			$${file} > $${file%%.in}; \
+	done
+
+clean: unpatch
+	dh_testdir
+	rm -rf .pc
+
+	rm -f config.cache config.log config.status
+	rm -f */config.cache */config.log */config.status
+	rm -f conftest* */conftest*
+	rm -rf autom4te.cache */autom4te.cache
+	rm -rf build
+	rm -rf configure bin/config.guess bin/config.sub config.h.in
+	rm -rf $$(find -name Makefile.in)
+	rm -rf aclocal.m4 bin/missing bin/depcomp install-sh bin/ltmain.sh
+	rm -f bin/ar-lib bin/compile bin/ylwrap bin/install-sh
+	rm -rf $(STAMP_DIR)
+	for file in debian/*.in; do rm -f $${file%%.in}; done
+	rm -f src/glsl/builtins/tools/texture_builtins.pyc
+	rm -f src/mapi/glapi/gen/*.pyc
+	rm -f src/mesa/main/*.pyc
+	rm -f src/gallium/auxiliary/util/*.pyc
+	rm -f m4/libtool.m4 m4/ltoptions.m4 m4/ltsugar.m4 m4/ltversion.m4 m4/lt~obsolete.m4
+
+	dh_clean
+
+# Build architecture-independent files here.
+binary-indep: install
+
+allpkg = $(shell dh_listpackages -s)
+dbgpkg = $(filter %-dbg, $(allpkg))
+otherpkg = $(filter-out %-dbg, $(allpkg))
+havedbgpkg = $(patsubst %-dbg,%,$(dbgpkg))
+nodbgpkg = $(filter-out $(havedbgpkg),$(otherpkg))
+
+# Build architecture-dependent files here.
+binary-arch: install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs -s
+	dh_installchangelogs -pmesa-common-dev
+	dh_installdocs -s
+	dh_installexamples -s
+
+	# Also get rid of other files which aren't installed. Do not
+	# use -f to ensure we notice disappearing files:
+	set -e; for file in $(NOT_INSTALLED); do rm debian/tmp/$$file; done
+	# Files only in git, not in tarballs, OK to use rm -f here:
+	set -e; for file in $(NOT_INSTALLED_EITHER); do rm -f debian/tmp/$$file; done
+	# purge .la files
+	find debian/tmp/ -name '*.la' -exec rm '{}' ';'
+
+	# Copy the hardlinked *_dri.so correctly.
+	install -m755 -d debian/libgl1-mesa-dri/usr/lib/${DEB_HOST_MULTIARCH}/dri/
+	mv debian/tmp/dri/usr/lib/${DEB_HOST_MULTIARCH}/dri/*_dri.so \
+	   debian/libgl1-mesa-dri/usr/lib/${DEB_HOST_MULTIARCH}/dri/
+
+  ifneq ($(DEB_HOST_ARCH_OS), hurd)
+	# Copy the hardlinked vdpau drivers correctly.
+	install -m755 -d debian/mesa-vdpau-drivers/usr/lib/${DEB_HOST_MULTIARCH}/vdpau/
+	mv debian/tmp/dri/usr/lib/${DEB_HOST_MULTIARCH}/vdpau/libvdpau*.so* \
+	   debian/mesa-vdpau-drivers/usr/lib/${DEB_HOST_MULTIARCH}/vdpau/
+  endif
+
+	dh_install -s --fail-missing
+	dh_installman -s
+	dh_lintian -s
+	dh_link -s
+	# Install bug control and script:
+	set -e; for p in $(allpkg); do \
+		install -d debian/$$p/usr/share/bug/$$p && \
+		install -m 644 debian/local/control debian/$$p/usr/share/bug/$$p && \
+		install -m 755 debian/local/script  debian/$$p/usr/share/bug/$$p; \
+	done
+	set -e; for p in $(havedbgpkg); do \
+		dh_strip -p$${p} --dbg-package=$${p}-dbg; \
+	done
+	# dh_strip -s --remaining-packages doesn't work with resumed
+	# builds (see changelog for mesa 7.10-1):
+	dh_strip $(foreach p,$(nodbgpkg),-p$(p))
+	dh_compress -s
+	dh_fixperms -s
+	dh_makeshlibs -s -- -c4
+	dh_installdeb -s
+	dh_shlibdeps -s
+	dh_gencontrol -s
+	dh_md5sums -s
+	dh_builddeb -s -- -Zxz
+
+binary: binary-indep binary-arch
+.PHONY: configs build clean binary-indep binary-arch binary install
+
+# For maintainer use only, generate a tarball:
+gentarball: SOURCE=mesa
+gentarball: UV=$(shell dpkg-parsechangelog|awk '/^Version:/ {print $$2}'|sed 's/-.*$$//')
+gentarball:
+	git archive --format=tar upstream-experimental --prefix=$(SOURCE)-$(UV)/ | gzip -9 > ../$(SOURCE)_$(UV).orig.tar.gz
