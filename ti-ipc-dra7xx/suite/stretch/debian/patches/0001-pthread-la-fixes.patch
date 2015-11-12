@@ -40,14 +40,15 @@ index c427cc8..8e216ac 100644
  # Otherwise a system limit (for SysV at least) may be exceeded.
  .NOEXPORT:
 diff --git a/configure.ac b/configure.ac
-index e6cb19f..c079676 100644
+index e6cb19f..81e05b0 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -43,6 +43,8 @@ AC_CONFIG_SRCDIR([packages/ti/ipc/MessageQ.h])
+@@ -43,6 +43,9 @@ AC_CONFIG_SRCDIR([packages/ti/ipc/MessageQ.h])
  # Set auxiliary build tools directory
  AC_CONFIG_AUX_DIR([linux/build-aux])
  
 +AC_SEARCH_LIBS([pthread_create], [pthread])
++AC_CONFIG_MACRO_DIR([m4])
 +
  # Initilize automake
  AM_INIT_AUTOMAKE([foreign])
