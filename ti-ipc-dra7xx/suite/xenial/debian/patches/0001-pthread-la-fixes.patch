@@ -1,0 +1,54 @@
+diff --git a/Makefile.am b/Makefile.am
+index 5272bdb..35805c0 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -35,6 +35,12 @@
+ SUBDIRS =  linux/etc linux/src/utils linux/src/api linux/src/transport \
+         linux/src/mm linux/src/daemon linux/src/tests
+ 
++# hook to remove libtools library extention files (.la)
++install-exec-hook:
++	rm -f $(DESTDIR)$(libdir)/*.la
++
++ACLOCAL_AMFLAGS = -I m4
++
+ # where to install common headers on the system
+ ipcincludedir = $(includedir)/ti/ipc
+ ipcincludeinterfacesdir = $(includedir)/ti/ipc/interfaces
+diff --git a/Makefile.in b/Makefile.in
+index c427cc8..8e216ac 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -675,6 +675,8 @@ install-data-am: install-ipcincludeHEADERS \
+ 	install-ipcincludeinterfacesHEADERS
+ 
+ install-exec-am:
++	@$(NORMAL_INSTALL)
++	$(MAKE) $(AM_MAKEFLAGS) install-exec-hook
+ 
+ install-info: install-info-recursive
+ 
+@@ -725,6 +727,10 @@ uninstall-info: uninstall-info-recursive
+ 	uninstall-ipcincludeHEADERS uninstall-ipcincludeheapsHEADERS \
+ 	uninstall-ipcincludeinterfacesHEADERS
+ 
++
++# hook to remove libtools library extention files (.la)
++install-exec-hook:
++	rm -f $(DESTDIR)$(libdir)/*.la
+ # Tell versions [3.59,3.63) of GNU make to not export all variables.
+ # Otherwise a system limit (for SysV at least) may be exceeded.
+ .NOEXPORT:
+diff --git a/configure.ac b/configure.ac
+index e6cb19f..c079676 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -43,6 +43,8 @@ AC_CONFIG_SRCDIR([packages/ti/ipc/MessageQ.h])
+ # Set auxiliary build tools directory
+ AC_CONFIG_AUX_DIR([linux/build-aux])
+ 
++AC_SEARCH_LIBS([pthread_create], [pthread])
++
+ # Initilize automake
+ AM_INIT_AUTOMAKE([foreign])
+ 

@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 
 # Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
+export DH_VERBOSE=1
 
 confflags=--prefix=/usr \
           PLATFORM=DRA7XX \
@@ -9,6 +9,8 @@ confflags=--prefix=/usr \
 
 %:
 	dh $@ --with autoreconf
+
+export EXTRA_LIB=-lpthread
 
 override_dh_auto_configure:
 	./configure $(confflags)
