@@ -338,6 +338,36 @@ qt5_lxqt () {
 	site="${debian_pool}/main/l"
 	package_name="lxqt-config" ; package_version="${package_name}_0.10.0-0" ; check_http
 
+	#adep: libasound2-dev
+	#adep: libdbusmenu-qt5-dev
+	#adep: libglib2.0-dev
+	#adep: libicu-dev
+	#adep: liblxqt0-dev
+	#adep: liblxqt-globalkeys0-dev
+	#adep: liblxqt-globalkeys-ui0-dev
+	#adep: libkf5windowsystem-dev
+	#adep: libkf5solid-dev
+	#adep: libmenu-cache-dev
+	#adep: libpulse-dev
+	#adep: libqt5x11extras5-dev
+	#adep: libqt5xdg-dev (>= 1.3.0)
+	#adep: libsensors4-dev
+	#adep: libstatgrab-dev
+	#adep: libsysstat-qt5-0-dev (>= 0.3.0)
+	#adep: libx11-dev
+	#adep: libxcomposite-dev
+	#adep: libxcb-util0-dev
+	#adep: libxcb-xkb-dev
+	#adep: libxcb-damage0-dev
+	#adep: libxdamage-dev
+	#adep: libxkbcommon-dev
+	#adep: libxkbcommon-x11-dev
+	#adep: libxrender-dev
+
+	#https://tracker.debian.org/pkg/lxqt-panel
+	site="${debian_pool}/main/l"
+	package_name="lxqt-panel" ; package_version="${package_name}_0.10.0-0" ; check_http
+
 #in progress..
 	site="${debian_pool}/main/o"
 	package_name="obconf-qt" ; package_version="${package_name}_0.1.2-8" ; check_http
@@ -346,7 +376,6 @@ qt5_lxqt () {
 	package_name="compton-conf" ; package_version="${package_name}_0.1.2-8" ; check_http
 
 	site="${debian_pool}/main/l"
-	package_name="lxqt-panel" ; package_version="${package_name}_0.9.0-34" ; check_http
 	package_name="lximage-qt" ; package_version="${package_name}_0.4.0-7" ; check_http
 }
 
