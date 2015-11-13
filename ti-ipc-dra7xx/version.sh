@@ -16,7 +16,7 @@ dl_path=""
 debian_version="${package_version}-1"
 debian_patch=""
 debian_diff=""
-local_patch="rcnee1"
+local_patch="rcnee2"
 
 wheezy_version="~bpo70+20151113+1"
 jessie_version="~bpo80+20151113+1"
