@@ -145,7 +145,7 @@ index 0000000..e880b26
 +	etnaviv_drmif.h
 diff --git a/etnaviv/etnaviv_bo.c b/etnaviv/etnaviv_bo.c
 new file mode 100644
-index 0000000..94dc943
+index 0000000..1504f93
 --- /dev/null
 +++ b/etnaviv/etnaviv_bo.c
 @@ -0,0 +1,319 @@
@@ -188,16 +188,15 @@ index 0000000..94dc943
 +static void set_name(struct etna_bo *bo, uint32_t name)
 +{
 +	bo->name = name;
-+	/* add ourself into the handle table: */
-+	drmHashInsert(bo->dev->handle_table, name, bo);
++	/* add ourself into the name table: */
++	drmHashInsert(bo->dev->name_table, name, bo);
 +}
 +
 +/* lookup a buffer from it's handle, call w/ table_lock held: */
-+static struct etna_bo * lookup_bo(struct etna_device *dev,
-+		uint32_t handle)
++static struct etna_bo * lookup_bo(void *tbl, uint32_t handle)
 +{
 +	struct etna_bo *bo = NULL;
-+	if (!drmHashLookup(dev->handle_table, handle, (void **)&bo)) {
++	if (!drmHashLookup(tbl, handle, (void **)&bo)) {
 +		/* found, incr refcnt and return: */
 +		bo = etna_bo_ref(bo);
 +	}
@@ -290,7 +289,7 @@ index 0000000..94dc943
 +	pthread_mutex_lock(&table_lock);
 +
 +	/* check name table first, to see if bo is already open: */
-+	bo = lookup_bo(dev, req.handle);
++	bo = lookup_bo(dev->name_table, req.handle);
 +	if (bo)
 +		goto out_unlock;
 +
@@ -299,7 +298,7 @@ index 0000000..94dc943
 +		goto out_unlock;
 +	}
 +
-+	bo = lookup_bo(dev, req.handle);
++	bo = lookup_bo(dev->handle_table, req.handle);
 +	if (bo)
 +		goto out_unlock;
 +
@@ -327,25 +326,23 @@ index 0000000..94dc943
 +
 +	ret = drmPrimeFDToHandle(dev->fd, fd, &handle);
 +	if (ret) {
-+		goto fail;
++		return NULL;
 +	}
++
++	bo = lookup_bo(dev->handle_table, handle);
++	if (bo)
++		goto out_unlock;
 +
 +	/* lseek() to get bo size */
 +	size = lseek(fd, 0, SEEK_END);
 +	lseek(fd, 0, SEEK_CUR);
 +
-+	bo = lookup_bo(dev, handle);
-+	if (!bo) {
-+		bo = bo_from_handle(dev, size, handle);
-+	}
-+
-+	pthread_mutex_unlock(&table_lock);
++	bo = bo_from_handle(dev, size, handle);
 +
 +	return bo;
 +
-+fail:
++out_unlock:
 +	pthread_mutex_unlock(&table_lock);
-+	free(bo);
 +	return NULL;
 +}
 +
@@ -360,6 +357,9 @@ index 0000000..94dc943
 +
 +	if (bo->map)
 +		drm_munmap(bo->map, bo->size);
++
++	if (bo->name)
++		drmHashDelete(bo->dev->name_table, bo->name);
 +
 +	if (bo->handle) {
 +		struct drm_gem_close req = {
@@ -470,7 +470,7 @@ index 0000000..94dc943
 +
 diff --git a/etnaviv/etnaviv_cmd_stream.c b/etnaviv/etnaviv_cmd_stream.c
 new file mode 100644
-index 0000000..43dfe3b
+index 0000000..b48ba23
 --- /dev/null
 +++ b/etnaviv/etnaviv_cmd_stream.c
 @@ -0,0 +1,216 @@
@@ -578,7 +578,7 @@ index 0000000..43dfe3b
 +	struct etna_cmd_stream_priv *priv = etna_cmd_stream_priv(stream);
 +
 +	free(stream->buffer);
-+	free(priv->relocs);
++	free(priv->submit.relocs);
 +	free(priv);
 +}
 +
@@ -587,8 +587,8 @@ index 0000000..43dfe3b
 +	struct etna_cmd_stream_priv *priv = etna_cmd_stream_priv(stream);
 +
 +	stream->offset = 0;
-+	priv->nr_bos = 0;
-+	priv->nr_relocs = 0;
++	priv->submit.nr_bos = 0;
++	priv->submit.nr_relocs = 0;
 +
 +	if (priv->reset_notify)
 +		priv->reset_notify(stream, priv->reset_notify_priv);
@@ -609,9 +609,9 @@ index 0000000..43dfe3b
 +
 +	if (!bo->indexp1[id]) {
 +		struct list_head *list = &bo->list[id];
-+		idx = APPEND(priv, bos);
-+		priv->bos[idx].flags = 0;
-+		priv->bos[idx].handle = bo->handle;
++		idx = APPEND(&priv->submit, bos);
++		priv->submit.bos[idx].flags = 0;
++		priv->submit.bos[idx].handle = bo->handle;
 +		bo->indexp1[id] = idx + 1;
 +
 +		assert(LIST_IS_EMPTY(list));
@@ -621,9 +621,9 @@ index 0000000..43dfe3b
 +		idx = bo->indexp1[id] - 1;
 +	}
 +	if (flags & ETNA_RELOC_READ)
-+		priv->bos[idx].flags |= ETNA_SUBMIT_BO_READ;
++		priv->submit.bos[idx].flags |= ETNA_SUBMIT_BO_READ;
 +	if (flags & ETNA_RELOC_WRITE)
-+		priv->bos[idx].flags |= ETNA_SUBMIT_BO_WRITE;
++		priv->submit.bos[idx].flags |= ETNA_SUBMIT_BO_WRITE;
 +	return idx;
 +}
 +
@@ -637,10 +637,10 @@ index 0000000..43dfe3b
 +
 +	req.pipe = gpu->core;
 +	req.exec_state = id;
-+	req.bos = VOID2U64(priv->bos);
-+	req.nr_bos = priv->nr_bos;
-+	req.relocs = VOID2U64(priv->relocs);
-+	req.nr_relocs = priv->nr_relocs;
++	req.bos = VOID2U64(priv->submit.bos);
++	req.nr_bos = priv->submit.nr_bos;
++	req.relocs = VOID2U64(priv->submit.relocs);
++	req.nr_relocs = priv->submit.nr_relocs;
 +	req.stream = VOID2U64(stream->buffer);
 +	req.stream_size = stream->offset * 4; /* in bytes */
 +
@@ -679,10 +679,10 @@ index 0000000..43dfe3b
 +{
 +	struct etna_cmd_stream_priv *priv = etna_cmd_stream_priv(stream);
 +	struct drm_etnaviv_gem_submit_reloc *reloc;
-+	uint32_t idx = APPEND(priv, relocs);
++	uint32_t idx = APPEND(&priv->submit, relocs);
 +	uint32_t addr = 0;
 +
-+	reloc = &priv->relocs[idx];
++	reloc = &priv->submit.relocs[idx];
 +
 +	reloc->reloc_idx = bo2idx(stream, r->bo, r->flags);
 +	reloc->reloc_offset = r->offset;
@@ -692,10 +692,10 @@ index 0000000..43dfe3b
 +}
 diff --git a/etnaviv/etnaviv_device.c b/etnaviv/etnaviv_device.c
 new file mode 100644
-index 0000000..37d46ce
+index 0000000..4d0a708
 --- /dev/null
 +++ b/etnaviv/etnaviv_device.c
-@@ -0,0 +1,77 @@
+@@ -0,0 +1,79 @@
 +/*
 + * Copyright (C) 2014 Etnaviv Project
 + *
@@ -753,6 +753,7 @@ index 0000000..37d46ce
 +	atomic_set(&dev->refcnt, 1);
 +	dev->fd = fd;
 +	dev->handle_table = drmHashCreate();
++	dev->name_table = drmHashCreate();
 +
 +	return dev;
 +}
@@ -769,6 +770,7 @@ index 0000000..37d46ce
 +		return;
 +	pthread_mutex_lock(&table_lock);
 +	drmHashDestroy(dev->handle_table);
++	drmHashDestroy(dev->name_table);
 +	pthread_mutex_unlock(&table_lock);
 +	free(dev);
 +}
@@ -1437,10 +1439,10 @@ index 0000000..9d281f5
 +}
 diff --git a/etnaviv/etnaviv_priv.h b/etnaviv/etnaviv_priv.h
 new file mode 100644
-index 0000000..9e585ac
+index 0000000..42156a3
 --- /dev/null
 +++ b/etnaviv/etnaviv_priv.h
-@@ -0,0 +1,169 @@
+@@ -0,0 +1,172 @@
 +/*
 + * Copyright (C) 2014-2015 Etnaviv Project
 + *
@@ -1522,16 +1524,16 @@ index 0000000..9e585ac
 +	int fd;
 +	atomic_t refcnt;
 +
-+	/* The handle_table is used to track GEM bo handles associated w/
-+	 * this fd.  This is needed, in particular, when importing
-+	 * dmabuf's because we don't want multiple 'struct etna_bo's
-+	 * floating around with the same handle.  Otherwise, when the
-+	 * first one is etna_bo_del()'d the handle becomes no longer
-+	 * valid, and the remaining 'struct etna_bo's are left pointing
-+	 * to an invalid handle (and possible a GEM bo that is already
-+	 * free'd).
++	/* tables to keep track of bo's, to avoid "evil-twin" etna_bo objects:
++	 *
++	 *   handle_table: maps handle to etna_bo
++	 *   name_table: maps flink name to etna_bo
++	 *
++	 * We end up needing two tables, because DRM_IOCTL_GEM_OPEN always
++	 * returns a new handle.  So we need to figure out if the bo is already
++	 * open in the process first, before calling gem-open.
 +	 */
-+	void *handle_table;
++	void *handle_table, *name_table;
 +};
 +
 +/* a GEM buffer object allocated from the DRM device */
@@ -1566,13 +1568,16 @@ index 0000000..9e585ac
 +	struct list_head submit_list;
 +	uint32_t last_timestamp;
 +
-+	/* bo's table: */
-+	struct drm_etnaviv_gem_submit_bo *bos;
-+	uint32_t nr_bos, max_bos;
++	/* submit ioctl related tables: */
++	struct {
++		/* bo's table: */
++		struct drm_etnaviv_gem_submit_bo *bos;
++		uint32_t nr_bos, max_bos;
 +
-+	/* reloc's table: */
-+	struct drm_etnaviv_gem_submit_reloc *relocs;
-+	uint32_t nr_relocs, max_relocs;
++		/* reloc's table: */
++		struct drm_etnaviv_gem_submit_reloc *relocs;
++		uint32_t nr_relocs, max_relocs;
++	} submit;
 +
 +	/* notify callback if buffer reset happend */
 +	void (*reset_notify)(struct etna_cmd_stream *stream, void *priv);
