@@ -354,7 +354,7 @@ machinekit () {
 	echo "machinekit:"
 
 	site="${debian_pool}/main/c"
-	package_name="czmq" ; package_version="${package_name}_3.0.2-1" ; check_http
+	package_name="czmq" ; package_version="${package_name}_3.0.2-2" ; check_http
 
 	site="http://deb.dovetail-automata.com/pool/main/libw"
 	package_name="libwebsockets" ; package_version="${package_name}_1.3-1%7egit95a8abb%7e1431844465git95a8abb%7e1jessie%7e1da" ; check_http_machine
