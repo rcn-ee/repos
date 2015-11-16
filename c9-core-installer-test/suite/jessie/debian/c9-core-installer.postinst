@@ -6,8 +6,8 @@ set -e
 
 package="c9-core-installer"
 
-sha256sum_tgz="ed28652e369ce04b61b1c13068c4383d0721cb2350a8c1e2567525a69eae182e"
-wfile="c9-core_3.0.2596+git20150904-build.tar.xz"
+sha256sum_tgz="27fe8fd07014cd22544f1946d6803219aced7961115481e412f486b1455b818f"
+wfile="c9-core_3.0.2886+git20151011-build.tar.xz"
 
 partner_url="https://rcn-ee.com/repos/pkgs/c9v3"
 extract_dir="/opt/cloud9/build/"
@@ -107,6 +107,11 @@ maybe_install_depend () {
 	fi
 }
 
+npmboxfail () {
+	"$NPM" install ${pkg}@${ver}
+	echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
+}
+
 maybe_npmunbox () {
 	if [ ! -f "$C9_DIR/node_modules/${pkg}/${package}.version" ] ; then
 		echo "${package}:Installing: ${pkg}"
@@ -116,7 +121,7 @@ maybe_npmunbox () {
 		rfile="node-gyp.npmbox"
 		npmbox_dl_file
 
-		"$NPMUNBOX" /var/cache/${package}/${wfile}
+		"$NPMUNBOX" /var/cache/${package}/${wfile} || npmboxfail
 		echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
 	else
 		old_version=$(cat "$C9_DIR/node_modules/${pkg}/${package}.version")
@@ -128,7 +133,7 @@ maybe_npmunbox () {
 			rfile="node-gyp.npmbox"
 			npmbox_dl_file
 
-			"$NPMUNBOX" /var/cache/${package}/${wfile}
+			"$NPMUNBOX" /var/cache/${package}/${wfile} || npmboxfail
 			echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
 		fi
 	fi
