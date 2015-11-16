@@ -156,67 +156,67 @@ qt5_lxqt () {
 
 	#https://tracker.debian.org/pkg/liblxqt
 	site="${debian_pool}/main/libl"
-	package_name="liblxqt" ; package_version="${package_name}_0.10.0-0" ; check_http
+	package_name="liblxqt" ; package_version="${package_name}_0.10.0-2" ; check_http
 
 	#https://tracker.debian.org/pkg/lxqt-about
 	site="${debian_pool}/main/l"
-	package_name="lxqt-about" ; package_version="${package_name}_0.10.0-0" ; check_http
+	package_name="lxqt-about" ; package_version="${package_name}_0.10.0-1" ; check_http
 
 	#https://tracker.debian.org/pkg/lxqt-admin
 	site="${debian_pool}/main/l"
-	package_name="lxqt-admin" ; package_version="${package_name}_0.10.0-0" ; check_http
+	package_name="lxqt-admin" ; package_version="${package_name}_0.10.0-1" ; check_http
 
 	#https://tracker.debian.org/pkg/lxqt-common
 	site="${debian_pool}/main/l"
-	package_name="lxqt-common" ; package_version="${package_name}_0.10.0-0" ; check_http
+	package_name="lxqt-common" ; package_version="${package_name}_0.10.0-1" ; check_http
 
 	#https://tracker.debian.org/pkg/lxqt-globalkeys
 	site="${debian_pool}/main/l"
-	package_name="lxqt-globalkeys" ; package_version="${package_name}_0.10.0-0" ; check_http
+	package_name="lxqt-globalkeys" ; package_version="${package_name}_0.10.0-1" ; check_http
 
 	#https://tracker.debian.org/pkg/lxqt-openssh-askpass
 	site="${debian_pool}/main/l"
-	package_name="lxqt-openssh-askpass" ; package_version="${package_name}_0.10.0-0" ; check_http
+	package_name="lxqt-openssh-askpass" ; package_version="${package_name}_0.10.0-1" ; check_http
 
 	#https://tracker.debian.org/pkg/lxqt-notificationd
 	site="${debian_pool}/main/l"
-	package_name="lxqt-notificationd" ; package_version="${package_name}_0.10.0-0" ; check_http
+	package_name="lxqt-notificationd" ; package_version="${package_name}_0.10.0-1" ; check_http
 
 	#https://tracker.debian.org/pkg/lxqt-powermanagement
 	site="${debian_pool}/main/l"
-	package_name="lxqt-powermanagement" ; package_version="${package_name}_0.10.0-0" ; check_http
+	package_name="lxqt-powermanagement" ; package_version="${package_name}_0.10.0-1" ; check_http
 
 	#https://tracker.debian.org/pkg/lxqt-policykit
 	site="${debian_pool}/main/l"
-	package_name="lxqt-policykit" ; package_version="${package_name}_0.10.0-0" ; check_http
+	package_name="lxqt-policykit" ; package_version="${package_name}_0.10.0-1" ; check_http
 
 	#https://tracker.debian.org/pkg/lxqt-qtplugin
 	site="${debian_pool}/main/l"
-	package_name="lxqt-qtplugin" ; package_version="${package_name}_0.10.0-0" ; check_http
+	package_name="lxqt-qtplugin" ; package_version="${package_name}_0.10.0-1" ; check_http
 
 	#https://tracker.debian.org/pkg/lxqt-session
 	site="${debian_pool}/main/l"
-	package_name="lxqt-session" ; package_version="${package_name}_0.10.0-0" ; check_http
+	package_name="lxqt-session" ; package_version="${package_name}_0.10.0-1" ; check_http
 
 	#https://tracker.debian.org/pkg/lxqt-sudo
 	site="${debian_pool}/main/l"
-	package_name="lxqt-sudo" ; package_version="${package_name}_0.10.0-0" ; check_http
+	package_name="lxqt-sudo" ; package_version="${package_name}_0.10.0-1" ; check_http
 
 	#https://tracker.debian.org/pkg/pcmanfm-qt
 	site="${debian_pool}/main/p"
-	package_name="pcmanfm-qt" ; package_version="${package_name}_0.10.0-0" ; check_http
+	package_name="pcmanfm-qt" ; package_version="${package_name}_0.10.0-1" ; check_http
 
 	#https://tracker.debian.org/pkg/lxqt-runner
 	site="${debian_pool}/main/l"
-	package_name="lxqt-runner" ; package_version="${package_name}_0.10.0-0" ; check_http
+	package_name="lxqt-runner" ; package_version="${package_name}_0.10.0-1" ; check_http
 
 	#https://tracker.debian.org/pkg/lxqt-config
 	site="${debian_pool}/main/l"
-	package_name="lxqt-config" ; package_version="${package_name}_0.10.0-0" ; check_http
+	package_name="lxqt-config" ; package_version="${package_name}_0.10.0-1" ; check_http
 
 	#https://tracker.debian.org/pkg/lxqt-panel
 	site="${debian_pool}/main/l"
-	package_name="lxqt-panel" ; package_version="${package_name}_0.10.0-0" ; check_http
+	package_name="lxqt-panel" ; package_version="${package_name}_0.10.0-1" ; check_http
 
 #in progress..
 	site="${debian_pool}/main/l"
