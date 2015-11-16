@@ -6,10 +6,13 @@ set -e
 
 package="c9-core-installer"
 
-sha256sum_tgz="27fe8fd07014cd22544f1946d6803219aced7961115481e412f486b1455b818f"
-wfile="c9-core_3.0.2886+git20151011-build.tar.xz"
+sha256sum_tgz_0_10_38="7695b434e87b253a7e1deaadb7fc978d6b4f18092e002847df2145f1c68b0f47"
+        wfile_0_10_38="c9-core_3.1.355+git20151115-build.tar.xz"
 
-partner_url="https://rcn-ee.com/repos/pkgs/c9v3"
+    sha256sum_tgz_4_2="d25f7cc2ba91ac66c61f9f7559e039f419cd8481c43b00b1fa56d6b8d451323d"
+            wfile_4_2="c9-core_3.1.355+git20151115-build.tar.xz"
+
+partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v0.10.38"
 extract_dir="/opt/cloud9/build/"
 
 # summary of how this script can be called:
@@ -42,6 +45,19 @@ validdate_file() {
 }
 
 dl_install() {
+	unset nodejs_version
+	nodejs_version=$(nodejs --version || true)
+	case "${nodejs_version}" in
+	v0.10.38)
+		sha256sum_tgz=${sha256sum_tgz_0_10_38}
+		wfile=${wfile_0_10_38}
+		;;
+	*)
+		sha256sum_tgz=${sha256sum_tgz_4_2}
+		wfile=${wfile_4_2}
+		;;
+	esac
+
 	if [ ! -d /var/cache/${package} ] ; then
 		mkdir -p /var/cache/${package}
 	fi
