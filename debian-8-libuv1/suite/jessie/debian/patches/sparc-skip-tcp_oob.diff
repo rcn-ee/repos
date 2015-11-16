@@ -1,0 +1,19 @@
+Description: Workaround for test failure on old sparc kernels
+Forwarded: not-needed
+Author: Luca BRUNO <lucab@debian.org>
+
+--- a/test/test-tcp-oob.c
++++ b/test/test-tcp-oob.c
+@@ -101,6 +101,12 @@
+   struct sockaddr_in addr;
+   uv_loop_t* loop;
+ 
++#if defined(__sparc__) && defined(__linux__)
++  fprintf(stderr, "Skipping test on Linux-sparc due to instability.\n");
++  fflush(stderr);
++  return TEST_SKIP;
++#endif
++
+   ASSERT(0 == uv_ip4_addr("127.0.0.1", TEST_PORT, &addr));
+   loop = uv_default_loop();
+ 
