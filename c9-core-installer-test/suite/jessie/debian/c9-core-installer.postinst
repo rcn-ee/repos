@@ -121,7 +121,7 @@ c9_directory () {
 	mkdir -p "$C9_DIR"/node/bin
 	ln -sf $(which nodejs) "$C9_DIR"/node/bin/node
 	ln -sf $(which npm) "$C9_DIR"/node/bin/
-	node_version=$("NODE" --version)
+	node_version=$("$NODE" --version)
 
 	# use local npm cache
 	"$NPM" config -g set cache  "$C9_DIR/tmp/.npm"
