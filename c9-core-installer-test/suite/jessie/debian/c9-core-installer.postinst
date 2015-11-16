@@ -12,7 +12,6 @@ sha256sum_tgz_0_10_38="7695b434e87b253a7e1deaadb7fc978d6b4f18092e002847df2145f1c
     sha256sum_tgz_4_2="d25f7cc2ba91ac66c61f9f7559e039f419cd8481c43b00b1fa56d6b8d451323d"
             wfile_4_2="c9-core_3.1.355+git20151115-build.tar.xz"
 
-partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v0.10.38"
 extract_dir="/opt/cloud9/build/"
 
 # summary of how this script can be called:
@@ -49,10 +48,12 @@ dl_install() {
 	nodejs_version=$(nodejs --version || true)
 	case "${nodejs_version}" in
 	v0.10.38)
+		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v0.10.38"
 		sha256sum_tgz=${sha256sum_tgz_0_10_38}
 		wfile=${wfile_0_10_38}
 		;;
 	*)
+		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v4.2.2"
 		sha256sum_tgz=${sha256sum_tgz_4_2}
 		wfile=${wfile_4_2}
 		;;
