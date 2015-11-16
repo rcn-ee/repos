@@ -81,7 +81,9 @@ maybe_install_depend () {
 		echo "${node_version}" > "$C9_DIR/node_modules/${pkg}/${package}.node_version"
 	else
 		unset old_version
-		old_version=$(cat "$C9_DIR/node_modules/${pkg}/${package}.version" || true)
+		if [ -f "$C9_DIR/node_modules/${pkg}/${package}.version" ] ; then
+			old_version=$(cat "$C9_DIR/node_modules/${pkg}/${package}.version" || true)
+		fi
 		if [ ! "x${old_version}" = "x${ver}" ] ; then
 			rm -rf "$C9_DIR/node_modules/${pkg}/" || true
 			echo "${package}:Installing: ${pkg}-${ver}.tgz (for ${npm_project})"
@@ -90,7 +92,9 @@ maybe_install_depend () {
 			echo "${node_version}" > "$C9_DIR/node_modules/${pkg}/${package}.node_version"
 		else
 			unset old_version
-			old_version=$(cat "$C9_DIR/node_modules/${pkg}/${package}.node_version" || true)
+			if [ -f "$C9_DIR/node_modules/${pkg}/${package}.node_version" ] ; then
+				old_version=$(cat "$C9_DIR/node_modules/${pkg}/${package}.node_version" || true)
+			fi
 			if [ ! "x${old_version}" = "x${node_version}" ] ; then
 				rm -rf "$C9_DIR/node_modules/${pkg}/" || true
 				echo "${package}:Installing: ${pkg}-${ver}.tgz (for ${npm_project})"
