@@ -125,7 +125,6 @@ qt5_apps () {
 qt5_lxqt () {
 	echo "lxqt: debian"
 
-#backports:
 	site="${debian_pool}/main/libd"
 	package_name="libdbusmenu-qt" ; package_version="${package_name}_0.9.3+15.10.20150604-1" ; check_http
 
@@ -135,15 +134,13 @@ qt5_lxqt () {
 	site="${debian_pool}/main/p"
 	package_name="polkit-qt-1" ; package_version="${package_name}_0.112.0-4" ; check_http
 
-	#common:
-	#debhelper
-	#cmake (stretch = 3.3.2-1, (jessie = backported))
-	#pkg-config (jessie/stretch = 0.28-1)
-	#qttools5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
-	#qttools5-dev-tools (jessie = 5.3.2-2, stretch = 5.5.1-3)
+	site="${debian_pool}/main/o"
+	package_name="obconf-qt" ; package_version="${package_name}_0.1.2-8" ; check_http
 
-	#libmagic-dev (jessie = 5.22+15-2, stretch = 5.25-2)
-	#qtbase5-private-dev (jessie = 5.3.2+dfsg-4+deb8u1, stretch = 5.5.1+dfsg-5)
+	#https://github.com/lxde/compton-conf
+	#resync version with stretch and drop...
+	site="${debian_pool}/main/c"
+	package_name="compton-conf" ; package_version="${package_name}_0.1.2-8" ; check_http
 
 	#https://tracker.debian.org/pkg/libqtxdg
 	site="${debian_pool}/main/libq"
@@ -153,228 +150,75 @@ qt5_lxqt () {
 	site="${debian_pool}/main/libs"
 	package_name="libsysstat" ; package_version="${package_name}_0.3.1-1" ; check_http
 
-	#libqt5xdg-dev
-	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
-	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
-	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
-	#libqxt-dev (jessie = 0.6.2-1, stretch = 0.6.2-2)
-
 	#https://tracker.debian.org/pkg/screengrab
 	site="${debian_pool}/main/s"
 	package_name="screengrab" ; package_version="${package_name}_1.95+20150929-1" ; check_http
-
-	#libqt5xdg-dev
-	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
-	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
-	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
 
 	#https://tracker.debian.org/pkg/liblxqt
 	site="${debian_pool}/main/libl"
 	package_name="liblxqt" ; package_version="${package_name}_0.10.0-0" ; check_http
 
-	#libqt5xdg-dev
-	#liblxqt0-dev
-	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
-	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
-	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
-
 	#https://tracker.debian.org/pkg/lxqt-about
 	site="${debian_pool}/main/l"
 	package_name="lxqt-about" ; package_version="${package_name}_0.10.0-0" ; check_http
-
-	#libqt5xdg-dev
-	#liblxqt0-dev
-	#liboobs-1-dev (jessie/stretch = 3.0.0-2)
-	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
-	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
-	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
 
 	#https://tracker.debian.org/pkg/lxqt-admin
 	site="${debian_pool}/main/l"
 	package_name="lxqt-admin" ; package_version="${package_name}_0.10.0-0" ; check_http
 
-	#libqt5xdg-dev
-	#liblxqt0-dev
-	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
-	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
-	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
-
 	#https://tracker.debian.org/pkg/lxqt-common
 	site="${debian_pool}/main/l"
 	package_name="lxqt-common" ; package_version="${package_name}_0.10.0-0" ; check_http
-
-	#libqt5xdg-dev
-	#liblxqt0-dev
-	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
-	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
-	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
 
 	#https://tracker.debian.org/pkg/lxqt-globalkeys
 	site="${debian_pool}/main/l"
 	package_name="lxqt-globalkeys" ; package_version="${package_name}_0.10.0-0" ; check_http
 
-	#libqt5xdg-dev
-	#liblxqt0-dev
-	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
-	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
-	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
-
 	#https://tracker.debian.org/pkg/lxqt-openssh-askpass
 	site="${debian_pool}/main/l"
 	package_name="lxqt-openssh-askpass" ; package_version="${package_name}_0.10.0-0" ; check_http
-
-	#libqt5xdg-dev
-	#liblxqt0-dev
-	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
-	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
-	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
-	#qtbase5-private-dev (jessie = 5.3.2+dfsg-4+deb8u1, stretch = 5.5.1+dfsg-5)
 
 	#https://tracker.debian.org/pkg/lxqt-notificationd
 	site="${debian_pool}/main/l"
 	package_name="lxqt-notificationd" ; package_version="${package_name}_0.10.0-0" ; check_http
 
-	#libqt5xdg-dev
-	#liblxqt0-dev
-	#libkf5solid-dev (stretch = 5.15.0-1, (jessie = backported))
-	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
-	#libqt5svg5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
-	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
-	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
-	#libx11-xcb-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
-	#libxcb-dpms0-dev (jessie = 1.10-3, stretch = 1.10-3)
-	#libxcb-screensaver0-dev (jessie = 1.10-3, stretch = 1.10-3)
-	#qtbase5-private-dev (jessie = 5.3.2+dfsg-4+deb8u1, stretch = 5.5.1+dfsg-5)
-
 	#https://tracker.debian.org/pkg/lxqt-powermanagement
 	site="${debian_pool}/main/l"
 	package_name="lxqt-powermanagement" ; package_version="${package_name}_0.10.0-0" ; check_http
-
-	#libqt5xdg-dev
-	#liblxqt0-dev
-	#libpolkit-agent-1-dev (sid = 0.113-2,  (jessie = backported))
-	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
-	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
-	#libpolkit-qt5-1-dev (stretch = 0.112.0-4, (jessie = backported))
-	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
 
 	#https://tracker.debian.org/pkg/lxqt-policykit
 	site="${debian_pool}/main/l"
 	package_name="lxqt-policykit" ; package_version="${package_name}_0.10.0-0" ; check_http
 
-	#libqt5xdg-dev
-	#liblxqt0-dev
-	#libdbusmenu-qt5-dev  (stretch = 0.9.3+15.10.20150604-1, (jessie = backported))
-	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
-	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
-	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
-	#qtbase5-private-dev (jessie = 5.3.2+dfsg-4+deb8u1, stretch = 5.5.1+dfsg-5)
-
 	#https://tracker.debian.org/pkg/lxqt-qtplugin
 	site="${debian_pool}/main/l"
 	package_name="lxqt-qtplugin" ; package_version="${package_name}_0.10.0-0" ; check_http
-
-	#libqt5xdg-dev
-	#liblxqt0-dev
-	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
-	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
-	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
-	#libudev-dev [linux-any]
 
 	#https://tracker.debian.org/pkg/lxqt-session
 	site="${debian_pool}/main/l"
 	package_name="lxqt-session" ; package_version="${package_name}_0.10.0-0" ; check_http
 
-	#libqt5xdg-dev
-	#liblxqt0-dev
-	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
-	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
-	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
-
 	#https://tracker.debian.org/pkg/lxqt-sudo
 	site="${debian_pool}/main/l"
 	package_name="lxqt-sudo" ; package_version="${package_name}_0.10.0-0" ; check_http
-
-	#libqt5xdg-dev
-	#liblxqt0-dev
-	#libfm-dev (jessie = 1.2.3-1, stretch = 1.2.3-1)
-	#libglib2.0-dev (jessie = 2.42.1-1, stretch = 2.46.1-1)
-	#libmenu-cache-dev (jessie = 1.0.0-1, stretch = 1.0.0-1)
-	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
-	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
 
 	#https://tracker.debian.org/pkg/pcmanfm-qt
 	site="${debian_pool}/main/p"
 	package_name="pcmanfm-qt" ; package_version="${package_name}_0.10.0-0" ; check_http
 
-	#libqt5xdg-dev
-	#liblxqt0-dev
-	#liblxqt-globalkeys0-dev
-	#liblxqt-globalkeys-ui0-dev
-
-	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
-	#libmenu-cache-dev (jessie = 1.0.0-1, stretch = 1.0.0-1)
-	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
-	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
-	#qtbase5-private-dev (jessie = 5.3.2+dfsg-4+deb8u1, stretch = 5.5.1+dfsg-5)
-	#qtscript5-dev (jessie = 5.3.2+dfsg-2, stretch = 5.5.1+dfsg-2)
-
 	#https://tracker.debian.org/pkg/lxqt-runner
 	site="${debian_pool}/main/l"
 	package_name="lxqt-runner" ; package_version="${package_name}_0.10.0-0" ; check_http
 
-	#libqt5xdg-dev
-	#liblxqt0-dev
-	#libkf5windowsystem-dev (stretch = 5.15.0-1, (jessie = backported))
-	#libqt5svg5-dev (jessie = 5.3.2-2, stretch = 5.5.1-2)
-	#libqt5x11extras5-dev (jessie = 5.3.2-2, stretch = 5.5.1-3)
-	#libx11-dev (jessie = 1.6.2-3, stretch = 1.6.3-1)
-	#libxcursor-dev (jessie = 1:1.1.14-1, stretch = 1:1.1.14-1)
-	#libxfixes-dev (jessie = 1:5.0.1-2, stretch = 1:5.0.1-2)
-	#qtbase5-private-dev (jessie = 5.3.2+dfsg-4+deb8u1, stretch = 5.5.1+dfsg-5)
-	#zlib1g-dev (jessie = 1:1.2.8.dfsg-2, stretch = 1:1.2.8.dfsg-2)
-
 	#https://tracker.debian.org/pkg/lxqt-config
 	site="${debian_pool}/main/l"
 	package_name="lxqt-config" ; package_version="${package_name}_0.10.0-0" ; check_http
-
-	#adep: libasound2-dev
-	#adep: libdbusmenu-qt5-dev
-	#adep: libglib2.0-dev
-	#adep: libicu-dev
-	#adep: liblxqt0-dev
-	#adep: liblxqt-globalkeys0-dev
-	#adep: liblxqt-globalkeys-ui0-dev
-	#adep: libkf5windowsystem-dev
-	#adep: libkf5solid-dev
-	#adep: libmenu-cache-dev
-	#adep: libpulse-dev
-	#adep: libqt5x11extras5-dev
-	#adep: libqt5xdg-dev (>= 1.3.0)
-	#adep: libsensors4-dev
-	#adep: libstatgrab-dev
-	#adep: libsysstat-qt5-0-dev (>= 0.3.0)
-	#adep: libx11-dev
-	#adep: libxcomposite-dev
-	#adep: libxcb-util0-dev
-	#adep: libxcb-xkb-dev
-	#adep: libxcb-damage0-dev
-	#adep: libxdamage-dev
-	#adep: libxkbcommon-dev
-	#adep: libxkbcommon-x11-dev
-	#adep: libxrender-dev
 
 	#https://tracker.debian.org/pkg/lxqt-panel
 	site="${debian_pool}/main/l"
 	package_name="lxqt-panel" ; package_version="${package_name}_0.10.0-0" ; check_http
 
 #in progress..
-	site="${debian_pool}/main/o"
-	package_name="obconf-qt" ; package_version="${package_name}_0.1.2-8" ; check_http
-
-	site="${debian_pool}/main/c"
-	package_name="compton-conf" ; package_version="${package_name}_0.1.2-8" ; check_http
-
 	site="${debian_pool}/main/l"
 	package_name="lximage-qt" ; package_version="${package_name}_0.4.0-7" ; check_http
 }
