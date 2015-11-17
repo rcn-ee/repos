@@ -10,31 +10,31 @@ Reviewed-by: Dr Stephen N Henson <shenson@drh-consultancy.co.uk>
 
 This is not meant as final patch.  
 
-Index: openssl-1.0.0d/crypto/x509/x509_vfy.c
+Index: openssl-1.0.2/crypto/x509/x509_vfy.c
 ===================================================================
---- openssl-1.0.0d.orig/crypto/x509/x509_vfy.c
-+++ openssl-1.0.0d/crypto/x509/x509_vfy.c
-@@ -117,6 +117,7 @@ static int check_trust(X509_STORE_CTX *c
+--- openssl-1.0.2.orig/crypto/x509/x509_vfy.c
++++ openssl-1.0.2/crypto/x509/x509_vfy.c
+@@ -119,6 +119,7 @@ static int check_trust(X509_STORE_CTX *c
  static int check_revocation(X509_STORE_CTX *ctx);
  static int check_cert(X509_STORE_CTX *ctx);
  static int check_policy(X509_STORE_CTX *ctx);
 +static int check_ca_blacklist(X509_STORE_CTX *ctx);
  
  static int get_crl_score(X509_STORE_CTX *ctx, X509 **pissuer,
- 			unsigned int *preasons,
-@@ -374,6 +375,9 @@ int X509_verify_cert(X509_STORE_CTX *ctx
- 		ok=internal_verify(ctx);
- 	if(!ok) goto end;
+                          unsigned int *preasons, X509_CRL *crl, X509 *x);
+@@ -438,6 +439,9 @@ int X509_verify_cert(X509_STORE_CTX *ctx
+     if (!ok)
+         goto end;
  
 +	ok = check_ca_blacklist(ctx);
 +	if(!ok) goto end;
 +
  #ifndef OPENSSL_NO_RFC3779
- 	/* RFC 3779 path validation, now that CRL check has been done */
- 	ok = v3_asid_validate_path(ctx);
-@@ -820,6 +824,29 @@ static int check_crl_time(X509_STORE_CTX
- 	return 1;
- 	}
+     /* RFC 3779 path validation, now that CRL check has been done */
+     ok = v3_asid_validate_path(ctx);
+@@ -938,6 +942,29 @@ static int check_crl_time(X509_STORE_CTX
+     return 1;
+ }
  
 +static int check_ca_blacklist(X509_STORE_CTX *ctx)
 +	{
@@ -60,5 +60,5 @@ Index: openssl-1.0.0d/crypto/x509/x509_vfy.c
 +	}
 +
  static int get_crl_sk(X509_STORE_CTX *ctx, X509_CRL **pcrl, X509_CRL **pdcrl,
- 			X509 **pissuer, int *pscore, unsigned int *preasons,
- 			STACK_OF(X509_CRL) *crls)
+                       X509 **pissuer, int *pscore, unsigned int *preasons,
+                       STACK_OF(X509_CRL) *crls)

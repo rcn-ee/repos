@@ -26,7 +26,7 @@ ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
 	export CROSS_COMPILE ?= $(DEB_HOST_GNU_TYPE)-
 endif
 
-CONFARGS  = --prefix=/usr --openssldir=/usr/lib/ssl --libdir=lib/$(DEB_HOST_MULTIARCH) no-idea no-mdc2 no-rc5 no-zlib  enable-tlsext no-ssl2 no-ssl3
+CONFARGS  = --prefix=/usr --openssldir=/usr/lib/ssl --libdir=lib/$(DEB_HOST_MULTIARCH) no-idea no-mdc2 no-rc5 no-zlib  enable-tlsext no-ssl2 no-ssl3 enable-unit-test
 OPT_alpha = ev4 ev5
 OPT_i386  = i586 i686/cmov
 ARCHOPTS  = OPT_$(DEB_HOST_ARCH)

@@ -1,8 +1,8 @@
-Index: openssl-1.0.0c/Makefile.org
+Index: openssl-1.0.2~beta3/Makefile.org
 ===================================================================
---- openssl-1.0.0c.orig/Makefile.org	2010-01-27 17:06:58.000000000 +0100
-+++ openssl-1.0.0c/Makefile.org	2010-12-13 19:41:03.000000000 +0100
-@@ -497,7 +497,7 @@
+--- openssl-1.0.2~beta3.orig/Makefile.org
++++ openssl-1.0.2~beta3/Makefile.org
+@@ -541,7 +541,7 @@ install: all install_docs install_sw
  install_sw:
  	@$(PERL) $(TOP)/util/mkdir-p.pl $(INSTALL_PREFIX)$(INSTALLTOP)/bin \
  		$(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR) \
@@ -11,11 +11,11 @@ Index: openssl-1.0.0c/Makefile.org
  		$(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/pkgconfig \
  		$(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl \
  		$(INSTALL_PREFIX)$(OPENSSLDIR)/misc \
-Index: openssl-1.0.0c/engines/Makefile
+Index: openssl-1.0.2~beta3/engines/Makefile
 ===================================================================
---- openssl-1.0.0c.orig/engines/Makefile	2010-08-24 23:46:34.000000000 +0200
-+++ openssl-1.0.0c/engines/Makefile	2010-12-12 19:16:22.000000000 +0100
-@@ -107,7 +107,7 @@
+--- openssl-1.0.2~beta3.orig/engines/Makefile
++++ openssl-1.0.2~beta3/engines/Makefile
+@@ -107,13 +107,13 @@ install:
  	@[ -n "$(INSTALLTOP)" ] # should be set by top Makefile...
  	@if [ -n "$(SHARED_LIBS)" ]; then \
  		set -e; \
@@ -24,16 +24,19 @@ Index: openssl-1.0.0c/engines/Makefile
  		for l in $(LIBNAMES); do \
  			( echo installing $$l; \
  			  pfx=lib; \
-@@ -119,13 +119,13 @@
+ 			  if expr "$(PLATFORM)" : "Cygwin" >/dev/null; then \
+ 				sfx=".so"; \
+-				cp cyg$$l.dll $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$$pfx$$l$$sfx.new; \
++				cp cyg$$l.dll $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.0/engines/$$pfx$$l$$sfx.new; \
+ 			  else \
+ 				case "$(CFLAGS)" in \
+ 				*DSO_BEOS*)	sfx=".so";;	\
+@@ -122,10 +122,10 @@ install:
  				*DSO_WIN32*)	sfx="eay32.dll"; pfx=;;	\
  				*)		sfx=".bad";;	\
  				esac; \
 -				cp $$pfx$$l$$sfx $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$$pfx$$l$$sfx.new; \
 +				cp $$pfx$$l$$sfx $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.0/engines/$$pfx$$l$$sfx.new; \
- 			  else \
- 				sfx=".so"; \
--				cp cyg$$l.dll $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$$pfx$$l$$sfx.new; \
-+				cp cyg$$l.dll $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.0/engines/$$pfx$$l$$sfx.new; \
  			  fi; \
 -			  chmod 555 $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$$pfx$$l$$sfx.new; \
 -			  mv -f $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$$pfx$$l$$sfx.new $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$$pfx$$l$$sfx ); \
@@ -42,11 +45,11 @@ Index: openssl-1.0.0c/engines/Makefile
  		done; \
  	fi
  	@target=install; $(RECURSIVE_MAKE)
-Index: openssl-1.0.0c/Configure
+Index: openssl-1.0.2~beta3/Configure
 ===================================================================
---- openssl-1.0.0c.orig/Configure	2010-12-12 19:16:22.000000000 +0100
-+++ openssl-1.0.0c/Configure	2010-12-13 19:40:53.000000000 +0100
-@@ -1732,7 +1732,7 @@
+--- openssl-1.0.2~beta3.orig/Configure
++++ openssl-1.0.2~beta3/Configure
+@@ -1893,7 +1893,7 @@ while (<IN>)
  		}
  	elsif	(/^#define\s+ENGINESDIR/)
  		{
@@ -55,19 +58,25 @@ Index: openssl-1.0.0c/Configure
  		$foo =~ s/\\/\\\\/g;
  		print OUT "#define ENGINESDIR \"$foo\"\n";
  		}
-Index: openssl-1.0.0c/engines/ccgost/Makefile
+Index: openssl-1.0.2~beta3/engines/ccgost/Makefile
 ===================================================================
---- openssl-1.0.0c.orig/engines/ccgost/Makefile	2010-12-13 19:41:14.000000000 +0100
-+++ openssl-1.0.0c/engines/ccgost/Makefile	2010-12-13 19:42:21.000000000 +0100
-@@ -53,13 +53,13 @@
+--- openssl-1.0.2~beta3.orig/engines/ccgost/Makefile
++++ openssl-1.0.2~beta3/engines/ccgost/Makefile
+@@ -47,7 +47,7 @@ install:
+ 		pfx=lib; \
+ 		if expr "$(PLATFORM)" : "Cygwin" >/dev/null; then \
+ 			sfx=".so"; \
+-			cp cyg$(LIBNAME).dll $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$${pfx}$(LIBNAME)$$sfx.new; \
++			cp cyg$(LIBNAME).dll $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.0/engines/$${pfx}$(LIBNAME)$$sfx.new; \
+ 		else \
+ 			case "$(CFLAGS)" in \
+ 			*DSO_BEOS*) sfx=".so";; \
+@@ -56,10 +56,10 @@ install:
  			*DSO_WIN32*) sfx="eay32.dll"; pfx=;; \
  			*) sfx=".bad";; \
  			esac; \
 -			cp $${pfx}$(LIBNAME)$$sfx $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$${pfx}$(LIBNAME)$$sfx.new; \
 +			cp $${pfx}$(LIBNAME)$$sfx $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.0/engines/$${pfx}$(LIBNAME)$$sfx.new; \
- 		else \
- 			sfx=".so"; \
- 			cp cyg$(LIBNAME).dll $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$${pfx}$(LIBNAME)$$sfx.new; \
  		fi; \
 -		chmod 555 $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$${pfx}$(LIBNAME)$$sfx.new; \
 -		mv -f $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$${pfx}$(LIBNAME)$$sfx.new $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$${pfx}$(LIBNAME)$$sfx; \

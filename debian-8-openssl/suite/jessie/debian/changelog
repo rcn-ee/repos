@@ -1,38 +1,54 @@
-openssl (1.0.1k-3+deb8u1) jessie-security; urgency=medium
-
-  * Fix CVE-2015-1791
-  * Fix CVE-2015-1792
-  * Fix CVE-2015-1789
-  * Fix CVE-2015-1790
-  * Fix CVE-2015-1788
-  * CVE-2015-4000: Have minimum of 768 bit for DH
-
- -- Kurt Roeckx <kurt@roeckx.be>  Thu, 11 Jun 2015 20:55:20 +0200
-
-openssl (1.0.1k-3) unstable; urgency=medium
-
-  * Drop patch 0003-Free-up-passed-ASN.1-structure-if-reused.patch, it at
-    least breaks voms, possibly others. (Closes: #781081)
-
- -- Kurt Roeckx <kurt@roeckx.be>  Tue, 24 Mar 2015 21:34:00 +0100
-
-openssl (1.0.1k-2) unstable; urgency=high
-
-  * Fix CVE-2015-0286
-  * Fix CVE-2015-0287
-  * Fix CVE-2015-0289
-  * Fix CVE-2015-0293 (not affected, SSLv2 disabled)
-  * Fix CVE-2015-0209
-  * Fix CVE-2015-0288
-  * Remove export ciphers from DEFAULT.
-  * Make DTLS always act as if read_ahead is set.  This fixes a regression
-    introduce by the fix for CVE-2014-3571.  (Closes: #775502)
-
- -- Kurt Roeckx <kurt@roeckx.be>  Fri, 20 Mar 2015 18:24:15 +0100
-
-openssl (1.0.1k-1) unstable; urgency=medium
+openssl (1.0.2d-1) unstable; urgency=high
 
   * New upstream version
+    - Fixes CVE-2015-1793
+
+ -- Kurt Roeckx <kurt@roeckx.be>  Thu, 09 Jul 2015 18:22:26 +0200
+
+openssl (1.0.2c-1) unstable; urgency=medium
+
+  * New upstream version
+    - Fixes ABI (Closes: #788511)
+
+ -- Kurt Roeckx <kurt@roeckx.be>  Fri, 12 Jun 2015 20:35:12 +0200
+
+openssl (1.0.2b-1) unstable; urgency=high
+
+  * New upstream version
+    - Fix CVE-2015-4000
+    - Fix CVE-2015-1788
+    - Fix CVE-2015-1789
+    - Fix CVE-2015-1790
+    - Fix CVE-2015-1792
+    - Fix CVE-2015-1791
+  * Update c_rehash-compat.patch to make it apply to the new version.
+  * Remove openssl-pod-misspell.patch applied upstream
+
+ -- Kurt Roeckx <kurt@roeckx.be>  Thu, 11 Jun 2015 18:20:38 +0200
+
+openssl (1.0.2a-1) unstable; urgency=medium
+
+  * New upstrema version
+    - Fix CVE-2015-0286
+    - Fix CVE-2015-0287
+    - Fix CVE-2015-0289
+    - Fix CVE-2015-0293 (not affected, SSLv2 disabled)
+    - Fix CVE-2015-0209
+    - Fix CVE-2015-0288
+    - Fix CVE-2015-0291
+    - Fix CVE-2015-0290
+    - Fix CVE-2015-0207
+    - Fix CVE-2015-0208
+    - Fix CVE-2015-1787
+    - Fix CVE-2015-0285
+  * Temporary enable SSLv3 methods again, but they will go away.
+  * Don't set TERMIO anymore, use the default TERMIOS instead.
+
+ -- Kurt Roeckx <kurt@roeckx.be>  Thu, 30 Apr 2015 23:37:27 +0200
+
+openssl (1.0.2-1) experimental; urgency=medium
+
+  * New upstream release
     - Fixes CVE-2014-3571
     - Fixes CVE-2015-0206
     - Fixes CVE-2014-3569
@@ -41,117 +57,78 @@ openssl (1.0.1k-1) unstable; urgency=medium
     - Fixes CVE-2015-0205
     - Fixes CVE-2014-8275
     - Fixes CVE-2014-3570
-  * Drop gnu_source.patch, dgst_hmac.patch: applied upstream
+    - Drop git_snapshot.patch
+  * Drop gnu_source.patch, dgst_hmac.patch, stddef.patch,
+    no_ssl3_method.patch: applied upstream
+  * Update patches to apply
 
- -- Kurt Roeckx <kurt@roeckx.be>  Thu, 08 Jan 2015 20:55:26 +0100
+ -- Kurt Roeckx <kurt@roeckx.be>  Fri, 23 Jan 2015 18:54:13 +0100
 
-openssl (1.0.1j-1) unstable; urgency=high
+openssl (1.0.2~beta3-1) experimental; urgency=low
 
-  * New upstream release
-    - Fixes CVE-2014-3513
-    - Fixes CVE-2014-3567
-    - Add Fallback SCSV support to mitigate CVE-2014-3566
-    - Fixes CVE-2014-3568
-  * Disables SSLv3 because of CVE-2014-3566
-  * Update dgst_hmac.patch to apply to new upstream version
-  * Drop rehash_pod.patch, applied upstream
-  * Fix openssl_fix_for_x32.patch to apply to new upstream version
+  * New usptream beta version
+  * Add git snapshot
+  * Merge changes between 1.0.1h-3 and 1.0.1j-1:
+    - Disables SSLv3 because of CVE-2014-3566
+  * Drop patch rehash-crt.patch: partially applied upstream.
+    c_rehash now doesn't support files in DER format anymore.
+  * Drop patch rehash_pod.patch: applied upstream
+  * Update c_rehash-compat.patch to apply to new upstream version.  This
+    undoes upstream's "-old" option and creates both the new and old again.
+    It now also does it for CRLs.
+  * Drop defaults.patch, applied upstream
+  * dgst_hmac.patch updated to apply to upstream version.
+  * engines-path.patch updated to apply to upstream version.
+  * Update list of exported symbols
+  * Update symbols files to require beta3
+  * Enable unit tests
+  * Add patch to add support for the no-ssl3-method option that completly
+    disable SSLv3 and pass the option.  This drops the following functions
+    from the library: SSLv3_method, SSLv3_server_method and
+    SSLv3_client_method
+  * Build using OPENSSL_NO_BUF_FREELISTS
 
- -- Kurt Roeckx <kurt@roeckx.be>  Wed, 15 Oct 2014 19:06:38 +0200
+ -- Kurt Roeckx <kurt@roeckx.be>  Fri, 07 Nov 2014 00:20:10 +0100
 
-openssl (1.0.1i-2) unstable; urgency=medium
+openssl (1.0.2~beta2-1) experimental; urgency=medium
 
-  * Fix assembler for ppc64le (Closes: #745657)
-
- -- Kurt Roeckx <kurt@roeckx.be>  Mon, 11 Aug 2014 21:37:47 +0200
-
-openssl (1.0.1i-1) unstable; urgency=high
-
-  * New upstream release
-    - Fix for CVE-2014-3512
-    - Fix for CVE-2014-3511
-    - Fix for CVE-2014-3510
-    - Fix for CVE-2014-3507
-    - Fix for CVE-2014-3506
-    - Fix for CVE-2014-3505
-    - Fix for CVE-2014-3509
-    - Fix for CVE-2014-5139
-    - Fix for CVE-2014-3508
-    - Drop upstream git snapshot patch.
-  * Add support for ppc64le (Closes: #745657)
-  * Add support for OpenRISC (Closes: #736772)
-
- -- Kurt Roeckx <kurt@roeckx.be>  Thu, 07 Aug 2014 00:02:41 +0200
-
-openssl (1.0.1h-3) unstable; urgency=medium
-
-  * New upstream git snapshot
-    - Allows CCS after finished message, needed for some renegiotation cases.
-      (Closes: #751093)
-
- -- Kurt Roeckx <kurt@roeckx.be>  Sat, 14 Jun 2014 22:23:21 +0200
-
-openssl (1.0.1h-2) unstable; urgency=medium
-
-  * Use upstream git snapshot:
-    - Fix resumption problem when using tls_session_secret_cb
-    - Create ~/.rnd with mode 0600 (Closes: #750103)
-    - Fix building on heartbeat test, drop patch to disable it.
-
- -- Kurt Roeckx <kurt@roeckx.be>  Mon, 09 Jun 2014 11:21:51 +0200
-
-openssl (1.0.1h-1) unstable; urgency=high
-
-  * New upstream release
+  * New usptream beta version
     - Fix CVE-2014-0224
     - Fix CVE-2014-0221
     - Fix CVE-2014-0195
     - Fix CVE-2014-3470
-    - Drop patch git_snapshot.patch
-  * Disable the heartbeat test since it fails to build.
+    - Fix CVE-2014-0198
+    - Fix CVE-2010-5298
+    - Fix CVE-2014-0160
+    - Fix CVE-2014-0076
+  * Merge changes between 1.0.1f-1 and 1.0.1h-3:
+    - postinst: Updated check for restarting services
+  * libdoc-manpgs-pod-spell.patch and openssl-pod-misspell.patch
+    partially applied upstream
+  * Drop fix-pod-errors.patch, applied upstream.
+  * Add support for ppc64le (Closes: #745657)
+  * Add support for OpenRISC (Closes: #736772)
 
- -- Kurt Roeckx <kurt@roeckx.be>  Thu, 05 Jun 2014 18:42:05 +0200
+ -- Kurt Roeckx <kurt@roeckx.be>  Wed, 23 Jul 2014 19:54:09 +0200
 
-openssl (1.0.1g-4) unstable; urgency=medium
+openssl (1.0.2~beta1-1) experimental; urgency=medium
 
-  * Update to git snapshot
-    - Fixes CVE-2014-0198 (Closes: #747432)
-    - Drop the following patches that got applied upstream:
-      fix-pod-errors.patch, CVE-2010-5298.patch,
-      CVE-2014-XXXX-Extension-checking-fixes.patch
-  * Actually restart the services when restart-without-asking is set.
-    (Closes: #745801)
+  * New upstream beta version
+    - Update list of symbols that should be exported and adjust the symbols
+      file.  This also removes a bunch of duplicate symbols in the linker
+      file.
+    - Fix additional pod errors
+    - Following patches have been applied upstream and are removed:
+      libssl-misspell.patch, pod_req_misspell2.patch,
+      pod_pksc12.misspell.patch, pod_s_server.misspell.patch,
+      pod_x509setflags.misspell.patch, pod_ec.misspell.patch,
+      pkcs12-doc.patch, req_bits.patch
+    - Following patches have been partially applied upstream:
+      libdoc-manpgs-pod-spell.patch, openssl-pod-misspell.patch
+    - Remove openssl_fix_for_x32.patch, different patch applied upstream.
+  * Add support for cross compiling (Closes: #465248)
 
- -- Kurt Roeckx <kurt@roeckx.be>  Mon, 12 May 2014 22:22:16 +0200
-
-openssl (1.0.1g-3) unstable; urgency=medium
-
-  * Fix CVE-2010-5298: use-after-free race condition.
-  * Propose restarting prosody on upgrade (Closes: #744871).
-  * Add more services to be checked for restart.
-  * Fix a bug where the critical flag for TSA extended key usage is not
-    always detected, and two other similar cases.
-  * Add support for 'libraries/restart-without-asking', which allows
-    services to be restarted automatically without prompting, or
-    requiring a response instead.
-
- -- Kurt Roeckx <kurt@roeckx.be>  Sat, 19 Apr 2014 18:38:32 +0200
-
-openssl (1.0.1g-2) unstable; urgency=emergency
-
-  * Enable checking for services that may need to be restarted (Closes: #743889)
-  * Update list of services to possibly restart
-
- -- Kurt Roeckx <kurt@roeckx.be>  Tue, 08 Apr 2014 19:13:08 +0200
-
-openssl (1.0.1g-1) unstable; urgency=high
-
-  * New upstream release
-    - Fixes CVE-2014-0160
-    - Fixes CVE-2014-0076
-    - Drop patches applied upstream
-
- -- Kurt Roeckx <kurt@roeckx.be>  Mon, 07 Apr 2014 23:17:42 +0200
+ -- Kurt Roeckx <kurt@roeckx.be>  Tue, 25 Feb 2014 00:36:51 +0100
 
 openssl (1.0.1f-1) unstable; urgency=high
 
