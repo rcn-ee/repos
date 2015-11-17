@@ -1,7 +1,12 @@
 #!/bin/bash -e
 
 mirror="http://ftp.de.debian.org/debian"
-mirror="http://snapshot.debian.org/archive/debian/20150709T214436Z"
+
+#1.0.2d-1
+#mirror="http://snapshot.debian.org/archive/debian/20150709T214436Z"
+
+#1.0.2d-2 (ssl3 removed, soname bump..)
+mirror="http://snapshot.debian.org/archive/debian/20150908T213435Z"
 
 package_name="openssl"
 debian_pkg_name="${package_name}"
@@ -14,7 +19,7 @@ git_sha=""
 reprepro_dir="o/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-1"
+debian_version="${package_version}-2"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 

@@ -1,3 +1,15 @@
+openssl (1.0.2d-2) experimental; urgency=medium
+
+  * Build with no-ssl3-method to remove all SSLv3 support.  This results in
+    the functions SSLv3_method(), SSLv3_server_method() and
+    SSLv3_client_method() being removed from libssl.  Change the soname as
+    result of that and also changes name of the binary package.
+    (Closes: #768476)
+  * Enable rfc3779 and cms support (Closes: #630790)
+  * Fix cross compilation for mips architectures. (Closes: #782492)
+
+ -- Kurt Roeckx <kurt@roeckx.be>  Sun, 06 Sep 2015 14:21:27 +0200
+
 openssl (1.0.2d-1) unstable; urgency=high
 
   * New upstream version
