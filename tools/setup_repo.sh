@@ -60,6 +60,11 @@ if [ -f ${apache_dir}/${dist}/conf/distributions ] ; then
 	rm -f ${apache_dir}/${dist}/conf/distributions || true
 fi
 
+dist="debian-machinekit"
+if [ -f ${apache_dir}/${dist}/conf/distributions ] ; then
+	rm -f ${apache_dir}/${dist}/conf/distributions || true
+fi
+
 dist="debian-nodejs"
 if [ -f ${apache_dir}/${dist}/conf/distributions ] ; then
 	rm -f ${apache_dir}/${dist}/conf/distributions || true
@@ -90,6 +95,13 @@ suite="jessie"
 setup_repo
 
 suite="stretch"
+setup_repo
+
+dist="debian-machinekit"
+suite="wheezy"
+setup_repo
+
+suite="jessie"
 setup_repo
 
 dist="debian-nodejs"
