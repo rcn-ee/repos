@@ -227,8 +227,20 @@ c9_directory () {
 		"$NPM" install --unsafe-perm=true /var/cache/${package}/pty.js-0.2.8.tgz
 		;;
 	*)
-		echo "${package}:Installing pty.js@0.3.0"
-		"$NPM" install pty.js@0.3.0
+		npm_project="pty.js@0.3.0"
+		#pty.js@0.3.0 node_modules/pty.js
+		#├── extend@1.2.1
+		#└── nan@2.0.5
+
+		#npm pack extend@1.2.1
+		pkg="extend" ; ver="1.2.1" ; maybe_install_depend
+		#npm pack nan@2.0.5
+		pkg="nan" ; ver="2.0.5" ; maybe_install_depend
+
+		echo "${package}:Installing ${npm_project}"
+		#npm pack pty.js@0.3.0
+		##stupid: "--unsafe-perm=true" npm actually wants you to install as root then thru sudo!!!
+		"$NPM" install --unsafe-perm=true /var/cache/${package}/pty.js-0.3.0.tgz
 		;;
 	esac
 
