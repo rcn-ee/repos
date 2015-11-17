@@ -1,0 +1,58 @@
+From a9f34a7aac5fd89f33a34fb71e954b85fbf35875 Mon Sep 17 00:00:00 2001
+From: "Dr. Stephen Henson" <steve@openssl.org>
+Date: Mon, 23 Feb 2015 02:32:44 +0000
+Subject: [PATCH 2/6] Free up ADB and CHOICE if already initialised.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+CVE-2015-0287
+
+Reviewed-by: Tim Hudson <tjh@openssl.org>
+Reviewed-by: Emilia Käsper <emilia@openssl.org>
+---
+ crypto/asn1/tasn_dec.c | 24 +++++++++++++++++++++---
+ 1 file changed, 21 insertions(+), 3 deletions(-)
+
+Index: openssl-1.0.1e/crypto/asn1/tasn_dec.c
+===================================================================
+--- openssl-1.0.1e.orig/crypto/asn1/tasn_dec.c
++++ openssl-1.0.1e/crypto/asn1/tasn_dec.c
+@@ -317,9 +317,16 @@ int ASN1_item_ex_d2i(ASN1_VALUE **pval,
+ 		if (asn1_cb && !asn1_cb(ASN1_OP_D2I_PRE, pval, it, NULL))
+ 				goto auxerr;
+ 
+-		/* Allocate structure */
+-		if (!*pval && !ASN1_item_ex_new(pval, it))
+-			{
++                if (*pval) {
++                    /* Free up and zero CHOICE value if initialised */
++                    i = asn1_get_choice_selector(pval, it);
++                    if ((i >= 0) && (i < it->tcount)) {
++                        tt = it->templates + i;
++                        pchptr = asn1_get_field_ptr(pval, tt);
++                        ASN1_template_free(pchptr, tt);
++                        asn1_set_choice_selector(pval, -1, it);
++                    }
++                } else if (!ASN1_item_ex_new(pval, it)) {
+ 			ASN1err(ASN1_F_ASN1_ITEM_EX_D2I,
+ 						ERR_R_NESTED_ASN1_ERROR);
+ 			goto err;
+@@ -413,6 +420,17 @@ int ASN1_item_ex_d2i(ASN1_VALUE **pval,
+ 		if (asn1_cb && !asn1_cb(ASN1_OP_D2I_PRE, pval, it, NULL))
+ 				goto auxerr;
+ 
++        /* Free up and zero any ADB found */
++        for (i = 0, tt = it->templates; i < it->tcount; i++, tt++) {
++            if (tt->flags & ASN1_TFLG_ADB_MASK) {
++                const ASN1_TEMPLATE *seqtt;
++                ASN1_VALUE **pseqval;
++                seqtt = asn1_do_adb(pval, tt, 1);
++                pseqval = asn1_get_field_ptr(pval, seqtt);
++                ASN1_template_free(pseqval, seqtt);
++            }
++        }
++
+ 		/* Get each field entry */
+ 		for (i = 0, tt = it->templates; i < it->tcount; i++, tt++)
+ 			{

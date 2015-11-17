@@ -1,0 +1,93 @@
+Index: openssl-1.0.1e/doc/crypto/ASN1_generate_nconf.pod
+===================================================================
+--- openssl-1.0.1e.orig/doc/crypto/ASN1_generate_nconf.pod	2013-12-22 16:16:44.695836636 +0100
++++ openssl-1.0.1e/doc/crypto/ASN1_generate_nconf.pod	2013-12-22 16:16:44.691836721 +0100
+@@ -61,7 +61,7 @@
+ =item B<INTEGER>, B<INT>
+ 
+ Encodes an ASN1 B<INTEGER> type. The B<value> string represents
+-the value of the integer, it can be preceeded by a minus sign and
++the value of the integer, it can be preceded by a minus sign and
+ is normally interpreted as a decimal value unless the prefix B<0x>
+ is included.
+ 
+Index: openssl-1.0.1e/doc/crypto/BN_BLINDING_new.pod
+===================================================================
+--- openssl-1.0.1e.orig/doc/crypto/BN_BLINDING_new.pod	2013-12-22 16:16:44.695836636 +0100
++++ openssl-1.0.1e/doc/crypto/BN_BLINDING_new.pod	2013-12-22 16:16:44.691836721 +0100
+@@ -48,7 +48,7 @@
+ 
+ BN_BLINDING_convert_ex() multiplies B<n> with the blinding factor B<A>.
+ If B<r> is not NULL a copy the inverse blinding factor B<Ai> will be
+-returned in B<r> (this is useful if a B<RSA> object is shared amoung
++returned in B<r> (this is useful if a B<RSA> object is shared among
+ several threads). BN_BLINDING_invert_ex() multiplies B<n> with the
+ inverse blinding factor B<Ai>. If B<r> is not NULL it will be used as
+ the inverse blinding.
+Index: openssl-1.0.1e/doc/crypto/EVP_BytesToKey.pod
+===================================================================
+--- openssl-1.0.1e.orig/doc/crypto/EVP_BytesToKey.pod	2013-12-22 16:16:44.695836636 +0100
++++ openssl-1.0.1e/doc/crypto/EVP_BytesToKey.pod	2013-12-22 16:16:44.691836721 +0100
+@@ -17,7 +17,7 @@
+ 
+ EVP_BytesToKey() derives a key and IV from various parameters. B<type> is
+ the cipher to derive the key and IV for. B<md> is the message digest to use.
+-The B<salt> paramter is used as a salt in the derivation: it should point to
++The B<salt> parameter is used as a salt in the derivation: it should point to
+ an 8 byte buffer or NULL if no salt is used. B<data> is a buffer containing
+ B<datal> bytes which is used to derive the keying data. B<count> is the
+ iteration count to use. The derived key and IV will be written to B<key>
+Index: openssl-1.0.1e/doc/crypto/EVP_EncryptInit.pod
+===================================================================
+--- openssl-1.0.1e.orig/doc/crypto/EVP_EncryptInit.pod	2013-12-22 16:16:44.695836636 +0100
++++ openssl-1.0.1e/doc/crypto/EVP_EncryptInit.pod	2013-12-22 16:16:44.691836721 +0100
+@@ -152,7 +152,7 @@
+ 
+ EVP_EncryptInit(), EVP_DecryptInit() and EVP_CipherInit() behave in a
+ similar way to EVP_EncryptInit_ex(), EVP_DecryptInit_ex and
+-EVP_CipherInit_ex() except the B<ctx> paramter does not need to be
++EVP_CipherInit_ex() except the B<ctx> parameter does not need to be
+ initialized and they always use the default cipher implementation.
+ 
+ EVP_EncryptFinal(), EVP_DecryptFinal() and EVP_CipherFinal() behave in a
+Index: openssl-1.0.1e/doc/crypto/EVP_PKEY_cmp.pod
+===================================================================
+--- openssl-1.0.1e.orig/doc/crypto/EVP_PKEY_cmp.pod	2013-12-22 16:16:44.695836636 +0100
++++ openssl-1.0.1e/doc/crypto/EVP_PKEY_cmp.pod	2013-12-22 16:16:44.691836721 +0100
+@@ -26,7 +26,7 @@
+ The funcion EVP_PKEY_cmp_parameters() compares the parameters of keys
+ B<a> and B<b>.
+ 
+-The funcion EVP_PKEY_cmp() compares the public key components and paramters
++The funcion EVP_PKEY_cmp() compares the public key components and parameters
+ (if present) of keys B<a> and B<b>.
+ 
+ =head1 NOTES
+Index: openssl-1.0.1e/doc/crypto/pem.pod
+===================================================================
+--- openssl-1.0.1e.orig/doc/crypto/pem.pod	2013-12-22 16:16:44.695836636 +0100
++++ openssl-1.0.1e/doc/crypto/pem.pod	2013-12-22 16:16:44.691836721 +0100
+@@ -201,7 +201,7 @@
+ PEM_write_bio_PKCS8PrivateKey() and PEM_write_PKCS8PrivateKey()
+ write a private key in an EVP_PKEY structure in PKCS#8
+ EncryptedPrivateKeyInfo format using PKCS#5 v2.0 password based encryption
+-algorithms. The B<cipher> argument specifies the encryption algoritm to
++algorithms. The B<cipher> argument specifies the encryption algorithm to
+ use: unlike all other PEM routines the encryption is applied at the
+ PKCS#8 level and not in the PEM headers. If B<cipher> is NULL then no
+ encryption is used and a PKCS#8 PrivateKeyInfo structure is used instead.
+Index: openssl-1.0.1e/doc/ssl/SSL_CTX_set_verify.pod
+===================================================================
+--- openssl-1.0.1e.orig/doc/ssl/SSL_CTX_set_verify.pod	2013-12-22 16:16:44.695836636 +0100
++++ openssl-1.0.1e/doc/ssl/SSL_CTX_set_verify.pod	2013-12-22 16:16:44.695836636 +0100
+@@ -169,8 +169,8 @@
+ failure, if wished. The callback realizes a verification depth limit with
+ more informational output.
+ 
+-All verification errors are printed, informations about the certificate chain
+-are printed on request.
++All verification errors are printed; information about the certificate chain
++is printed on request.
+ The example is realized for a server that does allow but not require client
+ certificates.
+ 

@@ -1,0 +1,81 @@
+From bc2e18a3c818ae7e2d8c996b6648aa4ae8e3ee28 Mon Sep 17 00:00:00 2001
+From: Kurt Roeckx <kurt@roeckx.be>
+Date: Wed, 4 Mar 2015 21:57:52 +0100
+Subject: [PATCH] Remove export ciphers from the DEFAULT cipher list
+
+They are moved to the COMPLEMENTOFDEFAULT instead.
+This also fixes SSLv2 to be part of COMPLEMENTOFDEFAULT.
+
+Reviewed-by: Rich Salz <rsalz@openssl.org>
+(cherry picked from commit f417997a324037025be61737288e40e171a8218c)
+
+Conflicts:
+	ssl/ssl_ciph.c
+---
+ CHANGES              |  3 ++-
+ doc/apps/ciphers.pod |  4 ++--
+ ssl/ssl.h            |  2 +-
+ ssl/ssl_ciph.c       | 11 ++++++++---
+ 4 files changed, 13 insertions(+), 7 deletions(-)
+
+Index: openssl-1.0.1k/doc/apps/ciphers.pod
+===================================================================
+--- openssl-1.0.1k.orig/doc/apps/ciphers.pod
++++ openssl-1.0.1k/doc/apps/ciphers.pod
+@@ -109,8 +109,8 @@ The following is a list of all permitted
+ 
+ =item B<DEFAULT>
+ 
+-the default cipher list. This is determined at compile time and, as of OpenSSL
+-1.0.0, is normally B<ALL:!aNULL:!eNULL>. This must be the first cipher string
++the default cipher list. This is determined at compile time and
++is normally B<ALL:!EXPORT:!aNULL:!eNULL:!SSLv2>. This must be the firstcipher string
+ specified.
+ 
+ =item B<COMPLEMENTOFDEFAULT>
+Index: openssl-1.0.1k/ssl/ssl.h
+===================================================================
+--- openssl-1.0.1k.orig/ssl/ssl.h
++++ openssl-1.0.1k/ssl/ssl.h
+@@ -332,7 +332,7 @@ extern "C" {
+ /* The following cipher list is used by default.
+  * It also is substituted when an application-defined cipher list string
+  * starts with 'DEFAULT'. */
+-#define SSL_DEFAULT_CIPHER_LIST	"ALL:!aNULL:!eNULL:!SSLv2"
++#define SSL_DEFAULT_CIPHER_LIST	"ALL:!EXPORT:!aNULL:!eNULL:!SSLv2"
+ /* As of OpenSSL 1.0.0, ssl_create_cipher_list() in ssl/ssl_ciph.c always
+  * starts with a reasonable order, and all we have to do for DEFAULT is
+  * throwing out anonymous and unencrypted ciphersuites!
+Index: openssl-1.0.1k/ssl/ssl_ciph.c
+===================================================================
+--- openssl-1.0.1k.orig/ssl/ssl_ciph.c
++++ openssl-1.0.1k/ssl/ssl_ciph.c
+@@ -230,7 +230,7 @@ static const SSL_CIPHER cipher_aliases[]
+ 	{0,SSL_TXT_CMPALL,0,  0,0,SSL_eNULL,0,0,0,0,0,0},
+ 
+ 	/* "COMPLEMENTOFDEFAULT" (does *not* include ciphersuites not found in ALL!) */
+-	{0,SSL_TXT_CMPDEF,0,  SSL_kEDH|SSL_kEECDH,SSL_aNULL,~SSL_eNULL,0,0,0,0,0,0},
++        {0, SSL_TXT_CMPDEF, 0, 0, SSL_aNULL, ~SSL_eNULL, 0, ~SSL_SSLV2, SSL_EXP_MASK, 0, 0, 0},
+ 
+ 	/* key exchange aliases
+ 	 * (some of those using only a single bit here combine
+@@ -980,6 +980,10 @@ static void ssl_cipher_apply_rule(unsign
+ 			fprintf(stderr, "\nName: %s:\nAlgo = %08lx/%08lx/%08lx/%08lx/%08lx Algo_strength = %08lx\n", cp->name, cp->algorithm_mkey, cp->algorithm_auth, cp->algorithm_enc, cp->algorithm_mac, cp->algorithm_ssl, cp->algo_strength);
+ #endif
+ 
++                        if (algo_strength == SSL_EXP_MASK && SSL_C_IS_EXPORT(cp))
++                            goto ok;
++                        if (alg_ssl == ~SSL_SSLV2 && cp->algorithm_ssl == SSL_SSLV2)
++                            goto ok;
+ 			if (alg_mkey && !(alg_mkey & cp->algorithm_mkey))
+ 				continue;
+ 			if (alg_auth && !(alg_auth & cp->algorithm_auth))
+@@ -996,6 +1000,8 @@ static void ssl_cipher_apply_rule(unsign
+ 				continue;
+ 			}
+ 
++    ok:
++
+ #ifdef CIPHER_DEBUG
+ 		fprintf(stderr, "Action = %d\n", rule);
+ #endif

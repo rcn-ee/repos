@@ -1,0 +1,33 @@
+Index: openssl-1.0.0c/tools/c_rehash.in
+===================================================================
+--- openssl-1.0.0c.orig/tools/c_rehash.in	2010-04-15 01:07:28.000000000 +0200
++++ openssl-1.0.0c/tools/c_rehash.in	2010-12-12 17:10:51.000000000 +0100
+@@ -75,12 +75,15 @@
+ 		}
+ 	}
+ 	closedir DIR;
+-	FILE: foreach $fname (grep {/\.pem$/} @flist) {
++	FILE: foreach $fname (grep {/\.pem$|\.crt$/} @flist) {
+ 		# Check to see if certificates and/or CRLs present.
+ 		my ($cert, $crl) = check_file($fname);
+ 		if(!$cert && !$crl) {
+-			print STDERR "WARNING: $fname does not contain a certificate or CRL: skipping\n";
+-			next;
++			($cert, $crl) = check_file("$openssl x509 -in \"$fname\" -inform der  -outform pem | ");
++			if(!$cert && !$crl) {
++				print STDERR "WARNING: $fname does not contain a certificate or CRL: skipping\n";
++				next;
++			}
+ 		}
+ 		link_hash_cert($fname) if($cert);
+ 		link_hash_crl($fname) if($crl);
+@@ -153,6 +156,9 @@
+ 		my $fname = $_[0];
+ 		$fname =~ s/'/'\\''/g;
+ 		my ($hash, $fprint) = `"$openssl" crl -hash -fingerprint -noout -in '$fname'`;
++		if(!$hash || !fprint) {
++			($hash, $fprint) = `"$openssl" crl -hash -fingerprint -noout -in '$fname' -inform der`;
++		}
+ 		chomp $hash;
+ 		chomp $fprint;
+ 		$fprint =~ s/^.*=//;

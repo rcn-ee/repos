@@ -1,0 +1,27 @@
+From 51527f1e3564f210e984fe5b654c45d34e4f03d7 Mon Sep 17 00:00:00 2001
+From: "Dr. Stephen Henson" <steve@openssl.org>
+Date: Wed, 18 Feb 2015 00:34:59 +0000
+Subject: [PATCH] Check public key is not NULL.
+
+CVE-2015-0288
+PR#3708
+
+Reviewed-by: Matt Caswell <matt@openssl.org>
+(cherry picked from commit 28a00bcd8e318da18031b2ac8778c64147cd54f9)
+---
+ crypto/x509/x509_req.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+Index: openssl-1.0.1e/crypto/x509/x509_req.c
+===================================================================
+--- openssl-1.0.1e.orig/crypto/x509/x509_req.c
++++ openssl-1.0.1e/crypto/x509/x509_req.c
+@@ -92,6 +92,8 @@ X509_REQ *X509_to_X509_REQ(X509 *x, EVP_
+ 		goto err;
+ 
+ 	pktmp = X509_get_pubkey(x);
++        if (pktmp == NULL)
++            goto err;
+ 	i=X509_REQ_set_pubkey(ret,pktmp);
+ 	EVP_PKEY_free(pktmp);
+ 	if (!i) goto err;

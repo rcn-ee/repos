@@ -1,0 +1,29 @@
+From a67303954caa923e8bf2f2bdf04882e9cbc45cc1 Mon Sep 17 00:00:00 2001
+From: "Dr. Stephen Henson" <steve@openssl.org>
+Date: Sun, 8 Mar 2015 17:31:48 +0000
+Subject: [PATCH 1/6] fix warning
+
+Reviewed-by: Richard Levitte <levitte@openssl.org>
+(cherry picked from commit d6ca1cee8b6efac5906ac66443d1ca67fe689ff8)
+---
+ ssl/ssl_locl.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+Index: openssl-1.0.1e/ssl/ssl_locl.h
+===================================================================
+--- openssl-1.0.1e.orig/ssl/ssl_locl.h
++++ openssl-1.0.1e/ssl/ssl_locl.h
+@@ -346,10 +346,10 @@
+ #define SSL_AEAD		0x00000040L
+ 
+ /* Bits for algorithm_ssl (protocol version) */
+-#define SSL_SSLV2		0x00000001L
+-#define SSL_SSLV3		0x00000002L
++#define SSL_SSLV2		0x00000001UL
++#define SSL_SSLV3		0x00000002UL
+ #define SSL_TLSV1		SSL_SSLV3	/* for now */
+-#define SSL_TLSV1_2		0x00000004L
++#define SSL_TLSV1_2		0x00000004UL
+ 
+ 
+ /* Bits for algorithm2 (handshake digests and other extra flags) */

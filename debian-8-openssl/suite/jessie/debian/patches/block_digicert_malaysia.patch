@@ -1,0 +1,26 @@
+From: Raphael Geissert <geissert@debian.org>
+Description: make X509_verify_cert indicate that any certificate whose
+ name contains "Digicert Sdn. Bhd." (from Malaysia) is revoked.
+Forwarded: not-needed
+Origin: vendor
+Last-Update: 2011-11-05
+
+Index: openssl-1.0.0e/crypto/x509/x509_vfy.c
+===================================================================
+--- openssl-1.0.0e.orig/crypto/x509/x509_vfy.c
++++ openssl-1.0.0e/crypto/x509/x509_vfy.c
+@@ -833,10 +833,11 @@ static int check_ca_blacklist(X509_STORE
+ 	for (i = sk_X509_num(ctx->chain) - 1; i >= 0; i--)
+ 		{
+ 		x = sk_X509_value(ctx->chain, i);
+-		/* Mark DigiNotar certificates as revoked, no matter
+-		 * where in the chain they are.
++		/* Mark certificates containing the following names as
++		 * revoked, no matter where in the chain they are.
+ 		 */
+-		if (x->name && strstr(x->name, "DigiNotar"))
++		if (x->name && (strstr(x->name, "DigiNotar") ||
++			strstr(x->name, "Digicert Sdn. Bhd.")))
+ 			{
+ 			ctx->error = X509_V_ERR_CERT_REVOKED;
+ 			ctx->error_depth = i;

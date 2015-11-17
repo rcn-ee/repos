@@ -1,0 +1,30 @@
+From ee5a1253285e5c9f406c8b57b0686319b70c07d8 Mon Sep 17 00:00:00 2001
+From: "Dr. Stephen Henson" <steve@openssl.org>
+Date: Mon, 9 Mar 2015 23:11:45 +0000
+Subject: [PATCH 4/6] Fix ASN1_TYPE_cmp
+
+Fix segmentation violation when ASN1_TYPE_cmp is passed a boolean type. This
+can be triggered during certificate verification so could be a DoS attack
+against a client or a server enabling client authentication.
+
+CVE-2015-0286
+
+Reviewed-by: Richard Levitte <levitte@openssl.org>
+---
+ crypto/asn1/a_type.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+Index: openssl-1.0.1e/crypto/asn1/a_type.c
+===================================================================
+--- openssl-1.0.1e.orig/crypto/asn1/a_type.c
++++ openssl-1.0.1e/crypto/asn1/a_type.c
+@@ -124,6 +124,9 @@ int ASN1_TYPE_cmp(const ASN1_TYPE *a, co
+ 	case V_ASN1_OBJECT:
+ 		result = OBJ_cmp(a->value.object, b->value.object);
+ 		break;
++    case V_ASN1_BOOLEAN:
++        result = a->value.boolean - b->value.boolean;
++        break;
+ 	case V_ASN1_NULL:
+ 		result = 0;	/* They do not have content. */
+ 		break;

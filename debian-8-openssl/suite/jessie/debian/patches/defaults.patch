@@ -1,0 +1,117 @@
+From: Kurt Roeckx <kurt@roeckx.be>
+Subject: Change default bit size and digest
+Date: Fri, 01 Nov 2013 20:47:14 +0100
+
+Index: openssl-1.0.1e/apps/openssl.cnf
+===================================================================
+--- openssl-1.0.1e.orig/apps/openssl.cnf	2013-12-22 15:36:37.179274819 +0100
++++ openssl-1.0.1e/apps/openssl.cnf	2013-12-22 15:36:37.175274904 +0100
+@@ -103,7 +103,7 @@
+ 
+ ####################################################################
+ [ req ]
+-default_bits		= 1024
++default_bits		= 2048
+ default_keyfile 	= privkey.pem
+ distinguished_name	= req_distinguished_name
+ attributes		= req_attributes
+Index: openssl-1.0.1e/crypto/dsa/dsa_ameth.c
+===================================================================
+--- openssl-1.0.1e.orig/crypto/dsa/dsa_ameth.c	2013-12-22 15:36:37.179274819 +0100
++++ openssl-1.0.1e/crypto/dsa/dsa_ameth.c	2013-12-22 15:36:37.175274904 +0100
+@@ -628,7 +628,7 @@
+ #endif
+ 
+ 		case ASN1_PKEY_CTRL_DEFAULT_MD_NID:
+-		*(int *)arg2 = NID_sha1;
++		*(int *)arg2 = NID_sha256;
+ 		return 2;
+ 
+ 		default:
+Index: openssl-1.0.1e/crypto/ec/ec_ameth.c
+===================================================================
+--- openssl-1.0.1e.orig/crypto/ec/ec_ameth.c	2013-12-22 15:36:37.179274819 +0100
++++ openssl-1.0.1e/crypto/ec/ec_ameth.c	2013-12-22 15:36:37.175274904 +0100
+@@ -615,7 +615,7 @@
+ #endif
+ 
+ 		case ASN1_PKEY_CTRL_DEFAULT_MD_NID:
+-		*(int *)arg2 = NID_sha1;
++		*(int *)arg2 = NID_sha256;
+ 		return 2;
+ 
+ 		default:
+Index: openssl-1.0.1e/crypto/hmac/hm_ameth.c
+===================================================================
+--- openssl-1.0.1e.orig/crypto/hmac/hm_ameth.c	2013-12-22 15:36:37.179274819 +0100
++++ openssl-1.0.1e/crypto/hmac/hm_ameth.c	2013-12-22 15:36:37.175274904 +0100
+@@ -89,7 +89,7 @@
+ 	switch (op)
+ 		{
+ 		case ASN1_PKEY_CTRL_DEFAULT_MD_NID:
+-		*(int *)arg2 = NID_sha1;
++		*(int *)arg2 = NID_sha256;
+ 		return 1;
+ 
+ 		default:
+Index: openssl-1.0.1e/crypto/rsa/rsa_ameth.c
+===================================================================
+--- openssl-1.0.1e.orig/crypto/rsa/rsa_ameth.c	2013-12-22 15:36:37.179274819 +0100
++++ openssl-1.0.1e/crypto/rsa/rsa_ameth.c	2013-12-22 15:36:37.175274904 +0100
+@@ -435,7 +435,7 @@
+ #endif
+ 
+ 		case ASN1_PKEY_CTRL_DEFAULT_MD_NID:
+-		*(int *)arg2 = NID_sha1;
++		*(int *)arg2 = NID_sha256;
+ 		return 1;
+ 
+ 		default:
+Index: openssl-1.0.1e/apps/gendh.c
+===================================================================
+--- openssl-1.0.1e.orig/apps/gendh.c	2013-12-22 15:36:37.179274819 +0100
++++ openssl-1.0.1e/apps/gendh.c	2013-12-22 15:36:37.175274904 +0100
+@@ -78,7 +78,7 @@
+ #include <openssl/x509.h>
+ #include <openssl/pem.h>
+ 
+-#define DEFBITS	512
++#define DEFBITS	2048
+ #undef PROG
+ #define PROG gendh_main
+ 
+Index: openssl-1.0.1e/apps/genrsa.c
+===================================================================
+--- openssl-1.0.1e.orig/apps/genrsa.c	2013-12-22 15:36:37.179274819 +0100
++++ openssl-1.0.1e/apps/genrsa.c	2013-12-22 15:36:37.175274904 +0100
+@@ -78,7 +78,7 @@
+ #include <openssl/pem.h>
+ #include <openssl/rand.h>
+ 
+-#define DEFBITS	1024
++#define DEFBITS	2048
+ #undef PROG
+ #define PROG genrsa_main
+ 
+Index: openssl-1.0.1e/apps/dhparam.c
+===================================================================
+--- openssl-1.0.1e.orig/apps/dhparam.c	2013-12-22 15:37:05.438669443 +0100
++++ openssl-1.0.1e/apps/dhparam.c	2013-12-22 15:38:18.417105946 +0100
+@@ -130,7 +130,7 @@
+ #undef PROG
+ #define PROG	dhparam_main
+ 
+-#define DEFBITS	512
++#define DEFBITS	2048
+ 
+ /* -inform arg	- input format - default PEM (DER or PEM)
+  * -outform arg - output format - default PEM
+@@ -253,7 +253,7 @@
+ 		BIO_printf(bio_err," -C            Output C code\n");
+ 		BIO_printf(bio_err," -2            generate parameters using  2 as the generator value\n");
+ 		BIO_printf(bio_err," -5            generate parameters using  5 as the generator value\n");
+-		BIO_printf(bio_err," numbits       number of bits in to generate (default 512)\n");
++		BIO_printf(bio_err," numbits       number of bits in to generate (default 2048)\n");
+ #ifndef OPENSSL_NO_ENGINE
+ 		BIO_printf(bio_err," -engine e     use engine e, possibly a hardware device.\n");
+ #endif

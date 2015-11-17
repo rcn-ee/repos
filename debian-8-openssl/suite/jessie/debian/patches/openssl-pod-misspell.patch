@@ -1,0 +1,122 @@
+Index: openssl-1.0.1/apps/ca.c
+===================================================================
+--- openssl-1.0.1.orig/apps/ca.c	2012-01-12 16:28:02.000000000 +0000
++++ openssl-1.0.1/apps/ca.c	2012-03-17 09:31:48.000000000 +0000
+@@ -148,7 +148,7 @@
+ static const char *ca_usage[]={
+ "usage: ca args\n",
+ "\n",
+-" -verbose        - Talk alot while doing things\n",
++" -verbose        - Talk a lot while doing things\n",
+ " -config file    - A config file\n",
+ " -name arg       - The particular CA definition to use\n",
+ " -gencrl         - Generate a new CRL\n",
+Index: openssl-1.0.1/apps/ecparam.c
+===================================================================
+--- openssl-1.0.1.orig/apps/ecparam.c	2010-06-15 17:25:02.000000000 +0000
++++ openssl-1.0.1/apps/ecparam.c	2012-03-17 09:31:48.000000000 +0000
+@@ -105,7 +105,7 @@
+  *                    in the asn1 der encoding
+  *                    possible values: named_curve (default)
+  *                                     explicit
+- * -no_seed         - if 'explicit' parameters are choosen do not use the seed
++ * -no_seed         - if 'explicit' parameters are chosen do not use the seed
+  * -genkey          - generate ec key
+  * -rand file       - files to use for random number input
+  * -engine e        - use engine e, possibly a hardware device
+@@ -286,7 +286,7 @@
+ 		BIO_printf(bio_err, "                                   "
+ 				" explicit\n");
+ 		BIO_printf(bio_err, " -no_seed          if 'explicit'"
+-				" parameters are choosen do not"
++				" parameters are chosen do not"
+ 				" use the seed\n");
+ 		BIO_printf(bio_err, " -genkey           generate ec"
+ 				" key\n");
+Index: openssl-1.0.1/crypto/evp/encode.c
+===================================================================
+--- openssl-1.0.1.orig/crypto/evp/encode.c	2010-06-15 17:25:09.000000000 +0000
++++ openssl-1.0.1/crypto/evp/encode.c	2012-03-17 09:31:48.000000000 +0000
+@@ -250,7 +250,7 @@
+ 	/* We parse the input data */
+ 	for (i=0; i<inl; i++)
+ 		{
+-		/* If the current line is > 80 characters, scream alot */
++		/* If the current line is > 80 characters, scream a lot */
+ 		if (ln >= 80) { rv= -1; goto end; }
+ 
+ 		/* Get char and put it into the buffer */
+Index: openssl-1.0.1/doc/apps/config.pod
+===================================================================
+--- openssl-1.0.1.orig/doc/apps/config.pod	2004-11-25 17:47:29.000000000 +0000
++++ openssl-1.0.1/doc/apps/config.pod	2012-03-17 09:31:48.000000000 +0000
+@@ -119,7 +119,7 @@
+ information.
+ 
+ The section pointed to by B<engines> is a table of engine names (though see
+-B<engine_id> below) and further sections containing configuration informations
++B<engine_id> below) and further sections containing configuration information
+ specific to each ENGINE.
+ 
+ Each ENGINE specific section is used to set default algorithms, load
+Index: openssl-1.0.1/doc/apps/req.pod
+===================================================================
+--- openssl-1.0.1.orig/doc/apps/req.pod	2009-04-10 16:42:28.000000000 +0000
++++ openssl-1.0.1/doc/apps/req.pod	2012-03-17 09:31:48.000000000 +0000
+@@ -159,7 +159,7 @@
+ the algorithm is determined by the parameters. B<algname:file> use algorithm
+ B<algname> and parameter file B<file>: the two algorithms must match or an
+ error occurs. B<algname> just uses algorithm B<algname>, and parameters,
+-if neccessary should be specified via B<-pkeyopt> parameter.
++if necessary should be specified via B<-pkeyopt> parameter.
+ 
+ B<dsa:filename> generates a DSA key using the parameters
+ in the file B<filename>. B<ec:filename> generates EC key (usable both with
+Index: openssl-1.0.1/doc/apps/ts.pod
+===================================================================
+--- openssl-1.0.1.orig/doc/apps/ts.pod	2009-04-10 11:25:54.000000000 +0000
++++ openssl-1.0.1/doc/apps/ts.pod	2012-03-17 09:31:48.000000000 +0000
+@@ -352,7 +352,7 @@
+ 
+ This is the main section and it specifies the name of another section
+ that contains all the options for the B<-reply> command. This default
+-section can be overriden with the B<-section> command line switch. (Optional)
++section can be overridden with the B<-section> command line switch. (Optional)
+ 
+ =item B<oid_file>
+ 
+@@ -453,7 +453,7 @@
+ =head1 ENVIRONMENT VARIABLES
+ 
+ B<OPENSSL_CONF> contains the path of the configuration file and can be
+-overriden by the B<-config> command line option.
++overridden by the B<-config> command line option.
+ 
+ =head1 EXAMPLES
+ 
+Index: openssl-1.0.1/doc/apps/tsget.pod
+===================================================================
+--- openssl-1.0.1.orig/doc/apps/tsget.pod	2010-01-05 17:17:20.000000000 +0000
++++ openssl-1.0.1/doc/apps/tsget.pod	2012-03-17 09:31:48.000000000 +0000
+@@ -124,7 +124,7 @@
+ =item [request]...
+ 
+ List of files containing B<RFC 3161> DER-encoded time stamp requests. If no
+-requests are specifed only one request will be sent to the server and it will be
++requests are specified only one request will be sent to the server and it will be
+ read from the standard input. (Optional)
+ 
+ =back
+Index: openssl-1.0.1/doc/apps/x509v3_config.pod
+===================================================================
+--- openssl-1.0.1.orig/doc/apps/x509v3_config.pod	2006-11-07 13:44:03.000000000 +0000
++++ openssl-1.0.1/doc/apps/x509v3_config.pod	2012-03-17 09:31:48.000000000 +0000
+@@ -174,7 +174,7 @@
+ 
+ The value of B<dirName> should point to a section containing the distinguished
+ name to use as a set of name value pairs. Multi values AVAs can be formed by
+-preceeding the name with a B<+> character.
++preceding the name with a B<+> character.
+ 
+ otherName can include arbitrary data associated with an OID: the value
+ should be the OID followed by a semicolon and the content in standard

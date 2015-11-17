@@ -1,0 +1,45 @@
+From 89117535f1bb3ea72a17933b703271587d7aaf0b Mon Sep 17 00:00:00 2001
+From: Matt Caswell <matt@openssl.org>
+Date: Mon, 9 Feb 2015 11:38:41 +0000
+Subject: [PATCH] Fix a failure to NULL a pointer freed on error.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Inspired by BoringSSL commit 517073cd4b by Eric Roman <eroman@chromium.org>
+
+CVE-2015-0209
+
+Reviewed-by: Emilia Käsper <emilia@openssl.org>
+---
+ crypto/ec/ec_asn1.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+Index: openssl-1.0.1k/crypto/ec/ec_asn1.c
+===================================================================
+--- openssl-1.0.1k.orig/crypto/ec/ec_asn1.c
++++ openssl-1.0.1k/crypto/ec/ec_asn1.c
+@@ -1142,8 +1142,6 @@ EC_KEY *d2i_ECPrivateKey(EC_KEY **a, con
+                                  ERR_R_MALLOC_FAILURE);
+ 			goto err;
+ 			}
+-		if (a)
+-			*a = ret;
+ 		}
+ 	else
+ 		ret = *a;
+@@ -1225,11 +1223,13 @@ EC_KEY *d2i_ECPrivateKey(EC_KEY **a, con
+ 		ret->enc_flag |= EC_PKEY_NO_PUBKEY;
+ 		}
+ 
++        if (a)
++                *a = ret;
+ 	ok = 1;
+ err:
+ 	if (!ok)
+ 		{
+-		if (ret)
++                if (ret && (a == NULL || *a != ret))
+ 			EC_KEY_free(ret);
+ 		ret = NULL;
+ 		}

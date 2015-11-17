@@ -1,0 +1,36 @@
+This is another documentation issue ...
+
+apps/pkcs12.c accepts -password as an argument.  The document author 
+almost certainly meant to write "-password, -passin".
+
+However, that is not correct, either.  Actually the code treats 
+-password as equivalent to -passin, EXCEPT when -export is also 
+specified, in which case -password as equivalent to -passout.  The patch 
+below makes this explicit.
+
+
+Index: openssl-1.0.0d/doc/apps/pkcs12.pod
+===================================================================
+--- openssl-1.0.0d.orig/doc/apps/pkcs12.pod	2011-06-13 10:46:06.000000000 +0000
++++ openssl-1.0.0d/doc/apps/pkcs12.pod	2011-06-13 10:47:36.000000000 +0000
+@@ -67,7 +67,7 @@
+ The filename to write certificates and private keys to, standard output by
+ default.  They are all written in PEM format.
+ 
+-=item B<-pass arg>, B<-passin arg>
++=item B<-passin arg>
+ 
+ the PKCS#12 file (i.e. input file) password source. For more information about
+ the format of B<arg> see the B<PASS PHRASE ARGUMENTS> section in
+@@ -79,6 +79,11 @@
+ information about the format of B<arg> see the B<PASS PHRASE ARGUMENTS> section
+ in L<openssl(1)|openssl(1)>.
+ 
++=item B<-password arg>
++
++With -export, -password is equivalent to -passout.
++Otherwise, -password is equivalent to -passin.
++
+ =item B<-noout>
+ 
+ this option inhibits output of the keys and certificates to the output file

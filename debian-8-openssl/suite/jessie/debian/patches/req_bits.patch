@@ -1,0 +1,43 @@
+From: Kurt Roeckx <kurt@roeckx.be>
+Date: Sun, 22 Dec 2013 19:10:21 +0100
+Subject: Use defaults bits in req when not given
+Bug: http://rt.openssl.org/Ticket/Display.html?id=2592&user=guest&pass=guest
+
+Index: openssl-1.0.1e/apps/req.c
+===================================================================
+--- openssl-1.0.1e.orig/apps/req.c	2013-12-22 19:47:42.355657810 +0100
++++ openssl-1.0.1e/apps/req.c	2013-12-22 19:57:12.287547599 +0100
+@@ -644,6 +644,11 @@
+ 		if (inrand)
+ 			app_RAND_load_files(inrand);
+ 
++		if (!NCONF_get_number(req_conf,SECTION,BITS, &newkey))
++			{
++			newkey=DEFAULT_KEY_LENGTH;
++			}
++
+ 		if (keyalg)
+ 			{
+ 			genctx = set_keygen_ctx(bio_err, keyalg, &pkey_type, &newkey,
+@@ -652,12 +657,6 @@
+ 				goto end;
+ 			}
+ 	
+-		if (newkey <= 0)
+-			{
+-			if (!NCONF_get_number(req_conf,SECTION,BITS, &newkey))
+-				newkey=DEFAULT_KEY_LENGTH;
+-			}
+-
+ 		if (newkey < MIN_KEY_LENGTH && (pkey_type == EVP_PKEY_RSA || pkey_type == EVP_PKEY_DSA))
+ 			{
+ 			BIO_printf(bio_err,"private key length is too short,\n");
+@@ -1649,6 +1648,8 @@
+ 				keylen = atol(p + 1);
+ 				*pkeylen = keylen;
+ 				}
++			else
++				keylen = *pkeylen;
+ 			}
+ 		else if (p)
+ 			paramfile = p + 1;

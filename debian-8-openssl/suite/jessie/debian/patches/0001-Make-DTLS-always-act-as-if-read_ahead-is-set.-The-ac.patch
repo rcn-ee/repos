@@ -1,0 +1,28 @@
+From 1895583835239bc44c3f6584e48f0279ad884f3b Mon Sep 17 00:00:00 2001
+From: Matt Caswell <matt@openssl.org>
+Date: Mon, 26 Jan 2015 16:47:36 +0000
+Subject: [PATCH] Make DTLS always act as if read_ahead is set. The actual
+ value of read_ahead is ignored for DTLS.
+
+RT#3657
+
+Reviewed-by: Andy Polyakov <appro@openssl.org>
+(cherry picked from commit 8dd4ad0ff5d1d07ec4b6dd5d5104131269a472aa)
+---
+ ssl/s3_pkt.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+Index: openssl-1.0.1e/ssl/s3_pkt.c
+===================================================================
+--- openssl-1.0.1e.orig/ssl/s3_pkt.c
++++ openssl-1.0.1e/ssl/s3_pkt.c
+@@ -217,7 +217,8 @@ int ssl3_read_n(SSL *s, int n, int max,
+ 		return -1;
+ 		}
+ 
+-	if (!s->read_ahead)
++    /* We always act like read_ahead is set for DTLS */
++    if (!s->read_ahead && !SSL_IS_DTLS(s))
+ 		/* ignore max parameter */
+ 		max = n;
+ 	else

@@ -1,0 +1,73 @@
+From a4517be9e348634ac64f9cf093131e13e8c03e38 Mon Sep 17 00:00:00 2001
+From: Matt Caswell <matt@openssl.org>
+Date: Thu, 19 Mar 2015 10:16:32 +0000
+Subject: [PATCH 08/12] Fix a failure to NULL a pointer freed on error.
+
+Reported by the LibreSSL project as a follow on to CVE-2015-0209
+
+Reviewed-by: Richard Levitte <levitte@openssl.org>
+---
+ crypto/asn1/x_x509.c | 12 +++++++++++-
+ crypto/ec/ec_asn1.c  |  7 +++++--
+ 2 files changed, 16 insertions(+), 3 deletions(-)
+
+Index: openssl-1.0.1e/crypto/asn1/x_x509.c
+===================================================================
+--- openssl-1.0.1e.orig/crypto/asn1/x_x509.c	2013-02-11 15:26:04.000000000 +0000
++++ openssl-1.0.1e/crypto/asn1/x_x509.c	2015-03-19 18:07:02.689136145 +0000
+@@ -170,8 +170,14 @@
+ {
+ 	const unsigned char *q;
+ 	X509 *ret;
++    int freeret = 0;
++
+ 	/* Save start position */
+ 	q = *pp;
++
++    if(!a || *a == NULL) {
++        freeret = 1;
++    }
+ 	ret = d2i_X509(a, pp, length);
+ 	/* If certificate unreadable then forget it */
+ 	if(!ret) return NULL;
+@@ -181,7 +187,11 @@
+ 	if(!d2i_X509_CERT_AUX(&ret->aux, pp, length)) goto err;
+ 	return ret;
+ 	err:
+-	X509_free(ret);
++    if(freeret) {
++        X509_free(ret);
++        if (a)
++            *a = NULL;
++    }
+ 	return NULL;
+ }
+ 
+Index: openssl-1.0.1e/crypto/ec/ec_asn1.c
+===================================================================
+--- openssl-1.0.1e.orig/crypto/ec/ec_asn1.c	2015-03-19 18:06:21.000000000 +0000
++++ openssl-1.0.1e/crypto/ec/ec_asn1.c	2015-03-19 18:09:11.394282947 +0000
+@@ -1358,8 +1358,6 @@
+ 			ECerr(EC_F_D2I_ECPARAMETERS, ERR_R_MALLOC_FAILURE);
+ 			return NULL;
+ 			}
+-		if (a)
+-			*a = ret;
+ 		}
+ 	else
+ 		ret = *a;
+@@ -1367,9 +1365,14 @@
+ 	if (!d2i_ECPKParameters(&ret->group, in, len))
+ 		{
+ 		ECerr(EC_F_D2I_ECPARAMETERS, ERR_R_EC_LIB);
++                if (a == NULL || *a != ret)
++                     EC_KEY_free(ret);
+ 		return NULL;
+ 		}
+ 
++        if (a)
++            *a = ret;
++
+ 	return ret;
+ 	}
+ 
