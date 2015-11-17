@@ -78,3 +78,17 @@ Index: b/common/autoconf/platform.m4
      x86)     ZERO_ARCHDEF=IA32  ;;
      *)      ZERO_ARCHDEF=$(echo "${OPENJDK_TARGET_CPU_LEGACY_LIB}" | tr a-z A-Z)
    esac
+--- a/jdk/make/gensrc/GensrcX11Wrappers.gmk
++++ b/jdk/make/gensrc/GensrcX11Wrappers.gmk
+@@ -87,9 +87,11 @@
+ 	$(TOOL_WRAPPERGENERATOR) $(@D) $(GENSRC_SIZER_DIR)/xlibtypes.txt "sizer" $*
+ 
+   # use -m32/-m64 only if the compiler supports it
++  ifneq ($(OPENJDK_TARGET_CPU),x32)
+   ifeq ($(COMPILER_SUPPORTS_TARGET_BITS_FLAG), true)
+     MEMORY_MODEL_FLAG="$(COMPILER_TARGET_BITS_FLAG)$*"
+   endif
++  endif
+ 
+   # Compile the C code into an executable.
+   $(GENSRC_X11WRAPPERS_TMP)/sizer.%.exe: $(GENSRC_X11WRAPPERS_TMP)/sizer.%.c

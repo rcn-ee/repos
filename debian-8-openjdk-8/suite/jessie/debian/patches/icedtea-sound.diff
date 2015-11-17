@@ -1,158 +1,180 @@
+--- a/icedtea-sound/Makefile.am
++++ b/icedtea-sound/Makefile.am
+@@ -143,7 +143,7 @@
+ 	touch $@
+ 
+ $(ICEDTEA_SOUND_NATIVE_BUILDDIR)/%.o: $(ICEDTEA_SOUND_NATIVE_SRCDIR)/%.c stamps/icedtea-sound-headers.stamp
+-	$(CC) $(IT_CFLAGS) -fPIC -I$(SYSTEM_JDK_DIR)/include/linux -I$(SYSTEM_JDK_DIR)/include \
++	$(CC) $(IT_CFLAGS) -fPIC -I$(SYSTEM_JDK_DIR)/include/linux -I$(SYSTEM_JDK_DIR)/include/bsd -I$(SYSTEM_JDK_DIR)/include \
+ 	 -I$(ICEDTEA_SOUND_NATIVE_BUILDDIR) -o $@ -c $<
+ 
+ $(ICEDTEA_SOUND_NATIVE_BUILDDIR)/$(TARGET_NAME): $(ICEDTEA_SOUND_NATIVE_OBJECTS)
+--- a/icedtea-sound/Makefile.in
++++ b/icedtea-sound/Makefile.in
+@@ -721,7 +721,7 @@
+ 	touch $@
+ 
+ $(ICEDTEA_SOUND_NATIVE_BUILDDIR)/%.o: $(ICEDTEA_SOUND_NATIVE_SRCDIR)/%.c stamps/icedtea-sound-headers.stamp
+-	$(CC) $(IT_CFLAGS) -fPIC -I$(SYSTEM_JDK_DIR)/include/linux -I$(SYSTEM_JDK_DIR)/include \
++	$(CC) $(IT_CFLAGS) -fPIC -I$(SYSTEM_JDK_DIR)/include/linux -I$(SYSTEM_JDK_DIR)/include/bsd -I$(SYSTEM_JDK_DIR)/include \
+ 	 -I$(ICEDTEA_SOUND_NATIVE_BUILDDIR) -o $@ -c $<
+ 
+ $(ICEDTEA_SOUND_NATIVE_BUILDDIR)/$(TARGET_NAME): $(ICEDTEA_SOUND_NATIVE_OBJECTS)
 --- a/icedtea-sound/acinclude.m4
 +++ b/icedtea-sound/acinclude.m4
-@@ -24,12 +24,14 @@
+@@ -24,14 +24,12 @@
        BUILD_ARCH_DIR=amd64
        INSTALL_ARCH_DIR=amd64
        JRE_ARCH_DIR=amd64
-+      ARCHFLAG="-m64"
+-      ARCHFLAG="-m64"
        ;;
      i?86)
        BUILD_ARCH_DIR=i586
        INSTALL_ARCH_DIR=i386
        JRE_ARCH_DIR=i386
        ARCH_PREFIX=${LINUX32}
-+      ARCHFLAG="-m32"
+-      ARCHFLAG="-m32"
        ;;
      alpha*)
        BUILD_ARCH_DIR=alpha
-@@ -40,11 +42,13 @@
+@@ -42,13 +40,11 @@
        BUILD_ARCH_DIR=arm
        INSTALL_ARCH_DIR=arm
        JRE_ARCH_DIR=arm
-+      ARCHFLAG="-D_LITTLE_ENDIAN"
+-      ARCHFLAG="-D_LITTLE_ENDIAN"
        ;;
      arm64|aarch64)
        BUILD_ARCH_DIR=aarch64
        INSTALL_ARCH_DIR=aarch64
        JRE_ARCH_DIR=aarch64
-+      ARCHFLAG="-D_LITTLE_ENDIAN"
+-      ARCHFLAG="-D_LITTLE_ENDIAN"
        ;;
      mips)
        BUILD_ARCH_DIR=mips
-@@ -61,16 +65,19 @@
+@@ -65,19 +61,16 @@
        INSTALL_ARCH_DIR=ppc
        JRE_ARCH_DIR=ppc
        ARCH_PREFIX=${LINUX32}
-+      ARCHFLAG="-m32"
+-      ARCHFLAG="-m32"
        ;;
      powerpc64)
        BUILD_ARCH_DIR=ppc64
        INSTALL_ARCH_DIR=ppc64
        JRE_ARCH_DIR=ppc64
-+      ARCHFLAG="-m64"
+-      ARCHFLAG="-m64"
         ;;
      powerpc64le)
        BUILD_ARCH_DIR=ppc64
        INSTALL_ARCH_DIR=ppc64
        JRE_ARCH_DIR=ppc64
-+      ARCHFLAG="-m64"
+-      ARCHFLAG="-m64"
         ;;
      sparc)
        BUILD_ARCH_DIR=sparc
-@@ -78,23 +85,27 @@
+@@ -85,27 +78,23 @@
        JRE_ARCH_DIR=sparc
        CROSS_TARGET_ARCH=sparc
        ARCH_PREFIX=${LINUX32}
-+      ARCHFLAG="-m32"
+-      ARCHFLAG="-m32"
         ;;
      sparc64)
        BUILD_ARCH_DIR=sparcv9
        INSTALL_ARCH_DIR=sparcv9
        JRE_ARCH_DIR=sparc64
-+      ARCHFLAG="-m64"
+-      ARCHFLAG="-m64"
         ;;
      s390)
        BUILD_ARCH_DIR=s390
        INSTALL_ARCH_DIR=s390
        JRE_ARCH_DIR=s390
        ARCH_PREFIX=${LINUX32}
-+      ARCHFLAG="-m31"
+-      ARCHFLAG="-m31"
         ;;
      s390x)
        BUILD_ARCH_DIR=s390x
        INSTALL_ARCH_DIR=s390x
        JRE_ARCH_DIR=s390x
        CROSS_TARGET_ARCH=s390x
-+      ARCHFLAG="-m64"
+-      ARCHFLAG="-m64"
        ;;
      sh*)
        BUILD_ARCH_DIR=sh
 --- a/icedtea-sound/configure
 +++ b/icedtea-sound/configure
-@@ -3719,12 +3719,14 @@
+@@ -3719,14 +3719,12 @@
        BUILD_ARCH_DIR=amd64
        INSTALL_ARCH_DIR=amd64
        JRE_ARCH_DIR=amd64
-+      ARCHFLAG="-m64"
+-      ARCHFLAG="-m64"
        ;;
      i?86)
        BUILD_ARCH_DIR=i586
        INSTALL_ARCH_DIR=i386
        JRE_ARCH_DIR=i386
        ARCH_PREFIX=${LINUX32}
-+      ARCHFLAG="-m32"
+-      ARCHFLAG="-m32"
        ;;
      alpha*)
        BUILD_ARCH_DIR=alpha
-@@ -3735,11 +3737,13 @@
+@@ -3737,13 +3735,11 @@
        BUILD_ARCH_DIR=arm
        INSTALL_ARCH_DIR=arm
        JRE_ARCH_DIR=arm
-+      ARCHFLAG="-D_LITTLE_ENDIAN"
+-      ARCHFLAG="-D_LITTLE_ENDIAN"
        ;;
      arm64|aarch64)
        BUILD_ARCH_DIR=aarch64
        INSTALL_ARCH_DIR=aarch64
        JRE_ARCH_DIR=aarch64
-+      ARCHFLAG="-D_LITTLE_ENDIAN"
+-      ARCHFLAG="-D_LITTLE_ENDIAN"
        ;;
      mips)
        BUILD_ARCH_DIR=mips
-@@ -3756,16 +3760,19 @@
+@@ -3760,19 +3756,16 @@
        INSTALL_ARCH_DIR=ppc
        JRE_ARCH_DIR=ppc
        ARCH_PREFIX=${LINUX32}
-+      ARCHFLAG="-m32"
+-      ARCHFLAG="-m32"
        ;;
      powerpc64)
        BUILD_ARCH_DIR=ppc64
        INSTALL_ARCH_DIR=ppc64
        JRE_ARCH_DIR=ppc64
-+      ARCHFLAG="-m64"
+-      ARCHFLAG="-m64"
         ;;
      powerpc64le)
        BUILD_ARCH_DIR=ppc64
        INSTALL_ARCH_DIR=ppc64
        JRE_ARCH_DIR=ppc64
-+      ARCHFLAG="-m64"
+-      ARCHFLAG="-m64"
         ;;
      sparc)
        BUILD_ARCH_DIR=sparc
-@@ -3773,23 +3780,27 @@
+@@ -3780,27 +3773,23 @@
        JRE_ARCH_DIR=sparc
        CROSS_TARGET_ARCH=sparc
        ARCH_PREFIX=${LINUX32}
-+      ARCHFLAG="-m32"
+-      ARCHFLAG="-m32"
         ;;
      sparc64)
        BUILD_ARCH_DIR=sparcv9
        INSTALL_ARCH_DIR=sparcv9
        JRE_ARCH_DIR=sparc64
-+      ARCHFLAG="-m64"
+-      ARCHFLAG="-m64"
         ;;
      s390)
        BUILD_ARCH_DIR=s390
        INSTALL_ARCH_DIR=s390
        JRE_ARCH_DIR=s390
        ARCH_PREFIX=${LINUX32}
-+      ARCHFLAG="-m31"
+-      ARCHFLAG="-m31"
         ;;
      s390x)
        BUILD_ARCH_DIR=s390x
        INSTALL_ARCH_DIR=s390x
        JRE_ARCH_DIR=s390x
        CROSS_TARGET_ARCH=s390x
-+      ARCHFLAG="-m64"
+-      ARCHFLAG="-m64"
        ;;
      sh*)
        BUILD_ARCH_DIR=sh

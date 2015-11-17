@@ -28,6 +28,9 @@ PKGVERSION := $(call vafilt,$(CHANGELOG_VARS),Version)
 
 distribution := $(shell lsb_release --id --short)
 distrel := $(shell lsb_release --codename --short)
+derivative := $(shell if dpkg-vendor --derives-from Ubuntu; then echo Ubuntu; \
+               elif dpkg-vendor --derives-from Debian; then echo Debian; \
+               else echo Unknown; fi)
 ifeq ($(distrel),n/a)
   distrel := sid
 endif
@@ -118,7 +121,7 @@ endif
 with_wgy_zenhai = $(if $(filter $(distrel),lenny),,yes)
 
 arch_map	:= alpha=alpha arm=arm armel=arm armhf=arm arm64=aarch64 amd64=amd64 hppa=parisc i386=i586 m68k=m68k mips=mips mipsel=mipsel mips64=mips64 mips64el=mips64el powerpc=ppc powerpcspe=ppc ppc64=ppc64 ppc64el=ppc64le sparc=sparc sparc64=sparc64 sh4=sh s390x=s390x ia64=ia64 m68k=m68k x32=x32
-archdir_map	:= alpha=alpha arm=arm armel=arm armhf=arm arm64=aarch64 amd64=amd64 hppa=parisc i386=i386 m68k=m68k mips=mips mipsel=mipsel mips64=mips64 mips64el=mips64el powerpc=ppc powerpcspe=ppc ppc64=ppc64 ppc64el=ppc64 sparc=sparc sparc64=sparcv9 sh4=sh s390x=s390x ia64=ia64 m68k=m68k x32=x32
+archdir_map	:= alpha=alpha arm=arm armel=arm armhf=arm arm64=aarch64 amd64=amd64 hppa=parisc i386=i386 m68k=m68k mips=mips mipsel=mipsel mips64=mips64 mips64el=mips64el powerpc=ppc powerpcspe=ppc ppc64=ppc64 ppc64el=ppc64le sparc=sparc sparc64=sparcv9 sh4=sh s390x=s390x ia64=ia64 m68k=m68k x32=x32
 
 jvmarch		:= $(strip $(patsubst $(DEB_HOST_ARCH_CPU)=%, %, \
 			$(filter $(DEB_HOST_ARCH_CPU)=%, $(arch_map))))
@@ -277,30 +280,33 @@ export EXTRA_LDFLAGS_CACAO  := $(shell $(dpkg_buildflags_cacao) --get LDFLAGS)
 ifneq (,$(filter $(distrel),squeeze lucid))
   export CC = gcc-4.4
   export CXX = g++-4.4
-  GCJ_SUFFIX = -4.4
 else ifneq (,$(filter $(distrel),wheezy quantal raring))
   export CC = gcc-4.7
   export CXX = g++-4.7
-  GCJ_SUFFIX = -4.7
-  ifneq (,$(filter $(DEB_HOST_ARCH), m68k))
-    GCJ_SUFFIX = -4.6
-  endif
 else ifneq (,$(filter $(distrel),precise))
   export CC = gcc-4.6
   export CXX = g++-4.6
-  GCJ_SUFFIX = -4.6
 else ifneq (,$(filter $(distrel),saucy trusty))
   export CC = gcc-4.8
   export CXX = g++-4.8
-  GCJ_SUFFIX = -4.8
-else
+else ifneq (,$(filter $(distrel),utopic vivid jessie))
   export CC = gcc-4.9
   export CXX = g++-4.9
-  GCJ_SUFFIX = -4.9
+else ifneq (,$(filter $(distrel),wily sid stretch))
+  ifneq (,$(filter $(DEB_HOST_ARCH), $(hotspot_archs)))
+    export CC = gcc-5
+    export CXX = g++-5
+  else
+    export CC = gcc-4.9
+    export CXX = g++-4.9
+  endif
+else
+  export CC = gcc-5
+  export CXX = g++-5
 endif
 
 ifneq (,$(filter $(DEB_HOST_ARCH), armel armhf))
-ifeq ($(distribution),Ubuntu)
+ifeq ($(derivative),Ubuntu)
   OPT_CFLAGS/cppInterpreter_arm.o = -march=armv6 -mtune=cortex-a8 -O2 -falign-functions=64 -falign-loops=8 -g0
 else
   OPT_CFLAGS/cppInterpreter_arm.o = -O2 -falign-functions=32 -falign-loops=8 -g0
@@ -309,6 +315,9 @@ export OPT_CFLAGS/cppInterpreter_arm.o
 endif
 
 with_pulse = yes
+ifneq (,$(filter $(DEB_HOST_ARCH), alpha))
+  with_pulse =
+endif
 
 ifneq (,$(filter $(distrel),squeeze lucid))
   with_bridge = bridge
@@ -330,7 +339,7 @@ endif
 
 on_buildd := $(shell [ -f /CurrentlyBuilding -o "$$LOGNAME" = buildd ] && echo yes)
 
-ifeq ($(distribution),Debian)
+ifeq ($(derivative),Debian)
   with_wm = $(notdir $(firstword $(wildcard /usr/bin/metacity /usr/bin/twm)))
   ifneq (,$(findstring twm, $(with_wm)))
     with_wm_args = -f $(CURDIR)/bin/jtreg.tmwrc
@@ -366,7 +375,6 @@ endif
 COMMON_PATCHES = \
 	autoconf-select.diff \
 	hotspot-warn-no-errformat.diff \
-	make4-compatibility.diff \
 	aarch64.diff \
 	hotspot-set-compiler.diff \
 	ppc64el.diff \
@@ -402,6 +410,10 @@ COMMON_PATCHES = \
 	applet-hole.patch \
 	libjpeg-fix.diff \
 	sparc-fixes.diff \
+	jdk-target-arch-define.diff \
+	jvm-detect-32bit-archs.diff \
+	m68k-support.diff \
+	javadoc-sort-enum-and-annotation-types.diff \
 
 # FIXME: update patches
 	#accessible-toolkit.patch # update for 8
@@ -423,6 +435,7 @@ COMMON_PATCHES += \
 
 ifeq (,$(filter $(DEB_HOST_ARCH),arm64))
   COMMON_PATCHES += \
+	ppc64le-8036767.diff \
 	hotspot-powerpcspe.diff
 # FIXME	zero-opt.diff
 endif
@@ -511,6 +524,9 @@ ifeq (,$(filter $(DEB_HOST_ARCH), $(hotspot_archs)))
 endif
 
 EXTRA_BUILD_ENV += MAKE_VERBOSE=y QUIETLY= LOG=debug
+
+# timestamp skew on kFreeBSD
+EXTRA_BUILD_ENV += IGNORE_OLD_CONFIG=true
 
 EXTRA_BUILD_ENV += LIBFFI_LIBS=-lffi_pic
 
@@ -685,8 +701,12 @@ else ifneq (,$(filter $(distrel), quantal raring))
   bd_gcc = g++-4.7,
 else ifneq (,$(filter $(distrel), saucy trusty))
   bd_gcc = g++-4.8,
-else
+else ifneq (,$(filter $(distrel),utopic vivid jessie))
   bd_gcc = g++-4.9,
+else ifneq (,$(filter $(distrel),wily stretch sid))
+  bd_gcc = g++-5 [$(hotspot_archs)], g++-4.9 [$(strip $(foreach a,$(hotspot_archs), !$(a)))],
+else
+  bd_gcc = g++-5,
 endif
 bd_syslibs = zlib1g-dev, libattr1-dev,
 ifneq (,$(filter $(distrel),squeeze lucid))
@@ -745,7 +765,7 @@ bd_fastjar = fastjar (>= 2:0.96-0ubuntu2),
 bd_xvfb = xvfb, xauth, xfonts-base, libgl1-mesa-dri [!x32], $(bd_wm) x11-xkb-utils,
 bd_mauve = mauve,
 ifeq ($(with_pulse),yes)
-  bd_pulsejava = libpulse-dev (>= 0.9.12),
+  bd_pulsejava = libpulse-dev (>= 0.9.12) [!alpha],
 endif
 ifeq ($(with_nss),yes)
   ifneq (,$(filter $(distrel),squeeze lucid precise quantal))
@@ -773,6 +793,8 @@ else ifneq (,$(filter $(distrel), jessie sid))
 else
   dlopen_hl_depends += libjpeg8,
 endif
+# FIXME: #793210, directly link with libfontconfig.
+dlopen_hl_depends += libfontconfig1,
 ifneq ($(with_nss),no)
   ifneq (,$(filter $(distrel),squeeze lucid precise))
     dlopen_hl_depends += , libnss3-1d (>= 3.12.3)
@@ -799,7 +821,7 @@ browser_plugin_dirs = mozilla
 # .desktop files need to be multiarch installable
 java_launcher = /$(basedir)/bin/java
 java_launcher = /usr/bin/java
-ifeq ($(distribution),Ubuntu)
+ifeq ($(derivative),Ubuntu)
   java_launcher = cautious-launcher %f /$(basedir)/bin/java
   java_launcher = cautious-launcher %f /usr/bin/java
 endif
@@ -1066,7 +1088,7 @@ stamps/sound-configure: stamps/build
 	tar xf icedtea-sound.tar.xz
 	mv $$(tar tf icedtea-sound.tar.xz | head -1 | sed 's,/.*,,') \
 	  icedtea-sound
-	patch -p1 -R < debian/patches/icedtea-sound.diff
+	patch -p1 < debian/patches/icedtea-sound.diff
 	if [ -x icedtea-sound/autogen.sh ]; then \
 	  cd icedtea-sound && ./autogen.sh; \
 	fi
@@ -1125,6 +1147,8 @@ endif
 
 	$(MAKE) -f debian/rules packaging-files
 
+	cp /usr/share/misc/config.* $(srcdir)/common/autoconf/build-aux/.
+
 	mkdir -p stamps
 	touch $@
 
@@ -1133,6 +1157,7 @@ stamps/jamvm-unpack:
 	rm -rf jamvm jamvm-*
 	tar xf jamvm.tar.gz
 	mv jamvm-2* jamvm
+	cp /usr/share/misc/config.* jamvm/.
 	patch -p1 < debian/patches/kfreebsd-support-jamvm.diff
 	patch -p1 < debian/patches/jamvm-fix.diff
 	@mkdir -p stamps
@@ -1617,7 +1642,7 @@ debian-clean:
 	rm -f debian/*.install debian/*.links debian/*.debhelper.log
 
 lib_ext_dirs = common $(sort $(foreach arch,$(arch_map),$(firstword $(subst =,$(SPACE),$(arch)))))
-ifeq ($(distribution),Ubuntu)
+ifeq ($(derivative),Ubuntu)
   lib_ext_dirs := $(filter-out arm hppa m68k mips% powerpcspe s390% sh%, $(lib_ext_dirs))
 else
   lib_ext_dirs := $(filter-out arm hppa, $(lib_ext_dirs))
@@ -1640,6 +1665,10 @@ ifeq ($(with_pulse),yes)
 	cp icedtea-sound/icedtea-sound.jar $(d)/$(basedir)/jre/lib/ext/.
 	cp icedtea-sound/build/native/libicedtea-sound.so \
 	  $(d)/$(basedir)/jre/lib/$(archdir)/.
+endif
+
+ifneq (,$(filter $(DEB_HOST_ARCH), kfreebsd-amd64 kfreebsd-i386))
+	cp -a $(d)/$(basedir)/include/bsd $(d)/$(basedir)/include/linux
 endif
 
 	chmod -R u+w $(d)
@@ -1702,8 +1731,13 @@ endif
 	done
 
 ifeq ($(with_bridge),atk)
-	cp -p debian/accessibility-atk.properties \
+  ifneq (,$(filter $(distrel),lenny wheezy squeeze jessie lucid precise quantal raring saucy trusty utopic vivid))
+	cp -p debian/accessibility-atk.properties.disabled \
 		$(d)/$(basedir)/jre/lib/accessibility.properties
+  else
+	cp -p debian/accessibility-atk.properties.enabled \
+		$(d)/$(basedir)/jre/lib/accessibility.properties
+  endif
 else
 	cp -p debian/accessibility.properties $(d)/$(basedir)/jre/lib/
 endif
@@ -1950,7 +1984,7 @@ endif
 	: # add GNOME stuff
 	cp -p debian/$(basename)-policytool.desktop \
 	      $(d_jre)/usr/share/applications/
-ifeq ($(java_launcher),cautious-launcher)
+ifneq (,$(findstring cautious-launcher, $(java_launcher)))
 	cp -p debian/$(basename)-java.desktop \
 	      $(d_jre)/usr/share/applications/
 endif
@@ -2204,7 +2238,6 @@ endif
 		$(nodemo) $(nojrec) $(nojrej) $(nojrez) \
 		-Xlibjvm.so -X.debuginfo --dbg-package=$(p_dbg)
 
-ifeq (0,1)
 ifeq (,$(findstring nostrip, $(DEB_BUILD_OPTIONS)))
 	set -ex; \
 	for i in {$(d_jrehl),$(d_jre),$(d_jrec),$(d_jrez)}/$(basedir)/jre/lib/$(archdir)/*/libjvm.so; do \
@@ -2232,7 +2265,6 @@ ifeq (,$(findstring nostrip, $(DEB_BUILD_OPTIONS)))
 	  fi; \
 	done
 endif
-endif
 
 	dh_compress -s $(nodemo) $(nojrec) $(nojrej) $(nojrez) -Xexamples -Xdemo -Xpackage-list
 	dh_fixperms -s $(nodemo) $(nojrec) $(nojrej) $(nojrez)
@@ -2250,9 +2282,9 @@ endif
 	dh_builddeb -s $(nodemo) $(nojrec) $(nojrej) $(nojrez) #$(bd_options)
 
 is_release		=
-#is_release		= yes
+is_release		= yes
 hg_project		= jdk8u
-hg_tag			= jdk8u60-b22
+hg_tag			= jdk8u66-b17
 package_version		= $(subst jdk,,$(hg_tag))
 ifneq ($(is_release),yes)
   package_version	:= $(subst -,~,$(package_version))

@@ -1,50 +1,9 @@
-# DP: 
+# DP: Common bits to configure ppc64le support.
 
-Index: b/common/autoconf/generated-configure.sh
+Index: src/common/autoconf/hotspot-spec.gmk.in
 ===================================================================
---- a/common/autoconf/generated-configure.sh
-+++ b/common/autoconf/generated-configure.sh
-@@ -6844,7 +6844,7 @@ test -n "$target_alias" &&
-       VAR_CPU_ENDIAN=big
-       ;;
-     powerpc64le)
--      VAR_CPU=ppc64
-+      VAR_CPU=ppc64le
-       VAR_CPU_ARCH=ppc
-       VAR_CPU_BITS=64
-       VAR_CPU_ENDIAN=little
-@@ -6981,7 +6981,7 @@ $as_echo "$OPENJDK_BUILD_OS-$OPENJDK_BUI
-       VAR_CPU_ENDIAN=big
-       ;;
-     powerpc64le)
--      VAR_CPU=ppc64
-+      VAR_CPU=ppc64le
-       VAR_CPU_ARCH=ppc
-       VAR_CPU_BITS=64
-       VAR_CPU_ENDIAN=little
-@@ -7969,7 +7969,7 @@ $as_echo "$with_jvm_variants" >&6; }
-   if test "x$JVM_VARIANT_ZEROSHARK" = xtrue ; then
-     INCLUDE_SA=false
-   fi
--  if test "x$VAR_CPU" = xppc64 ; then
-+  if test "x$VAR_CPU" = xppc64 -o "x$VAR_CPU" = xppc64le ; then
-     INCLUDE_SA=false
-   fi
-   if test "x$OPENJDK_TARGET_CPU" = xaarch64; then
-@@ -29916,6 +29916,9 @@ fi
-   else
-     CCXXFLAGS_JDK="$CCXXFLAGS_JDK -D_BIG_ENDIAN"
-   fi
-+  if test "x$OPENJDK_TARGET_CPU" = xppc64le; then
-+    CCXXFLAGS_JDK="$CCXXFLAGS_JDK -DABI_ELFv2"
-+  fi
-   if test "x$OPENJDK_TARGET_OS" = xlinux; then
-     CCXXFLAGS_JDK="$CCXXFLAGS_JDK -DLINUX"
-   fi
-Index: b/common/autoconf/hotspot-spec.gmk.in
-===================================================================
---- a/common/autoconf/hotspot-spec.gmk.in
-+++ b/common/autoconf/hotspot-spec.gmk.in
+--- src.orig/common/autoconf/hotspot-spec.gmk.in
++++ src/common/autoconf/hotspot-spec.gmk.in
 @@ -71,6 +71,10 @@ ISA_DIR=$(OPENJDK_TARGET_CPU_ISADIR)
  LIBARCH=$(OPENJDK_TARGET_CPU_LEGACY_LIB)
  # Old name for OPENJDK_TARGET_CPU, uses i586 and amd64, instead of x86 and x86_64.
@@ -56,10 +15,10 @@ Index: b/common/autoconf/hotspot-spec.gmk.in
  # Legacy setting for building for a 64 bit machine.
  # If yes then this expands to _LP64:=1
  @LP64@
-Index: b/common/autoconf/jdk-options.m4
+Index: src/common/autoconf/jdk-options.m4
 ===================================================================
---- a/common/autoconf/jdk-options.m4
-+++ b/common/autoconf/jdk-options.m4
+--- src.orig/common/autoconf/jdk-options.m4
++++ src/common/autoconf/jdk-options.m4
 @@ -158,7 +158,7 @@ AC_DEFUN_ONCE([JDKOPT_SETUP_JVM_VARIANTS
    if test "x$JVM_VARIANT_ZEROSHARK" = xtrue ; then
      INCLUDE_SA=false
@@ -69,11 +28,11 @@ Index: b/common/autoconf/jdk-options.m4
      INCLUDE_SA=false
    fi
    if test "x$OPENJDK_TARGET_CPU" = xaarch64; then
-Index: b/common/autoconf/platform.m4
+Index: src/common/autoconf/platform.m4
 ===================================================================
---- a/common/autoconf/platform.m4
-+++ b/common/autoconf/platform.m4
-@@ -115,7 +115,7 @@ AC_DEFUN([PLATFORM_EXTRACT_VARS_FROM_CPU
+--- src.orig/common/autoconf/platform.m4
++++ src/common/autoconf/platform.m4
+@@ -121,7 +121,7 @@ AC_DEFUN([PLATFORM_EXTRACT_VARS_FROM_CPU
        VAR_CPU_ENDIAN=big
        ;;
      powerpc64le)
@@ -82,11 +41,11 @@ Index: b/common/autoconf/platform.m4
        VAR_CPU_ARCH=ppc
        VAR_CPU_BITS=64
        VAR_CPU_ENDIAN=little
-Index: b/common/autoconf/toolchain.m4
+Index: src/common/autoconf/toolchain.m4
 ===================================================================
---- a/common/autoconf/toolchain.m4
-+++ b/common/autoconf/toolchain.m4
-@@ -979,6 +979,9 @@ AC_DEFUN_ONCE([TOOLCHAIN_SETUP_COMPILER_
+--- src.orig/common/autoconf/toolchain.m4
++++ src/common/autoconf/toolchain.m4
+@@ -1058,6 +1058,9 @@ AC_DEFUN_ONCE([TOOLCHAIN_SETUP_COMPILER_
    else
      CCXXFLAGS_JDK="$CCXXFLAGS_JDK -D_BIG_ENDIAN"
    fi
@@ -96,10 +55,10 @@ Index: b/common/autoconf/toolchain.m4
    if test "x$OPENJDK_TARGET_OS" = xlinux; then
      CCXXFLAGS_JDK="$CCXXFLAGS_JDK -DLINUX"
    fi
-Index: b/jdk/make/lib/SoundLibraries.gmk
+Index: src/jdk/make/lib/SoundLibraries.gmk
 ===================================================================
---- a/jdk/make/lib/SoundLibraries.gmk
-+++ b/jdk/make/lib/SoundLibraries.gmk
+--- src.orig/jdk/make/lib/SoundLibraries.gmk
++++ src/jdk/make/lib/SoundLibraries.gmk
 @@ -143,6 +143,10 @@ else
    ifeq ($(OPENJDK_TARGET_CPU), aarch64)
  	LIBJSOUND_CFLAGS += -DX_ARCH=X_AARCH64
@@ -111,10 +70,10 @@ Index: b/jdk/make/lib/SoundLibraries.gmk
  endif
  
  LIBJSOUND_CFLAGS += -DEXTRA_SOUND_JNI_LIBS='"$(EXTRA_SOUND_JNI_LIBS)"'
-Index: b/jdk/src/share/native/com/sun/media/sound/SoundDefs.h
+Index: src/jdk/src/share/native/com/sun/media/sound/SoundDefs.h
 ===================================================================
---- a/jdk/src/share/native/com/sun/media/sound/SoundDefs.h
-+++ b/jdk/src/share/native/com/sun/media/sound/SoundDefs.h
+--- src.orig/jdk/src/share/native/com/sun/media/sound/SoundDefs.h
++++ src/jdk/src/share/native/com/sun/media/sound/SoundDefs.h
 @@ -43,7 +43,9 @@
  #define X_ZERO          6
  #define X_ARM           7
@@ -126,10 +85,10 @@ Index: b/jdk/src/share/native/com/sun/media/sound/SoundDefs.h
  
  // **********************************
  // Make sure you set X_PLATFORM and X_ARCH defines correctly.
-Index: b/jdk/src/solaris/bin/ppc64le/jvm.cfg
+Index: src/jdk/src/solaris/bin/ppc64le/jvm.cfg
 ===================================================================
 --- /dev/null
-+++ b/jdk/src/solaris/bin/ppc64le/jvm.cfg
++++ src/jdk/src/solaris/bin/ppc64le/jvm.cfg
 @@ -0,0 +1,33 @@
 +# Copyright (c) 2011, Oracle and/or its affiliates. All rights reserved.
 +# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -164,3 +123,21 @@ Index: b/jdk/src/solaris/bin/ppc64le/jvm.cfg
 +# and may not be available in a future release.
 +#
 +-server KNOWN
+Index: src/hotspot/make/defs.make
+===================================================================
+--- src.orig/hotspot/make/defs.make
++++ src/hotspot/make/defs.make
+@@ -313,6 +313,13 @@ ifneq ($(OSNAME),windows)
+   LIBARCH/ppc64   = ppc64
+   LIBARCH/zero    = $(ZERO_LIBARCH)
+ 
++  # Override LIBARCH for ppc64le
++  ifeq ($(ARCH), ppc64)
++    ifeq ($(OPENJDK_TARGET_CPU_ENDIAN), little)
++      LIBARCH = ppc64le
++    endif
++  endif
++
+   LP64_ARCH += sparcv9 amd64 ia64 ppc64 zero
+ endif
+ 

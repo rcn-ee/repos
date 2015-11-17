@@ -1,0 +1,19 @@
+# DP: Define _alpha_ / _sh_ preprocessor macros instead of alpha / sh.
+
+--- a/common/autoconf/toolchain.m4
++++ b/common/autoconf/toolchain.m4
+@@ -1096,7 +1096,13 @@
+     CCXXFLAGS_JDK="$CCXXFLAGS_JDK -DDEBUG"
+   fi
+ 
+-  CCXXFLAGS_JDK="$CCXXFLAGS_JDK -DARCH='\"$OPENJDK_TARGET_CPU_LEGACY\"' -D$OPENJDK_TARGET_CPU_LEGACY"
++  CCXXFLAGS_JDK="$CCXXFLAGS_JDK -DARCH='\"$OPENJDK_TARGET_CPU_LEGACY\"'"
++  case "$OPENJDK_TARGET_CPU_LEGACY" in
++  alpha*|sh*)
++    CCXXFLAGS_JDK="$CCXXFLAGS_JDK -D_${OPENJDK_TARGET_CPU_LEGACY}_";;
++  *)
++    CCXXFLAGS_JDK="$CCXXFLAGS_JDK -D$OPENJDK_TARGET_CPU_LEGACY"
++  esac
+   CCXXFLAGS_JDK="$CCXXFLAGS_JDK -DRELEASE='\"\$(RELEASE)\"'"
+ 
+   CCXXFLAGS_JDK="$CCXXFLAGS_JDK \

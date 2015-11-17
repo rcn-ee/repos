@@ -1,8 +1,99 @@
-openjdk-8 (8u60~b22-1~bpo80+20150708+1) jessie; urgency=low
+openjdk-8 (8u66-b17-1~bpo8+1~bpo80+20151117+1) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Wed, 08 Jul 2015 19:58:26 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Tue, 17 Nov 2015 10:34:19 -0600
+
+openjdk-8 (8u66-b17-1~bpo8+1) jessie-backports; urgency=medium
+
+  * Rebuild for jessie-backports.
+
+ -- Moritz Muehlenhoff <moritz@wikimedia.org>  Thu, 22 Oct 2015 08:12:40 +0000
+
+openjdk-8 (8u66-b17-1) unstable; urgency=high
+
+  * Update to 8u66-b01.
+  * Security fixes:
+    - S8048030, CVE-2015-4734: Expectations should be consistent
+    - S8068842, CVE-2015-4803: Better JAXP data handling
+    - S8076339, CVE-2015-4903: Better handling of remote object invocation
+    - S8076383, CVE-2015-4835: Better CORBA exception handling
+    - S8076387, CVE-2015-4882: Better CORBA value handling
+    - S8076392, CVE-2015-4881: Improve IIOPInputStream consistency
+    - S8076413, CVE-2015-4883: Better JRMP message handling
+    - S8078427, CVE-2015-4842: More supportive home environment
+    - S8078440: Safer managed types
+    - S8080541: More direct property handling
+    - S8080688, CVE-2015-4860: Service for DGC services
+    - S8081744, CVE-2015-4868: Clear out list corner case
+    - S8081760: Better group dynamics
+    - S8086092. CVE-2015-4840: More palette improvements
+    - S8086733, CVE-2015-4893: Improve namespace handling
+    - S8087350: Improve array conversions
+    - S8103671, CVE-2015-4805: More objective stream classes
+    - S8103675: Better Binary searches
+    - S8129611: Accessbridge error handling improvement
+    - S8130078, CVE-2015-4911: Document better processing
+    - S8130185: More accessible access switch
+    - S8130193, CVE-2015-4806: Improve HTTP connections
+    - S8130864: Better server identity handling
+    - S8130891, CVE-2015-4843: (bf) More direct buffering
+    - S8131291, CVE-2015-4872: Perfect parameter patterning
+    - S8132042, CVE-2015-4844: Preserve layout presentation
+  * Strip packages again, Debian infrastruction is fixed. Closes: #775760.
+
+ -- Matthias Klose <doko@ubuntu.com>  Wed, 21 Oct 2015 22:48:28 +0200
+
+openjdk-8 (8u66-b01-6) unstable; urgency=medium
+
+  * Fix pulseaudio build on KFreeBSD.
+
+ -- Matthias Klose <doko@ubuntu.com>  Thu, 15 Oct 2015 02:07:13 +0200
+
+openjdk-8 (8u66-b01-5) unstable; urgency=medium
+
+  * Backport the proposed patch for 8036767, renaming the architecture
+    on ppc64el from ppc64 to ppc64le.
+  * JDK-8073139: PPC64: User-visible arch directory and os.arch value on
+    ppc64le cause issues with Java tooling (Tiago Stürmer Daitx).
+
+ -- Matthias Klose <doko@ubuntu.com>  Thu, 08 Oct 2015 08:03:51 +0200
+
+openjdk-8 (8u66-b01-4) unstable; urgency=medium
+
+  * Update KFreeBSD patches (Steven Chamberlain). Closes: #761067.
+  * Really fix preprocessor defines for alpha and sh4.
+  * Re-enable the partial stripping for the jre packages.
+  * openjdk-jre-headless: Directly depend on libfontconfig1. Closes: #793210.
+
+ -- Matthias Klose <doko@ubuntu.com>  Sun, 13 Sep 2015 13:04:03 +0200
+
+openjdk-8 (8u66-b01-3) unstable; urgency=medium
+
+  * Build using GCC 4.9 for zero ports.
+
+ -- Matthias Klose <doko@ubuntu.com>  Sat, 05 Sep 2015 16:06:38 +0200
+
+openjdk-8 (8u66-b01-2) unstable; urgency=medium
+
+  * Fix installing the openjdk.desktop file when cautious-launch is available.
+    LP: #1448548.
+  * Define _alpha_ / _sh_ preprocessor macros instead of alpha / sh.
+  * Fix jdk gensrc build on x32.
+  * Re-enable the atk bridge for releases with a fixed atk bridge. 
+  * Really apply the 32bit detection patch. Closes: #787072.
+  * Make derivatives builds the same as the parent distro. Closes: #797665.
+  * Add m68k support for Zero (Andreas Schwab).
+  * Sort the enums and the annotations in the package-tree.html files.
+
+ -- Matthias Klose <doko@ubuntu.com>  Fri, 04 Sep 2015 18:49:13 +0200
+
+openjdk-8 (8u66-b01-1) unstable; urgency=medium
+
+  * Update to 8u66-b01.
+  * Fix jdk build on x32.
+
+ -- Matthias Klose <doko@ubuntu.com>  Mon, 27 Jul 2015 13:46:58 +0200
 
 openjdk-8 (8u60~b22-1) unstable; urgency=medium
 

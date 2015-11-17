@@ -1,5 +1,7 @@
---- src.orig/hotspot/src/os/linux/vm/decoder_linux.cpp
-+++ src/hotspot/src/os/linux/vm/decoder_linux.cpp
+Index: b/hotspot/src/os/linux/vm/decoder_linux.cpp
+===================================================================
+--- a/hotspot/src/os/linux/vm/decoder_linux.cpp
++++ b/hotspot/src/os/linux/vm/decoder_linux.cpp
 @@ -22,6 +22,7 @@
   *
   */
@@ -8,8 +10,10 @@
  #include "prims/jvm.h"
  #include "utilities/decoder_elf.hpp"
  
---- src.orig/hotspot/src/os/linux/vm/attachListener_linux.cpp
-+++ src/hotspot/src/os/linux/vm/attachListener_linux.cpp
+Index: b/hotspot/src/os/linux/vm/attachListener_linux.cpp
+===================================================================
+--- a/hotspot/src/os/linux/vm/attachListener_linux.cpp
++++ b/hotspot/src/os/linux/vm/attachListener_linux.cpp
 @@ -39,6 +39,10 @@
  #define UNIX_PATH_MAX   sizeof(((struct sockaddr_un *)0)->sun_path)
  #endif
@@ -21,7 +25,7 @@
  // The attach mechanism on Linux uses a UNIX domain socket. An attach listener
  // thread is created at startup or is created on-demand via a signal from
  // the client tool. The attach listener creates a socket and binds it to a file
-@@ -337,16 +341,26 @@
+@@ -337,16 +341,26 @@ LinuxAttachOperation* LinuxAttachListene
  
      // get the credentials of the peer and check the effective uid/guid
      // - check with jeff on this.
@@ -44,13 +48,15 @@
 +    if (cred_info.cr_uid != euid || cred_info.cr_gid != egid) {
 +#else
      if (cred_info.uid != euid || cred_info.gid != egid) {
-+#endif 
++#endif
        ::close(s);
        continue;
      }
---- src.orig/hotspot/src/os/linux/vm/jvm_linux.cpp
-+++ src/hotspot/src/os/linux/vm/jvm_linux.cpp
-@@ -169,7 +169,9 @@
+Index: b/hotspot/src/os/linux/vm/jvm_linux.cpp
+===================================================================
+--- a/hotspot/src/os/linux/vm/jvm_linux.cpp
++++ b/hotspot/src/os/linux/vm/jvm_linux.cpp
+@@ -169,7 +169,9 @@ struct siglabel siglabels[] = {
    "WINCH",      SIGWINCH,       /* Window size change (4.3 BSD, Sun).  */
    "POLL",       SIGPOLL,        /* Pollable event occurred (System V).  */
    "IO",         SIGIO,          /* I/O now possible (4.2 BSD).  */
@@ -60,8 +66,10 @@
  #ifdef SIGSYS
    "SYS",        SIGSYS          /* Bad system call. Only on some Linuxen! */
  #endif
---- src.orig/hotspot/src/os/linux/vm/os_linux.cpp
-+++ src/hotspot/src/os/linux/vm/os_linux.cpp
+Index: b/hotspot/src/os/linux/vm/os_linux.cpp
+===================================================================
+--- a/hotspot/src/os/linux/vm/os_linux.cpp
++++ b/hotspot/src/os/linux/vm/os_linux.cpp
 @@ -22,6 +22,7 @@
   *
   */
@@ -70,7 +78,7 @@
  // no precompiled headers
  #include "classfile/classLoader.hpp"
  #include "classfile/systemDictionary.hpp"
-@@ -91,8 +92,16 @@
+@@ -92,8 +93,16 @@
  # include <semaphore.h>
  # include <fcntl.h>
  # include <string.h>
@@ -87,7 +95,7 @@
  # include <gnu/libc-version.h>
  # include <sys/ipc.h>
  # include <sys/shm.h>
-@@ -197,11 +206,22 @@
+@@ -169,11 +178,22 @@ julong os::available_memory() {
  }
  
  julong os::Linux::available_memory() {
@@ -110,22 +118,7 @@
  }
  
  julong os::physical_memory() {
-@@ -239,11 +259,11 @@
- // i386: 224, ia64: 1105, amd64: 186, sparc 143
- #ifdef __ia64__
- #define SYS_gettid 1105
--#elif __i386__
-+#elif defined(__i386__)
- #define SYS_gettid 224
--#elif __amd64__
-+#elif defined(__amd64__)
- #define SYS_gettid 186
--#elif __sparc__
-+#elif defined(__sparc__)
- #define SYS_gettid 143
- #else
- #error define gettid for the arch
-@@ -2219,18 +2239,22 @@
+@@ -2171,18 +2191,22 @@ void os::print_memory_info(outputStream*
    st->print("Memory:");
    st->print(" %dk page", os::vm_page_size()>>10);
  
@@ -148,44 +141,10 @@
    st->cr();
  }
  
-@@ -6007,6 +6031,7 @@
- int os::fork_and_exec(char* cmd) {
-   const char * argv[4] = {"sh", "-c", cmd, NULL};
- 
-+#ifdef __linux__
-   // fork() in LinuxThreads/NPTL is not async-safe. It needs to run
-   // pthread_atfork handlers and reset pthread library. All we need is a
-   // separate process to execve. Make a direct syscall to fork process.
-@@ -6014,6 +6039,9 @@
-   // the best...
-   pid_t pid = NOT_IA64(syscall(__NR_fork);)
-               IA64_ONLY(fork();)
-+#else
-+  pid_t pid = fork();
-+#endif
- 
-   if (pid < 0) {
-     // fork failed
-@@ -6022,6 +6050,7 @@
-   } else if (pid == 0) {
-     // child process
- 
-+#ifdef __linux__
-     // execve() in LinuxThreads will call pthread_kill_other_threads_np()
-     // first to kill every thread on the thread list. Because this list is
-     // not reset by fork() (see notes above), execve() will instead kill
-@@ -6031,6 +6060,9 @@
-     // above.
-     NOT_IA64(syscall(__NR_execve, "/bin/sh", argv, environ);)
-     IA64_ONLY(execve("/bin/sh", (char* const*)argv, environ);)
-+#else
-+    execve("/bin/sh", (char* const*)argv, environ);
-+#endif
- 
-     // execve failed
-     _exit(-1);
---- src.orig/hotspot/src/os/linux/vm/osThread_linux.cpp
-+++ src/hotspot/src/os/linux/vm/osThread_linux.cpp
+Index: b/hotspot/src/os/linux/vm/osThread_linux.cpp
+===================================================================
+--- a/hotspot/src/os/linux/vm/osThread_linux.cpp
++++ b/hotspot/src/os/linux/vm/osThread_linux.cpp
 @@ -22,6 +22,7 @@
   *
   */
@@ -194,8 +153,10 @@
  // no precompiled headers
  #include "runtime/mutex.hpp"
  #include "runtime/osThread.hpp"
---- src.orig/hotspot/src/os_cpu/linux_x86/vm/os_linux_x86.cpp
-+++ src/hotspot/src/os_cpu/linux_x86/vm/os_linux_x86.cpp
+Index: b/hotspot/src/os_cpu/linux_x86/vm/os_linux_x86.cpp
+===================================================================
+--- a/hotspot/src/os_cpu/linux_x86/vm/os_linux_x86.cpp
++++ b/hotspot/src/os_cpu/linux_x86/vm/os_linux_x86.cpp
 @@ -22,6 +22,7 @@
   *
   */
@@ -267,7 +228,7 @@
  
  PRAGMA_FORMAT_MUTE_WARNINGS_FOR_GCC
  
-@@ -118,15 +168,27 @@
+@@ -118,15 +168,27 @@ void os::initialize_thread(Thread* thr)
  }
  
  address os::Linux::ucontext_get_pc(ucontext_t * uc) {
@@ -295,7 +256,7 @@
  }
  
  // For Forte Analyzer AsyncGetCallTrace profiling support - thread
-@@ -278,7 +340,11 @@
+@@ -278,7 +340,11 @@ JVM_handle_linux_signal(int sig,
      pc = (address) os::Linux::ucontext_get_pc(uc);
  
      if (StubRoutines::is_safefetch_fault(pc)) {
@@ -307,7 +268,7 @@
        return 1;
      }
  
-@@ -443,7 +509,11 @@
+@@ -443,7 +509,11 @@ JVM_handle_linux_signal(int sig,
    // Furthermore, a false-positive should be harmless.
    if (UnguardOnExecutionViolation > 0 &&
        (sig == SIGSEGV || sig == SIGBUS) &&
@@ -319,7 +280,7 @@
      int page_size = os::vm_page_size();
      address addr = (address) info->si_addr;
      address pc = os::Linux::ucontext_get_pc(uc);
-@@ -513,7 +583,11 @@
+@@ -513,7 +583,11 @@ JVM_handle_linux_signal(int sig,
      // save all thread context in case we need to restore it
      if (thread != NULL) thread->set_saved_exception_pc(pc);
  
@@ -331,7 +292,7 @@
      return true;
    }
  
-@@ -765,6 +839,7 @@
+@@ -765,6 +839,7 @@ void os::print_context(outputStream *st,
  
    ucontext_t *uc = (ucontext_t*)context;
    st->print_cr("Registers:");
@@ -339,7 +300,7 @@
  #ifdef AMD64
    st->print(  "RAX=" INTPTR_FORMAT, uc->uc_mcontext.gregs[REG_RAX]);
    st->print(", RBX=" INTPTR_FORMAT, uc->uc_mcontext.gregs[REG_RBX]);
-@@ -807,6 +882,48 @@
+@@ -807,6 +882,48 @@ void os::print_context(outputStream *st,
    st->print(", EFLAGS=" INTPTR_FORMAT, uc->uc_mcontext.gregs[REG_EFL]);
    st->print(", CR2=" INTPTR_FORMAT, uc->uc_mcontext.cr2);
  #endif // AMD64
@@ -388,7 +349,7 @@
    st->cr();
    st->cr();
  
-@@ -837,6 +954,7 @@
+@@ -837,6 +954,7 @@ void os::print_register_info(outputStrea
  
    // this is only for the "general purpose" registers
  
@@ -396,7 +357,7 @@
  #ifdef AMD64
    st->print("RAX="); print_location(st, uc->uc_mcontext.gregs[REG_RAX]);
    st->print("RBX="); print_location(st, uc->uc_mcontext.gregs[REG_RBX]);
-@@ -864,6 +982,35 @@
+@@ -864,6 +982,35 @@ void os::print_register_info(outputStrea
    st->print("ESI="); print_location(st, uc->uc_mcontext.gregs[REG_ESI]);
    st->print("EDI="); print_location(st, uc->uc_mcontext.gregs[REG_EDI]);
  #endif // AMD64
@@ -432,8 +393,10 @@
  
    st->cr();
  }
---- src.orig/hotspot/src/share/vm/memory/allocation.hpp
-+++ src/hotspot/src/share/vm/memory/allocation.hpp
+Index: b/hotspot/src/share/vm/memory/allocation.hpp
+===================================================================
+--- a/hotspot/src/share/vm/memory/allocation.hpp
++++ b/hotspot/src/share/vm/memory/allocation.hpp
 @@ -25,8 +25,8 @@
  #ifndef SHARE_VM_MEMORY_ALLOCATION_HPP
  #define SHARE_VM_MEMORY_ALLOCATION_HPP
@@ -444,8 +407,10 @@
  #include "utilities/macros.hpp"
  #ifdef COMPILER1
  #include "c1/c1_globals.hpp"
---- src.orig/hotspot/src/share/vm/ci/ciObject.hpp
-+++ src/hotspot/src/share/vm/ci/ciObject.hpp
+Index: b/hotspot/src/share/vm/ci/ciObject.hpp
+===================================================================
+--- a/hotspot/src/share/vm/ci/ciObject.hpp
++++ b/hotspot/src/share/vm/ci/ciObject.hpp
 @@ -25,6 +25,7 @@
  #ifndef SHARE_VM_CI_CIOBJECT_HPP
  #define SHARE_VM_CI_CIOBJECT_HPP
@@ -454,8 +419,10 @@
  #include "ci/ciBaseObject.hpp"
  #include "ci/ciClassList.hpp"
  #include "memory/allocation.hpp"
---- src.orig/hotspot/src/share/vm/interpreter/bytecodeInterpreter.cpp
-+++ src/hotspot/src/share/vm/interpreter/bytecodeInterpreter.cpp
+Index: b/hotspot/src/share/vm/interpreter/bytecodeInterpreter.cpp
+===================================================================
+--- a/hotspot/src/share/vm/interpreter/bytecodeInterpreter.cpp
++++ b/hotspot/src/share/vm/interpreter/bytecodeInterpreter.cpp
 @@ -22,6 +22,7 @@
   *
   */
@@ -464,9 +431,11 @@
  // no precompiled headers
  #include "classfile/vmSymbols.hpp"
  #include "gc_interface/collectedHeap.hpp"
---- src.orig/hotspot/src/share/vm/utilities/globalDefinitions_gcc.hpp
-+++ src/hotspot/src/share/vm/utilities/globalDefinitions_gcc.hpp
-@@ -76,7 +76,7 @@
+Index: b/hotspot/src/share/vm/utilities/globalDefinitions_gcc.hpp
+===================================================================
+--- a/hotspot/src/share/vm/utilities/globalDefinitions_gcc.hpp
++++ b/hotspot/src/share/vm/utilities/globalDefinitions_gcc.hpp
+@@ -68,7 +68,7 @@
  # include <sys/procfs.h>
  # endif
  
@@ -475,9 +444,11 @@
  #ifndef __STDC_LIMIT_MACROS
  #define __STDC_LIMIT_MACROS
  #endif // __STDC_LIMIT_MACROS
---- src.orig/hotspot/make/defs.make
-+++ src/hotspot/make/defs.make
-@@ -167,9 +167,6 @@
+Index: b/hotspot/make/defs.make
+===================================================================
+--- a/hotspot/make/defs.make
++++ b/hotspot/make/defs.make
+@@ -167,9 +167,6 @@ endif
  # Windows should have OS predefined
  ifeq ($(OS),)
    OS   := $(shell uname -s)
@@ -487,7 +458,7 @@
    ifeq ($(OS), Darwin)
      OS=bsd
    endif
-@@ -195,6 +192,10 @@
+@@ -195,6 +192,10 @@ else
    OSNAME=linux
  endif
  
@@ -498,10 +469,12 @@
  # Determinations of default make arguments and platform specific settings
  MAKE_ARGS=
  
---- src.orig/hotspot/make/linux/Makefile
-+++ src/hotspot/make/linux/Makefile
-@@ -232,6 +232,9 @@
- SUPPORTED_OS_VERSION = 2.4% 2.5% 2.6% 3%
+Index: b/hotspot/make/linux/Makefile
+===================================================================
+--- a/hotspot/make/linux/Makefile
++++ b/hotspot/make/linux/Makefile
+@@ -232,6 +232,9 @@ checks: check_os_version check_j2se_vers
+ SUPPORTED_OS_VERSION = 2.4% 2.5% 2.6% 3% 4%
  OS_VERSION := $(shell uname -r)
  EMPTY_IF_NOT_SUPPORTED = $(filter $(SUPPORTED_OS_VERSION),$(OS_VERSION))
 +ifeq ($(shell uname -s), GNU/kFreeBSD)
@@ -510,20 +483,27 @@
  
  check_os_version:
  ifeq ($(DISABLE_HOTSPOT_OS_VERSION_CHECK)$(EMPTY_IF_NOT_SUPPORTED),)
---- src.orig/hotspot/make/linux/makefiles/defs.make
-+++ src/hotspot/make/linux/makefiles/defs.make
-@@ -102,7 +102,7 @@
+Index: b/hotspot/make/linux/makefiles/defs.make
+===================================================================
+--- a/hotspot/make/linux/makefiles/defs.make
++++ b/hotspot/make/linux/makefiles/defs.make
+@@ -102,9 +102,9 @@ ifneq (,$(findstring $(ARCH), amd64 x86_
  endif
  
  # i686/i586 ie 32-bit x86
 -ifneq (,$(findstring $(ARCH), i686 i586))
-+ifneq (,$(filter i686 i386, $(ARCH)))
++ifneq (,$(filter $(ARCH), i686 i586 i486 i386))
    ARCH_DATA_MODEL  = 32
-   PLATFORM         = linux-i586
+-  PLATFORM         = linux-i586
++  PLATFORM         = linux_i486
    VM_PLATFORM      = linux_i486
---- src.orig/hotspot/agent/src/os/linux/ps_core.c
-+++ src/hotspot/agent/src/os/linux/ps_core.c
-@@ -551,11 +551,16 @@
+   HS_ARCH          = x86
+ endif
+Index: b/hotspot/agent/src/os/linux/ps_core.c
+===================================================================
+--- a/hotspot/agent/src/os/linux/ps_core.c
++++ b/hotspot/agent/src/os/linux/ps_core.c
+@@ -551,11 +551,16 @@ static bool core_handle_prstatus(struct
        return false;
  
     // copy regs
@@ -540,7 +520,7 @@
        // print the regset
        print_debug("\teax = 0x%x\n", newthr->regs.eax);
        print_debug("\tebx = 0x%x\n", newthr->regs.ebx);
-@@ -566,9 +571,21 @@
+@@ -566,9 +571,21 @@ static bool core_handle_prstatus(struct
        print_debug("\tesi = 0x%x\n", newthr->regs.esi);
        print_debug("\tedi = 0x%x\n", newthr->regs.edi);
        print_debug("\teip = 0x%x\n", newthr->regs.eip);
@@ -562,7 +542,7 @@
        // print the regset
        print_debug("\tr15 = 0x%lx\n", newthr->regs.r15);
        print_debug("\tr14 = 0x%lx\n", newthr->regs.r14);
-@@ -597,6 +614,27 @@
+@@ -597,6 +614,27 @@ static bool core_handle_prstatus(struct
        print_debug("\tes = 0x%lx\n", newthr->regs.es);
        print_debug("\tfs = 0x%lx\n", newthr->regs.fs);
        print_debug("\tgs = 0x%lx\n", newthr->regs.gs);
@@ -590,9 +570,11 @@
  #endif
     }
  
---- src.orig/hotspot/agent/src/os/linux/ps_proc.c
-+++ src/hotspot/agent/src/os/linux/ps_proc.c
-@@ -40,6 +40,22 @@
+Index: b/hotspot/agent/src/os/linux/ps_proc.c
+===================================================================
+--- a/hotspot/agent/src/os/linux/ps_proc.c
++++ b/hotspot/agent/src/os/linux/ps_proc.c
+@@ -42,6 +42,22 @@
  #define __WALL          0x40000000  // Copied from /usr/include/linux/wait.h
  #endif
  
@@ -615,7 +597,7 @@
  // This file has the libproc implementation specific to live process
  // For core files, refer to ps_core.c
  
-@@ -57,7 +73,11 @@
+@@ -59,7 +75,11 @@ static inline uintptr_t align(uintptr_t
  // before calling process_read_data.
  
  static bool process_read_data(struct ps_prochandle* ph, uintptr_t addr, char *buf, size_t size) {
@@ -627,7 +609,7 @@
    size_t i, words;
    uintptr_t end_addr = addr + size;
    uintptr_t aligned_addr = align(addr, sizeof(long));
-@@ -65,36 +85,62 @@
+@@ -67,36 +87,62 @@ static bool process_read_data(struct ps_
    if (aligned_addr != addr) {
      char *ptr = (char *)&rslt;
      errno = 0;
@@ -690,7 +672,7 @@
      if (errno) {
        print_debug("ptrace(PTRACE_PEEKDATA, ..) failed for %d bytes @ %lx\n", size, addr);
        return false;
-@@ -133,7 +179,11 @@
+@@ -135,7 +181,11 @@ static bool process_get_lwp_regs(struct
  #endif
  
  #ifdef PTRACE_GETREGS_REQ
@@ -702,7 +684,7 @@
     print_debug("ptrace(PTRACE_GETREGS, ...) failed for lwp %d\n", pid);
     return false;
   }
-@@ -205,7 +255,11 @@
+@@ -216,7 +266,11 @@ static bool ptrace_waitpid(pid_t pid) {
  
  // attach to a process/thread specified by "pid"
  static bool ptrace_attach(pid_t pid) {
@@ -714,7 +696,7 @@
      print_debug("ptrace(PTRACE_ATTACH, ..) failed for %d\n", pid);
      return false;
    } else {
-@@ -299,7 +353,11 @@
+@@ -310,7 +364,11 @@ static bool read_lib_info(struct ps_proc
  
  // detach a given pid
  static bool ptrace_detach(pid_t pid) {
@@ -726,8 +708,10 @@
      print_debug("ptrace(PTRACE_DETACH, ..) failed for %d\n", pid);
      return false;
    } else {
---- src.orig/hotspot/agent/src/os/linux/libproc.h
-+++ src/hotspot/agent/src/os/linux/libproc.h
+Index: b/hotspot/agent/src/os/linux/libproc.h
+===================================================================
+--- a/hotspot/agent/src/os/linux/libproc.h
++++ b/hotspot/agent/src/os/linux/libproc.h
 @@ -28,6 +28,10 @@
  #include <jni.h>
  #include <unistd.h>
@@ -738,8 +722,8 @@
 +#endif
  #include "proc_service.h"
  
- #if defined(arm) || defined(ppc)
-@@ -72,6 +76,10 @@
+ #ifdef ALT_SASRCDIR
+@@ -72,6 +76,10 @@ combination of ptrace and /proc calls.
  #define user_regs_struct  pt_regs
  #endif
  
@@ -750,9 +734,11 @@
  // This C bool type must be int for compatibility with Linux calls and
  // it would be a mistake to equivalence it to C++ bool on many platforms
  
---- src.orig/hotspot/agent/src/os/linux/LinuxDebuggerLocal.c
-+++ src/hotspot/agent/src/os/linux/LinuxDebuggerLocal.c
-@@ -364,7 +364,7 @@
+Index: b/hotspot/agent/src/os/linux/LinuxDebuggerLocal.c
+===================================================================
+--- a/hotspot/agent/src/os/linux/LinuxDebuggerLocal.c
++++ b/hotspot/agent/src/os/linux/LinuxDebuggerLocal.c
+@@ -364,7 +364,7 @@ JNIEXPORT jlongArray JNICALL Java_sun_jv
  
  #ifdef i386
  #define REG_INDEX(reg) sun_jvm_hotspot_debugger_x86_X86ThreadContext_##reg
@@ -761,7 +747,7 @@
    regs[REG_INDEX(GS)]  = (uintptr_t) gregs.xgs;
    regs[REG_INDEX(FS)]  = (uintptr_t) gregs.xfs;
    regs[REG_INDEX(ES)]  = (uintptr_t) gregs.xes;
-@@ -380,12 +380,28 @@
+@@ -380,12 +380,28 @@ JNIEXPORT jlongArray JNICALL Java_sun_jv
    regs[REG_INDEX(PC)] = (uintptr_t) gregs.eip;
    regs[REG_INDEX(CS)]  = (uintptr_t) gregs.xcs;
    regs[REG_INDEX(SS)]  = (uintptr_t) gregs.xss;
@@ -792,7 +778,7 @@
    regs[REG_INDEX(R15)] = gregs.r15;
    regs[REG_INDEX(R14)] = gregs.r14;
    regs[REG_INDEX(R13)] = gregs.r13;
-@@ -411,7 +427,27 @@
+@@ -411,7 +427,27 @@ JNIEXPORT jlongArray JNICALL Java_sun_jv
    regs[REG_INDEX(ES)] = gregs.es;
    regs[REG_INDEX(FS)] = gregs.fs;
    regs[REG_INDEX(GS)] = gregs.gs;
