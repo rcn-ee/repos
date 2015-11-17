@@ -4,21 +4,21 @@
 
 package_name="ti-ipc-dra7xx"
 debian_pkg_name="${package_name}"
-package_version="3.41.00.02"
+package_version="3.41.00.03"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
 git_repo="git://git.ti.com/ipc/ipcdev.git"
-git_sha="b34c8ada4ed243cd52e504bf2c6fb3451dc730f8"
+git_sha="354db7d3b6aa397e6ab4b86fdbd312746fd46a07"
 reprepro_dir="c/${package_name}"
 dl_path=""
 
 debian_version="${package_version}-1"
 debian_patch=""
 debian_diff=""
-local_patch="rcnee2"
+local_patch="rcnee1"
 
-wheezy_version="~bpo70+20151113+1"
-jessie_version="~bpo80+20151113+1"
-stretch_version="~bpo90+20151113+1"
-xenial_version="~bpo1604+20151113+1"
+wheezy_version="~bpo70+20151117+1"
+jessie_version="~bpo80+20151117+1"
+stretch_version="~bpo90+20151117+1"
+xenial_version="~bpo1604+20151117+1"

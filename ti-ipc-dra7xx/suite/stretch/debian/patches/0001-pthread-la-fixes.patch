@@ -16,21 +16,21 @@ index 5272bdb..35805c0 100644
  ipcincludedir = $(includedir)/ti/ipc
  ipcincludeinterfacesdir = $(includedir)/ti/ipc/interfaces
 diff --git a/Makefile.in b/Makefile.in
-index c427cc8..8e216ac 100644
+index edf4369..b24061f 100644
 --- a/Makefile.in
 +++ b/Makefile.in
-@@ -675,6 +675,8 @@ install-data-am: install-ipcincludeHEADERS \
- 	install-ipcincludeinterfacesHEADERS
+@@ -785,6 +785,8 @@ install-dvi: install-dvi-recursive
+ install-dvi-am:
  
  install-exec-am:
 +	@$(NORMAL_INSTALL)
 +	$(MAKE) $(AM_MAKEFLAGS) install-exec-hook
  
- install-info: install-info-recursive
+ install-html: install-html-recursive
  
-@@ -725,6 +727,10 @@ uninstall-info: uninstall-info-recursive
- 	uninstall-ipcincludeHEADERS uninstall-ipcincludeheapsHEADERS \
+@@ -852,6 +854,10 @@ uninstall-am: uninstall-ipcincludeHEADERS \
  	uninstall-ipcincludeinterfacesHEADERS
+ 
  
 +
 +# hook to remove libtools library extention files (.la)
@@ -40,7 +40,7 @@ index c427cc8..8e216ac 100644
  # Otherwise a system limit (for SysV at least) may be exceeded.
  .NOEXPORT:
 diff --git a/configure.ac b/configure.ac
-index e6cb19f..81e05b0 100644
+index 9e6e55c..9ffea4d 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -43,6 +43,9 @@ AC_CONFIG_SRCDIR([packages/ti/ipc/MessageQ.h])
