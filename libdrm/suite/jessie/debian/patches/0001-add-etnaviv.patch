@@ -145,10 +145,10 @@ index 0000000..e880b26
 +	etnaviv_drmif.h
 diff --git a/etnaviv/etnaviv_bo.c b/etnaviv/etnaviv_bo.c
 new file mode 100644
-index 0000000..1504f93
+index 0000000..e9a8513
 --- /dev/null
 +++ b/etnaviv/etnaviv_bo.c
-@@ -0,0 +1,319 @@
+@@ -0,0 +1,314 @@
 +/*
 + * Copyright (C) 2014 Etnaviv Project
 + *
@@ -207,8 +207,6 @@ index 0000000..1504f93
 +static struct etna_bo * bo_from_handle(struct etna_device *dev,
 +		uint32_t size, uint32_t handle)
 +{
-+	unsigned int i;
-+
 +	struct etna_bo *bo = calloc(sizeof(*bo), 1);
 +	if (!bo) {
 +		struct drm_gem_close req = {
@@ -217,9 +215,6 @@ index 0000000..1504f93
 +		drmIoctl(dev->fd, DRM_IOCTL_GEM_CLOSE, &req);
 +		return NULL;
 +	}
-+
-+	for (i = 0; i < ARRAY_SIZE(bo->list); i++)
-+		list_inithead(&bo->list[i]);
 +
 +	bo->dev = etna_device_ref(dev);
 +	bo->size = size;
@@ -339,11 +334,9 @@ index 0000000..1504f93
 +
 +	bo = bo_from_handle(dev, size, handle);
 +
-+	return bo;
-+
 +out_unlock:
 +	pthread_mutex_unlock(&table_lock);
-+	return NULL;
++	return bo;
 +}
 +
 +/* destroy a buffer object */
@@ -390,7 +383,9 @@ index 0000000..1504f93
 +			return ret;
 +		}
 +
-+		bo->name = req.name;
++		pthread_mutex_lock(&table_lock);
++		set_name(bo, req.name);
++		pthread_mutex_unlock(&table_lock);
 +	}
 +
 +	*name = bo->name;
@@ -470,10 +465,10 @@ index 0000000..1504f93
 +
 diff --git a/etnaviv/etnaviv_cmd_stream.c b/etnaviv/etnaviv_cmd_stream.c
 new file mode 100644
-index 0000000..b48ba23
+index 0000000..726ed9b
 --- /dev/null
 +++ b/etnaviv/etnaviv_cmd_stream.c
-@@ -0,0 +1,216 @@
+@@ -0,0 +1,239 @@
 +/*
 + * Copyright (C) 2014-2015 Etnaviv Project
 + *
@@ -508,6 +503,8 @@ index 0000000..b48ba23
 +
 +#include "etnaviv_drmif.h"
 +#include "etnaviv_priv.h"
++
++static pthread_mutex_t idx_lock = PTHREAD_MUTEX_INITIALIZER;
 +
 +static void *grow(void *ptr, uint32_t nr, uint32_t *max, uint32_t sz)
 +{
@@ -558,8 +555,6 @@ index 0000000..b48ba23
 +		goto fail;
 +	}
 +
-+	list_inithead(&stream->submit_list);
-+
 +	stream->base.size = size;
 +	stream->pipe = pipe;
 +	stream->reset_notify = reset_notify;
@@ -589,6 +584,7 @@ index 0000000..b48ba23
 +	stream->offset = 0;
 +	priv->submit.nr_bos = 0;
 +	priv->submit.nr_relocs = 0;
++	priv->nr_bos = 0;
 +
 +	if (priv->reset_notify)
 +		priv->reset_notify(stream, priv->reset_notify_priv);
@@ -599,31 +595,54 @@ index 0000000..b48ba23
 +	return etna_cmd_stream_priv(stream)->last_timestamp;
 +}
 +
++static uint32_t append_bo(struct etna_cmd_stream *stream, struct etna_bo *bo)
++{
++	struct etna_cmd_stream_priv *priv = etna_cmd_stream_priv(stream);
++	uint32_t idx;
++
++	idx = APPEND(&priv->submit, bos);
++	idx = APPEND(priv, bos);
++
++	priv->submit.bos[idx].flags = 0;
++	priv->submit.bos[idx].handle = bo->handle;
++
++	priv->bos[idx] = etna_bo_ref(bo);
++
++	return idx;
++}
++
 +/* add (if needed) bo, return idx: */
 +static uint32_t bo2idx(struct etna_cmd_stream *stream, struct etna_bo *bo,
 +		uint32_t flags)
 +{
 +	struct etna_cmd_stream_priv *priv = etna_cmd_stream_priv(stream);
-+	int id = priv->pipe->id;
 +	uint32_t idx;
 +
-+	if (!bo->indexp1[id]) {
-+		struct list_head *list = &bo->list[id];
-+		idx = APPEND(&priv->submit, bos);
-+		priv->submit.bos[idx].flags = 0;
-+		priv->submit.bos[idx].handle = bo->handle;
-+		bo->indexp1[id] = idx + 1;
++	pthread_mutex_lock(&idx_lock);
 +
-+		assert(LIST_IS_EMPTY(list));
-+		etna_bo_ref(bo);
-+		list_addtail(list, &priv->submit_list);
++	if (!bo->current_stream) {
++		idx = append_bo(stream, bo);
++		bo->current_stream = stream;
++		bo->idx = idx;
++	} else if (bo->current_stream == stream) {
++		idx = bo->idx;
 +	} else {
-+		idx = bo->indexp1[id] - 1;
++		/* slow-path: */
++		for (idx = 0; idx < priv->nr_bos; idx++)
++			if (priv->bos[idx] == bo)
++				break;
++		if (idx == priv->nr_bos) {
++			/* not found */
++			idx = append_bo(stream, bo);
++		}
 +	}
++	pthread_mutex_unlock(&idx_lock);
++
 +	if (flags & ETNA_RELOC_READ)
 +		priv->submit.bos[idx].flags |= ETNA_SUBMIT_BO_READ;
 +	if (flags & ETNA_RELOC_WRITE)
 +		priv->submit.bos[idx].flags |= ETNA_SUBMIT_BO_WRITE;
++
 +	return idx;
 +}
 +
@@ -632,7 +651,6 @@ index 0000000..b48ba23
 +	struct etna_cmd_stream_priv *priv = etna_cmd_stream_priv(stream);
 +	int ret, id = priv->pipe->id;
 +	struct etna_gpu *gpu = priv->pipe->gpu;
-+	struct etna_bo *etna_bo = NULL, *tmp;
 +	struct drm_etnaviv_gem_submit req;
 +
 +	req.pipe = gpu->core;
@@ -653,10 +671,10 @@ index 0000000..b48ba23
 +		priv->last_timestamp = req.fence;
 +	}
 +
-+	LIST_FOR_EACH_ENTRY_SAFE(etna_bo, tmp, &priv->submit_list, list[id]) {
-+		struct list_head *list = &etna_bo->list[id];
-+		list_delinit(list);
-+		etna_bo->indexp1[id] = 0;
++	for (uint32_t i = 0; i < priv->nr_bos; i++) {
++		struct etna_bo *bo = priv->bos[i];
++		bo->current_stream = NULL;
++		etna_bo_del(bo);
 +	}
 +}
 +
@@ -1439,10 +1457,10 @@ index 0000000..9d281f5
 +}
 diff --git a/etnaviv/etnaviv_priv.h b/etnaviv/etnaviv_priv.h
 new file mode 100644
-index 0000000..42156a3
+index 0000000..5276f19
 --- /dev/null
 +++ b/etnaviv/etnaviv_priv.h
-@@ -0,0 +1,172 @@
+@@ -0,0 +1,182 @@
 +/*
 + * Copyright (C) 2014-2015 Etnaviv Project
 + *
@@ -1546,8 +1564,15 @@ index 0000000..42156a3
 +	uint64_t        offset;         /* offset to mmap() */
 +	atomic_t        refcnt;
 +
-+	uint32_t indexp1[ETNA_MAX_PIPES]; /* index plus 1 */
-+	struct list_head list[ETNA_MAX_PIPES];
++	/* in the common case, a bo won't be referenced by more than a single
++	 * command stream.  So to avoid looping over all the bo's in the
++	 * reloc table to find the idx of a bo that might already be in the
++	 * table, we cache the idx in the bo.  But in order to detect the
++	 * slow-path where bo is ref'd in multiple streams, we also must track
++	 * the current_stream for which the idx is valid.  See bo2idx().
++	 */
++	struct etna_cmd_stream *current_stream;
++	uint32_t idx;
 +};
 +
 +struct etna_gpu {
@@ -1565,7 +1590,6 @@ index 0000000..42156a3
 +	struct etna_cmd_stream base;
 +	struct etna_pipe *pipe;
 +
-+	struct list_head submit_list;
 +	uint32_t last_timestamp;
 +
 +	/* submit ioctl related tables: */
@@ -1578,6 +1602,10 @@ index 0000000..42156a3
 +		struct drm_etnaviv_gem_submit_reloc *relocs;
 +		uint32_t nr_relocs, max_relocs;
 +	} submit;
++
++	/* should have matching entries in submit.bos: */
++	struct etna_bo **bos;
++	uint32_t nr_bos, max_bos;
 +
 +	/* notify callback if buffer reset happend */
 +	void (*reset_notify)(struct etna_cmd_stream *stream, void *priv);
