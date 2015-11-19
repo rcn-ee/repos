@@ -1,0 +1,16 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+export DH_GOPKG := github.com/Sirupsen/logrus
+export DH_GOLANG_INSTALL_ALL := 1
+
+override_dh_auto_build:
+	# skip buiding ./... here so we don't get a usr/bin/basic binary from
+	# examples/basic
+	DH_GOLANG_BUILDPKG=$(DH_GOPKG) \
+		dh_auto_build
+
+%:
+	dh $@ --buildsystem=golang --with=golang
