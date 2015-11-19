@@ -6,7 +6,7 @@ package_name="golang-pty"
 debian_pkg_name="${package_name}"
 package_version="0.0~git20141217.1.05017fc"
 package_source="${package_name}_${package_version}.orig.tar.gz"
-src_dir="${package_name}-05017fc"
+src_dir="${package_name}_05017fc"
 
 git_repo=""
 git_sha=""
