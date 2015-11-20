@@ -10,7 +10,7 @@ setup_repo () {
 	echo "Origin: rcn-ee.net" >> ${apache_dir}/${dist}/conf/distributions
 	echo "Label: rcn-ee.net" >> ${apache_dir}/${dist}/conf/distributions
 	echo "Codename: ${suite}" >> ${apache_dir}/${dist}/conf/distributions
-	echo "Architectures: armhf source" >> ${apache_dir}/${dist}/conf/distributions
+	echo "Architectures: arm64 armhf source" >> ${apache_dir}/${dist}/conf/distributions
 	echo "Components: main" >> ${apache_dir}/${dist}/conf/distributions
 	echo "UDebComponents: main" >> ${apache_dir}/${dist}/conf/distributions
 	echo "Description: Apt repository for rcn-ee.net" >> ${apache_dir}/${dist}/conf/distributions
