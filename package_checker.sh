@@ -172,7 +172,7 @@ qt5_lxqt () {
 
 	#https://tracker.debian.org/pkg/lxqt-globalkeys
 	site="${debian_pool}/main/l"
-	package_name="lxqt-globalkeys" ; package_version="${package_name}_0.10.0-1" ; check_http
+	package_name="lxqt-globalkeys" ; package_version="${package_name}_0.10.0-2" ; check_http
 
 	#https://tracker.debian.org/pkg/lxqt-openssh-askpass
 	site="${debian_pool}/main/l"
