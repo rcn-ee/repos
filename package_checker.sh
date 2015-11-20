@@ -200,11 +200,11 @@ qt5_lxqt () {
 
 	#https://tracker.debian.org/pkg/lxqt-sudo
 	site="${debian_pool}/main/l"
-	package_name="lxqt-sudo" ; package_version="${package_name}_0.10.0-1" ; check_http
+	package_name="lxqt-sudo" ; package_version="${package_name}_0.10.0-2" ; check_http
 
 	#https://tracker.debian.org/pkg/pcmanfm-qt
 	site="${debian_pool}/main/p"
-	package_name="pcmanfm-qt" ; package_version="${package_name}_0.10.0-1" ; check_http
+	package_name="pcmanfm-qt" ; package_version="${package_name}_0.10.0-2" ; check_http
 
 	#https://tracker.debian.org/pkg/lxqt-runner
 	site="${debian_pool}/main/l"
