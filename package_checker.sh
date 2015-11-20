@@ -152,7 +152,7 @@ qt5_lxqt () {
 
 	#https://tracker.debian.org/pkg/screengrab
 	site="${debian_pool}/main/s"
-	package_name="screengrab" ; package_version="${package_name}_1.95+20150929-1" ; check_http
+	package_name="screengrab" ; package_version="${package_name}_1.95+20151117-2" ; check_http
 
 	#https://tracker.debian.org/pkg/liblxqt
 	site="${debian_pool}/main/libl"
