@@ -21,7 +21,6 @@ suite="wheezy"
 if [ -d suite/${suite}/ ] ; then
 	repo="${base}${dist}-machinekit/"
 	deb_arch="armhf"
-	rcn_ee_version="${jessie_version}"
 	run
 fi
 #
