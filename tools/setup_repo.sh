@@ -10,7 +10,7 @@ setup_repo () {
 	echo "Origin: rcn-ee.net" >> ${apache_dir}/${dist}/conf/distributions
 	echo "Label: rcn-ee.net" >> ${apache_dir}/${dist}/conf/distributions
 	echo "Codename: ${suite}" >> ${apache_dir}/${dist}/conf/distributions
-	echo "Architectures: arm64 armhf source" >> ${apache_dir}/${dist}/conf/distributions
+	echo "Architectures: ${archs}" >> ${apache_dir}/${dist}/conf/distributions
 	echo "Components: main" >> ${apache_dir}/${dist}/conf/distributions
 	echo "UDebComponents: main" >> ${apache_dir}/${dist}/conf/distributions
 	echo "Description: Apt repository for rcn-ee.net" >> ${apache_dir}/${dist}/conf/distributions
@@ -79,49 +79,63 @@ key="A4C46402"
 
 dist="debian"
 suite="wheezy"
+archs="armhf source"
 setup_repo
 
 suite="jessie"
+archs="arm64 armhf source"
 setup_repo
 
 suite="stretch"
+archs="arm64 armhf source"
 setup_repo
 
 suite="sid"
+archs="arm64 armhf source"
 setup_repo
 
 dist="debian-exp"
 suite="jessie"
+archs="arm64 armhf source"
 setup_repo
 
 suite="stretch"
+archs="arm64 armhf source"
 setup_repo
 
 dist="debian-machinekit"
 suite="wheezy"
+archs="armhf source"
 setup_repo
 
 suite="jessie"
+archs="arm64 armhf source"
 setup_repo
 
 dist="debian-nodejs"
 suite="jessie"
+archs="arm64 armhf source"
 setup_repo
 
 dist="ubuntu"
 suite="trusty"
+archs="armhf source"
 setup_repo
 
 #eol: july 25 2015
 suite="utopic"
+archs="armhf source"
 setup_repo
 
 suite="vivid"
+archs="armhf source"
 setup_repo
 
 suite="wily"
+archs="armhf source"
 setup_repo
 
 suite="xenial"
+archs="arm64 armhf source"
 setup_repo
 #
