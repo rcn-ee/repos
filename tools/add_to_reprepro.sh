@@ -11,7 +11,7 @@ run () {
 	if [ ! "x${changes_file}" = "x" ] ; then
 		if [ -f ${outgoing}/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}/${changes_file} ] ; then
 			wfile="${outgoing}/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}/${changes_file}"
-			reprepro -b ${repo} -A ${deb_arch} -C main include ${suite} ${wfile}
+			reprepro -b ${repo} -C main include ${suite} ${wfile}
 		fi
 	fi
 }
