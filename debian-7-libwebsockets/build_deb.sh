@@ -45,8 +45,8 @@ run () {
 
 dist="debian"
 suite="wheezy"
-if [ -d suite/${suite}/ ] ; then
+#if [ -d suite/${suite}/ ] ; then
 	deb_arch="armhf"
 	run
-fi
+#fi
 

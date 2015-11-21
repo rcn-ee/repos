@@ -18,14 +18,14 @@ run () {
 
 dist="debian"
 suite="wheezy"
-if [ -d suite/${suite}/ ] ; then
+#if [ -d suite/${suite}/ ] ; then
 	repo="${base}${dist}/"
 	deb_arch=armhf
 	run
-fi
-if [ -d suite/${suite}/ ] ; then
+#fi
+#if [ -d suite/${suite}/ ] ; then
 	repo="${base}${dist}-machinekit/"
 	deb_arch="armhf"
 	run
-fi
+#fi
 #
