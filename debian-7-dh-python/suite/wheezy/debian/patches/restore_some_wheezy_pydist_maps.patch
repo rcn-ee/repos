@@ -1,0 +1,164 @@
+diff --git a/pydist/cpython2_fallback b/pydist/cpython2_fallback
+index 3091281..eef7fd4 100644
+--- a/pydist/cpython2_fallback
++++ b/pydist/cpython2_fallback
+@@ -69,11 +69,13 @@ PyYAML python-yaml
+ Py_ python-py++
+ Pymacs pymacs
+ Pyro4 python2-pyro4
+-Pyste libboost-python1.55-dev
++Pygmy pygmy
++Pyste libboost-python1.49-dev
+ QuantLib_Python quantlib-python
+ Roadmap_Plugin trac-roadmap
+ RunSnakeRun runsnakerun
+ ScientificPython python-scientific
++Shinken shinken-core
+ Sonata sonata
+ South python-django-south
+ TaskCoach taskcoach
+@@ -108,13 +110,13 @@ WikiTableMacro trac-wikitablemacro
+ WordPress_Library python-wordpresslib
+ X_Tile x-tile
+ ZODB3 python-zodb
+-_tifffile python-tifffile
++_tifffile tifffile
+ adns_python python-adns
+ alembic alembic
+ allmydata_tahoe tahoe-lafs
+ ansible ansible
+ apache_libcloud python-libcloud
+-apparmor apparmor-easyprof
++apparmor apparmor-utils
+ apt_clone apt-clone
+ aptfs aptfs
+ aptoncd aptoncd
+@@ -154,13 +156,19 @@ burn burn
+ bzr python-bzrlib
+ bzr_builddeb bzr-builddeb
+ bzr_cia cia-clients
++bzr_cvsps_import bzr-cvsps-import
++bzr_dbus bzr-dbus
+ bzr_email bzr-email
+ bzr_etckeeper etckeeper
+ bzr_fastimport bzr-fastimport
+ bzr_git bzr-git
++bzr_grep bzr-grep
++bzr_gtk bzr-gtk
++bzr_rewrite bzr-rewrite
+ bzr_search bzr-search
+ bzr_stats bzr-stats
+ bzr_tweet bzr-tweet
++bzr_svn bzr-svn
+ bzr_upload bzr-upload
+ bzr_xmloutput bzr-xmloutput
+ calypso calypso
+@@ -185,6 +193,7 @@ datapm datapm
+ dblatex dblatex
+ deluge deluge-common
+ dh_virtualenv dh-virtualenv
++devscripts devscripts
+ dicompyler dicompyler
+ dispcalGUI dispcalgui
+ dissy dissy
+@@ -245,11 +254,13 @@ gourmet gourmet
+ gquilt gquilt
+ graphite_web graphite-web
+ grokmirror grokmirror
++gozerplugs gozerbot-plugins
+ gunicorn gunicorn
+ gvb gvb
+ gyp gyp
+ hgnested mercurial-nested
+ horizon python-django-horizon
++hitchhhiker hitchhiker
+ httpcode httpcode
+ httpie httpie
+ hyde hyde
+@@ -312,6 +323,8 @@ oidua oidua
+ ooo2dbk ooo2dbk
+ ooolib_python python-ooolib
+ openbmap_logger openbmap-logger
++openoffice_python python-openoffice
++openstack.common python-openstack-common
+ osc osc
+ pYsearch python-yahoo
+ pam python-pampy
+@@ -328,6 +341,7 @@ pondus pondus
+ preprocess preprocess
+ presage_dbus_service presage-dbus
+ prewikka prewikka
++proteus tryton-proteus
+ ptex2tex ptex2tex
+ purity_ng purity-ng
+ pyExcelerator python-excelerator
+@@ -377,10 +391,11 @@ pymtbl python-mtbl
+ pyneighborhood pyneighborhood
+ pyp pyp
+ pyparallel python-parallel
++pyppd pyppd
+ pyprompter pyprompter
+ pyqi pyqi
+ pyremctl python-remctl
+-pysane python-sane
++pysane python-imaging-sane
+ pysatellites python-satellites
+ pyserial python-serial
+ pysnmp python-pysnmp4
+@@ -395,6 +410,7 @@ pytcpwrap python-tcpwrap
+ python_libgearman python-gearman.libgearman
+ python_logging_extra python-loggingx
+ python_memcached python-memcache
++python_policyd_spf postfix-policyd-spf-python
+ pytidylib python-tidylib
+ pytimechart pytimechart
+ pytz python-tz
+@@ -413,6 +429,7 @@ quisk quisk
+ quodlibet exfalso
+ rabbitvcs rabbitvcs-core
+ radiotray radiotray
++ranger ranger
+ rapid_spring rapid-spring
+ rdiff_backup rdiff-backup
+ rebuildd rebuildd
+@@ -519,11 +536,15 @@ ttb ttb
+ turpial turpial
+ turses turses
+ typecatcher typecatcher
++txLibravatar python-twisted-libravatar
+ ubuntu_dev_tools ubuntu-dev-tools
+ udev_discover udev-discover
+ unittest_xml_reporting python-xmlrunner
+ urlscan urlscan
++ufw ufw
++unattended_upgrades unattended-upgrades
+ vamos undertaker
++vboxapi virtualbox
+ virtaal virtaal
+ virtualbricks virtualbricks
+ virtualenv_clone virtualenv-clone
+diff --git a/pydist/cpython3_fallback b/pydist/cpython3_fallback
+index ed20695..2c289a9 100644
+--- a/pydist/cpython3_fallback
++++ b/pydist/cpython3_fallback
+@@ -32,6 +32,7 @@ pySFML python3-sfml
+ py_bcrypt python3-bcrypt
+ py_postgresql python3-postgresql
+ pycrypto python3-crypto
++pydns python3-dns
+ pyenchant python3-enchant
+ pyepr python3-epr
+ pyflakes pyflakes
+diff --git a/pydist/generate_fallback_list.py b/pydist/generate_fallback_list.py
+index c3e843c..6451f39 100755
+--- a/pydist/generate_fallback_list.py
++++ b/pydist/generate_fallback_list.py
+@@ -26,7 +26,7 @@ from os import chdir, mkdir
+ from os.path import dirname, exists, isdir, join, split
+ from urllib.request import urlopen
+ 
+-SOURCE = 'http://ftp.debian.org/debian/dists/unstable/main/Contents-amd64.gz'
++SOURCE = 'http://ftp.debian.org/debian/dists/wheezy/main/Contents-amd64.gz'
+ IGNORED_PKGS = {'python-setuptools', 'python3-setuptools', 'pypy-setuptools'}
+ DEFAULTS = {
+     'cpython2': [
