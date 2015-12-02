@@ -97,7 +97,7 @@ qt5_kde () {
 	echo "qt5: kde:"
 
 	site="${debian_pool}/main/s"
-	package_name="solid" ; package_version="${package_name}_5.15.0-1" ; check_http
+	package_name="solid" ; package_version="${package_name}_5.16.0-1" ; check_http
 
 	site="${debian_pool}/main/k"
 	package_name="kcoreaddons" ; package_version="${package_name}_5.15.0-1" ; check_http
