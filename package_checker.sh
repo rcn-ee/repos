@@ -70,7 +70,7 @@ builds () {
 	package_name="pkg-kde-tools" ; package_version="${package_name}_0.15.19" ; check_http
 
 	site="${debian_pool}/main/e"
-	package_name="extra-cmake-modules" ; package_version="${package_name}_5.15.0-1" ; check_http
+	package_name="extra-cmake-modules" ; package_version="${package_name}_5.16.0-1" ; check_http
 }
 
 mesa () {
