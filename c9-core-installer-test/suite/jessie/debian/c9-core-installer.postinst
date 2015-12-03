@@ -6,11 +6,13 @@ set -e
 
 package="c9-core-installer"
 
-sha256sum_tgz_0_10_38="7695b434e87b253a7e1deaadb7fc978d6b4f18092e002847df2145f1c68b0f47"
-        wfile_0_10_38="c9-core_3.1.355+git20151115-build.tar.xz"
+core_version="3.1.614+git20151202"
 
-    sha256sum_tgz_4_2="d25f7cc2ba91ac66c61f9f7559e039f419cd8481c43b00b1fa56d6b8d451323d"
-            wfile_4_2="c9-core_3.1.355+git20151115-build.tar.xz"
+sha256sum_tgz_0_10_38="e031b86dc49ba710092d25eb36c428c37880705e0e20d29bce8347f01862fe63"
+        wfile_0_10_38="c9-core_${core_version}-build.tar.xz"
+
+    sha256sum_tgz_4_2="c57aeae6a4f1bf9bfb7691db143a0a5d7913fe8e9a1456d553dee3e2e613b960"
+            wfile_4_2="c9-core_${core_version}-build.tar.xz"
 
 extract_dir="/opt/cloud9/build/"
 
@@ -51,6 +53,11 @@ dl_install() {
 		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v0.10.38"
 		sha256sum_tgz=${sha256sum_tgz_0_10_38}
 		wfile=${wfile_0_10_38}
+		;;
+	v4.2.2)
+		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v4.2.2"
+		sha256sum_tgz=${sha256sum_tgz_4_2}
+		wfile=${wfile_4_2}
 		;;
 	*)
 		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v4.2.2"
