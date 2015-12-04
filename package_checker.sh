@@ -246,6 +246,11 @@ nodejs () {
 
 	site="${debian_pool}/main/n"
 	package_name="nodejs"; package_version="${package_name}_0.10.38~dfsg-1"; check_http
+
+	echo "nodejs: (jessie-exp)"
+
+	site="${debian_pool}/main/o"
+	package_name="openssl"; package_version="${package_name}_1.0.2e-1"; check_http
 }
 
 builds

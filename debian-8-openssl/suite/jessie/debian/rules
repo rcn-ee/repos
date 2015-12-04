@@ -50,6 +50,7 @@ build-stamp:
 #	perl util/ssldir.pl /usr/lib/ssl
 #	chmod +x debian/libtool
 	./Configure no-shared $(CONFARGS) debian-$(DEB_HOST_ARCH)
+	make depend
 	make -f Makefile all
 	$(MAKE_TEST)
 	mv libcrypto.a libcrypto.static
@@ -100,6 +101,7 @@ clean:
 	rm -f test/asn1test test/wp_test test/srptest test/jpaketest
 	rm -f certs/demo/*.0
 	rm -rf crypto/aes/aes-armv4.S crypto/bn/armv4-gf2m.S crypto/modes/ghash-armv4.S crypto/sha/*.S
+	find . -type l -exec rm '{}' \;
 	dh_clean
 
 install: build
