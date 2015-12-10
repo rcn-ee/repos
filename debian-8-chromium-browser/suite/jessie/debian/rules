@@ -25,7 +25,7 @@ BINARY_PACKAGE_COMPRESSION ?= xz
 FFMPEG_DIR     := third_party/ffmpeg
 FFMPEG_SRC_DIR := $(SRC_DIR)/$(FFMPEG_DIR)
 NINJA          := ninja
-SNAPPY_PKGR_TO_USE :=
+SNAPPY_PKGR_TO_USE := $(shell which snappy)
 
 # Whitelist LP provided new langs only in release builds, PPAs ship them all
 WANT_ONLY_WHITELISTED_NEW_LANGS ?= 0
@@ -88,11 +88,16 @@ GYP_DEFINES += use_aura=1
 GYP_DEFINES += enable_hidpi=1
 GYP_DEFINES += enable_touch_ui=1
 
+GYP_DEFINES += enable_hangout_services_extension=1
+
 # add support and stubbed implementation of widevine (needed for EME)
 GYP_DEFINES += enable_widevine=1 enable_pepper_cdms=1
 
 # Prefer gcc/g++ over clang until clang is better tested in Ubuntu.
 GYP_DEFINES += clang=0
+#ubuntu/clang
+#GYP_DEFINES += clang=1
+#GYP_DEFINES += clang_use_chrome_plugins=0
 
 #GYP_DEFINES += use_ozone=1 ozone_auto_platforms=0 ozone_platform_mir=1 ozone_platform_wayland=0
 #GYP_DEFINES += use_ozone=1
@@ -219,6 +224,7 @@ BUILD_TARGETS := \
 	chrome \
 	chrome_sandbox \
 	chromedriver \
+	remoting_all \
 	$(NULL)
 
 # Needed to preserve the suid and make the sandbox happy
@@ -237,6 +243,8 @@ ifneq ($(DEB_HOST_ARCH),$(DEB_BUILD_ARCH))
 CROSS_BUILD = PKG_CONFIG_PATH=/usr/lib/$(DEB_HOST_MULTIARCH)/pkgconfig:/usr/$(DEB_HOST_MULTIARCH)/lib/pkgconfig CXX=$(DEB_HOST_GNU_TYPE)-g++ CC=$(DEB_HOST_GNU_TYPE)-gcc AR=$(DEB_HOST_GNU_TYPE)-ar AS=$(DEB_HOST_GNU_TYPE)-as CPP=$(DEB_HOST_GNU_TYPE)-cpp LD=$(DEB_HOST_GNU_TYPE)-ld
 else
 CROSS_BUILD = CC=$$(which gcc-4.9 gcc |head -1) CXX=$$(which g++-4.9 g++ |head -1)
+#ubuntu/clang
+#CROSS_BUILD = CC=clang CXX=clang++
 endif
 
 
@@ -255,7 +263,7 @@ get-packaged-orig-source: SUMURL=https://commondatastorage.googleapis.com/chromi
 get-packaged-orig-source: DEST_FILENAME=chromium-browser_$(ORIG_VERSION).orig.tar.xz
 get-packaged-orig-source:
 	@set -eux
-	wget --continue --progress=dot:mega $(URL)
+	wget --continue --progress=dot:giga $(URL)
 	diff -u <(wget -O - -q $(SUMURL); echo) <(for crypto in md5 sha1 sha224 sha256 sha384 sha512; do echo -n "$$crypto  "; $${crypto}sum 'chromium-$(ORIG_VERSION).tar.xz'; done)
 	mv "chromium-$(ORIG_VERSION).tar.xz" "$(DEST_FILENAME)"
 
@@ -295,7 +303,7 @@ override_dh_shlibdeps:
 local-install-arch: S_CR_PATH := apps/chromium/current
 local-install-arch: SNAPPY_ROOT := debian/snappy/$(S_CR_PATH)
 local-install-arch: PKG_DIRS := $(addprefix debian/,$(shell dh_listpackages))
-local-install-arch: TRASH := .deps gen obj.host obj.target \*.lock obj build.\* .landmines mksnapshot.ia32 protoc pyproto re2c resources xdg-mime xdg-settings yasm \*.TOC \*.stamp product_logo_\*png gen\* lib/\* lib libvpx_obj_int_extract .ninja\* chrome-wrapper \*.breakpad.\* java_mojo dump_syms 
+local-install-arch: TRASH := .deps gen obj.host obj.target \*.lock obj build.\* .landmines mksnapshot.ia32 protoc pyproto re2c resources xdg-mime yasm \*.TOC \*.stamp product_logo_\*png gen\* lib/\* lib libvpx_obj_int_extract .ninja\* chrome-wrapper \*.breakpad.\* java_mojo dump_syms 
 local-install-arch:
 	@set -eux
 	# Two stages: Install out of source tree. Copy to packaging.

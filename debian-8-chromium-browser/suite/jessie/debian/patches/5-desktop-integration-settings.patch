@@ -1,6 +1,6 @@
 --- a/chrome/app/generated_resources.grd
 +++ b/chrome/app/generated_resources.grd
-@@ -5176,6 +5176,35 @@ Keep your key file in a safe place. You
+@@ -4820,6 +4820,35 @@ Keep your key file in a safe place. You
          Access denied.
        </message>
  
@@ -36,7 +36,7 @@
        <!-- Global error messages for extensions -->
        <message name="IDS_EXTENSION_WARNINGS_WRENCH_MENU_ITEM" desc="The wrench menu item indicating that extensions caused problems.">
          Extension error
-@@ -12428,6 +12457,9 @@ Some features may be unavailable.  Pleas
+@@ -11996,6 +12025,9 @@ Some features may be unavailable.  Pleas
        <message name="IDS_OPTIONS_ADVANCED_SECTION_TITLE_CONTENT">
          Web content
        </message>
@@ -71,7 +71,7 @@
      <div class="checkbox controlled-setting-with-label">
 --- a/chrome/browser/resources/options/browser_options.js
 +++ b/chrome/browser/resources/options/browser_options.js
-@@ -608,6 +608,23 @@ cr.define('options', function() {
+@@ -621,6 +621,23 @@ cr.define('options', function() {
              [String(event.target.options[event.target.selectedIndex].value)]);
        };
  
@@ -95,7 +95,7 @@
        // Languages section.
        var showLanguageOptions = function(event) {
          PageManager.showPageByName('languages');
-@@ -1713,6 +1730,24 @@ cr.define('options', function() {
+@@ -1743,6 +1760,24 @@ cr.define('options', function() {
      },
  
      /**
@@ -120,7 +120,7 @@
       * Set the checked state of the metrics reporting checkbox.
       * @private
       */
-@@ -2139,6 +2174,7 @@ cr.define('options', function() {
+@@ -2169,6 +2204,7 @@ cr.define('options', function() {
    cr.makePublic(BrowserOptions, [
      'addBluetoothDevice',
      'deleteCurrentProfile',
@@ -128,7 +128,7 @@
      'enableCertificateButton',
      'enableDisplaySettings',
      'enableFactoryResetSection',
-@@ -2153,6 +2189,7 @@ cr.define('options', function() {
+@@ -2183,6 +2219,7 @@ cr.define('options', function() {
      'setAutoOpenFileTypesDisplayed',
      'setBluetoothState',
      'setCanSetTime',
@@ -532,7 +532,7 @@
  <link rel="stylesheet" href="do_not_track_confirm_overlay.css">
  <link rel="stylesheet" href="easy_unlock_turn_off_overlay.css">
  <link rel="stylesheet" href="font_settings.css">
-@@ -119,6 +120,7 @@
+@@ -118,6 +119,7 @@
    <include src="home_page_overlay.html">
    <include src="hotword_confirm_overlay.html">
    <include src="import_data_overlay.html">
@@ -540,7 +540,7 @@
    <include src="language_options.html">
    <include src="manage_profile_overlay.html">
    <include src="password_manager.html">
-@@ -151,6 +153,7 @@
+@@ -150,6 +152,7 @@
    <include src="autofill_edit_creditcard_overlay.html">
    <include src="content_settings_exceptions_area.html">
    <include src="cookies_view.html">
@@ -579,7 +579,7 @@
                                  ContentSettings.getInstance(),
 --- a/chrome/browser/resources/options/options_bundle.js
 +++ b/chrome/browser/resources/options/options_bundle.js
-@@ -82,6 +82,8 @@ var CertificateImportErrorOverlay = opti
+@@ -81,6 +81,8 @@ var CertificateImportErrorOverlay = opti
  <include src="content_settings_ui.js">
  <include src="cookies_list.js">
  <include src="cookies_view.js">
@@ -590,7 +590,7 @@
  <include src="font_settings.js">
 --- a/chrome/browser/ui/webui/options/browser_options_handler.cc
 +++ b/chrome/browser/ui/webui/options/browser_options_handler.cc
-@@ -219,6 +219,8 @@ void BrowserOptionsHandler::GetLocalized
+@@ -220,6 +220,8 @@ void BrowserOptionsHandler::GetLocalized
      { "advancedSectionTitleCloudPrint", IDS_GOOGLE_CLOUD_PRINT },
      { "advancedSectionTitleContent",
        IDS_OPTIONS_ADVANCED_SECTION_TITLE_CONTENT },
@@ -599,7 +599,7 @@
      { "advancedSectionTitleLanguages",
        IDS_OPTIONS_ADVANCED_SECTION_TITLE_LANGUAGES },
      { "advancedSectionTitleNetwork",
-@@ -243,6 +245,8 @@ void BrowserOptionsHandler::GetLocalized
+@@ -244,6 +246,8 @@ void BrowserOptionsHandler::GetLocalized
      { "defaultFontSizeLabel", IDS_OPTIONS_DEFAULT_FONT_SIZE_LABEL },
      { "defaultSearchManageEngines", IDS_OPTIONS_DEFAULTSEARCH_MANAGE_ENGINES },
      { "defaultZoomFactorLabel", IDS_OPTIONS_DEFAULT_ZOOM_LEVEL_LABEL },
@@ -608,14 +608,14 @@
      { "disableWebServices", IDS_OPTIONS_DISABLE_WEB_SERVICES },
      { "doNotTrack", IDS_OPTIONS_ENABLE_DO_NOT_TRACK },
      { "doNotTrackConfirmDisable",
-@@ -334,6 +338,7 @@ void BrowserOptionsHandler::GetLocalized
-       IDS_PRODUCT_NAME },
-     { "profilesSupervisedDashboardTip",
-       IDS_PROFILES_SUPERVISED_USER_DASHBOARD_TIP },
+@@ -321,6 +325,7 @@ void BrowserOptionsHandler::GetLocalized
+     { "privacyClearDataButton", IDS_OPTIONS_PRIVACY_CLEAR_DATA_BUTTON },
+     { "privacyContentSettingsButton",
+       IDS_OPTIONS_PRIVACY_CONTENT_SETTINGS_BUTTON },
 +    { "promptIntegrationEnableIntegration", IDS_PROMPT_INTEGRATION_ENABLE_BUTTON_LABEL },
-     { "proxiesLabelExtension", IDS_OPTIONS_EXTENSION_PROXIES_LABEL },
-     { "proxiesLabelSystem", IDS_OPTIONS_SYSTEM_PROXIES_LABEL,
-       IDS_PRODUCT_NAME },
+     { "profileAddPersonEnable", IDS_PROFILE_ADD_PERSON_ENABLE },
+     { "profileBrowserGuestEnable", IDS_PROFILE_BROWSER_GUEST_ENABLE },
+     { "profilesCreate", IDS_PROFILES_CREATE_BUTTON_LABEL },
 --- /dev/null
 +++ b/chrome/browser/ui/webui/options/desktop_integration_settings_handler.cc
 @@ -0,0 +1,273 @@
@@ -995,7 +995,7 @@
    AddOptionsPageUIHandler(localized_strings, new GeolocationOptionsHandler());
 --- a/chrome/chrome_browser_ui.gypi
 +++ b/chrome/chrome_browser_ui.gypi
-@@ -1859,6 +1859,8 @@
+@@ -1861,6 +1861,8 @@
        'browser/ui/webui/options/core_options_handler.h',
        'browser/ui/webui/options/create_profile_handler.cc',
        'browser/ui/webui/options/create_profile_handler.h',
@@ -1004,7 +1004,7 @@
        'browser/ui/webui/options/easy_unlock_handler.cc',
        'browser/ui/webui/options/easy_unlock_handler.h',
        'browser/ui/webui/options/font_settings_handler.cc',
-@@ -2935,6 +2937,7 @@
+@@ -2942,6 +2944,7 @@
            ],
          }],
          ['use_aura==1 and chromeos==0 and use_ozone==0 and OS=="linux"', {

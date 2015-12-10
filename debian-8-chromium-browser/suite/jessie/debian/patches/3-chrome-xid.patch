@@ -30,7 +30,7 @@
    views::NonClientFrameView* CreateNonClientFrameView() override;
 --- a/chrome/browser/ui/views/frame/browser_view.cc
 +++ b/chrome/browser/ui/views/frame/browser_view.cc
-@@ -702,6 +702,7 @@ void BrowserView::Show() {
+@@ -728,6 +728,7 @@ void BrowserView::Show() {
    force_location_bar_focus_ = false;
  
    browser()->OnWindowDidShow();
@@ -126,7 +126,7 @@
  #include "base/basictypes.h"
  #include "base/command_line.h"
  #include "base/strings/stringprintf.h"
-@@ -105,6 +107,7 @@ const char* kAtomsToCache[] = {
+@@ -106,6 +108,7 @@ const char* kAtomsToCache[] = {
    "_NET_WM_WINDOW_TYPE_NORMAL",
    "_NET_WM_WINDOW_TYPE_NOTIFICATION",
    "_NET_WM_WINDOW_TYPE_TOOLTIP",
@@ -134,7 +134,7 @@
    "XdndActionAsk",
    "XdndActionCopy"
    "XdndActionLink",
-@@ -1411,6 +1414,22 @@ void DesktopWindowTreeHostX11::UpdateMin
+@@ -1421,6 +1424,22 @@ void DesktopWindowTreeHostX11::UpdateMin
    XSetWMNormalHints(xdisplay_, xwindow_, &hints);
  }
  
@@ -204,7 +204,7 @@
      ui::WindowShowState* show_state) const {
 --- a/ui/views/widget/native_widget_aura.h
 +++ b/ui/views/widget/native_widget_aura.h
-@@ -48,6 +48,8 @@ class VIEWS_EXPORT NativeWidgetAura
+@@ -47,6 +47,8 @@ class VIEWS_EXPORT NativeWidgetAura
        internal::NativeWidgetPrivate* native_widget,
        aura::Window* window);
  

@@ -3,11 +3,13 @@
 SNAPPY ?= /tmp/chromium-snappy/apps/chromium
 
 all: $(SNAPPY)/meta/package.yaml $(SNAPPY)/meta/readme.md
+	cd $(SNAPPY); snappy build
 
 DEB_HOST_ARCH ?= $(shell arch)
 
 $(SNAPPY)/meta/package.yaml: 
 $(SNAPPY)/meta/package.yaml:
+	mkdir -p $(SNAPPY)/meta
 	@dpkg-parsechangelog |sed \
 		-e '/^Source: / { s/^Source: .*/name: chromium/; p }' \
 		-e '/^Maintainer: / { s/^Maintainer: /vendor: /; p }' \
@@ -22,6 +24,7 @@ $(SNAPPY)/meta/package.yaml:
 	@echo >>$@
 
 $(SNAPPY)/meta/readme.md:
+	mkdir -p $(SNAPPY)/meta
 	@echo "chromium" >$@
 	@echo "========" >>$@
 	@echo >>$@

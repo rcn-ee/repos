@@ -1,20 +1,59 @@
-chromium-browser (45.0.2454.101-0ubuntu1.1201~bpo80+20151003+1) jessie; urgency=low
+chromium-browser (47.0.2526.73-0ubuntu1.1218~bpo80+20151210+1) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Sat, 03 Oct 2015 20:52:33 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Thu, 10 Dec 2015 12:40:09 -0600
 
-chromium-browser (45.0.2454.101-0ubuntu1.1201) wily; urgency=medium
+chromium-browser (47.0.2526.73-0ubuntu1.1218) xenial; urgency=medium
 
-  * Upstream release 45.0.2454.101:
-    - CVE-2015-1303: Cross-origin bypass in DOM.
-    - CVE-2015-1304: Cross-origin bypass in V8.
-  * debian/tests/testdata/xx-test-tool-is-functional-if-this-prints-functional.sikuli
-    Only use GUI test tool to test IF it works on its own.  If it is broken,
-    don't use that to test chromium.
-  * debian/rules: Include our own "xdg-settings" file until a bug is fixed.
-  * debian/patches/xdg-settings-multiexec-desktopfiles.patch : Locally fix
-    aforementioned bug. More than one Exec line in a destop file (like ours)
-    triggers a bug in badly-written shell code in portland xdg-utils-common.in
+  * Upstream release 47.0.2526.73:
+    - CVE-2015-6765: Use-after-free in AppCache.
+    - CVE-2015-6766: Use-after-free in AppCache.
+    - CVE-2015-6767: Use-after-free in AppCache.
+    - CVE-2015-6768: Cross-origin bypass in DOM.
+    - CVE-2015-6769: Cross-origin bypass in core.
+    - CVE-2015-6770: Cross-origin bypass in DOM.
+    - CVE-2015-6771: Out of bounds access in v8.
+    - CVE-2015-6772: Cross-origin bypass in DOM.
+    - CVE-2015-6764: Out of bounds access in v8.
+    - CVE-2015-6773: Out of bounds access in Skia.
+    - CVE-2015-6774: Use-after-free in Extensions.
+    - CVE-2015-6775: Type confusion in PDFium.
+    - CVE-2015-6776: Out of bounds access in PDFium.
+    - CVE-2015-6777: Use-after-free in DOM.
+    - CVE-2015-6778: Out of bounds access in PDFium.
+    - CVE-2015-6779: Scheme bypass in PDFium.
+    - CVE-2015-6780: Use-after-free in Infobars.
+    - CVE-2015-6781: Integer overflow in Sfntly.
+    - CVE-2015-6782: Content spoofing in Omnibox.
+    - CVE-2015-6783: Signature validation issue in Android Crazy Linker.
+    - CVE-2015-6784: Escaping issue in saved pages.
+    - CVE-2015-6785: Wildcard matching issue in CSP.
+    - CVE-2015-6786: Scheme bypass in CSP.
+    - CVE-2015-6787: Various fixes from internal audits, fuzzing and other
+      initiatives.
+    - Multiple vulnerabilities in V8 fixed at the tip of the 4.7 branch
+      (currently 4.7.80.23).
+  * Upstream release 46.0.2490.86:
+    - CVE-2015-1302: Information leak in PDF viewer.
+  * Upstream release 46.0.2490.71:
+    - CVE-2015-6755: Cross-origin bypass in Blink.
+    - CVE-2015-6756: Use-after-free in PDFium.
+    - CVE-2015-6757: Use-after-free in ServiceWorker.
+    - CVE-2015-6758: Bad-cast in PDFium.
+    - CVE-2015-6759: Information leakage in LocalStorage.
+    - CVE-2015-6760: Improper error handling in libANGLE.
+    - CVE-2015-6761: Memory corruption in FFMpeg.
+    - CVE-2015-6762: CORS bypass via CSS fonts.
+    - CVE-2015-6763: Various fixes from internal audits, fuzzing and other
+      initiatives.
+  * debian/patches/gpu-hangs: remove. Not useful.
+  * Switch to Clang to compile.
+  * debian/rules: Explicitly create remoting resources.
+  * debian/patches/cr46-missing-test-files: 
+  * debian/rules: support screen sharing in Hangouts.
+  * debian/patches/xdg-settings-multiexec-desktopfiles.patch: Always prefer
+    local xdg-settings.
+  * debian/chromium-browser.desktop: Don't override WM class matching.
 
- -- Chad MILLER <chad.miller@canonical.com>  Tue, 29 Sep 2015 08:06:37 -0400
+ -- Chad MILLER <chad.miller@canonical.com>  Tue, 01 Dec 2015 15:37:11 -0500
