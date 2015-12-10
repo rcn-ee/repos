@@ -90,7 +90,7 @@ mesa () {
 	package_name="libvdpau" ; package_version="${package_name}_1.1.1-3" ; check_http
 
 	site="${debian_pool}/main/m"
-	package_name="mesa" ; package_version="${package_name}_11.0.6-1" ; check_http
+	package_name="mesa" ; package_version="${package_name}_11.1.0~rc3-1" ; check_http
 }
 
 qt5_kde () {
