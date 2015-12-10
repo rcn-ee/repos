@@ -48,7 +48,7 @@ else
 	fi
 fi
 
-if [ ! -f ${package_name}_${package_version}.orig.tar.xz ] ; then
-	cp ${package_name}_${package_version}.tar.xz ${package_name}_${package_version}.orig.tar.xz
+if [ ! -f ${package_name}_${package_version}.orig.tar.gz ] ; then
+	cp ${package_name}_${package_version}.tar.gz ${package_name}_${package_version}.orig.tar.gz
 fi
 

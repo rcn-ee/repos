@@ -2,14 +2,14 @@
 
 mirror="http://ports.ubuntu.com"
 
-#https://launchpad.net/ubuntu/+archive/primary/+files/initramfs-tools_0.120ubuntu6.tar.xz
+#https://launchpad.net/ubuntu/+archive/primary/+files/initramfs-tools_0.103ubuntu15.tar.gz
 
 package_name="initramfs-tools"
 debian_pkg_name="${package_name}"
-package_version="0.120ubuntu6"
-dl_package_source="${package_name}_${package_version}.tar.xz"
-package_source="${package_name}_${package_version}.orig.tar.xz"
-src_dir="initramfs-tools-0.120ubuntu6"
+package_version="0.103ubuntu15"
+dl_package_source="${package_name}_${package_version}.tar.gz"
+package_source="${package_name}_${package_version}.orig.tar.gz"
+src_dir="initramfs-tools-0.103ubuntu15"
 
 git_repo=""
 git_sha=""
@@ -20,5 +20,4 @@ debian_version="${package_version}-1rcnee1"
 debian_untar=""
 debian_patch=""
 
-
-wily_version="~bpo1510+20151007+1"
+vivid_version="~bpo1504+20151007+1"
