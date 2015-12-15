@@ -1,3 +1,22 @@
+diff --git a/.gitignore b/.gitignore
+index 79b2ac1..fb6b1eb 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -56,6 +56,7 @@ libdrm_omap.pc
+ libdrm_exynos.pc
+ libdrm_freedreno.pc
+ libdrm_amdgpu.pc
++libdrm_etnaviv.pc
+ libkms.pc
+ libtool
+ ltmain.sh
+@@ -95,4 +96,6 @@ tests/kmstest/kmstest
+ tests/vbltest/vbltest
+ tests/radeon/radeon_ttm
+ tests/exynos/exynos_fimg2d_test
++tests/etnaviv/etnaviv_2d_test
++tests/etnaviv/etnaviv_cmd_stream_test
+ man/*.3
 diff --git a/Makefile.am b/Makefile.am
 index a7a0cca..f2bdede 100644
 --- a/Makefile.am
@@ -145,10 +164,10 @@ index 0000000..e880b26
 +	etnaviv_drmif.h
 diff --git a/etnaviv/etnaviv_bo.c b/etnaviv/etnaviv_bo.c
 new file mode 100644
-index 0000000..e9a8513
+index 0000000..1805411
 --- /dev/null
 +++ b/etnaviv/etnaviv_bo.c
-@@ -0,0 +1,314 @@
+@@ -0,0 +1,315 @@
 +/*
 + * Copyright (C) 2014 Etnaviv Project
 + *
@@ -455,9 +474,10 @@ index 0000000..e9a8513
 +
 +void etna_bo_cpu_fini(struct etna_bo *bo)
 +{
-+	struct drm_etnaviv_gem_cpu_fini req = {
-+			.handle = bo->handle,
-+	};
++	struct drm_etnaviv_gem_cpu_fini req;
++
++	memset(&req, 0, sizeof(req));
++	req.handle = bo->handle;
 +
 +	drmCommandWrite(bo->dev->fd, DRM_ETNAVIV_GEM_CPU_FINI,
 +			&req, sizeof(req));
@@ -795,10 +815,10 @@ index 0000000..4d0a708
 +
 diff --git a/etnaviv/etnaviv_drm.h b/etnaviv/etnaviv_drm.h
 new file mode 100644
-index 0000000..3521da0
+index 0000000..b2ad2b2
 --- /dev/null
 +++ b/etnaviv/etnaviv_drm.h
-@@ -0,0 +1,215 @@
+@@ -0,0 +1,221 @@
 +/*
 + * Copyright (C) 2015 Etnaviv Project
 + *
@@ -905,6 +925,7 @@ index 0000000..3521da0
 +
 +struct drm_etnaviv_gem_cpu_fini {
 +	__u32 handle;         /* in */
++	__u32 flags;          /* in, placeholder for now, no defined values */
 +};
 +
 +/*
@@ -968,9 +989,12 @@ index 0000000..3521da0
 + * mainly just exists as a way to implement the gallium pipe_fence
 + * APIs without requiring a dummy bo to synchronize on.
 + */
++#define ETNA_WAIT_NONBLOCK      0x01
 +struct drm_etnaviv_wait_fence {
 +	__u32 pipe;           /* in */
 +	__u32 fence;          /* in */
++	__u32 flags;          /* in, mask of ETNA_WAIT_x  */
++	__u32 pad;
 +	struct drm_etnaviv_timespec timeout;   /* in */
 +};
 +
@@ -986,6 +1010,8 @@ index 0000000..3521da0
 +struct drm_etnaviv_gem_wait {
 +	__u32 pipe;				/* in */
 +	__u32 handle;				/* in, bo to be waited for */
++	__u32 flags;                            /* in, mask of ETNA_WAIT_x  */
++	__u32 pad;
 +	struct drm_etnaviv_timespec timeout;	/* in */
 +};
 +
@@ -1377,10 +1403,10 @@ index 0000000..26cc05c
 +}
 diff --git a/etnaviv/etnaviv_pipe.c b/etnaviv/etnaviv_pipe.c
 new file mode 100644
-index 0000000..9d281f5
+index 0000000..a1ea786
 --- /dev/null
 +++ b/etnaviv/etnaviv_pipe.c
-@@ -0,0 +1,74 @@
+@@ -0,0 +1,78 @@
 +/*
 + * Copyright (C) 2014-2015 Etnaviv Project
 + *
@@ -1416,11 +1442,15 @@ index 0000000..9d281f5
 +int etna_pipe_wait(struct etna_pipe *pipe, uint32_t timestamp, uint32_t ms)
 +{
 +	struct etna_device *dev = pipe->gpu->dev;
-+	struct drm_etnaviv_wait_fence req = {
-+			.pipe = pipe->gpu->core,
-+			.fence = timestamp,
-+	};
++	struct drm_etnaviv_wait_fence req;
 +	int ret;
++
++	memset(&req, 0, sizeof(req));
++	req.pipe = pipe->gpu->core;
++	req.fence = timestamp;
++
++	if (ms == 0)
++		req.flags |= ETNA_WAIT_NONBLOCK;
 +
 +	get_abs_timeout(&req.timeout, ms);
 +
