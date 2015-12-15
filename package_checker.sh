@@ -78,7 +78,7 @@ mesa () {
 
 	site="${debian_pool}/main/l"
 	package_name="llvm-toolchain-3.6" ; package_version="${package_name}_3.6.2-3" ; check_http
-	package_name="llvm-toolchain-3.7" ; package_version="${package_name}_3.7-4" ; check_http
+	package_name="llvm-toolchain-3.7" ; package_version="${package_name}_3.7.1-1" ; check_http
 
 	site="${debian_pool}/main/libc"
 	package_name="libclc" ; package_version="${package_name}_0.2.0+git20150813-2" ; check_http
@@ -229,11 +229,8 @@ machinekit () {
 	site="${debian_pool}/main/c"
 	package_name="czmq" ; package_version="${package_name}_3.0.2-2" ; check_http
 
-	site="http://deb.dovetail-automata.com/pool/main/libw"
-	package_name="libwebsockets" ; package_version="${package_name}_1.3-1%7egit95a8abb%7e1431844465git95a8abb%7e1jessie%7e1da" ; check_http_machine
-
-	site="http://deb.dovetail-automata.com/deb-testing/pool/main/x"
-	package_name="xenomai" ; package_version="${package_name}_2.6.4-1%7e1jessie%7e1da" ; check_http
+	#site="http://deb.dovetail-automata.com/pool/main/libw"
+	#package_name="libwebsockets" ; package_version="${package_name}_1.3-1%7egit95a8abb%7e1431844465git95a8abb%7e1jessie%7e1da" ; check_http_machine
 }
 
 nodejs () {
@@ -264,10 +261,7 @@ nodejs
 echo "others"
 
 site="http://ports.ubuntu.com/pool/universe/c"
-package_name="chromium-browser" ; package_version="${package_name}_47.0.2526.731-0ubuntu1.1218" ; check_http
-
-site="${debian_pool}/main/o"
-package_name="openjdk-8"; package_version="${package_name}_8u60~b22-1"; check_http
+package_name="chromium-browser" ; package_version="${package_name}_47.0.2526.73-0ubuntu1.1218" ; check_http
 
 #really slow...
 exit
