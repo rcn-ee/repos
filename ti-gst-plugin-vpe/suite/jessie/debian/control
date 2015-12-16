@@ -1,0 +1,36 @@
+Source: gst-plugin-vpe
+Section: libs
+Priority: optional
+Maintainer: TI OMAP Developers <tiomap-dev@lists.launchpad.net>
+Standards-Version: 3.9.2
+Build-Depends: debhelper (>= 7.4.20),
+	cdbs (>= 0.4.43),
+	autotools-dev,
+	libtool,
+	pkg-config,
+	dpkg-dev (>= 1.13.19),
+	pkg-config (>= 0.11.0),
+	autopoint,
+	quilt,
+	libgstreamer0.10-dev ( >= 0.10.36),
+	libgstreamer-plugins-base0.10-dev ( >= 0.10.36),
+	libgstreamer-plugins-bad0.10-dev ( >= 0.10.22),
+	libdce-dev (>= 1.6.2),
+	libdrm-dev (>= 2.4.32-1ubuntu1+ti3.0)
+Vcs-Git:  git://git.ti.com/glsdk/gst-plugin-vpe.git
+Homepage: http://git.ti.com/glsdk/gst-plugin-vpe
+
+Package: gstreamer0.10-plugin-vpe
+Architecture: armhf
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: gst-plugin-vpe is a Gstreamer plugin
+ supporting hardware accelerated video processing on TI DRA7x processors
+
+Package: gstreamer0.10-plugin-vpe-dbg
+Architecture: armhf
+Section: debug
+Priority: extra
+Depends: ${misc:Depends}, gstreamer0.10-plugin-vpe (= ${binary:Version})
+Description: Debug symbols for gst-plugin-vpe, a Gstreamer plugin
+ supporting hardware accelerated video processing on TI DRA7x processors
