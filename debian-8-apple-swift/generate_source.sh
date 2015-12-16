@@ -15,5 +15,5 @@ git clone https://github.com/apple/swift-package-manager.git swiftpm --depth=1
 git clone https://github.com/apple/swift-corelibs-xctest.git --depth=1
 git clone https://github.com/apple/swift-corelibs-foundation.git --depth=1
 cd ..
-tar -cJf ${package_name}_${package_version}.orig.tar.xz ./${package_name}_${package_version}
+#tar -cJf ${package_name}_${package_version}.orig.tar.xz ./${package_name}_${package_version}
 
