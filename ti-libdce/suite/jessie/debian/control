@@ -1,19 +1,17 @@
 Source: dce
 Section: libs
 Priority: extra
-Maintainer: TI OMAP Developers <tiomap-dev@lists.launchpad.net>
+Maintainer: Robert Nelson <robertcnelson@gmail.com>
 Build-Depends: cdbs, debhelper (>= 7), pkg-config (>= 0.11.0),
                libtool, dh-autoreconf, quilt,
-               libdrm-dev (>= 2.4.30-1ubuntu1+ti1.0),
-               libx11-dev (>= 2:1.4.99.1-0ubuntu1),
-               libdri2-dev (>= 1.0.2-0ubuntu2),
+               libdrm-dev,
                libxext-dev,
                libxfixes-dev,
                xserver-xorg-dev,
-               libwayland-dev
-Standards-Version: 3.9.2
-Homepage: https://gitorious.org/gstreamer-omap/libdce
-Vcs-Git: git://gitorious.org/ubuntu-omap/dce.git
+               ti-ipc-dra7xx-dev
+Standards-Version: 3.9.6
+Homepage: http://omapzoom.org/?p=repo/libdce.git;a=summary
+Vcs-Git: git://git.omapzoom.org/repo/libdce.git
 
 Package: libdce1
 Section: libs
@@ -22,7 +20,7 @@ Depends: ${shlibs:Depends},
          ${misc:Depends}
 Replaces:  libdce0
 Conflicts: libdce0
-Description: OMAP4 DCE library
+Description: AM57xx DCE library
  A library to remotely invoke the HW accellerated codecs on IVA-HD
  via a syslink/rcm shim layer.
 
@@ -33,5 +31,5 @@ Depends: ${shlibs:Depends},
          ${misc:Depends},
          pkg-config,
 	 libdce1 (= ${binary:Version})
-Description: OMAP4 DCE development files.
+Description: AM57xx DCE development files.
  Contains all the necessary header files and libs.
