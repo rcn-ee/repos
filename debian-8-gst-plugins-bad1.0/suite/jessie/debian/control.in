@@ -1,0 +1,131 @@
+Source: gst-plugins-bad@GST_ABI@
+Section: libs
+Priority: extra
+Maintainer: Maintainers of GStreamer packages <pkg-gstreamer-maintainers@lists.alioth.debian.org>
+Uploaders: Sebastian Dröge <slomo@debian.org>,
+           Sjoerd Simons <sjoerd@debian.org>
+Build-Depends: BUILDDEPS
+Standards-Version: 3.9.3
+Vcs-Git: git://anonscm.debian.org/pkg-gstreamer/gst-plugins-bad@GST_ABI@.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-gstreamer/gst-plugins-bad@GST_ABI@.git;a=summary
+Homepage: http://gstreamer.freedesktop.org/modules/gst-plugins-bad.html
+
+Package: @GST_PKGNAME@-plugins-bad-doc
+Architecture: all
+Section: doc
+Depends: ${misc:Depends},
+         gstreamer@GST_ABI@-doc,
+         gstreamer@GST_ABI@-plugins-base-doc
+Description: GStreamer documentation for plugins from the "bad" set
+ GStreamer is a streaming media framework, based on graphs of filters
+ which operate on media data.  Applications using this library can do
+ anything from real-time sound processing to playing videos, and just
+ about anything else media-related.  Its plugin-based architecture means
+ that new data types or processing capabilities can be added simply by
+ installing new plug-ins.
+ .
+ GStreamer Bad Plug-ins is a set of plug-ins that aren't up to par compared
+ to the rest. They might be close to being good quality, but they're missing
+ something - be it a good code review, some documentation, a set of tests, a
+ real live maintainer, or some actual wide use.
+ .
+ This package contains the documentation for plugins from the "bad" set.
+ 
+Package: @GST_PKGNAME@-plugins-bad
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         gstreamer@GST_ABI@-plugins-base,
+         libgstreamer-plugins-bad@GST_DEB_ABI@ (= ${binary:Version}),
+Provides: ${gstreamer:Provides}
+Suggests: frei0r-plugins
+Replaces: gstreamer1.0-plugins-base (<< 0.11.94), gstreamer1.0-plugins-good (<< 1.1.2)
+Breaks: gstreamer1.0-plugins-base (<< 0.11.94), gstreamer1.0-plugins-good (<< 1.1.2)
+XB-GStreamer-Version: ${gstreamer:Version}
+XB-GStreamer-Elements: ${gstreamer:Elements}
+XB-GStreamer-URI-Sources: ${gstreamer:URISources}
+XB-GStreamer-URI-Sinks: ${gstreamer:URISinks}
+XB-GStreamer-Encoders: ${gstreamer:Encoders}
+XB-GStreamer-Decoders: ${gstreamer:Decoders}
+Description: GStreamer plugins from the "bad" set
+ GStreamer is a streaming media framework, based on graphs of filters
+ which operate on media data.  Applications using this library can do
+ anything from real-time sound processing to playing videos, and just
+ about anything else media-related.  Its plugin-based architecture means
+ that new data types or processing capabilities can be added simply by
+ installing new plug-ins.
+ .
+ GStreamer Bad Plug-ins is a set of plug-ins that aren't up to par compared
+ to the rest. They might be close to being good quality, but they're missing
+ something - be it a good code review, some documentation, a set of tests, a
+ real live maintainer, or some actual wide use.
+
+Package: @GST_PKGNAME@-plugins-bad-dbg
+Architecture: any
+Multi-Arch: same
+Section: debug
+Priority: extra
+Depends: @GST_PKGNAME@-plugins-bad (= ${binary:Version}),
+         ${misc:Depends}
+Replaces: gstreamer1.0-plugins-base-dbg (<< 0.11.94), gstreamer1.0-plugins-good (<< 1.1.2)
+Breaks: gstreamer1.0-plugins-base-dbg (<< 0.11.94), gstreamer1.0-plugins-good (<< 1.1.2)
+Description: GStreamer plugins from the "bad" set (debug symbols)
+ GStreamer is a streaming media framework, based on graphs of filters
+ which operate on media data.  Applications using this library can do
+ anything from real-time sound processing to playing videos, and just
+ about anything else media-related.  Its plugin-based architecture means
+ that new data types or processing capabilities can be added simply by
+ installing new plug-ins.
+ .
+ This package contains unstripped shared libraries. It is provided primarily
+ to provide a backtrace with names in a debugger, this makes it somewhat
+ easier to interpret core dumps. The libraries are installed in
+ /usr/lib/debug and are automatically used by gdb.
+
+Package: libgstreamer-plugins-bad@GST_DEB_ABI@
+Architecture: any
+Section: libs
+Priority: extra
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+Description: GStreamer development files for libraries from the "bad" set
+ GStreamer is a streaming media framework, based on graphs of filters
+ which operate on media data.  Applications using this library can do
+ anything from real-time sound processing to playing videos, and just
+ about anything else media-related.  Its plugin-based architecture means
+ that new data types or processing capabilities can be added simply by
+ installing new plug-ins.
+ .
+ GStreamer Bad Plug-ins is a set of plug-ins that aren't up to par compared
+ to the rest. They might be close to being good quality, but they're missing
+ something - be it a good code review, some documentation, a set of tests, a
+ real live maintainer, or some actual wide use.
+ .
+ This package contains shared GStreamer libraries from the "bad" set. The API
+ is not guaranteed to be stable.
+
+Package: libgstreamer-plugins-bad@GST_ABI@-dev
+Architecture: any
+Section: libdevel
+Priority: extra
+Depends: ${misc:Depends},
+	 libgstreamer-plugins-bad@GST_DEB_ABI@ (= ${binary:Version}),
+Description: GStreamer development files for libraries from the "bad" set
+ GStreamer is a streaming media framework, based on graphs of filters
+ which operate on media data.  Applications using this library can do
+ anything from real-time sound processing to playing videos, and just
+ about anything else media-related.  Its plugin-based architecture means
+ that new data types or processing capabilities can be added simply by
+ installing new plug-ins.
+ .
+ GStreamer Bad Plug-ins is a set of plug-ins that aren't up to par compared
+ to the rest. They might be close to being good quality, but they're missing
+ something - be it a good code review, some documentation, a set of tests, a
+ real live maintainer, or some actual wide use.
+ .
+ This package contains development files for GStreamer libraries from the
+ "bad" set. The API is not guaranteed to be stable.
