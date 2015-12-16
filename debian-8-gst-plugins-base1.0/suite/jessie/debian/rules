@@ -1,0 +1,183 @@
+#!/usr/bin/make -f
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/gnome.mk
+include /usr/share/cdbs/1/rules/utils.mk
+include /usr/share/cdbs/1/rules/autoreconf.mk
+include /usr/share/gnome-pkg-tools/1/rules/clean-la.mk
+
+export HOME=$(CURDIR)/fake-home
+
+DEB_DH_AUTORECONF_ARGS += --as-needed
+
+CFLAGS += -Wno-error
+CXXFLAGS += -Wno-error
+LDFLAGS += -Wl,-z,defs -Wl,-O1 -Wl,--as-needed
+DEB_MAKE_CHECK_TARGET = check || true
+
+# upstream version with epoch
+gst_version := $(shell dpkg-parsechangelog | sed -n 's/Version: //p' | cut -d '-' -f 1)
+gst_major := 1
+gst_minor := 0
+gst_abi := $(gst_major).$(gst_minor)
+# gstreamer library package names
+gst_lib := libgstreamer$(gst_abi)-0
+gst_lib_dev := libgstreamer$(gst_abi)-dev
+# what gstreamer version is needed
+gst_lib_dev_dep := $(gst_lib_dev) (>= 1.4.0)
+
+gst_pkgname := gstreamer$(gst_abi)
+gst_deb_abi := $(gst_abi)-0
+
+# gst-plugins-base library package names
+gst_plugins_base_lib := libgstreamer-plugins-base$(gst_deb_abi)
+gst_plugins_base_lib_dev := libgstreamer-plugins-base$(gst_abi)-dev
+# gst-plugins-base library shlibs
+gst_plugins_base_lib_dep := "$(gst_plugins_base_lib) (>= $(gst_version))"
+
+gst_extra_build_depends += libasound2-dev (>= 0.9.0) [linux-any]
+gst_extra_build_depends += , libgudev-1.0-dev (>= 143) [linux-any]
+
+# debug package
+DEB_DH_STRIP_ARGS += --dbg-package=$(gst_pkgname)-plugins-base-dbg
+
+DEB_COMPRESS_EXCLUDE = .sgml .devhelp .ps .pdf
+
+# disable all CPU specific optimizations in commands launched by this Makefile
+# using liboil; this is to work around liboil related build failures which
+# are not specially interesting to catch on buildds as these might run very
+# specific hardware
+OIL_CPU_FLAGS := 0
+export OIL_CPU_FLAGS
+
+# The plugins are basically the same.
+# Link special names to a template file.
+# still need "*.install" to be done by hand
+
+PLUGINS += plugins-base x
+ifeq ($(DEB_HOST_ARCH_OS),linux)
+PLUGINS += alsa
+endif
+VERSIONIZE += \
+	plugins-base-apps.install \
+	plugins-base-apps.manpages \
+	plugins-base-doc.install \
+
+ifneq ($(DEB_HOST_ARCH_OS),hurd)
+cdparanoia := debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/gstreamer-$(gst_abi)/libgstcdparanoia.so
+endif
+
+# Let's decide the package name and url depending on the distribution
+DISTRO = "$(shell dpkg-vendor --query vendor)"
+
+GST_PACKAGE_NAME := "GStreamer Base Plugins (unknown Debian derivative)"
+GST_PACKAGE_ORIGIN="http://packages.qa.debian.org/gst-plugins-base$(gst_abi)"
+
+ifeq ($(DISTRO),"Debian")
+GST_PACKAGE_NAME := "GStreamer Base Plugins (Debian)"
+GST_PACKAGE_ORIGIN="http://packages.qa.debian.org/gst-plugins-base$(gst_abi)"
+endif
+
+ifeq ($(DISTRO),"Ubuntu")
+GST_PACKAGE_NAME := "GStreamer Base Plugins (Ubuntu)"
+GST_PACKAGE_ORIGIN="https://launchpad.net/distros/ubuntu/+source/gst-plugins-base$(gst_abi)"
+endif
+
+
+# setup links for packages
+pre-build::
+	for p in $(PLUGINS); do \
+		rm -f debian/$(gst_pkgname)-$$p.install; \
+		sed \
+			-e 's/@GST_ABI@/$(gst_abi)/g' \
+			-e 's,@cdparanoia@,$(cdparanoia),g' \
+			debian/gstreamer-$$p.install \
+			>debian/$(gst_pkgname)-$$p.install; \
+	done
+	for f in $(VERSIONIZE); do \
+		sed 's/@GST_ABI@/$(gst_abi)/g' debian/gstreamer-$$f \
+			>debian/$(gst_pkgname)-$$f; \
+	done
+	rm -f debian/gir1.2-gst-plugins-base-$(gst_abi).install
+	cp debian/gir1.2-gst-plugins-base.install \
+		debian/gir1.2-gst-plugins-base-$(gst_abi).install
+	rm -f debian/libgstreamer-plugins-base$(gst_deb_abi).install
+	sed 's/@GST_ABI@/$(gst_abi)/g' \
+		debian/libgstreamer-plugins-base.install \
+		>debian/libgstreamer-plugins-base$(gst_deb_abi).install
+	rm -f debian/libgstreamer-plugins-base$(gst_deb_abi).symbols
+	cp debian/libgstreamer-plugins-base.symbols \
+		debian/libgstreamer-plugins-base$(gst_deb_abi).symbols
+	rm -f debian/libgstreamer-plugins-base$(gst_abi)-dev.install
+	sed 's/@GST_ABI@/$(gst_abi)/g' \
+		debian/libgstreamer-plugins-base-dev.install \
+		>debian/libgstreamer-plugins-base$(gst_abi)-dev.install
+
+maint: debian/control
+
+debian/build-deps: debian/build-deps.in debian/rules
+	cat $< >$@
+
+debian/control:: debian/control.in debian/build-deps debian/mk.control debian/rules debian/changelog force
+	perl debian/mk.control | sed \
+		-e 's/@GST_VERSION@/$(gst_version)/g' \
+		-e 's/@GST_ABI@/$(gst_abi)/g' \
+		-e 's/@GST_PKGNAME@/$(gst_pkgname)/g' \
+		-e 's/@GST_LIB@/$(gst_lib)/g' \
+		-e 's/@GST_LIB_DEV@/$(gst_lib_dev)/g' \
+		-e 's/@GST_LIB_DEV_DEP@/$(gst_lib_dev_dep)/g' \
+		-e 's/@GST_PLUGINS_BASE_LIB@/$(gst_plugins_base_lib)/g' \
+		-e 's/@GST_PLUGINS_BASE_LIB_DEV@/$(gst_plugins_base_lib_dev)/g' \
+		-e 's/@GST_EXTRA_BUILD_DEPENDS@/$(gst_extra_build_depends)/g' \
+		>$@
+
+DEB_CONFIGURE_EXTRA_FLAGS += \
+	--disable-failing-tests \
+	--disable-examples \
+	--enable-DEBUG \
+	--enable-debug \
+	--enable-experimental \
+	--libdir=\$${prefix}/lib/$(DEB_HOST_MULTIARCH) \
+	--with-package-name=$(GST_PACKAGE_NAME) \
+	--with-package-origin=$(GST_PACKAGE_ORIGIN) \
+	--with-install-plugins-helper="/usr/bin/gstreamer-codec-install"
+
+# only build the docs if gtk-doc-tools is installed, i.e. binary-indep is called
+ifeq ($(shell test "`dpkg -l gtk-doc-tools | grep ^ii`" && echo binary-indep),binary-indep)
+DEB_CONFIGURE_EXTRA_FLAGS += --enable-gtk-doc
+endif
+
+clean::
+	# get rid of the symlinks
+	for i in $(PLUGINS); do \
+		rm -f debian/$(gst_pkgname)-$$i.install; \
+		rm -f debian/$(gst_pkgname)-$$i.preinst; \
+	done
+	for f in $(VERSIONIZE); do \
+		rm -f debian/$(gst_pkgname)-$$f; \
+	done
+	rm -f debian/gir1.2-gst-plugins-base-$(gst_abi).install
+	rm -f debian/libgstreamer-plugins-base$(gst_deb_abi).install
+	rm -f debian/libgstreamer-plugins-base$(gst_deb_abi).symbols
+	rm -f debian/libgstreamer-plugins-base$(gst_abi)-dev.install
+	-rm -rf $(CURDIR)/fake-home
+
+binary-post-install/$(gst_pkgname)-plugins-base-apps::
+	dh_perl -d
+
+DEB_DH_MAKESHLIBS_ARGS_$(gst_plugins_base_lib) += -X "/usr/lib/$(DEB_HOST_MULTIARCH)/gstreamer-$(gst_abi)" -V $(gst_plugins_base_lib_dep) -- -c4
+DEB_INSTALL_DOCS_ALL += debian/README.Debian NEWS
+DEB_SHLIBDEPS_INCLUDE += debian/libgstreamer-plugins-base$(gst_deb_abi)/usr/lib/$(DEB_HOST_MULTIARCH)
+# Disable inclusion of large upstream ChangeLog
+DEB_INSTALL_CHANGELOGS_ALL :=
+
+common-binary-fixup-arch::
+	mkdir -p $(CURDIR)/fake-home
+	HOME=$(CURDIR)/fake-home \
+	LD_LIBRARY_PATH=debian/libgstreamer-plugins-base$(gst_deb_abi)/usr/lib/$(DEB_HOST_MULTIARCH):$(LD_LIBRARY_PATH) \
+	    dh_gstscancodecs
+	rm -rf $(CURDIR)/fake-home
+
+force:
+
+.PHONY: maint force
