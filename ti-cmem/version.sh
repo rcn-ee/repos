@@ -16,14 +16,16 @@ dl_path=""
 debian_version="${package_version}-1"
 debian_patch=""
 debian_diff=""
+local_patch="rcnee1"
 
 #sed -i -e 's:4.10.02.03:4.10.02.04:g' ./debian/cmem-mod-dkms.install
 #sed -i -e 's:4.10.02.03:4.10.02.04:g' ./debian/control
 #sed -i -e 's:4.10.02.03:4.10.02.04:g' ./debian/cmem-mod-dkms.dkms
 
-wheezy_version="~bpo70+20151022+1"
-jessie_version="~bpo80+20151022+1"
-stretch_version="~bpo90+20151022+1"
-trusty_version="~bpo1404+20151022+1"
-vivid_version="~bpo1504+20151022+1"
-wily_version="~bpo1510+20151022+1"
+wheezy_version="~bpo70+20151217+1"
+jessie_version="~bpo80+20151217+1"
+stretch_version="~bpo90+20151217+1"
+trusty_version="~bpo1404+20151217+1"
+vivid_version="~bpo1504+20151217+1"
+wily_version="~bpo1510+20151217+1"
+xenial_version="~bpo1604+20151217+1"
