@@ -9,6 +9,7 @@ export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
 override_dh_install:
 	$(RM) -r $(CURDIR)/debian/tmp/usr/share/icons
+	find . -name LICENSE -delete
 	dh_install
 
 override_dh_strip:
