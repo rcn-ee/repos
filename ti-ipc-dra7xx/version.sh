@@ -4,7 +4,7 @@
 
 package_name="ti-ipc-dra7xx"
 debian_pkg_name="${package_name}"
-package_version="3.41.00.07"
+package_version="3.41.00.08"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
@@ -18,7 +18,7 @@ debian_patch=""
 debian_diff=""
 local_patch="rcnee1"
 
-wheezy_version="~bpo70+20151210+1"
-jessie_version="~bpo80+20151210+1"
-stretch_version="~bpo90+20151210+1"
-xenial_version="~bpo1604+20151210+1"
+wheezy_version="~bpo70+20151216+1"
+jessie_version="~bpo80+20151216+1"
+stretch_version="~bpo90+20151216+1"
+xenial_version="~bpo1604+20151216+1"
