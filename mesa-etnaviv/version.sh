@@ -13,9 +13,9 @@ git_sha="0d19dc302f21d00b88ccb7b70e5a110d17ea4fdf"
 reprepro_dir="m/${package_name}"
 dl_path=""
 
-debian_version="${package_version}-1"
+debian_version="${package_version}-1etnaviv20151216"
 debian_untar=""
 debian_patch=""
-local_patch="rcnee1etnaviv20151216"
+local_patch="rcnee1"
 
 jessie_version="~bpo80+20151217+1"
