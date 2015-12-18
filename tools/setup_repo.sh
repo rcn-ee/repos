@@ -55,6 +55,11 @@ if [ -f ${apache_dir}/${dist}/conf/distributions ] ; then
 	rm -f ${apache_dir}/${dist}/conf/distributions || true
 fi
 
+dist="debian-etnaviv"
+if [ -f ${apache_dir}/${dist}/conf/distributions ] ; then
+	rm -f ${apache_dir}/${dist}/conf/distributions || true
+fi
+
 dist="debian-exp"
 if [ -f ${apache_dir}/${dist}/conf/distributions ] ; then
 	rm -f ${apache_dir}/${dist}/conf/distributions || true
@@ -94,9 +99,14 @@ suite="sid"
 archs="arm64 armhf source"
 setup_repo
 
+dist="debian-etnaviv"
+suite="jessie"
+archs="armhf source"
+setup_repo
+
 dist="debian-exp"
 suite="jessie"
-archs="arm64 armhf source"
+archs="armhf source"
 setup_repo
 
 suite="stretch"
@@ -114,7 +124,7 @@ setup_repo
 
 dist="debian-nodejs"
 suite="jessie"
-archs="arm64 armhf source"
+archs="armhf source"
 setup_repo
 
 dist="ubuntu"
