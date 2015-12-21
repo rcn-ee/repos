@@ -103,8 +103,8 @@ endif
 ifeq (armhf, $(DEB_HOST_ARCH))
 DEB_CONFIGURE_EXTRA_FLAGS += --with-arm-float-abi=hard
 ifeq ($(shell dpkg-vendor --derives-from raspbian && echo true),true)
-# enable vfpv2, disable armv7
-DEB_CONFIGURE_EXTRA_FLAGS += --with-arm-fpu=vfpv2
+# enable vfp, disable armv7
+DEB_CONFIGURE_EXTRA_FLAGS += --with-arm-fpu=vfp
 else
 # enable armv7 vfpv3
 DEB_CONFIGURE_EXTRA_FLAGS += --with-arm-fpu=vfpv3
@@ -115,10 +115,11 @@ DEB_DESTDIR = $(CURDIR)/debian/tmp
 DEB_MAKE_CLEAN_TARGET = clean
 
 #  relax regression tests when targeted experimental suite
-exp-relax-check := $(if $(shell dpkg-parsechangelog | grep -x 'Distribution: \(experimental\|UNRELEASED\)'),-i)
-export HOME := $(CURDIR)/test/tmp
+export HOME = $(CURDIR)/test/tmp
 export FLAKY_TESTS = dontcare
-export TEST_CI_ARGS = --arch=$(destCpu) --timeout=100
+export TEST_CI_ARGS = --arch=$(destCpu) --timeout=3000
+# keep in mind ./debian/rules check is also invoked by adt-run, see debian/tests/
+exp-relax-check := $(if $(shell dpkg-parsechangelog | grep -x 'Distribution: \(experimental\|UNRELEASED\)'),-i)
 DEB_MAKE_CHECK_TARGET = $(exp-relax-check) test-ci
 
 # hardening gyp
@@ -140,11 +141,6 @@ clean::
 	find . -name "*.pyc" -delete
 	rm -rf out
 
-# because of https://github.com/nodejs/node/issues/3227
-pre-build::
-	mkdir -p test/tmp
-	mkdir -p test/tmp.0
-
 binary-post-install/nodejs::
 	mv debian/nodejs/usr/bin/node debian/nodejs/usr/bin/nodejs
 	mv debian/nodejs/usr/share/man/man1/node.1 debian/nodejs/usr/share/man/man1/nodejs.1
@@ -152,6 +148,9 @@ binary-post-install/nodejs::
 # remove *.json files from documentation
 binary-install/nodejs::
 	find debian/nodejs/usr/share/doc/nodejs -name *.json -delete
+
+pre-build::
+	mkdir -p $(HOME)
 
 build/nodejs::
 	make doc
@@ -163,3 +162,10 @@ install/nodejs-dev::
 	install -D debian/dh_nodejs $(cdbs_curdestdir)/usr/bin/dh_nodejs
 	mkdir -p $(cdbs_curdestdir)/usr/share/nodejs
 	echo '$(abi-deps)' > $(cdbs_curdestdir)/usr/share/nodejs/pluginsdep
+
+check:
+	ln -s /usr/bin/nodejs node
+	mkdir -p $(HOME)
+	make $(DEB_MAKE_CHECK_TARGET)
+	rm -f node
+	rm -rf test/tmp*

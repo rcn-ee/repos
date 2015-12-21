@@ -1,8 +1,23 @@
-nodejs (4.2.3~dfsg-1~bpo80+20151204+1) jessie; urgency=low
+nodejs (4.2.3~dfsg-2rcnee0~bpo80+20151221+1) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Fri, 04 Dec 2015 12:55:55 -0600
+ -- Robert Nelson <robertcnelson@gmail.com>  Mon, 21 Dec 2015 08:47:07 -0600
+
+nodejs (4.2.3~dfsg-2) unstable; urgency=medium
+
+  * There is no gcc -mfpu vfpv2 flag - the right flag is vfp
+  * Use repacksuffix in debian/watch
+  * Run tests as autopkgtests as well:
+    + add debian/rules check target to run tests using binary package
+    + create/remove a HOME for test
+    + disable test-process-config because it needs configured tree
+    + test-fs-watch does not work in test bed
+    + test-force-repl hangs in test bed
+  * Set test timeout to 3 seconds
+  * Flaky test-regress-GH-746 because it requires stdin
+
+ -- Jérémy Lal <kapouer@melix.org>  Sun, 20 Dec 2015 03:03:50 +0100
 
 nodejs (4.2.3~dfsg-1) unstable; urgency=high
 
