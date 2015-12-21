@@ -1607,10 +1607,10 @@ index 0000000..d37235e
 +
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_compiler.c b/src/gallium/drivers/etnaviv/etnaviv_compiler.c
 new file mode 100644
-index 0000000..669c485
+index 0000000..a652491
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_compiler.c
-@@ -0,0 +1,2080 @@
+@@ -0,0 +1,2114 @@
 +/*
 + * Copyright (c) 2012-2015 Etnaviv Project
 + *
@@ -2804,6 +2804,41 @@ index 0000000..669c485
 +                        .src[2] = src[0],
 +                        });
 +                break;
++            case TGSI_OPCODE_POW: {
++                struct etna_native_reg temp = etna_compile_get_inner_temp(cd);
++
++                emit_inst(cd, &(struct etna_inst) {
++                        .opcode = INST_OPCODE_LOG,
++                        .sat = sat,
++                        .dst.use = 1,
++                        .dst.comps = INST_COMPS_X, /* temp.x */
++                        .dst.reg = temp.id,
++                        .src[2] = src[0],
++                        });
++
++                emit_inst(cd, &(struct etna_inst) {
++                        .opcode = INST_OPCODE_MUL,
++                        .sat = sat,
++                        .dst.use = 1,
++                        .dst.comps = INST_COMPS_Y, /* temp.y */
++                        .dst.reg = temp.id,
++                        .src[0] = src[1],
++                        .src[1].use = 1, /* temp.xxxx */
++                        .src[1].swiz = INST_SWIZ_BROADCAST(0),
++                        .src[1].rgroup = temp.rgroup,
++                        .src[1].reg = temp.id,
++                        });
++
++                emit_inst(cd, &(struct etna_inst) {
++                        .opcode = INST_OPCODE_EXP,
++                        .sat = sat,
++                        .dst = convert_dst(cd, &inst->Dst[0]),
++                        .src[2].use = 1, /* temp.yyyy */
++                        .src[2].swiz = INST_SWIZ_BROADCAST(1),
++                        .src[2].rgroup = temp.rgroup,
++                        .src[2].reg = temp.id,
++                        });
++                } break;
 +            case TGSI_OPCODE_XPD: {
 +                /*
 +                 * MUL tTEMP.xyzw, src0.zxyw, src1.yzxw, void
@@ -3067,7 +3102,6 @@ index 0000000..669c485
 +            case TGSI_OPCODE_PK2US:
 +            case TGSI_OPCODE_PK4B:
 +            case TGSI_OPCODE_PK4UB:
-+            case TGSI_OPCODE_POW: /* lowered by mesa to ex2(y*lg2(x)) */
 +            case TGSI_OPCODE_ROUND:
 +            case TGSI_OPCODE_CLAMP:
 +            case TGSI_OPCODE_DP2A:
@@ -6493,10 +6527,10 @@ index 0000000..2eaf325
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_screen.c b/src/gallium/drivers/etnaviv/etnaviv_screen.c
 new file mode 100644
-index 0000000..f8b91a3
+index 0000000..0d60119
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_screen.c
-@@ -0,0 +1,679 @@
+@@ -0,0 +1,677 @@
 +/*
 + * Copyright (c) 2012-2015 Etnaviv Project
 + *
@@ -6796,8 +6830,6 @@ index 0000000..f8b91a3
 +            return 0;
 +    case PIPE_SHADER_CAP_TGSI_SQRT_SUPPORTED:
 +            return VIV_FEATURE(screen, chipMinorFeatures0, HAS_SQRT_TRIG);
-+    case PIPE_SHADER_CAP_TGSI_POW_SUPPORTED:
-+            return false;
 +    case PIPE_SHADER_CAP_INTEGERS: /* XXX supported on gc2000 but not yet implemented */
 +            return 0;
 +    case PIPE_SHADER_CAP_MAX_TEXTURE_SAMPLERS:
@@ -14154,7 +14186,7 @@ index 0000000..e398ccc
 +
 +#endif /* RENDERONLY_SCREEN_H */
 diff --git a/src/gallium/include/pipe/p_defines.h b/src/gallium/include/pipe/p_defines.h
-index 88e37e9..12a9047 100644
+index 88e37e9..6345434 100644
 --- a/src/gallium/include/pipe/p_defines.h
 +++ b/src/gallium/include/pipe/p_defines.h
 @@ -544,6 +544,7 @@ enum pipe_cap
@@ -14173,14 +14205,6 @@ index 88e37e9..12a9047 100644
  };
  
  #define PIPE_QUIRK_TEXTURE_BORDER_COLOR_SWIZZLE_NV50 (1 << 0)
-@@ -689,6 +691,7 @@ enum pipe_shader_cap
-    PIPE_SHADER_CAP_MAX_TEXTURE_SAMPLERS,
-    PIPE_SHADER_CAP_PREFERRED_IR,
-    PIPE_SHADER_CAP_TGSI_SQRT_SUPPORTED,
-+   PIPE_SHADER_CAP_TGSI_POW_SUPPORTED,
-    PIPE_SHADER_CAP_MAX_SAMPLER_VIEWS,
-    PIPE_SHADER_CAP_DOUBLES,
-    PIPE_SHADER_CAP_TGSI_DROUND_SUPPORTED, /* all rounding modes */
 diff --git a/src/gallium/state_trackers/egl/fbdev/native_fbdev.h b/src/gallium/state_trackers/egl/fbdev/native_fbdev.h
 new file mode 100644
 index 0000000..571e682
@@ -14753,20 +14777,6 @@ index ccc3cc6..d5d345c 100644
        get_extensions = dlsym(dri->driver, get_extensions_name);
        free(get_extensions_name);
  
-diff --git a/src/glsl/ir_optimization.h b/src/glsl/ir_optimization.h
-index 265b223..6633c75 100644
---- a/src/glsl/ir_optimization.h
-+++ b/src/glsl/ir_optimization.h
-@@ -36,7 +36,8 @@
- #define LOG_TO_LOG2        0x10
- #define MOD_TO_FLOOR       0x20
- #define INT_DIV_TO_MUL_RCP 0x40
--#define BITFIELD_INSERT_TO_BFM_BFI 0x80
-+#define LRP_TO_ARITH       0x80
-+#define BITFIELD_INSERT_TO_BFM_BFI 0x120
- #define LDEXP_TO_ARITH     0x100
- #define CARRY_TO_ARITH     0x200
- #define BORROW_TO_ARITH    0x400
 diff --git a/src/mesa/program/ir_to_mesa.cpp b/src/mesa/program/ir_to_mesa.cpp
 index 8f58f3e..8f8a2f7 100644
 --- a/src/mesa/program/ir_to_mesa.cpp
@@ -14786,18 +14796,10 @@ index 8f58f3e..8f8a2f7 100644
  	 progress = do_lower_jumps(ir, true, true, options->EmitNoMainReturn, options->EmitNoCont, options->EmitNoLoops) || progress;
  
 diff --git a/src/mesa/state_tracker/st_extensions.c b/src/mesa/state_tracker/st_extensions.c
-index 17f572f..0e85590 100644
+index 17f572f..359e0bb 100644
 --- a/src/mesa/state_tracker/st_extensions.c
 +++ b/src/mesa/state_tracker/st_extensions.c
-@@ -224,6 +224,7 @@ void st_init_limits(struct pipe_screen *screen,
-       pc->MaxEnvParams = MIN2(pc->MaxParameters, MAX_PROGRAM_ENV_PARAMS);
- 
-       options->EmitNoNoise = TRUE;
-+      options->EmitNoPow = !screen->get_shader_param(screen, sh, PIPE_SHADER_CAP_TGSI_POW_SUPPORTED);
- 
-       /* TODO: make these more fine-grained if anyone needs it */
-       options->MaxIfDepth = screen->get_shader_param(screen, sh, PIPE_SHADER_CAP_MAX_CONTROL_FLOW_DEPTH);
-@@ -462,6 +463,7 @@ void st_init_extensions(struct pipe_screen *screen,
+@@ -462,6 +462,7 @@ void st_init_extensions(struct pipe_screen *screen,
        { o(EXT_blend_equation_separate),      PIPE_CAP_BLEND_EQUATION_SEPARATE          },
        { o(EXT_draw_buffers2),                PIPE_CAP_INDEP_BLEND_ENABLE               },
        { o(EXT_stencil_two_side),             PIPE_CAP_TWO_SIDED_STENCIL                },
@@ -14805,7 +14807,7 @@ index 17f572f..0e85590 100644
        { o(EXT_texture_array),                PIPE_CAP_MAX_TEXTURE_ARRAY_LAYERS         },
        { o(EXT_texture_filter_anisotropic),   PIPE_CAP_ANISOTROPIC_FILTER               },
        { o(EXT_texture_mirror_clamp),         PIPE_CAP_TEXTURE_MIRROR_CLAMP             },
-@@ -645,6 +647,7 @@ void st_init_extensions(struct pipe_screen *screen,
+@@ -645,6 +646,7 @@ void st_init_extensions(struct pipe_screen *screen,
     extensions->EXT_pixel_buffer_object = GL_TRUE;
     extensions->EXT_point_parameters = GL_TRUE;
     extensions->EXT_provoking_vertex = GL_TRUE;
