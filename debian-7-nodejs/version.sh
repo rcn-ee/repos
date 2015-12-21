@@ -18,8 +18,8 @@ dl_path="pool/main/${reprepro_dir}/"
 
 debian_version="${package_version}-1"
 debian_untar=""
-#debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
+local_patch="rcnee1"
 
-wheezy_version="~bpo70+20151204+1"
-jessie_version="~bpo80+20151204+1"
+wheezy_version="~bpo70+20151221+1"
+jessie_version="~bpo80+20151221+1"
