@@ -4,7 +4,7 @@ mirror="http://ftp.de.debian.org/debian"
 
 package_name="qupzilla"
 debian_pkg_name="${package_name}"
-package_version="1.8.8~dfsg1"
+package_version="1.8.9~dfsg1"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}-${package_version}"
 
@@ -17,4 +17,4 @@ debian_version="${package_version}-1"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 
-jessie_version="~bpo80+20151109+1"
+jessie_version="~bpo80+20151221+1"
