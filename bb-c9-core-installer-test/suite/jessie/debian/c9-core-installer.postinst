@@ -6,13 +6,13 @@ set -e
 
 package="c9-core-installer"
 
-core_version="3.1.614+git20151202"
+core_version="3.1.794+git20151220"
 
-sha256sum_tgz_0_10_38="e031b86dc49ba710092d25eb36c428c37880705e0e20d29bce8347f01862fe63"
-        wfile_0_10_38="c9-core_${core_version}-build.tar.xz"
+sha256sum_tgz_0_10_x="56c7b9961c48bae387a340618462710e681794f30e2968da975455a447976ade"
+        wfile_0_10_x="c9-core_${core_version}-build.tar.xz"
 
-    sha256sum_tgz_4_2="c57aeae6a4f1bf9bfb7691db143a0a5d7913fe8e9a1456d553dee3e2e613b960"
-            wfile_4_2="c9-core_${core_version}-build.tar.xz"
+ sha256sum_tgz_4_2_x="99468b624a389a09212cc9c963de577b8bfa7c995b4f7c58dd32ef6f9029939d"
+         wfile_4_2_x="c9-core_${core_version}-build.tar.xz"
 
 extract_dir="/opt/cloud9/build/"
 
@@ -49,20 +49,20 @@ dl_install() {
 	unset node_version
 	node_version=$(nodejs --version || true)
 	case "${node_version}" in
-	v0.10.38)
-		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v0.10.38"
-		sha256sum_tgz=${sha256sum_tgz_0_10_38}
-		wfile=${wfile_0_10_38}
+	v0.10.38|v0.10.39|v0.10.40|v0.10.41)
+		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v0.10.x"
+		sha256sum_tgz=${sha256sum_tgz_0_10_x}
+		wfile=${wfile_0_10_x}
 		;;
-	v4.2.2)
-		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v4.2.2"
-		sha256sum_tgz=${sha256sum_tgz_4_2}
-		wfile=${wfile_4_2}
+	v4.2.2|v4.2.3)
+		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v4.2.x"
+		sha256sum_tgz=${sha256sum_tgz_4_2_x}
+		wfile=${wfile_4_2_x}
 		;;
 	*)
-		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v4.2.2"
-		sha256sum_tgz=${sha256sum_tgz_4_2}
-		wfile=${wfile_4_2}
+		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v4.2.x"
+		sha256sum_tgz=${sha256sum_tgz_4_2_x}
+		wfile=${wfile_4_2_x}
 		;;
 	esac
 
@@ -217,7 +217,7 @@ c9_directory () {
 	echo "2.0.2" > "$C9_DIR/node_modules/node-gyp/${package}.version"
 
 	case "${node_version}" in
-	v0.10.38)
+	v0.10.38|v0.10.39|v0.10.40|v0.10.41)
 		npm_project="pty.js@0.2.8"
 		#pty.js@0.2.8 node_modules/pty.js
 		#├── extend@1.2.1
@@ -233,7 +233,24 @@ c9_directory () {
 		##stupid: "--unsafe-perm=true" npm actually wants you to install as root then thru sudo!!!
 		"$NPM" install --unsafe-perm=true /var/cache/${package}/pty.js-0.2.8.tgz
 		;;
+	v4.2.2|v4.2.3)
+		npm_project="pty.js@0.3.0"
+		#pty.js@0.3.0 node_modules/pty.js
+		#├── extend@1.2.1
+		#└── nan@2.0.5
+
+		#npm pack extend@1.2.1
+		pkg="extend" ; ver="1.2.1" ; maybe_install_depend
+		#npm pack nan@2.0.5
+		pkg="nan" ; ver="2.0.5" ; maybe_install_depend
+
+		echo "${package}:Installing ${npm_project}"
+		#npm pack pty.js@0.3.0
+		##stupid: "--unsafe-perm=true" npm actually wants you to install as root then thru sudo!!!
+		"$NPM" install --unsafe-perm=true /var/cache/${package}/pty.js-0.3.0.tgz
+		;;
 	*)
+		#v4.2.2|v4.2.3
 		npm_project="pty.js@0.3.0"
 		#pty.js@0.3.0 node_modules/pty.js
 		#├── extend@1.2.1
