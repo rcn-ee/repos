@@ -1607,10 +1607,10 @@ index 0000000..d37235e
 +
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_compiler.c b/src/gallium/drivers/etnaviv/etnaviv_compiler.c
 new file mode 100644
-index 0000000..a652491
+index 0000000..2942a36
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_compiler.c
-@@ -0,0 +1,2114 @@
+@@ -0,0 +1,2074 @@
 +/*
 + * Copyright (c) 2012-2015 Etnaviv Project
 + *
@@ -1670,6 +1670,7 @@ index 0000000..a652491
 +#include "tgsi/tgsi_strings.h"
 +#include "tgsi/tgsi_util.h"
 +#include "tgsi/tgsi_info.h"
++#include "tgsi/tgsi_lowering.h"
 +#include "pipe/p_shader_tokens.h"
 +#include "util/u_memory.h"
 +#include "util/u_math.h"
@@ -1728,6 +1729,9 @@ index 0000000..a652491
 +/* scratch area for compiling shader, freed after compilation finishes */
 +struct etna_compile_data
 +{
++    const struct tgsi_token *tokens;
++    bool free_tokens;
++
 +    uint processor; /* TGSI_PROCESSOR_... */
 +
 +    /* Register descriptions, per TGSI file, per register index */
@@ -1945,11 +1949,11 @@ index 0000000..a652491
 +}
 +
 +/* Pass -- check register file declarations and immediates */
-+static void etna_compile_parse_declarations(struct etna_compile_data *cd, const struct tgsi_token *tokens)
++static void etna_compile_parse_declarations(struct etna_compile_data *cd)
 +{
 +    struct tgsi_parse_context ctx = {};
 +    unsigned status = TGSI_PARSE_OK;
-+    status = tgsi_parse_init(&ctx, tokens);
++    status = tgsi_parse_init(&ctx, cd->tokens);
 +    assert(status == TGSI_PARSE_OK);
 +
 +    cd->processor = ctx.FullHeader.Processor.Processor;
@@ -1997,11 +2001,11 @@ index 0000000..a652491
 +}
 +
 +/* Pass -- check and record usage of temporaries, inputs, outputs */
-+static void etna_compile_pass_check_usage(struct etna_compile_data *cd, const struct tgsi_token *tokens)
++static void etna_compile_pass_check_usage(struct etna_compile_data *cd)
 +{
 +    struct tgsi_parse_context ctx = {};
 +    unsigned status = TGSI_PARSE_OK;
-+    status = tgsi_parse_init(&ctx, tokens);
++    status = tgsi_parse_init(&ctx, cd->tokens);
 +    assert(status == TGSI_PARSE_OK);
 +
 +    for(int idx=0; idx<cd->total_decls; ++idx)
@@ -2119,11 +2123,11 @@ index 0000000..a652491
 + * b) the temporary is not used after that
 + * Also recognize direct assignment of IN to OUT (passthrough)
 + **/
-+static void etna_compile_pass_optimize_outputs(struct etna_compile_data *cd, const struct tgsi_token *tokens)
++static void etna_compile_pass_optimize_outputs(struct etna_compile_data *cd)
 +{
 +    struct tgsi_parse_context ctx = {};
 +    unsigned status = TGSI_PARSE_OK;
-+    status = tgsi_parse_init(&ctx, tokens);
++    status = tgsi_parse_init(&ctx, cd->tokens);
 +    assert(status == TGSI_PARSE_OK);
 +
 +    int inst_idx = 0;
@@ -2363,11 +2367,11 @@ index 0000000..a652491
 +}
 +
 +/* Pass -- compile instructions */
-+static void etna_compile_pass_generate_code(struct etna_compile_data *cd, const struct tgsi_token *tokens)
++static void etna_compile_pass_generate_code(struct etna_compile_data *cd)
 +{
 +    struct tgsi_parse_context ctx = {};
 +    unsigned status = TGSI_PARSE_OK;
-+    status = tgsi_parse_init(&ctx, tokens);
++    status = tgsi_parse_init(&ctx, cd->tokens);
 +    assert(status == TGSI_PARSE_OK);
 +
 +    int inst_idx = 0;
@@ -2550,35 +2554,6 @@ index 0000000..a652491
 +                        .src[2] = src[1],
 +                        });
 +                break;
-+            case TGSI_OPCODE_DP2: {
-+                struct etna_native_reg temp = etna_compile_get_inner_temp(cd);
-+                emit_inst(cd, &(struct etna_inst) {
-+                        .opcode = INST_OPCODE_MUL,
-+                        .sat = 0,
-+                        .dst.use = 1,
-+                        .dst.comps = INST_COMPS_X | INST_COMPS_Y, /* temp.xy */
-+                        .dst.reg = temp.id,
-+                        .src[0] = convert_src(cd, &inst->Src[0], INST_SWIZ_IDENTITY),
-+                        .src[1] = convert_src(cd, &inst->Src[1], INST_SWIZ_IDENTITY),
-+                        });
-+                emit_inst(cd, &(struct etna_inst) {
-+                        .opcode = INST_OPCODE_ADD,
-+                        .sat = 0,
-+                        .dst = convert_dst(cd, &inst->Dst[0]),
-+                        .src[0].use = 1, /* temp.xxxx */
-+                        .src[0].swiz = INST_SWIZ_BROADCAST(0),
-+                        .src[0].neg = 0,
-+                        .src[0].abs = 0,
-+                        .src[0].rgroup = temp.rgroup,
-+                        .src[0].reg = temp.id,
-+                        .src[2].use = 1, /* temp.yyyy */
-+                        .src[2].swiz = INST_SWIZ_BROADCAST(1),
-+                        .src[2].neg = 0,
-+                        .src[2].abs = 0,
-+                        .src[2].rgroup = temp.rgroup,
-+                        .src[2].reg = temp.id,
-+                        });
-+                } break;
 +            case TGSI_OPCODE_DP3:
 +                emit_inst(cd, &(struct etna_inst) {
 +                        .opcode = INST_OPCODE_DP3,
@@ -2804,41 +2779,6 @@ index 0000000..a652491
 +                        .src[2] = src[0],
 +                        });
 +                break;
-+            case TGSI_OPCODE_POW: {
-+                struct etna_native_reg temp = etna_compile_get_inner_temp(cd);
-+
-+                emit_inst(cd, &(struct etna_inst) {
-+                        .opcode = INST_OPCODE_LOG,
-+                        .sat = sat,
-+                        .dst.use = 1,
-+                        .dst.comps = INST_COMPS_X, /* temp.x */
-+                        .dst.reg = temp.id,
-+                        .src[2] = src[0],
-+                        });
-+
-+                emit_inst(cd, &(struct etna_inst) {
-+                        .opcode = INST_OPCODE_MUL,
-+                        .sat = sat,
-+                        .dst.use = 1,
-+                        .dst.comps = INST_COMPS_Y, /* temp.y */
-+                        .dst.reg = temp.id,
-+                        .src[0] = src[1],
-+                        .src[1].use = 1, /* temp.xxxx */
-+                        .src[1].swiz = INST_SWIZ_BROADCAST(0),
-+                        .src[1].rgroup = temp.rgroup,
-+                        .src[1].reg = temp.id,
-+                        });
-+
-+                emit_inst(cd, &(struct etna_inst) {
-+                        .opcode = INST_OPCODE_EXP,
-+                        .sat = sat,
-+                        .dst = convert_dst(cd, &inst->Dst[0]),
-+                        .src[2].use = 1, /* temp.yyyy */
-+                        .src[2].swiz = INST_SWIZ_BROADCAST(1),
-+                        .src[2].rgroup = temp.rgroup,
-+                        .src[2].reg = temp.id,
-+                        });
-+                } break;
 +            case TGSI_OPCODE_XPD: {
 +                /*
 +                 * MUL tTEMP.xyzw, src0.zxyw, src1.yzxw, void
@@ -3104,9 +3044,6 @@ index 0000000..a652491
 +            case TGSI_OPCODE_PK4UB:
 +            case TGSI_OPCODE_ROUND:
 +            case TGSI_OPCODE_CLAMP:
-+            case TGSI_OPCODE_DP2A:
-+            case TGSI_OPCODE_EXP:
-+            case TGSI_OPCODE_LOG:
 +            case TGSI_OPCODE_TXB: /* XXX INST_OPCODE_TEXLDB */
 +            case TGSI_OPCODE_TXL: /* XXX INST_OPCODE_TEXLDL */
 +            case TGSI_OPCODE_UP2H:
@@ -3490,22 +3427,43 @@ index 0000000..a652491
 +bool etna_compile_shader_object(struct etna_specs* specs, const struct tgsi_token* tokens, struct etna_shader_object** out)
 +{
 +    /* Create scratch space that may be too large to fit on stack
-+     * XXX don't forget to free this on all exit paths.
 +     */
++    bool ret = true;
 +    struct etna_compile_data *cd = CALLOC_STRUCT(etna_compile_data);
++    struct tgsi_shader_info info;
++
++    static const struct tgsi_lowering_config lconfig = {
++        .lower_SCS  = true,
++        .lower_POW  = true,
++        .lower_EXP  = true,
++        .lower_LOG  = true,
++        .lower_DP2  = true,
++        .lower_DP2A = true,
++    };
++
++    *out = NULL;
++    if (!cd)
++        return false;
++
 +    cd->specs = specs;
++    cd->tokens = tgsi_transform_lowering(&lconfig, tokens, &info);
++    cd->free_tokens = !!cd->tokens;
++    if (!cd->tokens) {
++        /* no lowering */
++        cd->tokens = tokens;
++    }
 +
 +    /* Build a map from gallium register to native registers for files
 +     * CONST, SAMP, IMM, OUT, IN, TEMP.
 +     * SAMP will map as-is for fragment shaders, there will be a +8 offset for vertex shaders.
 +     */
 +    /* Pass one -- check register file declarations and immediates */
-+    etna_compile_parse_declarations(cd, tokens);
++    etna_compile_parse_declarations(cd);
 +
 +    etna_allocate_decls(cd);
 +
 +    /* Pass two -- check usage of temporaries, inputs, outputs */
-+    etna_compile_pass_check_usage(cd, tokens);
++    etna_compile_pass_check_usage(cd);
 +
 +    assign_special_inputs(cd);
 +
@@ -3513,7 +3471,7 @@ index 0000000..a652491
 +    assign_temporaries_to_native(cd, cd->file[TGSI_FILE_TEMPORARY], cd->file_size[TGSI_FILE_TEMPORARY]);
 +
 +    /* optimize outputs */
-+    etna_compile_pass_optimize_outputs(cd, tokens);
++    etna_compile_pass_optimize_outputs(cd);
 +
 +    /* XXX assign special inputs: gl_FrontFacing (VARYING_SLOT_FACE)
 +     *     this is part of RGROUP_INTERNAL
@@ -3597,17 +3555,14 @@ index 0000000..a652491
 +
 +    /* pass 3: generate instructions
 +     */
-+    etna_compile_pass_generate_code(cd, tokens);
++    etna_compile_pass_generate_code(cd);
 +    etna_compile_add_z_div_if_needed(cd);
 +    etna_compile_add_nop_if_needed(cd);
 +    etna_compile_fill_in_labels(cd);
 +
-+    if(!etna_compile_check_limits(cd))
-+    {
-+        FREE(cd);
-+        *out = NULL;
-+        return false;
-+    }
++    ret = etna_compile_check_limits(cd);
++    if (!ret)
++        goto out;
 +
 +    /* fill in output structure */
 +    struct etna_shader_object *sobj = CALLOC_STRUCT(etna_shader_object);
@@ -3633,8 +3588,13 @@ index 0000000..a652491
 +        fill_in_ps_outputs(sobj, cd);
 +    }
 +    *out = sobj;
++
++out:
++    if (cd->free_tokens)
++        FREE((void *)cd->tokens);
++
 +    FREE(cd);
-+    return true;
++    return ret;
 +}
 +
 +extern const char *tgsi_swizzle_names[];
