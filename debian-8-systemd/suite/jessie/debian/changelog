@@ -1,16 +1,32 @@
-systemd (215-17+deb8u2rcnee1~bpo80+20151009+1) jessie; urgency=low
+systemd (215-17+deb8u3rcnee1~bpo80+20151222+1) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
-  * backport: https://github.com/systemd/systemd/blob/master/src/login/70-power-switch.rules
 
- -- Robert Nelson <robertcnelson@gmail.com>  Fri, 09 Oct 2015 10:44:04 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Tue, 22 Dec 2015 19:45:53 -0600
+
+systemd (215-17+deb8u3) stable; urgency=medium
+
+  * Fix namespace breakage due to incorrect path sorting. (Closes: #787758)
+  * Don't timeout after 90 seconds when no password was entered for cryptsetup
+    devices. (Closes: #802897)
+  * Only set the kernel's timezone when the RTC runs in local time. Otherwise,
+    every daylight saving time change or time zone change by travelling will
+    make the time jump, and the local time might jump backwards which creates
+    unsolvable problems with file timestamps. (Closes: #759319)
+  * Fix incorrect handling of comma separator in systemd-delta.
+    (Closes: #793477)
+  * Make DHCP broadcast behaviour configurable in systemd-networkd via
+    RequestBroadcast=. This is a backport from upstream which doesn't change
+    the default setting. (Closes: #797894)
+
+ -- Michael Biebl <biebl@debian.org>  Mon, 16 Nov 2015 18:08:32 +0100
 
 systemd (215-17+deb8u2) stable; urgency=medium
 
   * Disable default DNS servers in systemd-resolved. In v215 they are always
     added to resolv.conf as fallback entries even when DNS servers were
     acquired from systemd-networkd. (Closes: #787731)
-  * Use strictly versioned dependendency on libsystemd-dev for the
+  * Use strictly versioned dependency on libsystemd-dev for the
     transitional dev packages. The .pc files of the compat libraries declare
     a strictly versioned dependency on libsystemd.pc, so reflect that in the
     package dependencies as well. (Closes: #794290)
