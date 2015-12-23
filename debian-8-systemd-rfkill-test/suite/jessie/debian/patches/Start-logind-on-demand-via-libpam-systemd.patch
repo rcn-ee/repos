@@ -1,0 +1,25 @@
+From: Michael Biebl <biebl@debian.org>
+Date: Thu, 18 Jul 2013 20:36:39 +0200
+Subject: Start logind on demand via libpam-systemd
+
+Don't make pam_sm_open_session() a NOP if logind is not running. Trying
+to access logind via D-Bus will start it on demand.
+---
+ src/login/pam_systemd.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/src/login/pam_systemd.c b/src/login/pam_systemd.c
+index f522d6e..76b883f 100644
+--- a/src/login/pam_systemd.c
++++ b/src/login/pam_systemd.c
+@@ -222,10 +222,6 @@ _public_ PAM_EXTERN int pam_sm_open_session(
+ 
+         assert(handle);
+ 
+-        /* Make this a NOP on non-logind systems */
+-        if (!logind_running())
+-                return PAM_SUCCESS;
+-
+         if (parse_argv(handle,
+                        argc, argv,
+                        &class_pam,

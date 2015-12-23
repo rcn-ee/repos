@@ -1,0 +1,26 @@
+From: Lennart Poettering <lennart@poettering.net>
+Date: Wed, 9 Jul 2014 19:21:42 +0200
+Subject: sysusers: don't allow control characters in gecos fields
+
+(cherry picked from commit 38c74dad1c3d605018e61074e0b80f6b9523b1c8)
+---
+ src/sysusers/sysusers.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/src/sysusers/sysusers.c b/src/sysusers/sysusers.c
+index f3ba8cf..16ea0c9 100644
+--- a/src/sysusers/sysusers.c
++++ b/src/sysusers/sysusers.c
+@@ -1107,7 +1107,11 @@ static bool valid_gecos(const char *d) {
+         if (!utf8_is_valid(d))
+                 return false;
+ 
+-        if (strpbrk(d, ":\n"))
++        if (string_has_cc(d, NULL))
++                return false;
++
++        /* Colons are used as field separators, and hence not OK */
++        if (strchr(d, ':'))
+                 return false;
+ 
+         return true;

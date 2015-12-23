@@ -1,0 +1,40 @@
+From: Tanu Kaskinen <tanu.kaskinen@linux.intel.com>
+Date: Sat, 12 Jul 2014 19:36:16 +0300
+Subject: man: mention XDG_DATA_HOME in systemd.unit
+
+(cherry picked from commit 91acdc17a5b47e775369c6b907601f44fab07dcb)
+---
+ man/systemd.unit.xml | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/man/systemd.unit.xml b/man/systemd.unit.xml
+index cd3279c..f66c580 100644
+--- a/man/systemd.unit.xml
++++ b/man/systemd.unit.xml
+@@ -74,6 +74,8 @@
+ <filename>$HOME/.config/systemd/user/*</filename>
+ <filename>/etc/systemd/user/*</filename>
+ <filename>/run/systemd/user/*</filename>
++<filename>$XDG_DATA_HOME/systemd/user/*</filename>
++<filename>$HOME/.local/share/systemd/user/*</filename>
+ <filename>/usr/lib/systemd/user/*</filename>
+ <filename>...</filename>
+                 </literallayout></para>
+@@ -339,8 +341,16 @@
+                         <entry>Runtime units</entry>
+                       </row>
+                       <row>
++                        <entry><filename>$XDG_DATA_HOME/systemd/user</filename></entry>
++                        <entry>Units of packages that have been installed in the home directory (only used when $XDG_DATA_HOME is set)</entry>
++                      </row>
++                      <row>
++                        <entry><filename>$HOME/.local/share/systemd/user</filename></entry>
++                        <entry>Units of packages that have been installed in the home directory (only used when $XDG_DATA_HOME is not set)</entry>
++                      </row>
++                      <row>
+                         <entry><filename>/usr/lib/systemd/user</filename></entry>
+-                        <entry>Units of installed packages</entry>
++                        <entry>Units of packages that have been installed system-wide</entry>
+                       </row>
+                     </tbody>
+                   </tgroup>

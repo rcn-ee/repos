@@ -1,0 +1,21 @@
+Tests: timedated hostnamed localed-locale localed-x11-keymap logind
+Depends: systemd, libpam-systemd, acl
+Restrictions: needs-root, isolation-machine
+
+Tests: unit-config
+Depends: systemd, python3
+Restrictions: needs-root, allow-stderr
+
+Tests: build-login
+Depends: libsystemd-login-dev, build-essential, pkg-config
+
+Tests: python3
+Depends: python3-systemd
+
+Tests: boot-and-services
+Depends: lightdm, cron, network-manager, busybox-static, python3
+Restrictions: needs-root, isolation-machine, needs-recommends, breaks-testbed
+
+Tests: display-managers
+Depends: systemd, lightdm, python3
+Restrictions: needs-root, isolation-machine, needs-recommends, breaks-testbed

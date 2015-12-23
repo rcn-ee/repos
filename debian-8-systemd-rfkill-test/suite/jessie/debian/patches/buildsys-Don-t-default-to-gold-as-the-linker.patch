@@ -1,0 +1,29 @@
+From: Sjoerd Simons <sjoerd@luon.net>
+Date: Sun, 14 Sep 2014 18:37:51 +0200
+Subject: buildsys: Don't default to gold as the linker
+
+systemd fails to build on sparc when using gold as the linker. Since
+ifuncs aren't used any more for the compat libraries there isn't a real
+reason anymore to explicitely switch to gold as a linker (apart from a
+small build speedup). So remove the explict linker selection and use the
+default linker instead.
+
+https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=760879
+---
+ configure.ac | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 78776da..747d81a 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -216,8 +216,7 @@ CC_CHECK_FLAGS_APPEND([with_ldflags], [LDFLAGS], [\
+         -Wl,--gc-sections \
+         -Wl,-z,relro \
+         -Wl,-z,now \
+-        -pie \
+-        -Wl,-fuse-ld=gold])
++        -pie ])
+ AC_SUBST([OUR_LDFLAGS], "$with_ldflags $sanitizer_ldflags")
+ 
+ AC_CHECK_SIZEOF(pid_t)

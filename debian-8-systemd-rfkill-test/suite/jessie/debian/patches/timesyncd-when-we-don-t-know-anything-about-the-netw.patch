@@ -1,0 +1,127 @@
+From: Lennart Poettering <lennart@poettering.net>
+Date: Mon, 11 Aug 2014 22:04:05 +0200
+Subject: timesyncd: when we don't know anything about the network state,
+ assume we are online
+
+This should provide better compatibility with systems that lack networkd
+
+Conflicts:
+	src/timesync/timesyncd.c
+---
+ src/timesync/timesyncd.c | 48 ++++++++++++++++++++++--------------------------
+ 1 file changed, 22 insertions(+), 26 deletions(-)
+
+diff --git a/src/timesync/timesyncd.c b/src/timesync/timesyncd.c
+index 19ab1cf..0fb92f1 100644
+--- a/src/timesync/timesyncd.c
++++ b/src/timesync/timesyncd.c
+@@ -349,6 +349,7 @@ static int manager_clock_watch(sd_event_source *source, int fd, uint32_t revents
+         /* resync */
+         log_info("System time changed. Resyncing.");
+         m->poll_resync = true;
++
+         return manager_send_request(m);
+ }
+ 
+@@ -1162,80 +1163,75 @@ static bool network_is_online(void) {
+         int r;
+ 
+         r = sd_network_get_operational_state(&state);
+-        if (r >= 0 && STR_IN_SET(state, "routable", "degraded"))
++        if (r < 0) /* if we don't know anything, we consider the system online */
++                return true;
++
++        if (STR_IN_SET(state, "routable", "degraded"))
+                 return true;
+ 
+         return false;
+ }
+ 
+-static int manager_network_event_handler(sd_event_source *s, int fd, uint32_t revents,
+-                                         void *userdata) {
++static int manager_network_event_handler(sd_event_source *s, int fd, uint32_t revents, void *userdata) {
+         Manager *m = userdata;
+         bool connected, online;
+         int r;
+ 
+         assert(m);
+ 
++        sd_network_monitor_flush(m->network_monitor);
++
+         /* check if the machine is online */
+         online = network_is_online();
+ 
+         /* check if the client is currently connected */
+-        connected = (m->server_socket != -1) || m->exhausted_servers;
++        connected = (m->server_socket >= 0) || m->exhausted_servers;
+ 
+         if (connected && !online) {
+                 log_info("No network connectivity, watching for changes.");
+                 manager_disconnect(m);
++
+         } else if (!connected && online) {
+                 log_info("Network configuration changed, trying to establish connection.");
+-                if (m->current_server_address) {
++
++                if (m->current_server_address)
+                         r = manager_begin(m);
+-                        if (r < 0)
+-                                return r;
+-                } else {
++                else
+                         r = manager_connect(m);
+-                        if (r < 0)
+-                                return r;
+-                }
++                if (r < 0)
++                        return r;
+         }
+ 
+-        sd_network_monitor_flush(m->network_monitor);
+-
+         return 0;
+ }
+ 
+ static int manager_network_monitor_listen(Manager *m) {
+-        _cleanup_event_source_unref_ sd_event_source *event_source = NULL;
+-        _cleanup_network_monitor_unref_ sd_network_monitor *monitor = NULL;
+         int r, fd, events;
+ 
+-        r = sd_network_monitor_new(NULL, &monitor);
++        assert(m);
++
++        r = sd_network_monitor_new(NULL, &m->network_monitor);
+         if (r < 0)
+                 return r;
+ 
+-        fd = sd_network_monitor_get_fd(monitor);
++        fd = sd_network_monitor_get_fd(m->network_monitor);
+         if (fd < 0)
+                 return fd;
+ 
+-        events = sd_network_monitor_get_events(monitor);
++        events = sd_network_monitor_get_events(m->network_monitor);
+         if (events < 0)
+                 return events;
+ 
+-        r = sd_event_add_io(m->event, &event_source, fd, events,
+-                            &manager_network_event_handler, m);
++        r = sd_event_add_io(m->event, &m->network_event_source, fd, events, manager_network_event_handler, m);
+         if (r < 0)
+                 return r;
+ 
+-        m->network_monitor = monitor;
+-        m->network_event_source = event_source;
+-        monitor = NULL;
+-        event_source = NULL;
+-
+         return 0;
+ }
+ 
+ int main(int argc, char *argv[]) {
+-        const char *user = "systemd-timesync";
+         _cleanup_manager_free_ Manager *m = NULL;
++        const char *user = "systemd-timesync";
+         uid_t uid;
+         gid_t gid;
+         int r;

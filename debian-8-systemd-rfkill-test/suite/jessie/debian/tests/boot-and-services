@@ -1,0 +1,278 @@
+#!/usr/bin/python3
+# autopkgtest check: Boot with systemd and check critical desktop services
+# (C) 2014 Canonical Ltd.
+# Author: Martin Pitt <martin.pitt@ubuntu.com>
+
+import sys
+import os
+import unittest
+import subprocess
+import tempfile
+import shutil
+import time
+from glob import glob
+
+
+class ServicesTest(unittest.TestCase):
+    '''Check that expected services are running'''
+
+    def test_0_init(self):
+        '''Verify that init is systemd'''
+
+        self.assertIn('systemd', os.readlink('/proc/1/exe'))
+
+    def test_lightdm(self):
+        out = subprocess.check_output(['ps', 'u', '-C', 'lightdm'])
+        self.assertIn(b'lightdm --session', out)
+        out = subprocess.check_output(['ps', 'u', '-C', 'Xorg'])
+        self.assertIn(b':0', out)
+        self.active_unit('lightdm')
+
+    def test_dbus(self):
+        out = subprocess.check_output(
+            ['dbus-send', '--print-reply', '--system',
+             '--dest=org.freedesktop.DBus', '/', 'org.freedesktop.DBus.GetId'])
+        self.assertIn(b'string "', out)
+        self.active_unit('dbus')
+
+    def test_network_manager(self):
+        # 0.9.10 changed the command name
+        _help = subprocess.check_output(['nmcli', '--help'],
+                                        stderr=subprocess.STDOUT)
+        if b' g[eneral]' in _help:
+            out = subprocess.check_output(['nmcli', 'general'])
+        else:
+            out = subprocess.check_output(['nmcli', 'nm'])
+        self.assertIn(b'enabled', out)
+        self.active_unit('network-manager')
+
+    def test_cron(self):
+        out = subprocess.check_output(['ps', 'u', '-C', 'cron'])
+        self.assertIn(b'root', out)
+        self.active_unit('cron')
+
+    def test_logind(self):
+        out = subprocess.check_output(['loginctl'])
+        self.assertNotEqual(b'', out)
+        self.active_unit('systemd-logind')
+
+    def test_rsyslog(self):
+        out = subprocess.check_output(['ps', 'u', '-C', 'rsyslogd'])
+        self.assertIn(b'bin/rsyslogd', out)
+        self.active_unit('rsyslog')
+        with open('/var/log/syslog') as f:
+            log = f.read()
+        # has kernel messages
+        self.assertRegex(log, 'kernel:.*[cC]ommand line:')
+        # has init messages
+        self.assertRegex(log, 'systemd.*Reached target Default')
+        # has other services
+        self.assertRegex(log, 'NetworkManager.*:')
+
+    def test_udev(self):
+        out = subprocess.check_output(['udevadm', 'info', '--export-db'])
+        self.assertIn(b'\nP: /devices/', out)
+        self.active_unit('systemd-udevd')
+
+    # Helper methods
+
+    def active_unit(self, unit):
+        '''Check that given unit is active'''
+
+        out = subprocess.check_output(['systemctl', 'status', unit])
+        self.assertIn(b'active (running)', out)
+
+
+class JournalTest(unittest.TestCase):
+    '''Check journal functionality'''
+
+    def test_no_options(self):
+        out = subprocess.check_output(['journalctl'])
+        # has kernel messages
+        self.assertRegex(out, b'kernel:.*[cC]ommand line:')
+        # has init messages
+        self.assertRegex(out, b'systemd.*Reached target Default')
+        # has other services
+        self.assertRegex(out, b'NetworkManager.*:.*starting')
+
+    def test_log_for_service(self):
+        out = subprocess.check_output(
+            ['journalctl', '_SYSTEMD_UNIT=NetworkManager.service'])
+        self.assertRegex(out, b'NetworkManager.*:.*starting')
+        self.assertNotIn(b'kernel:', out)
+        self.assertNotIn(b'systemd:', out)
+
+
+class NspawnTest(unittest.TestCase):
+    '''Check nspawn'''
+
+    @classmethod
+    def setUpClass(kls):
+        '''Build a bootable busybox mini-container'''
+
+        kls.td_c_busybox = tempfile.TemporaryDirectory(prefix='c_busybox.')
+        kls.c_busybox = kls.td_c_busybox.name
+        for d in ['etc/init.d', 'bin', 'sbin']:
+            os.makedirs(os.path.join(kls.c_busybox, d))
+        shutil.copy('/bin/busybox', os.path.join(kls.c_busybox, 'bin'))
+        shutil.copy('/etc/os-release', os.path.join(kls.c_busybox, 'etc'))
+        os.symlink('busybox', os.path.join(kls.c_busybox, 'bin', 'sh'))
+        os.symlink('../bin/busybox', os.path.join(kls.c_busybox, 'sbin/init'))
+        with open(os.path.join(kls.c_busybox, 'etc/init.d/rcS'), 'w') as f:
+            f.write('''#!/bin/sh
+echo fake container started
+ps aux
+poweroff\n''')
+            os.fchmod(f.fileno(), 0o755)
+        subprocess.check_call(['systemd-machine-id-setup', '--root',
+                               kls.c_busybox], stderr=subprocess.PIPE)
+
+    def setUp(self):
+        self.workdir = tempfile.TemporaryDirectory()
+
+    def test_boot(self):
+        cont = os.path.join(self.workdir.name, 'c1')
+        shutil.copytree(self.c_busybox, cont, symlinks=True)
+        out = subprocess.check_output(['systemd-nspawn', '-D', cont, '-b'],
+                                      timeout=60, stderr=subprocess.STDOUT)
+        self.assertIn(b'Spawning container c1', out)
+        self.assertIn(b'fake container started', out)
+        self.assertRegex(out, b'\n\s+1\s+0\s+init[\r\n]')
+        self.assertRegex(out, b'\n\s+2+\s+0\s.*rcS[\r\n]')
+        self.assertRegex(out, b'Container c1.*shut down')
+
+    def test_service(self):
+        self.assertTrue(os.path.isdir('/var/lib/container'))
+        cont = '/var/lib/container/c1'
+        shutil.copytree(self.c_busybox, cont, symlinks=True)
+        subprocess.check_call(['systemctl', 'start', 'systemd-nspawn@c1'])
+        time.sleep(5)
+
+        systemctl = subprocess.Popen(
+            ['systemctl', 'status', '-l', 'systemd-nspawn@c1'],
+            stdout=subprocess.PIPE)
+        out = systemctl.communicate()[0]
+        self.assertEqual(systemctl.returncode, 3, out)
+        self.assertIn(b'Requesting system poweroff', out)
+
+
+class CgroupsTest(unittest.TestCase):
+    '''Check cgroup setup'''
+
+    @classmethod
+    def setUpClass(kls):
+        kls.controllers = []
+        for controller in glob('/sys/fs/cgroup/*'):
+            if not os.path.islink(controller):
+                kls.controllers.append(controller)
+
+    def setUp(self):
+        self.service = 'testsrv.service'
+        self.service_file = '/run/systemd/system/' + self.service
+
+    def tearDown(self):
+        subprocess.call(['systemctl', 'stop', self.service],
+                        stderr=subprocess.PIPE)
+        try:
+            os.unlink(self.service_file)
+        except OSError:
+            pass
+        subprocess.check_call(['systemctl', 'daemon-reload'])
+
+    def create_service(self, extra_service=''):
+        '''Create test service unit'''
+
+        with open(self.service_file, 'w') as f:
+            f.write('''[Unit]
+Description=test service
+[Service]
+ExecStart=/bin/sleep 500
+%s
+''' % extra_service)
+        subprocess.check_call(['systemctl', 'daemon-reload'])
+
+    def assertNoControllers(self):
+        '''Assert that no cgroup controllers exist for test service'''
+
+        cs = glob('/sys/fs/cgroup/*/system.slice/%s' % self.service)
+        self.assertEqual(cs, [])
+
+    def assertController(self, name):
+        '''Assert that cgroup controller exists for test service'''
+
+        c = '/sys/fs/cgroup/%s/system.slice/%s' % (name, self.service)
+        self.assertTrue(os.path.isdir(c))
+
+    def assertNoController(self, name):
+        '''Assert that cgroup controller does not exist for test service'''
+
+        c = '/sys/fs/cgroup/%s/system.slice/%s' % (name, self.service)
+        self.assertFalse(os.path.isdir(c))
+
+    def test_simple(self):
+        '''simple service'''
+
+        self.create_service()
+        self.assertNoControllers()
+        subprocess.check_call(['systemctl', 'start', self.service])
+        self.assertController('systemd')
+        subprocess.check_call(['systemctl', 'stop', self.service])
+        self.assertNoControllers()
+
+    def test_cpushares(self):
+        '''service with CPUShares'''
+
+        self.create_service('CPUShares=1000')
+        self.assertNoControllers()
+        subprocess.check_call(['systemctl', 'start', self.service])
+        self.assertController('systemd')
+        self.assertController('cpu,cpuacct')
+        subprocess.check_call(['systemctl', 'stop', self.service])
+        self.assertNoControllers()
+
+    def test_custom_cgroup_cleanup(self):
+        '''cgroup cleanup does not touch manually created cgroups'''
+
+        # reproduces https://bugs.debian.org/777601
+        self.create_service()
+        os.mkdir('/sys/fs/cgroup/blkio/aux')
+        os.mkdir('/sys/fs/cgroup/perf_event/aux')
+        self.addCleanup(os.rmdir, '/sys/fs/cgroup/blkio/aux')
+        self.addCleanup(os.rmdir, '/sys/fs/cgroup/perf_event/aux')
+        subprocess.check_call(['systemctl', 'start', self.service])
+        self.assertController('systemd')
+        self.assertTrue(os.path.exists('/sys/fs/cgroup/blkio/aux'))
+        self.assertTrue(os.path.exists('/sys/fs/cgroup/perf_event/aux'))
+
+        subprocess.check_call(['systemctl', 'daemon-reload'])
+        time.sleep(1)
+        subprocess.check_call(['systemctl', 'restart', self.service])
+        time.sleep(1)
+        self.assertTrue(os.path.exists('/sys/fs/cgroup/blkio/aux'))
+        self.assertTrue(os.path.exists('/sys/fs/cgroup/perf_event/aux'))
+
+        subprocess.check_call(['systemctl', 'stop', self.service])
+        self.assertNoControllers()
+        self.assertTrue(os.path.exists('/sys/fs/cgroup/blkio/aux'))
+        self.assertTrue(os.path.exists('/sys/fs/cgroup/perf_event/aux'))
+
+
+def boot_with_systemd():
+    '''Reboot with systemd as init
+
+    In case something else is currently running in the testbed
+    '''
+    if subprocess.call(['systemctl', 'status'], stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE) != 0:
+        print('Installing systemd-sysv and rebooting...')
+        subprocess.check_call('apt-get -y install systemd-sysv 2>&1',
+                              shell=True)
+        subprocess.check_call(['autopkgtest-reboot', 'boot-systemd'])
+
+
+if __name__ == '__main__':
+    if not os.getenv('ADT_REBOOT_MARK'):
+        boot_with_systemd()
+
+    unittest.main(testRunner=unittest.TextTestRunner(stream=sys.stdout,
+                                                     verbosity=2))

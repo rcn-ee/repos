@@ -1,0 +1,80 @@
+Building from source
+--------------------
+Install “git-buildpackage” and run the following steps:
+
+  gbp-clone git+ssh://git.debian.org/git/pkg-systemd/systemd.git
+  cd systemd
+  git-buildpackage
+
+We recommend you use pbuilder to make sure you build in a clean environment:
+
+  git-buildpackage --git-pbuilder
+
+Patch handling
+--------------
+The official form of modifications to the upstream source are quilt patches in
+debian/patches/, like most Debian packages do. You are welcome to use quilt to
+add or modify patches, but you might prefer using a git commit based approach.
+gbp-pq provides that by synthesizing a "patch-queue/<branch>" local branch
+which represents each quilt patch as git commit. You create this with
+
+  gbp-pq import --force
+
+Then you are in the patch-queue branch and can git log, commit, cherry-pick
+upstream commits, rebase, etc. there. After you are done, run
+
+  gbp-pq export
+
+which will put you back into master and update debian/patches/ (including
+series). You need to git add etc. new patches, add a changelog and other
+packaging changes, and then debcommit as usual.
+
+Rebasing patches to a new upstream version
+------------------------------------------
+gbp-pq's "rebase" command does not work very conveniently as it fails on merge
+conflicts. First, ensure you are in the master branch:
+
+  git checkout master  # in case you aren't already
+
+Now, do one of
+
+ (1) To import a new upstream release into the existing master branch for unstable,
+do:
+
+  gbp-pq import --force
+  gbp-pq switch   # switch back to master from patch-queue/master
+  git-import-orig [...]
+  gbp-pq switch   # switch to patch-queue/master
+  git rebase master
+
+ (2) To import a new upstream release into a new branch for Debian experimental, do:
+
+  git branch experimental
+  git checkout experimental
+  editor debian/gbp.conf  # set "debian-branch=experimental"
+  git-import-orig [...]
+  git branch patch-queue/experimental patch-queue/master
+  git checkout patch-queue/experimental
+  git rebase experimental
+
+Now resolve all the conflicts, skip obsolete patches, etc. When you are done, run
+
+  gbp-pq export
+
+Note that our debian/gbp.conf disables patch numbers.
+
+Cherry-picking upstream patches
+-------------------------------
+You can add the systemd upstream branch as an additional remote to the Debian
+packaging branch. Call it "fdo" or "systemd" or similar to avoid confusing it
+with the already existing "upstream" branch from git-buildpackage:
+
+  git remote add fdo git://anongit.freedesktop.org/systemd/systemd
+  git fetch fdo -n
+
+Now you can look at the upstream log and cherry-pick patches into the
+patch-queue branch:
+
+  gbp-pq import --force
+  git log fdo/master
+  git cherry-pick 123DEADBEEF

@@ -1,0 +1,22 @@
+From: Ronny Chevalier <chevalier.ronny@gmail.com>
+Date: Sun, 6 Jul 2014 13:33:38 +0200
+Subject: sysusers: fix uninitialized warning
+
+(cherry picked from commit bce415edcae8e7af8327de8265d621f95fa5426f)
+---
+ src/sysusers/sysusers.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/sysusers/sysusers.c b/src/sysusers/sysusers.c
+index 1209a5a..c0af693 100644
+--- a/src/sysusers/sysusers.c
++++ b/src/sysusers/sysusers.c
+@@ -1312,6 +1312,8 @@ static int parse_line(const char *fname, unsigned line, const char *buffer) {
+ 
+                 h = groups;
+                 break;
++        default:
++                return -EBADMSG;
+         }
+ 
+         i->type = action[0];

@@ -1,0 +1,27 @@
+From 6d025bafdb9a3317fac014bdf19acf09256a1531 Mon Sep 17 00:00:00 2001
+From: Michael Biebl <biebl@debian.org>
+Date: Thu, 16 Apr 2015 13:56:28 +0200
+Subject: [PATCH] manager: pass correct errno to strerror()
+
+have_ask_password contains negative error values which have to be
+negated when being passed to strerror().
+---
+ src/core/manager.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/core/manager.c b/src/core/manager.c
+index 47e23ba..06ef376 100644
+--- a/src/core/manager.c
++++ b/src/core/manager.c
+@@ -241,7 +241,7 @@ static int manager_dispatch_ask_password_fd(sd_event_source *source,
+         if (m->have_ask_password < 0)
+                 /* Log error but continue. Negative have_ask_password
+                  * is treated as unknown status. */
+-                log_error("Failed to list /run/systemd/ask-password: %s", strerror(m->have_ask_password));
++                log_error("Failed to list /run/systemd/ask-password: %s", strerror(-m->have_ask_password));
+ 
+         return 0;
+ }
+-- 
+2.1.4
+

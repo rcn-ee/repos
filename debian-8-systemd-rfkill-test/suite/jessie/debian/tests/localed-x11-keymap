@@ -1,0 +1,25 @@
+#!/bin/sh
+set -e
+
+ORIG_KBD=`cat /etc/default/keyboard`
+
+# should activate daemon and work
+STATUS=`localectl`
+echo "$STATUS" | grep -q "X11 Layout:"
+
+# change layout
+OUT=`localectl set-x11-keymap et pc101 2>&1`
+[ -z "$OUT" ]
+sync
+
+grep -q 'XKBMODEL="\?pc101"\?' /etc/default/keyboard
+grep -q 'XKBLAYOUT="\?et"\?' /etc/default/keyboard
+
+! [ -f /etc/X11/xorg.conf.d/00-keyboard.conf ]
+
+STATUS=`localectl`
+echo "$STATUS" | grep -q "X11 Layout: et"
+echo "$STATUS" | grep -q "X11 Model: pc101"
+
+# reset locale to original
+echo "$ORIG_KBD" > /etc/default/keyboard

@@ -1,0 +1,83 @@
+From: =?utf-8?q?Zbigniew_J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sun, 12 Oct 2014 16:05:49 -0400
+Subject: tests: fix some tests to pass in koji
+
+FAIL: test-engine
+=================
+Cannot find cgroup mount point: No such file or directory
+Assertion 'r >= 0' failed at ../src/test/test-engine.c:46, function main(). Aborting.
+
+FAIL: test-sched-prio
+=====================
+Cannot find cgroup mount point: No such file or directory
+Assertion 'r >= 0' failed at ../src/test/test-sched-prio.c:42, function main(). Aborting.
+
+FAIL: test-bus-cleanup
+======================
+Assertion 'sd_bus_open_system(&bus) >= 0' failed at ../src/libsystemd/sd-bus/test-bus-cleanup.c:40, function test_bus_open(). Aborting.
+after new: refcount 1
+---
+ src/libsystemd/sd-bus/test-bus-cleanup.c | 22 +++++++++++++++++++---
+ src/test/test-sched-prio.c               |  2 +-
+ 2 files changed, 20 insertions(+), 4 deletions(-)
+
+diff --git a/src/libsystemd/sd-bus/test-bus-cleanup.c b/src/libsystemd/sd-bus/test-bus-cleanup.c
+index e36a69f..f586880 100644
+--- a/src/libsystemd/sd-bus/test-bus-cleanup.c
++++ b/src/libsystemd/sd-bus/test-bus-cleanup.c
+@@ -34,11 +34,18 @@ static void test_bus_new(void) {
+         printf("after new: refcount %u\n", REFCNT_GET(bus->n_ref));
+ }
+ 
+-static void test_bus_open(void) {
++static int test_bus_open(void) {
+         _cleanup_bus_unref_ sd_bus *bus = NULL;
++        int r;
+ 
+-        assert_se(sd_bus_open_system(&bus) >= 0);
++        r = sd_bus_open_system(&bus);
++        if (r == -ECONNREFUSED || r == -ENOENT)
++                return r;
++
++        assert_se(r >= 0);
+         printf("after open: refcount %u\n", REFCNT_GET(bus->n_ref));
++
++        return 0;
+ }
+ 
+ static void test_bus_new_method_call(void) {
+@@ -70,11 +77,20 @@ static void test_bus_new_signal(void) {
+ }
+ 
+ int main(int argc, char **argv) {
++        int r;
++
+         log_parse_environment();
+         log_open();
+ 
+         test_bus_new();
+-        test_bus_open();
++        r = test_bus_open();
++        if (r < 0) {
++                log_info("Failed to connect to bus, skipping tests.");
++                return EXIT_TEST_SKIP;
++        }
++
+         test_bus_new_method_call();
+         test_bus_new_signal();
++
++        return EXIT_SUCCESS;
+ }
+diff --git a/src/test/test-sched-prio.c b/src/test/test-sched-prio.c
+index e984ee4..6c90561 100644
+--- a/src/test/test-sched-prio.c
++++ b/src/test/test-sched-prio.c
+@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
+         /* prepare the test */
+         assert_se(set_unit_path(dir) >= 0);
+         r = manager_new(SYSTEMD_USER, &m);
+-        if (r == -EPERM || r == -EACCES || r == -EADDRINUSE || r == -EHOSTDOWN) {
++        if (IN_SET(r, -EPERM, -EACCES, -EADDRINUSE, -EHOSTDOWN, -ENOENT)) {
+                 printf("Skipping test: manager_new: %s", strerror(-r));
+                 return EXIT_TEST_SKIP;
+         }

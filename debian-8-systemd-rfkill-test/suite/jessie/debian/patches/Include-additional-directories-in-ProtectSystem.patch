@@ -1,0 +1,30 @@
+From: Ansgar Burchardt <ansgar@debian.org>
+Date: Thu, 24 Jul 2014 19:38:07 +0200
+Subject: Include additional directories in ProtectSystem
+
+---
+ src/core/namespace.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/core/namespace.c b/src/core/namespace.c
+index 5466b7b..88f6448 100644
+--- a/src/core/namespace.c
++++ b/src/core/namespace.c
+@@ -372,7 +372,7 @@ int setup_namespace(
+                 strv_length(inaccessible_dirs) +
+                 private_dev +
+                 (protect_home != PROTECT_HOME_NO ? 3 : 0) +
+-                (protect_system != PROTECT_SYSTEM_NO ? 2 : 0) +
++                (protect_system != PROTECT_SYSTEM_NO ? 6 : 0) +
+                 (protect_system == PROTECT_SYSTEM_FULL ? 1 : 0);
+ 
+         if (n > 0) {
+@@ -414,7 +414,7 @@ int setup_namespace(
+                 }
+ 
+                 if (protect_system != PROTECT_SYSTEM_NO) {
+-                        r = append_mounts(&m, protect_system == PROTECT_SYSTEM_FULL ? STRV_MAKE("/usr", "-/boot", "/etc") : STRV_MAKE("/usr", "-/boot"), READONLY);
++                        r = append_mounts(&m, protect_system == PROTECT_SYSTEM_FULL ? STRV_MAKE("/usr", "/bin", "/sbin", "/lib", "-/lib64", "-/boot", "/etc") : STRV_MAKE("/usr", "/bin", "/sbin", "/lib", "-/lib64", "-/boot"), READONLY);
+                         if (r < 0)
+                                 return r;
+                 }

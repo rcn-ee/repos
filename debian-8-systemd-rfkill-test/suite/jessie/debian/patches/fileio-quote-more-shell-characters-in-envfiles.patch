@@ -1,0 +1,52 @@
+From: =?utf-8?q?Mantas_Mikul=C4=97nas?= <grawity@gmail.com>
+Date: Sun, 13 Jul 2014 18:49:00 +0300
+Subject: fileio: quote more shell characters in envfiles
+
+Turns out, making strings shell-proof is harder than expected:
+
+    # machinectl set-hostname "foo|poweroff" && . /etc/machine-info
+
+(This could be simplified by quoting *and* escaping all characters,
+which is harmless in shell but unnecessary.)
+
+(cherry picked from commit 0ce5a80601597fe4d1a715a8f70ce8d5ccaa2d86)
+---
+ src/shared/fileio.c | 4 ++--
+ src/shared/util.h   | 6 ++++++
+ 2 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/src/shared/fileio.c b/src/shared/fileio.c
+index b1de590..d22770b 100644
+--- a/src/shared/fileio.c
++++ b/src/shared/fileio.c
+@@ -738,11 +738,11 @@ static void write_env_var(FILE *f, const char *v) {
+         p++;
+         fwrite(v, 1, p-v, f);
+ 
+-        if (string_has_cc(p, NULL) || chars_intersect(p, WHITESPACE "\'\"\\`$")) {
++        if (string_has_cc(p, NULL) || chars_intersect(p, WHITESPACE SHELL_NEED_QUOTES)) {
+                 fputc('\"', f);
+ 
+                 for (; *p; p++) {
+-                        if (strchr("\'\"\\`$", *p))
++                        if (strchr(SHELL_NEED_ESCAPE, *p))
+                                 fputc('\\', f);
+ 
+                         fputc(*p, f);
+diff --git a/src/shared/util.h b/src/shared/util.h
+index 7124e51..64b9fc6 100644
+--- a/src/shared/util.h
++++ b/src/shared/util.h
+@@ -93,6 +93,12 @@
+ #define COMMENTS   "#;"
+ #define GLOB_CHARS "*?["
+ 
++/* What characters are special in the shell? */
++/* must be escaped outside and inside double-quotes */
++#define SHELL_NEED_ESCAPE "\"\\`$"
++/* can be escaped or double-quoted */
++#define SHELL_NEED_QUOTES SHELL_NEED_ESCAPE GLOB_CHARS "'()<>|&;"
++
+ #define FORMAT_BYTES_MAX 8
+ 
+ #define ANSI_HIGHLIGHT_ON "\x1B[1;39m"

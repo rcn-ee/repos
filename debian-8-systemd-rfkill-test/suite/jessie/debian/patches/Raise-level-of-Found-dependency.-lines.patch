@@ -1,0 +1,38 @@
+From: =?utf-8?q?Zbigniew_J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sun, 2 Nov 2014 12:10:42 -0500
+Subject: Raise level of 'Found dependency...' lines
+
+This way they always show up together with 'Found ordering cycle...'.
+Ordering cycles are a serious error and a major pain to debug. If
+quiet is enabled, only the first and the last line of output are
+shown:
+
+systemd[1]: Found ordering cycle on basic.target/start
+systemd[1]: Breaking ordering cycle by deleting job timers.target/start
+systemd[1]: Job timers.target/start deleted to break ordering cycle starting with basic.target/start
+
+which isn't particularly enlightening. So just show the whole message
+at the same level.
+
+https://bugzilla.redhat.com/show_bug.cgi?id=1158206
+---
+ src/core/transaction.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/core/transaction.c b/src/core/transaction.c
+index 805d40a..b9bbec2 100644
+--- a/src/core/transaction.c
++++ b/src/core/transaction.c
+@@ -377,9 +377,9 @@ static int transaction_verify_order_one(Transaction *tr, Job *j, Job *from, unsi
+                 for (k = from; k; k = ((k->generation == generation && k->marker != k) ? k->marker : NULL)) {
+ 
+                         /* logging for j not k here here to provide consistent narrative */
+-                        log_info_unit(j->unit->id,
+-                                      "Found dependency on %s/%s",
+-                                      k->unit->id, job_type_to_string(k->type));
++                        log_warning_unit(j->unit->id,
++                                         "Found dependency on %s/%s",
++                                         k->unit->id, job_type_to_string(k->type));
+ 
+                         if (!delete && hashmap_get(tr->jobs, k->unit) &&
+                             !unit_matters_to_anchor(k->unit, k)) {

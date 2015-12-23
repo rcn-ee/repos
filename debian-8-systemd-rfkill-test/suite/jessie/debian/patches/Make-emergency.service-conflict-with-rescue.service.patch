@@ -1,0 +1,26 @@
+From: Michael Biebl <biebl@debian.org>
+Date: Wed, 20 Aug 2014 23:44:36 +0200
+Subject: Make emergency.service conflict with rescue.service
+
+Otherwise if rescue mode is selected during boot and the emergency mode
+is triggered (e.g. via a broken fstab entry), we have two sulogin
+processes fighting over the tty.
+
+Closes: #757072
+Forwarded: https://bugs.freedesktop.org/show_bug.cgi?id=82778
+---
+ units/emergency.service.in | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/units/emergency.service.in b/units/emergency.service.in
+index 91fc1bb..224a434 100644
+--- a/units/emergency.service.in
++++ b/units/emergency.service.in
+@@ -10,6 +10,7 @@ Description=Emergency Shell
+ Documentation=man:sulogin(8)
+ DefaultDependencies=no
+ Conflicts=shutdown.target
++Conflicts=rescue.service
+ Before=shutdown.target
+ 
+ [Service]

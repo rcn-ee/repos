@@ -1,0 +1,51 @@
+From: Lennart Poettering <lennart@poettering.net>
+Date: Wed, 28 Jan 2015 00:34:58 +0100
+Subject: list: add macro for iterating through a list an item is in,
+ skipping the item
+
+---
+ src/shared/list.h    | 12 ++++++++++++
+ src/test/test-list.c |  7 +++++++
+ 2 files changed, 19 insertions(+)
+
+diff --git a/src/shared/list.h b/src/shared/list.h
+index c020f7e..d535a17 100644
+--- a/src/shared/list.h
++++ b/src/shared/list.h
+@@ -130,6 +130,18 @@
+ #define LIST_FOREACH_AFTER(name,i,p)                                    \
+         for ((i) = (p)->name##_next; (i); (i) = (i)->name##_next)
+ 
++/* Iterate through all the members of the list p is included in, but skip over p */
++#define LIST_FOREACH_OTHERS(name,i,p)                                   \
++        for (({                                                         \
++                (i) = (p);                                              \
++                while ((i) && (i)->name##_prev)                         \
++                        (i) = (i)->name##_prev;                         \
++                if ((i) == (p))                                         \
++                        (i) = (p)->name##_next;                         \
++             });                                                        \
++             (i);                                                       \
++             (i) = (i)->name##_next == (p) ? (p)->name##_next : (i)->name##_next)
++
+ /* Loop starting from p->next until p->prev.
+    p can be adjusted meanwhile. */
+ #define LIST_LOOP_BUT_ONE(name,i,head,p)                                \
+diff --git a/src/test/test-list.c b/src/test/test-list.c
+index fa52ad1..4e3be91 100644
+--- a/src/test/test-list.c
++++ b/src/test/test-list.c
+@@ -38,6 +38,13 @@ int main(int argc, const char *argv[]) {
+                 LIST_PREPEND(item, head, &items[i]);
+         }
+ 
++        i = 0;
++        LIST_FOREACH_OTHERS(item, cursor, &items[2]) {
++                i++;
++                assert_se(cursor != &items[2]);
++        }
++        assert_se(i == ELEMENTSOF(items)-1);
++
+         assert_se(!LIST_JUST_US(item, head));
+ 
+         assert_se(items[0].item_next == NULL);
