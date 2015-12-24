@@ -13,10 +13,10 @@ git_sha="c7f6029e454b70dffa3d04d500966a6ecf24a1fe"
 reprepro_dir="t/${package_name}"
 dl_path=""
 
-debian_version="${package_version}-0"
+debian_version="${package_version}-0rcnee2"
 debian_patch=""
 debian_diff=""
-local_patch="rcnee1"
+local_patch=""
 
 wheezy_version="~bpo70+20151223+1"
 jessie_version="~bpo80+20151223+1"
