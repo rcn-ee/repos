@@ -242,17 +242,18 @@ machinekit () {
 }
 
 nodejs () {
-	echo "nodejs: (jessie-exp)"
-	site="${debian_pool}/main/o"
-	filter="1.0.2"
-	package_name="openssl"; package_version="${package_name}_1.0.2e-1"; check_http
-
+	echo "nodejs: (jessie)"
 	site="${debian_pool}/main/libu"
 	package_name="libuv1"; package_version="${package_name}_1.7.5-1"; check_http
 
 	site="${debian_pool}/main/g"
 	filter="201"
 	package_name="gyp"; package_version="${package_name}_0.1+20150913git1f374df9-1"; check_http
+
+	echo "nodejs: (jessie-exp)"
+	site="${debian_pool}/main/o"
+	filter="1.0.2"
+	package_name="openssl"; package_version="${package_name}_1.0.2e-1"; check_http
 
 	site="${debian_pool}/main/n"
 	filter="4.2"
