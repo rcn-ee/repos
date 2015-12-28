@@ -36,7 +36,12 @@ check_http_exp () {
 
 check_http () {
 	generic_http
-	version=$(cat /tmp/index.html | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+	if [ "x${filter}" = "x" ] ; then
+		version=$(cat /tmp/index.html | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+	else
+		version=$(cat /tmp/index.html | grep ${filter} | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+		unset filter
+	fi
 	generic_check
 }
 
@@ -82,6 +87,7 @@ mesa () {
 	package_name="llvm-toolchain-snapshot" ; package_version="${package_name}_3.8~svn254193-1" ; check_http
 
 	site="${debian_pool}/main/libc"
+	filter="0.2"
 	package_name="libclc" ; package_version="${package_name}_0.2.0+git20150813-2" ; check_http
 
 	site="${debian_pool}/main/libd"
@@ -236,20 +242,21 @@ machinekit () {
 }
 
 nodejs () {
-	echo "nodejs: (jessie)"
+	echo "nodejs: (jessie-exp)"
+	site="${debian_pool}/main/o"
+	filter="1.0.2"
+	package_name="openssl"; package_version="${package_name}_1.0.2e-1"; check_http
+
 	site="${debian_pool}/main/libu"
 	package_name="libuv1"; package_version="${package_name}_1.7.5-1"; check_http
 
 	site="${debian_pool}/main/g"
+	filter="201"
 	package_name="gyp"; package_version="${package_name}_0.1+20150913git1f374df9-1"; check_http
 
 	site="${debian_pool}/main/n"
-	package_name="nodejs"; package_version="${package_name}_0.10.38~dfsg-1"; check_http
-
-	echo "nodejs: (jessie-exp)"
-
-	site="${debian_pool}/main/o"
-	package_name="openssl"; package_version="${package_name}_1.0.2e-1"; check_http
+	filter="4.2"
+	package_name="nodejs"; package_version="${package_name}_4.2.3~dfsg-2"; check_http
 }
 
 builds
@@ -257,7 +264,7 @@ mesa
 qt5_kde
 qt5_apps
 qt5_lxqt
-machinekit
+#machinekit
 nodejs
 
 echo "others"
