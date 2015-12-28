@@ -152,7 +152,7 @@ qt5_lxqt () {
 
 	#https://tracker.debian.org/pkg/libqtxdg
 	site="${debian_pool}/main/libq"
-	package_name="libqtxdg" ; package_version="${package_name}_1.3.0-2" ; check_http
+	package_name="libqtxdg" ; package_version="${package_name}_1.3.0-3" ; check_http
 
 	#https://tracker.debian.org/pkg/libsysstat
 	site="${debian_pool}/main/libs"
