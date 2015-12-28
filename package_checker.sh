@@ -156,7 +156,7 @@ qt5_lxqt () {
 
 	#https://tracker.debian.org/pkg/libsysstat
 	site="${debian_pool}/main/libs"
-	package_name="libsysstat" ; package_version="${package_name}_0.3.1-1" ; check_http
+	package_name="libsysstat" ; package_version="${package_name}_0.3.1-2" ; check_http
 
 	#https://tracker.debian.org/pkg/screengrab
 	site="${debian_pool}/main/s"
