@@ -121,7 +121,7 @@ qt5_apps () {
 	package_name="qtermwidget" ; package_version="${package_name}_0.6.0-10" ; check_http
 	package_name="qterminal" ; package_version="${package_name}_0.6.0-10" ; check_http
 	package_name="qlipper" ; package_version="${package_name}_5.0.0+20151111-1" ; check_http
-	package_name="qps" ; package_version="${package_name}_1.10.16+20150823-1" ; check_http
+	package_name="qps" ; package_version="${package_name}_1.10.16+20151210-1" ; check_http
 
 	echo "connman/cmst:"
 	site="http://packages.siduction.org/extra/pool/main/c"
