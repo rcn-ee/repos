@@ -244,7 +244,7 @@ machinekit () {
 nodejs () {
 	echo "nodejs: (jessie)"
 	site="${debian_pool}/main/libu"
-	package_name="libuv1"; package_version="${package_name}_1.7.5-1"; check_http
+	package_name="libuv1"; package_version="${package_name}_1.8.0-1"; check_http
 
 	site="${debian_pool}/main/g"
 	filter="201"
