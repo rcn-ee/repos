@@ -1,6 +1,7 @@
 Description: import v8z s390 branch matching v8 version
+ - adapt https://github.com/nodejs/node/commit/aa575b87 to s390 code
 Forwarded: not-needed
-Last-Update: 2015-10-07
+Last-Update: 2015-12-24
 Origin: https://github.com/andrewlow/v8z/releases
 
 ---
@@ -3013,7 +3014,7 @@ Origin: https://github.com/andrewlow/v8z/releases
 +#endif  // V8_TARGET_ARCH_S390
 --- a/deps/v8/src/isolate.cc
 +++ b/deps/v8/src/isolate.cc
-@@ -2138,7 +2138,7 @@
+@@ -2143,7 +2143,7 @@
    // Initialize other runtime facilities
  #if defined(USE_SIMULATOR)
  #if V8_TARGET_ARCH_ARM || V8_TARGET_ARCH_ARM64 || V8_TARGET_ARCH_MIPS || \
@@ -21943,7 +21944,7 @@ Origin: https://github.com/andrewlow/v8z/releases
 +  // redeclaration.
 +  if (scope()->HasIllegalRedeclaration()) {
 +    Comment cmnt(masm_, "[ Declarations");
-+    scope()->VisitIllegalRedeclaration(this);
++    VisitForEffect(scope()->GetIllegalRedeclaration());
 +
 +  } else {
 +    PrepareForBailoutForId(BailoutId::FunctionEntry(), NO_REGISTERS);
@@ -54390,7 +54391,7 @@ Origin: https://github.com/andrewlow/v8z/releases
  valid_arm_float_abi = ('soft', 'softfp', 'hard')
  valid_arm_fpu = ('vfp', 'vfpv2', 'vfpv3', 'vfpv3-d16', 'neon')
  valid_mips_arch = ('loongson', 'r1', 'r2', 'r6', 'rx')
-@@ -586,6 +586,7 @@
+@@ -581,6 +581,7 @@
      '__PPC64__'   : 'ppc64',
      '__PPC__'     : 'ppc',
      '__x86_64__'  : 'x64',

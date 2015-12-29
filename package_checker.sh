@@ -257,7 +257,7 @@ nodejs () {
 
 	site="${debian_pool}/main/n"
 	filter="4.2"
-	package_name="nodejs"; package_version="${package_name}_4.2.3~dfsg-2"; check_http
+	package_name="nodejs"; package_version="${package_name}_4.2.4~dfsg-1"; check_http
 }
 
 builds

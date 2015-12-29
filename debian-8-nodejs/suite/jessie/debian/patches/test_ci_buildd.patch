@@ -32,18 +32,18 @@ Author: Jérémy Lal <kapouer@melix.org>
 --- a/test/parallel/parallel.status
 +++ b/test/parallel/parallel.status
 @@ -5,6 +5,7 @@
- # sample-test                       : PASS,FLAKY
+ # sample-test                        : PASS,FLAKY
  
  [true] # This section applies to all platforms
 +test-process-config                  : PASS,FLAKY
  
  [$system==win32]
- test-tls-ticket-cluster           : PASS,FLAKY
+ test-cluster-net-send                : PASS,FLAKY
 @@ -15,6 +16,7 @@
- test-tls-no-sslv3                 : PASS,FLAKY
- test-child-process-buffering      : PASS,FLAKY
- test-child-process-exit-code      : PASS,FLAKY
-+test-stdout-close-unref           : PASS,FLAKY
+ test-http-client-timeout-event       : PASS,FLAKY
+ test-child-process-buffering         : PASS,FLAKY
+ test-child-process-exit-code         : PASS,FLAKY
++test-stdout-close-unref              : PASS,FLAKY
  
  [$system==macos]
  
@@ -64,7 +64,7 @@ Author: Jérémy Lal <kapouer@melix.org>
 +
 --- a/test/common.js
 +++ b/test/common.js
-@@ -230,13 +230,7 @@
+@@ -238,13 +238,7 @@
  };
  
  exports.platformTimeout = function(ms) {
@@ -93,7 +93,7 @@ Author: Jérémy Lal <kapouer@melix.org>
  
 --- a/tools/test.py
 +++ b/tools/test.py
-@@ -772,10 +772,7 @@
+@@ -779,10 +779,7 @@
      self.store_unexpected_output = store_unexpected_output
  
    def GetVm(self, arch, mode):
