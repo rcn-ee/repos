@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-apache_dir="/var/www/html/repos.rcn-ee.net"
+apache_dir="/var/www/html/rcn-ee.us/repos"
 
 setup_repo () {
 	if [ ! -d ${apache_dir}/${dist}/dists/${suite}/ ] ; then

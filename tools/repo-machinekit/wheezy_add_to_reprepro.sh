@@ -2,7 +2,7 @@
 
 . version.sh
 
-base="/var/www/html/repos.rcn-ee.net/"
+base="/var/www/html/rcn-ee.us/repos/"
 outgoing="/var/www/html/farm/outgoing"
 
 run () {
