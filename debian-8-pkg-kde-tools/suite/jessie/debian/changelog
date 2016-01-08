@@ -1,8 +1,30 @@
-pkg-kde-tools (0.15.19~bpo80+20150824+1) jessie; urgency=low
+pkg-kde-tools (0.15.20~bpo80+20160108+1) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Mon, 24 Aug 2015 10:11:07 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Fri, 08 Jan 2016 15:57:51 -0600
+
+pkg-kde-tools (0.15.20) unstable; urgency=medium
+
+  * Team upload.
+
+  [ Dmitry Shachnev ]
+  * Minor fixes to pkgkde-mark-private-symbols.1 manpage.
+  * Add a new script (pkgkde-mark-qt5-private-symbols) which is a replacement
+    for the old script (pkgkde-mark-private-symbols) that works with Qt ≥ 5.6.
+    - Add dependency on python3:any for this script.
+    - Write the manual page for this script.
+  * Drop obsolete debian/source/options file. We do not want to force bzip2
+    compression now that xz is the dpkg default.
+
+  [ Maximiliano Curia ]
+  * Drop stale copy of Dpkg/Shlibs (2010-02-21), and use the ones from
+    libdpkg-perl instead.
+    - Drop the find_datalibdir and setup_datalibdir functions and the
+      DATALIBDIR global variable.
+    - Adapt pkgkde-gensymbols and pkgkde-symbolshelper accordingly.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Tue, 29 Dec 2015 18:44:43 +0300
 
 pkg-kde-tools (0.15.19) unstable; urgency=medium
 
