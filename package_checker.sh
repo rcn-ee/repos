@@ -72,7 +72,7 @@ builds () {
 	package_name="cmake" ; package_version="${package_name}_3.4.1-2" ; check_http
 
 	site="${debian_pool}/main/p"
-	package_name="pkg-kde-tools" ; package_version="${package_name}_0.15.19" ; check_http
+	package_name="pkg-kde-tools" ; package_version="${package_name}_0.15.20" ; check_http
 
 	site="${debian_pool}/main/e"
 	package_name="extra-cmake-modules" ; package_version="${package_name}_5.16.0-1" ; check_http
@@ -117,7 +117,7 @@ qt5_apps () {
 	echo "qt5: apps:"
 
 	site="${debian_pool}/main/q"
-	package_name="qupzilla" ; package_version="${package_name}_1.8.9~dfsg1-1" ; check_http
+	package_name="qupzilla" ; package_version="${package_name}_1.8.9~dfsg1-2" ; check_http
 	package_name="qtermwidget" ; package_version="${package_name}_0.6.0-10" ; check_http
 	package_name="qterminal" ; package_version="${package_name}_0.6.0-10" ; check_http
 	package_name="qlipper" ; package_version="${package_name}_5.0.0+20151111-1" ; check_http
