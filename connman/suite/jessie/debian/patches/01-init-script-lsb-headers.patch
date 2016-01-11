@@ -6,8 +6,6 @@ Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=543869
  scripts/connman.in |   33 ++++++++++++++++++++++++++++++---
  1 file changed, 30 insertions(+), 3 deletions(-)
 
-Index: b/scripts/connman.in
-===================================================================
 --- a/scripts/connman.in
 +++ b/scripts/connman.in
 @@ -1,7 +1,17 @@
@@ -28,8 +26,8 @@ Index: b/scripts/connman.in
  
  . /lib/lsb/init-functions
  
-@@ -9,8 +19,6 @@ if [ -f @sysconfdir@/default/connman ] ;
- 	. @sysconfdir@/default/connman
+@@ -14,8 +24,6 @@
+     ln -sf @runstatedir@/connman/resolv.conf /etc/
  fi
  
 -set -e
@@ -37,7 +35,7 @@ Index: b/scripts/connman.in
  do_start() {
  	start-stop-daemon --start --oknodo --exec $DAEMON -- $DAEMON_OPTS
  }
-@@ -19,6 +27,15 @@ do_stop() {
+@@ -24,6 +32,15 @@
  	start-stop-daemon --stop --oknodo --quiet --exec $DAEMON
  }
  
@@ -53,7 +51,7 @@ Index: b/scripts/connman.in
  case "$1" in
    start)
  	log_daemon_msg "Starting $DESC"
-@@ -37,8 +54,18 @@ case "$1" in
+@@ -42,8 +59,18 @@
  	do_start
  	log_end_msg $?
  	;;
