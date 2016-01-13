@@ -65,6 +65,12 @@ check () {
 	fi
 }
 
+important () {
+	echo "important"
+	site="${debian_pool}/main/p"
+	package_name="pastebinit" ; package_version="${package_name}_1.4-6" ; check_http
+}
+
 builds () {
 	echo "build tools:"
 
@@ -260,6 +266,7 @@ nodejs () {
 	package_name="nodejs"; package_version="${package_name}_4.2.4~dfsg-1"; check_http
 }
 
+important
 builds
 mesa
 qt5_kde
