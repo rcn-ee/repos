@@ -71,6 +71,9 @@ GYP_DEFINES += werror=$(NULL)
 # autodetection for arm.
 GYP_DEFINES += sysroot=
 
+# NO NO NO, we never want to use bundled binutils. No. Just no.
+GYP_DEFINES += linux_use_bundled_binutils=0
+
 # Link directly to library instead of using dlopen.
 GYP_DEFINES += linux_link_gsettings=1
 
@@ -474,6 +477,8 @@ override_dh_clean:
 	echo VERIFICATION-
 	echo Compare to https://commondatastorage.googleapis.com/chromium-browser-official/chromium-$(DEBIAN_UPSTREAM_VERSION).tar.xz.hashes
 	echo
+
+	-find $(SRC_DIR)/native_client $(SRC_DIR)/build/linux $(SRC_DIR)/third_party/binutils -type f -executable -exec chmod -x {} \;
 
 debian/chromium-browser.sh: debian/chromium-browser.sh.in
 	@set -eux

@@ -271,7 +271,7 @@ nodejs
 echo "others"
 
 site="http://ports.ubuntu.com/pool/universe/c"
-package_name="chromium-browser" ; package_version="${package_name}_47.0.2526.73-0ubuntu1.1218" ; check_http
+package_name="chromium-browser" ; package_version="${package_name}_47.0.2526.106-0ubuntu1.1221" ; check_http
 
 #really slow...
 exit
