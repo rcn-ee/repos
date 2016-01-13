@@ -22,7 +22,7 @@ index a7a0cca..f2bdede 100644
  	$(MAN_SUBDIR)
  
 diff --git a/configure.ac b/configure.ac
-index cf10ef2..61a6f59 100644
+index cf10ef2..2e2a292 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -126,6 +126,11 @@ AC_ARG_ENABLE(tegra-experimental-api,
@@ -37,7 +37,17 @@ index cf10ef2..61a6f59 100644
  AC_ARG_ENABLE(install-test-programs,
  		  AS_HELP_STRING([--enable-install-test-programs],
  		  [Install test programs (default: no)]),
-@@ -391,6 +396,11 @@ if test "x$TEGRA" = xyes; then
+@@ -267,6 +272,9 @@ if test "x$drm_cv_atomic_primitives" = "xnone"; then
+ 
+ 	LIBDRM_ATOMICS_NOT_FOUND_MSG($TEGRA, tegra, NVIDIA Tegra, tegra-experimental-api)
+ 	TEGRA=no
++
++	LIBDRM_ATOMICS_NOT_FOUND_MSG($ETNAVIV, etnaviv, Vivante, etnaviv-experimental-api)
++	ETNAVIV=no
+ else
+ 	if test "x$INTEL" = xauto; then
+ 		case $host_cpu in
+@@ -391,6 +399,11 @@ if test "x$TEGRA" = xyes; then
  	AC_DEFINE(HAVE_TEGRA, 1, [Have Tegra support])
  fi
  
@@ -49,7 +59,7 @@ index cf10ef2..61a6f59 100644
  AM_CONDITIONAL(HAVE_INSTALL_TESTS, [test "x$INSTALL_TESTS" = xyes])
  if test "x$INSTALL_TESTS" = xyes; then
  	AC_DEFINE(HAVE_INSTALL_TESTS, 1, [Install test programs])
-@@ -496,6 +506,8 @@ AC_CONFIG_FILES([
+@@ -496,6 +509,8 @@ AC_CONFIG_FILES([
  	freedreno/libdrm_freedreno.pc
  	tegra/Makefile
  	tegra/libdrm_tegra.pc
@@ -58,7 +68,7 @@ index cf10ef2..61a6f59 100644
  	tests/Makefile
  	tests/modeprint/Makefile
  	tests/modetest/Makefile
-@@ -507,6 +519,7 @@ AC_CONFIG_FILES([
+@@ -507,6 +522,7 @@ AC_CONFIG_FILES([
  	tests/exynos/Makefile
  	tests/tegra/Makefile
  	tests/nouveau/Makefile
@@ -66,7 +76,7 @@ index cf10ef2..61a6f59 100644
  	man/Makefile
  	libdrm.pc])
  AC_OUTPUT
-@@ -524,4 +537,5 @@ echo "  OMAP API       $OMAP"
+@@ -524,4 +540,5 @@ echo "  OMAP API       $OMAP"
  echo "  EXYNOS API     $EXYNOS"
  echo "  Freedreno API  $FREEDRENO (kgsl: $FREEDRENO_KGSL)"
  echo "  Tegra API      $TEGRA"
@@ -98,10 +108,10 @@ index 0000000..980ed90
 +include $(BUILD_SHARED_LIBRARY)
 diff --git a/etnaviv/Makefile.am b/etnaviv/Makefile.am
 new file mode 100644
-index 0000000..c8ad0a9
+index 0000000..06247d4
 --- /dev/null
 +++ b/etnaviv/Makefile.am
-@@ -0,0 +1,26 @@
+@@ -0,0 +1,27 @@
 +AUTOMAKE_OPTIONS=subdir-objects
 +include Makefile.sources
 +
@@ -127,22 +137,76 @@ index 0000000..c8ad0a9
 +pkgconfigdir = @pkgconfigdir@
 +pkgconfig_DATA = libdrm_etnaviv.pc
 +
-+EXTRA_DIST = Android.mk
++TESTS = etnaviv-symbol-check
++EXTRA_DIST = Android.mk $(TESTS)
 diff --git a/etnaviv/Makefile.sources b/etnaviv/Makefile.sources
 new file mode 100644
-index 0000000..e880b26
+index 0000000..54aa71b
 --- /dev/null
 +++ b/etnaviv/Makefile.sources
-@@ -0,0 +1,9 @@
+@@ -0,0 +1,11 @@
 +LIBDRM_ETNAVIV_FILES := \
 +	etnaviv_device.c \
 +	etnaviv_gpu.c \
 +	etnaviv_bo.c \
 +	etnaviv_pipe.c \
-+	etnaviv_cmd_stream.c
++	etnaviv_cmd_stream.c \
++	etnaviv_drm.h \
++	etnaviv_priv.h
 +
 +LIBDRM_ETNAVIV_H_FILES := \
 +	etnaviv_drmif.h
+diff --git a/etnaviv/etnaviv-symbol-check b/etnaviv/etnaviv-symbol-check
+new file mode 100755
+index 0000000..7795023
+--- /dev/null
++++ b/etnaviv/etnaviv-symbol-check
+@@ -0,0 +1,45 @@
++#!/bin/bash
++
++# The following symbols (past the first five) are taken from the public headers.
++# A list of the latter should be available Makefile.sources/LIBDRM_FREEDRENO_H_FILES
++
++FUNCS=$(nm -D --format=bsd --defined-only ${1-.libs/libdrm_etnaviv.so} | awk '{print $3}'| while read func; do
++( grep -q "^$func$" || echo $func )  <<EOF
++__bss_start
++_edata
++_end
++_fini
++_init
++etna_device_new
++etna_device_ref
++etna_device_del
++etna_gpu_new
++etna_gpu_del
++etna_gpu_get_param
++etna_pipe_new
++etna_pipe_del
++etna_pipe_wait
++etna_bo_new
++etna_bo_from_handle
++etna_bo_from_name
++etna_bo_from_dmabuf
++etna_bo_ref
++etna_bo_del
++etna_bo_get_name
++etna_bo_handle
++etna_bo_dmabuf
++etna_bo_size
++etna_bo_map
++etna_bo_cpu_prep
++etna_bo_cpu_fini
++etna_cmd_stream_new
++etna_cmd_stream_del
++etna_cmd_stream_timestamp
++etna_cmd_stream_flush
++etna_cmd_stream_finish
++etna_cmd_stream_reloc
++EOF
++done)
++
++test ! -n "$FUNCS" || echo $FUNCS
++test ! -n "$FUNCS"
 diff --git a/etnaviv/etnaviv_bo.c b/etnaviv/etnaviv_bo.c
 new file mode 100644
 index 0000000..1805411
@@ -466,10 +530,10 @@ index 0000000..1805411
 +
 diff --git a/etnaviv/etnaviv_cmd_stream.c b/etnaviv/etnaviv_cmd_stream.c
 new file mode 100644
-index 0000000..726ed9b
+index 0000000..e1bbc3e
 --- /dev/null
 +++ b/etnaviv/etnaviv_cmd_stream.c
-@@ -0,0 +1,239 @@
+@@ -0,0 +1,240 @@
 +/*
 + * Copyright (C) 2014-2015 Etnaviv Project
 + *
@@ -706,6 +770,7 @@ index 0000000..726ed9b
 +	reloc->reloc_idx = bo2idx(stream, r->bo, r->flags);
 +	reloc->reloc_offset = r->offset;
 +	reloc->submit_offset = stream->offset * 4; /* in bytes */
++	reloc->flags = 0;
 +
 +	etna_cmd_stream_emit(stream, addr);
 +}
@@ -796,10 +861,10 @@ index 0000000..4d0a708
 +
 diff --git a/etnaviv/etnaviv_drm.h b/etnaviv/etnaviv_drm.h
 new file mode 100644
-index 0000000..b2ad2b2
+index 0000000..ae1a08c
 --- /dev/null
 +++ b/etnaviv/etnaviv_drm.h
-@@ -0,0 +1,221 @@
+@@ -0,0 +1,222 @@
 +/*
 + * Copyright (C) 2015 Etnaviv Project
 + *
@@ -923,6 +988,7 @@ index 0000000..b2ad2b2
 +	__u32 submit_offset;  /* in, offset from submit_bo */
 +	__u32 reloc_idx;      /* in, index of reloc_bo buffer */
 +	__u64 reloc_offset;   /* in, offset from start of reloc_bo */
++	__u32 flags;          /* in, placeholder for now, no defined values */
 +};
 +
 +/* Each buffer referenced elsewhere in the cmdstream submit (ie. the
@@ -1023,10 +1089,10 @@ index 0000000..b2ad2b2
 +#endif /* __ETNAVIV_DRM_H__ */
 diff --git a/etnaviv/etnaviv_drmif.h b/etnaviv/etnaviv_drmif.h
 new file mode 100644
-index 0000000..d5b84ad
+index 0000000..cf32872
 --- /dev/null
 +++ b/etnaviv/etnaviv_drmif.h
-@@ -0,0 +1,188 @@
+@@ -0,0 +1,187 @@
 +/*
 + * Copyright (C) 2014-2015 Etnaviv Project
 + *
@@ -1112,7 +1178,6 @@ index 0000000..d5b84ad
 + */
 +
 +struct etna_device * etna_device_new(int fd);
-+struct etna_device * etna_device_new_dup(int fd);
 +struct etna_device * etna_device_ref(struct etna_device *dev);
 +void etna_device_del(struct etna_device *dev);
 +
@@ -1672,7 +1737,7 @@ index 0000000..13fed01
 +Cflags: -I${includedir} -I${includedir}/libdrm
 +Requires.private: libdrm
 diff --git a/tests/Makefile.am b/tests/Makefile.am
-index a511d28..2eaa833 100644
+index a511d28..e4a3696 100644
 --- a/tests/Makefile.am
 +++ b/tests/Makefile.am
 @@ -22,6 +22,10 @@ if HAVE_TEGRA
