@@ -26,10 +26,10 @@ case "$1" in
   start)
     echo -n "Starting tiipclad daemon"
     start-stop-daemon --start --quiet \
-        --exec $tiipclad_daemon -- $tiipclad_params
+        --exec $tiipclad_daemon -- $tiipclad_params || true
     echo "."
     ;;
-reload|force-reload|restart)
+  reload|force-reload|restart)
     echo -n "Stopping tiipclad daemon"
     start-stop-daemon --stop --quiet --pidfile /var/run/tiipclad.pid
     echo "."

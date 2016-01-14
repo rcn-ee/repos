@@ -1,0 +1,15 @@
+Index: openssl-1.0.0c/config
+===================================================================
+--- openssl-1.0.0c.orig/config	2010-12-12 16:09:43.000000000 +0100
++++ openssl-1.0.0c/config	2010-12-12 16:09:48.000000000 +0100
+@@ -170,8 +170,8 @@
+ 	echo "${MACHINE}-whatever-linux1"; exit 0
+ 	;;
+ 
+-    GNU*)
+-	echo "hurd-x86"; exit 0;
++    GNU:*|GNU/*:*)
++	echo "${MACHINE}-gnuish"; exit 0;
+ 	;;
+ 
+     LynxOS:*)

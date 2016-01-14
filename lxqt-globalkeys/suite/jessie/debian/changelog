@@ -1,208 +1,69 @@
-lxqt-globalkeys (0.9.0-19~bpo80+20150731+1) jessie; urgency=low
+lxqt-globalkeys (0.10.0-2~bpo80+20151202+1) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Fri, 31 Jul 2015 10:45:31 -0500
-
-lxqt-globalkeys (0.9.0-19) unstable; urgency=medium
-
-  * commit 34e794531fa907b47adc087a0ac8bf33e81faed2
-    Author: Luís Pereira <luis.artur.pereira@gmail.com>
-    Date:   Wed Jul 15 11:41:01 2015 -0700
-    Merge pull request #20 from lxde/fix-ui-compromised-749
-    Install lxqt-globalkeysd to where it belongs
-
- -- Alf Gaida <agaida@siduction.org>  Sun, 19 Jul 2015 22:47:43 +0200
-
-lxqt-globalkeys (0.9.0-18) unstable; urgency=medium
-
-  * LIB_SUFFIX removed, debian/rules modified 
-
- -- Alf Gaida <agaida@siduction.org>  Sat, 11 Jul 2015 20:19:36 +0200
-
-lxqt-globalkeys (0.9.0-17) unstable; urgency=medium
-
-  * commit d2f45dbbc6c184d5bbadc9d334c035cea65dbd43
-    Author: Luís Pereira <luis.artur.pereira@gmail.com>
-    Date:   Sat Jul 11 08:33:20 2015 -0700
-    Drops LIB_SUFFIX. Use GNUInstallDirs.
-    Drops also custom create_pkg_config_file() and use
-    lxqt_create_pkg_config_file().
-    Closes lxde/lxqt#742 
-
- -- Alf Gaida <agaida@siduction.org>  Sat, 11 Jul 2015 20:10:24 +0200
-
-lxqt-globalkeys (0.9.0-16) unstable; urgency=medium
-
-  * fix ftbfs
-
- -- Alf Gaida <agaida@siduction.org>  Sat, 11 Jul 2015 18:02:08 +0200
-
-lxqt-globalkeys (0.9.0-15) unstable; urgency=medium
-
-  * commit b4d943946caa261593b8d70055e056ef1cdb233e
-    Author: Philipp Wiesemann <philipp.wiesemann@arcor.de>
-    Date:   Tue Jul 7 22:09:35 2015 +0200
-    Fix three memory leaks in daemon error handling
-    In three cases char arrays created on the heap were only deleted if no
-    error occurred afterwards. This was now fixed by removing the explicit
-    deletions and only referencing the arrays through smart pointers. These
-    make sure that the arrays are also deleted in the error handling paths.
-
- -- Alf Gaida <agaida@siduction.org>  Fri, 10 Jul 2015 02:17:36 +0200
-
-lxqt-globalkeys (0.9.0-14) unstable; urgency=medium
-
-  * fix symbols for liblxqt-globalkeys0.symbols
-
- -- Alf Gaida <agaida@siduction.org>  Fri, 03 Jul 2015 19:38:15 +0200
-
-lxqt-globalkeys (0.9.0-13) unstable; urgency=medium
-
-  * second set of fixes for $foo-dev.install 
-
- -- Alf Gaida <agaida@siduction.org>  Fri, 03 Jul 2015 19:28:54 +0200
-
-lxqt-globalkeys (0.9.0-12) unstable; urgency=medium
-
-  * fix $foo-dev.install 
-
- -- Alf Gaida <agaida@siduction.org>  Fri, 03 Jul 2015 18:52:47 +0200
-
-lxqt-globalkeys (0.9.0-11) unstable; urgency=medium
-
-  * commit 3e6a3eee8cc78ac89cbd9f5b027b7bac0dde9e27
-    Author: Paulo Lieuthier <paulolieuthier@gmail.com>
-    Date:   Fri Jul 3 13:13:40 2015 -0300                                                                                                                                                 
-    Fix FTBFS after new CMake Targets
-
- -- Alf Gaida <agaida@siduction.org>  Fri, 03 Jul 2015 18:37:56 +0200
-
-lxqt-globalkeys (0.9.0-10) unstable; urgency=medium
-
-  * commit b84374d1c23d16c6ba8776b0626a411ad65cbabf
-    Author: Luís Pereira <luis.artur.pereira@gmail.com>
-    Date:   Fri Jul 3 03:52:31 2015 -0700
-    Merge branch 'targets'
-    * targets:
-      Adds intree/superbuild support
-      Generate -config-version.cmake files
-      Drops xxx_use.cmake files. Adopt Targets 
-
- -- Alf Gaida <agaida@siduction.org>  Fri, 03 Jul 2015 16:23:04 +0200
-
-lxqt-globalkeys (0.9.0-9) unstable; urgency=medium
-
-  * commit c163211d2ecb6a79c21d8b7758e36208f7a81288
-    Author: Palo Kisa <palo.kisa@gmail.com>
-    Date:   Thu Jul 2 13:45:38 2015 +0200
-    main: use standard liblxqt unix signal handling to quit
-
- -- Alf Gaida <agaida@siduction.org>  Thu, 02 Jul 2015 21:50:18 +0200
-
-lxqt-globalkeys (0.9.0-8) unstable; urgency=medium
-
-  * rebuild with Qt 5.4.2
-
- -- Alf Gaida <agaida@siduction.org>  Tue, 23 Jun 2015 22:30:38 +0200
-
-lxqt-globalkeys (0.9.0-7) unstable; urgency=medium
-
-  * commit f1b6902a826f606efdcca33a8b328e37ece1e5b9
-    Author: Philipp Wiesemann <philipp.wiesemann@arcor.de>
-    Date:   Tue Jun 9 23:05:43 2015 +0200
-    daemon: fix two memory leaks
-    In two cases the data structure used for poll() was created on the heap
-    but not deleted after use. This was now fixed by creating the structure
-    on the stack. It is automatically deleted there. The use is also faster.
-  * VCS fields, maintainer, uploaders, copyright cleanup
-
- -- Alf Gaida <agaida@siduction.org>  Sat, 13 Jun 2015 23:02:17 +0200
-
-lxqt-globalkeys (0.9.0-6) unstable; urgency=low
-
-  * commit d039b23b5579e219f51f559a94bbcddc5cb53550
-    Author: Luís Pereira <luis.artur.pereira@gmail.com>
-    Date:   Wed May 27 09:28:10 2015 -0700
-    Removes commented CMake code
-    They are commented out because those variables are set in liblxqt.
-
- -- Alf Gaida <agaida@siduction.org>  Mon, 01 Jun 2015 18:24:34 +0200
-
-lxqt-globalkeys (0.9.0-5) unstable; urgency=medium
-
-  * commit e92c968e54f188b692e2d1ddbedaf600b54b8dc1
-    Update lxqt-config-globalkeyshortcuts_it_IT.desktop
-
- -- Alf Gaida <agaida@siduction.org>  Sun, 29 Mar 2015 17:04:54 +0200
-
-lxqt-globalkeys (0.9.0-4) unstable; urgency=medium
-
-  * commit 8d70f7e55338c600686c39260e116796b785fca7
-    client: emitting registrationFinished signal
-
- -- Alf Gaida <agaida@siduction.org>  Fri, 27 Mar 2015 00:23:23 +0100
-
-lxqt-globalkeys (0.9.0-3) unstable; urgency=medium
-
-  * commit c45700b25f0eef62cd0804d117ad998dad54cf5b
-    Add check for NULL pointer. See lxde/lxqt#521
-
- -- Alf Gaida <agaida@siduction.org>  Sat, 07 Mar 2015 02:34:13 +0100
-
-lxqt-globalkeys (0.9.0-2) unstable; urgency=medium
-
-  * commit 76a2a8958e820712dd4bacf505b919684acbfddf
-    Make DBus calls to addClientAction async
-    Fixes lxde/lxqt#505 
-
- -- Alf Gaida <agaida@siduction.org>  Tue, 03 Mar 2015 01:15:20 +0100
-
-lxqt-globalkeys (0.9.0-1) unstable; urgency=medium
-
-  * RELEASE 0.9.0 
-
- -- Alf Gaida <agaida@siduction.org>  Sun, 08 Feb 2015 19:02:45 +0100
-
-lxqt-globalkeys (0.8.1-8) experimental; urgency=medium
-
-  * commit 4504880ff4c960a7cf1e971128c415390109feed
-    Portuguese update
-
- -- Alf Gaida <agaida@siduction.org>  Wed, 21 Jan 2015 19:28:56 +0100
-
-lxqt-globalkeys (0.8.1-7) experimental; urgency=medium
-
-  * fix breaks and replaces
-
- -- Alf Gaida <agaida@siduction.org>  Mon, 19 Jan 2015 01:58:46 +0100
-
-lxqt-globalkeys (0.8.1-6) experimental; urgency=medium
-
-  * transitional packages fixed
-  * copyright 2015, checkout, symbols, debian maintainer 
-
- -- Alf Gaida <agaida@siduction.org>  Mon, 19 Jan 2015 01:49:45 +0100
-
-lxqt-globalkeys (0.8.1-5) experimental; urgency=medium
-
-  * transitional packages added 
-
- -- Alf Gaida <agaida@siduction.org>  Sat, 17 Jan 2015 04:37:08 +0100
-
-lxqt-globalkeys (0.8.1-4) experimental; urgency=medium
-
-  * symbols added
-  * rename packages (don't use -qt5 suffix anymore)
-  * commit 169ffdd16f21829cd7165aa9c318ac3fb0d94da2
-    - Unify naming for a unique lxqt. No more suffixes
-  * KF5 series 
-
- -- Alf Gaida <agaida@siduction.org>  Wed, 14 Jan 2015 21:39:39 +0100
-
-lxqt-globalkeys (0.8.0-1) unstable; urgency=medium
-
-  * Imported Upstream version 0.8.0 
-  * Initial release (Closes: #747601)
-
- -- Alf Gaida <agaida@siduction.org>  Wed, 26 Nov 2014 02:32:45 +0100
+ -- Robert Nelson <robertcnelson@gmail.com>  Wed, 02 Dec 2015 13:44:32 -0600
+
+lxqt-globalkeys (0.10.0-2~bpo80+20151120+1) jessie; urgency=low
+
+  * Rebuild for repos.rcn-ee.com
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Fri, 20 Nov 2015 10:22:19 -0600
+
+lxqt-globalkeys (0.10.0-2) unstable; urgency=medium
+
+  * Merge from experimental.
+  * New upstream release.
+
+ -- ChangZhuo Chen (陳昌倬) <czchen@debian.org>  Sun, 15 Nov 2015 15:40:51 +0800
+
+lxqt-globalkeys (0.9.0+20150806-2) unstable; urgency=medium
+
+  * Remove --list-missing from rules, it's included in --fail-missing
+  * Fixed .gitignore
+  * Removed breaks/replaces
+  * Removed the most minimum versions
+  * Beautified debian/control
+  * Added linker flags -Wl,--as-needed
+
+ -- Alf Gaida <agaida@siduction.org>  Wed, 11 Nov 2015 21:59:30 +0100
+
+lxqt-globalkeys (0.9.0+20150806-1) unstable; urgency=low
+
+  [ Alf Gaida ]
+  * inititial debian files.
+  * Initial release. (Closes: #747601)
+
+  [ ChangZhuo Chen (陳昌倬) ]
+  * Add *.symbols.
+
+  [ Alf Gaida ]
+  * Imported Upstream version 0.8.0.
+  * bump standards 3.9.6.
+  * Min liblxqt-qt5-0-dev version 0.8.0.
+  * Min Qt version 5.3.2.
+  * install fixed (translation path).
+  * mangled symbol files added.
+  * lintian-overrides for missed manpages and unknown category warnings.
+  * desktop file OnlyShowIn patched.
+  * new release 0.9.0 fix symbols fix package names add source/options fix
+    debian $foo.
+  * Some cleanup in debian $foo
+  * some changes for debian $foo
+  * dependencies fixed.
+  * installs fixed.
+  * current symbols.
+  * multiarch removed, handled by cmake.
+  * drop transitional packages.
+
+  [ Andrew Lee (李健秋) ]
+  * Merging upstream version 0.9.0+20150806.
+  * Added myself as Uploader.
+  * Sorting build-depends.
+  * Removing whitespaces at EOL and EOF.
+  * Drop GPL-2+ license from copyright as it hasn't been mentioned
+    anywhere in headers.
+  * Added fullstop in descriptions.
+  * Use lower-case for description.
+
+ -- Andrew Lee (李健秋) <ajqlee@debian.org>  Sun, 16 Aug 2015 02:18:03 +0800

@@ -1,0 +1,107 @@
+Description: adapt test-ci build target for buildd
+ * run tests with ./node
+ * remove addons from test-ci suite, because it creates a dependency loop
+   nodejs -> node-gyp -> nodejs which is painful to manage.
+ * disabled because it requires stdin:
+   + test-stdout-close-unref
+   + test-regress-GH-746
+ * test-tick-processor fails on ppc64 and s390x, currently investigated
+   https://github.com/nodejs/node/issues/2471
+ * test-cluster-disconnect sometimes fails on busy buildd, forwarded upstream
+   https://github.com/nodejs/node/issues/3383
+ * test-fs-watch is flaky, might be related to https://github.com/nodejs/node/issues/4082
+ * huge timeout value for all platforms, buildd could be busy
+Forwarded: not-needed
+Last-Update: 2015-10-06
+Author: Jérémy Lal <kapouer@melix.org>
+--- a/Makefile
++++ b/Makefile
+@@ -143,9 +143,9 @@
+ test-all-valgrind: test-build
+ 	$(PYTHON) tools/test.py --mode=debug,release --valgrind
+ 
+-test-ci: | build-addons
+-	$(PYTHON) tools/test.py -p tap --logfile test.tap --mode=release --flaky-tests=$(FLAKY_TESTS) \
+-		$(TEST_CI_ARGS) addons message parallel sequential
++test-ci:
++	$(PYTHON) tools/test.py -p tap --mode=release --flaky-tests=$(FLAKY_TESTS) \
++		$(TEST_CI_ARGS) message parallel sequential
+ 
+ test-release: test-build
+ 	$(PYTHON) tools/test.py --mode=release
+--- a/test/parallel/parallel.status
++++ b/test/parallel/parallel.status
+@@ -5,6 +5,7 @@
+ # sample-test                        : PASS,FLAKY
+ 
+ [true] # This section applies to all platforms
++test-process-config                  : PASS,FLAKY
+ 
+ [$system==win32]
+ test-cluster-net-send                : PASS,FLAKY
+@@ -15,6 +16,7 @@
+ test-http-client-timeout-event       : PASS,FLAKY
+ test-child-process-buffering         : PASS,FLAKY
+ test-child-process-exit-code         : PASS,FLAKY
++test-stdout-close-unref              : PASS,FLAKY
+ 
+ [$system==macos]
+ 
+@@ -23,3 +25,14 @@
+ 
+ [$system==freebsd]
+ test-net-socket-local-address     : PASS,FLAKY
++test-stdout-close-unref           : PASS,FLAKY
++
++[$arch==ppc64]
++test-tick-processor               : PASS,FLAKY
++
++[$arch==s390x]
++test-tick-processor               : PASS,FLAKY
++
++[$arch==arm]
++test-cluster-disconnect           : PASS,FLAKY
++
+--- a/test/common.js
++++ b/test/common.js
+@@ -238,13 +238,7 @@
+ };
+ 
+ exports.platformTimeout = function(ms) {
+-  if (process.arch !== 'arm')
+-    return ms;
+-
+-  if (process.config.variables.arm_version === '6')
+-    return 7 * ms;  // ARMv6
+-
+-  return 2 * ms;  // ARMv7 and up.
++  return 20 * ms;
+ };
+ 
+ var knownGlobals = [setTimeout,
+--- a/test/sequential/sequential.status
++++ b/test/sequential/sequential.status
+@@ -5,6 +5,9 @@
+ # sample-test                       : PASS,FLAKY
+ 
+ [true] # This section applies to all platforms
++test-fs-watch                                   : PASS,FLAKY
++test-regress-GH-746                             : PASS,FLAKY
++test-force-repl                                 : SKIP
+ 
+ [$system==win32]
+ 
+--- a/tools/test.py
++++ b/tools/test.py
+@@ -779,10 +779,7 @@
+     self.store_unexpected_output = store_unexpected_output
+ 
+   def GetVm(self, arch, mode):
+-    if arch == 'none':
+-      name = 'out/Debug/node' if mode == 'debug' else 'out/Release/node'
+-    else:
+-      name = 'out/%s.%s/node' % (arch, mode)
++    name = './node'
+ 
+     # Currently GYP does not support output_dir for MSVS.
+     # http://code.google.com/p/gyp/issues/detail?id=40

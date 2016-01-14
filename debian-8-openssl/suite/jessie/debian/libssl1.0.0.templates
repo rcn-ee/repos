@@ -1,0 +1,30 @@
+Template: libssl1.0.0/restart-services
+Type: string
+_Description: Services to restart to make them use the new libraries:
+ This release of OpenSSL fixes some security issues. Services will not
+ use these fixes until they are restarted. Please note that restarting
+ the SSH server (sshd) should not affect any existing connections.
+ .
+ Please check the list of detected services that need to be restarted
+ and correct it, if needed. The services names must be identical to the
+ initialization script names in /etc/init.d and separated by
+ spaces. No services will be restarted if the list is empty.
+ .
+ Any service that later fails unexpectedly after this upgrade should
+ be restarted. It is recommended to reboot this host to avoid any
+ SSL-related trouble.
+
+Template: libssl1.0.0/restart-failed
+Type: error
+#flag:translate!:3
+#flag:comment:2
+# This paragraph is followed by a (non translatable) paragraph containing
+# a list of services that could not be restarted
+_Description: Failure restarting some services for OpenSSL upgrade
+ The following services could not be restarted for the OpenSSL library upgrade:
+ .
+ ${services}
+ .
+ You will need to start these manually by running
+ '/etc/init.d/<service> start'.
+

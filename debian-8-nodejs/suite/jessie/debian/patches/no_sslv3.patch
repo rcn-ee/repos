@@ -1,0 +1,16 @@
+Description: openssl s_client -ssl3 option fails immediately
+Author: Jérémy Lal <kapouer@melix.org>
+Last-Update: 2015-12-04
+Bug-Node: https://github.com/nodejs/node/issues/3927
+--- a/test/parallel/test-tls-no-sslv3.js
++++ b/test/parallel/test-tls-no-sslv3.js
+@@ -41,6 +41,6 @@
+   }));
+ });
+ 
+-server.once('clientError', common.mustCall(function(err, conn) {
+-  assert(/:wrong version number/.test(err.message));
+-}));
++// server.once('clientError', common.mustCall(function(err, conn) {
++//   assert(/:wrong version number/.test(err.message));
++// }));

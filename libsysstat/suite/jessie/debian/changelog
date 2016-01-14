@@ -1,94 +1,48 @@
-libsysstat (0.3.0-5~bpo80+20150731+1) jessie; urgency=low
+libsysstat (0.3.1-2~bpo80+20151228+1) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Fri, 31 Jul 2015 11:32:01 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Mon, 28 Dec 2015 10:13:19 -0600
 
-libsysstat (0.3.0-5) unstable; urgency=medium
+libsysstat (0.3.1-2) unstable; urgency=medium
 
-  * commit 0a59c411aad006adb66755f677611da9a95b9164
-    Author: Luís Pereira <luis.artur.pereira@gmail.com>
-    Date:   Mon Jul 13 14:49:49 2015 -0700
-    CMake: Adds Runtime and Devel install COMPONENTs
-    There are two install components:
-    Devel Contains all the development files;
-    Runtime Contains all the runtime needed files.
+  * Remove dbg package in favor of dbgsym.
 
- -- Alf Gaida <agaida@siduction.org>  Sun, 19 Jul 2015 22:29:36 +0200
+ -- Alf Gaida <agaida@siduction.org>  Sat, 26 Dec 2015 17:10:46 +0100
 
-libsysstat (0.3.0-4) unstable; urgency=medium
+libsysstat (0.3.1-1) unstable; urgency=medium
 
-  * commit 5ef5c4a91ee03d9bb0cd782287ee501188d18c7c
-    Author: Luís Pereira <luis.artur.pereira@gmail.com>
-    Date:   Fri Jul 10 15:07:44 2015 -0700
-    Merge branch 'build-system'
-    * build-system:
-      Use target_compile_definitions()
-      Use CMAKE_INCLUDE_CURRENT_DIR
-      Use GNUInstallDirs
+  * Cherry-picking upstream version 0.3.1.
 
- -- Alf Gaida <agaida@siduction.org>  Sat, 11 Jul 2015 12:46:59 +0200
+ -- Alf Gaida <agaida@siduction.org>  Sun, 01 Nov 2015 00:15:25 +0100
 
-libsysstat (0.3.0-3) unstable; urgency=medium
+libsysstat (0.3.0+20150806-1) unstable; urgency=medium
 
-  * commit 6017f2ea528be733d298b1f301a9f02c6e4a7a95
-    Author: Luís Pereira <luis.artur.pereira@gmail.com>
-    Date:   Fri Jul 3 03:44:29 2015 -0700
-    Merge branch 'targets'
-    * targets:
-      Adapts the buildsystem to use CMake Targets 
-  * fix $foo-dev.install
+  [ Alf Gaida ]
+  * Initial release (Closes: #761270)
+  * Initial debian files
+  * symbols file added - tested for amd64 and i386
+  * Added .gitignore 
+  * Cherry-picking upstream version 0.3.0+201500806
+  * Fixed copyright to LGPL2.1+ only
+  * Added linker flags to rules
+  * Added upstream signing key
+  * Changed mail address czchen
 
- -- Alf Gaida <agaida@siduction.org>  Fri, 03 Jul 2015 22:48:57 +0200
+  [ Andrew Lee (李健秋) ]
+  * Adding upstream version 0.3.0.
 
-libsysstat (0.3.0-2) unstable; urgency=medium
+  [ Shih-Yuan Lee (FourDollars) ]
+  * Imported Upstream version 0.3.0
+  * Merge branch 'upstream' into debian
+  * Add debian/gbp.conf for xz compression format.
+  * Merge remote-tracking branch 'origin/fix-multiarch'
 
-  * commit f72bc6173f25710089d237b1f37ff88b7772455d
-    Author: Philipp Wiesemann <philipp.wiesemann@arcor.de>
-    Date:   Fri Jun 5 23:27:08 2015 +0200
-    Fix warnings about using uninitialized variables
-    Six warnings were given when compiling. Initializing the local variables
-    fixed them. It also fixed possibly emitting updates calculated by using
-    undefined values of the variables if reading from /proc/meminfo failed.
+  [ Wei-Cheng Pan ]
+  * fix multiarch install path
+  * do not install files that do not exist
 
- -- Alf Gaida <agaida@siduction.org>  Sun, 21 Jun 2015 00:52:23 +0200
+  [ Wen.Liao ]
+  * Remove un-needed dependency: libqt5xdg-dev
 
-libsysstat (0.3.0-1) unstable; urgency=medium
-
-  * RELEASE 0.3.0 
-
- -- Alf Gaida <agaida@siduction.org>  Sun, 08 Feb 2015 18:35:43 +0100
-
-libsysstat (0.2.1-6) experimental; urgency=medium
-
-  * copyright 2015, checkout target, symbols, debian maintainer 
-
- -- Alf Gaida <agaida@siduction.org>  Mon, 19 Jan 2015 01:04:44 +0100
-
-libsysstat (0.2.1-4) experimental; urgency=medium
-
-  * commit 70f70eb97e5b144a63468ea78b6c436bf43cf571
-    Adds the Requires field to the .pc confile file
-    It has been unnoticed because other packages already required it.
-  * symbols added
-  * rules target new-symbols 
-
- -- Alf Gaida <agaida@siduction.org>  Wed, 14 Jan 2015 01:32:46 +0100
-
-libsysstat (0.2.1-3) experimental; urgency=medium
-
-  * commit 70f70eb97e5b144a63468ea78b6c436bf43cf571
-    Author: Luís Pereira <luis.artur.pereira@gmail.com>
-    Date:   Tue Oct 21 06:23:15 2014 -0700
-    Adds the Requires field to the .pc confile file
-    It has been unnoticed because other packages already required it.
-  * Qt5 only
-
- -- Alf Gaida <agaida@siduction.org>  Tue, 23 Dec 2014 01:34:03 +0100
-
-libsysstat (0.2.0-1) unstable; urgency=medium
-
-  * Upstream version 0.2.0 
-  * Initial release (Closes:  )
-
- -- Alf Gaida <agaida@siduction.org>  Mon, 24 Feb 2014 23:41:30 +0100
+ -- ChangZhuo Chen (陳昌倬) <czchen@debian.org>  Tue, 22 Sep 2015 21:35:12 +0800

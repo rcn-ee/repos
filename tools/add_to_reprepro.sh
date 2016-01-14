@@ -2,7 +2,7 @@
 
 . version.sh
 
-base="/var/www/html/repos.rcn-ee.net/"
+base="/var/www/html/rcn-ee.us/repos/"
 outgoing="/var/www/html/farm/outgoing"
 
 run () {
@@ -13,11 +13,6 @@ run () {
 			wfile="${outgoing}/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}/${changes_file}"
 			reprepro -b ${repo} -C main include ${suite} ${wfile}
 		fi
-	fi
-
-	if [ "x${archive}" = "xenable" ] ; then
-		mkdir -p ${base}archive/${debian_pkg_name}/${suite}/${package_version}/
-		cp -v ${repo}pool/main/${reprepro_dir}/${debian_pkg_name}_${debian_version}${rcn_ee_version}_${deb_arch}.deb ${base}archive/${debian_pkg_name}/${suite}/${package_version}/
 	fi
 }
 

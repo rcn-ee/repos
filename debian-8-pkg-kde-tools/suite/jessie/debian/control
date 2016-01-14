@@ -1,0 +1,83 @@
+Source: pkg-kde-tools
+Section: devel
+Priority: extra
+Maintainer: Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
+Build-Depends: debhelper (>= 9), libdpkg-perl (>= 1.15.6~), cmake (>= 2.6.4)
+Standards-Version: 3.9.6
+Uploaders: Sune Vuorela <sune@debian.org>,
+           Modestas Vainius <modax@debian.org>,
+           Maximiliano Curia <maxy@debian.org>,
+           Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>
+Vcs-Git: git://anonscm.debian.org/pkg-kde/pkg-kde-tools.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-kde/pkg-kde-tools.git;a=summary
+
+Package: pkg-kde-tools
+Architecture: all
+Multi-Arch: foreign
+Depends: libdpkg-perl (>= 1.15.6~),
+         python3:any (>= 3.3.2-2~),
+         ${misc:Depends},
+         ${perl:Depends}
+Recommends: dpkg-dev (>= 1.15.6~), libwww-perl
+Suggests: debhelper (>= 7.3.16), cdbs
+Breaks: kdelibs5-dev (<< 4:4.2.2), dpkg-dev (<< 1.15.6~)
+Description: various packaging tools and scripts for KDE Applications
+ This package contains a variety of packaging tools and build scripts that may
+ be very useful when packaging KDE applications. Even if you are a maintainer
+ of a very small KDE application, this package should be worthwhile checking
+ out.
+ .
+ Main highlights:
+  - recommended build flags for building packages based on the KDE Platform;
+  - cdbs class for building packages based on the KDE Platform (kde.mk);
+  - debhelper build system (--buildsystem=kde) and dh addon (--with kde) for
+    building packages based on the KDE Platform;
+  - dh_sameversiondep for generating a dependency that is versioned the same
+    way as a dependency (coming from the same source) of another reference
+    package.
+  - dh_movelibkdeinit for moving libkdeinit4_*.so libraries to private
+    location;
+  - dh_sodeps (and sodeps dh addon) for generating so:Depends substvar for -dev
+    packages based to which local packages lib*.so symlinks point to;
+  - pkgkde-symbolshelper tool for efficient management of C and C++ symbol
+    files;
+  - pkgkde-debs2symbols tool for generating symbol files and symbol file
+    patches from pre-built binaries in the deb packages;
+  - pkgkde-getbuildlogs tool for downloading build logs for the specified
+    package (from buildd.debian.org);
+  - pkgkde-override-sc-dev-latest tool for overriding Breaks of the
+    kde-sc-dev-latest package;
+  - pkgkde-vcs tool for performing common tasks when packaging under VCS.
+ .
+ NOTE: since this package is cumulative, it does not depend on the packages it
+ provides helpers for. I.e. you still need to explicitly build depend on
+ debhelper or cdbs in your packages.
+
+Package: libdlrestrictions1
+Architecture: any
+Section: libs
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: library that implements library compatibility checks for dlopen()
+ This package provides a DLRestrictions library that can be used to check
+ compatibility of the external shared library (or plugin) against other
+ libraries currently loaded in the global symbol object. It might help to avoid
+ symbol clashes and provide means for graceful failure detection in advance
+ before the first dlsym() call. Otherwise, usage of incompatible library might
+ result in crashes or other unpredictable failures of the application.
+ .
+ A shared library that is protected by DLRestrictions provides a special symbol
+ which defines conditions under which the library may be safely used. At the
+ moment, the only restriction that may be imposed controls whether multiple
+ SONAMEs of the same library can safely co-exist in the same symbol space.
+ Shared library dependencies are also checked for compatibility.
+
+Package: libdlrestrictions-dev
+Architecture: any
+Section: libdevel
+Depends: libdlrestrictions1 (= ${binary:Version})
+Description: development files for the DLRestrictions library
+ This package provides development files needed to build both shared libraries,
+ which specify their compatibility restrictions, and applications, which check
+ whether those restrictions are satisfied before using those libraries. The
+ package also contains a CMake module which simplifies building DLRestricted
+ shared libraries with CMake.

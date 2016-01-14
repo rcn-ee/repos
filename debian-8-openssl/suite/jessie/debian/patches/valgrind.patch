@@ -1,0 +1,20 @@
+Index: openssl-1.0.2/crypto/rand/md_rand.c
+===================================================================
+--- openssl-1.0.2.orig/crypto/rand/md_rand.c
++++ openssl-1.0.2/crypto/rand/md_rand.c
+@@ -480,6 +480,7 @@ int ssleay_rand_bytes(unsigned char *buf
+         MD_Update(&m, (unsigned char *)&(md_c[0]), sizeof(md_c));
+ 
+ #ifndef PURIFY                  /* purify complains */
++#if 0
+         /*
+          * The following line uses the supplied buffer as a small source of
+          * entropy: since this buffer is often uninitialised it may cause
+@@ -489,6 +490,7 @@ int ssleay_rand_bytes(unsigned char *buf
+          */
+         MD_Update(&m, buf, j);
+ #endif
++#endif
+ 
+         k = (st_idx + MD_DIGEST_LENGTH / 2) - st_num;
+         if (k > 0) {

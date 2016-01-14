@@ -1,34 +1,16 @@
 #!/usr/bin/make -f
 #export DH_VERBOSE=1
 
-%:
-	dh ${@} --buildsystem cmake --parallel --with quilt
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
+%:
+	dh ${@} --buildsystem cmake --parallel
+
+override_dh_auto_configure:
+	dh_auto_configure -- -DDOM_PLUGIN=YES
 
 override_dh_auto_install:
 	dh_auto_install -- DESTDIR=$(CURDIR)/debian/lxqt-panel
 
 override_dh_strip:
 	dh_strip --dbg-package=lxqt-panel-dbg
-
-
-maintainer-clean:
-	$(RM) -r checkout
-	$(RM) -r backport
-	$(RM) *.build
-	$(RM) *.changes
-	$(RM) *.deb
-	$(RM) *.dsc
-	$(RM) *.tar.gz
-	$(RM) *.upload
-
-checkout: maintainer-clean
-	git clone git://github.com/lxde/lxqt-panel.git checkout; \
-	cd checkout; \
-	cp -a ../debian .; \
-	echo ""; \
-	git log -1 | head; \
-	echo ""; 
-
-backport: checkout
-	mv checkout backport

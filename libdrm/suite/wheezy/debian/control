@@ -17,8 +17,9 @@ Build-Depends:
  libbsd-dev [kfreebsd-any],
 Standards-Version: 3.9.6
 Section: libs
-Vcs-Git: git://git.debian.org/git/pkg-xorg/lib/libdrm
-Vcs-Browser: http://git.debian.org/?p=pkg-xorg/lib/libdrm.git
+Vcs-Git: https://anonscm.debian.org/git/pkg-xorg/lib/libdrm.git
+Vcs-Browser: https://anonscm.debian.org/cgit/pkg-xorg/lib/libdrm.git
+Homepage: http://cgit.freedesktop.org/mesa/drm/
 
 Package: libdrm-dev
 Section: libdevel
@@ -28,12 +29,13 @@ Depends:
  libdrm-intel1 (= ${binary:Version}) [amd64 i386 kfreebsd-amd64 kfreebsd-i386 x32],
  libdrm-radeon1 (= ${binary:Version}),
  libdrm-nouveau2 (= ${binary:Version}) [linux-any],
- libdrm-amdgpu1 (= ${binary:Version}) [linux-any],
+ libdrm-amdgpu1 (= ${binary:Version}),
  libdrm-omap1 (= ${binary:Version}) [any-arm],
- libdrm-freedreno1 (= ${binary:Version}) [any-arm],
+ libdrm-freedreno1 (= ${binary:Version}) [any-arm arm64],
  libdrm-etnaviv0 (= ${binary:Version}) [any-arm],
  libdrm-exynos1 (= ${binary:Version}) [any-arm],
  libdrm-tegra0 (= ${binary:Version}) [any-arm],
+ libkms1 (= ${binary:Version}) [linux-any],
  ${misc:Depends},
 Multi-Arch: same
 Replaces:
@@ -213,7 +215,7 @@ Description: Userspace interface to omap-specific kernel DRM services -- debuggi
  This package provides the debugging symbols for the libdrm-omap1 package.
 
 Package: libdrm-freedreno1
-Architecture: any-arm
+Architecture: any-arm arm64
 Depends:
  ${shlibs:Depends},
  ${misc:Depends},
@@ -229,7 +231,7 @@ Description: Userspace interface to msm/kgsl kernel DRM services -- runtime
 Package: libdrm-freedreno1-dbg
 Section: debug
 Priority: extra
-Architecture: any-arm
+Architecture: any-arm arm64
 Depends:
  libdrm-freedreno1 (= ${binary:Version}),
  ${misc:Depends},
@@ -337,7 +339,7 @@ Description: Userspace interface to tegra-specific kernel DRM services -- debugg
  This package provides the debugging symbols for the libdrm-tegra0 package.
 
 Package: libdrm-amdgpu1
-Architecture: linux-any
+Architecture: any
 Depends:
  ${shlibs:Depends},
  ${misc:Depends},
@@ -353,7 +355,7 @@ Description: Userspace interface to amdgpu-specific kernel DRM services -- runti
 Package: libdrm-amdgpu1-dbg
 Section: debug
 Priority: extra
-Architecture: linux-any
+Architecture: any
 Depends:
  libdrm-amdgpu1 (= ${binary:Version}),
  ${misc:Depends},
@@ -366,3 +368,25 @@ Description: Userspace interface to amdgpu-specific kernel DRM services -- debug
  OpenGL drivers.
  .
  This package provides the debugging symbols for the libdrm-amdgpu1 package.
+
+Package: libkms1
+Section: libs
+Architecture: linux-any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Description: Userspace interface to kernel DRM buffer management
+ This library implements a unified userspace interface to the different buffer
+ management interfaces of the kernel DRM hardware drivers.
+
+Package: libkms1-dbg
+Section: debug
+Priority: extra
+Architecture: linux-any
+Depends: libkms1 (= ${binary:Version}), ${misc:Depends}
+Multi-Arch: same
+Description: Userspace interface to kernel DRM buffer management -- debugging symbols
+ This library implements a unified userspace interface to the different buffer
+ management interfaces of the kernel DRM hardware drivers.
+ .
+ This package provides the debugging symbols for the libkms1 package.

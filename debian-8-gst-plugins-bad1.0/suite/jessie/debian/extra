@@ -1,0 +1,96 @@
+#!/bin/sh
+
+if [ $# -lt 2 ]; then
+   echo "usage: $1 deps|control plugin"
+   exit 1
+fi
+
+case $1 in
+  deps)
+    case $2 in
+      amrwbenc)
+        echo "libamrwb-dev | amrwb-dev"
+        ;;
+      faac)
+        echo "libfaac-dev"
+        ;;
+      mpeg2enc)
+        echo "libmjpegtools-dev | mjpegtools-dev"
+        ;;
+      *)
+        echo "ERROR invalid plugin: add your plugin to debian/extra"
+        exit 1
+        ;;
+    esac ;;
+
+  control)
+    case $2 in
+      amrwbenc)
+cat << EOF
+Package: @GST_PKGNAME@-amrwbenc
+Architecture: any
+Depends: \${shlibs:Depends}, \${misc:Depends}, @GST_LIB@
+XB-GStreamer-Version: \${gstreamer:Version}
+XB-GStreamer-Elements: \${gstreamer:Elements}
+XB-GStreamer-URI-Sources: \${gstreamer:URISources}
+XB-GStreamer-URI-Sinks: \${gstreamer:URISinks}
+XB-GStreamer-Encoders: \${gstreamer:Encoders}
+XB-GStreamer-Decoders: \${gstreamer:Decoders}
+Provides: \${gstreamer:Provides}
+Description: amrwb encoder plugin for GStreamer
+ This GStreamer plugin uses amrwb to encode audio stream into an Adaptive
+ Multi-Rate - Wideband (AMR-WB) speech codec compressed audio stream.
+ .
+  amrwb Homepage: http://www.penguin.cz/~utx/amr
+
+EOF
+;;
+      faac)
+cat << EOF
+Package: @GST_PKGNAME@-faac
+Architecture: any
+Depends: \${shlibs:Depends}, \${misc:Depends}, @GST_LIB@
+Recommends: @GST_PKGNAME@-ffmpeg
+XB-GStreamer-Version: \${gstreamer:Version}
+XB-GStreamer-Elements: \${gstreamer:Elements}
+XB-GStreamer-URI-Sources: \${gstreamer:URISources}
+XB-GStreamer-URI-Sinks: \${gstreamer:URISinks}
+XB-GStreamer-Encoders: \${gstreamer:Encoders}
+XB-GStreamer-Decoders: \${gstreamer:Decoders}
+Provides: \${gstreamer:Provides}
+Description: FAAC plugin for GStreamer
+ This GStreamer plugin uses FAAC to encode audio stream into a AAC
+ compressed audio stream.  This is commonly known as the "mp4" format.
+ .
+  FAAC Homepage: http://www.audiocoding.com/
+
+EOF
+;;
+      mpeg2enc)
+cat << EOF
+Package: @GST_PKGNAME@-mpeg2enc
+Architecture: any
+Depends: \${shlibs:Depends}, \${misc:Depends}, \${misc:Depends}, @GST_LIB@
+XB-GStreamer-Version: \${gstreamer:Version}
+XB-GStreamer-Elements: \${gstreamer:Elements}
+XB-GStreamer-URI-Sources: \${gstreamer:URISources}
+XB-GStreamer-URI-Sinks: \${gstreamer:URISinks}
+XB-GStreamer-Encoders: \${gstreamer:Encoders}
+XB-GStreamer-Decoders: \${gstreamer:Decoders}
+Provides: \${gstreamer:Provides}
+Description: MJPEG Tools plugin for GStreamer
+ This GStreamer plugin uses MJPEG Tools to encode video stream into a MPEG-2
+ compressed video stream.
+ .
+  MJPEG Tools Homepage: http://mjpeg.sourceforge.net/
+
+EOF
+;;
+      *)
+        echo "ERROR invalid plugin: add your plugin to debian/extra"
+        exit 1
+        ;;
+    esac ;;
+  *) echo "ERROR use deps or control" ;;
+esac
+

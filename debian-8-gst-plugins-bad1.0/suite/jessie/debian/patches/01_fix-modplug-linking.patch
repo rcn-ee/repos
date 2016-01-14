@@ -1,0 +1,16 @@
+Description: Tell libtool not to deduplicate linked libraries which causes problems in the case of circular deps. Force -lc to be added at the end.
+Author: Iain Lane <iain.lane@canonical.com>
+
+--- a/ext/modplug/Makefile.am
++++ b/ext/modplug/Makefile.am
+@@ -2,8 +2,8 @@
+ 
+ libgstmodplug_la_SOURCES = gstmodplug.cc
+ libgstmodplug_la_CXXFLAGS = $(GST_PLUGINS_BASE_CFLAGS) $(GST_CXXFLAGS) $(MODPLUG_CFLAGS)
+-libgstmodplug_la_LIBADD = $(GST_PLUGINS_BASE_LIBS) $(LIBM) $(MODPLUG_LIBS)
++libgstmodplug_la_LIBADD = $(GST_PLUGINS_BASE_LIBS) $(LIBM) $(MODPLUG_LIBS) -lc
+ libgstmodplug_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS)
+-libgstmodplug_la_LIBTOOLFLAGS = $(GST_PLUGIN_LIBTOOLFLAGS)
++libgstmodplug_la_LIBTOOLFLAGS = $(GST_PLUGIN_LIBTOOLFLAGS) --preserve-dup-deps
+ 
+ noinst_HEADERS = gstmodplug.h

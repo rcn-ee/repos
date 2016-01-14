@@ -1,0 +1,23 @@
+From ab9b8882296ee02d2427dcfff3b952f2fe747072 Mon Sep 17 00:00:00 2001
+From: Philipp Wiesemann <philipp.wiesemann@arcor.de>
+Date: Tue, 3 Nov 2015 20:15:17 +0100
+Subject: [PATCH] Fix compiling with Qt < 5.4
+
+The global qUtf8Printable() is not available in versions before Qt 5.4.
+---
+ pcmanfm/application.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/pcmanfm/application.cpp b/pcmanfm/application.cpp
+index 5de57a5..af06193 100644
+--- a/pcmanfm/application.cpp
++++ b/pcmanfm/application.cpp
+@@ -338,7 +338,7 @@ void Application::onUserDirsChanged()
+       }
+     } else {
+         qWarning("Application::onUserDirsChanged: %s doesn't exist",
+-                    qUtf8Printable(userDesktopFolder_));
++                    userDesktopFolder_.toUtf8().constData());
+     }
+   }
+ }

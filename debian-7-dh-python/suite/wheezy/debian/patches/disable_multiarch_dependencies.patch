@@ -1,0 +1,39 @@
+diff --git a/dhpython/__init__.py b/dhpython/__init__.py
+index 12cc3f2..b330192 100644
+--- a/dhpython/__init__.py
++++ b/dhpython/__init__.py
+@@ -25,8 +25,8 @@ PKG_PREFIX_MAP = {'cpython2': 'python',
+                   'pypy': 'pypy'}
+ 
+ # minimum version required for compile/clean scripts:
+-MINPYCDEP = {'cpython2': 'python:any (>= 2.7.5-5~)',
+-             'cpython3': 'python3:any (>= 3.3.2-2~)',
++MINPYCDEP = {'cpython2': 'python (>= 2.6.6-3)',
++             'cpython3': 'python3 (>= 3.2.3-3~)',
+              'pypy': 'pypy'}
+ 
+ PUBLIC_DIR_RE = {
+diff --git a/dhpython/depends.py b/dhpython/depends.py
+index b276e4c..2bd02c9 100644
+--- a/dhpython/depends.py
++++ b/dhpython/depends.py
+@@ -48,8 +48,8 @@ class Dependencies:
+             self.ipkg_tpl_ma = self.ipkg_tpl
+             self.ipkg_vtpl_ma = self.ipkg_vtpl
+         else:
+-            self.ipkg_tpl_ma = self.ipkg_tpl + ':any'
+-            self.ipkg_vtpl_ma = self.ipkg_vtpl + ':any'
++            self.ipkg_tpl_ma = self.ipkg_tpl
++            self.ipkg_vtpl_ma = self.ipkg_vtpl
+ 
+         self.depends = set()
+         self.recommends = []
+@@ -155,7 +155,7 @@ class Dependencies:
+             self.depend(MINPYCDEP[self.impl])
+ 
+         for ipreter in stats['shebangs']:
+-            self.depend("%s%s" % (ipreter, ':any' if self.impl == 'pypy' else ''))
++            self.depend(str(ipreter))
+ 
+         supported_versions = supported(self.impl)
+         default_version = default(self.impl)

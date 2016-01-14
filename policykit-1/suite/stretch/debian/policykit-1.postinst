@@ -60,6 +60,9 @@ case "$1" in
 	# Kill the old polkitd daemon on upgrade, to ensure that the new
 	# version will be used at the next occasion.
 	if [ -d /run/systemd/system ]; then
+		# remove the temporary mask from preinst
+		systemctl unmask --runtime polkit.service
+		systemctl daemon-reload
 		deb-systemd-invoke restart polkit.service || true
 	else
 		kill $(get_pid org.freedesktop.PolicyKit1) 2>/dev/null || true

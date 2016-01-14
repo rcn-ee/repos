@@ -1,0 +1,89 @@
+firmware-nonfree
+================
+
+Upstream
+--------
+
+firmware-nonfree is based on the linux-firmware.git repository, which
+does not currently make tarball (or tagged) releases.  Also, some of
+its contents are not clearly redistributable, and some are obsolete
+for Debian's purposes.
+
+We set the upstream version to the date of the last commit and use the
+'debian/bin/genorig.py' script to generate a tarball from a git
+repository.  The [upstream] excluded field in 'debian/config/defines'
+lists file patterns that should be excluded from the tarball.
+
+Licences
+--------
+
+The upstream source includes the file 'WHENCE' which lists the licence
+and any source code for each file.  The script
+'debian/bin/check_upstream.py' will warn about any files that aren't
+recognised to be distributable based on the information in 'WHENCE'
+and that haven't been excluded.
+
+Each binary package is assumed to have a different licence(s).  The
+installed 'copyright' file is taken from the 'LICENSE' file in its
+subdirectory.
+
+Some firmware redistribution licences require us to prompt the user to
+accept an EULA.  In this case, put the EULA text in 'LICENSE.install'
+and set the [base] license-accept field to 'required'.  There is no
+upstream provision for EULAs.
+
+Binary package definition
+-------------------------
+
+The binary package definitions are placed under 'debian/config' and
+written in a format similar to INI files, parsed using the Python
+ConfigParser module
+<http://docs.python.org/release/2.7/library/configparser.html>,
+
+The [base] packages field in the top-level 'defines' file lists all
+the binary package names, without the fixed prefix 'firmware-'.
+
+For each binary package, there is a subdirectory with matching name
+(again without the prefix) containing another 'defines' file with
+metadata.  Any non-upstream firmware files are also included in
+these subdirectories.
+
+The script 'debian/bin/check_upstream.py' will list the upstream
+firmware files that are non-free but not assigned to any binary
+package.
+
+Required metadata:
+
+[base] desc: Short description of related hardware, used in Description
+[base] files: List of files to be included, one per line
+[base] longdesc: Longer description of related hardware and drivers, used in
+                 Description.
+
+Optional metadata:
+
+[base] uri: Upstream URL, used as Homepage and in copyright file.  Not
+            needed if the contents come from linux-firmware.git.
+[base] license-accept: Set to 'required' if we must prompt the user to
+                       accept a EULA on installation
+[base] license-title: Title of the EULA
+[base] support: Set to 'initramfs-tools' if update-initramfs should be
+                invoked after installation
+[base] replaces: Used as Replaces field
+[base] conflicts: Used as Conflicts field
+[base] provides: Used as Provides field
+
+Optional per-file metadata:
+
+[<filename>_base] desc: One-line description for this file, used in
+                        package description
+[<filename>_base] version: Verson number for this file, used in package
+                           description
+
+To re-generate debian/control (and other files) based on these
+definitions:
+
+1. Install the current linux-support-<kernelversion> package
+2. Ensure debian/rules.defs has the right value of KERNELVERSION
+3. Run: debian/rules debian/control
+
+ -- Ben Hutchings <ben@decadent.org.uk>, Wed, 25 Nov 2015 22:41:15 +0000

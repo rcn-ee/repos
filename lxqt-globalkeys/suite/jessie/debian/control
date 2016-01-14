@@ -1,133 +1,75 @@
 Source: lxqt-globalkeys
+Maintainer: LXQt Packaging Team <pkg-lxqt-devel@lists.alioth.debian.org>
+Uploaders: Alf Gaida <agaida@siduction.org>,
+           ChangZhuo Chen (陳昌倬) <czchen@debian.org>,
+           Andrew Lee (李健秋) <ajqlee@debian.org>
 Section: x11
 Priority: optional
-Maintainer: LXQt Packaging Team <pkg-lxqt-devel@lists.alioth.debian.org>
-Uploaders:
- Alf Gaida <agaida@siduction.org>,
- ChangZhuo Chen (陳昌倬) <czchen@gmail.com>
-Build-Depends:
- cmake (>= 3.0.2),
- debhelper (>= 9),
- libx11-dev,
- pkg-config,
- libkf5windowsystem-dev (>= 5.9.0),
- liblxqt0-dev (>= 0.9.0),
- libqt5x11extras5-dev (>= 5.3),
- libqt5xdg-dev (>= 1.2.0),
- qttools5-dev (>= 5.3),
- qttools5-dev-tools (>= 5.3),
+Build-Depends: debhelper (>= 9),
+               cmake (>= 3.0.2),
+               libkf5windowsystem-dev,
+               liblxqt0-dev (>= 0.10.0),
+               libqt5x11extras5-dev,
+               libqt5xdg-dev (>= 1.3.0),
+               libx11-dev,
+               pkg-config,
+               qttools5-dev,
+               qttools5-dev-tools
 Standards-Version: 3.9.6
+Vcs-Browser: http://anonscm.debian.org/cgit/pkg-lxqt/lxqt-globalkeys.git/?h=debian/sid
+Vcs-Git: git://anonscm.debian.org/pkg-lxqt/lxqt-globalkeys.git -b debian/sid
 Homepage: https://github.com/lxde/lxqt-globalkeys
-Vcs-Git: git://anonscm.debian.org/pkg-lxqt/lxqt-globalkeys.git
-Vcs-Browser: http://anonscm.debian.org/cgit/pkg-lxqt/lxqt-globalkeys.git
 
 Package: lxqt-globalkeys
 Architecture: any
-Breaks: lxqt-globalkeys-qt5 (<< 0.9.0)
-Replaces: lxqt-globalkeys-qt5 (<< 0.9.0)
-Depends:
- ${misc:Depends},
- ${shlibs:Depends},
-Description: Daemon used to register global keyboard shortcuts (appl.)
- Daemon used to register global keyboard shortcuts
+Depends: ${misc:Depends},
+         ${shlibs:Depends}
+Description: daemon used to register global keyboard shortcuts (appl.)
+ Daemon used to register global keyboard shortcuts.
  .
  This package contain the program files for LXQt globalskeys.
 
 Package: liblxqt-globalkeys0
 Architecture: any
 Section: libs
-Breaks: liblxqt-globalkeys-qt5-0 (<< 0.9.0)
-Replaces: liblxqt-globalkeys-qt5-0 (<< 0.9.0)
-Depends:
- ${misc:Pre-Depends},
- ${misc:Depends},
- ${shlibs:Depends},
-Description: Daemon used to register global keyboard shortcuts (shared libs)
- Daemon used to register global keyboard shortcuts
+Depends: ${misc:Pre-Depends},
+         ${misc:Depends},
+         ${shlibs:Depends}
+Description: daemon used to register global keyboard shortcuts (shared libs)
+ Daemon used to register global keyboard shortcuts.
  .
  This package contain the shared libs for LXQt globalkeys.
 
 Package: liblxqt-globalkeys0-dev
 Architecture: any
 Section: libdevel
-Breaks: liblxqt-globalkeys-qt5-0-dev (<< 0.9.0)
-Replaces: liblxqt-globalkeys-qt5-0-dev (<< 0.9.0)
-Depends:
- ${misc:Depends},
- ${shlibs:Depends},
- liblxqt-globalkeys0 (= ${binary:Version}),
-Description: Daemon used to register global keyboard shortcuts (dev files)
- Daemon used to register global keyboard shortcuts
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         liblxqt-globalkeys0 (= ${binary:Version})
+Description: daemon used to register global keyboard shortcuts (dev files)
+ Daemon used to register global keyboard shortcuts.
  .
  This package contain the development files.
 
-Package: liblxqt-globalkeys-ui0 
+Package: liblxqt-globalkeys-ui0
 Architecture: any
 Section: libs
-Breaks: liblxqt-globalkeys-ui-qt5-0 (<< 0.9.0)
-Replaces: liblxqt-globalkeys-ui-qt5-0 (<< 0.9.0)
-Depends:
- ${misc:Pre-Depends},
- ${misc:Depends},
- ${shlibs:Depends},
- liblxqt-globalkeys0 (= ${binary:Version}),
-Description: Daemon used to register global keyboard shortcuts (ui files)
- Daemon used to register global keyboard shortcuts
+Depends: ${misc:Pre-Depends},
+         ${misc:Depends},
+         ${shlibs:Depends},
+         liblxqt-globalkeys0 (= ${binary:Version})
+Description: daemon used to register global keyboard shortcuts (ui files)
+ Daemon used to register global keyboard shortcuts.
  .
  This package contain the ui for LXQt globalkeys.
 
 Package: liblxqt-globalkeys-ui0-dev
 Architecture: any
 Section: libdevel
-Breaks: liblxqt-globalkeys-ui-qt5-0-dev (<< 0.9.0)
-Replaces: liblxqt-globalkeys-ui-qt5-0-dev (<< 0.9.0)
-Depends:
- ${misc:Depends},
- ${shlibs:Depends},
- liblxqt-globalkeys-ui0 (= ${binary:Version}),
-Description: Daemon used to register global keyboard shortcuts (ui dev files)
- Daemon used to register global keyboard shortcuts
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         liblxqt-globalkeys-ui0 (= ${binary:Version})
+Description: daemon used to register global keyboard shortcuts (ui dev files)
+ Daemon used to register global keyboard shortcuts.
  .
  This package contain the ui development files.
-
-# ---- to be removed in 2016 ----
-
-Package: lxqt-globalkeys-qt5
-Depends: lxqt-globalkeys, ${misc:Depends}
-Priority: extra
-Section: oldlibs
-Architecture: all
-Description: lxqt-globalkeys transitional package
- Empty package to facilitate upgrades, can be safely removed.
-
-Package: liblxqt-globalkeys-qt5-0
-Depends: liblxqt-globalkeys0, ${misc:Depends}
-Priority: extra
-Section: oldlibs
-Architecture: all
-Description: liblxqt-globalkeys0 transitional package
- Empty package to facilitate upgrades, can be safely removed.
-
-Package: liblxqt-globalkeys-qt5-0-dev
-Depends: liblxqt-globalkeys0-dev, ${misc:Depends}
-Priority: extra
-Section: oldlibs
-Architecture: all
-Description: liblxqt-globalkeys0 transitional package (dev)
- Empty package to facilitate upgrades, can be safely removed.
-
-Package: liblxqt-globalkeys-ui-qt5-0
-Depends: liblxqt-globalkeys-ui0, ${misc:Depends}
-Priority: extra
-Section: oldlibs
-Architecture: all
-Description: liblxqt-globalkeys-ui0 transitional package
- Empty package to facilitate upgrades, can be safely removed.
-
-Package: liblxqt-globalkeys-ui-qt5-0-dev
-Depends: liblxqt-globalkeys-ui0-dev, ${misc:Depends}
-Priority: extra
-Section: oldlibs
-Architecture: all
-Description: liblxqt-globalkeys-ui0 transitional package
- Empty package to facilitate upgrades, can be safely removed.

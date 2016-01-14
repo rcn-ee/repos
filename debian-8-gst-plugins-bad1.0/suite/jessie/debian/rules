@@ -1,0 +1,236 @@
+#!/usr/bin/make -f
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/gnome.mk
+include /usr/share/cdbs/1/rules/utils.mk
+include /usr/share/cdbs/1/rules/autoreconf.mk
+
+DEB_BUILD_PARALLEL = 1
+
+DEB_DH_AUTORECONF_ARGS += --as-needed
+
+CFLAGS += -Wno-error
+CXXFLAGS += -Wno-error
+LDFLAGS += -Wl,-z,defs -Wl,-O1 -Wl,--as-needed
+DEB_MAKE_CHECK_TARGET = check || true
+
+# this is for compatibility with dpkg-dev < 1.13.5, see
+# <http://lists.debian.org/debian-devel-announce/2005/06/msg00010.html>
+DEB_HOST_ARCH_CPU := $(shell dpkg-architecture -qDEB_HOST_ARCH_CPU 2>/dev/null)
+DEB_HOST_ARCH_OS := $(shell dpkg-architecture -qDEB_HOST_ARCH_OS 2>/dev/null)
+
+# Take account of old dpkg-architecture output.
+ifeq ($(DEB_HOST_ARCH_CPU),)
+  DEB_HOST_ARCH_CPU := $(shell dpkg-architecture -qDEB_HOST_GNU_CPU)
+  ifeq ($(DEB_HOST_ARCH_CPU),x86_64)
+    DEB_HOST_ARCH_CPU := amd64
+  endif
+endif
+ifeq ($(DEB_HOST_ARCH_OS),)
+  DEB_HOST_ARCH_OS := $(subst -gnu,,$(shell dpkg-architecture -qDEB_HOST_GNU_SYSTEM))
+  ifeq ($(DEB_HOST_ARCH_OS),gnu)
+    DEB_HOST_ARCH_OS := hurd
+  endif
+endif
+# end of compatibility block
+
+# debian package version
+version=$(shell dpkg-parsechangelog | grep ^Version: | cut -d ' ' -f 2)
+# upstream version
+gst_version=$(shell echo $(version) | cut -d '-' -f 1)
+gst_major=1
+gst_minor=0
+gst_abi=$(gst_major).$(gst_minor)
+# gstreamer library package names
+gst_lib=libgstreamer$(gst_abi)-0
+gst_lib_dev=libgstreamer$(gst_abi)-dev
+# what gstreamer version is needed
+gst_lib_dev_dep=$(gst_lib_dev) (>= 1.4.0)
+
+gst_pkgname=gstreamer$(gst_abi)
+gst_deb_abi=$(gst_abi)-0
+
+gst_extra_build_depends =
+gst_extra_build_depends += libasound2-dev (>= 0.9.1) [linux-any]
+gst_extra_build_depends += , libcdaudio-dev [linux-any]
+gst_extra_build_depends += , libdc1394-22-dev (>= 2.0.0) [linux-any]
+gst_extra_build_depends += , libgudev-1.0-dev (>= 143) [linux-any]
+gst_extra_build_depends += , libusb-1.0-0-dev [linux-any]
+#gst_extra_build_depends += , libbluetooth-dev (<< 5) [linux-any]
+gst_extra_build_depends += , libsbc-dev (>= 1.1) [linux-any]
+gst_extra_build_depends += , libwayland-dev (>= 1.0) [linux-any]
+
+# The plugins are basically the same.
+# Link special names to a template file.
+# still need "*.install" to be done by hand
+# 
+# EXTRA_PLUGINS: See debian/README.Debian for docs
+EXTRA_PLUGINS +=
+
+PLUGINS += plugins-bad $(EXTRA_PLUGINS)
+ifeq ($(DEB_HOST_ARCH_OS),linux)
+PLUGINS +=
+endif
+VERSIONIZE= \
+	plugins-bad-doc.install \
+
+#debug package
+DEB_DH_STRIP_ARGS := --dbg-package=$(gst_pkgname)-plugins-bad-dbg
+
+# enable the real plugin on x86
+ifeq ($(DEB_HOST_ARCH_CPU), i386)
+real = debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/gstreamer-$(gst_abi)/libgstreal.so
+endif
+
+ifeq ($(DEB_HOST_ARCH_OS),linux)
+dvb = debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/gstreamer-$(gst_abi)/libgstdvb.so
+fbdev = debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/gstreamer-$(gst_abi)/libgstfbdevsink.so
+vcd = debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/gstreamer-$(gst_abi)/libgstvcdsrc.so
+cdaudio = debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/gstreamer-$(gst_abi)/libgstcdaudio.so
+dc1394 = debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/gstreamer-$(gst_abi)/libgstdc1394.so
+decklink = debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/gstreamer-$(gst_abi)/libgstdecklink.so
+linsys = debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/gstreamer-$(gst_abi)/libgstlinsys.so
+uvch264 = debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/gstreamer-$(gst_abi)/libgstuvch264.so
+#bluez = debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/gstreamer-$(gst_abi)/libgstbluez.so
+sbc = debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/gstreamer-$(gst_abi)/libgstsbc.so
+waylandsink = debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/gstreamer-$(gst_abi)/libgstwaylandsink.so
+wayland = debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/libgstwayland-$(gst_abi).so.*
+endif
+
+ifeq ($(DEB_HOST_ARCH_OS),kfreebsd)
+cdaudio = debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/gstreamer-$(gst_abi)/libgstcdaudio.so
+endif
+
+ifneq ($(DEB_HOST_ARCH_OS),hurd)
+resindvd = debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/gstreamer-$(gst_abi)/libgstresindvd.so
+endif
+
+# Let's decide the package name and url depending on the distribution
+DISTRO = "$(shell dpkg-vendor --query vendor)"
+
+GST_PACKAGE_NAME := "GStreamer Bad Plugins (unknown Debian derivative)"
+GST_PACKAGE_ORIGIN="http://packages.qa.debian.org/gst-plugins-bad$(gst_abi)"
+
+ifeq ($(DISTRO),"Debian")
+GST_PACKAGE_NAME := "GStreamer Bad Plugins (Debian)"
+GST_PACKAGE_ORIGIN="http://packages.qa.debian.org/gst-plugins-bad$(gst_abi)"
+endif
+
+ifeq ($(DISTRO),"Ubuntu")
+GST_PACKAGE_NAME := "GStreamer Bad Plugins (Ubuntu)"
+GST_PACKAGE_ORIGIN="https://launchpad.net/distros/ubuntu/+source/gst-plugins-bad$(gst_abi)"
+endif
+
+
+# setup links for packages
+pre-build::
+	for p in $(PLUGINS); do \
+		rm -f debian/$(gst_pkgname)-$$p.install; \
+		sed \
+			-e 's,@real@,$(real),g' \
+			-e 's,@dvb@,$(dvb),g' \
+			-e 's,@decklink@,$(decklink),g' \
+			-e 's,@linsys@,$(linsys),g' \
+			-e 's,@fbdev@,$(fbdev),g' \
+			-e 's,@vcd@,$(vcd),g' \
+			-e 's,@dc1394@,$(dc1394),g' \
+			-e 's,@cdaudio@,$(cdaudio),g' \
+			-e 's,@resindvd@,$(resindvd),g' \
+			-e 's,@uvch264@,$(uvch264),g' \
+			-e 's,@bluez@,$(bluez),g' \
+			-e 's,@sbc@,$(sbc),g' \
+			-e 's,@waylandsink@,$(waylandsink),g' \
+			-e 's/@GST_ABI@/$(gst_abi)/g' \
+			debian/gstreamer-$$p.install \
+			> debian/$(gst_pkgname)-$$p.install; \
+	done
+
+	for f in $(VERSIONIZE); do \
+		sed 's/@GST_ABI@/$(gst_abi)/g' debian/gstreamer-$$f \
+			> debian/$(gst_pkgname)-$$f; \
+	done
+
+	sed -e 's/@GST_ABI@/$(gst_abi)/g' -e 's,@wayland@,$(wayland),g' \
+			debian/libgstreamer-plugins-bad.install \
+			> debian/libgstreamer-plugins-bad$(gst_deb_abi).install
+	sed 's/@GST_ABI@/$(gst_abi)/g' debian/libgstreamer-plugins-bad-dev.install \
+			> debian/libgstreamer-plugins-bad$(gst_abi)-dev.install
+
+maint: debian/control
+
+debian/build-deps: debian/build-deps.in debian/rules
+	cat $< > $@
+	for plugin in $(EXTRA_PLUGINS); do \
+		sh debian/extra deps $$plugin >> $@; \
+	done
+	sort $@ -o $@
+
+debian/control:: debian/control.in debian/build-deps debian/mk.control debian/rules
+	perl debian/mk.control | sed \
+		-e 's/@GST_VERSION@/$(gst_version)/g' \
+		-e 's/@GST_ABI@/$(gst_abi)/g' \
+		-e 's/@GST_DEB_ABI@/$(gst_deb_abi)/g' \
+		-e 's/@GST_PKGNAME@/$(gst_pkgname)/g' \
+		-e 's/@GST_LIB@/$(gst_lib)/g' \
+		-e 's/@GST_LIB_DEV@/$(gst_lib_dev)/g' \
+		-e 's/@GST_LIB_DEV_DEP@/$(gst_lib_dev_dep)/g' \
+		-e 's/@GST_EXTRA_BUILD_DEPENDS@/$(gst_extra_build_depends)/g' \
+		-e '/^Build-Depends\(-Indep\)\?/s/\ *,\ */,\n               /g' \
+		>$@
+
+	for plugin in $(EXTRA_PLUGINS); do \
+		sh debian/extra control $$plugin | sed \
+			-e 's/@GST_ABI@/$(gst_abi)/g' \
+			-e 's/@GST_PKGNAME@/$(gst_pkgname)/g' \
+			-e 's/@GST_LIB@/$(gst_lib)/g' \
+			-e 's/@GST_LIB_DEV@/$(gst_lib_dev)/g' \
+			-e 's/@GST_LIB_DEV_DEP@/$(gst_lib_dev_dep)/g' \
+			-e 's/@GST_PLUGINS_LIB@/$(gst_plugins_lib)/g' \
+			-e 's/@GST_PLUGINS_LIB_DEV@/$(gst_plugins_lib_dev)/g' \
+			-e 's/@GST_PLUGINS_LIB_DEV_DEP@/$(gst_plugins_lib_dev_dep)/g' \
+			-e 's/@GST_GCONF_LIB@/$(gst_gconf_lib)/g' \
+			-e 's/@GST_GCONF_LIB_DEV@/$(gst_gconf_lib_dev)/g' \
+			-e 's/@GST_GCONF_LIB_DEV_DEP@/$(gst_gconf_lib_dev_dep)/g' \
+			>> $@; \
+	done
+
+
+DEB_CONFIGURE_EXTRA_FLAGS += \
+	--libdir=\$${prefix}/lib/$(DEB_HOST_MULTIARCH) \
+	--disable-examples \
+	--enable-DEBUG \
+	--enable-debug \
+	--enable-experimental \
+	--with-package-name=$(GST_PACKAGE_NAME) \
+	--with-package-origin=$(GST_PACKAGE_ORIGIN) \
+	--disable-pvr
+
+# only build the docs on arches which can
+ifeq (,$(findstring $(DEB_HOST_ARCH),m68k arm))
+DEB_CONFIGURE_EXTRA_FLAGS += --enable-gtk-doc
+endif
+
+common-binary-fixup-arch::
+	LD_LIBRARY_PATH=debian/libgstreamer-plugins-bad1.0-0/usr/lib/$(DEB_HOST_MULTIARCH):$(LD_LIBRARY_PATH) \
+		dh_gstscancodecs
+
+clean::
+	# get rid of the sym links
+	for i in $(PLUGINS); do \
+		rm -f debian/$(gst_pkgname)-$$i.install; \
+		rm -f debian/$(gst_pkgname)-$$i.preinst; \
+	done
+	for f in $(VERSIONIZE); do \
+		rm -f debian/$(gst_pkgname)-$$f; \
+	done
+
+gst_patch = $(shell echo $(gst_version) | cut -d '.' -f 3)
+gst_patch_next = $(shell expr $(gst_patch) + 1)
+gst_version_next = $(shell echo $(gst_version) | cut -d '.' -f-2).$(gst_patch_next)
+DEB_DH_MAKESHLIBS_ARGS_libgstreamer-plugins-bad$(gst_deb_abi) += -V "libgstreamer-plugins-bad$(gst_deb_abi) (>= $(gst_version)), libgstreamer-plugins-bad$(gst_deb_abi) (<< $(gst_version_next))"
+DEB_INSTALL_DOCS_ALL += debian/README.Debian NEWS
+
+# Disable inclusion of large upstream ChangeLog
+DEB_INSTALL_CHANGELOGS_ALL :=
+
+.PHONY: maint

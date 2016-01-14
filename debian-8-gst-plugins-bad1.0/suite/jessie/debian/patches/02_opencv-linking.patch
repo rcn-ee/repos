@@ -1,0 +1,15 @@
+diff --git a/ext/opencv/Makefile.am b/ext/opencv/Makefile.am
+index 3ba1c34..2bda4e3 100644
+--- a/ext/opencv/Makefile.am
++++ b/ext/opencv/Makefile.am
+@@ -40,7 +40,9 @@ libgstopencv_la_CFLAGS = $(GST_PLUGINS_BASE_CFLAGS) $(GST_BASE_CFLAGS) \
+ 	-DCV_INLINE="static inline" \
+ 	-DCV_NO_BACKWARD_COMPATIBILITY
+ 
+-libgstopencv_la_LIBADD = $(GST_LIBS) $(GST_BASE_LIBS) $(OPENCV_LIBS) \
++# workaround for broken pkg-config file
++OPENCV_LIBS_FIXED = $(subst ocl,ml,$(OPENCV_LIBS))
++libgstopencv_la_LIBADD = $(GST_LIBS) $(GST_BASE_LIBS) $(OPENCV_LIBS_FIXED) \
+ 			$(GSTPB_BASE_LIBS) -lgstvideo-$(GST_API_VERSION)
+ 
+ libgstopencv_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS)

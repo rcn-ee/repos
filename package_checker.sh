@@ -36,7 +36,12 @@ check_http_exp () {
 
 check_http () {
 	generic_http
-	version=$(cat /tmp/index.html | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+	if [ "x${filter}" = "x" ] ; then
+		version=$(cat /tmp/index.html | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+	else
+		version=$(cat /tmp/index.html | grep ${filter} | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+		unset filter
+	fi
 	generic_check
 }
 
@@ -60,17 +65,23 @@ check () {
 	fi
 }
 
+important () {
+	echo "important"
+	site="${debian_pool}/main/p"
+	package_name="pastebinit" ; package_version="${package_name}_1.4-6" ; check_http
+}
+
 builds () {
 	echo "build tools:"
 
 	site="${debian_pool}/main/c"
-	package_name="cmake" ; package_version="${package_name}_3.3.2-1" ; check_http
+	package_name="cmake" ; package_version="${package_name}_3.4.1-2" ; check_http
 
 	site="${debian_pool}/main/p"
-	package_name="pkg-kde-tools" ; package_version="${package_name}_0.15.19" ; check_http
+	package_name="pkg-kde-tools" ; package_version="${package_name}_0.15.20" ; check_http
 
 	site="${debian_pool}/main/e"
-	package_name="extra-cmake-modules" ; package_version="${package_name}_5.15.0-1" ; check_http
+	package_name="extra-cmake-modules" ; package_version="${package_name}_5.16.0-1" ; check_http
 }
 
 mesa () {
@@ -78,47 +89,51 @@ mesa () {
 
 	site="${debian_pool}/main/l"
 	package_name="llvm-toolchain-3.6" ; package_version="${package_name}_3.6.2-3" ; check_http
-	package_name="llvm-toolchain-3.7" ; package_version="${package_name}_3.7-2" ; check_http
+	package_name="llvm-toolchain-3.7" ; package_version="${package_name}_3.7.1-1" ; check_http
+	package_name="llvm-toolchain-snapshot" ; package_version="${package_name}_3.8~svn254193-1" ; check_http
 
 	site="${debian_pool}/main/libc"
-	package_name="libclc" ; package_version="${package_name}_0.2.0+git20150813-1" ; check_http
+	filter="0.2"
+	package_name="libclc" ; package_version="${package_name}_0.2.0+git20150813-2" ; check_http
 
 	site="${debian_pool}/main/libd"
-	package_name="libdrm" ; package_version="${package_name}_2.4.64-1" ; check_http
+	package_name="libdrm" ; package_version="${package_name}_2.4.65-3" ; check_http
 
 	site="${debian_pool}/main/libv"
-	package_name="libvdpau" ; package_version="${package_name}_1.1.1-2" ; check_http
+	package_name="libvdpau" ; package_version="${package_name}_1.1.1-3" ; check_http
 
 	site="${debian_pool}/main/m"
-	package_name="mesa" ; package_version="${package_name}_11.0.2-1" ; check_http
+	package_name="mesa" ; package_version="${package_name}_11.1.1-1" ; check_http
+	package_name="mesa-demos" ; package_version="${package_name}_8.3.0-1" ; check_http
 }
 
 qt5_kde () {
 	echo "qt5: kde:"
 
 	site="${debian_pool}/main/s"
-	package_name="solid" ; package_version="${package_name}_5.15.0-1" ; check_http
+	package_name="solid" ; package_version="${package_name}_5.16.0-1" ; check_http
 
 	site="${debian_pool}/main/k"
-	package_name="kcoreaddons" ; package_version="${package_name}_5.15.0-1" ; check_http
-	package_name="kguiaddons" ; package_version="${package_name}_5.15.0-1" ; check_http
-	package_name="kwindowsystem" ; package_version="${package_name}_5.15.0-1" ; check_http
+	package_name="kcoreaddons" ; package_version="${package_name}_5.16.0-1" ; check_http
+	package_name="kguiaddons" ; package_version="${package_name}_5.16.0-1" ; check_http
+	package_name="kwindowsystem" ; package_version="${package_name}_5.16.0-1" ; check_http
 }
 
 qt5_apps () {
-	echo "qupzilla:"
-	site="${debian_pool}/main/q"
-	package_name="qupzilla" ; package_version="${package_name}_1.8.6~dfsg1-2" ; check_http
+	echo "qt5: apps:"
 
-	echo "qterminal:"
 	site="${debian_pool}/main/q"
-	package_name="qtermwidget" ; package_version="qtermwidget_0.6.0-10" ; check_http
-	package_name="qterminal" ; package_version="qterminal_0.6.0-10" ; check_http
+	package_name="qupzilla" ; package_version="${package_name}_1.8.9~dfsg1-2" ; check_http
+	package_name="qtermwidget" ; package_version="${package_name}_0.6.0-10" ; check_http
+	package_name="qterminal" ; package_version="${package_name}_0.6.0-10" ; check_http
+	package_name="qlipper" ; package_version="${package_name}_5.0.0+20151111-1" ; check_http
+	package_name="qps" ; package_version="${package_name}_1.10.16+20151210-1" ; check_http
 
 	echo "connman/cmst:"
 	site="http://packages.siduction.org/extra/pool/main/c"
-	package_name="connman" ; package_version="connman_1.30-1" ; check_http_exp
-	package_name="cmst" ; package_version="cmst_2015.10.07-1" ; check_http
+	package_name="connman" ; package_version="${package_name}_1.31-1" ; check_http_exp
+	site="${debian_pool}/main/c"
+	package_name="cmst" ; package_version="${package_name}_2015.12.03-2" ; check_http
 }
 
 qt5_lxqt () {
@@ -128,101 +143,147 @@ qt5_lxqt () {
 	package_name="libdbusmenu-qt" ; package_version="${package_name}_0.9.3+15.10.20150604-1" ; check_http
 
 	site="${debian_pool}/main/p"
-	package_name="policykit-1" ; package_version="${package_name}_0.113-1" ; check_http
+	package_name="policykit-1" ; package_version="${package_name}_0.113-2" ; check_http
 
 	site="${debian_pool}/main/p"
-	package_name="polkit-qt-1" ; package_version="${package_name}_0.112.0-3" ; check_http
+	package_name="polkit-qt-1" ; package_version="${package_name}_0.112.0-4" ; check_http
 
 	site="${debian_pool}/main/o"
 	package_name="obconf-qt" ; package_version="${package_name}_0.1.2-8" ; check_http
 
-	site="${debian_pool}/main/libq"
-	package_name="libqtxdg" ; package_version="${package_name}_1.2.0-7" ; check_http
-
-	site="${debian_pool}/main/libl"
-	package_name="liblxqt" ; package_version="${package_name}_0.9.0-23" ; check_http
-
-	site="${debian_pool}/main/l"
-	package_name="lxqt-about" ; package_version="${package_name}_0.9.0-9" ; check_http
-	package_name="lxqt-admin" ; package_version="${package_name}_0.9.0-6" ; check_http
-	package_name="lxqt-common" ; package_version="${package_name}_0.9.1-17" ; check_http
-	package_name="lxqt-notificationd" ; package_version="${package_name}_0.9.0-11" ; check_http
-	package_name="lxqt-policykit" ; package_version="${package_name}_0.9.0-9" ; check_http
-	package_name="lxqt-powermanagement" ; package_version="${package_name}_0.9.0-14" ; check_http
-	package_name="lxqt-qtplugin" ; package_version="${package_name}_0.9.0-6" ; check_http
-
-	site="${debian_pool}/main/l"
-	package_name="lxqt-openssh-askpass" ; package_version="${package_name}_0.9.0-1" ; check_http
-
-	site="${debian_pool}/main/p"
-	package_name="pcmanfm-qt" ; package_version="${package_name}_0.9.0-22" ; check_http
-
+	#https://github.com/lxde/compton-conf
+	#resync version with stretch and drop...
 	site="${debian_pool}/main/c"
 	package_name="compton-conf" ; package_version="${package_name}_0.1.2-8" ; check_http
 
-	site="${debian_pool}/main/l"
-	package_name="lxqt-session" ; package_version="${package_name}_0.9.0-15" ; check_http
+	#https://tracker.debian.org/pkg/libqtxdg
+	site="${debian_pool}/main/libq"
+	package_name="libqtxdg" ; package_version="${package_name}_1.3.0-3" ; check_http
 
-#
+	#https://tracker.debian.org/pkg/libsysstat
 	site="${debian_pool}/main/libs"
-	package_name="libsysstat" ; package_version="${package_name}_0.3.0-5" ; check_http
+	package_name="libsysstat" ; package_version="${package_name}_0.3.1-2" ; check_http
 
+	#https://tracker.debian.org/pkg/screengrab
+	site="${debian_pool}/main/s"
+	package_name="screengrab" ; package_version="${package_name}_1.95+20151117-4" ; check_http
+
+	#https://tracker.debian.org/pkg/liblxqt
+	site="${debian_pool}/main/libl"
+	package_name="liblxqt" ; package_version="${package_name}_0.10.0-3" ; check_http
+
+	#https://tracker.debian.org/pkg/lxqt-about
 	site="${debian_pool}/main/l"
-	package_name="lxqt-globalkeys" ; package_version="${package_name}_0.9.0-19" ; check_http
-	package_name="lxqt-sudo" ; package_version="${package_name}_0.1.0-9" ; check_http
-	package_name="lxqt-panel" ; package_version="${package_name}_0.9.0-34" ; check_http
-	package_name="lxqt-session" ; package_version="${package_name}_0.9.0-15" ; check_http
-	package_name="lxqt-runner" ; package_version="${package_name}_0.9.0-9" ; check_http
+	package_name="lxqt-about" ; package_version="${package_name}_0.10.0-2" ; check_http
+
+	#https://tracker.debian.org/pkg/lxqt-admin
+	site="${debian_pool}/main/l"
+	package_name="lxqt-admin" ; package_version="${package_name}_0.10.0-2" ; check_http
+
+	#https://tracker.debian.org/pkg/lxqt-common
+	site="${debian_pool}/main/l"
+	package_name="lxqt-common" ; package_version="${package_name}_0.10.0-2" ; check_http
+
+	#https://tracker.debian.org/pkg/lxqt-globalkeys
+	site="${debian_pool}/main/l"
+	package_name="lxqt-globalkeys" ; package_version="${package_name}_0.10.0-2" ; check_http
+
+	#https://tracker.debian.org/pkg/lxqt-openssh-askpass
+	site="${debian_pool}/main/l"
+	package_name="lxqt-openssh-askpass" ; package_version="${package_name}_0.10.0-2" ; check_http
+
+	#https://tracker.debian.org/pkg/lxqt-notificationd
+	site="${debian_pool}/main/l"
+	package_name="lxqt-notificationd" ; package_version="${package_name}_0.10.0-1" ; check_http
+
+	#https://tracker.debian.org/pkg/lxqt-powermanagement
+	site="${debian_pool}/main/l"
+	package_name="lxqt-powermanagement" ; package_version="${package_name}_0.10.0-2" ; check_http
+
+	#https://tracker.debian.org/pkg/lxqt-policykit
+	site="${debian_pool}/main/l"
+	package_name="lxqt-policykit" ; package_version="${package_name}_0.10.0-2" ; check_http
+
+	#https://tracker.debian.org/pkg/lxqt-qtplugin
+	site="${debian_pool}/main/l"
+	package_name="lxqt-qtplugin" ; package_version="${package_name}_0.10.0-2" ; check_http
+
+	#https://tracker.debian.org/pkg/lxqt-session
+	site="${debian_pool}/main/l"
+	package_name="lxqt-session" ; package_version="${package_name}_0.10.0-2" ; check_http
+
+	#https://tracker.debian.org/pkg/lxqt-sudo
+	site="${debian_pool}/main/l"
+	package_name="lxqt-sudo" ; package_version="${package_name}_0.10.0-2" ; check_http
+
+	#https://tracker.debian.org/pkg/pcmanfm-qt
+	site="${debian_pool}/main/p"
+	package_name="pcmanfm-qt" ; package_version="${package_name}_0.10.0-2" ; check_http
+
+	#https://tracker.debian.org/pkg/lxqt-runner
+	site="${debian_pool}/main/l"
+	package_name="lxqt-runner" ; package_version="${package_name}_0.10.0-2" ; check_http
+
+	#https://tracker.debian.org/pkg/lxqt-config
+	site="${debian_pool}/main/l"
+	package_name="lxqt-config" ; package_version="${package_name}_0.10.0-2" ; check_http
+
+	#https://tracker.debian.org/pkg/lxqt-panel
+	site="${debian_pool}/main/l"
+	package_name="lxqt-panel" ; package_version="${package_name}_0.10.0-2" ; check_http
+
+#in progress..
+	site="${debian_pool}/main/l"
 	package_name="lximage-qt" ; package_version="${package_name}_0.4.0-7" ; check_http
-	package_name="lxqt-config" ; package_version="${package_name}_0.9.0-21" ; check_http
 }
 
 machinekit () {
 	echo "machinekit:"
 
 	site="${debian_pool}/main/c"
-	package_name="czmq" ; package_version="${package_name}_3.0.2-1" ; check_http_machine
+	package_name="czmq" ; package_version="${package_name}_3.0.2-2" ; check_http
 
-	site="http://deb.dovetail-automata.com/pool/main/libw"
-	package_name="libwebsockets" ; package_version="${package_name}_1.3-1%7egit95a8abb%7e1431844465git95a8abb%7e1jessie%7e1da" ; check_http_machine
-
-	site="http://deb.dovetail-automata.com/deb-testing/pool/main/x"
-	package_name="xenomai" ; package_version="${package_name}_2.6.4-1%7e1jessie%7e1da" ; check_http
+	#site="http://deb.dovetail-automata.com/pool/main/libw"
+	#package_name="libwebsockets" ; package_version="${package_name}_1.3-1%7egit95a8abb%7e1431844465git95a8abb%7e1jessie%7e1da" ; check_http_machine
 }
 
 nodejs () {
-	echo "nodejs:"
-	site="${debian_pool}/main/g"
-	package_name="gyp" ; package_version="${package_name}_0.1~svn1729-3" ; check_http
+	echo "nodejs: (jessie)"
+	site="${debian_pool}/main/libu"
+	package_name="libuv1"; package_version="${package_name}_1.8.0-1"; check_http
 
-	site="${debian_pool}/main/libv"
-	package_name="libv8-3.14"; package_version="${package_name}_3.14.5.8-10"; check_http
+	site="${debian_pool}/main/g"
+	filter="201"
+	package_name="gyp"; package_version="${package_name}_0.1+20150913git1f374df9-1"; check_http
+
+	echo "nodejs: (jessie-exp)"
+	site="${debian_pool}/main/o"
+	filter="1.0.2"
+	package_name="openssl"; package_version="${package_name}_1.0.2e-1"; check_http
 
 	site="${debian_pool}/main/n"
-	package_name="nodejs"; package_version="${package_name}_0.10.38~dfsg-1"; check_http
+	filter="4.2"
+	package_name="nodejs"; package_version="${package_name}_4.2.4~dfsg-1"; check_http
 }
 
+important
 builds
 mesa
 qt5_kde
 qt5_apps
 qt5_lxqt
-machinekit
+#machinekit
 nodejs
 
 echo "others"
 
 site="http://ports.ubuntu.com/pool/universe/c"
-package_name="chromium-browser" ; package_version="${package_name}_45.0.2454.101-0ubuntu1.1201" ; check_http
-
-site="${debian_pool}/main/o"
-package_name="openjdk-8"; package_version="${package_name}_8u60~b22-1"; check_http
+package_name="chromium-browser" ; package_version="${package_name}_47.0.2526.106-0ubuntu1.1221" ; check_http
 
 #really slow...
 exit
 
 suite="experimental"
-
 
 suite="sid"
 package_name="openjfx" ; package_version="8u20-b26-3" ; check
@@ -235,60 +296,9 @@ suite="jessie"
 package_name="cython" ; package_version="0.19.1+git34-gac3e3a2-1" ; check
 package_name="jansson"; package_version="2.7-1"; check
 package_name="libsodium"; package_version="1.0.0-1"; check
-package_name="node-abbrev"; package_version="1.0.5-2"; check
-package_name="node-ansi"; package_version="0.3.0-2"; check
-package_name="node-ansi-color-table"; package_version="1.0.0-1"; check
-package_name="node-archy"; package_version="0.0.2-1"; check
-package_name="node-async"; package_version="0.8.0-1"; check
-package_name="node-block-stream"; package_version="0.0.7-1"; check
-package_name="node-combined-stream"; package_version="0.0.5-1"; check
-package_name="node-cookie-jar"; package_version="0.3.1-1"; check
-package_name="node-delayed-stream"; package_version="0.0.5-1"; check
-package_name="node-forever-agent"; package_version="0.5.1-1"; check
-package_name="node-form-data"; package_version="0.1.0-1"; check
-package_name="node-fstream"; package_version="0.1.24-1"; check
-package_name="node-fstream-ignore"; package_version="0.0.6-2"; check
-package_name="node-github-url-from-git"; package_version="1.1.1-1"; check
-package_name="node-glob"; package_version="4.0.5-1"; check
-package_name="node-graceful-fs"; package_version="3.0.2-1"; check
-package_name="node-gyp"; package_version="0.12.2+ds-1"; check
-package_name="node-inherits"; package_version="2.0.1-1"; check
-package_name="node-ini"; package_version="1.1.0-1"; check
-package_name="node-json-stringify-safe"; package_version="5.0.0-1"; check
-package_name="node-lockfile"; package_version="0.4.1-1"; check
-package_name="node-lru-cache"; package_version="2.3.1-1"; check
-package_name="node-marked"; package_version="0.3.2+dfsg-1"; check
-package_name="node-mime"; package_version="1.2.11-1"; check
-package_name="node-minimatch"; package_version="1.0.0-1"; check
-package_name="node-mkdirp"; package_version="0.5.0-1"; check
-package_name="node-mute-stream"; package_version="0.0.4-1"; check
-package_name="node-nopt"; package_version="3.0.1-1"; check
-package_name="node-normalize-package-data"; package_version="0.2.2-1"; check
-package_name="node-npmlog"; package_version="0.0.4-1"; check
-package_name="node-once"; package_version="1.1.1-1"; check
-package_name="node-optimist"; package_version="0.3.5-1"; check
-package_name="node-osenv"; package_version="0.1.0-1"; check
-package_name="node-qs"; package_version="2.2.4-1"; check
-package_name="node-read"; package_version="1.0.5-1"; check
-package_name="node-read-package-json"; package_version="1.2.4-1"; check
-package_name="node-request"; package_version="2.26.1-1"; check
-package_name="node-retry"; package_version="0.6.0-1"; check
-package_name="node-rimraf"; package_version="2.2.8-1" ; check
-package_name="node-semver"; package_version="2.1.0-2" ; check
-package_name="node-sha"; package_version="1.2.3-1"; check
-package_name="node-sigmund"; package_version="1.0.0-1"; check
-package_name="node-slide"; package_version="1.1.4-1"; check
-package_name="node-tar"; package_version="0.1.18-1" ; check
-package_name="node-tunnel-agent"; package_version="0.3.1-1"; check
-package_name="node-uglify" ; package_version="2.4.15-1" ; check
-package_name="node-underscore" ; package_version="1.7.0~dfsg-1" ; check
-package_name="node-uuid"; package_version="1.4.0-1" ; check
-package_name="node-which"; package_version="1.0.5-2"; check
-package_name="node-wordwrap"; package_version="0.0.2-2"; check
 package_name="npm"; package_version="1.4.21+ds-2"; check
 package_name="python-sendfile" ; package_version="2.0.0-6" ; check
 package_name="python-pyftpdlib" ; package_version="1.2.0-1" ; check
-package_name="tmux" ; package_version="1.9-6" ; check
 
 echo "Done:"
 #

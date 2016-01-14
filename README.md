@@ -34,6 +34,12 @@ deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ wily main
 #deb-src [arch=armhf] http://repos.rcn-ee.com/ubuntu/ wily main
 ```
 
+Ubuntu 16.04 lts: (Xenial): http://repos.rcn-ee.com/ubuntu/
+```
+deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ xenial main
+#deb-src [arch=armhf] http://repos.rcn-ee.com/ubuntu/ xenial main
+```
+
 keyring:
 ```
 sudo apt-get install rcn-ee-archive-keyring
