@@ -103,7 +103,7 @@ mesa () {
 	package_name="libvdpau" ; package_version="${package_name}_1.1.1-3" ; check_http
 
 	site="${debian_pool}/main/m"
-	package_name="mesa" ; package_version="${package_name}_11.1.0-1" ; check_http
+	package_name="mesa" ; package_version="${package_name}_11.1.1-1" ; check_http
 	package_name="mesa-demos" ; package_version="${package_name}_8.3.0-1" ; check_http
 }
 
