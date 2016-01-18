@@ -298,6 +298,7 @@ ros () {
 	package_name="ros-genlisp"; package_version="${package_name}_0.4.15-3"; check_http
 	package_name="ros-roscpp-core"; package_version="${package_name}_0.5.6-2"; check_http
 	package_name="ros-std-msgs"; package_version="${package_name}_0.5.9-2"; check_http
+	package_name="ros-common-msgs"; package_version="${package_name}_1.12.3-4"; check_http
 }
 
 ros
