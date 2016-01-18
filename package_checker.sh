@@ -303,6 +303,7 @@ ros () {
 	package_name="ros-rospack"; package_version="${package_name}_2.2.5-2"; check_http
 	package_name="ros-ros"; package_version="${package_name}_1.12.5-3"; check_http
 	package_name="ros-ros-comm"; package_version="${package_name}_1.11.16-2"; check_http
+	package_name="ros-roslisp"; package_version="${package_name}_1.9.19-1"; check_http
 }
 
 ros
