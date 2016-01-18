@@ -289,6 +289,7 @@ ros () {
 	site="${debian_pool}/main/r"
 	package_name="ros-catkin-pkg"; package_version="${package_name}_0.2.10-2"; check_http
 	package_name="ros-catkin"; package_version="${package_name}_0.6.16-3"; check_http
+	package_name="ros-cmake-modules"; package_version="${package_name}_0.4.0-2"; check_http
 }
 
 ros
