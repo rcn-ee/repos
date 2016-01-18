@@ -6,7 +6,7 @@ package_name="orocos-kdl"
 debian_pkg_name="${package_name}"
 package_version="1.3.0+dfsg"
 package_source="${package_name}_${package_version}.orig.tar.xz"
-src_dir="orocos_kinematics_synamics-1.3.0"
+src_dir="orocos_kinematics_dynamics-1.3.0"
 
 git_repo=""
 git_sha=""
