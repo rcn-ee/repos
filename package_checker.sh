@@ -315,6 +315,7 @@ ros () {
 	site="${debian_pool}/main/r"
 	package_name="ros-geometry-experimental"; package_version="${package_name}_0.5.12-2"; check_http
 	package_name="ros-geometry"; package_version="${package_name}_1.11.7-1"; check_http
+	package_name="ros-bond-core"; package_version="${package_name}_1.7.16-3"; check_http
 }
 
 ros
