@@ -284,9 +284,11 @@ site="http://ports.ubuntu.com/pool/universe/c"
 package_name="chromium-browser" ; package_version="${package_name}_47.0.2526.106-0ubuntu1.1221" ; check_http
 
 ros () {
+	#https://wiki.debian.org/DebianScience/Robotics/ROS/Packages
 	echo "ros: (jessie)"
 	site="${debian_pool}/main/r"
 	package_name="ros-catkin-pkg"; package_version="${package_name}_0.2.10-2"; check_http
+	package_name="ros-catkin"; package_version="${package_name}_0.6.16-3"; check_http
 }
 
 ros
