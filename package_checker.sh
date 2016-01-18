@@ -69,6 +69,9 @@ important () {
 	echo "important"
 	site="${debian_pool}/main/p"
 	package_name="pastebinit" ; package_version="${package_name}_1.4-6" ; check_http
+
+	site="${debian_pool}/non-free/f"
+	package_name="firmware-nonfree" ; package_version="${package_name}_20160110-1" ; check_http
 }
 
 builds () {

@@ -4,7 +4,7 @@ mirror="http://ftp.de.debian.org/debian"
 
 package_name="firmware-nonfree"
 debian_pkg_name="${package_name}"
-package_version="20151207"
+package_version="20160110"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}-${package_version}"
 
@@ -17,4 +17,4 @@ debian_version="${package_version}-1"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 
-jessie_version="~bpo80+20160104+1"
+jessie_version="~bpo80+20160117+1"

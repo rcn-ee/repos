@@ -1,8 +1,34 @@
-firmware-nonfree (20151207-1~bpo80+20160104+1) jessie; urgency=low
+firmware-nonfree (20160110-1~bpo80+20160117+1) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Mon, 04 Jan 2016 15:19:01 -0600
+ -- Robert Nelson <robertcnelson@gmail.com>  Sun, 17 Jan 2016 18:32:56 -0600
+
+firmware-nonfree (20160110-1) unstable; urgency=medium
+
+  * New upstream version
+    - Upstream version is commit 73b07a93ed6c0cdb2f96dae8387b04cbb7b75643,
+      dated 2016-01-10
+    - libertas: Marvell PCIE8897 and SD8897 firmware updated to version
+      15.68.7.p53
+    - libertas: Marvell USB8797 firmware updated to version 14.68.29.p49
+    - misc-nonfree: Intel QAT DH895xCC firmware updated
+    - atheros: Clarified licensing terms for the current ath9k_htc firmware
+  * Add AppStream metadata to all packages containing firmware blobs
+  * genorig.py: Make orig tarballs really reproducible:
+    - Override umask while extracting/exporting files
+    - Override user and group names in tarball
+  * libertas: Include SD8801 and USB8801 firmware for use with the mwifiex_sdio
+    and mwifiex_usb drivers
+  * misc-nonfree: Include Intel QAT C3xxx and C62x firmware for use with the
+    intel_qat driver
+  * brcm80211: Include Broadcom BCM4350 rev 5+ firmware for use with the
+    brcmfmac driver
+  * qlogic: Include QLogic QL45000 series firmware version 8.7.3.0 for use with
+    the qed driver
+  * Update to linux-support 4.3.0-1
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Sun, 10 Jan 2016 21:34:11 +0000
 
 firmware-nonfree (20151207-1) unstable; urgency=medium
 
