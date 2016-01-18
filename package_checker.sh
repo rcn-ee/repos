@@ -295,6 +295,7 @@ ros () {
 	package_name="ros-genmsg"; package_version="${package_name}_0.5.6-3"; check_http
 	package_name="ros-genpy"; package_version="${package_name}_0.5.7-4"; check_http
 	package_name="ros-gencpp"; package_version="${package_name}_0.5.3-3"; check_http
+	package_name="ros-genlisp"; package_version="${package_name}_0.4.15-3"; check_http
 }
 
 ros
