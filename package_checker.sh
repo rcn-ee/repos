@@ -308,6 +308,11 @@ ros () {
 	package_name="ros-dynamic-reconfigure"; package_version="${package_name}_1.5.39-2"; check_http
 	package_name="ros-angles"; package_version="${package_name}_1.9.10-1"; check_http
 	package_name="ros-rosconsole-bridge"; package_version="${package_name}_0.4.2-2"; check_http
+
+	site="${debian_pool}/main/o"
+	package_name="orocos-kdl"; package_version="${package_name}_1.3.0+dfsg-1"; check_http
+
+	site="${debian_pool}/main/r"
 	package_name="ros-geometry-experimental"; package_version="${package_name}_0.5.12-2"; check_http
 }
 
