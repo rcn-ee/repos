@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-#mirror="http://ftp.de.debian.org/debian"
+#mirror="http://http.debian.net/debian"
 mirror="http://ports.ubuntu.com"
 
 package_name="chromium-browser"

@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-mirror="http://ftp.de.debian.org/debian"
+mirror="http://http.debian.net/debian"
 
 package_name="xf86-video-modesetting"
 debian_pkg_name="xserver-xorg-video-modesetting"
