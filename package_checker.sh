@@ -291,6 +291,7 @@ ros () {
 	package_name="ros-catkin"; package_version="${package_name}_0.6.16-3"; check_http
 	package_name="ros-cmake-modules"; package_version="${package_name}_0.4.0-2"; check_http
 	package_name="ros-message-generation"; package_version="${package_name}_0.3.0-3"; check_http
+	package_name="ros-message-runtime"; package_version="${package_name}_0.4.12-3"; check_http
 }
 
 ros
