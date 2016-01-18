@@ -318,6 +318,7 @@ ros () {
 	package_name="ros-bond-core"; package_version="${package_name}_1.7.16-3"; check_http
 	package_name="ros-class-loader"; package_version="${package_name}_0.3.2-1"; check_http
 	package_name="ros-eigen-stl-containers"; package_version="${package_name}_0.1.4-1"; check_http
+	package_name="ros-resource-retriever"; package_version="${package_name}_1.11.6-2"; check_http
 }
 
 ros
