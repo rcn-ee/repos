@@ -322,6 +322,7 @@ ros () {
 	package_name="ros-random-numbers"; package_version="${package_name}_0.3.0-2"; check_http
 	package_name="ros-geometric-shapes"; package_version="${package_name}_0.4.3-2"; check_http
 	package_name="ros-pluginlib"; package_version="${package_name}_1.10.1-2"; check_http
+	package_name="ros-image-common"; package_version="${package_name}_1.11.8-2"; check_http
 }
 
 ros
