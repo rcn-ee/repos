@@ -177,7 +177,7 @@ qt5_lxqt () {
 
 	#https://tracker.debian.org/pkg/lxqt-about
 	site="${debian_pool}/main/l"
-	package_name="lxqt-about" ; package_version="${package_name}_0.10.0-2" ; check_http
+	package_name="lxqt-about" ; package_version="${package_name}_0.10.0-3" ; check_http
 
 	#https://tracker.debian.org/pkg/lxqt-admin
 	site="${debian_pool}/main/l"
