@@ -325,6 +325,7 @@ ros () {
 	package_name="ros-image-common"; package_version="${package_name}_1.11.8-2"; check_http
 	package_name="ros-interactive-markers"; package_version="${package_name}_1.11.1-2"; check_http
 	package_name="ros-laser-geometry"; package_version="${package_name}_1.6.4-2"; check_http
+	package_name="ros-rospkg"; package_version="${package_name}_1.0.38-1"; check_http
 }
 
 ros
