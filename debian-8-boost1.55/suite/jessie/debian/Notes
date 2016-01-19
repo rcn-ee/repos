@@ -1,0 +1,20 @@
+	Documentation
+	-------------
+
+Generate the list of documentation files using wget going through
+localhost to get the source tree.  See generate-docfiles-list.py
+
+* need to symlink .../HTML/boost to /usr/include/boost; when put
+  the symlink into the deb, it got converted to a directory during
+  installation; use dh_link to do it
+
+* use -Nlibboost-doc with dh_compress to inhibit compressing files in the HTML
+  tree
+
+
+	Examples
+	--------
+
+List of example directories obtained using
+
+    find * -name 'example*' -type d | grep -v '/example.*/example' > debian/example-files

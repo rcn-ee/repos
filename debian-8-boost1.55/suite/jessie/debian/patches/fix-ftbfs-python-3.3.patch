@@ -1,0 +1,20 @@
+Description: python3.3 has an extra multiarch include location
+Author: Dmitrijs Ledkovs <dmitrij.ledkov@ubuntu.com>
+Last-Update: 2012-10-26
+Forwarded: no
+
+Index: b/tools/build/v2/tools/python.jam
+===================================================================
+--- a/tools/build/v2/tools/python.jam
++++ b/tools/build/v2/tools/python.jam
+@@ -548,7 +548,9 @@
+     }
+     else
+     {
+-        includes ?= $(prefix)/include/python$(version) ;
++        python_includes = [ shell-cmd "printf `python$(version) -c 'import distutils.sysconfig; print(distutils.sysconfig.get_python_inc());'`" ] ;
++        python_platincludes = [ shell-cmd "printf `python$(version) -c 'import distutils.sysconfig; print(distutils.sysconfig.get_python_inc(plat_specific=1));'`" ] ;
++        includes ?= $(python_includes) $(python_platincludes) ;
+ 
+         local lib = $(exec-prefix)/lib ;
+         libraries ?= $(lib)/python$(version)/config $(lib) ;

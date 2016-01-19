@@ -1,0 +1,1222 @@
+Source: boost1.55
+Homepage: http://www.boost.org/
+Section: libs
+Priority: optional
+Maintainer: Debian Boost Team <pkg-boost-devel@lists.alioth.debian.org>
+Uploaders: Steve M. Robbins <smr@debian.org>
+Build-Depends: debhelper (>= 9), dpkg-dev (>= 1.16.1~), dctrl-tools,
+ zlib1g-dev, libbz2-dev, libicu-dev, mpi-default-dev,
+ bison, flex, docbook-to-man, help2man, xsltproc, doxygen, 
+ dh-python,
+ python, python-all-dev, 
+ python3, python3-all-dev (>= 3.1)
+Build-Conflicts: libopenmpi-dev (= 1.3.2-2)
+Vcs-Browser: http://anonscm.debian.org/viewvc/pkg-boost/boost/
+Vcs-Svn: svn://anonscm.debian.org/pkg-boost/boost/
+Standards-Version: 3.9.5
+
+Package: libboost1.55-dbg
+Architecture: any
+Multi-Arch: same
+Section: debug
+Priority: extra
+Depends: ${misc:Depends}, ${shlibs:Depends}, libboost1.55-dev (= ${binary:Version})
+Conflicts: libboost1.42-dbg, libboost1.46-dbg, libboost1.48-dbg, libboost1.49-dbg, libboost1.50-dbg, libboost1.52-dbg, libboost1.53-dbg, libboost1.54-dbg
+Description: Boost C++ Libraries with debug symbols
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ These libraries are built with debug symbols. They are useful to debug
+ programs which use Boost. These must be used also at build/link time.
+
+Package: libboost1.55-dev
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: ${misc:Depends}, ${shlibs:Depends}, libstdc++-4.8-dev | libstdc++-dev
+Suggests: libboost1.55-doc,
+ libboost-atomic1.55-dev,
+ libboost-chrono1.55-dev,
+ libboost-context1.55-dev,
+ libboost-coroutine1.55-dev,
+ libboost-date-time1.55-dev,
+ libboost-exception1.55-dev,
+ libboost-filesystem1.55-dev,
+ libboost-graph1.55-dev,
+ libboost-graph-parallel1.55-dev,
+ libboost-iostreams1.55-dev,
+ libboost-locale1.55-dev,
+ libboost-log1.55-dev,
+ libboost-math1.55-dev,
+ libboost-mpi1.55-dev,
+ libboost-mpi-python1.55-dev,
+ libboost-program-options1.55-dev,
+ libboost-python1.55-dev,
+ libboost-random1.55-dev,
+ libboost-regex1.55-dev,
+ libboost-serialization1.55-dev,
+ libboost-signals1.55-dev,
+ libboost-system1.55-dev,
+ libboost-test1.55-dev,
+ libboost-thread1.55-dev,
+ libboost-timer1.55-dev,
+ libboost-wave1.55-dev,
+ libboost1.55-tools-dev,
+ libmpfrc++-dev, libntl-dev
+Conflicts: bjam, boost-build, libboost1.42-dev, libboost1.46-dev, libboost1.48-dev, libboost1.49-dev, libboost1.50-dev, libboost1.52-dev, libboost1.53-dev, libboost1.54-dev
+Description: Boost C++ Libraries development files
+ The Boost web site provides free, peer-reviewed, portable C++ source
+ libraries. The emphasis is on libraries which work well with the C++
+ Standard Library. One goal is to establish "existing practice" and
+ provide reference implementations so that the Boost libraries are
+ suitable for eventual standardization. Some of the libraries have
+ already been proposed for inclusion in the C++ Standards Committee's
+ upcoming C++ Standard Library Technical Report.
+ .
+ This package provides headers for all Boost libraries.
+ .
+ Extended precision arithmetic package libmpfrc++-dev or libntl-dev is
+ required to use the Boost.Multiprecision wrapping of the respective
+ library.
+ .
+ For the following subprojects separate packages exist: chrono,
+ date-time, exception filesystem, graph, iostreams, locale, math, mpi,
+ program_options, python, regex, serialization, signals, system, test,
+ thread, timer, and wave.
+
+Package: libboost1.55-tools-dev
+Architecture: any
+Multi-Arch: foreign
+Section: libdevel
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Suggests: xsltproc,
+ doxygen,
+ docbook-xml (>= 4.2),
+ docbook-xsl (>= 1.73.2),
+ default-jdk (>= 1.4),
+ fop (>= 0.94)
+Conflicts: bjam, boost-build, libboost1.49-dev, libboost1.53-tools-dev, libboost1.54-tools-dev
+Replaces: bjam, boost-build, libboost1.49-dev, libboost1.53-dev, libboost1.53-tools-dev
+Description: Boost C++ Libraries development tools
+ The Boost web site provides free, peer-reviewed, portable C++ source
+ libraries. The emphasis is on libraries which work well with the C++
+ Standard Library. One goal is to establish "existing practice" and
+ provide reference implementations so that the Boost libraries are
+ suitable for eventual standardization. Some of the libraries have
+ already been proposed for inclusion in the C++ Standards Committee's
+ upcoming C++ Standard Library Technical Report.
+ .
+ This package provides the auxiliary tools bjam, Boost.Build, bcp,
+ inspect, boostbook and quickbook.
+
+Package: libboost1.55-all-dev
+Architecture: any
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost1.55-dev,
+ libboost1.55-tools-dev,
+ libboost-atomic1.55-dev,
+ libboost-chrono1.55-dev,
+ libboost-context1.55-dev,
+ libboost-coroutine1.55-dev,
+ libboost-date-time1.55-dev,
+ libboost-exception1.55-dev,
+ libboost-filesystem1.55-dev,
+ libboost-graph1.55-dev,
+ libboost-graph-parallel1.55-dev,
+ libboost-iostreams1.55-dev,
+ libboost-locale1.55-dev,
+ libboost-log1.55-dev,
+ libboost-math1.55-dev,
+ libboost-mpi1.55-dev,
+ libboost-mpi-python1.55-dev,
+ libboost-program-options1.55-dev,
+ libboost-python1.55-dev,
+ libboost-random1.55-dev,
+ libboost-regex1.55-dev,
+ libboost-serialization1.55-dev,
+ libboost-signals1.55-dev,
+ libboost-system1.55-dev,
+ libboost-test1.55-dev,
+ libboost-thread1.55-dev,
+ libboost-timer1.55-dev,
+ libboost-wave1.55-dev
+Description: Boost C++ Libraries development files (ALL)
+ The Boost web site provides free, peer-reviewed, portable C++ source
+ libraries. The emphasis is on libraries which work well with the C++
+ Standard Library. One goal is to establish "existing practice" and
+ provide reference implementations so that the Boost libraries are
+ suitable for eventual standardization. Some of the libraries have
+ already been proposed for inclusion in the C++ Standards Committee's
+ upcoming C++ Standard Library Technical Report.
+ .
+ This metapackage provides the complete Boost development environment,
+ including all separately-packaged libraries.
+
+Package: libboost1.55-doc
+Homepage: http://www.boost.org/libs/
+Architecture: all
+Section: doc
+Depends: ${misc:Depends}
+Suggests: libboost1.55-dev (>= ${source:Version})
+Conflicts: libboost1.42-doc, libboost1.46-doc, libboost1.48-doc, libboost1.49-doc, libboost1.50-doc, libboost1.52-doc, libboost1.53-doc, libboost1.54-doc
+Description: Boost.org libraries documentation
+ The Boost web site provides free, peer-reviewed, portable C++ source
+ libraries. The emphasis is on libraries which work well with the C++
+ Standard Library. One goal is to establish "existing practice" and
+ provide reference implementations so that the Boost libraries are
+ suitable for eventual standardization. Some of the libraries have
+ already been proposed for inclusion in the C++ Standards Committee's
+ upcoming C++ Standard Library Technical Report.
+ .
+ This is documentation for the boost libraries in HTML format.
+ Some pages point to header files provided in the corresponding -dev package,
+ so it is suggested to install the latter as well.
+
+Package: libboost-atomic1.55.0
+Homepage: http://www.boost.org/libs/atomic/
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: atomic data types, operations, and memory ordering constraints
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ Boost.Atomic is a library that provides atomic data types and
+ operations on these data types, as well as memory ordering
+ constraints required for coordinating multiple threads through atomic
+ variables. It implements the interface as defined by the C++11
+ standard, but makes this feature available for platforms lacking
+ system/compiler support for this particular C++11 feature.
+ .
+ Users of this library should already be familiar with concurrency in
+ general, as well as elementary concepts such as "mutual exclusion".
+ .
+ The implementation makes use of processor-specific instructions where
+ possible (via inline assembler, platform libraries or compiler
+ intrinsics), and falls back to "emulating" atomic operations through
+ locking.
+
+Package: libboost-atomic1.55-dev
+Homepage: http://www.boost.org/libs/atomic/
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: ${misc:Depends}, 
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-atomic1.55.0 (= ${binary:Version})
+Description: atomic data types, operations, and memory ordering constraints
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ Boost.Atomic is a library that provides atomic data types and
+ operations on these data types, as well as memory ordering
+ constraints required for coordinating multiple threads through atomic
+ variables. It implements the interface as defined by the C++11
+ standard, but makes this feature available for platforms lacking
+ system/compiler support for this particular C++11 feature.
+ .
+ Users of this library should already be familiar with concurrency in
+ general, as well as elementary concepts such as "mutual exclusion".
+ .
+ The implementation makes use of processor-specific instructions where
+ possible (via inline assembler, platform libraries or compiler
+ intrinsics), and falls back to "emulating" atomic operations through
+ locking.
+Conflicts: libboost-atomic1.53-dev, libboost-atomic1.54-dev
+
+Package: libboost-chrono1.55.0
+Homepage: http://www.boost.org/libs/chrono/
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: C++ representation of time duration, time point, and clocks
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ The Boost.Chrono library provides:
+ .
+  * A means to represent time durations: managed by the generic duration
+    class.Examples of time durations include days, minutes, seconds and
+    nanoseconds, which can be represented with a fixed number of clock
+    ticks per unit. All of these units of time duration are united with
+    a generic interface by the duration facility.
+  * A type for representing points in time: time_point. A time_point
+    represents an epoch plus or minus a duration. The library leaves
+    epochs unspecified. A time_point is associated with a clock.
+  * Several clocks, some of which may not be available on a particular
+    platform: system_clock, steady_clock and high_resolution_clock. A
+    clock is a pairing of a time_point and duration, and a function
+    which returns a time_point representing now.
+ .
+ To make the timing facilities more generally useful, Boost.Chrono
+ provides a number of clocks that are thin wrappers around the
+ operating system's time APIs, thereby allowing the extraction of wall
+ clock time, user CPU time, system CPU time spent by the process:
+ .
+  * process_real_cpu_clock, captures wall clock CPU time spent by the
+    current process.
+  * process_user_cpu_clock, captures user-CPU time spent by the current
+    process.
+  * process_system_cpu_clock, captures system-CPU time spent by the
+    current process.
+  * a tuple-like class process_cpu_clock, that captures real, user-CPU,
+    and system-CPU process times together.
+  * a thread_clock thread steady clock giving the time spent by the
+    current thread (when supported by a platform).
+ .
+ Lastly, Boost.Chrono includes typeof registration for duration and
+ time_point to permit using emulated auto with C++03 compilers.
+
+Package: libboost-chrono1.55-dev
+Homepage: http://www.boost.org/libs/chrono/
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-chrono1.55.0 (= ${binary:Version})
+Conflicts: libboost-chrono1.48-dev, libboost-chrono1.49-dev, libboost-chrono1.50-dev, libboost-chrono1.52-dev, libboost-chrono1.53-dev, libboost-chrono1.54-dev
+Description: C++ representation of time duration, time point, and clocks
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ The Boost.Chrono library provides:
+ .
+  * A means to represent time durations: managed by the generic
+ duration class . Examples of time durations include days, minutes,
+ seconds and nanoseconds, which can be represented with a fixed number
+ of clock ticks per unit. All of these units of time duration are
+ united with a generic interface by the duration facility.
+  * A type for representing points in time: time_point. A time_point
+ represents an epoch plus or minus a duration. The library leaves
+ epochs unspecified. A time_point is associated with a clock.
+  * Several clocks, some of which may not be available on a
+ particular platform: system_clock, steady_clock and
+ high_resolution_clock. A clock is a pairing of a time_point and
+ duration, and a function which returns a time_point representing now.
+ .
+ To make the timing facilities more generally useful, Boost.Chrono
+ provides a number of clocks that are thin wrappers around the
+ operating system's time APIs, thereby allowing the extraction of wall
+ clock time, user CPU time, system CPU time spent by the process:
+ .
+  * process_real_cpu_clock, captures wall clock CPU time spent by the
+ current process.  
+  * process_user_cpu_clock, captures user-CPU time
+ spent by the current process.  
+  * process_system_cpu_clock, captures
+ system-CPU time spent by the current process.  
+  * A tuple-like class
+ process_cpu_clock, that captures real, user-CPU, and system-CPU
+ process times together.
+  * A thread_clock thread steady clock giving
+ the time spent by the current thread (when supported by a platform).
+ .
+ Lastly, Boost.Chrono includes typeof registration for duration and
+ time_point to permit using emulated auto with C++03 compilers.
+
+Package: libboost-context1.55.0
+Homepage: http://www.boost.org/libs/context/
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: provides a sort of cooperative multitasking on a single thread
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ Boost.Context is a foundational library that provides a sort of
+ cooperative multitasking on a single thread. By providing an
+ abstraction of the current execution state in the current thread,
+ including the stack (with local variables) and stack pointer, all
+ registers and CPU flags, and the instruction pointer, a fcontext_t
+ instance represents a specific point in the application's execution
+ path. This is useful for building higher-level abstractions, like
+ coroutines, cooperative threads (userland threads) or an equivalent
+ to C# keyword yield in C++.
+
+Package: libboost-context1.55-dev
+Homepage: http://www.boost.org/libs/context/
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: ${misc:Depends}, 
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-context1.55.0 (= ${binary:Version})
+Description: provides a sort of cooperative multitasking on a single thread
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ Boost.Context is a foundational library that provides a sort of
+ cooperative multitasking on a single thread. By providing an
+ abstraction of the current execution state in the current thread,
+ including the stack (with local variables) and stack pointer, all
+ registers and CPU flags, and the instruction pointer, a fcontext_t
+ instance represents a specific point in the application's execution
+ path. This is useful for building higher-level abstractions, like
+ coroutines, cooperative threads (userland threads) or an equivalent
+ to C# keyword yield in C++.
+Conflicts: libboost-context1.53-dev, libboost-context1.54-dev
+
+Package: libboost-coroutine1.55-dev
+Homepage: http://www.boost.org/libs/coroutine/
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: ${misc:Depends}, 
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-context1.55-dev (= ${binary:Version})
+Description: provides a sort of cooperative multitasking on a single thread
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ Boost.Coroutine provides templates for generalized subroutines which
+ allow multiple entry points for suspending and resuming execution at
+ certain locations. It preserves the local state of execution and
+ allows re-entering subroutines more than once (useful if state must
+ be kept across function calls).
+ .
+ Coroutines can be viewed as a language-level construct providing a
+ special kind of control flow.
+ .
+ In contrast to threads, which are pre-emptive, coroutine switches are
+ cooperative (programmer controls when a switch will happen). The
+ kernel is not involved in the coroutine switches.
+ .
+ The implementation uses Boost.Context for context switching.
+Conflicts: libboost-coroutine1.54-dev
+
+Package: libboost-date-time1.55.0
+Homepage: http://www.boost.org/libs/date_time/
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: set of date-time libraries based on generic programming concepts
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ These libraries are intended to make programming with dates and times
+ almost as simple and natural as programming with strings and integers.
+
+Package: libboost-date-time1.55-dev
+Homepage: http://www.boost.org/libs/date_time/
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-date-time1.55.0 (= ${binary:Version}),
+ libboost-serialization1.55-dev (= ${binary:Version})
+Conflicts: libboost-date-time1.42-dev, libboost-date-time1.46-dev, libboost-date-time1.48-dev, libboost-date-time1.49-dev, libboost-date-time1.50-dev, libboost-date-time1.52-dev, libboost-date-time1.53-dev, libboost-date-time1.54-dev
+Description: set of date-time libraries based on generic programming concepts
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ These libraries are intended to make programming with dates and times
+ almost as simple and natural as programming with strings and integers.
+
+Package: libboost-exception1.55-dev
+Homepage: http://www.boost.org/libs/exception/
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost1.55-dev (= ${binary:Version})
+Description: library to help write exceptions and handlers
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ The purpose of Boost Exception is to ease the design of exception
+ class hierarchies and to help write exception handling and error
+ reporting code.
+Conflicts: libboost-exception1.50-dev, libboost-exception1.52-dev, libboost-exception1.53-dev, libboost-exception1.54-dev
+
+Package: libboost-filesystem1.55.0
+Homepage: http://boost.org/libs/filesystem/
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: filesystem operations (portable paths, iteration over directories, etc) in C++
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ The Boost Filesystem Library provides portable facilities to query and 
+ manipulate paths, files, and directories.  The goal is to
+ facilitate portable script-like operations from within C++ programs.
+
+Package: libboost-filesystem1.55-dev
+Homepage: http://boost.org/libs/filesystem/
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-filesystem1.55.0 (= ${binary:Version}),
+ libboost-system1.55-dev (= ${binary:Version})
+Conflicts: libboost-filesystem1.42-dev, libboost-filesystem1.46-dev, libboost-filesystem1.48-dev, libboost-filesystem1.49-dev, libboost-filesystem1.50-dev, libboost-filesystem1.52-dev, libboost-filesystem1.53-dev, libboost-filesystem1.54-dev
+Description: filesystem operations (portable paths, iteration over directories, etc) in C++
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ The Boost Filesystem Library provides portable facilities to query and 
+ manipulate paths, files, and directories.  The goal is to
+ facilitate portable script-like operations from within C++ programs.
+
+Package: libboost-graph1.55.0
+Homepage: http://www.boost.org/libs/graph/
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Suggests: graphviz
+Description: generic graph components and algorithms in C++
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ Graphs are mathematical abstractions that are useful for solving
+ many types of problems in computer science. Consequently, these
+ abstractions must also be represented in computer programs. A
+ standardized generic interface for traversing graphs is of utmost
+ importance to encourage reuse of graph algorithms and data structures.
+
+Package: libboost-graph1.55-dev
+Homepage: http://www.boost.org/libs/graph/
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-graph1.55.0 (= ${binary:Version}),
+ libboost-serialization1.55-dev (= ${binary:Version}),
+ libboost-test1.55-dev (= ${binary:Version})
+Conflicts: libboost-graph1.42-dev, libboost-graph1.46-dev, libboost-graph1.48-dev, libboost-graph1.49-dev, libboost-graph1.50-dev, libboost-graph1.52-dev, libboost-graph1.53-dev, libboost-graph1.54-dev
+Description: generic graph components and algorithms in C++
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ Graphs are mathematical abstractions that are useful for solving
+ many types of problems in computer science. Consequently, these
+ abstractions must also be represented in computer programs. A
+ standardized generic interface for traversing graphs is of utmost
+ importance to encourage reuse of graph algorithms and data structures.
+
+Package: libboost-graph-parallel1.55.0
+Homepage: http://www.boost.org/libs/graph_parallel/
+Architecture: any
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Suggests: graphviz
+Description: generic graph components and algorithms in C++
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ The Parallel Boost Graph Library is an extension to the Boost Graph Library
+ (BGL) for parallel and distributed computing. It offers distributed graphs 
+ and graph algorithms to exploit coarse-grained parallelism along with 
+ parallel algorithms that exploit fine-grained parallelism, while retaining 
+ the same interfaces as the (sequential) BGL. Code written using the sequential
+ BGL should be easy to parallelize with the parallel BGL.
+
+Package: libboost-graph-parallel1.55-dev
+Homepage: http://www.boost.org/libs/graph_parallel/
+Architecture: any
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-graph-parallel1.55.0 (= ${binary:Version}),
+ libboost-serialization1.55-dev (= ${binary:Version}),
+ libboost-test1.55-dev (= ${binary:Version})
+Conflicts: libboost-graph-parallel1.42-dev, libboost-graph-parallel1.46-dev, libboost-graph-parallel1.48-dev, libboost-graph-parallel1.49-dev, libboost-graph-parallel1.50-dev, libboost-graph-parallel1.52-dev, libboost-graph-parallel1.53-dev, libboost-graph-parallel1.54-dev
+Description: generic graph components and algorithms in C++
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ The Parallel Boost Graph Library is an extension to the Boost Graph Library
+ (BGL) for parallel and distributed computing. It offers distributed graphs 
+ and graph algorithms to exploit coarse-grained parallelism along with 
+ parallel algorithms that exploit fine-grained parallelism, while retaining 
+ the same interfaces as the (sequential) BGL. Code written using the sequential
+ BGL should be easy to parallelize with the parallel BGL.
+
+Package: libboost-iostreams1.55.0
+Homepage: http://www.boost.org/libs/iostreams/
+Architecture: any
+Multi-Arch: same
+Section: libs
+Priority: important
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: Boost.Iostreams Library
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ Boost.Iostreams are a collection of concepts and a set of templates
+ which turn models of these concepts into C++ standard library streams
+ and stream buffers.
+
+Package: libboost-iostreams1.55-dev
+Homepage: http://www.boost.org/libs/iostreams/
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-regex1.55-dev (= ${binary:Version}),
+ libboost-iostreams1.55.0 (= ${binary:Version})
+Conflicts: libboost-iostreams1.42-dev, libboost-iostreams1.46-dev, libboost-iostreams1.48-dev, libboost-iostreams1.49-dev, libboost-iostreams1.50-dev, libboost-iostreams1.52-dev, libboost-iostreams1.53-dev, libboost-iostreams1.54-dev
+Description: Boost.Iostreams Library development files
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ Boost.Iostreams are a collection of concepts and a set of templates
+ which turn models of these concepts into C++ standard library streams
+ and stream buffers.
+
+Package: libboost-locale1.55.0
+Homepage: http://www.boost.org/libs/locale/
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: C++ facilities for localization
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ Boost.Locale gives powerful tools for development of cross platform
+ localized software - the software that talks to user in its language.
+ .
+  * Correct case conversion, case folding and normalization.
+  * Collation (sorting), including support for 4 Unicode collation
+ levels.
+  * Date, time, timezone and calendar manipulations, formatting
+ and parsing, including transparent support for calendars other than
+ Gregorian.
+  * Boundary analysis for characters, words, sentences and
+ line-breaks.
+  * Number formatting, spelling and parsing.
+  * Monetary formatting and parsing.
+  * Powerful message formatting (string translation) including 
+ support for plural forms, using GNU catalogs.
+  * Character set conversion.
+  * Transparent support for 8-bit character sets like Latin1
+  * Support for char and wchar_t
+  * Experimental support for C++0x char16_t and char32_t strings and streams.
+
+Package: libboost-locale1.55-dev
+Homepage: http://www.boost.org/libs/math/
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-locale1.55.0 (= ${binary:Version})
+Conflicts: libboost-locale1.48-dev, libboost-locale1.49-dev, libboost-locale1.50-dev, libboost-locale1.52-dev, libboost-locale1.53-dev, libboost-locale1.54-dev
+Description: C++ facilities for localization
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ Boost.Locale gives powerful tools for development of cross platform
+ localized software - the software that talks to user in its language.
+ .
+  * Correct case conversion, case folding and normalization.
+  * Collation (sorting), including support for 4 Unicode collation
+ levels.
+  * Date, time, timezone and calendar manipulations, formatting
+ and parsing, including transparent support for calendars other than
+ Gregorian.
+  * Boundary analysis for characters, words, sentences and
+ line-breaks.
+  * Number formatting, spelling and parsing.
+  * Monetary formatting and parsing.
+  * Powerful message formatting (string translation) including 
+ support for plural forms, using GNU catalogs.
+  * Character set conversion.
+  * Transparent support for 8-bit character sets like Latin1
+  * Support for char and wchar_t
+  * Experimental support for C++0x char16_t and char32_t strings and streams.
+
+Package: libboost-log1.55.0
+Homepage: http://www.boost.org/libs/log/
+Architecture: any
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: C++ logging library
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ This library aims to make logging significantly easier for the
+ application developer. It provides a wide range of out-of-the-box
+ tools along with public interfaces for extending the library. The
+ main goals of the library are:
+ .
+  * Simplicity. A small example code snippet should be enough to get
+ the feel of the library and be ready to use its basic features.
+  * Extensibility. A user should be able to extend functionality of the
+ library for collecting and storing information into logs.
+  * Performance. The library should have as little performance impact on
+ the user's application as possible.
+
+Package: libboost-log1.55-dev
+Homepage: http://www.boost.org/libs/log/
+Architecture: any
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost-log1.55.0 (= ${binary:Version}),
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-filesystem1.55-dev (= ${binary:Version}),
+ libboost-system1.55-dev (= ${binary:Version}),
+ libboost-date-time1.55-dev (= ${binary:Version}),
+ libboost-thread1.55-dev (= ${binary:Version})
+Description: C++ logging library
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ This library aims to make logging significantly easier for the
+ application developer. It provides a wide range of out-of-the-box
+ tools along with public interfaces for extending the library. The
+ main goals of the library are:
+ .
+  * Simplicity. A small example code snippet should be enough to get
+ the feel of the library and be ready to use its basic features.
+  * Extensibility. A user should be able to extend functionality of the
+ library for collecting and storing information into logs.
+  * Performance. The library should have as little performance impact on
+ the user's application as possible.
+Conflicts: libboost-log1.54-dev
+
+Package: libboost-math1.55.0
+Homepage: http://www.boost.org/libs/math/
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: Boost.Math Library
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ This library is divided into three interconnected parts:
+  * Statistical Distributions: Provides a reasonably comprehensive set of 
+    statistical distributions, upon which higher level statistical tests 
+    can be built.
+  * Mathematical Special Functions: Provides a small number of high quality 
+    special functions, initially these were concentrated on functions used in 
+    statistical applications along with those in the Technical Report on 
+    C++ Library Extensions.
+  * Implementation Toolkit: Provides many of the tools required to implement 
+    mathematical special functions.
+
+Package: libboost-math1.55-dev
+Homepage: http://www.boost.org/libs/math/
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-math1.55.0 (= ${binary:Version})
+Conflicts: libboost-math1.42-dev, libboost-math1.46-dev, libboost-math1.48-dev, libboost-math1.49-dev, libboost-math1.50-dev, libboost-math1.52-dev, libboost-math1.53-dev, libboost-math1.54-dev
+Description: Boost.Math Library development files
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ This library is divided into three interconnected parts:
+  * Statistical Distributions: Provides a reasonably comprehensive set of 
+    statistical distributions, upon which higher level statistical tests 
+    can be built.
+  * Mathematical Special Functions: Provides a small number of high quality 
+    special functions, initially these were concentrated on functions used in 
+    statistical applications along with those in the Technical Report on 
+    C++ Library Extensions.
+  * Implementation Toolkit: Provides many of the tools required to implement 
+    mathematical special functions.
+
+Package: libboost-mpi1.55.0
+Homepage: http://www.boost.org/doc/html/mpi.html
+Architecture: any
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: C++ interface to the Message Passing Interface (MPI)
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ The Boost.MPI library provides a C++ interface to MPI that
+ supports modern C++ development styles, including complete support for
+ user-defined data types and C++ Standard Library types, arbitrary function
+ objects for collective algorithms, and the use of modern C++ library
+ techniques to maintain maximal efficiency.
+
+Package: libboost-mpi1.55-dev
+Homepage: http://www.boost.org/doc/html/mpi.html
+Architecture: any
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-serialization1.55-dev (= ${binary:Version}),
+ libboost-mpi1.55.0 (= ${binary:Version}),
+ mpi-default-dev
+Suggests: libboost-graph1.55-dev
+Conflicts: libboost-mpi1.42-dev, libboost-mpi1.46-dev, libboost-mpi1.48-dev, libboost-mpi1.49-dev, libboost-mpi1.50-dev, libboost-mpi1.52-dev, libboost-mpi1.53-dev, libboost-mpi1.54-dev
+Description: C++ interface to the Message Passing Interface (MPI)
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ The Boost.MPI library provides a C++ interface to MPI that
+ supports modern C++ development styles, including complete support for
+ user-defined data types and C++ Standard Library types, arbitrary function
+ objects for collective algorithms, and the use of modern C++ library
+ techniques to maintain maximal efficiency.
+
+Package: libboost-mpi-python1.55.0
+Homepage: http://www.boost.org/doc/html/mpi/python.html
+Architecture: any
+Section: python
+Depends: ${misc:Depends}, ${shlibs:Depends}, ${python:Depends}, mpi-default-bin
+Pre-Depends: ${misc:Pre-Depends}
+Suggests: python, python3
+Breaks: ${python:Breaks}
+Conflicts: libboost-mpi-python1.40.0,
+ libboost-mpi-python1.41.0,
+ libboost-mpi-python1.42.0,
+ libboost-mpi-python1.46.0, libboost-mpi-python1.46.1, libboost-mpi-python1.48.0, libboost-mpi-python1.49.0, libboost-mpi-python1.50.0, libboost-mpi-python1.52.0, libboost-mpi-python1.53.0, libboost-mpi-python1.54.0
+Description: C++ interface to the Message Passing Interface (MPI), Python Bindings
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ The Boost.MPI library provides a C++ interface to MPI that
+ supports modern C++ development styles, including complete support for
+ user-defined data types and C++ Standard Library types, arbitrary function
+ objects for collective algorithms, and the use of modern C++ library
+ techniques to maintain maximal efficiency.
+ .
+ This package provides Python Bindings to the C++ interface.
+ .
+ One of the python interpreter packages is required to use the bindings.
+
+Package: libboost-mpi-python1.55-dev
+Homepage: http://www.boost.org/doc/html/mpi/python.html
+Architecture: any
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost-mpi1.55-dev (= ${binary:Version}),
+ libboost-mpi-python1.55.0 (= ${binary:Version})
+Conflicts: libboost-mpi-python1.42-dev, libboost-mpi-python1.46-dev, libboost-mpi-python1.48-dev, libboost-mpi-python1.49-dev, libboost-mpi-python1.50-dev, libboost-mpi-python1.52-dev, libboost-mpi-python1.53-dev, libboost-mpi-python1.54-dev
+Description: C++ interface to the Message Passing Interface (MPI), Python Bindings
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ The Boost.MPI library provides a C++ interface to MPI that
+ supports modern C++ development styles, including complete support for
+ user-defined data types and C++ Standard Library types, arbitrary function
+ objects for collective algorithms, and the use of modern C++ library
+ techniques to maintain maximal efficiency.
+ .
+ This package provides Python Bindings to the C++ interface.
+
+Package: libboost-program-options1.55.0
+Homepage: http://www.boost.org/libs/program_options/
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: program options library for C++
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ Library to let program developers obtain program options, that is
+ (name, value) pairs from the user, via conventional methods such as
+ command line and config file.
+
+Package: libboost-program-options1.55-dev
+Homepage: http://www.boost.org/libs/program_options/
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-program-options1.55.0 (= ${binary:Version})
+Conflicts: libboost-program-options1.42-dev, libboost-program-options1.46-dev, libboost-program-options1.48-dev, libboost-program-options1.49-dev, libboost-program-options1.50-dev, libboost-program-options1.52-dev, libboost-program-options1.53-dev, libboost-program-options1.54-dev
+Description: program options library for C++
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ Library to let program developers obtain program options, that is
+ (name, value) pairs from the user, via conventional methods such as
+ command line and config file.
+
+Package: libboost-python1.55.0
+Homepage: http://www.boost.org/libs/python/
+Architecture: any
+Section: python
+Depends: ${misc:Depends}, ${shlibs:Depends}, ${python:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Suggests: python, python3
+Breaks: ${python:Breaks}
+Description: Boost.Python Library 
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ The Boost Python Library is used to quickly and easily export a C++
+ library to Python such that the Python interface is very similar to
+ the C++ interface. It is designed to be minimally intrusive on your
+ C++ design. In most cases, you should not have to alter your C++
+ classes in any way in order to use them with Boost.Python.  The
+ system should simply "reflect" your C++ classes and functions into
+ Python. The major features of Boost.Python include support for:
+ Subclassing extension types in Python, Overriding virtual functions
+ in Python, Member function Overloading, Automatic wrapping of
+ numeric operators among others.
+ .
+ One of the python interpreter packages is required to use the
+ created extensions.
+
+Package: libboost-python1.55-dev
+Homepage: http://www.boost.org/libs/python/
+Architecture: any
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-python1.55.0 (= ${binary:Version}),
+ python-dev, ${python:Depends},
+ python (>= 2.5) | python-celementtree | python-elementtree,
+Suggests: libboost1.55-doc, gccxml
+Conflicts: libboost-python1.42-dev, libboost-python1.46-dev, libboost-python1.48-dev, libboost-python1.49-dev, libboost-python1.50-dev, libboost-python1.52-dev, libboost-python1.53-dev, libboost-python1.54-dev
+Description: Boost.Python Library development files
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ The Boost Python Library is used to quickly and easily export a C++
+ library to Python such that the Python interface is very similar to
+ the C++ interface. It is designed to be minimally intrusive on your
+ C++ design. In most cases, you should not have to alter your C++
+ classes in any way in order to use them with Boost.Python.  The
+ system should simply "reflect" your C++ classes and functions into
+ Python. The major features of Boost.Python include support for:
+ Subclassing extension types in Python, Overriding virtual functions
+ in Python, Member function Overloading, Automatic wrapping of
+ numeric operators among others.
+ .
+ This package also contains the pyste Boost.Python code generator that
+ allows the user to specify classes and functions to be exported using
+ a simple interface file, which following the Boost.Python's
+ philosophy, is simple Python code.
+ .
+ This package allows development of a Python interface for all current
+ versions of Python in Debian.  Code using this library will need also
+ one of the Python development packages.
+
+Package: libboost-random1.55.0
+Homepage: http://www.boost.org/libs/random/
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: Boost Random Number Library
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ The Boost Random Number Library (Boost.Random for short) provides a
+ variety of generators and distributions to produce random numbers
+ having useful properties, such as uniform distribution.
+
+Package: libboost-random1.55-dev
+Homepage: http://www.boost.org/libs/random/
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-random1.55.0 (= ${binary:Version})
+Conflicts: libboost-random1.42-dev, libboost-random1.46-dev, libboost-random1.48-dev, libboost-random1.49-dev, libboost-random1.50-dev, libboost-random1.52-dev, libboost-random1.53-dev, libboost-random1.54-dev
+Description: Boost Random Number Library
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ The Boost Random Number Library (Boost.Random for short) provides a
+ variety of generators and distributions to produce random numbers
+ having useful properties, such as uniform distribution.
+
+Package: libboost-regex1.55.0
+Homepage: http://www.boost.org/libs/regex/
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: regular expression library for C++
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ Regular expressions are a form of pattern-matching that are often
+ used in text processing; many users will be familiar with the Unix
+ utilities grep, sed and awk, and the programming language perl, each
+ of which make extensive use of regular expressions. Traditionally C++
+ users have been limited to the POSIX C APIs for manipulating regular
+ expressions, and while regex does provide these APIs, they do not
+ represent the best way to use the library. For example regex can cope
+ with wide character strings, or search and replace operations (in a
+ manner analogous to either sed or perl), something that traditional C
+ libraries can not do.
+
+Package: libboost-regex1.55-dev
+Homepage: http://www.boost.org/libs/regex/
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-regex1.55.0 (= ${binary:Version}),
+ libicu-dev
+Conflicts: libboost-regex1.42-dev, libboost-regex1.46-dev, libboost-regex1.48-dev, libboost-regex1.49-dev, libboost-regex1.50-dev, libboost-regex1.52-dev, libboost-regex1.53-dev, libboost-regex1.54-dev
+Description: regular expression library for C++
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ Regular expressions are a form of pattern-matching that are often
+ used in text processing; many users will be familiar with the Unix
+ utilities grep, sed and awk, and the programming language perl, each
+ of which make extensive use of regular expressions. Traditionally C++
+ users have been limited to the POSIX C APIs for manipulating regular
+ expressions, and while regex does provide these APIs, they do not
+ represent the best way to use the library. For example regex can cope
+ with wide character strings, or search and replace operations (in a
+ manner analogous to either sed or perl), something that traditional C
+ libraries can not do.
+
+Package: libboost-serialization1.55.0
+Homepage: http://www.boost.org/libs/serialization/
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: serialization library for C++
+ This package forms part of the Boost C++ Libraries collection,
+ containing the following functionalities:
+ .
+  * proper restoration of pointers to shared data
+  * serialization of STL containers and other commonly used templates
+  * data portability - streams of bytes created on one platform should
+    be readable on any other
+  * archive interface must be rich enough to permit the creation of an
+    archive that presents serialized data as XML in a useful manner
+ .
+ Here, "serialization" means the reversible deconstruction of an
+ arbitrary set of C++ data structures to a sequence of bytes.
+ archive: to refer to a specific rendering of this stream of bytes.
+
+Package: libboost-serialization1.55-dev
+Homepage: http://www.boost.org/libs/serialization/
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-serialization1.55.0 (= ${binary:Version})
+Conflicts: libboost-serialization1.42-dev, libboost-serialization1.46-dev, libboost-serialization1.48-dev, libboost-serialization1.49-dev, libboost-serialization1.50-dev, libboost-serialization1.52-dev, libboost-serialization1.53-dev, libboost-serialization1.54-dev
+Description: serialization library for C++
+ This package forms part of the Boost C++ Libraries collection,
+ containing the following functionalities:
+ .
+  * proper restoration of pointers to shared data
+  * serialization of STL containers and other commonly used templates
+  * data portability - streams of bytes created on one platform should
+    be readable on any other
+  * archive interface must be rich enough to permit the creation of an
+    archive that presents serialized data as XML in a useful manner
+ .
+ Here, "serialization" means the reversible deconstruction of an
+ arbitrary set of C++ data structures to a sequence of bytes.
+ archive: to refer to a specific rendering of this stream of bytes.
+
+Package: libboost-signals1.55.0
+Homepage: http://www.boost.org/libs/signals/
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: managed signals and slots library for C++
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ Signals represent callbacks with multiple targets, and are also
+ called publishers or events in similar systems. Signals are connected
+ to some set of slots, which are callback receivers (also called event
+ targets or subscribers), which are called when the signal is
+ "emitted."
+
+Package: libboost-signals1.55-dev
+Homepage: http://www.boost.org/libs/signals/
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-signals1.55.0 (= ${binary:Version})
+Conflicts: libboost-signals1.42-dev, libboost-signals1.46-dev, libboost-signals1.48-dev, libboost-signals1.49-dev, libboost-signals1.50-dev, libboost-signals1.52-dev, libboost-signals1.53-dev, libboost-signals1.54-dev
+Description: managed signals and slots library for C++
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ Signals represent callbacks with multiple targets, and are also
+ called publishers or events in similar systems. Signals are connected
+ to some set of slots, which are callback receivers (also called event
+ targets or subscribers), which are called when the signal is
+ "emitted."
+
+Package: libboost-system1.55.0
+Homepage: http://www.boost.org/libs/system/
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: Operating system (e.g. diagnostics support) library
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ The Boost System library provides simple, light-weight error_code
+ objects that encapsulate system-specific error code values, yet also
+ provide access to more abstract and portable error conditions via
+ error_condition objects. Because error_code objects can represent
+ errors from sources other than the operating system, including
+ user-defined sources, each error_code and error_condition has an
+ associated error_category.
+
+Package: libboost-system1.55-dev
+Homepage: http://www.boost.org/libs/system/
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-system1.55.0 (= ${binary:Version})
+Conflicts: libboost-system1.42-dev, libboost-system1.46-dev, libboost-system1.48-dev, libboost-system1.49-dev, libboost-system1.50-dev, libboost-system1.52-dev, libboost-system1.53-dev, libboost-system1.54-dev
+Description: Operating system (e.g. diagnostics support) library
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ The Boost System library provides simple, light-weight error_code
+ objects that encapsulate system-specific error code values, yet also
+ provide access to more abstract and portable error conditions via
+ error_condition objects. Because error_code objects can represent
+ errors from sources other than the operating system, including
+ user-defined sources, each error_code and error_condition has an
+ associated error_category.
+
+Package: libboost-test1.55.0
+Homepage: http://www.boost.org/libs/test/
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: components for writing and executing test suites
+ This package forms part of the Boost C++ Libraries collection.  The
+ library contains several components.
+ .
+  * Basic execution, error detection, and reporting facility.
+  * Facilities to monitor program execution and produce error reports.
+  * Unit test framework to simplify writing test cases.
+
+Package: libboost-test1.55-dev
+Homepage: http://www.boost.org/libs/test/
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-test1.55.0 (= ${binary:Version})
+Conflicts: libboost-test1.42-dev, libboost-test1.46-dev, libboost-test1.48-dev, libboost-test1.49-dev, libboost-test1.50-dev, libboost-test1.52-dev, libboost-test1.53-dev, libboost-test1.54-dev
+Description: components for writing and executing test suites
+ This package forms part of the Boost C++ Libraries collection.  The
+ library contains several components.
+ .
+  * Basic execution, error detection, and reporting facility.
+  * Facilities to monitor program execution and produce error reports.
+  * Unit test framework to simplify writing test cases.
+
+Package: libboost-thread1.55.0
+Homepage: http://www.boost.org/libs/thread/
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: portable C++ multi-threading
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ Toolkit for writing C++ programs that execute as multiple,
+ asynchronous, independent, threads-of-execution. Each thread has its
+ own machine state including program instruction counter and
+ registers.
+
+Package: libboost-thread1.55-dev
+Homepage: http://www.boost.org/libs/thread/
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-atomic1.55-dev (= ${binary:Version}),
+ libboost-chrono1.55-dev (= ${binary:Version}),
+ libboost-date-time1.55-dev (= ${binary:Version}),
+ libboost-system1.55-dev (= ${binary:Version}),
+ libboost-thread1.55.0 (= ${binary:Version})
+Conflicts: libboost-thread1.42-dev, libboost-thread1.46-dev, libboost-thread1.48-dev, libboost-thread1.49-dev, libboost-thread1.50-dev, libboost-thread1.52-dev, libboost-thread1.53-dev, libboost-thread1.54-dev
+Description: portable C++ multi-threading
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ Toolkit for writing C++ programs that execute as multiple,
+ asynchronous, independent, threads-of-execution. Each thread has its
+ own machine state including program instruction counter and
+ registers.
+
+Package: libboost-timer1.55.0
+Homepage: http://www.boost.org/libs/timer/
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: C++ wall clock and CPU process timers
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ Portable C++ timer classes that answer the question "How long does my
+ C++ code take to run?" with as little as one #include and one
+ additional line of code.
+ .
+ Class cpu_timer measures wall clock time, user CPU process time, and
+ system CPU process time. Class auto_cpu_timer is a refinement of
+ cpu_timer that automatically reports the elapsed times when an
+ auto_cpu_timer object is destroyed.
+
+Package: libboost-timer1.55-dev
+Homepage: http://www.boost.org/libs/timer/
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-timer1.55.0 (= ${binary:Version})
+Conflicts: libboost-timer1.42-dev, libboost-timer1.46-dev, libboost-timer1.48-dev, libboost-timer1.49-dev, libboost-timer1.50-dev, libboost-timer1.52-dev, libboost-timer1.53-dev, libboost-timer1.54-dev
+Description: C++ wall clock and CPU process timers
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ Portable C++ timer classes that answer the question "How long does my
+ C++ code take to run?" with as little as one #include and one
+ additional line of code.
+ .
+ Class cpu_timer measures wall clock time, user CPU process time, and
+ system CPU process time. Class auto_cpu_timer is a refinement of
+ cpu_timer that automatically reports the elapsed times when an
+ auto_cpu_timer object is destroyed.
+
+Package: libboost-wave1.55.0
+Homepage: http://www.boost.org/libs/wave/
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: C99/C++ preprocessor library
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ The Wave C++ preprocessor library is a Standards conformant
+ implementation of the mandated C99/C++ preprocessor functionality
+ packed behind a simple to use interface, which integrates well with
+ the well known idioms of the Standard Template Library (STL).
+
+Package: libboost-wave1.55-dev
+Homepage: http://www.boost.org/libs/wave/
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: ${misc:Depends},
+ libboost1.55-dev (= ${binary:Version}),
+ libboost-serialization1.55-dev (= ${binary:Version}),
+ libboost-wave1.55.0 (= ${binary:Version}),
+ libboost-filesystem1.55-dev (= ${binary:Version})
+Conflicts: libboost-wave1.42-dev, libboost-wave1.46-dev, libboost-wave1.48-dev, libboost-wave1.49-dev, libboost-wave1.50-dev, libboost-wave1.52-dev, libboost-wave1.53-dev, libboost-wave1.54-dev
+Description: C99/C++ preprocessor library
+ This package forms part of the Boost C++ Libraries collection.
+ .
+ The Wave C++ preprocessor library is a Standards conformant
+ implementation of the mandated C99/C++ preprocessor functionality
+ packed behind a simple to use interface, which integrates well with
+ the well known idioms of the Standard Template Library (STL).

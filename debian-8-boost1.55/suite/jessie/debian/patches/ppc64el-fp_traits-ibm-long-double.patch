@@ -1,0 +1,45 @@
+Origin: https://github.com/boost-at/boost_1_55_0/commit/4426b41dab6bb8d110ebda00e0b199b640c7896a
+From: Adhemerval Zanella <azanella@linux.vnet.ibm.com>
+Date: Tue, 22 Apr 2014 14:31:19 -0500
+Subject: [PATCH] math: Fix fp_traits for IBM long double
+
+This patch fixes the fp_traits_non_native template specialization for
+IBM long double.  Current interface does not work correctly for the type
+due to the fact that for some operations (sign manipulation, for instance), both
+double should be manipulated.  For other operations that only require
+the 32 most significand bits (isinf/isnan for instance), the double
+specialization is suffient.
+
+This fixes the issues for geometry test in PPC64LE environment with no
+regressions on PPC64BE.
+---
+ boost/math/special_functions/detail/fp_traits.hpp | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/boost/math/special_functions/detail/fp_traits.hpp b/boost/math/special_functions/detail/fp_traits.hpp
+index 50c034d..72ebd4e 100644
+--- a/boost/math/special_functions/detail/fp_traits.hpp
++++ b/boost/math/special_functions/detail/fp_traits.hpp
+@@ -359,6 +359,13 @@ struct fp_traits_non_native<long double, extended_double_precision>
+ 
+ // PowerPC extended double precision format (128 bits)
+ 
++// Current 'fp_traits_non_native' does not work correctly with IBM long double
++// due the fact that for some operations, like sign manipulation, the algorithm
++// should manipulate both 'double' value.  For algorithms that only depend on
++// the most significant 32 bits (for instance, isinf or isnan), using the
++// template double especialization is suffient.
++
++#if 0
+ template<>
+ struct fp_traits_non_native<long double, extended_double_precision>
+ {
+@@ -391,7 +398,7 @@ struct fp_traits_non_native<long double, extended_double_precision>
+     BOOST_STATIC_ASSERT(false);
+ #endif
+ };
+-
++#endif
+ 
+ // long double (>64 bits), Motorola 68K ----------------------------------------
+ 

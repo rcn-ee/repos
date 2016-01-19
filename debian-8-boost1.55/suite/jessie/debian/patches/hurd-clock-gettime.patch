@@ -1,0 +1,19 @@
+From: Samuel Thibault <sthibault@debian.org> (resent from Samuel Thibault <sthibault@debian.org>)
+Description: boost1.54 currently FTBFS on hurd-i386 because it doesn't know hurd-i386
+ has clock_gettime. hurd-i386 does not define _POSIX_TIMERS because it
+ does not have timer_create & co yet, but it does have clock_gettime,
+ thus the attached patch.
+Bug: 714847
+
+
+--- boost1.54-1.54.0.orig/libs/log/src/timestamp.cpp
++++ boost1.54-1.54.0/libs/log/src/timestamp.cpp
+@@ -196,7 +196,7 @@
+ 
+ #endif // _WIN32_WINNT >= 0x0600
+ 
+-#elif defined(_POSIX_TIMERS) && _POSIX_TIMERS > 0
++#elif (defined(_POSIX_TIMERS) && _POSIX_TIMERS > 0) || defined(__GNU__)
+ 
+ BOOST_LOG_API int64_t duration::milliseconds() const
+ {

@@ -1,0 +1,26 @@
+Description: Fix include of <boost/mpi.hpp> on gcc < 4.6.3
+ Workaround proposed in boost Trac ticket to allow using
+ -std=c++0x with gcc 4.6.  It turns out to be a gcc
+ bug that is fixed for gcc 4.6.3 and 4.7.
+Author: Petar Marendic
+Bug: 639862
+Forwarded: https://svn.boost.org/trac/boost/ticket/5538
+
+Boost 1.49 status: open
+
+
+--- boost1.46-1.46.1.orig/boost/mpi/allocator.hpp
++++ boost1.46-1.46.1/boost/mpi/allocator.hpp
+@@ -170,6 +170,12 @@
+     new ((void *)p) T(val);
+   }
+ 
++  /* Default construct a value of type T at the location referenced by p. */
++  void construct(pointer p) 
++  {
++      new ((void *)p) T();
++  }
++
+   /** Destroy the object referenced by @c p. */
+   void destroy(pointer p)
+   {

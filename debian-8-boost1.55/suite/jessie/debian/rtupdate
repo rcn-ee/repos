@@ -1,0 +1,60 @@
+#! /bin/sh
+#
+# Update link-library symlinks after a Python default runtime change
+
+set -e
+
+die() {
+    echo "$@" >&2
+    exit 1
+}
+
+update_linklibs() {
+    py=$1
+    suf=$2
+
+    cd /usr/lib
+    for base in libboost_python libboost_mpi_python; do
+	target=${base}-${py}.${suf}
+	link=${base}.${suf} 
+  	test -e $target && ln -s -f $target $link || rm -f $link
+    done
+}
+
+remove_linklibs() {
+    suf=$1
+
+    cd /usr/lib
+    for thread in "" -mt; do
+	rm -f libboost_python${thread}.${suf}
+	rm -f libboost_mpi_python${thread}.${suf}
+    done
+}
+
+rtupdate() {
+    case "$1" in
+	python*)  py=py`echo ${1#python} | tr -d .` ;;
+	*)          remove ; return ;;
+    esac
+
+    update_linklibs $py a
+    update_linklibs $py so
+}
+
+remove() {
+    remove_linklibs a
+    remove_linklibs so
+}
+
+
+action="$1"
+shift
+
+case "$action" in
+    pre-rtupdate)  ;;
+    post-rtupdate) ;;
+    rtupdate)      rtupdate $2 ;;
+    remove)        remove ;;
+    *)             die "$0 called with unknown argument '$action'" ;;
+esac
+

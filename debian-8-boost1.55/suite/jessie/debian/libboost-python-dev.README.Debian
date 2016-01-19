@@ -1,0 +1,31 @@
+		Multiple Python Runtime Support
+		-------------------------------
+
+The Debian Boost.Python packages support python versions: 2.4, 2.5.
+
+This is achieved by decorating the library names with the python
+version.  You can choose either to use Boost.Python with a specific
+Python version, or use the default Python version.
+
+
+	Choosing the default Python
+	---------------------------
+
+You may simply link with -lboost_python.  This will always be the
+default python version.
+
+These default symlinks are automatically updated when the Python
+runtime version changes.
+
+
+	Choosing a specific Python Version
+	----------------------------------
+
+The library names are suffixed by "-py24" and "-py25", allowing you to
+select the specific Python version desired.  This holds true
+for both the upstream names and the simplified Debian names.
+
+So link against -lboost_python-py24 for Python 2.4.
+
+
+ -- Steve M. Robbins <smr@debian.org>, Mon, 16 Feb 2009 16:04:22 z

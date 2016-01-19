@@ -1,0 +1,60 @@
+Description: Patch to build examples using installed Boost.Python
+Author: Georg Schmid
+Bug: 452410
+Forwarded: no
+
+
+--- a/libs/python/example/Jamroot
++++ b/libs/python/example/Jamroot
+@@ -2,19 +2,15 @@
+ # Software License, Version 1.0. (See accompanying
+ # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+ 
+-# Specify the path to the Boost project.  If you move this project,
+-# adjust this path to refer to the Boost root directory.
+-use-project boost 
+-  : ../../.. ;
++using python ;
+ 
+-# Set up the project-wide requirements that everything uses the
+-# boost_python library from the project whose global ID is
+-# /boost/python.
+-project
+-  : requirements <library>/boost/python//boost_python 
+-                 <implicit-dependency>/boost//headers 
+-  : usage-requirements <implicit-dependency>/boost//headers 
+-  ;
++# Specify that the boost-python library exists under the name
++# boost_python. That is, because the library was installed at the
++# standard search path as /usr/lib/libboost_python.so, bjam will find
++# it automatically. No need to specify the absolute path.
++lib libboost_python : : <name>boost_python ;
++
++project : requirements <library>libboost_python ;
+ 
+ # Declare the three extension modules.  You can specify multiple
+ # source files after the colon separated by spaces.
+--- a/libs/python/example/tutorial/Jamroot
++++ b/libs/python/example/tutorial/Jamroot
+@@ -11,19 +11,9 @@
+     using python ;
+ }
+ 
+-# Specify the path to the Boost project.  If you move this project,
+-# adjust this path to refer to the Boost root directory.
+-use-project boost
+-  : ../../../.. ;
++using python ;
+ 
+-# Set up the project-wide requirements that everything uses the
+-# boost_python library from the project whose global ID is
+-# /boost/python.
+-project
+-  : requirements <library>/boost/python//boost_python 
+-                 <implicit-dependency>/boost//headers 
+-  : usage-requirements <implicit-dependency>/boost//headers 
+-  ;
++project : requirements <library>libbost_python ;
+ 
+ # Declare the three extension modules.  You can specify multiple
+ # source files after the colon separated by spaces.

@@ -1,0 +1,139 @@
+Help Save the World
+-------------------
+
+Boost is a fairly extensive set of libraries, of which I personally
+use but a very small part.  I greatly appreciate folks that send
+patches to the BTS.  Please do have a look at the outstanding bug
+reports and send me hints or patches if you have extra information.
+
+
+Getting Started
+---------------
+
+The following table shows which components use a library (shared or
+static) and the corresponding "-l" flag.  All libraries are built
+for multithreaded applications.
+
+  Component              Link Flag                      Library Type
+  ---------              ---------                      ------------
+  Boost.Atomic		 -lboost_atomic			static  shared
+  Boost.Chrono           -lboost_chrono                 static  shared
+  Boost.Context		 -lboost_context		static	shared
+  Boost.Coroutine	 -lboost_coroutine		static    x
+  Boost.Date_Time        -lboost_date_time            	static  shared
+  Boost.Exception	 -lboost_exception		static	  x
+  Boost.Filesystem       -lboost_filesystem           	static  shared
+  Boost.Graph            -lboost_graph                	static  shared
+  Boost.Graph_parallel   -lboost_graph_parallel       	static  shared
+  Boost.IOStreams        -lboost_iostreams            	static  shared
+  Boost.Locale           -lboost_locale                 static  shared
+  Boost.log		 -lboost_log			static	shared
+			 -lboost_log_setup		static	shared
+  Boost.Math		 -lboost_math_c99             	static  shared
+  			 -lboost_math_c99f            	static  shared
+  			 -lboost_math_c99l          [1] static  shared
+  			 -lboost_math_tr1            	static  shared
+  			 -lboost_math_tr1f            	static  shared
+  			 -lboost_math_tr1l          [1] static  shared
+  Boost.MPI		 -lboost_mpi   		      	static  shared
+  Boost.Program_options  -lboost_program_options      	static  shared
+  Boost.Python           -lboost_python-pyPQ        [2] static  shared
+                         -lboost_python             [3] static  shared
+                         -lboost_mpi_python-pyPQ    [2] static  shared
+                         -lboost_mpi_python         [3] static  shared
+  Boost.Random           -lboost_random                 static  shared
+  Boost.Regex            -lboost_regex                	static  shared
+  Boost.Serialization    -lboost_serialization        	static  shared
+                         -lboost_wserialization       	static  shared
+  Boost.Signals          -lboost_signals              	static  shared
+  Boost.System		 -lboost_system   	      	static  shared
+  Boost.Test             -lboost_prg_exec_monitor     	static  shared
+                         -lboost_test_exec_monitor      static    x
+                         -lboost_unit_test_framework   	static  shared
+  Boost.Thread           -lboost_thread               	static  shared
+  Boost.Timer            -lboost_timer                  static  shared
+  Boost.Wave             -lboost_wave   		static  shared
+
+
+[1] Not available on all architectures.
+[2] Boost.Python is built for multiple Python versions.  
+    For example, Boost 1.48.0 is built for Python 2.6, 2.7, and 3.2; 
+    the corresponding libraries are -lboost_python-py26, -py27, and
+    -py32.
+[3] Symbolic link to the default version of Python (as of build time).
+
+Most of Boost is installed using the package libboostX.Y-dev.
+The components with a shared library have separate -dev packages.
+
+There is extensive documentation available in the libboostX.Y-doc
+package and at www.boost.org.
+
+
+Debian Packaging of Boost
+-------------------------
+
+Upstream releases quarterly without guarenteeing any backwards
+compatibility.  Debian chooses to package two versions of Boost
+simultaneously, to enable users to make the transition on their own
+time.  The -dev packages are decorated with the Boost version,
+e.g. libboost1.39-dev and libboost1.40-dev.  If your code builds only
+with a specific version of boost, you can directly install that
+specific version.
+
+On the other hand, many of the mature Boost libraries hardly change
+from one version to the next.  If your code uses only such stable
+libraries, then continually installing versioned -dev packages is a
+nuisance.  Debian therefore has a set of "default" Boost development
+packages without a version number; e.g. libboost-dev.  These packages
+will pull in the version of boost considered most suitable at any
+given time.  If your code is not tied to a specific Boost version, you
+can use the unversioned development packages.
+
+This strategy was hashed out on debian-release in the Spring of 2009.
+See threads starting at:
+    http://lists.debian.org/debian-release/2009/03/msg00147.html
+    http://lists.debian.org/debian-release/2009/04/msg00251.html
+    http://lists.debian.org/debian-release/2009/05/msg00011.html
+
+
+Example Code
+------------
+
+All example code is shipped in libboostX.Y-doc package.
+
+Some of the example code is linked to by the documentation, and thus
+appears in a directory named
+
+  /usr/share/doc/libboostX.Y-doc/HTML/libs/*/example
+
+Example code that is not linked from the documentation appears in a
+directory under
+
+  /usr/share/doc/libboostX.Y-doc/examples/libs/
+
+
+Use of boost/nondet_random.hpp
+------------------------------
+
+The use of this header file is subject to the availability of class
+boost::random_device::impl. Boost libraries provide only an example
+implementation which the user may use to fit her needs.
+
+Such implementation is distributed by libboostX.Y-dev Debian package
+in file /usr/share/doc/libboostX.Y-dev/examples/random_device.cpp. 
+This file is generally good enough for most linux users.  Simply 
+copy and modify to suit your needs.
+
+
+Boost.Test main() function
+--------------------------
+
+The Boost unit test framework defines a main() function in the static
+library boost_unit_test_framework.a.  Prior to v 1.34, the shared
+library also defined main() but it no longer does.
+
+Please see the manual and the following thread for more details
+  http://lists.boost.org/boost-users/2008/03/34486.php
+
+
+ -- Steve M. Robbins <smr@debian.org>, Sat,  6 Jul 2013 20:56:17 -0500

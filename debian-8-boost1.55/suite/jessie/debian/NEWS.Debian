@@ -1,0 +1,95 @@
+boost1.53 (1.53.0-1) unstable; urgency=low
+
+  Debian no longer ships the "libboost_foo-mt" compatibility symlinks.
+  Use "-lboost_foo" only.
+
+ -- Steve M. Robbins <smr@debian.org>  Sat, 09 Feb 2013 21:12:14 -0600
+
+boost1.46 (1.46.1-3) unstable; urgency=low
+
+  Boost.Build and bjam now ship in the main -dev package (currently
+  libboost1.46-dev).  Packages boost-build and bjam are obsolete and to
+  be removed from the archive.
+
+ -- Steve M. Robbins <smr@debian.org>  Sat, 19 Mar 2011 18:26:39 -0500
+
+boost1.39 (1.39.0-4) unstable; urgency=low
+  
+  Since only one (the multi-threaded) variant of each library is built,
+  upstream elected to simplify the library name by removing the
+  redundant "-mt" decoration.  Debian will follow this convention, to
+  remain compatible at link time with other vendors.  The preferred form
+  of the link option is now "-lboost_regex", etc.
+  
+  In response to the Debian 1.37 package, a number of boost-using
+  packages changed their build system to add "-mt"; see entry below.  To
+  avoid breaking all these packages, Debian is providing compatibility
+  symlinks with the "-mt" decoration; e.g. "-lboost_regex-mt" continues
+  to work.  However, note that this name is not compatible with other
+  distributions, so build-system authors are encouraged to use the
+  undecorated name.
+
+ -- Steve M. Robbins <smr@debian.org>  Sun, 30 Aug 2009 14:47:14 -0500
+
+boost1.37 (1.37.0-1) unstable; urgency=low
+  
+  The single-threaded variant of the libraries is no longer built.
+  Prior to this, -lboost_regex was the single-threaded variant and
+  -lboost_regex-mt was the multi-threaded variant of Boost.Regex.  Any
+  software using "-lboost_regex" will need to now use "-lboost_regex-mt"
+  instead (and similar for all other libraries, of course).
+
+ -- Steve M. Robbins <smr@debian.org>  Sun, 09 Nov 2008 15:46:50 -0600
+
+boost1.35 (1.35.0-1) unstable; urgency=low
+
+  All packages now incorporate the boost version.  The -doc, -dbg, and
+  -dev packages are labelled with 1.35 under the assumption that 1.35.x
+  will all be API compatible.  The shared lib packages are labelled with
+  the SOVERSION (1.35.0) as always.  The new packages conflict with the
+  old (versions 1.34.x) since they install into the same directories.
+  The new packages have a new source name, however, so both 1.34 and
+  1.35 will be available from the Debian repository.
+  
+  Removed package bcp.  The binary "bcp" is now found in libboost-dev.
+
+  Removed package pyste.  The binary "pyste" is now found in
+  libboost-python-dev.
+
+ -- Steve M. Robbins <smr@debian.org>  Wed, 07 May 2008 02:38:44 -0500
+
+boost (1.34.0-1) unstable; urgency=low
+  
+  The boost library short name has changed semantics in Debian.  Prior to
+  1.34.0-1, the short name was multi-threaded.  Now it is single
+  threaded.
+
+  Boost library names encode the SOVERSION and build characteristics of
+  the library, including the compiler used (gcc41) and whether
+  multi-threading is enabled (-mt if so).  This leads to long names like
+  libboost_wserialization-gcc42-mt-1_34_1.so.1.34.1
+  [http://www.boost.org/more/getting_started/unix-variants.html#library-naming]
+  that are hard to discover in the build system of boost-using software.
+
+  Prior to 1.34.0-1, Debian packages provided a NON-PORTABLE short form
+  of the library name as a convenience.  The short form
+  (e.g. libboost_wserialization.so) did not have the compiler or "-mt"
+  strings in the name, even though it was the multi-thread flavour.
+
+  Other distributions, e.g. Fedora, use the so-called "layout=system"
+  install and also have shorter-named boost libraries.  However, the
+  short-named libraries are the single-threaded flavour.  The
+  multi-threaded flavour has "-mt" appended,
+  e.g. libboost_wserialization-mt.so).
+
+  After some discussion, both internal and on bug reports #429533,
+  #424038, #425264, #428419, #431502, and #425992, we decided to bring
+  the Debian names in line with "layout=system", hence compatible with
+  other distributions.  This means that the short name has changed
+  semantics from being the multi-threaded flavour to being now the
+  single-threaded flavour.
+
+  To summarize: if you're linking to libboostX for a multi-threaded
+  application, append "-mt".
+
+ -- Domenico Andreoli <cavok@debian.org>  Mon, 14 May 2007 00:06:49 +0200

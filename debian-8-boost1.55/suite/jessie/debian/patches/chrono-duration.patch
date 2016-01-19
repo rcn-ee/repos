@@ -1,0 +1,63 @@
+Description: Fix conflict between chrono/duration.hpp and apache2/httpd.h
+ The former defines a type named "CR" while the latter #defines CR.
+Author: Kirill Spitsin <tn@0x746e.org.ua>
+Bug: 703325
+Forwarded: no
+
+--- boost1.53-1.53.0.obsolete.0.932490394234076.orig/boost/chrono/duration.hpp
++++ boost1.53-1.53.0.obsolete.0.932490394234076/boost/chrono/duration.hpp
+@@ -566,9 +566,9 @@
+     >::type
+     operator*(const duration<Rep1, Period>& d, const Rep2& s)
+     {
+-      typedef typename common_type<Rep1, Rep2>::type CR;
+-      typedef duration<CR, Period> CD;
+-      return CD(CD(d).count()*static_cast<CR>(s));
++      typedef typename common_type<Rep1, Rep2>::type CRRRRR;
++      typedef duration<CRRRRR, Period> CD;
++      return CD(CD(d).count()*static_cast<CRRRRR>(s));
+     }
+ 
+     template <class Rep1, class Period, class Rep2>
+@@ -595,10 +595,10 @@
+     >::type
+     operator/(const duration<Rep1, Period>& d, const Rep2& s)
+     {
+-        typedef typename common_type<Rep1, Rep2>::type CR;
+-        typedef duration<CR, Period> CD;
++        typedef typename common_type<Rep1, Rep2>::type CRRRRR;
++        typedef duration<CRRRRR, Period> CD;
+ 
+-      return CD(CD(d).count()/static_cast<CR>(s));
++      return CD(CD(d).count()/static_cast<CRRRRR>(s));
+     }
+ 
+     template <class Rep1, class Period1, class Rep2, class Period2>
+@@ -620,10 +620,10 @@
+       >::type
+     operator/(const Rep1& s, const duration<Rep2, Period>& d)
+     {
+-        typedef typename common_type<Rep1, Rep2>::type CR;
+-        typedef duration<CR, Period> CD;
++        typedef typename common_type<Rep1, Rep2>::type CRRRRR;
++        typedef duration<CRRRRR, Period> CD;
+ 
+-      return static_cast<CR>(s)/CD(d).count();
++      return static_cast<CRRRRR>(s)/CD(d).count();
+     }
+     #endif
+     // Duration %
+@@ -636,10 +636,10 @@
+     >::type
+     operator%(const duration<Rep1, Period>& d, const Rep2& s)
+     {
+-        typedef typename common_type<Rep1, Rep2>::type CR;
+-        typedef duration<CR, Period> CD;
++        typedef typename common_type<Rep1, Rep2>::type CRRRRR;
++        typedef duration<CRRRRR, Period> CD;
+ 
+-      return CD(CD(d).count()%static_cast<CR>(s));
++      return CD(CD(d).count()%static_cast<CRRRRR>(s));
+     }
+ 
+     template <class Rep1, class Period1, class Rep2, class Period2>

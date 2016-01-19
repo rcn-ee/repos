@@ -1,0 +1,19 @@
+Description: Fix definition of BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS for hppa
+Author: John David Anglin <dave.anglin@bell.net>
+Forwarded: no
+Reviewed-by: Steve Robbins <smr@debian.org>
+
+
+
+--- boost1.54-1.54.0.orig/boost/math/tools/config.hpp
++++ boost1.54-1.54.0/boost/math/tools/config.hpp
+@@ -24,7 +24,8 @@
+ #include <boost/math/tools/user.hpp>
+ 
+ #if (defined(__CYGWIN__) || defined(__FreeBSD__) || defined(__NetBSD__) \
+-   || (defined(__hppa) && !defined(__OpenBSD__)) || (defined(__NO_LONG_DOUBLE_MATH) && (DBL_MANT_DIG != LDBL_MANT_DIG))) \
++   || (defined(__hppa) && !defined(__OpenBSD__) && !defined(__linux__)) \
++   || (defined(__NO_LONG_DOUBLE_MATH) && (DBL_MANT_DIG != LDBL_MANT_DIG))) \
+    && !defined(BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS)
+ #  define BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
+ #endif
