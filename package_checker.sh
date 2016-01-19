@@ -333,6 +333,10 @@ ros () {
 	site="${debian_pool}/main/c"
 	package_name="collada-dom"; package_version="${package_name}_2.4.4+ds1-1"; check_http
 
+	site="${debian_pool}/main/a"
+	filter="bpo"
+	package_name="assimp"; package_version="${package_name}_3.2~dfsg-3~bpo8+1"; check_http
+
 	site="${debian_pool}/main/r"
 	package_name="ros-robot-model"; package_version="${package_name}_1.11.8-2"; check_http
 }
