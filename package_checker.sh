@@ -329,6 +329,7 @@ ros () {
 	package_name="ros-nodelet-core"; package_version="${package_name}_1.9.3-2"; check_http
 	package_name="ros-pcl-msgs"; package_version="${package_name}_0.2.0-2"; check_http
 	package_name="ros-pcl-conversions"; package_version="${package_name}_0.2.1-1"; check_http
+	package_name="ros-robot-model"; package_version="${package_name}_1.11.8-2"; check_http
 }
 
 ros
@@ -355,3 +356,4 @@ package_name="python-pyftpdlib" ; package_version="1.2.0-1" ; check
 
 echo "Done:"
 #
+
