@@ -339,6 +339,7 @@ ros () {
 
 	site="${debian_pool}/main/r"
 	package_name="ros-robot-model"; package_version="${package_name}_1.11.8-2"; check_http
+	package_name="ros-navigation-msgs"; package_version="${package_name}_1.13.0-1"; check_http
 }
 
 ros
