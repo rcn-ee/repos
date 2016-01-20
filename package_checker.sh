@@ -343,6 +343,9 @@ ros () {
 
 	#needs boost1.58
 	#package_name="ros-vision-opencv"; package_version="${package_name}_1.11.10+ds-1"; check_http
+
+	site="${debian_pool}/main/r"
+	package_name="ros-python-qt-binding"; package_version="${package_name}_0.2.17-1"; check_http
 }
 
 ros
