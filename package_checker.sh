@@ -346,6 +346,10 @@ ros () {
 
 	site="${debian_pool}/main/r"
 	package_name="ros-python-qt-binding"; package_version="${package_name}_0.2.17-1"; check_http
+
+#helpers..
+	site="${debian_pool}/main/r"
+	package_name="ros-rosdistro"; package_version="${package_name}_0.4.2-1"; check_http
 }
 
 ros
