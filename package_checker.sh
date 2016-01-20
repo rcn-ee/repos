@@ -354,6 +354,7 @@ ros () {
 	package_name="ros-rosinstall-generator"; package_version="${package_name}_0.1.11-1"; check_http
 	package_name="ros-vcstools"; package_version="${package_name}_0.1.38-1"; check_http
 	package_name="ros-wstool"; package_version="${package_name}_0.1.12-1"; check_http
+	package_name="ros-bloom"; package_version="${package_name}_0.5.20-1"; check_http
 }
 
 ros
