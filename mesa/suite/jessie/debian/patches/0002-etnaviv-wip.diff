@@ -1,0 +1,31 @@
+diff --git a/src/gallium/drivers/etnaviv/etnaviv_disasm.c b/src/gallium/drivers/etnaviv/etnaviv_disasm.c
+index e85fc02..4d6329f 100644
+--- a/src/gallium/drivers/etnaviv/etnaviv_disasm.c
++++ b/src/gallium/drivers/etnaviv/etnaviv_disasm.c
+@@ -401,7 +401,7 @@ static void print_opc_imm(struct opc_operands *operands)
+ struct opc_info {
+     const char *name;
+     void (*print)(struct opc_operands *operands);
+-} opcs[1 << OPC_BITS] = {
++} etopcs[1 << OPC_BITS] = {
+     #define OPC(opc)     [INST_OPCODE_##opc] = { #opc, print_opc_default }
+     #define OPC_MOV(opc) [INST_OPCODE_##opc] = { #opc, print_opc_mov }
+     #define OPC_TEX(opc) [INST_OPCODE_##opc] = { #opc, print_opc_tex }
+@@ -465,7 +465,7 @@ static void print_instr(uint32_t *dwords, int n, enum debug_t debug)
+ {
+     struct instr *instr = (struct instr *)dwords;
+     const unsigned opc = instr->opc | (instr->opcode_bit6 << 6);
+-    const char *name = opcs[opc].name;
++    const char *name = etopcs[opc].name;
+ 
+     printf("%04d: ", n);
+     if (debug & PRINT_RAW)
+@@ -531,7 +531,7 @@ static void print_instr(uint32_t *dwords, int n, enum debug_t debug)
+         printf("%s", name);
+         print_condition(instr->cond);
+         printf(" ");
+-        opcs[opc].print(&operands);
++        etopcs[opc].print(&operands);
+     } else {
+         printf("unknown (%d)", instr->opc);
+     }
