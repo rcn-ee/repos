@@ -4,8 +4,6 @@
 export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
 %:
-	dh ${@} --buildsystem cmake --parallel
-
-
-override_dh_install:
-	dh_install --fail-missing
+	dh ${@} --buildsystem cmake \
+		--parallel \
+		--fail-missing
