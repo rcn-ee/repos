@@ -352,6 +352,7 @@ ros () {
 	package_name="ros-rosdistro"; package_version="${package_name}_0.4.2-1"; check_http
 	package_name="ros-rosinstall"; package_version="${package_name}_0.7.7-1"; check_http
 	package_name="ros-rosinstall-generator"; package_version="${package_name}_0.1.11-1"; check_http
+	package_name="ros-vcstools"; package_version="${package_name}_0.1.38-1"; check_http
 }
 
 ros
