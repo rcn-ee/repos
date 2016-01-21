@@ -10,17 +10,17 @@ Subject: Add Debian specific SOVERSION
  4 files changed, 4 insertions(+)
 
 diff --git a/camera_calibration_parsers/CMakeLists.txt b/camera_calibration_parsers/CMakeLists.txt
-index 0893dbc..ff153ab 100644
+index 4f9bf6d..2848103 100644
 --- a/camera_calibration_parsers/CMakeLists.txt
 +++ b/camera_calibration_parsers/CMakeLists.txt
-@@ -35,6 +35,7 @@ add_library(${PROJECT_NAME}
- )
+@@ -41,6 +41,7 @@ add_library(${PROJECT_NAME}_wrapper
+   src/parse_wrapper.cpp)
  
- target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES} ${Boost_LIBRARIES})
+ target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES} ${Boost_FILESYSTEM_LIBRARY})
 +set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${camera_calibration_parsers_VERSION} SOVERSION "0d")
+ target_link_libraries(${PROJECT_NAME}_wrapper ${PROJECT_NAME} ${catkin_LIBRARIES} ${Boost_PYTHON_LIBRARY} ${PYTHON_LIBRARIES})
  
- add_dependencies(${PROJECT_NAME} sensor_msgs_gencpp)
- 
+ # Don't prepend wrapper library name with lib and add to Python libs.
 diff --git a/camera_info_manager/CMakeLists.txt b/camera_info_manager/CMakeLists.txt
 index bcb250e..bc05273 100644
 --- a/camera_info_manager/CMakeLists.txt
@@ -34,13 +34,13 @@ index bcb250e..bc05273 100644
  install(TARGETS ${PROJECT_NAME}
          DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 diff --git a/image_transport/CMakeLists.txt b/image_transport/CMakeLists.txt
-index 72a3547..6994a9f 100644
+index 6e43f2f..7d8b0d9 100644
 --- a/image_transport/CMakeLists.txt
 +++ b/image_transport/CMakeLists.txt
 @@ -32,6 +32,7 @@ add_library(${PROJECT_NAME}
    src/subscriber.cpp
  )
- add_dependencies(${PROJECT_NAME} sensor_msgs_gencpp)
+ add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
 +set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${image_transport_VERSION} SOVERSION "0d")
  target_link_libraries(${PROJECT_NAME}
    ${Boost_LIBRARIES}
