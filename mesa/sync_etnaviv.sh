@@ -20,12 +20,12 @@ git diff 4b2d9f29e9b75cbbeb76ccf753a256e11f07ee1a...HEAD >  ../../suite/jessie/d
 git diff 4b2d9f29e9b75cbbeb76ccf753a256e11f07ee1a...HEAD > ../../suite/stretch/debian/patches/0001-etnaviv-base.diff
 git diff 4b2d9f29e9b75cbbeb76ccf753a256e11f07ee1a...HEAD >  ../../suite/xenial/debian/patches/0001-etnaviv-base.diff
 
-sed -i -e 's:opcs:etopcs:g' ./src/gallium/drivers/etnaviv/etnaviv_disasm.c
+#sed -i -e 's:opcs:etopcs:g' ./src/gallium/drivers/etnaviv/etnaviv_disasm.c
 
-git diff >  ../../suite/jessie/debian/patches/0002-etnaviv-wip.diff
-git diff > ../../suite/stretch/debian/patches/0002-etnaviv-wip.diff
-git diff >  ../../suite/xenial/debian/patches/0002-etnaviv-wip.diff
+#echo "" >  ../../suite/jessie/debian/patches/0002-etnaviv-wip.diff
+#echo "" > ../../suite/stretch/debian/patches/0002-etnaviv-wip.diff
+#echo "" >  ../../suite/xenial/debian/patches/0002-etnaviv-wip.diff
 
-git diff | patch -p1 -R
+#git diff | patch -p1 -R
 
 cd ../../
