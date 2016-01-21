@@ -1,8 +1,8 @@
 diff --git a/Makefile.am b/Makefile.am
-index a7a0cca..f2bdede 100644
+index ca41508..115a492 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -78,6 +78,10 @@ if HAVE_TEGRA
+@@ -79,6 +79,10 @@ if HAVE_TEGRA
  TEGRA_SUBDIR = tegra
  endif
  
@@ -13,7 +13,7 @@ index a7a0cca..f2bdede 100644
  if BUILD_MANPAGES
  if HAVE_MANPAGES_STYLESHEET
  MAN_SUBDIR = man
-@@ -95,6 +99,7 @@ SUBDIRS = \
+@@ -96,6 +100,7 @@ SUBDIRS = \
  	$(EXYNOS_SUBDIR) \
  	$(FREEDRENO_SUBDIR) \
  	$(TEGRA_SUBDIR) \
@@ -22,7 +22,7 @@ index a7a0cca..f2bdede 100644
  	$(MAN_SUBDIR)
  
 diff --git a/configure.ac b/configure.ac
-index cf10ef2..2e2a292 100644
+index c8c4ace..93928d3 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -126,6 +126,11 @@ AC_ARG_ENABLE(tegra-experimental-api,
@@ -68,15 +68,15 @@ index cf10ef2..2e2a292 100644
  	tests/Makefile
  	tests/modeprint/Makefile
  	tests/modetest/Makefile
-@@ -507,6 +522,7 @@ AC_CONFIG_FILES([
+@@ -508,6 +523,7 @@ AC_CONFIG_FILES([
  	tests/exynos/Makefile
  	tests/tegra/Makefile
  	tests/nouveau/Makefile
 +	tests/etnaviv/Makefile
+ 	tests/util/Makefile
  	man/Makefile
  	libdrm.pc])
- AC_OUTPUT
-@@ -524,4 +540,5 @@ echo "  OMAP API       $OMAP"
+@@ -526,4 +542,5 @@ echo "  OMAP API       $OMAP"
  echo "  EXYNOS API     $EXYNOS"
  echo "  Freedreno API  $FREEDRENO (kgsl: $FREEDRENO_KGSL)"
  echo "  Tegra API      $TEGRA"
@@ -157,7 +157,7 @@ index 0000000..54aa71b
 +LIBDRM_ETNAVIV_H_FILES := \
 +	etnaviv_drmif.h
 diff --git a/etnaviv/etnaviv-symbol-check b/etnaviv/etnaviv-symbol-check
-new file mode 100755
+new file mode 100644
 index 0000000..7795023
 --- /dev/null
 +++ b/etnaviv/etnaviv-symbol-check
@@ -1737,7 +1737,7 @@ index 0000000..13fed01
 +Cflags: -I${includedir} -I${includedir}/libdrm
 +Requires.private: libdrm
 diff --git a/tests/Makefile.am b/tests/Makefile.am
-index a511d28..e4a3696 100644
+index 58feb12..aeffd64 100644
 --- a/tests/Makefile.am
 +++ b/tests/Makefile.am
 @@ -22,6 +22,10 @@ if HAVE_TEGRA
