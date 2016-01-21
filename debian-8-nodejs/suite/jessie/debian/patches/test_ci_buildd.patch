@@ -38,19 +38,19 @@ Author: Jérémy Lal <kapouer@melix.org>
 +test-process-config                  : PASS,FLAKY
  
  [$system==win32]
- test-cluster-net-send                : PASS,FLAKY
-@@ -15,6 +16,7 @@
- test-http-client-timeout-event       : PASS,FLAKY
- test-child-process-buffering         : PASS,FLAKY
- test-child-process-exit-code         : PASS,FLAKY
+ test-child-process-fork-regr-gh-2847 : PASS,FLAKY
+@@ -14,6 +15,7 @@
+ test-tls-ticket-cluster              : PASS,FLAKY
+ 
+ [$system==linux]
 +test-stdout-close-unref              : PASS,FLAKY
  
  [$system==macos]
  
-@@ -23,3 +25,14 @@
+@@ -21,3 +23,14 @@
+ test-debug-signal-cluster         : PASS,FLAKY
  
  [$system==freebsd]
- test-net-socket-local-address     : PASS,FLAKY
 +test-stdout-close-unref           : PASS,FLAKY
 +
 +[$arch==ppc64]
@@ -64,17 +64,25 @@ Author: Jérémy Lal <kapouer@melix.org>
 +
 --- a/test/common.js
 +++ b/test/common.js
-@@ -238,13 +238,7 @@
+@@ -246,21 +246,7 @@
  };
  
  exports.platformTimeout = function(ms) {
+-  if (process.config.target_defaults.default_configuration === 'Debug')
+-    ms = 2 * ms;
+-
 -  if (process.arch !== 'arm')
 -    return ms;
 -
--  if (process.config.variables.arm_version === '6')
+-  const armv = process.config.variables.arm_version;
+-
+-  if (armv === '6')
 -    return 7 * ms;  // ARMv6
 -
--  return 2 * ms;  // ARMv7 and up.
+-  if (armv === '7')
+-    return 2 * ms;  // ARMv7
+-
+-  return ms; // ARMv8+
 +  return 20 * ms;
  };
  
@@ -93,7 +101,7 @@ Author: Jérémy Lal <kapouer@melix.org>
  
 --- a/tools/test.py
 +++ b/tools/test.py
-@@ -779,10 +779,7 @@
+@@ -785,10 +785,7 @@
      self.store_unexpected_output = store_unexpected_output
  
    def GetVm(self, arch, mode):

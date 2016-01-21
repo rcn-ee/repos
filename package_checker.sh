@@ -334,7 +334,7 @@ ros () {
 	package_name="collada-dom"; package_version="${package_name}_2.4.4+ds1-1"; check_http
 
 	site="${debian_pool}/main/a"
-	filter="bpo"
+	filter="3.2"
 	package_name="assimp"; package_version="${package_name}_3.2~dfsg-3~bpo8+1"; check_http
 
 	site="${debian_pool}/main/r"
