@@ -1,6 +1,6 @@
 --- a/chrome/app/generated_resources.grd
 +++ b/chrome/app/generated_resources.grd
-@@ -4820,6 +4820,35 @@ Keep your key file in a safe place. You
+@@ -4883,6 +4883,35 @@ Keep your key file in a safe place. You
          Access denied.
        </message>
  
@@ -36,7 +36,7 @@
        <!-- Global error messages for extensions -->
        <message name="IDS_EXTENSION_WARNINGS_WRENCH_MENU_ITEM" desc="The wrench menu item indicating that extensions caused problems.">
          Extension error
-@@ -11996,6 +12025,9 @@ Some features may be unavailable.  Pleas
+@@ -11936,6 +11965,9 @@ Some features may be unavailable.  Pleas
        <message name="IDS_OPTIONS_ADVANCED_SECTION_TITLE_CONTENT">
          Web content
        </message>
@@ -48,7 +48,7 @@
        </message>
 --- a/chrome/browser/resources/options/browser_options.html
 +++ b/chrome/browser/resources/options/browser_options.html
-@@ -544,6 +544,20 @@
+@@ -538,6 +538,20 @@
      </div>
    </section>
  </if>  <!-- chromeos -->
@@ -71,7 +71,7 @@
      <div class="checkbox controlled-setting-with-label">
 --- a/chrome/browser/resources/options/browser_options.js
 +++ b/chrome/browser/resources/options/browser_options.js
-@@ -621,6 +621,23 @@ cr.define('options', function() {
+@@ -624,6 +624,23 @@ cr.define('options', function() {
              [String(event.target.options[event.target.selectedIndex].value)]);
        };
  
@@ -95,7 +95,7 @@
        // Languages section.
        var showLanguageOptions = function(event) {
          PageManager.showPageByName('languages');
-@@ -1743,6 +1760,24 @@ cr.define('options', function() {
+@@ -1727,6 +1744,24 @@ cr.define('options', function() {
      },
  
      /**
@@ -120,15 +120,15 @@
       * Set the checked state of the metrics reporting checkbox.
       * @private
       */
-@@ -2169,6 +2204,7 @@ cr.define('options', function() {
+@@ -2153,6 +2188,7 @@ cr.define('options', function() {
    cr.makePublic(BrowserOptions, [
-     'addBluetoothDevice',
+     'bluetoothPairingEvent',
      'deleteCurrentProfile',
 +    'disableDesktopIntegration',
      'enableCertificateButton',
      'enableDisplaySettings',
      'enableFactoryResetSection',
-@@ -2183,6 +2219,7 @@ cr.define('options', function() {
+@@ -2167,6 +2203,7 @@ cr.define('options', function() {
      'setAutoOpenFileTypesDisplayed',
      'setBluetoothState',
      'setCanSetTime',
@@ -559,7 +559,7 @@
  var CreateProfileOverlay = options.CreateProfileOverlay;
  var EditDictionaryOverlay = cr.IsMac ? null : options.EditDictionaryOverlay;
  var EasyUnlockTurnOffOverlay = options.EasyUnlockTurnOffOverlay;
-@@ -129,6 +131,17 @@ function load() {
+@@ -131,6 +133,17 @@ function load() {
    PageManager.registerOverlay(FontSettings.getInstance(),
                                BrowserOptions.getInstance(),
                                [$('fontSettingsCustomizeFontsButton')]);
@@ -590,7 +590,7 @@
  <include src="font_settings.js">
 --- a/chrome/browser/ui/webui/options/browser_options_handler.cc
 +++ b/chrome/browser/ui/webui/options/browser_options_handler.cc
-@@ -220,6 +220,8 @@ void BrowserOptionsHandler::GetLocalized
+@@ -223,6 +223,8 @@ void BrowserOptionsHandler::GetLocalized
      { "advancedSectionTitleCloudPrint", IDS_GOOGLE_CLOUD_PRINT },
      { "advancedSectionTitleContent",
        IDS_OPTIONS_ADVANCED_SECTION_TITLE_CONTENT },
@@ -599,7 +599,7 @@
      { "advancedSectionTitleLanguages",
        IDS_OPTIONS_ADVANCED_SECTION_TITLE_LANGUAGES },
      { "advancedSectionTitleNetwork",
-@@ -244,6 +246,8 @@ void BrowserOptionsHandler::GetLocalized
+@@ -246,6 +248,8 @@ void BrowserOptionsHandler::GetLocalized
      { "defaultFontSizeLabel", IDS_OPTIONS_DEFAULT_FONT_SIZE_LABEL },
      { "defaultSearchManageEngines", IDS_OPTIONS_DEFAULTSEARCH_MANAGE_ENGINES },
      { "defaultZoomFactorLabel", IDS_OPTIONS_DEFAULT_ZOOM_LEVEL_LABEL },
@@ -608,7 +608,7 @@
      { "disableWebServices", IDS_OPTIONS_DISABLE_WEB_SERVICES },
      { "doNotTrack", IDS_OPTIONS_ENABLE_DO_NOT_TRACK },
      { "doNotTrackConfirmDisable",
-@@ -321,6 +325,7 @@ void BrowserOptionsHandler::GetLocalized
+@@ -323,6 +327,7 @@ void BrowserOptionsHandler::GetLocalized
      { "privacyClearDataButton", IDS_OPTIONS_PRIVACY_CLEAR_DATA_BUTTON },
      { "privacyContentSettingsButton",
        IDS_OPTIONS_PRIVACY_CONTENT_SETTINGS_BUTTON },
@@ -995,7 +995,7 @@
    AddOptionsPageUIHandler(localized_strings, new GeolocationOptionsHandler());
 --- a/chrome/chrome_browser_ui.gypi
 +++ b/chrome/chrome_browser_ui.gypi
-@@ -1861,6 +1861,8 @@
+@@ -1883,6 +1883,8 @@
        'browser/ui/webui/options/core_options_handler.h',
        'browser/ui/webui/options/create_profile_handler.cc',
        'browser/ui/webui/options/create_profile_handler.h',
@@ -1004,7 +1004,7 @@
        'browser/ui/webui/options/easy_unlock_handler.cc',
        'browser/ui/webui/options/easy_unlock_handler.h',
        'browser/ui/webui/options/font_settings_handler.cc',
-@@ -2942,6 +2944,7 @@
+@@ -2993,6 +2995,7 @@
            ],
          }],
          ['use_aura==1 and chromeos==0 and use_ozone==0 and OS=="linux"', {
