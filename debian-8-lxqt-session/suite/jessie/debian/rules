@@ -15,5 +15,8 @@ endif
 override_dh_auto_configure:
 	dh_auto_configure -- $(CMAKE_ARGS)
 
+override_dh_auto_install:
+	dh_auto_install -- DESTDIR=$(CURDIR)/debian/lxqt-session
+
 override_dh_strip:
 	dh_strip --dbg-package=lxqt-session-dbg
