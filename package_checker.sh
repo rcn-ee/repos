@@ -117,7 +117,7 @@ qt5_kde () {
 	package_name="solid" ; package_version="${package_name}_5.18.0-1" ; check_http
 
 	site="${debian_pool}/main/k"
-	package_name="kcoreaddons" ; package_version="${package_name}_5.16.0-1" ; check_http
+	package_name="kcoreaddons" ; package_version="${package_name}_5.18.0-1" ; check_http
 	package_name="kguiaddons" ; package_version="${package_name}_5.16.0-1" ; check_http
 	package_name="kwindowsystem" ; package_version="${package_name}_5.16.0-1" ; check_http
 }
