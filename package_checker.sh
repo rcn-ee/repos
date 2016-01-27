@@ -233,7 +233,7 @@ qt5_lxqt () {
 
 	#https://tracker.debian.org/pkg/lxqt-panel
 	site="${debian_pool}/main/l"
-	package_name="lxqt-panel" ; package_version="${package_name}_0.10.0-2" ; check_http
+	package_name="lxqt-panel" ; package_version="${package_name}_0.10.0-7" ; check_http
 
 #in progress..
 	site="${debian_pool}/main/l"

@@ -20,8 +20,8 @@ Build-Depends: cmake (>= 3.0.2),
                libpulse-dev,
                libqt5x11extras5-dev,
                libqt5xdg-dev (>= 1.3.0),
-               libsensors4-dev,
-               libstatgrab-dev,
+               libsensors4-dev [!hurd-any],
+               libstatgrab-dev [linux-any],
                libsysstat-qt5-0-dev (>= 0.3.0),
                libx11-dev,
                libxcomposite-dev,
@@ -43,7 +43,8 @@ Homepage: https://github.com/lxde/lxqt-panel
 Package: lxqt-panel
 Architecture: any
 Depends: ${misc:Depends},
-         ${shlibs:Depends}
+         ${shlibs:Depends},
+         lxmenu-data
 Description: LXQt desktop panel
  The LXQt desktop panel
  .
