@@ -126,7 +126,7 @@ qt5_apps () {
 	echo "qt5: apps:"
 
 	site="${debian_pool}/main/q"
-	package_name="qupzilla" ; package_version="${package_name}_1.8.9~dfsg1-2" ; check_http
+	package_name="qupzilla" ; package_version="${package_name}_1.8.9~dfsg1-3" ; check_http
 	package_name="qtermwidget" ; package_version="${package_name}_0.6.0-10" ; check_http
 	package_name="qterminal" ; package_version="${package_name}_0.6.0-10" ; check_http
 	package_name="qlipper" ; package_version="${package_name}_5.0.0+20151111-1" ; check_http
