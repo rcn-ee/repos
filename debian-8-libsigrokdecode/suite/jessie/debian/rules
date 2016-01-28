@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+
+# export DH_VERBOSE=1
+
+# Reduce the number of unneeded dependencies with --as-needed.
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+
+%:
+	dh $@ --with autoreconf,python3 --parallel
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -rf decoders/**/__pycache__
+

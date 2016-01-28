@@ -1,0 +1,18 @@
+# The decoders directory must always match the package name + SONAME (e.g.
+# libsigrokdecode1, libsigrokdecode2, and so on).
+# This is needed in order to avoid problems with identical files in multiple
+# packages, e.g. when upgrading from libsigrokdecode1 to libsigrokdecode2.
+
+Index: a/configure.ac
+===================================================================
+--- a/configure.ac	2014-05-24 18:25:00.696985195 +0200
++++ b/configure.ac	2014-05-24 18:25:10.877000181 +0200
+@@ -143,7 +143,7 @@
+ # These are already checked: inttypes.h stdint.h stdlib.h string.h unistd.h.
+ AC_CHECK_HEADER([sys/resource.h], [], [build_runtc="no"])
+ 
+-AC_SUBST(DECODERS_DIR, "$datadir/libsigrokdecode/decoders")
++AC_SUBST(DECODERS_DIR, "$datadir/libsigrokdecode2/decoders")
+ AC_SUBST(MAKEFLAGS, '--no-print-directory')
+ AC_SUBST(AM_LIBTOOLFLAGS, '--silent')
+ 

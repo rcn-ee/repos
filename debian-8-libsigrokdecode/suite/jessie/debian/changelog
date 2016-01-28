@@ -1,0 +1,62 @@
+libsigrokdecode (0.3.0-1) unstable; urgency=medium
+
+  * New upstream release.
+    + The Python dependency is now on >= 3.2.
+    + Change the package name from libsigrokdecode1 to libsigrokdecode2
+      due to an upstream SO name change.
+  * Switch from cdbs to debhelper.
+  * Add multiarch support:
+    + Bump build-depend on debhelper (>= 9). 
+    + Add "Pre-Depends: ${misc:Pre-Depends}" to the lib package.
+    + debian/compat: Bump version to 9.
+    + Adapt the paths in *.install files.
+    + Add "Multi-Arch: same" to the lib and -dev package.
+    + This should also fix issues on e.g. MIPS systems (Closes: #723452).
+      Thanks YunQiang Su <wzssyqa@gmail.com> for the report!
+  * Standards-Version: 3.9.5 (no changes required).
+  * debian/control: Update to 'X-Python3-Version: >= 3.2'.
+  * Use dh-autoreconf instead of autotools-dev in order to fix FTBFS on
+    (e.g.) ppc64el (Closes: #744062). Thanks Logan Rosen <logan@ubuntu.com>!
+  * Add/update patches: 10_decodersdir.patch, 20_no_pdtests.patch.
+
+ -- Uwe Hermann <uwe@debian.org>  Sat, 24 May 2014 16:41:10 +0200
+
+libsigrokdecode (0.2.0-2) unstable; urgency=low
+
+  * Fixed upload for 0.2.0-1 (which never left the NEW queue).
+  * The upstream SONAME bumped to 1, so change the lib package name to
+    libsigrokdecode1. However, only use one libsigrokdecode-dev always, i.e.
+    don't encode the SONAME in the -dev package name (as per FTP Master
+    recommendation). Since the old name was libsigrokdecode0-dev, add a
+    transitional package to nicely handle the transition.
+
+ -- Uwe Hermann <uwe@debian.org>  Mon, 26 Aug 2013 08:51:54 +0200
+
+libsigrokdecode (0.2.0-1) unstable; urgency=low
+
+  * New upstream release.
+    + Bump version of libglib2.0-dev build-dep to >= 2.24.0.
+    + API and ABI changed, so change package name to libsigrokdecode1*.
+    + Decoders are installed to /usr/share/libsigrokdecode1 (dirname
+      includes SONAME) to avoid "identical file in multiple packages"
+      issues when upgrading.
+  * Standards-Version: 3.9.4 (no changes required).
+  * Add missing dependency on Python 3 (Closes: #709406).
+    - Use ${python3:Depends} as dependency of libsigrokdecode1.
+    - Add X-Python-Version: >= 3.0.
+    - Versioned build-dep on cdbs (>= 0.4.90~) for dh_python2 support.
+  * debian/watch: Update to new download URLs.
+
+ -- Uwe Hermann <uwe@debian.org>  Tue, 28 May 2013 17:51:55 +0200
+
+libsigrokdecode (0.1.0-2) unstable; urgency=low
+
+  * libsigrokdecode0-dev: Add missing dependencies on -dev libs.
+
+ -- Uwe Hermann <uwe@debian.org>  Wed, 23 May 2012 13:47:21 +0200
+
+libsigrokdecode (0.1.0-1) unstable; urgency=low
+
+  * Initial release (Closes: #669071).
+
+ -- Uwe Hermann <uwe@debian.org>  Sun, 13 May 2012 14:47:05 +0200

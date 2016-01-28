@@ -1,0 +1,47 @@
+Source: libsigrokdecode
+Priority: extra
+Maintainer: Uwe Hermann <uwe@debian.org>
+Build-Depends: debhelper (>= 9), dh-autoreconf, pkg-config (>= 0.22), libglib2.0-dev (>= 2.24.0), python3-dev (>= 3.2)
+Standards-Version: 3.9.5
+Section: libs
+X-Python3-Version: >= 3.2
+Homepage: http://sigrok.org/wiki/Libsigrokdecode
+
+Package: libsigrokdecode-dev
+Section: libdevel
+Conflicts: libsigrokdecode-dev (<< 0.2.0-2), libsigrokdecode0-dev (<< 0.2.0-2)
+Replaces: libsigrokdecode0-dev
+Architecture: any
+Multi-Arch: same
+Depends: libsigrokdecode2 (= ${binary:Version}), ${misc:Depends}, libglib2.0-dev (>= 2.24.0), python3-dev (>= 3.2)
+Description: sigrok protocol decoding library - development files
+ libsigrokdecode is a shared library which provides (streaming) protocol
+ decoding functionality.
+ .
+ The protocol decoders are written in Python (>= 3.2).
+ .
+ This package contains the header files and other development files.
+
+Package: libsigrokdecode2
+Section: libs
+Conflicts: libsigrokdecode0 (<< 0.2.0-2)
+Replaces: libsigrokdecode0 (<< 0.2.0-2)
+Architecture: any
+Multi-Arch: same
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}
+Description: sigrok protocol decoding library - shared library
+ libsigrokdecode is a shared library which provides (streaming) protocol
+ decoding functionality.
+ .
+ The protocol decoders are written in Python (>= 3.2).
+ .
+ This package contains the shared library and the protocol decoders.
+
+Package: libsigrokdecode0-dev
+Section: oldlibs
+Architecture: all
+Depends: libsigrokdecode-dev (>= 0.2.0-2), ${misc:Depends}
+Description: sigrok protocol decoding library (transitional dummy package)
+ This is a dummy transitional package that can be safely removed if no
+ packages depend on it.
+
