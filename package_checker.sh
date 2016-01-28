@@ -262,7 +262,7 @@ nodejs () {
 	echo "nodejs: (jessie-exp)"
 	site="${debian_pool}/main/o"
 	filter="1.0.2"
-	package_name="openssl"; package_version="${package_name}_1.0.2e-1"; check_http
+	package_name="openssl"; package_version="${package_name}_1.0.2f-2"; check_http
 
 	site="${debian_pool}/main/n"
 	filter="4.2"
