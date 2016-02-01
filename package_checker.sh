@@ -136,7 +136,7 @@ qt5_apps () {
 	site="http://packages.siduction.org/extra/pool/main/c"
 	package_name="connman" ; package_version="${package_name}_1.31-1" ; check_http_exp
 	site="${debian_pool}/main/c"
-	package_name="cmst" ; package_version="${package_name}_2015.12.03-2" ; check_http
+	package_name="cmst" ; package_version="${package_name}_2016.01.28-2" ; check_http
 }
 
 qt5_lxqt () {

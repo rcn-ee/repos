@@ -4,8 +4,8 @@ mirror="http://http.debian.net/debian"
 
 package_name="cmst"
 debian_pkg_name="${package_name}"
-package_version="2015.12.03"
-package_source="${package_name}_${package_version}.orig.tar.xz"
+package_version="2016.01.28"
+package_source="${package_name}_${package_version}.orig.tar.gz"
 src_dir="${package_name}-${package_version}"
 
 git_repo=""
@@ -17,5 +17,5 @@ debian_version="${package_version}-2"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 
-jessie_version="~bpo80+20151228+1"
 stretch_version="~bpo90+20151228+1"
+jessie_version="~bpo80+20160201+1"
