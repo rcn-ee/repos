@@ -6,7 +6,7 @@ package_name="cmst"
 debian_pkg_name="${package_name}"
 package_version="2016.01.28"
 package_source="${package_name}_${package_version}.orig.tar.gz"
-src_dir="${package_name}-${package_version}"
+src_dir="${package_name}"
 
 git_repo=""
 git_sha=""
