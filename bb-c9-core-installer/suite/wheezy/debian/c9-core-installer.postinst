@@ -28,6 +28,67 @@ extract_dir="/opt/cloud9/build/"
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
+export NODE_PATH=/usr/local/lib/node_modules
+
+npm_actually_install () {
+	echo "${package}:Installing: ${pkg}-${ver} (for ${npm_project})"
+	TERM=dumb npm install -g ${pkg}@${ver}
+	echo "${ver}" > "${NODE_PATH}/${pkg}/${pkg}.version"
+	echo "${node_version}" > "${NODE_PATH}/${pkg}/${pkg}.node_version"
+}
+
+npm_check_n_install () {
+	if [ ! -f "${NODE_PATH}/${pkg}/${pkg}.version" ] ; then
+		npm_actually_install
+	else
+		unset old_version
+		if [ -f "${NODE_PATH}/${pkg}/${pkg}.version" ] ; then
+			old_version=$(cat "${NODE_PATH}/${pkg}/${pkg}.version" || true)
+		fi
+		if [ ! "x${old_version}" = "x${ver}" ] ; then
+			rm -rf "${NODE_PATH}/${pkg}/" || true
+			npm_actually_install
+		else
+			unset old_version
+			if [ -f "${NODE_PATH}/${pkg}/${pkg}.node_version" ] ; then
+				old_version=$(cat "${NODE_PATH}/${pkg}/${pkg}.node_version" || true)
+			fi
+			if [ ! "x${old_version}" = "x${node_version}" ] ; then
+				rm -rf "${NODE_PATH}/${pkg}/" || true
+				npm_actually_install
+			fi
+		fi
+	fi
+}
+
+npm_install () {
+	unset node_version
+	node_version=$(nodejs --version || true)
+
+	npm_project="c9-core-installer"
+	pkg="winston" ; ver="2.1.1" ; npm_check_n_install
+
+	if [ -d /etc/avahi/ ] ; then
+		#Annouce http server via DNS Sevice Discovery
+		wfile="/etc/avahi/services/cloud9.service"
+		echo "<?xml version=\"1.0\" standalone='no'?><!--*-nxml-*-->" > ${wfile}
+		echo "<!DOCTYPE service-group SYSTEM \"avahi-service.dtd\">" >> ${wfile}
+		echo "" >> ${wfile}
+		echo "<!-- See avahi.service(5) for more information about this configuration file -->" >> ${wfile}
+		echo "" >> ${wfile}
+		echo "<service-group>" >> ${wfile}
+		echo "" >> ${wfile}
+		echo "  <name replace-wildcards=\"yes\">Cloud9 IDE for %h</name>" >> ${wfile}
+		echo "  <service>" >> ${wfile}
+		echo "" >> ${wfile}
+		echo "    <type>_http._tcp</type>" >> ${wfile}
+		echo "    <port>3000</port>" >> ${wfile}
+		echo "  </service>" >> ${wfile}
+		echo "" >> ${wfile}
+		echo "</service-group>" >> ${wfile}
+	fi
+}
+
 dl_file() {
 	wget --no-check-certificate ${partner_url}/${wfile}
 }
@@ -280,10 +341,13 @@ c9_directory () {
 	"$NPM" config -g delete cache
 	"$NPM" config -g delete tmp
 	"$NPM" config -g delete python
+
+	systemctl enable cloud9.socket || true
 }
 
 case "$1" in
     configure)
+	npm_install
 	dl_install
 	c9_directory
     ;;
