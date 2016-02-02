@@ -50,14 +50,6 @@ if [ -d suite/${suite}/ ] ; then
 	run
 fi
 
-suite="vivid"
-if [ -d suite/${suite}/ ] ; then
-	repo="${base}${dist}/"
-	deb_arch="armhf"
-	rcn_ee_version="${vivid_version}"
-	run
-fi
-
 suite="wily"
 if [ -d suite/${suite}/ ] ; then
 	repo="${base}${dist}/"

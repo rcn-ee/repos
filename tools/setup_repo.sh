@@ -132,6 +132,7 @@ suite="utopic"
 archs="armhf source"
 setup_repo
 
+#eol: feb 4 2016
 suite="vivid"
 archs="armhf source"
 setup_repo

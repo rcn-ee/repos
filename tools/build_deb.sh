@@ -67,7 +67,6 @@ start_run () {
 	suite="jessie" ; runner
 	suite="stretch" ; runner
 	suite="trusty" ; runner
-	suite="vivid" ; runner
 	suite="wily" ; runner
 	suite="xenial" ; runner
 }
@@ -77,7 +76,6 @@ cleanup () {
 	suite="jessie" ; cleanup_suite
 	suite="stretch" ; cleanup_suite
 	suite="trusty" ; cleanup_suite
-	suite="vivid" ; cleanup_suite
 	suite="wily" ; cleanup_suite
 	suite="xenial" ; cleanup_suite
 }
