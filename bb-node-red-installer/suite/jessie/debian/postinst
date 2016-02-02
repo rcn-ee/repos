@@ -26,6 +26,14 @@ npm_actually_install () {
 	TERM=dumb npm install -g ${pkg}@${ver}
 	echo "${ver}" > "${NODE_PATH}/${pkg}/${pkg}.version"
 	echo "${node_version}" > "${NODE_PATH}/${pkg}/${pkg}.node_version"
+
+	if [ "x${js_patch}" = "xenable" ] ; then
+		sed -i -e "s:var server;:require(\'systemd\');\n\nvar server;:"g "${NODE_PATH}/${pkg}/red.js"
+		sed -i -e "s:settings.uiPort,settings.uiHost,f:settings.uiPort);\n        server.on(\'listening\', f:"g "${NODE_PATH}/${pkg}/red.js"
+
+		sed -i -e "s:1880,:port,:"g "${NODE_PATH}/${pkg}/settings.js"
+		sed -i -e "s:module.exports:var port = process.env.LISTEN_PID > 0 ? \'systemd\' \: 1880;\n\nmodule.exports:"g "${NODE_PATH}/${pkg}/settings.js"
+	fi
 }
 
 npm_check_n_install () {
@@ -56,9 +64,36 @@ npm_install () {
 	unset node_version
 	node_version=$(nodejs --version || true)
 
+	unset js_patch
 	npm_project="node-red"
 	pkg="systemd" ; ver="0.2.6" ; npm_check_n_install
+	js_patch="enable"
 	pkg="node-red" ; ver="0.13.1" ; npm_check_n_install
+	unset js_patch
+
+	if [ -d /etc/avahi/services/ ] ; then
+		#Annouce http server via DNS Sevice Discovery
+		wfile="/etc/avahi/services/node-red.service"
+		echo "<?xml version=\"1.0\" standalone='no'?><!--*-nxml-*-->" > ${wfile}
+		echo "<!DOCTYPE service-group SYSTEM \"avahi-service.dtd\">" >> ${wfile}
+		echo "" >> ${wfile}
+		echo "<!-- See avahi.service(5) for more information about this configuration file -->" >> ${wfile}
+		echo "" >> ${wfile}
+		echo "<service-group>" >> ${wfile}
+		echo "" >> ${wfile}
+		echo "  <name replace-wildcards=\"yes\">Node-RED for %h</name>" >> ${wfile}
+		echo "  <service>" >> ${wfile}
+		echo "" >> ${wfile}
+		echo "    <type>_http._tcp</type>" >> ${wfile}
+		echo "    <port>1880</port>" >> ${wfile}
+		echo "  </service>" >> ${wfile}
+		echo "" >> ${wfile}
+		echo "</service-group>" >> ${wfile}
+		chown -R root:root ${wfile}
+	fi
+
+	systemctl enable ${service}.socket || true
+	systemctl start ${service} || true
 }
 
 case "$1" in

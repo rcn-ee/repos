@@ -25,8 +25,30 @@ fi
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
+export NODE_PATH=/usr/local/lib/node_modules
+
+
+remove_file () {
+	if [ -f ${wfile} ] ; then
+		rm -f ${wfile} || true
+	fi
+}
+
+remove_dir () {
+	if [ -d ${wdir} ] ; then
+		rm -rf ${wdir} || true
+	fi
+}
+
+remove_all() {
+	wfile="/etc/avahi/services/node-red.service" ; remove_file
+	wdir="${NODE_PATH}/node-red" ; remove_dir
+	wdir="${NODE_PATH}/systemd" ; remove_dir
+}
+
 case "$1" in
     remove|upgrade|deconfigure)
+	remove_all
     ;;
 
     failed-upgrade)
