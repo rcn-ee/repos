@@ -157,7 +157,7 @@ index 0000000..54aa71b
 +LIBDRM_ETNAVIV_H_FILES := \
 +	etnaviv_drmif.h
 diff --git a/etnaviv/etnaviv-symbol-check b/etnaviv/etnaviv-symbol-check
-new file mode 100644
+new file mode 100755
 index 0000000..7795023
 --- /dev/null
 +++ b/etnaviv/etnaviv-symbol-check
@@ -209,10 +209,10 @@ index 0000000..7795023
 +test ! -n "$FUNCS"
 diff --git a/etnaviv/etnaviv_bo.c b/etnaviv/etnaviv_bo.c
 new file mode 100644
-index 0000000..1805411
+index 0000000..4f6d431
 --- /dev/null
 +++ b/etnaviv/etnaviv_bo.c
-@@ -0,0 +1,315 @@
+@@ -0,0 +1,439 @@
 +/*
 + * Copyright (C) 2014 Etnaviv Project
 + *
@@ -256,6 +256,29 @@ index 0000000..1805411
 +	drmHashInsert(bo->dev->name_table, name, bo);
 +}
 +
++/* Called under table_lock */
++static void bo_del(struct etna_bo *bo)
++{
++	if (bo->map)
++		drm_munmap(bo->map, bo->size);
++
++	if (bo->name)
++		drmHashDelete(bo->dev->name_table, bo->name);
++
++	if (bo->handle) {
++		struct drm_gem_close req = {
++				.handle = bo->handle,
++		};
++
++		drmHashDelete(bo->dev->handle_table, bo->handle);
++
++		drmIoctl(bo->dev->fd, DRM_IOCTL_GEM_CLOSE, &req);
++	}
++
++	etna_device_del(bo->dev);
++	free(bo);
++}
++
 +/* lookup a buffer from it's handle, call w/ table_lock held: */
 +static struct etna_bo * lookup_bo(void *tbl, uint32_t handle)
 +{
@@ -289,18 +312,107 @@ index 0000000..1805411
 +	return bo;
 +}
 +
++/* Frees older cached buffers.  Called under table_lock */
++drm_private void etna_cleanup_bo_cache(struct etna_device *dev, time_t time)
++{
++	unsigned i;
++
++	if (dev->time == time)
++		return;
++
++	for (i = 0; i < dev->num_buckets; i++) {
++		struct etna_bo_bucket *bucket = &dev->cache_bucket[i];
++		struct etna_bo *bo;
++
++		while (!LIST_IS_EMPTY(&bucket->list)) {
++			bo = LIST_ENTRY(struct etna_bo, bucket->list.next, list);
++
++			/* keep things in cache for at least 1 second: */
++			if (time && ((time - bo->free_time) <= 1))
++				break;
++
++			list_del(&bo->list);
++			bo_del(bo);
++		}
++	}
++
++	dev->time = time;
++}
++
++static struct etna_bo_bucket *get_bucket(struct etna_device *dev, uint32_t size)
++{
++	unsigned i;
++
++	/* hmm, this is what intel does, but I suppose we could calculate our
++	 * way to the correct bucket size rather than looping..
++	 */
++	for (i = 0; i < dev->num_buckets; i++) {
++		struct etna_bo_bucket *bucket = &dev->cache_bucket[i];
++		if (bucket->size >= size) {
++			return bucket;
++		}
++	}
++
++	return NULL;
++}
++
++static int is_idle(struct etna_bo *bo)
++{
++	return etna_bo_cpu_prep(bo,
++			DRM_ETNA_PREP_READ |
++			DRM_ETNA_PREP_WRITE |
++			DRM_ETNA_PREP_NOSYNC) == 0;
++}
++
++static struct etna_bo *find_in_bucket(struct etna_device *dev,
++		struct etna_bo_bucket *bucket, uint32_t flags)
++{
++	struct etna_bo *bo = NULL;
++
++	pthread_mutex_lock(&table_lock);
++	while (!LIST_IS_EMPTY(&bucket->list)) {
++		bo = LIST_ENTRY(struct etna_bo, bucket->list.next, list);
++
++		/* TODO check for compatible flags? */
++		if (is_idle(bo)) {
++			list_del(&bo->list);
++			break;
++		}
++		bo = NULL;
++		break;
++	}
++	pthread_mutex_unlock(&table_lock);
++
++	return bo;
++}
++
 +/* allocate a new (un-tiled) buffer object */
 +struct etna_bo *etna_bo_new(struct etna_device *dev,
 +		uint32_t size, uint32_t flags)
 +{
++	int ret;
 +	struct etna_bo *bo = NULL;
++	struct etna_bo_bucket *bucket;
 +
 +	struct drm_etnaviv_gem_new req = {
 +			.size = size,
 +			.flags = flags,
 +	};
 +
-+	int ret;
++	size = ALIGN(size, 4096);
++	bucket = get_bucket(dev, size);
++
++	/* see if we can be green and recycle: */
++	if (bucket) {
++		size = bucket->size;
++		bo = find_in_bucket(dev, bucket, flags);
++		if (bo) {
++			atomic_set(&bo->refcnt, 1);
++			etna_device_ref(bo->dev);
++			return bo;
++		}
++	}
++
 +	ret = drmCommandWriteRead(dev->fd, DRM_ETNAVIV_GEM_NEW,
 +			&req, sizeof(req));
 +	if (ret)
@@ -308,6 +420,7 @@ index 0000000..1805411
 +
 +	pthread_mutex_lock(&table_lock);
 +	bo = bo_from_handle(dev, size, req.handle);
++	bo->reuse = 1;
 +	pthread_mutex_unlock(&table_lock);
 +
 +	return bo;
@@ -406,31 +519,42 @@ index 0000000..1805411
 +/* destroy a buffer object */
 +void etna_bo_del(struct etna_bo *bo)
 +{
++	struct etna_device *dev;
++
 +	if (!bo)
 +		return;
 +
 +	if (!atomic_dec_and_test(&bo->refcnt))
 +		return;
 +
-+	if (bo->map)
-+		drm_munmap(bo->map, bo->size);
++	pthread_mutex_lock(&table_lock);
++	dev = bo->dev;
 +
-+	if (bo->name)
-+		drmHashDelete(bo->dev->name_table, bo->name);
++	if (bo->reuse) {
++		struct etna_bo_bucket *bucket = get_bucket(dev, bo->size);
 +
-+	if (bo->handle) {
-+		struct drm_gem_close req = {
-+				.handle = bo->handle,
-+		};
-+		pthread_mutex_lock(&table_lock);
-+		drmHashDelete(bo->dev->handle_table, bo->handle);
-+		drmIoctl(bo->dev->fd, DRM_IOCTL_GEM_CLOSE, &req);
-+		pthread_mutex_unlock(&table_lock);
++		/* see if we can be green and recycle: */
++		if (bucket) {
++			struct timespec time;
++
++			clock_gettime(CLOCK_MONOTONIC, &time);
++
++			bo->free_time = time.tv_sec;
++			list_addtail(&bo->list, &bucket->list);
++			etna_cleanup_bo_cache(dev, time.tv_sec);
++
++			/* bo's in the bucket cache don't have a ref and
++			 * don't hold a ref to the dev:
++			 */
++
++			goto out;
++		}
 +	}
 +
-+	etna_device_del(bo->dev);
-+
-+	free(bo);
++	bo_del(bo);
++out:
++	etna_device_del_locked(dev);
++	pthread_mutex_unlock(&table_lock);
 +}
 +
 +/* get the global flink/DRI2 buffer name */
@@ -450,6 +574,7 @@ index 0000000..1805411
 +		pthread_mutex_lock(&table_lock);
 +		set_name(bo, req.name);
 +		pthread_mutex_unlock(&table_lock);
++		bo->reuse = 0;
 +	}
 +
 +	*name = bo->name;
@@ -476,14 +601,13 @@ index 0000000..1805411
 +		return ret;
 +	}
 +
++	bo->reuse = 0;
++
 +	return prime_fd;
 +}
 +
 +uint32_t etna_bo_size(struct etna_bo *bo)
 +{
-+	if (!bo->size) {
-+		get_buffer_info(bo);
-+	}
 +	return bo->size;
 +}
 +
@@ -776,10 +900,10 @@ index 0000000..e1bbc3e
 +}
 diff --git a/etnaviv/etnaviv_device.c b/etnaviv/etnaviv_device.c
 new file mode 100644
-index 0000000..4d0a708
+index 0000000..e415b47
 --- /dev/null
 +++ b/etnaviv/etnaviv_device.c
-@@ -0,0 +1,79 @@
+@@ -0,0 +1,131 @@
 +/*
 + * Copyright (C) 2014 Etnaviv Project
 + *
@@ -827,6 +951,42 @@ index 0000000..4d0a708
 +
 +static pthread_mutex_t table_lock = PTHREAD_MUTEX_INITIALIZER;
 +
++static void add_bucket(struct etna_device *dev, int size)
++{
++	unsigned i = dev->num_buckets;
++
++	assert(i < ARRAY_SIZE(dev->cache_bucket));
++
++	list_inithead(&dev->cache_bucket[i].list);
++	dev->cache_bucket[i].size = size;
++	dev->num_buckets++;
++}
++
++static void init_cache_buckets(struct etna_device *dev)
++{
++	unsigned long size, cache_max_size = 64 * 1024 * 1024;
++
++	/* OK, so power of two buckets was too wasteful of memory.
++	 * Give 3 other sizes between each power of two, to hopefully
++	 * cover things accurately enough.  (The alternative is
++	 * probably to just go for exact matching of sizes, and assume
++	 * that for things like composited window resize the tiled
++	 * width/height alignment and rounding of sizes to pages will
++	 * get us useful cache hit rates anyway)
++	 */
++	add_bucket(dev, 4096);
++	add_bucket(dev, 4096 * 2);
++	add_bucket(dev, 4096 * 3);
++
++	/* Initialize the linked lists for BO reuse cache. */
++	for (size = 4 * 4096; size <= cache_max_size; size *= 2) {
++		add_bucket(dev, size);
++		add_bucket(dev, size + size * 1 / 4);
++		add_bucket(dev, size + size * 2 / 4);
++		add_bucket(dev, size + size * 3 / 4);
++	}
++}
++
 +struct etna_device * etna_device_new(int fd)
 +{
 +	struct etna_device *dev = calloc(sizeof(*dev), 1);
@@ -838,6 +998,7 @@ index 0000000..4d0a708
 +	dev->fd = fd;
 +	dev->handle_table = drmHashCreate();
 +	dev->name_table = drmHashCreate();
++	init_cache_buckets(dev);
 +
 +	return dev;
 +}
@@ -848,23 +1009,38 @@ index 0000000..4d0a708
 +	return dev;
 +}
 +
++static void etna_device_del_impl(struct etna_device *dev)
++{
++	etna_cleanup_bo_cache(dev, 0);
++	drmHashDestroy(dev->handle_table);
++	drmHashDestroy(dev->name_table);
++
++	free(dev);
++}
++
++drm_private void etna_device_del_locked(struct etna_device *dev)
++{
++	if (!atomic_dec_and_test(&dev->refcnt))
++		return;
++
++	etna_device_del_impl(dev);
++}
++
 +void etna_device_del(struct etna_device *dev)
 +{
 +	if (!atomic_dec_and_test(&dev->refcnt))
 +		return;
-+	pthread_mutex_lock(&table_lock);
-+	drmHashDestroy(dev->handle_table);
-+	drmHashDestroy(dev->name_table);
-+	pthread_mutex_unlock(&table_lock);
-+	free(dev);
-+}
 +
++	pthread_mutex_lock(&table_lock);
++	etna_device_del_impl(dev);
++	pthread_mutex_unlock(&table_lock);
++}
 diff --git a/etnaviv/etnaviv_drm.h b/etnaviv/etnaviv_drm.h
 new file mode 100644
-index 0000000..ae1a08c
+index 0000000..462241c
 --- /dev/null
 +++ b/etnaviv/etnaviv_drm.h
-@@ -0,0 +1,222 @@
+@@ -0,0 +1,225 @@
 +/*
 + * Copyright (C) 2015 Etnaviv Project
 + *
@@ -915,6 +1091,8 @@ index 0000000..ae1a08c
 +#define ETNAVIV_PARAM_GPU_FEATURES_2                0x05
 +#define ETNAVIV_PARAM_GPU_FEATURES_3                0x06
 +#define ETNAVIV_PARAM_GPU_FEATURES_4                0x07
++#define ETNAVIV_PARAM_GPU_FEATURES_5                0x08
++#define ETNAVIV_PARAM_GPU_FEATURES_6                0x09
 +
 +#define ETNAVIV_PARAM_GPU_STREAM_COUNT              0x10
 +#define ETNAVIV_PARAM_GPU_REGISTER_MAX              0x11
@@ -926,6 +1104,7 @@ index 0000000..ae1a08c
 +#define ETNAVIV_PARAM_GPU_BUFFER_SIZE               0x17
 +#define ETNAVIV_PARAM_GPU_INSTRUCTION_COUNT         0x18
 +#define ETNAVIV_PARAM_GPU_NUM_CONSTANTS             0x19
++#define ETNAVIV_PARAM_GPU_NUM_VARYINGS              0x1a
 +
 +#define ETNA_MAX_PIPES 4
 +
@@ -1089,10 +1268,10 @@ index 0000000..ae1a08c
 +#endif /* __ETNAVIV_DRM_H__ */
 diff --git a/etnaviv/etnaviv_drmif.h b/etnaviv/etnaviv_drmif.h
 new file mode 100644
-index 0000000..cf32872
+index 0000000..15ccc16
 --- /dev/null
 +++ b/etnaviv/etnaviv_drmif.h
-@@ -0,0 +1,187 @@
+@@ -0,0 +1,190 @@
 +/*
 + * Copyright (C) 2014-2015 Etnaviv Project
 + *
@@ -1146,6 +1325,8 @@ index 0000000..cf32872
 +	ETNA_GPU_FEATURES_2                = 0x5,
 +	ETNA_GPU_FEATURES_3                = 0x6,
 +	ETNA_GPU_FEATURES_4                = 0x7,
++	ETNA_GPU_FEATURES_5                = 0x8,
++	ETNA_GPU_FEATURES_6                = 0x9,
 +
 +	ETNA_GPU_STREAM_COUNT              = 0x10,
 +	ETNA_GPU_REGISTER_MAX              = 0x11,
@@ -1156,7 +1337,8 @@ index 0000000..cf32872
 +	ETNA_GPU_VERTEX_OUTPUT_BUFFER_SIZE = 0x16,
 +	ETNA_GPU_BUFFER_SIZE               = 0x17,
 +	ETNA_GPU_INSTRUCTION_COUNT         = 0x18,
-+	ETNA_GPU_NUM_CONSTANTS             = 0x19
++	ETNA_GPU_NUM_CONSTANTS             = 0x19,
++	ETNA_GPU_NUM_VARYINGS              = 0x1a
 +};
 +
 +/* bo flags: */
@@ -1282,10 +1464,10 @@ index 0000000..cf32872
 +#endif /* ETNAVIV_DRMIF_H_ */
 diff --git a/etnaviv/etnaviv_gpu.c b/etnaviv/etnaviv_gpu.c
 new file mode 100644
-index 0000000..26cc05c
+index 0000000..5278542
 --- /dev/null
 +++ b/etnaviv/etnaviv_gpu.c
-@@ -0,0 +1,161 @@
+@@ -0,0 +1,174 @@
 +/*
 + * Copyright (C) 2015 Etnaviv Project
 + *
@@ -1329,7 +1511,7 @@ index 0000000..26cc05c
 +
 +	ret = drmCommandWriteRead(dev->fd, DRM_ETNAVIV_GET_PARAM, &req, sizeof(req));
 +	if (ret) {
-+		ERROR_MSG("get-param failed! %d (%s)", ret, strerror(errno));
++		ERROR_MSG("get-param (%x) failed! %d (%s)", param, ret, strerror(errno));
 +		return 0;
 +	}
 +
@@ -1356,6 +1538,9 @@ index 0000000..26cc05c
 +	gpu->specs.features[1] = get_param(dev, core, ETNAVIV_PARAM_GPU_FEATURES_1);
 +	gpu->specs.features[2] = get_param(dev, core, ETNAVIV_PARAM_GPU_FEATURES_2);
 +	gpu->specs.features[3] = get_param(dev, core, ETNAVIV_PARAM_GPU_FEATURES_3);
++	gpu->specs.features[4] = get_param(dev, core, ETNAVIV_PARAM_GPU_FEATURES_4);
++	gpu->specs.features[5] = get_param(dev, core, ETNAVIV_PARAM_GPU_FEATURES_5);
++	gpu->specs.features[6] = get_param(dev, core, ETNAVIV_PARAM_GPU_FEATURES_6);
 +	gpu->specs.stream_count = get_param(dev, core, ETNA_GPU_STREAM_COUNT);
 +	gpu->specs.register_max = get_param(dev, core, ETNA_GPU_REGISTER_MAX);
 +	gpu->specs.thread_count = get_param(dev, core, ETNA_GPU_THREAD_COUNT);
@@ -1366,6 +1551,7 @@ index 0000000..26cc05c
 +	gpu->specs.buffer_size = get_param(dev, core, ETNA_GPU_BUFFER_SIZE);
 +	gpu->specs.instruction_count = get_param(dev, core, ETNA_GPU_INSTRUCTION_COUNT);
 +	gpu->specs.num_constants = get_param(dev, core, ETNA_GPU_NUM_CONSTANTS);
++	gpu->specs.num_varyings = get_param(dev, core, ETNA_GPU_NUM_VARYINGS);
 +
 +	if (!gpu->specs.model)
 +		goto fail;
@@ -1409,6 +1595,12 @@ index 0000000..26cc05c
 +	case ETNA_GPU_FEATURES_4:
 +		*value = gpu->specs.features[4];
 +		return 0;
++	case ETNA_GPU_FEATURES_5:
++		*value = gpu->specs.features[4];
++		return 0;
++	case ETNA_GPU_FEATURES_6:
++		*value = gpu->specs.features[4];
++		return 0;
 +	case ETNA_GPU_STREAM_COUNT:
 +		*value = gpu->specs.stream_count;
 +		return 0;
@@ -1438,6 +1630,9 @@ index 0000000..26cc05c
 +		return 0;
 +	case ETNA_GPU_NUM_CONSTANTS:
 +		*value = gpu->specs.num_constants;
++		return 0;
++	case ETNA_GPU_NUM_VARYINGS:
++		*value = gpu->specs.num_varyings;
 +		return 0;
 +
 +	default:
@@ -1533,10 +1728,10 @@ index 0000000..a1ea786
 +}
 diff --git a/etnaviv/etnaviv_priv.h b/etnaviv/etnaviv_priv.h
 new file mode 100644
-index 0000000..5276f19
+index 0000000..52fe0c5
 --- /dev/null
 +++ b/etnaviv/etnaviv_priv.h
-@@ -0,0 +1,182 @@
+@@ -0,0 +1,191 @@
 +/*
 + * Copyright (C) 2014-2015 Etnaviv Project
 + *
@@ -1587,20 +1782,12 @@ index 0000000..5276f19
 +//#include "drm.h"
 +#include "etnaviv_drm.h"
 +
-+enum etna_features_word
-+{
-+	etna_chipFeatures = 0,
-+	etna_chipMinorFeatures0 = 1,
-+	etna_chipMinorFeatures1 = 2,
-+	etna_chipMinorFeatures2 = 3,
-+	etna_chipMinorFeatures3 = 4,
-+	VIV_FEATURES_WORD_COUNT /* Must be last */
-+};
++#define VIV_FEATURES_WORD_COUNT 6
 +
 +struct etna_specs {
 +	uint32_t model;
 +	uint32_t revision;
-+	uint32_t features[VIV_FEATURES_WORD_COUNT];
++	uint32_t features[VIV_FEATURES_WORD_COUNT + 1];
 +	uint32_t stream_count;
 +	uint32_t register_max;
 +	uint32_t thread_count;
@@ -1610,8 +1797,13 @@ index 0000000..5276f19
 +	uint32_t pixel_pipes;
 +	uint32_t instruction_count;
 +	uint32_t num_constants;
++	uint32_t num_varyings;
 +	uint32_t buffer_size;
-+	uint32_t varyings_count;
++};
++
++struct etna_bo_bucket {
++	uint32_t size;
++	struct list_head list;
 +};
 +
 +struct etna_device {
@@ -1628,7 +1820,16 @@ index 0000000..5276f19
 +	 * open in the process first, before calling gem-open.
 +	 */
 +	void *handle_table, *name_table;
++
++	struct etna_bo_bucket cache_bucket[14 * 4];
++	unsigned num_buckets;
++	time_t time;
 +};
++
++drm_private void etna_cleanup_bo_cache(struct etna_device *dev, time_t time);
++
++/* for where @table_lock is already held: */
++drm_private void etna_device_del_locked(struct etna_device *dev);
 +
 +/* a GEM buffer object allocated from the DRM device */
 +struct etna_bo {
@@ -1649,6 +1850,10 @@ index 0000000..5276f19
 +	 */
 +	struct etna_cmd_stream *current_stream;
 +	uint32_t idx;
++
++	int reuse;
++	struct list_head list;   /* bucket-list entry */
++	time_t free_time;        /* time when added to bucket-list */
 +};
 +
 +struct etna_gpu {
@@ -1706,7 +1911,6 @@ index 0000000..5276f19
 +		do { drmMsg("[E] " fmt " (%s:%d)\n", \
 +				##__VA_ARGS__, __FUNCTION__, __LINE__); } while (0)
 +
-+#define U642VOID(x) ((void *)(unsigned long)(x))
 +#define VOID2U64(x) ((uint64_t)(unsigned long)(x))
 +
 +static inline void get_abs_timeout(struct drm_etnaviv_timespec *tv, uint32_t ms)
@@ -1737,7 +1941,7 @@ index 0000000..13fed01
 +Cflags: -I${includedir} -I${includedir}/libdrm
 +Requires.private: libdrm
 diff --git a/tests/Makefile.am b/tests/Makefile.am
-index 58feb12..aeffd64 100644
+index a511d28..e4a3696 100644
 --- a/tests/Makefile.am
 +++ b/tests/Makefile.am
 @@ -22,6 +22,10 @@ if HAVE_TEGRA
@@ -1753,10 +1957,10 @@ index 58feb12..aeffd64 100644
  	-I $(top_srcdir)/include/drm \
 diff --git a/tests/etnaviv/Makefile.am b/tests/etnaviv/Makefile.am
 new file mode 100644
-index 0000000..0806aec
+index 0000000..a939945
 --- /dev/null
 +++ b/tests/etnaviv/Makefile.am
-@@ -0,0 +1,24 @@
+@@ -0,0 +1,33 @@
 +AM_CFLAGS = \
 +	-I $(top_srcdir)/include/drm \
 +	-I $(top_srcdir)/libkms/ \
@@ -1765,7 +1969,8 @@ index 0000000..0806aec
 +
 +noinst_PROGRAMS = \
 +	etnaviv_2d_test \
-+	etnaviv_cmd_stream_test
++	etnaviv_cmd_stream_test \
++	etnaviv_bo_cache_test
 +
 +etnaviv_2d_test_LDADD = \
 +	$(top_builddir)/libdrm.la \
@@ -1781,6 +1986,14 @@ index 0000000..0806aec
 +
 +etnaviv_cmd_stream_test_SOURCES = \
 +	etnaviv_cmd_stream_test.c
++
++etnaviv_bo_cache_test_LDADD = \
++	$(top_builddir)/libdrm.la \
++	$(top_builddir)/libkms/libkms.la \
++	$(top_builddir)/etnaviv/libdrm_etnaviv.la
++
++etnaviv_bo_cache_test_SOURCES = \
++	etnaviv_bo_cache_test.c
 diff --git a/tests/etnaviv/cmdstream.xml.h b/tests/etnaviv/cmdstream.xml.h
 new file mode 100644
 index 0000000..844f829
@@ -2243,6 +2456,113 @@ index 0000000..47fba8b
 +	if (gpu)
 +		etna_gpu_del(gpu);
 +
++	if (dev)
++		etna_device_del(dev);
++
++	close(fd);
++
++	return ret;
++}
+diff --git a/tests/etnaviv/etnaviv_bo_cache_test.c b/tests/etnaviv/etnaviv_bo_cache_test.c
+new file mode 100644
+index 0000000..77eae24
+--- /dev/null
++++ b/tests/etnaviv/etnaviv_bo_cache_test.c
+@@ -0,0 +1,101 @@
++/*
++ * Copyright (C) 2016 Etnaviv Project
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a
++ * copy of this software and associated documentation files (the "Software"),
++ * to deal in the Software without restriction, including without limitation
++ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
++ * and/or sell copies of the Software, and to permit persons to whom the
++ * Software is furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice (including the next
++ * paragraph) shall be included in all copies or substantial portions of the
++ * Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
++ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++ * SOFTWARE.
++ *
++ * Authors:
++ *    Christian Gmeiner <christian.gmeiner@gmail.com>
++ */
++
++#ifdef HAVE_CONFIG_H
++#  include "config.h"
++#endif
++
++#undef NDEBUG
++#include <assert.h>
++
++#include <fcntl.h>
++#include <stdio.h>
++#include <string.h>
++#include <unistd.h>
++
++#include "xf86drm.h"
++#include "etnaviv_drmif.h"
++#include "etnaviv_drm.h"
++
++static void test_cache(struct etna_device *dev)
++{
++	struct etna_bo *bo, *tmp;
++
++	/* allocate and free some bo's with same size - we must
++	 * get the same bo over and over. */
++	printf("testing bo cache ... ");
++
++	bo = tmp = etna_bo_new(dev, 0x100, ETNA_BO_UNCACHED);
++	assert(bo);
++	etna_bo_del(bo);
++
++	for (unsigned i = 0; i < 100; i++) {
++		tmp = etna_bo_new(dev, 0x100, ETNA_BO_UNCACHED);
++		etna_bo_del(tmp);
++		assert(tmp == bo);
++	}
++
++	printf("ok\n");
++}
++
++int main(int argc, char *argv[])
++{
++	struct etna_device *dev;
++
++	drmVersionPtr version;
++	int fd, ret = 0;
++
++	fd = open(argv[1], O_RDWR);
++	if (fd < 0)
++		return 1;
++
++	version = drmGetVersion(fd);
++	if (version) {
++		printf("Version: %d.%d.%d\n", version->version_major,
++		       version->version_minor, version->version_patchlevel);
++		printf("  Name: %s\n", version->name);
++		printf("  Date: %s\n", version->date);
++		printf("  Description: %s\n", version->desc);
++		drmFreeVersion(version);
++	}
++
++	dev = etna_device_new(fd);
++	if (!dev) {
++		ret = 2;
++		goto fail;
++	}
++
++
++	test_cache(dev);
++
++fail:
 +	if (dev)
 +		etna_device_del(dev);
 +
