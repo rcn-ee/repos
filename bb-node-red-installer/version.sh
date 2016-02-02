@@ -2,7 +2,7 @@
 
 package_name="bb-node-red-installer"
 debian_pkg_name="${package_name}"
-package_version="1.20160201"
+package_version="0.13.1"
 package_source=""
 src_dir=""
 
