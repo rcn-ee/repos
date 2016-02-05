@@ -6,7 +6,7 @@ package_name="librevisa"
 debian_pkg_name="${package_name}"
 package_version="0.0.20130812+git20140327"
 package_source="${package_name}_${package_version}.orig.tar.gz"
-src_dir="${package_name}_${package_version}"
+src_dir="${package_name}-${package_version}"
 
 git_repo=""
 git_sha=""
