@@ -269,6 +269,32 @@ nodejs () {
 	package_name="nodejs"; package_version="${package_name}_4.2.6~dfsg-1"; check_http
 }
 
+libsigrok () {
+	#http://sigrok.org/wiki/Downloads#Binaries_and_distribution_packages
+	echo "libsigrok: (jessie)"
+	site="${debian_pool}/main/libs"
+	#https://packages.debian.org/source/sid/libserialport
+	package_name="libserialport"; package_version="${package_name}_1.1.0-0"; check_http
+
+	#https://packages.debian.org/source/sid/libsigrok
+	package_name="libsigrok"; package_version="${package_name}_0.4.0-0"; check_http
+
+	#https://packages.debian.org/source/sid/libsigrokdecode
+	package_name="libsigrokdecode"; package_version="${package_name}_0.4.0-0"; check_http
+
+	#https://packages.debian.org/source/sid/sigrok-cli
+	site="${debian_pool}/main/s"
+	package_name="sigrok-cli"; package_version="${package_name}_0.6.0-0"; check_http
+
+	#https://packages.debian.org/source/sid/pulseview
+	site="${debian_pool}/main/p"
+	package_name="pulseview"; package_version="${package_name}_0.3.0-0"; check_http
+
+	#https://packages.debian.org/source/sid/sigrok-firmware-fx2lafw
+	site="${debian_pool}/main/s"
+	package_name="sigrok-firmware-fx2lafw"; package_version="${package_name}_0.1.3-0"; check_http
+}
+
 important
 builds
 mesa
@@ -277,6 +303,7 @@ qt5_apps
 qt5_lxqt
 #machinekit
 nodejs
+libsigrok
 
 echo "others"
 
