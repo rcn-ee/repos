@@ -271,6 +271,7 @@ nodejs () {
 
 libsigrok () {
 	#http://sigrok.org/wiki/Downloads#Binaries_and_distribution_packages
+	#https://launchpad.net/~daniel-elstner/+archive/ubuntu/sigrok/+packages
 	echo "libsigrok: (jessie)"
 	site="${debian_pool}/main/libs"
 	#https://packages.debian.org/source/sid/libserialport
