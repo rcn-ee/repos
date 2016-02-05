@@ -6,7 +6,10 @@
 export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
 %:
-	dh $@ --with autoreconf --parallel
+	dh $@ --parallel
+
+override_dh_auto_configure:
+	dh_auto_configure -- PYTHON=python3
 
 override_dh_auto_install:
 	cp contrib/z60_libsigrok.rules debian/libsigrok2.udev
