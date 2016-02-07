@@ -4,7 +4,7 @@ mirror="http://http.debian.net/debian"
 
 package_name="ros-rosdistro"
 debian_pkg_name="${package_name}"
-package_version="0.4.2"
+package_version="0.4.3"
 package_source="${package_name}_${package_version}.orig.tar.gz"
 src_dir="${package_name}-${package_version}"
 
@@ -18,4 +18,4 @@ debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 local_patch=""
 
-jessie_version="~bpo80+20160120+1"
+jessie_version="~bpo80+20160207+1"
