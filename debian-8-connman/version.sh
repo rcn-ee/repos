@@ -15,9 +15,9 @@ git_sha=""
 reprepro_dir="c/${package_name}"
 dl_path="extra/pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-1"
+debian_version="${package_version}-6"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 
-jessie_version="~bpo80+20160111+1"
-stretch_version="~bpo90+20160111+1"
+jessie_version="~bpo80+20160208+1"
+stretch_version="~bpo90+20160208+1"

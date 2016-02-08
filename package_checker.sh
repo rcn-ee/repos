@@ -134,7 +134,8 @@ qt5_apps () {
 
 	echo "connman/cmst:"
 	site="http://packages.siduction.org/extra/pool/main/c"
-	package_name="connman" ; package_version="${package_name}_1.31-1" ; check_http_exp
+	filter="1.3"
+	package_name="connman" ; package_version="${package_name}_1.31-6" ; check_http
 	site="${debian_pool}/main/c"
 	package_name="cmst" ; package_version="${package_name}_2016.01.28-2" ; check_http
 }
