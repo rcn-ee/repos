@@ -1,0 +1,20 @@
+# Debian's wpa_supplicant build time configuration
+CONFIG_DRIVER_WEXT=y
+CONFIG_DRIVER_NL80211=y
+CONFIG_LIBNL32=y
+CONFIG_CTRL_IFACE=y
+CONFIG_BACKEND=file
+CONFIG_MAIN=main
+CONFIG_OS=unix
+CONFIG_ELOOP=eloop
+CONFIG_L2_PACKET=linux
+
+# At least one of these two is needed to get 
+# the netlink driver working, why this is the case
+# is currently mysterious
+#CONFIG_IEEE8021X_EAPOL=y
+CONFIG_WPS=y
+
+# enable syslog support, as requested by d-i/ netcfg
+CONFIG_DEBUG_SYSLOG=y
+CONFIG_DEBUG_SYSLOG_FACILITY=LOG_DAEMON

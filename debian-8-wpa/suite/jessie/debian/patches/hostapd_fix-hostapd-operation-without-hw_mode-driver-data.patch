@@ -1,0 +1,27 @@
+From e9b783d58c23a7bb50b2f25bce7157f1f3b5d58b Mon Sep 17 00:00:00 2001
+From: Jouni Malinen <j@w1.fi>
+Date: Sun, 16 Nov 2014 23:08:04 +0000
+Subject: Fix hostapd operation without hw_mode driver data
+
+Commit 7f0303d5b0bb425f3e7318a7016b55ba9e67f9de ('hostapd: Verify VHT
+160/80+80 MHz driver support') added couple of hapd->iface->current_mode
+dereferences of which the one in hostapd_set_freq() can be hit with some
+configuration files when using driver wrappers that do not have hw_mode
+data, i.e., when current_mode is NULL. This could result in segmentation
+fault when trying to use driver=wired. Fix this by checking that
+current_mode is not NULL before dereferencing it to get vht_capab.
+
+Signed-off-by: Jouni Malinen <j@w1.fi>
+---
+--- a/src/ap/ap_drv_ops.c
++++ b/src/ap/ap_drv_ops.c
+@@ -573,7 +573,8 @@ int hostapd_set_freq(struct hostapd_data
+ 				    vht_enabled, sec_channel_offset,
+ 				    vht_oper_chwidth,
+ 				    center_segment0, center_segment1,
+-				    hapd->iface->current_mode->vht_capab))
++				    hapd->iface->current_mode ?
++				    hapd->iface->current_mode->vht_capab : 0))
+ 		return -1;
+ 
+ 	if (hapd->driver == NULL)

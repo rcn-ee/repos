@@ -1,0 +1,25 @@
+commit 8b2b718da9884d66684befe99d1fbdd9abe5fb5e
+Author: Jouni Malinen <j@w1.fi>
+Date:   Sat Feb 28 16:35:07 2015 +0200
+
+    Fix minor issue in HT40 max rate determination
+    
+    Commit a1b790eb9d7514d1a6e0582a07f695a1564caa59 ('Select AP based on
+    estimated maximum throughput') had a copy-paste bug than ended up
+    leaving one of the max_ht40_rate() cases unreachable. (CID 106087)
+    
+    Signed-off-by: Jouni Malinen <j@w1.fi>
+
+Index: wpa-2.3/wpa_supplicant/scan.c
+===================================================================
+--- wpa-2.3.orig/wpa_supplicant/scan.c
++++ wpa-2.3/wpa_supplicant/scan.c
+@@ -1810,7 +1810,7 @@ static unsigned int max_ht40_rate(int sn
+ 		return 81000; /* HT40 MCS4 */
+ 	if (snr < 22)
+ 		return 108000; /* HT40 MCS5 */
+-	if (snr < 22)
++	if (snr < 24)
+ 		return 121500; /* HT40 MCS6 */
+ 	return 135000; /* HT40 MCS7 */
+ }
