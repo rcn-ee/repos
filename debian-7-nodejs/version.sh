@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-#mirror="http://ftp.de.debian.org/debian"
+#mirror="http://http.debian.net/debian"
 #0.10.38
 mirror="http://snapshot.debian.org/archive/debian/20150505T035629Z"
 

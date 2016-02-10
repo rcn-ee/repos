@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-mirror="http://ftp.de.debian.org/debian"
+mirror="http://http.debian.net/debian"
 
 package_name="device-tree-compiler"
 debian_pkg_name="${package_name}"

@@ -12,8 +12,8 @@ Forwarded: not yet
 +valid_arch = ('arm', 'arm64', 'ia32', 'mips', 'mipsel', 'mips64el', 'ppc', 'ppc64', 'x32',
                'x64', 'x86', 's390x')
  valid_arm_float_abi = ('soft', 'softfp', 'hard')
- valid_arm_fpu = ('vfp', 'vfpv2', 'vfpv3', 'vfpv3-d16', 'neon')
-@@ -584,6 +584,9 @@
+ valid_arm_fpu = ('vfp', 'vfpv3', 'vfpv3-d16', 'neon')
+@@ -590,6 +590,9 @@
      '__s390x__'   : 's390x'
    }
  
@@ -23,7 +23,7 @@ Forwarded: not yet
    rtn = 'ia32' # default
  
    for i in matchup:
-@@ -668,7 +671,7 @@
+@@ -674,7 +677,7 @@
  
    if target_arch == 'arm':
      configure_arm(o)
@@ -31,4 +31,4 @@ Forwarded: not yet
 +  elif target_arch in ('mips', 'mipsel', 'mips64el'):
      configure_mips(o)
  
-   if flavor in ('solaris', 'mac', 'linux', 'freebsd'):
+   if flavor == 'aix':

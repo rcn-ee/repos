@@ -19,9 +19,6 @@ run () {
 	if [ "x${suite}" = "xtrusty" ] ; then
 		backport="bpo1404+"
 	fi
-	if [ "x${suite}" = "xvivid" ] ; then
-		backport="bpo1504+"
-	fi
 	if [ "x${suite}" = "xwily" ] ; then
 		backport="bpo1510+"
 	fi
@@ -82,15 +79,6 @@ if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${trusty_version}"
 	cat ${DIR}/version.sh | grep -v trusty_version > ${DIR}/new-version.sh
 	echo "trusty_version=\"~bpo1404+${simple_date}+1\"" >> ${DIR}/new-version.sh
-	mv ${DIR}/new-version.sh ${DIR}/version.sh
-	run
-fi
-
-suite="vivid"
-if [ -d ${DIR}/suite/${suite}/ ] ; then
-	rcn_ee_version="${vivid_version}"
-	cat ${DIR}/version.sh | grep -v vivid_version > ${DIR}/new-version.sh
-	echo "vivid_version=\"~bpo1504+${simple_date}+1\"" >> ${DIR}/new-version.sh
 	mv ${DIR}/new-version.sh ${DIR}/version.sh
 	run
 fi

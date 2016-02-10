@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-#mirror="http://ftp.de.debian.org/debian"
+#mirror="http://http.debian.net/debian"
 mirror="http://deb.dovetail-automata.com"
 
 package_name="machinekit"

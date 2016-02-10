@@ -1,10 +1,10 @@
-Index: openssl-1.0.2b/Configure
+Index: openssl-1.0.2f/Configure
 ===================================================================
---- openssl-1.0.2b.orig/Configure
-+++ openssl-1.0.2b/Configure
-@@ -124,6 +124,10 @@ my $clang_disabled_warnings = "-Wno-unus
- # -Wextended-offsetof
- my $clang_devteam_warn = "-Wno-unused-parameter -Wno-missing-field-initializers -Wno-language-extension-token -Wno-extended-offsetof -Qunused-arguments";
+--- openssl-1.0.2f.orig/Configure
++++ openssl-1.0.2f/Configure
+@@ -127,6 +127,10 @@ my $clang_devteam_warn = "-Wno-unused-pa
+ # Warn that "make depend" should be run?
+ my $warn_make_depend = 0;
  
 +# There are no separate CFLAGS/CPPFLAGS/LDFLAGS, set everything in CFLAGS
 +my $debian_cflags = `dpkg-buildflags --get CFLAGS` . `dpkg-buildflags --get CPPFLAGS` . `dpkg-buildflags --get LDFLAGS` . "-Wa,--noexecstack -Wall";
@@ -13,7 +13,7 @@ Index: openssl-1.0.2b/Configure
  my $strict_warnings = 0;
  
  my $x86_gcc_des="DES_PTR DES_RISC1 DES_UNROLL";
-@@ -360,6 +364,55 @@ my %table=(
+@@ -363,6 +367,55 @@ my %table=(
  "osf1-alpha-cc",  "cc:-std1 -tune host -O4 -readonly_strings::(unknown):::SIXTY_FOUR_BIT_LONG RC4_CHUNK:${alpha_asm}:dlfcn:alpha-osf1-shared:::.so",
  "tru64-alpha-cc", "cc:-std1 -tune host -fast -readonly_strings::-pthread:::SIXTY_FOUR_BIT_LONG RC4_CHUNK:${alpha_asm}:dlfcn:alpha-osf1-shared::-msym:.so",
  

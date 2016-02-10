@@ -38,21 +38,17 @@ else
 
 			if [ ! "x${debian_untar}" = "x" ] ; then
 				wget -c  ${mirror}/${dl_path}${debian_untar} || true
+
+				if [ ! -f ${debian_untar} ] ; then
+					wget -c ${incoming_mirror}/${dl_path}${debian_untar}
+				fi
+
 				if [ -d ./test ] ; then
 					rm -rf ./test || true
 				fi
+
 				mkdir ./test
 				tar xf ${debian_untar} -C ./test
-			fi
-			if [ ! "x${debian_untar}" = "x" ] ; then
-				if [ ! -f ${debian_untar} ] ; then
-					wget -c ${incoming_mirror}/${dl_path}${debian_untar}
-					if [ -d ./test ] ; then
-						rm -rf ./test || true
-					fi
-					mkdir ./test
-					tar xf ${debian_untar} -C ./test
-				fi
 			fi
 		fi
 	fi

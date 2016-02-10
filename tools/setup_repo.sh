@@ -55,11 +55,6 @@ if [ -f ${apache_dir}/${dist}/conf/distributions ] ; then
 	rm -f ${apache_dir}/${dist}/conf/distributions || true
 fi
 
-dist="debian-etnaviv"
-if [ -f ${apache_dir}/${dist}/conf/distributions ] ; then
-	rm -f ${apache_dir}/${dist}/conf/distributions || true
-fi
-
 dist="debian-exp"
 if [ -f ${apache_dir}/${dist}/conf/distributions ] ; then
 	rm -f ${apache_dir}/${dist}/conf/distributions || true
@@ -137,6 +132,7 @@ suite="utopic"
 archs="armhf source"
 setup_repo
 
+#eol: feb 4 2016
 suite="vivid"
 archs="armhf source"
 setup_repo
