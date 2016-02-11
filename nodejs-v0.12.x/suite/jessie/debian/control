@@ -1,4 +1,4 @@
-Source: nodejs
+Source: nodejs-v0.12.x
 Section: web
 Priority: extra
 Maintainer: Debian Javascript Maintainers <pkg-javascript-devel@lists.alioth.debian.org>
@@ -9,30 +9,24 @@ Build-Depends: cdbs,
  debhelper,
  dh-buildinfo,
  binutils,
- openssl (>= 1.0.0g),
  pkg-config,
  bash-completion,
  curl,
  procps,
- zlib1g-dev,
  libkvm-dev [kfreebsd-any],
  gyp (>= 0.1~svn1654),
  python,
- libv8-3.14-dev (>= 3.7),
- libssl-dev (>= 1.0.0g),
- libc-ares-dev (>= 1.7.5),
- ca-certificates
 Standards-Version: 3.9.6
 Homepage: http://nodejs.org/
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/nodejs.git
 Vcs-Git: git://anonscm.debian.org/collab-maint/nodejs.git
 
-Package: nodejs-dev
+Package: nodejs-v0.12.x-dev
 Section: devel
 Architecture: any
 Depends: ${cdbs:Depends},
  ${misc:Depends},
- nodejs (= ${binary:Version})
+ nodejs-v0.12.x (= ${binary:Version})
 Description: evented I/O for V8 javascript (development files)
  Node.js is a platform built on Chrome's JavaScript runtime for easily
  building fast, scalable network applications. Node.js uses an
@@ -42,7 +36,7 @@ Description: evented I/O for V8 javascript (development files)
  .
  This package is needed to build plugins.
 
-Package: nodejs
+Package: nodejs-v0.12.x
 Priority: optional
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -60,12 +54,11 @@ Description: evented I/O for V8 javascript
  System, Events, Standard I/O, Modules, Timers, Child Processes, POSIX,
  HTTP, Multipart Parsing, TCP, DNS, Assert, Path, URL, Query Strings.
 
-Package: nodejs-dbg
+Package: nodejs-v0.12.x-dbg
 Section: debug
 Architecture: any
 Depends: ${misc:Depends},
- nodejs (= ${binary:Version})
-Recommends: libv8-3.14-dbg
+ nodejs-v0.12.x (= ${binary:Version})
 Description: evented I/O for V8 javascript (debug)
  Node.js is a platform built on Chrome's JavaScript runtime for easily
  building fast, scalable network applications. Node.js uses an
@@ -75,11 +68,11 @@ Description: evented I/O for V8 javascript (debug)
  .
  This package contains the debugging symbols.
 
-Package: nodejs-legacy
+Package: nodejs-v0.12.x-legacy
 Priority: extra
 Architecture: all
 Depends: ${misc:Depends},
- nodejs (>= 0.6.19~dfsg1-3~)
+ nodejs-v0.12.x (>= 0.6.19~dfsg1-3~)
 Conflicts: node
 Description: evented I/O for V8 javascript (legacy symlink)
  Node.js is a platform built on Chrome's JavaScript runtime for easily
