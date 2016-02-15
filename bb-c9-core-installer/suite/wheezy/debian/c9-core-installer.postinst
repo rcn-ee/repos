@@ -34,8 +34,11 @@ extract_dir="/opt/cloud9/build/"
 export NODE_PATH=/usr/local/lib/node_modules
 
 npm_actually_install () {
+	# npm: force prefix to /usr/local (npm: 1.4.21 -> 3.7.1)
+	npm config set -g prefix /usr/local/
+
 	echo "${package}:Installing: ${pkg}-${ver} (for ${npm_project})"
-	TERM=dumb "$NPM" install -g ${pkg}@${ver}
+	TERM=dumb npm install -g ${pkg}@${ver}
 	echo "${ver}" > "${NODE_PATH}/${pkg}/${pkg}.version"
 	echo "${node_version}" > "${NODE_PATH}/${pkg}/${pkg}.node_version"
 }
@@ -223,9 +226,6 @@ c9_directory () {
 
 	# use local npm cache
 	"$NPM" config -g set cache  "$C9_DIR/tmp/.npm"
-
-	# npm: force prefix to /usr/local (npm: 1.4.21 -> 3.7.1)
-	"$NPM" config set prefix /usr/local/
 
 	# node-gyp uses sytem node or fails with command not found if
 	# we don't bump this node up in the path
