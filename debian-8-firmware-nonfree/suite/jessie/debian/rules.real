@@ -1,0 +1,43 @@
+SHELL  := sh -e
+
+export DH_OPTIONS
+
+#
+# Targets
+#
+binary-indep: install
+
+install: PACKAGE_NAME = firmware-$(PACKAGE)
+install: DH_OPTIONS = -p$(PACKAGE_NAME)
+install:
+	dh_testdir
+	dh_testroot
+	dh_prep
+	@for i in $(FILES); do \
+	  s="$${i%:*}"; \
+	  d=/lib/firmware/"$${i#*:}"; \
+	  echo install -m644 -D "$$s" debian/$(PACKAGE_NAME)"$$d"; \
+	  install -m644 -D "$$s" debian/$(PACKAGE_NAME)"$$d"; \
+	done
+	@for i in $(LINKS); do \
+	  link=debian/$(PACKAGE_NAME)/lib/firmware/"$${i%:*}"; \
+	  target="$${i#*:}"; \
+	  echo ln -s "$$target" "$$link"; \
+	  ln -s "$$target" "$$link"; \
+	done
+ifneq ($(FILES),)
+	dh_installdirs /usr/share/appdata
+	dh_install debian/$(PACKAGE_NAME).metainfo.xml /usr/share/appdata
+endif
+	dh_bugfiles
+	dh_installchangelogs
+	dh_installdocs -XTODO
+	dh_installdebconf
+	dh_lintian
+	dh_link
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb

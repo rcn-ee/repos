@@ -2,7 +2,7 @@
 
 . version.sh
 
-base="/var/www/html/repos.rcn-ee.net/"
+base="/var/www/html/rcn-ee.us/repos/"
 outgoing="/var/www/html/farm/outgoing"
 
 run () {
@@ -14,18 +14,13 @@ run () {
 			reprepro -b ${repo} -C main include ${suite} ${wfile}
 		fi
 	fi
-
-	if [ "x${archive}" = "xenable" ] ; then
-		mkdir -p ${base}archive/${debian_pkg_name}/${suite}/${package_version}/
-		cp -v ${repo}pool/main/${reprepro_dir}/${debian_pkg_name}_${debian_version}${rcn_ee_version}_${deb_arch}.deb ${base}archive/${debian_pkg_name}/${suite}/${package_version}/
-	fi
 }
 
 dist="debian"
 suite="wheezy"
 if [ -d suite/${suite}/ ] ; then
 	repo="${base}${dist}/"
-	deb_arch=armhf
+	deb_arch="armhf"
 	rcn_ee_version="${wheezy_version}"
 	run
 fi
@@ -33,8 +28,16 @@ fi
 suite="jessie"
 if [ -d suite/${suite}/ ] ; then
 	repo="${base}${dist}/"
-	deb_arch=armhf
+	deb_arch="armhf"
 	rcn_ee_version="${jessie_version}"
+	run
+fi
+
+suite="stretch"
+if [ -d suite/${suite}/ ] ; then
+	repo="${base}${dist}/"
+	deb_arch="armhf"
+	rcn_ee_version="${stretch_version}"
 	run
 fi
 
@@ -42,24 +45,24 @@ dist="ubuntu"
 suite="trusty"
 if [ -d suite/${suite}/ ] ; then
 	repo="${base}${dist}/"
-	deb_arch=armhf
+	deb_arch="armhf"
 	rcn_ee_version="${trusty_version}"
 	run
 fi
 
-suite="utopic"
+suite="wily"
 if [ -d suite/${suite}/ ] ; then
 	repo="${base}${dist}/"
-	deb_arch=armhf
-	rcn_ee_version="${utopic_version}"
+	deb_arch="armhf"
+	rcn_ee_version="${wily_version}"
 	run
 fi
 
-suite="vivid"
+suite="xenial"
 if [ -d suite/${suite}/ ] ; then
 	repo="${base}${dist}/"
-	deb_arch=armhf
-	rcn_ee_version="${vivid_version}"
+	deb_arch="armhf"
+	rcn_ee_version="${xenial_version}"
 	run
 fi
-
+#

@@ -7,6 +7,10 @@ debian_server="ftp.us.debian.org/debian"
 ubuntu_server="ports.ubuntu.com"
 
 setup_update_sbuild () {
+	if [ ! -f /usr/share/debootstrap/scripts/${dist} ] ; then
+		sudo ln -s /usr/share/debootstrap/scripts/${deboot} /usr/share/debootstrap/scripts/${dist}
+	fi
+
 	if [ ! -f /var/lib/sbuild/${dist}-${arch}.tar.gz ] ; then
 		sudo sbuild-createchroot ${options} --arch=${arch} --make-sbuild-tarball=/var/lib/sbuild/${dist}-${arch}.tar.gz ${dist} `mktemp -d` ${mirror}
 	else
@@ -17,9 +21,10 @@ setup_update_sbuild () {
 
 echo "\$build_arch_all = 1;" > ~/.sbuildrc
 echo "\$build_source = 1;" >> ~/.sbuildrc
-echo "\$distribution = 'jessie';" >> ~/.sbuildrc
+echo "\$distribution = 'stretch';" >> ~/.sbuildrc
 
 mirror="http://${proxy}${debian_server}"
+deboot="sid"
 dist="wheezy"
 arch="armhf"
 options=""
@@ -30,18 +35,25 @@ arch="armhf"
 options=""
 setup_update_sbuild
 
+dist="stretch"
+arch="armhf"
+options=""
+setup_update_sbuild
+
 mirror="http://${proxy}${ubuntu_server}"
+deboot="gutsy"
 dist="trusty"
 arch="armhf"
 options="--exclude=debfoster"
 setup_update_sbuild
 
-dist="utopic"
+dist="wily"
 arch="armhf"
 options="--exclude=debfoster"
 setup_update_sbuild
 
-dist="vivid"
+dist="xenial"
 arch="armhf"
 options="--exclude=debfoster"
 setup_update_sbuild
+#

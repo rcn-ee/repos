@@ -1,0 +1,27 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+DEB_BUILD_GNU_TYPE := $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+DEB_HOST_GNU_TYPE  := $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+ifeq ($(DEB_BUILD_GNU_TYPE),$(DEB_HOST_GNU_TYPE))
+CROSS :=
+else
+CROSS := CC=$(DEB_HOST_GNU_TYPE)-gcc PKG_CONFIG=$(DEB_HOST_GNU_TYPE)-pkg-config
+endif
+
+override_dh_auto_build:
+	make -C src $(CROSS)
+
+override_dh_auto_clean:
+	make -C src clean
+
+override_dh_install:
+	dh_install
+ifneq (,$(filter initramfs-tools,$(shell dh_listpackages)))
+	cp -a scripts/init-top/keymap \
+		debian/initramfs-tools/usr/share/initramfs-tools/scripts/panic/keymap
+	sed -i -e "/^OPTION=/d" \
+		debian/initramfs-tools/usr/share/initramfs-tools/scripts/panic/keymap
+endif

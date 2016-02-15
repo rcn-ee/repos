@@ -1,0 +1,42 @@
+From d79a8b745b58f0ce1aa1b6969414456415e7eb16 Mon Sep 17 00:00:00 2001
+From: Stefan Lippers-Hollmann <s.l-h@gmx.de>
+Date: Mon, 30 Jun 2014 01:46:27 +0200
+Subject: [PATCH] wpa_supplicant/ MACsec: fix build failure for
+ IEEE8021X_EAPOL=n
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Building wpa_supplicant >= 2.2 fails on Debian/ kfreebsd with the following
+error message:
+
+cc -c -o wpa_supplicant.o -MMD -Wall -g -Os -fPIC -Isrc -Isrc/utils -DCONFIG_BACKEND_FILE   -DCONFIG_DRIVER_BSD -DCONFIG_CTRL_IFACE -DCONFIG_CTRL_IFACE_UNIX  wpa_supplicant.c
+wpa_supplicant.c: In function ‘wpa_supplicant_initiate_eapol’:
+wpa_supplicant.c:303:33: error: ‘ssid’ undeclared (first use in this function)
+  ieee802_1x_alloc_kay_sm(wpa_s, ssid);
+                                 ^
+wpa_supplicant.c:303:33: note: each undeclared identifier is reported only once for each function it appears in
+
+Move ieee802_1x_alloc_kay_sm(wpa_s, ssid) into the IEEE8021X_EAPOL ifdef,
+as the "ssid" is only conditionally defined for it.
+
+Signed-off-by: Stefan Lippers-Hollmann <s.l-h@gmx.de>
+---
+Build-tested only.
+
+ wpa_supplicant/wpa_supplicant.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/wpa_supplicant/wpa_supplicant.c
++++ b/wpa_supplicant/wpa_supplicant.c
+@@ -299,9 +299,9 @@ void wpa_supplicant_initiate_eapol(struc
+ 	eapol_conf.external_sim = wpa_s->conf->external_sim;
+ 	eapol_conf.wps = wpa_s->key_mgmt == WPA_KEY_MGMT_WPS;
+ 	eapol_sm_notify_config(wpa_s->eapol, &ssid->eap, &eapol_conf);
+-#endif /* IEEE8021X_EAPOL */
+ 
+ 	ieee802_1x_alloc_kay_sm(wpa_s, ssid);
++#endif /* IEEE8021X_EAPOL */
+ }
+ 
+ 

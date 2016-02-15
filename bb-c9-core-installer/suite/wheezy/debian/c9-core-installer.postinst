@@ -1,0 +1,370 @@
+#!/bin/sh
+#
+# see: dh_installdeb(1)
+
+set -e
+
+package="c9-core-installer"
+
+core_version="3.1.1243+git20160130"
+
+sha256sum_tgz_0_10_x="122ecf8cc801265c8b508d66d95cd9454dbdf3e72db35991543d056f71ae8f22"
+        wfile_0_10_x="c9-core_${core_version}-build.tar.xz"
+
+ sha256sum_tgz_4_2_x="d358aa812b08beea030d5e9a356b2a652788d0f7c9042545671597b179760586"
+         wfile_4_2_x="c9-core_${core_version}-build.tar.xz"
+
+extract_dir="/opt/cloud9/build/"
+
+# summary of how this script can be called:
+#        * <postinst> `configure' <most-recently-configured-version>
+#        * <old-postinst> `abort-upgrade' <new version>
+#        * <conflictor's-postinst> `abort-remove' `in-favour' <package>
+#          <new-version>
+#        * <postinst> `abort-remove'
+#        * <deconfigured's-postinst> `abort-deconfigure' `in-favour'
+#          <failed-install-package> <version> `removing'
+#          <conflicting-package> <version>
+# for details, see http://www.debian.org/doc/debian-policy/ or
+# the debian-policy package
+
+export NODE_PATH=/usr/local/lib/node_modules
+
+npm_actually_install () {
+	echo "${package}:Installing: ${pkg}-${ver} (for ${npm_project})"
+	TERM=dumb npm install -g ${pkg}@${ver}
+	echo "${ver}" > "${NODE_PATH}/${pkg}/${pkg}.version"
+	echo "${node_version}" > "${NODE_PATH}/${pkg}/${pkg}.node_version"
+}
+
+npm_check_n_install () {
+	if [ ! -f "${NODE_PATH}/${pkg}/${pkg}.version" ] ; then
+		npm_actually_install
+	else
+		unset old_version
+		if [ -f "${NODE_PATH}/${pkg}/${pkg}.version" ] ; then
+			old_version=$(cat "${NODE_PATH}/${pkg}/${pkg}.version" || true)
+		fi
+		if [ ! "x${old_version}" = "x${ver}" ] ; then
+			rm -rf "${NODE_PATH}/${pkg}/" || true
+			npm_actually_install
+		else
+			unset old_version
+			if [ -f "${NODE_PATH}/${pkg}/${pkg}.node_version" ] ; then
+				old_version=$(cat "${NODE_PATH}/${pkg}/${pkg}.node_version" || true)
+			fi
+			if [ ! "x${old_version}" = "x${node_version}" ] ; then
+				rm -rf "${NODE_PATH}/${pkg}/" || true
+				npm_actually_install
+			fi
+		fi
+	fi
+}
+
+npm_install () {
+	unset node_version
+	node_version=$(nodejs --version || true)
+
+	npm_project="c9-core-installer"
+	pkg="winston" ; ver="2.1.1" ; npm_check_n_install
+
+	if [ -d /etc/avahi/ ] ; then
+		#Annouce http server via DNS Sevice Discovery
+		wfile="/etc/avahi/services/cloud9.service"
+		echo "<?xml version=\"1.0\" standalone='no'?><!--*-nxml-*-->" > ${wfile}
+		echo "<!DOCTYPE service-group SYSTEM \"avahi-service.dtd\">" >> ${wfile}
+		echo "" >> ${wfile}
+		echo "<!-- See avahi.service(5) for more information about this configuration file -->" >> ${wfile}
+		echo "" >> ${wfile}
+		echo "<service-group>" >> ${wfile}
+		echo "" >> ${wfile}
+		echo "  <name replace-wildcards=\"yes\">Cloud9 IDE for %h</name>" >> ${wfile}
+		echo "  <service>" >> ${wfile}
+		echo "" >> ${wfile}
+		echo "    <type>_http._tcp</type>" >> ${wfile}
+		echo "    <port>3000</port>" >> ${wfile}
+		echo "  </service>" >> ${wfile}
+		echo "" >> ${wfile}
+		echo "</service-group>" >> ${wfile}
+	fi
+}
+
+dl_file() {
+	wget --no-check-certificate ${partner_url}/${wfile}
+}
+
+validdate_file() {
+	sha256compare=$(sha256sum ${wfile} | awk '{print $1}')
+	if [ ! "x${sha256compare}" = "x${sha256sum_tgz}" ] ; then
+		rm -rf ${wfile}
+		dl_file
+		sha256compare=$(sha256sum ${wfile} | awk '{print $1}')
+		if [ ! "x${sha256compare}" = "x${sha256sum_tgz}" ] ; then
+			echo "dl failure"
+			exit 1
+		fi
+	fi
+}
+
+dl_install() {
+	unset node_version
+	node_version=$(nodejs --version || true)
+	case "${node_version}" in
+	v0.10.38|v0.10.39|v0.10.40|v0.10.41|v0.10.42)
+		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v0.10.x"
+		sha256sum_tgz=${sha256sum_tgz_0_10_x}
+		wfile=${wfile_0_10_x}
+		;;
+	v4.2.2|v4.2.3|v4.2.4|v4.2.5|v4.2.6)
+		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v4.2.x"
+		sha256sum_tgz=${sha256sum_tgz_4_2_x}
+		wfile=${wfile_4_2_x}
+		;;
+	*)
+		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v4.2.x"
+		sha256sum_tgz=${sha256sum_tgz_4_2_x}
+		wfile=${wfile_4_2_x}
+		;;
+	esac
+
+	if [ ! -d /var/cache/${package} ] ; then
+		mkdir -p /var/cache/${package}
+	fi
+
+	cd /var/cache/${package}/
+
+	if [ ! -f ${wfile} ] ; then
+		dl_file
+	fi
+
+	if [ -f ${wfile} ] ; then
+		validdate_file
+
+		systemctl stop cloud9.socket || true
+
+		if [ ! -d ${extract_dir} ] ; then
+			mkdir -p ${extract_dir} || true
+		fi
+
+		echo "extracting: ${wfile}"
+		tar xf ${wfile} -C ${extract_dir}
+		chown -R 1000:1000 ${extract_dir}
+
+		if [ ! -d /var/lib/cloud9 ] ; then
+			mkdir -p /var/lib/cloud9 || true
+		fi
+
+		systemctl --system daemon-reload || true
+	fi
+}
+
+maybe_install_depend () {
+	if [ ! -f "$C9_DIR/node_modules/${pkg}/${package}.version" ] ; then
+		echo "${package}:Installing: ${pkg}-${ver}.tgz (for ${npm_project})"
+		"$NPM" install /var/cache/${package}/${pkg}-${ver}.tgz
+		echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
+		echo "${node_version}" > "$C9_DIR/node_modules/${pkg}/${package}.node_version"
+	else
+		unset old_version
+		if [ -f "$C9_DIR/node_modules/${pkg}/${package}.version" ] ; then
+			old_version=$(cat "$C9_DIR/node_modules/${pkg}/${package}.version" || true)
+		fi
+		if [ ! "x${old_version}" = "x${ver}" ] ; then
+			rm -rf "$C9_DIR/node_modules/${pkg}/" || true
+			echo "${package}:Installing: ${pkg}-${ver}.tgz (for ${npm_project})"
+			"$NPM" install /var/cache/${package}/${pkg}-${ver}.tgz
+			echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
+			echo "${node_version}" > "$C9_DIR/node_modules/${pkg}/${package}.node_version"
+		else
+			unset old_version
+			if [ -f "$C9_DIR/node_modules/${pkg}/${package}.node_version" ] ; then
+				old_version=$(cat "$C9_DIR/node_modules/${pkg}/${package}.node_version" || true)
+			fi
+			if [ ! "x${old_version}" = "x${node_version}" ] ; then
+				rm -rf "$C9_DIR/node_modules/${pkg}/" || true
+				echo "${package}:Installing: ${pkg}-${ver}.tgz (for ${npm_project})"
+				"$NPM" install /var/cache/${package}/${pkg}-${ver}.tgz
+				echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
+				echo "${node_version}" > "$C9_DIR/node_modules/${pkg}/${package}.node_version"
+			fi
+		fi
+	fi
+}
+
+c9_directory () {
+	#Based on: https://github.com/c9/install
+	C9_DIR=/root/.c9
+	NPM=$C9_DIR/node/bin/npm
+	NODE=$C9_DIR/node/bin/node
+	PYTHON=python2.7
+
+	VIRTUALENV_VERSION=virtualenv-12.0.7
+
+	mkdir -p "$C9_DIR"/bin
+	mkdir -p "$C9_DIR"/tmp
+	mkdir -p "$C9_DIR"/node_modules
+	mkdir -p "$C9_DIR"/box_tmp
+	cd "$C9_DIR"
+
+	#start install node tmux_install nak ptyjs vfsextend collab
+
+	#node:
+	mkdir -p "$C9_DIR"/node/bin
+	ln -sf $(which nodejs) "$C9_DIR"/node/bin/node
+	ln -sf $(which npm) "$C9_DIR"/node/bin/
+
+	# use local npm cache
+	"$NPM" config -g set cache  "$C9_DIR/tmp/.npm"
+
+	# node-gyp uses sytem node or fails with command not found if
+	# we don't bump this node up in the path
+	PATH="$C9_DIR/node/bin/:$C9_DIR/node_modules/.bin:$PATH"
+
+	if [ -d "$C9_DIR"/$VIRTUALENV_VERSION ] ; then
+		rm -rf "$C9_DIR"/$VIRTUALENV_VERSION
+	fi
+
+	partner_url="https://rcn-ee.com/repos/git/archive/c9-npmbox"
+
+	sha256sum_tgz="d681db1766cdc8aa1b37eb18252c264b775f971166c2bf658a9618c1f3d28741"
+	wfile="virtualenv-12.0.7.tar.gz"
+
+	cd /var/cache/${package}/
+	if [ ! -f ${wfile} ] ; then
+		dl_file
+	fi
+
+	if [ -f ${wfile} ] ; then
+		validdate_file
+	fi
+	cd "$C9_DIR"
+
+	tar xzf /var/cache/${package}/$VIRTUALENV_VERSION.tar.gz
+
+	if [ -d "$C9_DIR"/python ] ; then
+		rm -rf "$C9_DIR"/python
+	fi
+
+	echo ${package}:python
+	"$PYTHON" virtualenv-12.0.7/virtualenv.py "$C9_DIR/python"
+	PYTHON="$C9_DIR/python/bin/python"
+	"$NPM" config -g set python "$PYTHON"
+
+	#tmux_install
+	ln -sf $(which tmux) "$C9_DIR"/bin/tmux
+
+	npm_project="nak"
+
+	#nak@0.3.3 node_modules/nak
+	#├── simplefunc@0.0.2
+	#├── colors@0.6.2
+	#└── isbinaryfile@2.0.0
+
+	#npm pack simplefunc@0.0.2
+	pkg="simplefunc" ; ver="0.0.2" ; maybe_install_depend
+	#npm pack colors@0.6.2
+	pkg="colors" ; ver="0.6.2" ; maybe_install_depend
+	#npm pack isbinaryfile@2.0.0
+	pkg="isbinaryfile" ; ver="2.0.0" ; maybe_install_depend
+
+	echo "${package}:Installing ${npm_project}"
+	#npm pack https://github.com/c9/nak/tarball/c9
+	"$NPM" install /var/cache/${package}/nak-0.3.3.tgz
+
+	npm_project="node-gyp@2.0.2"
+
+	echo "${package}:Installing ${npm_project}"
+	"$NPM" install node-gyp@2.0.2
+	echo "2.0.2" > "$C9_DIR/node_modules/node-gyp/${package}.version"
+
+	case "${node_version}" in
+	v0.10.38|v0.10.39|v0.10.40|v0.10.41|v0.10.42)
+		npm_project="pty.js@0.2.8"
+		#pty.js@0.2.8 node_modules/pty.js
+		#├── extend@1.2.1
+		#└── nan@1.9.0
+
+		#npm pack extend@1.2.1
+		pkg="extend" ; ver="1.2.1" ; maybe_install_depend
+		#npm pack nan@1.9.0
+		pkg="nan" ; ver="1.9.0" ; maybe_install_depend
+
+		echo "${package}:Installing ${npm_project}"
+		#npm pack pty.js@0.2.8
+		##stupid: "--unsafe-perm=true" npm actually wants you to install as root then thru sudo!!!
+		"$NPM" install --unsafe-perm=true /var/cache/${package}/pty.js-0.2.8.tgz
+		;;
+	v4.2.2|v4.2.3|v4.2.4|v4.2.5|v4.2.6)
+		npm_project="pty.js@0.3.0"
+		#pty.js@0.3.0 node_modules/pty.js
+		#├── extend@1.2.1
+		#└── nan@2.0.5
+
+		#npm pack extend@1.2.1
+		pkg="extend" ; ver="1.2.1" ; maybe_install_depend
+		#npm pack nan@2.0.5
+		pkg="nan" ; ver="2.0.5" ; maybe_install_depend
+
+		echo "${package}:Installing ${npm_project}"
+		#npm pack pty.js@0.3.0
+		##stupid: "--unsafe-perm=true" npm actually wants you to install as root then thru sudo!!!
+		"$NPM" install --unsafe-perm=true /var/cache/${package}/pty.js-0.3.0.tgz
+		;;
+	*)
+		npm_project="pty.js@0.3.0"
+		#pty.js@0.3.0 node_modules/pty.js
+		#├── extend@1.2.1
+		#└── nan@2.0.5
+
+		#npm pack extend@1.2.1
+		pkg="extend" ; ver="1.2.1" ; maybe_install_depend
+		#npm pack nan@2.0.5
+		pkg="nan" ; ver="2.0.5" ; maybe_install_depend
+
+		echo "${package}:Installing ${npm_project}"
+		#npm pack pty.js@0.3.0
+		##stupid: "--unsafe-perm=true" npm actually wants you to install as root then thru sudo!!!
+		"$NPM" install --unsafe-perm=true /var/cache/${package}/pty.js-0.3.0.tgz
+		;;
+	esac
+
+	HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
+	if [ $HASPTY -ne 1 ]; then
+	  echo "Unknown exception installing pty.js"
+	  echo `"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))"`
+	  exit 100
+	fi
+
+# vfsextend collab
+
+	#Cleanup:
+	"$NPM" config -g delete cache
+	"$NPM" config -g delete tmp
+	"$NPM" config -g delete python
+
+	systemctl enable cloud9.socket || true
+}
+
+case "$1" in
+    configure)
+	npm_install
+	dl_install
+	c9_directory
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+# dh_installdeb will replace this with shell code automatically
+# generated by other debhelper scripts.
+
+#DEBHELPER#
+
+exit 0
+

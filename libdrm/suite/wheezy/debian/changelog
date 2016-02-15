@@ -1,8 +1,121 @@
-libdrm (2.4.60-1etnaviv1.1~bpo70+20150320+1) wheezy; urgency=low
+libdrm (2.4.66-2rcnee2~bpo70+20160202+1) wheezy; urgency=low
 
-  * Rebuild for repos.rcn-ee.net
+  * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Fri, 20 Mar 2015 11:18:26 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Tue, 02 Feb 2016 11:21:28 -0600
+
+libdrm (2.4.66-2rcnee1~bpo70+20160121+1) wheezy; urgency=low
+
+  * Rebuild for repos.rcn-ee.com
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Thu, 21 Jan 2016 10:56:15 -0600
+
+libdrm (2.4.66-2) unstable; urgency=medium
+
+  * Update libdrm-exynos1.symbols and shlibs.
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Fri, 15 Jan 2016 12:08:05 +0100
+
+libdrm (2.4.66-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update symbols file and bump shlibs for libdrm2.
+  * Update libdrm-intel1.symbols and shlibs.
+  * Update libdrm-nouveau2.symbols and shlibs.
+  * Drop obsolete Replaces from pre-wheezy.
+  * Add myself to Uploaders.
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Fri, 15 Jan 2016 10:41:05 +0100
+
+libdrm (2.4.65-3) unstable; urgency=medium
+
+  * rules: Bump freedreno shlib back to 2.4.65.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 26 Oct 2015 23:15:56 +0200
+
+libdrm (2.4.65-2) unstable; urgency=medium
+
+  [ Andreas Boll ]
+  * Update libdrm-freedreno1.symbols and shlibs.
+  * Drop Debian revision from new symbols in libdrm2.symbols.
+
+  [ Fathi Boudra ]
+  * Enable freedreno build on arm64 architecture.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 26 Oct 2015 21:40:43 +0200
+
+libdrm (2.4.65-1) unstable; urgency=medium
+
+  [ Andreas Boll ]
+  * New upstream release.
+  * Update debian/upstream/signing-key.asc.
+  * Update symbols file and bump shlibs for libdrm2.
+  * Enable libdrm-amdgpu1 on kfreebsd-*.
+  * Fix Vcs-* fields.
+  * Add upstream url.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 26 Oct 2015 10:22:57 +0200
+
+libdrm (2.4.64-1) unstable; urgency=medium
+
+  [ Robert Hooker ]
+  * New upstream release.
+  * Bump symbols file and shlibs for libdrm-freedreno1.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 19 Aug 2015 07:52:50 +0300
+
+libdrm (2.4.63-1) unstable; urgency=medium
+
+  [ Robert Hooker ]
+  * New upstream release.
+    - Drop Fix-headers-inclusion-in-xf86drmMode.c.diff, upstream.
+  * Add new libdrm-amdgpu1 package.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Sat, 15 Aug 2015 18:55:57 +0300
+
+libdrm (2.4.62-1) unstable; urgency=medium
+
+  [ Sven Joachim ]
+  * New upstream release.
+    - nouveau: restore check that avoids multiple user bos per kernel bo
+      (Closes: #789759).
+  * Update symbols file and bump shlibs for libdrm2.
+  * Refresh the patch from 2.4.60-3 after upstream changes.
+  * Remove duplicate Section fields from debian/control.
+  * Update debian/upstream/signing-key.asc.
+  * Bump Standards-Version to 3.9.6, no changes needed.
+
+  [ Julien Cristau ]
+  * Update debian/upstream/signing-key.asc.
+  * Fix kfreebsd patch that caused an FTBFS on Linux/x32: only include
+    <sys/sysctl.h> if configure detects it (closes: #787496).  Thanks,
+    Thorsten Glaser.
+  * Add build-dep on xutils-dev for xorg-macros.
+  * Cherry-pick upstream patch to let valgrind auto-detection work.
+
+ -- Julien Cristau <jcristau@debian.org>  Thu, 02 Jul 2015 21:11:21 +0200
+
+libdrm (2.4.60-3) unstable; urgency=medium
+
+  [ Timo Aaltonen ]
+  * control: Add a typo in libdrm-tegra0 description.
+
+  [ Julien Cristau ]
+  * Fix FTBFS on kfreebsd: include <sys/sysctl.h> for sysctlbyname, and use
+    -lbsd to make the tests build (they use getopt, and our libbsd-overlay
+    cflags redirect that to bsd_getopt).
+  * Bump shlibs for libraries with new symbols.
+  * Add missing dependency of libdrm-dev on libdrm-tegra0 on arm*.
+  * Let uscan verify tarball signatures.
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 26 Apr 2015 12:21:30 +0200
+
+libdrm (2.4.60-2) experimental; urgency=medium
+
+  [ Maarten Lankhorst ]
+  * Fix ftbfs on armhf.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 08 Apr 2015 09:21:00 +0300
 
 libdrm (2.4.60-1) experimental; urgency=medium
 

@@ -1,0 +1,117 @@
+From 2d4e9c2eb811978a4097b7d249eca3c7e9c510e5 Mon Sep 17 00:00:00 2001
+From: Jouni Malinen <j@w1.fi>
+Date: Sun, 12 Oct 2014 17:03:25 +0300
+Subject: [PATCH] Include ieee802_11_common.c in wpa_supplicant build
+ unconditionally
+
+This is needed for number of items and it was possible to make a build
+configuration that did not include ieee802_11_common.c while still
+trying to use functions from there. While it would be possible to add
+NEED_80211_COMMON=y to all the cases where this file is needed, the
+extra complexity from this is not really justifiable anymore, so include
+the file unconditionally.
+
+Signed-off-by: Jouni Malinen <j@w1.fi>
+---
+ wpa_supplicant/Android.mk | 7 -------
+ wpa_supplicant/Makefile   | 7 -------
+ 2 files changed, 14 deletions(-)
+
+--- a/wpa_supplicant/Android.mk
++++ b/wpa_supplicant/Android.mk
+@@ -193,7 +193,6 @@ endif
+ ifdef CONFIG_IEEE80211R
+ L_CFLAGS += -DCONFIG_IEEE80211R
+ OBJS += src/rsn_supp/wpa_ft.c
+-NEED_80211_COMMON=y
+ NEED_SHA256=y
+ NEED_AES_OMAC1=y
+ endif
+@@ -263,7 +262,6 @@ OBJS += src/utils/bitfield.c
+ L_CFLAGS += -DCONFIG_P2P
+ NEED_GAS=y
+ NEED_OFFCHANNEL=y
+-NEED_80211_COMMON=y
+ CONFIG_WPS=y
+ CONFIG_AP=y
+ ifdef CONFIG_P2P_STRICT
+@@ -635,7 +633,6 @@ CONFIG_IEEE8021X_EAPOL=y
+ NEED_DH_GROUPS=y
+ NEED_SHA256=y
+ NEED_BASE64=y
+-NEED_80211_COMMON=y
+ NEED_AES_CBC=y
+ NEED_MODEXP=y
+ 
+@@ -744,7 +741,6 @@ endif
+ endif
+ 
+ ifdef CONFIG_AP
+-NEED_80211_COMMON=y
+ NEED_EAP_COMMON=y
+ NEED_RSN_AUTHENTICATOR=y
+ L_CFLAGS += -DCONFIG_AP
+@@ -1368,14 +1364,11 @@ OBJS += src/utils/base64.c
+ endif
+ 
+ ifdef NEED_SME
+-NEED_80211_COMMON=y
+ OBJS += sme.c
+ L_CFLAGS += -DCONFIG_SME
+ endif
+ 
+-ifdef NEED_80211_COMMON
+ OBJS += src/common/ieee802_11_common.c
+-endif
+ 
+ ifdef NEED_EAP_COMMON
+ OBJS += src/eap_common/eap_common.c
+--- a/wpa_supplicant/Makefile
++++ b/wpa_supplicant/Makefile
+@@ -194,7 +194,6 @@ endif
+ ifdef CONFIG_IEEE80211R
+ CFLAGS += -DCONFIG_IEEE80211R
+ OBJS += ../src/rsn_supp/wpa_ft.o
+-NEED_80211_COMMON=y
+ NEED_SHA256=y
+ NEED_AES_OMAC1=y
+ endif
+@@ -264,7 +263,6 @@ OBJS += ../src/utils/bitfield.o
+ CFLAGS += -DCONFIG_P2P
+ NEED_GAS=y
+ NEED_OFFCHANNEL=y
+-NEED_80211_COMMON=y
+ CONFIG_WPS=y
+ CONFIG_AP=y
+ ifdef CONFIG_P2P_STRICT
+@@ -635,7 +633,6 @@ CONFIG_IEEE8021X_EAPOL=y
+ NEED_DH_GROUPS=y
+ NEED_SHA256=y
+ NEED_BASE64=y
+-NEED_80211_COMMON=y
+ NEED_AES_CBC=y
+ NEED_MODEXP=y
+ 
+@@ -757,7 +754,6 @@ OBJS += ../src/pae/ieee802_1x_secy_ops.o
+ endif
+ 
+ ifdef CONFIG_AP
+-NEED_80211_COMMON=y
+ NEED_EAP_COMMON=y
+ NEED_RSN_AUTHENTICATOR=y
+ CFLAGS += -DCONFIG_AP
+@@ -1386,14 +1382,11 @@ OBJS += ../src/utils/base64.o
+ endif
+ 
+ ifdef NEED_SME
+-NEED_80211_COMMON=y
+ OBJS += sme.o
+ CFLAGS += -DCONFIG_SME
+ endif
+ 
+-ifdef NEED_80211_COMMON
+ OBJS += ../src/common/ieee802_11_common.o
+-endif
+ 
+ ifdef NEED_EAP_COMMON
+ OBJS += ../src/eap_common/eap_common.o

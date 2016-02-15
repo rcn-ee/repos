@@ -1,0 +1,21 @@
+#!/bin/sh
+set -e
+
+divert() {
+	dpkg-divert --package dh-python --add --rename \
+	  --divert /usr/bin/dh_python3.real /usr/bin/dh_python3
+	dpkg-divert --package dh-python --add --rename \
+	  --divert /usr/share/man/man1/dh_python3.real.1.gz /usr/share/man/man1/dh_python3.1.gz
+	dpkg-divert --package dh-python --add --rename \
+	  --divert /usr/bin/dh_python2.real /usr/bin/dh_python2
+	dpkg-divert --package dh-python --add --rename \
+	  --divert /usr/share/man/man1/dh_python2.real.1.gz /usr/share/man/man1/dh_python2.1.gz
+}
+
+if [ install = "$1" ]; then
+	divert
+elif [ upgrade = "$1" ] && dpkg --compare-versions "$2" lt '1.20130819-1~bpo70+1'; then
+	divert
+fi
+
+#DEBHELPER#

@@ -1,20 +1,19 @@
 Source: czmq
 Priority: optional
-Maintainer: John Morris <john@zultron.com>
+Maintainer: Luca Boccassi <luca.boccassi@gmail.com>
+Uploaders: Alessandro Ghedini <ghedo@debian.org>
 Build-Depends: debhelper (>= 9),
  autotools-dev,
- libzmq4-dev,
- libsodium-dev,
- xmlto,
- asciidoc,
- pkg-config
-Standards-Version: 3.9.3
+ pkg-config,
+ dh-autoreconf,
+ libzmq3-dev
+Standards-Version: 3.9.6
 Section: libs
 Homepage: http://czmq.zeromq.org/
-Vcs-Git: https://github.com/zultron/czmq-deb.git
-Vcs-Browser: https://github.com/zultron/czmq-deb
+Vcs-Git: git://anonscm.debian.org/collab-maint/czmq.git
+Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/czmq.git
 
-Package: libczmq2
+Package: libczmq3
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Pre-Depends: ${misc:Pre-Depends}
@@ -37,7 +36,10 @@ Description: High-level C binding for ZeroMQ
 Package: libczmq-dev
 Section: libdevel
 Architecture: any
-Depends: ${misc:Depends}, libczmq2 (= ${binary:Version})
+Depends: ${misc:Depends},
+         libzmq3-dev,
+         libczmq3 (= ${binary:Version})
+Multi-Arch: same
 Description: High-level C binding for ZeroMQ (development files)
  czmq (previously known as libzapi) provides a high-level C binding for
  0MQ, a lightweight messaging library.
@@ -59,7 +61,7 @@ Package: libczmq-dbg
 Priority: extra
 Section: debug
 Architecture: any
-Depends: ${misc:Depends}, libczmq2 (= ${binary:Version})
+Depends: ${misc:Depends}, libczmq3 (= ${binary:Version})
 Multi-Arch: same
 Description: High-level C binding for ZeroMQ (debugging symbols)
  czmq (previously known as libzapi) provides a high-level C binding for

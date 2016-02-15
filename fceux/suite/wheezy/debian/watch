@@ -1,0 +1,10 @@
+# watch file for fceux
+# See uscan(1) for format
+version=3
+
+# <Webpage URL> <string match> [Version  [Action]]
+opts=dversionmangle=s/\+dfsg\d+$// \
+http://fceux.com/web/download.html \
+https?://.*/Source%20Code/.*/fceux-(.*)\.src\.tar\.(?:bz2|gz)/download \
+debian \
+git-import-orig --verbose

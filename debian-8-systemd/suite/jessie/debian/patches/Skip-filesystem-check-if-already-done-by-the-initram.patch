@@ -1,0 +1,44 @@
+From: Michael Biebl <biebl@debian.org>
+Date: Mon, 13 Apr 2015 19:34:23 +0200
+Subject: Skip filesystem check if already done by the initramfs
+
+Newer versions of initramfs-tools already fsck and mount / and /usr in
+the initramfs. Skip the filesystem check in this case.
+
+Closes: #782522
+---
+ src/fstab-generator/fstab-generator.c | 4 +++-
+ units/systemd-fsck-root.service.in    | 1 +
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/fstab-generator/fstab-generator.c b/src/fstab-generator/fstab-generator.c
+index cb3d9dc..3323884 100644
+--- a/src/fstab-generator/fstab-generator.c
++++ b/src/fstab-generator/fstab-generator.c
+@@ -163,11 +163,13 @@ static bool mount_is_network(struct mntent *me) {
+ }
+ 
+ static bool mount_in_initrd(struct mntent *me) {
++        struct stat sb;
++
+         assert(me);
+ 
+         return
+                 hasmntopt(me, "x-initrd.mount") ||
+-                streq(me->mnt_dir, "/usr");
++                (streq(me->mnt_dir, "/usr") && stat("/run/initramfs/fsck-usr", &sb) == 0);
+ }
+ 
+ static int add_mount(
+diff --git a/units/systemd-fsck-root.service.in b/units/systemd-fsck-root.service.in
+index 4162983..0668107 100644
+--- a/units/systemd-fsck-root.service.in
++++ b/units/systemd-fsck-root.service.in
+@@ -13,6 +13,7 @@ After=systemd-readahead-collect.service systemd-readahead-replay.service
+ Before=local-fs.target shutdown.target
+ 
+ ConditionPathIsReadWrite=!/
++ConditionPathExists=!/run/initramfs/fsck-root
+ 
+ [Service]
+ Type=oneshot

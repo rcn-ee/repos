@@ -1,0 +1,13 @@
+#!/usr/bin/make -f
+
+missing:
+	make -f debian/rules list-missing
+
+missing-so:
+	make -f debian/rules list-missing | grep so$$ | cut -c 2-
+
+missing-libs:
+	for i in `make -f debian/rules list-missing | grep so$$ | cut -c 2-`; do echo "=== $$i ==="; ldd debian/tmp/$$i; echo; done
+
+.PHONY: missing missing-so missing-libs
+

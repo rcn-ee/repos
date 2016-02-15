@@ -1,8 +1,246 @@
-mesa (10.4.2-2~20150115+1) jessie; urgency=low
+mesa (11.1.1-2rcnee3~bpo80+20160121+1) jessie; urgency=low
 
-  * Rebuild for repos.rcn-ee.net
+  * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Thu, 15 Jan 2015 12:57:58 -0600
+ -- Robert Nelson <robertcnelson@gmail.com>  Thu, 21 Jan 2016 09:13:38 -0600
+
+mesa (11.1.1-2rcnee2~bpo80+20160120+1) jessie; urgency=low
+
+  * Rebuild for repos.rcn-ee.com
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Wed, 20 Jan 2016 15:01:46 -0600
+
+mesa (11.1.1-2rcnee1~bpo80+20160120+1) jessie; urgency=low
+
+  * Rebuild for repos.rcn-ee.com
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Wed, 20 Jan 2016 11:02:59 -0600
+
+mesa (11.1.1-2) unstable; urgency=medium
+
+  * Limit the symbols glXGetDriverConfig and glXGetScreenDriver to
+    arch=!hurd-any (Fixes FTBFS on hurd).
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Fri, 15 Jan 2016 18:44:52 +0100
+
+mesa (11.1.1-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Enable support for virgl (Closes: #807774).
+  * Enable support for vc4 (Closes: #809406).
+  * Enable support for freedreno on arm64.
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Thu, 14 Jan 2016 11:27:28 +0100
+
+mesa (11.1.0-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Add a patch to remove the unused symbol
+    _glapi_create_table_from_handle from libGL.so.1.
+  * Replace shlibs file with a symbols file for libgl1-mesa-glx.
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Tue, 15 Dec 2015 20:24:10 +0100
+
+mesa (11.1.0~rc3-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+  * Bump libdrm-dev build-dep to 2.4.65.
+  * Update symbols for libgles2-mesa and libxatracker2.
+  * Remove Breaks/Conflicts/Provides/Replaces from pre-wheezy.
+  * Remove duplicated field "Priority" from package libgl1-mesa-dri.
+  * Declare Multi-Arch: same for mesa-opencl-icd{,-dbg} (Closes:
+    #804919).
+  * Add a Lintian override for symbols-declares-dependency-on-other-
+    package libgbm1-private.
+  * Remove obsolete libgl1-mesa-dri.lintian-overrides.
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Thu, 10 Dec 2015 12:22:54 +0100
+
+mesa (11.0.8-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 22 Dec 2015 16:12:35 +0200
+
+mesa (11.0.7-1) unstable; urgency=medium
+
+  [ Julien Cristau ]
+  * Update debian/copyright from docs/license.html (closes: #806805).  Thanks,
+    Steinar H. Gunderson!
+
+  [ Andreas Boll ]
+  * New upstream release.
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Wed, 09 Dec 2015 21:18:17 +0100
+
+mesa (11.0.6-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Bump libvdpau-dev build-dep.
+  * Add docs-Replace-sourceforge-logo-with-a-text-link.patch (Fixes
+    Lintian error privacy-breach-logo).
+  * Add some Lintian overrides for package-name-doesnt-match-sonames.
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Fri, 27 Nov 2015 08:59:30 +0100
+
+mesa (11.0.5-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Add myself to Uploaders.
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Thu, 12 Nov 2015 11:55:02 +0100
+
+mesa (11.0.4-1) unstable; urgency=medium
+
+  [ Andreas Boll ]
+  * New upstream release.
+  * Cherry-pick commit 70e91d6 (i965: Remove early release of DRI2
+    miptree) from upstream (Closes: #769518).
+  * control: Add libclc-amdgcn to mesa-opencl-icd depends.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 26 Oct 2015 10:30:04 +0200
+
+mesa (11.0.2-1) experimental; urgency=medium
+
+  [ Andreas Boll ]
+  * control: Bump libclc dependencies.
+
+  [ Timo Aaltonen ]
+  * New upstream release.
+  * rules, control: Enable llvmpipe on ppc64el. (LP: #1489483)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 29 Sep 2015 16:35:59 +0300
+
+mesa (11.0.0-1) experimental; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 14 Sep 2015 14:23:13 +0300
+
+mesa (11.0.0~rc3-1) experimental; urgency=medium
+
+  [ Andreas Boll ]
+  * Use https for Vcs-* fields.
+
+  [ Timo Aaltonen ]
+  * New upstream release candidate.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 07 Sep 2015 15:04:32 +0300
+
+mesa (11.0.0~rc2-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 02 Sep 2015 11:38:28 +0300
+
+mesa (11.0.0~rc1-1) experimental; urgency=medium
+
+  [ Andreas Boll ]
+  * New upstream release candidate.
+  * control: Drop unneeded libomxil-bellagio-dev build-dep.
+  * rules: Explicitly disable vaapi (Closes: #789100).
+  * control: Update upstream url.
+  * control: Update Vcs-* fields.
+  * Drop libgl1-mesa-swx11* packages.
+  * control: Update package description.
+
+  [ Timo Aaltonen ]
+  * control: Delete commented out libgl1-mesa-glx-i686 from the file.
+  * control: Bump llvm/libclang build-deps to match versions where
+    amdgpu is enabled.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 24 Aug 2015 11:15:16 +0300
+
+mesa (11.0.0~git20150817-1) experimental; urgency=medium
+
+  * New upstream snapshot
+  * control: Bump libdrm build-dep to 2.4.63.
+  * control: Add libomxil-bellagio-dev to build-deps.
+  * rules: Disable gles1 & 2 for swx11 builds.
+  * libegl1-mesa.symbols, libgles2-mesa.symbols: Updated
+  * control, rules: Migrate to llvm 3.7.
+  * rules: Enable llvmpipe on armhf again.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 18 Aug 2015 07:53:45 +0300
+
+mesa (10.6.8-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 22 Sep 2015 17:21:49 +0300
+
+mesa (10.6.7-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 14 Sep 2015 11:15:23 +0300
+
+mesa (10.6.5-1) unstable; urgency=medium
+
+  [ Andreas Boll ]
+  * New upstream release.
+
+  [ Julien Cristau ]
+  * Break libopengl-perl (<< 0.6704+dfsg-2), thanks to Niko Tyni
+    (closes: #796918)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 02 Sep 2015 12:26:37 +0300
+
+mesa (10.6.4-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 19 Aug 2015 09:11:47 +0300
+
+mesa (10.6.3-1) unstable; urgency=medium
+
+  * New upstream release.
+  * libegl1-mesa.symbols: Updated.
+  * not-installed: Dropped wmesa.h which is gone.
+  * libgles{1,2}-mesa.symbols: Updated.
+  * libegl1-mesa.symbols: Drop a spurious comment.
+  * source/local-options: Updated extend-diff-ignore.
+  * mesa-common-dev.docs: Updated.
+  * Delete i965-do_blit...patch, upstream.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 28 Jul 2015 11:12:44 +0300
+
+mesa (10.5.9-2) unstable; urgency=medium
+
+  * i965-do_blit_drawpixels-decode-array-formats.patch: Fix a regression
+    since 10.5.5, allow using blit fastpath again.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 10 Jul 2015 13:01:40 +0300
+
+mesa (10.5.9-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 06 Jul 2015 08:56:26 +0300
+
+mesa (10.5.8-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 25 Jun 2015 18:50:11 +0300
+
+mesa (10.5.7-1) unstable; urgency=medium
+
+  * New upstream release.
+  * control: Bump policy to 3.9.6, no changes.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 16 Jun 2015 11:57:08 +0300
+
+mesa (10.5.5-1) unstable; urgency=medium
+
+  [ Maarten Lankhorst ]
+  * New upstream release.
+  * Update watch file.
+
+  [ Timo Aaltonen ]
+  * libegl1-mesa.symbols: Updated.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 12 May 2015 13:26:49 +0300
 
 mesa (10.4.2-2) unstable; urgency=medium
 

@@ -1,0 +1,25 @@
+From: Michael Biebl <biebl@debian.org>
+Date: Sun, 27 Apr 2014 18:10:58 +0200
+Subject: Adjust systemd-user pam config file for Debian
+
+This pam config file is used by libpam-systemd/systemd-logind when
+launching systemd user instances.
+---
+ src/login/systemd-user | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/src/login/systemd-user b/src/login/systemd-user
+index 7b57dbf..cf8d9c8 100644
+--- a/src/login/systemd-user
++++ b/src/login/systemd-user
+@@ -2,7 +2,8 @@
+ 
+ # Used by systemd when launching systemd user instances.
+ 
+-account include system-auth
+-session include system-auth
++@include common-account
++@include common-session-noninteractive
+ auth required pam_deny.so
+ password required pam_deny.so
++session optional pam_systemd.so

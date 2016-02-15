@@ -1,0 +1,134 @@
+Index: dh-python/dh_python2
+===================================================================
+--- dh-python.orig/dh_python2
++++ dh-python/dh_python2
+@@ -83,10 +83,10 @@ def share(package, stats, options):
+                 dir2 = interpreter.sitedir(package, version2)
+                 dc = dircmp(dir1, dir2)
+                 share_2x(dir1, dir2, dc)
+-#    elif len(pubvers) == 1:
+-#        move_to_pyshared(interpreter.sitedir(package, pubvers[0]))
+-#    for version in stats['ext_vers']:
+-#        create_ext_links(interpreter.sitedir(package, version))
++    elif len(pubvers) == 1:
++        move_to_pyshared(interpreter.sitedir(package, pubvers[0]))
++    for version in stats['ext_vers']:
++        create_ext_links(interpreter.sitedir(package, version))
+ 
+     if options.guess_versions and pubvers:
+         for version in get_requested_versions('cpython2', options.vrange):
+@@ -113,60 +113,60 @@ def share(package, stats, options):
+     stats['nsp.txt'] = set(realpath(i) for i in stats['nsp.txt'])
+ 
+ 
+-# def move_to_pyshared(dir1):
+-#     # dir1 starts with debian/packagename/usr/lib/pythonX.Y/*-packages/
+-#     debian, package, path = dir1.split('/', 2)
+-#     dstdir = join(debian, package, 'usr/share/pyshared/',
+-#                   '/'.join(dir1.split('/')[6:]))
+-#
+-#     for i in os.listdir(dir1):
+-#         fpath1 = join(dir1, i)
+-#         if isdir(fpath1) and not islink(fpath1):
+-#             if any(fn for fn in os.listdir(fpath1) if fext(fn) != 'so'):
+-#                 # at least one file that is not an extension
+-#                 move_to_pyshared(join(dir1, i))
+-#         else:
+-#             if fext(i) == 'so':
+-#                 continue
+-#             fpath2 = join(dstdir, i)
+-#             if not exists(fpath2):
+-#                 if not exists(dstdir):
+-#                     os.makedirs(dstdir)
+-#                 if islink(fpath1):
+-#                     fpath1_target = os.readlink(fpath1)
+-#                     if isabs(fpath1_target):
+-#                         os.symlink(fpath1_target, fpath2)
+-#                     else:
+-#                         fpath1_target = normpath(join(dir1, fpath1_target))
+-#                         relative_symlink(fpath1_target, fpath2)
+-#                     os.remove(fpath1)
+-#                 else:
+-#                     os.rename(fpath1, fpath2)
+-#                 relative_symlink(fpath2, fpath1)
+-#
+-#
+-# def create_ext_links(dir1):
+-#     """Create extension symlinks in /usr/lib/pyshared/pythonX.Y.
+-#
+-#     These symlinks are used to let dpkg detect file conflicts with
+-#     python-support and python-central packages.
+-#     """
+-#
+-#     debian, package, path = dir1.split('/', 2)
+-#     python, _, module_subpath = path[8:].split('/', 2)
+-#     dstdir = join(debian, package, 'usr/lib/pyshared/', python, module_subpath)
+-#
+-#     for i in os.listdir(dir1):
+-#         fpath1 = join(dir1, i)
+-#         if isdir(fpath1):
+-#             create_ext_links(fpath1)
+-#         elif fext(i) == 'so':
+-#             fpath2 = join(dstdir, i)
+-#             if exists(fpath2):
+-#                 continue
+-#             if not exists(dstdir):
+-#                 os.makedirs(dstdir)
+-#             relative_symlink(fpath1, join(dstdir, i))
++def move_to_pyshared(dir1):
++    # dir1 starts with debian/packagename/usr/lib/pythonX.Y/*-packages/
++    debian, package, path = dir1.split('/', 2)
++    dstdir = join(debian, package, 'usr/share/pyshared/',
++                  '/'.join(dir1.split('/')[6:]))
++
++    for i in os.listdir(dir1):
++        fpath1 = join(dir1, i)
++        if isdir(fpath1) and not islink(fpath1):
++            if any(fn for fn in os.listdir(fpath1) if fext(fn) != 'so'):
++                # at least one file that is not an extension
++                move_to_pyshared(join(dir1, i))
++        else:
++            if fext(i) == 'so':
++                continue
++            fpath2 = join(dstdir, i)
++            if not exists(fpath2):
++                if not exists(dstdir):
++                    os.makedirs(dstdir)
++                if islink(fpath1):
++                    fpath1_target = os.readlink(fpath1)
++                    if isabs(fpath1_target):
++                        os.symlink(fpath1_target, fpath2)
++                    else:
++                        fpath1_target = normpath(join(dir1, fpath1_target))
++                        relative_symlink(fpath1_target, fpath2)
++                    os.remove(fpath1)
++                else:
++                    os.rename(fpath1, fpath2)
++                relative_symlink(fpath2, fpath1)
++
++
++def create_ext_links(dir1):
++    """Create extension symlinks in /usr/lib/pyshared/pythonX.Y.
++
++    These symlinks are used to let dpkg detect file conflicts with
++    python-support and python-central packages.
++    """
++
++    debian, package, path = dir1.split('/', 2)
++    python, _, module_subpath = path[8:].split('/', 2)
++    dstdir = join(debian, package, 'usr/lib/pyshared/', python, module_subpath)
++
++    for i in os.listdir(dir1):
++        fpath1 = join(dir1, i)
++        if isdir(fpath1):
++            create_ext_links(fpath1)
++        elif fext(i) == 'so':
++            fpath2 = join(dstdir, i)
++            if exists(fpath2):
++                continue
++            if not exists(dstdir):
++                os.makedirs(dstdir)
++            relative_symlink(fpath1, join(dstdir, i))
+ 
+ 
+ def create_public_links(dir1, vrange, root=''):

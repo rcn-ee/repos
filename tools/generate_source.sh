@@ -2,7 +2,7 @@
 
 . version.sh
 
-incoming_mirror="http://incoming.debian.org/debian-buildd/"
+incoming_mirror="http://incoming.debian.org/debian-buildd"
 
 if [ ! "x${git_repo}" = "x" ] ; then
 	if [ -f ./git/.git/config ] ; then
@@ -19,10 +19,14 @@ if [ ! "x${git_repo}" = "x" ] ; then
 else
 
 	if [ ! "x${dl_package_source}" = "x" ] ; then
-		wget -c ${mirror}/${dl_path}${dl_package_source}
+		wget -c ${mirror}/${dl_path}${dl_package_source} || true
 	else
 		if [ ! "x${package_source}" = "x" ] ; then
-			wget -c ${mirror}/${dl_path}${package_source}
+			wget -c ${mirror}/${dl_path}${package_source} || true
+			if [ ! -f ${package_source} ] ; then
+				wget -c ${incoming_mirror}/${dl_path}${package_source}
+			fi
+
 			if [ ! "x${debian_patch}" = "x" ] ; then
 				wget -c ${mirror}/${dl_path}${debian_patch} || true
 			fi
@@ -34,11 +38,17 @@ else
 
 			if [ ! "x${debian_untar}" = "x" ] ; then
 				wget -c  ${mirror}/${dl_path}${debian_untar} || true
-			fi
-			if [ ! "x${debian_untar}" = "x" ] ; then
+
 				if [ ! -f ${debian_untar} ] ; then
 					wget -c ${incoming_mirror}/${dl_path}${debian_untar}
 				fi
+
+				if [ -d ./test ] ; then
+					rm -rf ./test || true
+				fi
+
+				mkdir ./test
+				tar xf ${debian_untar} -C ./test
 			fi
 		fi
 	fi

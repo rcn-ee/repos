@@ -1,0 +1,22 @@
+From: Steven Noonan <steven@uplinklabs.net>
+Date: Thu, 3 Jul 2014 19:42:19 -0700
+Subject: networkd: accept section DHCP in systemd.network files
+
+(cherry picked from commit c38d2eb828f1a62ae9052c9db45ccc70f98fdb47)
+---
+ src/network/networkd-network.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/network/networkd-network.c b/src/network/networkd-network.c
+index 9ab4f23..9f6de18 100644
+--- a/src/network/networkd-network.c
++++ b/src/network/networkd-network.c
+@@ -92,7 +92,7 @@ static int network_load_one(Manager *manager, const char *filename) {
+         network->dhcp_routes = true;
+         network->dhcp_sendhost = true;
+ 
+-        r = config_parse(NULL, filename, file, "Match\0Network\0Address\0Route\0DHCPv4\0", config_item_perf_lookup,
++        r = config_parse(NULL, filename, file, "Match\0Network\0Address\0Route\0DHCP\0DHCPv4\0", config_item_perf_lookup,
+                         (void*) network_network_gperf_lookup, false, false, network);
+         if (r < 0) {
+                 log_warning("Could not parse config file %s: %s", filename, strerror(-r));

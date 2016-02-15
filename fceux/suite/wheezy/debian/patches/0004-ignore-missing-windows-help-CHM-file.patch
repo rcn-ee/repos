@@ -1,0 +1,23 @@
+From: Joe Nahmias <joe@nahmias.net>
+Date: Sun, 2 Mar 2014 14:10:45 -0500
+Subject: ignore missing windows help (CHM) file
+
+no source for the CHM file, so it was removed as part of the DFSG process.
+Therefore, don't throw an error if you can't find it.
+---
+ SConstruct | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/SConstruct b/SConstruct
+index ce56cff..2903144 100644
+--- a/SConstruct
++++ b/SConstruct
+@@ -213,7 +213,7 @@ auxlib_dst = 'bin/auxlib.lua'
+ fceux_h_src = 'output/fceux.chm'
+ fceux_h_dst = 'bin/fceux.chm'
+ 
+-env.Command(fceux_h_dst, fceux_h_src, [Copy(fceux_h_dst, fceux_h_src)])
++#### env.Command(fceux_h_dst, fceux_h_src, [Copy(fceux_h_dst, fceux_h_src)])
+ env.Command(fceux_dst, fceux_src, [Copy(fceux_dst, fceux_src)])
+ env.Command(fceux_net_server_dst, fceux_net_server_src, [Copy(fceux_net_server_dst, fceux_net_server_src)])
+ env.Command(auxlib_dst, auxlib_src, [Copy(auxlib_dst, auxlib_src)])

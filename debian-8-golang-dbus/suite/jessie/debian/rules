@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+export DH_GOPKG := github.com/godbus/dbus
+
+override_dh_auto_test:
+	# upstream's tests require that dbus be running (surprise, surprise)
+	[ ! -S /var/run/dbus/system_bus_socket ] || \
+		dh_auto_test -O--buildsystem=golang
+
+%:
+	dh $@ --buildsystem=golang --with=golang

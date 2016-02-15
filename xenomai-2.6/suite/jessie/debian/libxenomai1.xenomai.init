@@ -1,0 +1,36 @@
+#!/bin/sh -e
+### BEGIN INIT INFO
+# Provides:          xenomai
+# Required-Start:    mountkernfs
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Set xeno_nucleus group
+### END INIT INFO
+
+GROUP=xenomai
+INITNAME=/etc/init.d/xenomai
+FILENAME=/sys/module/xeno_nucleus/parameters/xenomai_gid
+GID=$(getent group $GROUP | cut -d: -f3)
+
+test -e $FILENAME || exit 0
+test -n "$GID" || exit 0
+
+case "$1" in
+  start)
+        echo "$GID" > $FILENAME
+        ;;
+  stop)
+        echo "-1" > $FILENAME
+        ;;
+  restart|force-reload)
+        $0 start
+        ;;
+  *)
+        echo "Usage: $INITNAME {start|stop|restart|force-reload}"
+        exit 1
+        ;;
+esac
+
+exit 0
+

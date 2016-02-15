@@ -13,24 +13,26 @@ run () {
 	if [ "x${suite}" = "xjessie" ] ; then
 		backport="bpo80+"
 	fi
+	if [ "x${suite}" = "xstretch" ] ; then
+		backport="bpo90+"
+	fi
 	if [ "x${suite}" = "xtrusty" ] ; then
 		backport="bpo1404+"
 	fi
-	if [ "x${suite}" = "xutopic" ] ; then
-		backport="bpo1410+"
+	if [ "x${suite}" = "xwily" ] ; then
+		backport="bpo1510+"
 	fi
-	if [ "x${suite}" = "xvivid" ] ; then
-		backport="bpo1504+"
+	if [ "x${suite}" = "xxenial" ] ; then
+		backport="bpo1604+"
 	fi
-
 
 	if [ "x${debian_version}" = "x" ] ; then
-		echo "${debian_pkg_name} (${package_version}~${backport}${simple_date}+1) ${suite}; urgency=low" > ${wfile}
+		echo "${debian_pkg_name} (${package_version}${local_patch}~${backport}${simple_date}+1) ${suite}; urgency=low" > ${wfile}
 	else
-		echo "${debian_pkg_name} (${debian_version}~${backport}${simple_date}+1) ${suite}; urgency=low" > ${wfile}
+		echo "${debian_pkg_name} (${debian_version}${local_patch}~${backport}${simple_date}+1) ${suite}; urgency=low" > ${wfile}
 	fi
 	echo "" >> ${wfile}
-	echo "  * Rebuild for repos.rcn-ee.net" >> ${wfile}
+	echo "  * Rebuild for repos.rcn-ee.com" >> ${wfile}
 	echo "" >> ${wfile}
 	echo " -- Robert Nelson <robertcnelson@gmail.com>  ${new_date}" >> ${wfile}
 	echo "" >> ${wfile}
@@ -62,6 +64,15 @@ if [ -d ${DIR}/suite/${suite}/ ] ; then
 	run
 fi
 
+suite="stretch"
+if [ -d ${DIR}/suite/${suite}/ ] ; then
+	rcn_ee_version="${stretch_version}"
+	cat ${DIR}/version.sh | grep -v stretch_version > ${DIR}/new-version.sh
+	echo "stretch_version=\"~bpo90+${simple_date}+1\"" >> ${DIR}/new-version.sh
+	mv ${DIR}/new-version.sh ${DIR}/version.sh
+	run
+fi
+
 dist="ubuntu"
 suite="trusty"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
@@ -72,20 +83,21 @@ if [ -d ${DIR}/suite/${suite}/ ] ; then
 	run
 fi
 
-suite="utopic"
+suite="wily"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
-	rcn_ee_version="${utopic_version}"
-	cat ${DIR}/version.sh | grep -v utopic_version > ${DIR}/new-version.sh
-	echo "utopic_version=\"~bpo1410+${simple_date}+1\"" >> ${DIR}/new-version.sh
+	rcn_ee_version="${wily_version}"
+	cat ${DIR}/version.sh | grep -v wily_version > ${DIR}/new-version.sh
+	echo "wily_version=\"~bpo1510+${simple_date}+1\"" >> ${DIR}/new-version.sh
 	mv ${DIR}/new-version.sh ${DIR}/version.sh
 	run
 fi
 
-suite="vivid"
+suite="xenial"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
-	rcn_ee_version="${vivid_version}"
-	cat ${DIR}/version.sh | grep -v vivid_version > ${DIR}/new-version.sh
-	echo "vivid_version=\"~bpo1504+${simple_date}+1\"" >> ${DIR}/new-version.sh
+	rcn_ee_version="${xenial_version}"
+	cat ${DIR}/version.sh | grep -v xenial_version > ${DIR}/new-version.sh
+	echo "xenial_version=\"~bpo1604+${simple_date}+1\"" >> ${DIR}/new-version.sh
 	mv ${DIR}/new-version.sh ${DIR}/version.sh
 	run
 fi
+#

@@ -1,0 +1,70 @@
+Gstreamer for Debian
+====================
+This package contains the GStreamer plugin distribution.
+
+More information can be found at http://gstreamer.net/
+
+As of GStreamer plugins version 0.8.0 all packages are versioned and
+parallel installable with other releases with other major.minor
+versions.  For example, 0.8.x series is versioned as 0.8 and parallel
+installable with both unversioned 0.6.x series and future 0.9.x and
+beyond.  The version part is represented as VER below.
+
+GStreamer plugins are split into a number of packages:
+
+plugins without external dependencies:
+
+   gstreamerVER-plugins-bad     many independent plugins
+
+documentation:
+
+   gstreamerVER-plugins-bad-doc		html documentation
+
+
+Notes
+=====
+
+ChangeLog
+---------
+
+The upstream ChangeLog is not included in all the plugin packages due to its
+large size.  Please see upstream sources if you are interested in detailed
+source changes.
+
+Unofficial plugin packages
+--------------------------
+
+Various plugins in the upstream source are not yet packaged or not officially
+supported.  This is most likely due to:
+
+  * upstream considers them too unstable
+  * libraries they depend on are not are yet in Debian or are poorly supported
+
+To build additional unofficial plugin packages:
+
+  * Get the source and Debian diff (for example, "apt-get source gst-plugins")
+  * Add new package name to the EXTRA_PLUGINS variable in debian/rules
+  * Add appropriate dependency and control info to debian/extra
+  * Add a .install file for the package
+  * Rebuild
+
+Currently available untested and unsupported info has been added for:
+  * gstreamer-faac
+  * gstreamer-mpeg2enc
+
+External tools support
+----------------------
+
+Your favorite codec isn't wrapped as a plugin?  External programs can be
+used to process streams.  Take a look at "pipefilter" element or try
+something like this (untested):
+
+  $ mkfifo fifo
+  $ gst-launch myaudiosrc ! filesink location=fifo &
+  $ cat fifo | my_encoder > output_file
+
+
+David I. Lehn <dlehn@debian.org>  Tue, 23 Mar 2004 04:38:37 -0500
+
+update:
+Sebastien Bacher <seb128@debian.org>  Wed, 14 Dec 2005 17:00:21 +0100

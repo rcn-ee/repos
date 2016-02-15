@@ -1,0 +1,100 @@
+Hacking GStreamer for Debian
+============================
+
+An addition to the README.Debian that has Debian package hacking notes.
+
+Everything should now be versioned.
+
+- To update dependencies edit debian/build-deps.in
+
+- To rebuild package files from .in files:
+
+  debian/rules maint
+
+- After a version update to check for missing files run:
+
+  debian/maint missing
+  debian/maint missing-libs
+  debian/maint missing-so
+
+- To update package files edit gstreamer-foo then rebuild package files.  This
+  will generate the gstreamerX.Y-foo file.  Also update debian/rules and
+  debian/control.in as needed.
+
+- The packaging tries to stay close of upstream choice. gstreamerX.Y-misc has
+  most of the files, extra packages are made for the sinks and by group of 
+  depends (gnome, x, ...)
+
+- Provide gstreamerX.Y-videosink and gstreamerX.Y-audiosink as needed.
+
+- All interfaces and generic libraries go in libgstreamer-plugins, libraries
+  with external dependencies have their own package such as libgstreamer-gconf.
+
+- Applications go in gstreamerX.Y-plugins-base-apps
+
+
+File listing
+------------
+
+build-deps:
+  - generated from "build-deps.in" abd "extra deps" in "rules
+    debian/build-deps:":
+    * "build-deps.in" lists build-depends for Debian main packages
+    * "extra deps" is a shell script outputting additional build-depends
+      if you are building additional plugins
+  - serves generation with "control.in" and "mk.control" of "control" in
+    "rules debian/control::"
+build-deps.in:
+  - lists build-depends for Debian main packages
+  - serves generation with "extra deps" of "build-deps" in "rules
+    debian/build-deps:"
+changelog: handled classically
+compat: handled classically
+control:
+  - generated for "rules maint"
+  - generated from "control.in" and "build-deps" in "rules debian/control::":
+    * "build-deps" lists build-depends to be inserted in "control
+      Build-Depends:"
+    * "control.in" serves of template for package descriptions of Debian main
+      packages and makes use of special stanzas enclosed in "@" such as
+      "@GST_ABI" which are replaced via sed in "rules debian/control::"
+    * "extra deps" is a shell script outputting additional binary packages
+      if you are building additional plugins
+control.in:
+  - serves generation of "control" in "rules debian/control::" via "mk.control"
+    called in "rules debian/control::"
+  - template for package descriptions of Debian main packages and makes use of
+    special stanzas enclosed in "@" such as "@GST_ABI" which are replaced via
+    sed in "rules debian/control::"
+copyright: handled classically
+extra:
+  - serves the generation of build-deps of additional packages not in Debian
+    main in "rules debian/build-deps:"
+  - serves the generation of additional binary packages if you are building
+    additional plugins in "rules debian/control::"
+gstreamer-$plugin.install:
+  - serves the generation of $gst_pkgname-$plugin.install (for example
+    gstreamer-alsa.install serves the generation of gstreamerX.Y-alsa.install) in
+    "rules pre-build::" via dynamic "@"-enclosed variables replacement
+  - some plugins are handled specially and some special variables are available
+gstreamer-plugins-base-apps.install: this isn't really a plugin, but the
+                                    gstreamerX.Y-plugins-base-apps package
+gstreamer-plugins-base-apps.manpages: man pages for the gstreamerX.Y-plugins-base-apps
+                                package
+HACKING.Debian: this file
+libgstreamer-plugins-base-dev.install libgstreamer-plugins-base.install: handled similarly has gstreamerX.Y-plugins-base-apps
+maint: makefile wrapping some targets of "rules" with some sh filtering
+mk.control:
+  - Perl script serving the generation of "control" which reads "build-deps"
+    and "control.in", and replaces the "BUILDDEPS" stanza with the build-deps
+patches: handled classically
+README.Debian: handled classically
+rules: handled classically, with special targets "maint:", and
+       "debian/build-deps:"
+watch: handled classically
+
+This file is the initial work of:
+David I. Lehn <dlehn@debian.org>  Tue, 13 Apr 2004 21:28:55 -0400
+and had some additions by:
+Loic Minier <lool@dooz.org>  Sun, 19 Jun 2005 19:04:58 +0200
+Sebastien Bacher <seb128@debian.org>  Wed, 14 Dec 2005 17:00:21 +0100

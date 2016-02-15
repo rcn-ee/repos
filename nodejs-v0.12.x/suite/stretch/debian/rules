@@ -1,0 +1,54 @@
+#!/usr/bin/make -f
+
+include /usr/share/cdbs/1/rules/utils.mk
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/autotools.mk
+
+# Needed by upstream build
+#  * recent gyp needed to build using flock
+bdeps = binutils, pkg-config
+bdeps +=, bash-completion, curl, procps
+bdeps +=, gyp (>= 0.1~svn1654)
+
+# Needed by upstream build and binary development package
+deps = python
+
+CDBS_BUILD_DEPENDS +=, $(bdeps), $(deps)
+CDBS_DEPENDS_nodejs-dev = $(deps)
+
+# suppress checking binary files, to not upset dpkg-source
+DEB_COPYRIGHT_CHECK_IGNORE_REGEX = ^(doc/trademark-policy\.pdf|doc/mac_osx_nodejs_installer_logo\.png|doc/.*-white-stripe\.jpg|favicon\.ico|deps/v8/benchmarks/v8-logo\.png|test/fixtures/person\.jpg.*|src/res/node\.ico|debian/(changelog|copyright(|_hints|_newhints)))$
+
+DEB_CONFIGURE_NORMAL_ARGS =
+DEB_CONFIGURE_EXTRA_FLAGS = --without-npm --without-snapshot --prefix=/usr
+
+DEB_DESTDIR = $(CURDIR)/debian/tmp
+DEB_MAKE_CLEAN_TARGET = clean
+#  * relax regression tests when targeted experimental suite
+exp-relax-check := $(if $(shell dpkg-parsechangelog | grep -x 'Distribution: \(experimental\|UNRELEASED\)'),-i)
+DEB_MAKE_CHECK_TARGET = $(exp-relax-check) test-simple test-message
+
+# hardening gyp
+CXXFLAGS+=$(CPPFLAGS)
+export CXXFLAGS
+export LDFLAGS
+
+# properly clean files from build, test, python
+clean::
+	rm -f config.gypi
+	rm -f config.mk
+	rm -f test/fixtures/hello.txt
+	rm -rf test/tmp
+	find . -name "*.pyc" -delete
+	rm -rf out
+
+binary-post-install/nodejs-v0.12.x::
+	mv debian/nodejs-v0.12.x/usr/bin/node debian/nodejs-v0.12.x/usr/bin/nodejs-v0.12.x
+	mv debian/nodejs-v0.12.x/usr/share/man/man1/node.1 debian/nodejs-v0.12.x/usr/share/man/man1/nodejs-v0.12.x.1
+
+# remove *.json files from documentation
+# remove all <script> tags from html files, js files are not installed anyway
+# TODO: when doc will be generated from markdown, patch doc/template.html instead
+binary-install/nodejs-v0.12.x::
+	find debian/nodejs-v0.12.x/usr/share/doc/nodejs-v0.12.x -name *.json -delete
+	sed -i -n '1h; 1!H; $${g; s/<script[^><]*>[^><]*<.script[^><]*>//g; p;}' debian/nodejs-v0.12.x/usr/share/doc/nodejs-v0.12.x/api/*.html

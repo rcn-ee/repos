@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+set -u
+
+case "$1" in
+    remove|purge)
+        update-alternatives --remove x-session-manager /usr/bin/startlxqt
+        ;;
+esac
+
+#DEBHELPER#
+
+exit 0

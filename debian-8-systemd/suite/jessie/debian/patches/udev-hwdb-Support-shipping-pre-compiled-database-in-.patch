@@ -1,0 +1,227 @@
+From: Martin Pitt <martin.pitt@ubuntu.com>
+Date: Fri, 17 Oct 2014 15:01:01 +0200
+Subject: udev hwdb: Support shipping pre-compiled database in system images
+
+In some cases it is preferable to ship system images with a pre-generated
+binary hwdb database, to avoid having to build it at runtime, avoid shipping
+the source hwdb files, or avoid storing large binary files in /etc.
+
+So if hwdb.bin does not exist in /etc/udev/, fall back to looking for it in
+UDEVLIBEXECDIR. This keeps the possibility to add files to /etc/udev/hwdb.d/
+and re-generating the database which trumps the one in /usr/lib.
+
+Add a new --usr flag to "udevadm hwdb --update" which puts the database
+into UDEVLIBEXECDIR.
+
+Adjust systemd-udev-hwdb-update.service to not generate the file in /etc if we
+already have it in /usr.
+---
+ man/udev.xml                              |  4 ++-
+ man/udevadm.xml                           |  9 +++++++
+ src/libudev/libudev-hwdb.c                | 42 ++++++++++++++++++++++++++-----
+ src/udev/udevadm-hwdb.c                   | 13 +++++++++-
+ units/systemd-udev-hwdb-update.service.in |  3 +++
+ 5 files changed, 63 insertions(+), 8 deletions(-)
+
+diff --git a/man/udev.xml b/man/udev.xml
+index 4e5f8f0..68c3586 100644
+--- a/man/udev.xml
++++ b/man/udev.xml
+@@ -758,7 +758,9 @@
+ 
+       <para>The content of all hwdb files is read by
+       <citerefentry><refentrytitle>udevadm</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+-      and compiled to a binary database located at <filename>/etc/udev/hwdb.bin</filename>.
++      and compiled to a binary database located at <filename>/etc/udev/hwdb.bin</filename>,
++      or alternatively <filename>/usr/lib/udev/hwdb.bin</filename> if you want ship the compiled
++      database in an immutable image.
+       During runtime only the binary database is used.</para>
+   </refsect1>
+ 
+diff --git a/man/udevadm.xml b/man/udevadm.xml
+index fbfa85a..590aaf9 100644
+--- a/man/udevadm.xml
++++ b/man/udevadm.xml
+@@ -495,6 +495,15 @@
+           </listitem>
+         </varlistentry>
+         <varlistentry>
++          <term><option>--usr</option></term>
++          <listitem>
++            <para>Put the compiled database into <filename>/usr/lib/udev/hwdb.bin</filename> instead.
++            Use this if you want to ship a pre-compiled database in immutable system images, or
++            don't use <filename>/etc/udev/hwdb.d</filename> and want to avoid large binary files in
++            <filename>/etc</filename>.</para>
++          </listitem>
++        </varlistentry>
++        <varlistentry>
+           <term><option>-t</option></term>
+           <term><option>--test=<replaceable>string</replaceable></option></term>
+           <listitem>
+diff --git a/src/libudev/libudev-hwdb.c b/src/libudev/libudev-hwdb.c
+index e0d4d7c..0a1365e 100644
+--- a/src/libudev/libudev-hwdb.c
++++ b/src/libudev/libudev-hwdb.c
+@@ -256,6 +256,11 @@ static int trie_search_f(struct udev_hwdb *hwdb, const char *search) {
+         return 0;
+ }
+ 
++static const char hwdb_bin_paths[] =
++    "/etc/udev/hwdb.bin\0"
++    UDEVLIBEXECDIR "/hwdb.bin\0";
++
++
+ /**
+  * udev_hwdb_new:
+  * @udev: udev library context
+@@ -266,6 +271,7 @@ static int trie_search_f(struct udev_hwdb *hwdb, const char *search) {
+  **/
+ _public_ struct udev_hwdb *udev_hwdb_new(struct udev *udev) {
+         struct udev_hwdb *hwdb;
++        const char *hwdb_bin_path;
+         const char sig[] = HWDB_SIG;
+ 
+         hwdb = new0(struct udev_hwdb, 1);
+@@ -275,30 +281,43 @@ _public_ struct udev_hwdb *udev_hwdb_new(struct udev *udev) {
+         hwdb->refcount = 1;
+         udev_list_init(udev, &hwdb->properties_list, true);
+ 
+-        hwdb->f = fopen("/etc/udev/hwdb.bin", "re");
++        /* find hwdb.bin in hwdb_bin_paths */
++        NULSTR_FOREACH(hwdb_bin_path, hwdb_bin_paths) {
++                hwdb->f = fopen(hwdb_bin_path, "re");
++                if (hwdb->f)
++                        break;
++                else if (errno == ENOENT)
++                        continue;
++                else {
++                        udev_dbg(udev, "error reading %s: %m", hwdb_bin_path);
++                        udev_hwdb_unref(hwdb);
++                        return NULL;
++                }
++        }
++
+         if (!hwdb->f) {
+-                udev_dbg(udev, "error reading /etc/udev/hwdb.bin: %m");
++                udev_err(udev, "hwdb.bin does not exist, please run udevadm hwdb --update");
+                 udev_hwdb_unref(hwdb);
+                 return NULL;
+         }
+ 
+         if (fstat(fileno(hwdb->f), &hwdb->st) < 0 ||
+             (size_t)hwdb->st.st_size < offsetof(struct trie_header_f, strings_len) + 8) {
+-                udev_dbg(udev, "error reading /etc/udev/hwdb.bin: %m");
++                udev_dbg(udev, "error reading %s: %m", hwdb_bin_path);
+                 udev_hwdb_unref(hwdb);
+                 return NULL;
+         }
+ 
+         hwdb->map = mmap(0, hwdb->st.st_size, PROT_READ, MAP_SHARED, fileno(hwdb->f), 0);
+         if (hwdb->map == MAP_FAILED) {
+-                udev_dbg(udev, "error mapping /etc/udev/hwdb.bin: %m");
++                udev_dbg(udev, "error mapping %s: %m", hwdb_bin_path);
+                 udev_hwdb_unref(hwdb);
+                 return NULL;
+         }
+ 
+         if (memcmp(hwdb->map, sig, sizeof(hwdb->head->signature)) != 0 ||
+             (size_t)hwdb->st.st_size != le64toh(hwdb->head->file_size)) {
+-                udev_dbg(udev, "error recognizing the format of /etc/udev/hwdb.bin");
++                udev_dbg(udev, "error recognizing the format of %s", hwdb_bin_path);
+                 udev_hwdb_unref(hwdb);
+                 return NULL;
+         }
+@@ -352,14 +371,25 @@ _public_ struct udev_hwdb *udev_hwdb_unref(struct udev_hwdb *hwdb) {
+ }
+ 
+ bool udev_hwdb_validate(struct udev_hwdb *hwdb) {
++        bool found = false;
++        const char* p;
+         struct stat st;
+ 
+         if (!hwdb)
+                 return false;
+         if (!hwdb->f)
+                 return false;
+-        if (stat("/etc/udev/hwdb.bin", &st) < 0)
++
++        /* if hwdb.bin doesn't exist anywhere, we need to update */
++        NULSTR_FOREACH(p, hwdb_bin_paths) {
++                if (stat(p, &st) >= 0) {
++                        found = true;
++                        break;
++                }
++        }
++        if (!found)
+                 return true;
++
+         if (timespec_load(&hwdb->st.st_mtim) != timespec_load(&st.st_mtim))
+                 return true;
+         return false;
+diff --git a/src/udev/udevadm-hwdb.c b/src/udev/udevadm-hwdb.c
+index 65cbf61..ba9bc71 100644
+--- a/src/udev/udevadm-hwdb.c
++++ b/src/udev/udevadm-hwdb.c
+@@ -526,14 +526,20 @@ static int import_file(struct udev *udev, struct trie *trie, const char *filenam
+ static void help(void) {
+         printf("Usage: udevadm hwdb OPTIONS\n"
+                "  -u,--update          update the hardware database\n"
++               "  --usr                generate in " UDEVLIBEXECDIR " instead of /etc/udev\n"
+                "  -t,--test=MODALIAS   query database and print result\n"
+                "  -r,--root=PATH       alternative root path in the filesystem\n"
+                "  -h,--help\n\n");
+ }
+ 
+ static int adm_hwdb(struct udev *udev, int argc, char *argv[]) {
++        enum {
++                ARG_USR = 0x100,
++        };
++
+         static const struct option options[] = {
+                 { "update", no_argument,       NULL, 'u' },
++                { "usr",    no_argument,       NULL, ARG_USR },
+                 { "test",   required_argument, NULL, 't' },
+                 { "root",   required_argument, NULL, 'r' },
+                 { "help",   no_argument,       NULL, 'h' },
+@@ -541,6 +547,7 @@ static int adm_hwdb(struct udev *udev, int argc, char *argv[]) {
+         };
+         const char *test = NULL;
+         const char *root = "";
++        const char *hwdb_bin_dir = "/etc/udev";
+         bool update = false;
+         struct trie *trie = NULL;
+         int err, c;
+@@ -551,6 +558,9 @@ static int adm_hwdb(struct udev *udev, int argc, char *argv[]) {
+                 case 'u':
+                         update = true;
+                         break;
++                case ARG_USR:
++                        hwdb_bin_dir = UDEVLIBEXECDIR;
++                        break;
+                 case 't':
+                         test = optarg;
+                         break;
+@@ -624,7 +634,8 @@ static int adm_hwdb(struct udev *udev, int argc, char *argv[]) {
+                 log_debug("strings dedup'ed: %8zu bytes (%8zu)",
+                           trie->strings->dedup_len, trie->strings->dedup_count);
+ 
+-                if (asprintf(&hwdb_bin, "%s/etc/udev/hwdb.bin", root) < 0) {
++                hwdb_bin = strjoin(root, "/", hwdb_bin_dir, "/hwdb.bin", NULL);
++                if (!hwdb_bin) {
+                         rc = EXIT_FAILURE;
+                         goto out;
+                 }
+diff --git a/units/systemd-udev-hwdb-update.service.in b/units/systemd-udev-hwdb-update.service.in
+index 153d93c..62ddd19 100644
+--- a/units/systemd-udev-hwdb-update.service.in
++++ b/units/systemd-udev-hwdb-update.service.in
+@@ -13,6 +13,9 @@ Conflicts=shutdown.target
+ After=systemd-readahead-collect.service systemd-readahead-replay.service systemd-remount-fs.service
+ Before=sysinit.target shutdown.target systemd-update-done.service
+ ConditionNeedsUpdate=/etc
++ConditionPathExists=|!@udevlibexecdir@/hwdb.bin
++ConditionPathExists=|/etc/udev/hwdb.bin
++ConditionDirectoryNotEmpty=|/etc/udev/hwdb.d/
+ 
+ [Service]
+ Type=oneshot

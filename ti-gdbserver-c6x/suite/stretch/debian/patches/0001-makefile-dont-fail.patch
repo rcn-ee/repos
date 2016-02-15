@@ -1,0 +1,25 @@
+From 9fc6b43c65c72628658f24e6640971d1dd59aa82 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Fri, 16 Oct 2015 14:12:43 -0500
+Subject: [PATCH] makefile: dont fail
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 2f84bcf..18a01cf 100644
+--- a/Makefile
++++ b/Makefile
+@@ -15,5 +15,5 @@ distclean: clean
+ install:
+ 	install -m 755 -d ${DESTDIR}/usr/share/ti/gdbc6x/include
+ 	install -m 755 -d ${DESTDIR}/usr/share/ti/gdbc6x/lib
+-	cp -rf ./include/* $(DESTDIR)/usr/share/ti/gdbc6x/include
+-	cp -rf ./lib/* $(DESTDIR)/usr/share/ti/gdbc6x/lib
++	cp -rf ./include/* $(DESTDIR)/usr/share/ti/gdbc6x/include || true
++	cp -rf ./lib/* $(DESTDIR)/usr/share/ti/gdbc6x/lib || true
+-- 
+2.6.1
+

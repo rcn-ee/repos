@@ -1,0 +1,67 @@
+From: Michal Schmidt <mschmidt@redhat.com>
+Date: Wed, 10 Sep 2014 20:34:36 +0200
+Subject: time-util: add clock_boottime_or_monotonic
+
+Upstream commit:
+commit 77ff2de999b7ea6b1b4a3a218fbd9d62bb07cd54
+Author: Tom Gundersen <teg@jklm.no>
+Date:   Thu Jul 24 18:36:37 2014 +0200
+
+    time-util: add clock_boottime_or_monotonic
+
+    CLOCK_BOOTTIME is not supported by timerfd on older kernels, so for the time beeing,
+    use this helper instead which will fallback to CLOCK_MONOTONIC if CLOCK_BOOTTIME is
+    not supported.
+
+Conflicts:
+	src/shared/time-util.c
+	src/shared/time-util.h
+---
+ src/shared/time-util.c | 19 +++++++++++++++++++
+ src/shared/time-util.h |  2 ++
+ 2 files changed, 21 insertions(+)
+
+diff --git a/src/shared/time-util.c b/src/shared/time-util.c
+index 8e5de77..d5c5217 100644
+--- a/src/shared/time-util.c
++++ b/src/shared/time-util.c
+@@ -22,6 +22,7 @@
+ #include <time.h>
+ #include <string.h>
+ #include <sys/timex.h>
++#include <sys/timerfd.h>
+ 
+ #include "util.h"
+ #include "time-util.h"
+@@ -826,3 +827,21 @@ bool ntp_synced(void) {
+ 
+         return true;
+ }
++
++clockid_t clock_boottime_or_monotonic(void) {
++        static clockid_t clock = -1;
++        int fd;
++
++        if (clock != -1)
++                return clock;
++
++        fd = timerfd_create(CLOCK_BOOTTIME, TFD_NONBLOCK|TFD_CLOEXEC);
++        if (fd < 0)
++                clock = CLOCK_MONOTONIC;
++        else {
++                safe_close(fd);
++                clock = CLOCK_BOOTTIME;
++        }
++
++        return clock;
++}
+diff --git a/src/shared/time-util.h b/src/shared/time-util.h
+index 34ba6c1..ad9a4fd 100644
+--- a/src/shared/time-util.h
++++ b/src/shared/time-util.h
+@@ -95,3 +95,5 @@ int parse_sec(const char *t, usec_t *usec);
+ int parse_nsec(const char *t, nsec_t *nsec);
+ 
+ bool ntp_synced(void);
++
++clockid_t clock_boottime_or_monotonic(void);

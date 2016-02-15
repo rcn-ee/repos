@@ -1,0 +1,18 @@
+Description: fix test that fails if http response is chunked.
+Bug-Node: https://github.com/joyent/node/pull/5926
+Author: Jérémy Lal <kapouer@melix.org>
+Last-Update: 2013-07-28
+--- a/test/simple/test-http-upgrade-server.js
++++ b/test/simple/test-http-upgrade-server.js
+@@ -44,8 +44,9 @@
+   });
+ 
+   server.on('request', function(req, res) {
+-    res.writeHead(200, {'Content-Type': 'text/plain'});
+-    res.write('okay');
++    var okay = 'okay';
++    res.writeHead(200, {'Content-Type': 'text/plain', 'Content-Length':okay.length});
++    res.write(okay);
+     res.end();
+   });
+ 

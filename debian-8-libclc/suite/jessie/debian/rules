@@ -1,0 +1,31 @@
+#!/usr/bin/make -f
+
+export VERBOSE=1
+
+export DH_VERBOSE=1
+
+export DEB_BUILD_MAINT_OPTIONS=hardening=+all
+
+confflags=--prefix=/usr \
+          --with-llvm-config=/usr/bin/llvm-config-3.7 \
+
+path=debian/tmp/usr/lib/clc
+
+%:
+	dh $@ --parallel
+
+override_dh_auto_configure:
+	./configure.py $(confflags)
+
+override_dh_install:
+	test $(shell sha512sum $(path)/cypress-r600--.bc) != $(shell sha512sum $(path)/cayman-r600--.bc) || \
+	    rm -f $(path)/cypress-r600--.bc && \
+	    ln -s cayman-r600--.bc $(path)/cypress-r600--.bc
+	test $(shell sha512sum $(path)/cedar-r600--.bc) != $(shell sha512sum $(path)/barts-r600--.bc) || \
+	    rm -f $(path)/cedar-r600--.bc && \
+	    ln -s barts-r600--.bc $(path)/cedar-r600--.bc
+	dh_install
+
+override_dh_clean:
+	dh_clean
+	find -name '*.d' -execdir rm -f {} \;

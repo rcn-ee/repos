@@ -1,0 +1,20 @@
+#!/usr/bin/make -f
+
+SCONSFLAGS=CREATE_AVI=1 SYSTEM_LUA=1 --prefix=$(CURDIR)/debian/fceux/usr
+
+ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+    NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+    SCONSFLAGS += -j$(NUMJOBS)
+endif
+
+override_dh_auto_build:
+	scons $(SCONSFLAGS)
+
+override_dh_auto_install:
+	scons $(SCONSFLAGS) install
+
+override_dh_auto_clean:
+	scons $(SCONSFLAGS) -c
+
+%:
+	dh $@

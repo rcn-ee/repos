@@ -1,0 +1,15 @@
+Description: raise timeout in test
+Bug-Node: https://github.com/joyent/node/issues/4412
+Author: Jérémy Lal <kapouer@melix.org>
+Last-Update: 2013-07-28
+--- a/test/simple/test-http-client-timeout-agent.js
++++ b/test/simple/test-http-client-timeout-agent.js
+@@ -70,7 +70,7 @@
+       console.log('req#'+this.id+' error');
+       this.destroy();
+     });
+-    req.setTimeout(50, function () {
++    req.setTimeout(500, function () {
+       var req = this;
+       console.log('req#'+this.id + ' timeout');
+       req.abort();

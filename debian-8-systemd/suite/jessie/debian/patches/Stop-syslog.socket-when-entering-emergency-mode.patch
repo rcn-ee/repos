@@ -1,0 +1,31 @@
+From: Michael Biebl <biebl@debian.org>
+Date: Wed, 20 Aug 2014 23:52:47 +0200
+Subject: Stop syslog.socket when entering emergency mode
+
+When rsyslog is installed, the syslog.socket is active when entering
+emergency mode. This triggers the start of rsyslog.service along with
+its dependencies. Since sysinit.target conflicts with emergency.target,
+this breaks the emergency mode.
+As a workaround, add a Conflicts=syslog.socket to emergency.service to
+make sure the socket is stopped when emergency.service is started.
+
+Note: This issue is specific to v208 and is not reproducible with v214,
+so this patch should be dropped again when packaging newer releases.
+
+Closes: #755581
+---
+ units/emergency.service.in | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/units/emergency.service.in b/units/emergency.service.in
+index 224a434..950331b 100644
+--- a/units/emergency.service.in
++++ b/units/emergency.service.in
+@@ -11,6 +11,7 @@ Documentation=man:sulogin(8)
+ DefaultDependencies=no
+ Conflicts=shutdown.target
+ Conflicts=rescue.service
++Conflicts=syslog.socket
+ Before=shutdown.target
+ 
+ [Service]

@@ -1,9 +1,84 @@
-policykit-1 (0.112-4.3~20150216+1) jessie; urgency=low
+policykit-1 (0.113-2~bpo80+20151104+1) jessie; urgency=low
 
-  * Rebuild for repos.rcn-ee.net
-  * libmozjs185-dev
+  * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Mon, 16 Feb 2015 12:30:26 -0600
+ -- Robert Nelson <robertcnelson@gmail.com>  Wed, 04 Nov 2015 12:04:06 -0600
+
+policykit-1 (0.113-2) experimental; urgency=medium
+
+  [ Simon McVittie ]
+  * policykit-1.links: statically alias polkit.service (upstream's name)
+    as polkitd.service (Debian's historical name)
+
+  [ Martin Pitt ]
+  * debian/policykit-1.{pre,pos}inst: Temporarily mask polkitd.service while
+    policykit-1 is unpackaged but not yet configured. During that time we
+    don't yet have our D-Bus policy in /etc so that polkitd cannot work yet.
+    This can be dropped once the D-Bus policy moves to /usr.
+    (Closes: #794723, LP: #1447654)
+
+ -- Martin Pitt <mpitt@debian.org>  Wed, 21 Oct 2015 08:28:11 +0200
+
+policykit-1 (0.113-1) experimental; urgency=medium
+
+  * Team upload.
+
+  [ Martin Pitt ]
+  * policykit-1.postinst: Don't kill polkitd under systemd, but properly
+    restart it. This avoids killing it shortly after systemd tries to
+    bus-activate it on installation. (LP: #1447654)
+
+  [ Simon McVittie ]
+  * Disable silent build rules. (Previously done in Ubuntu, although
+    it seems to have been lost in a merge somewhere.)
+  * New upstream release
+    - drop most patches: they either came from upstream, or have been
+      merged upstream
+    - add new function to symbols file
+    - fixes CVE-2015-4625, CVE-2015-3218, CVE-2015-3255, CVE-2015-3256
+  * Annotate remaining patches with a bit more information. They are:
+    - 01_pam_polkit.patch: use Debian's common-* infrastructure,
+      plus pam_env to get the global environment and locale.
+      Debian-specific.
+    - 02_gettext.patch: Use gettext to translate .policy files at
+      runtime, allowing for Ubuntu-style language packs.
+      Debian-specific (mainly for Ubuntu's benefit, really).
+    - 05_revert-admin-identities-unix-group-wheel.patch: Debian does
+      not use the "wheel" group like Red Hat derivatives do;
+      treat uid 0 as the administrative identity instead.
+      Debian-specific.
+    - 08_chdir_root.patch: Explicitly use chdir("/") instead of
+      relying on user's home in `getent passwd` being set properly.
+      Potentially upstreamable?
+  * policykit-1.postinst: restart polkit.service, not polkitd.service
+    (which doesn't exist)
+
+ -- Simon McVittie <smcv@debian.org>  Fri, 03 Jul 2015 13:33:59 +0100
+
+policykit-1 (0.112-5) experimental; urgency=medium
+
+  * Team upload.
+  * Go back to mozjs 1.8.5, like the version in unstable: mozjs 17 has
+    been removed from Debian, and mozjs 24 requires significant upstream
+    changes and no longer has a C API (Closes: #776744)
+  * Add a symlink so the old library can run the new agent helper
+    (Closes: #699447)
+  * Add patch from upstream to work around older versions of libpam-systemd
+    which would give root processes the real uid's XDG_RUNTIME_DIR
+    under su; it shouldn't be necessary any more, but is harmless
+    (Closes: #772125)
+  * Replace 03_complete_session.patch with a change from upstream
+    which seems like a more correct solution for LP#445303, LP#649939
+  * Add patches from upstream to treat background processes as part of
+    the same uid's active GUI session if any, fixing use of
+    dbus-user-session (Closes: #779988)
+  * Add patches from upstream to fix some memory leaks (Closes: #775158,
+    LP: #1417637)
+  * Add patch from upstream to fix redundant removal of an event source
+  * Add patch to use libsystemd instead of the libsystemd-login compat
+    library (Closes: #779756)
+
+ -- Simon McVittie <smcv@debian.org>  Tue, 31 Mar 2015 18:13:28 +0100
 
 policykit-1 (0.112-4) experimental; urgency=medium
 

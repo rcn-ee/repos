@@ -1,0 +1,47 @@
+This package is maintained in git on alioth by the debian-science team
+http://anonscm.debian.org/cgit/debian-science/packages/caollada-dom.git
+
+The upstream source is in git on github, maintained by Roman Diankov
+https://github.com/rdiankov/collada-dom
+Release tarballs are at:
+https://github.com/rdiankov/collada-dom/releases
+This is a maintained fork of the original codebase from Sony at:
+http://sourceforge.net/projects/collada-dom
+
+Upstream tarballs are repacked by uscan to drop 3rd-party packages and licenses
+into a +ds1 orig tarball. The filter rules for this are the exclude-files lines in debian/copyright
+
+
+The debian-science git repo has standard git-buildpackage branches
+master
+upstream  (contents of the repacked (no 3rd-party stuff) upstream  +ds1 tarball) 
+pristine-tar (metadata to allow exact reconstruction of tarball in 'upstream' branch)
+
+
+To make a build
+---------------
+git clone git://anonscm.debian.org/debian-science/packages/collada-dom.git
+cd collada-dom
+gbp buildpackage
+
+To update to a new upstream release
+-----------------------------------
+git clone git://anonscm.debian.org/debian-science/packages/collada-dom.git
+cd collada-dom
+gbp import-orig --pristine-tar --uscan
+
+(or, more manually:
+uscan
+git import-orig --pristine-tar ../collada-dom_${ver}+ds1.orig.tar.gz
+(fill in ${ver} as appropriate)
+)
+
+git push --all --tags
+
+To make a debian release
+------------------------
+git clone git://anonscm.debian.org/debian-science/packages/collada-dom.git
+cd collada-dom
+gbp buildpackage --git-tag
+debian/rules clean
+git push --all --tags

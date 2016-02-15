@@ -1,0 +1,15 @@
+Index: pastebinit/pastebinit
+===================================================================
+--- pastebinit.orig/pastebinit	2015-02-16 12:37:04.434846203 -0500
++++ pastebinit/pastebinit	2015-02-16 12:39:22.709104460 -0500
+@@ -37,8 +37,8 @@
+ 
+ # Now try to override it with a distributor pastebin
+ try:
+-    import lsb_release
+-    release = lsb_release.get_distro_information()['ID'].lower()
++    import platform
++    release = platform.linux_distribution()[0].lower()
+     if release == 'debian':
+         defaultPB = "http://paste.debian.net"
+     elif release == 'fedora':

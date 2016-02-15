@@ -1,0 +1,76 @@
+From: Sjoerd Simons <sjoerd@luon.net>
+Date: Thu, 25 Sep 2014 21:36:00 +0200
+Subject: sd-bus: Accept :no-sender as the destination field
+
+Revert 51b4ea6f485a85. Older systemd versions (e.g. v208) used
+:no-sender as a fallback in direct connections. New systemd doesn't
+accept this as a valid sender name and thus causes issues when new
+systemctl tries to talk to old systemd.
+
+Should be removed after jessie is released
+
+Closes: #762146
+---
+ src/libsystemd/sd-bus/bus-internal.c | 13 +++++++++++++
+ src/libsystemd/sd-bus/bus-internal.h |  1 +
+ src/libsystemd/sd-bus/bus-message.c  |  4 ++--
+ 3 files changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/src/libsystemd/sd-bus/bus-internal.c b/src/libsystemd/sd-bus/bus-internal.c
+index 0bea8ca..2c1b69e 100644
+--- a/src/libsystemd/sd-bus/bus-internal.c
++++ b/src/libsystemd/sd-bus/bus-internal.c
+@@ -166,6 +166,19 @@ bool service_name_is_valid(const char *p) {
+         return true;
+ }
+ 
++bool sender_name_is_valid(const char *p) {
++        if (isempty(p))
++                return false;
++
++#ifndef NOLEGACY
++        if (streq(p, ":no-sender"))
++                return true;
++#endif
++
++        return service_name_is_valid(p);
++}
++
++
+ bool member_name_is_valid(const char *p) {
+         const char *q;
+ 
+diff --git a/src/libsystemd/sd-bus/bus-internal.h b/src/libsystemd/sd-bus/bus-internal.h
+index d1183d6..de85297 100644
+--- a/src/libsystemd/sd-bus/bus-internal.h
++++ b/src/libsystemd/sd-bus/bus-internal.h
+@@ -342,6 +342,7 @@ struct sd_bus {
+ 
+ bool interface_name_is_valid(const char *p) _pure_;
+ bool service_name_is_valid(const char *p) _pure_;
++bool sender_name_is_valid(const char *p) _pure_;
+ bool member_name_is_valid(const char *p) _pure_;
+ bool object_path_is_valid(const char *p) _pure_;
+ char *object_path_startswith(const char *a, const char *b) _pure_;
+diff --git a/src/libsystemd/sd-bus/bus-message.c b/src/libsystemd/sd-bus/bus-message.c
+index 4768a1f..0cc2915 100644
+--- a/src/libsystemd/sd-bus/bus-message.c
++++ b/src/libsystemd/sd-bus/bus-message.c
+@@ -5035,7 +5035,7 @@ int bus_message_parse_fields(sd_bus_message *m) {
+                         if (!streq(signature, "s"))
+                                 return -EBADMSG;
+ 
+-                        r = message_peek_field_string(m, service_name_is_valid, &ri, item_size, &m->destination);
++                        r = message_peek_field_string(m, sender_name_is_valid, &ri, item_size, &m->destination);
+                         break;
+ 
+                 case BUS_MESSAGE_HEADER_SENDER:
+@@ -5046,7 +5046,7 @@ int bus_message_parse_fields(sd_bus_message *m) {
+                         if (!streq(signature, "s"))
+                                 return -EBADMSG;
+ 
+-                        r = message_peek_field_string(m, service_name_is_valid, &ri, item_size, &m->sender);
++                        r = message_peek_field_string(m, sender_name_is_valid, &ri, item_size, &m->sender);
+ 
+                         if (r >= 0 && m->sender[0] == ':' && m->bus->bus_client && !m->bus->is_kernel) {
+                                 m->creds.unique_name = (char*) m->sender;

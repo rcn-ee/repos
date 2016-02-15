@@ -1,0 +1,46 @@
+initramfs-tools (0.94) unstable; urgency=low
+
+    To improve boot speed and avoid some complications, video drivers are
+    no longer included in the initramfs by default (MODULES=most).
+
+ -- maximilian attems <maks@debian.org>  Mon, 05 Apr 2010 08:10:34 +0200
+
+initramfs-tools (0.76) unstable; urgency=low
+
+    This release features nfs auto detection in the initramfs.
+    The boot paramaters are parsed according to the linux source
+    Documentation/kernel-parameters.txt and more specifically
+    Documentation/nfsroot.txt.
+
+    The initramfs-tools(8) manpage documents the parsed boot parameter.
+    Note that the undocumented and non compliant nfsoption bootarg got
+    dropped.
+
+ -- maximilian attems <maks@sternwelten.at>  Wed, 23 Aug 2006 08:47:26 +0200
+
+initramfs-tools (0.61) unstable; urgency=low
+
+    This release moves the initramfs-tools confdir from /etc/mkinitramfs to
+    /etc/initramfs-tools. Packages are encouraged to ship files as scripts
+    under /usr/share/initramfs-tools.
+
+    Local tests behaved fine, but be warned that this could potentially
+    cause boot troubles on upgrade.
+
+ -- maximilian attems <maks@sternwelten.at>  Wed, 21 Jun 2006 09:16:01 +0200
+
+initramfs-tools (0.10) breezy; urgency=low
+
+    This release includes hardware auto detection in the initramfs.
+    This means two things in particular that are important:
+
+    1) the resulting initramfs will be huge.  Like 10 megs huge.
+       I will shrink it down once it's correct.  If you're on an
+       arch that doesn't like >4mb initramfs', then this won't boot.
+
+    2) Your network drivers are loaded in the initramfs, so hotplug
+       won't see a network event, so ifup won't be run.  This will
+       be fixed shortly in hotplug.
+
+ -- Jeff Bailey <jbailey@ubuntu.com>  Fri, 17 Jun 2005 15:17:06 +0000
+

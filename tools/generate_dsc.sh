@@ -4,7 +4,7 @@
 
 DIR="$PWD"
 
-generate_dsc () {
+run () {
 	if [ -d ${DIR}/${suite} ] ; then
 		rm -rf ${DIR}/${suite}/
 	fi
@@ -65,27 +65,32 @@ generate_dsc () {
 dist="debian"
 suite="wheezy"
 if [ -d suite/${suite}/ ] ; then
-	generate_dsc
+	run
 fi
 
 suite="jessie"
 if [ -d suite/${suite}/ ] ; then
-	generate_dsc
+	run
+fi
+
+suite="stretch"
+if [ -d suite/${suite}/ ] ; then
+	run
 fi
 
 dist="ubuntu"
 suite="trusty"
 if [ -d suite/${suite}/ ] ; then
-	generate_dsc
+	run
 fi
 
-suite="utopic"
+suite="wily"
 if [ -d suite/${suite}/ ] ; then
-	generate_dsc
+	run
 fi
 
-suite="vivid"
+suite="xenial"
 if [ -d suite/${suite}/ ] ; then
-	generate_dsc
+	run
 fi
-
+#

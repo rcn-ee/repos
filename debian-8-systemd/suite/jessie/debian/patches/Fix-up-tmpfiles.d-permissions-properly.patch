@@ -1,0 +1,30 @@
+From: Tollef Fog Heen <tfheen@err.no>
+Date: Wed, 29 Jun 2011 13:57:07 +0200
+Subject: Fix up tmpfiles.d permissions properly
+
+---
+ tmpfiles.d/legacy.conf | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tmpfiles.d/legacy.conf b/tmpfiles.d/legacy.conf
+index 3219672..a634c17 100644
+--- a/tmpfiles.d/legacy.conf
++++ b/tmpfiles.d/legacy.conf
+@@ -10,7 +10,7 @@
+ # These files are considered legacy and are unnecessary on legacy-free
+ # systems.
+ 
+-d /run/lock 0755 root root -
++d /run/lock 1777 root root -
+ L /var/lock - - - - ../run/lock
+ 
+ # /run/lock/subsys is used for serializing SysV service execution, and
+@@ -24,7 +24,7 @@ d /run/lock/subsys 0755 root root -
+ # On modern systems a BSD file lock is a better choice if
+ # serialization is needed on those devices.
+ 
+-d /run/lock/lockdev 0775 root lock -
++d /run/lock/lockdev 0775 root root -
+ 
+ # /forcefsck, /fastboot and /forcequotecheck are deprecated in favor of the
+ # kernel command line options 'fsck.mode=force', 'fsck.mode=skip' and

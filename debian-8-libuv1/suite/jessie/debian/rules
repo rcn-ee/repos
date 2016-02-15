@@ -1,0 +1,34 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+include /usr/share/dpkg/default.mk
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+export SOVER=1
+export SONAME=libuv.so.$(SOVER)
+export SOPKG=libuv$(SOVER)
+
+%:
+	dh $@ --with autoreconf
+
+override_dh_autoreconf:
+	dh_autoreconf ./autogen.sh
+
+override_dh_strip:
+	dh_strip --dbg-package=$(SOPKG)-dbg
+
+override_dh_clean:
+	dh_clean
+	# Clean autoreconf files
+	$(RM) -- ltmain.sh m4/libtool.m4
+	find m4 -name 'lt*.m4' -delete
+
+# Testsuite is not robust enough, ignore errors on non-linux
+override_dh_auto_test:
+ifeq ($(DEB_BUILD_ARCH_OS),linux)
+	dh_auto_test
+else
+	-dh_auto_test
+endif

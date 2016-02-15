@@ -1,0 +1,4 @@
+# Backward compatibility with old OMAP UART-style ttyO0 naming
+
+SUBSYSTEM=="tty", ATTR{uartclk}!="0", KERNEL=="ttyS[0-9]", SYMLINK+="ttyO%n"
+
