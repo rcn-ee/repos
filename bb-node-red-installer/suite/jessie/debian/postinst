@@ -22,6 +22,9 @@ service="node-red"
 export NODE_PATH=/usr/local/lib/node_modules
 
 npm_actually_install () {
+	# npm: force prefix to /usr/local (npm: 1.4.21 -> 3.7.1)
+	npm config set -g prefix /usr/local/
+
 	echo "${package}:Installing: ${pkg}-${ver} (for ${npm_project})"
 	TERM=dumb npm install -g ${pkg}@${ver}
 	echo "${ver}" > "${NODE_PATH}/${pkg}/${pkg}.version"
@@ -62,7 +65,7 @@ npm_check_n_install () {
 
 npm_install () {
 	unset node_version
-	node_version=$(nodejs --version || true)
+	node_version=$(node --version || true)
 
 	unset js_patch
 	npm_project="node-red"
