@@ -1,3 +1,8 @@
 #!/bin/sh
 
-xvfb-run -a dh_auto_test
+xvfb-run -a --server-args="-screen 0 1024x768x24" \
+    Xephyr -reset -br -screen 1024x768 :2 & x_pid=$!
+
+trap "kill ${x_pid}" EXIT
+
+DISPLAY=:2 dbus-launch --exit-with-session dh_auto_test
