@@ -4,7 +4,7 @@ mirror="http://http.debian.net/debian"
 
 package_name="extra-cmake-modules"
 debian_pkg_name="${package_name}"
-package_version="5.18.0"
+package_version="5.19.0"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}-${package_version}"
 
@@ -17,4 +17,4 @@ debian_version="${package_version}-1"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 
-jessie_version="~bpo80+20160127+1"
+jessie_version="~bpo80+20160216+1"
