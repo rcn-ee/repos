@@ -16,5 +16,5 @@ debian_untar=""
 debian_patch=""
 local_patch="rcnee1"
 
-jessie_version="~bpo80+20160215+1"
-stretch_version="~bpo90+20160215+1"
+jessie_version="~bpo80+20160217+1"
+stretch_version="~bpo90+20160217+1"
