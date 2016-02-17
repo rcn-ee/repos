@@ -21,5 +21,5 @@ debian_untar=""
 debian_patch=""
 local_patch="rcnee1"
 
-wheezy_version="~bpo70+20160210+1"
-jessie_version="~bpo80+20160210+1"
+wheezy_version="~bpo70+20160217+1"
+jessie_version="~bpo80+20160217+1"
