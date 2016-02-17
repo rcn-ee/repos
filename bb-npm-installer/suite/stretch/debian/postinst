@@ -22,10 +22,10 @@ export NODE_PATH=/usr/local/lib/node_modules
 
 npm_actually_install () {
 	# npm: force prefix to /usr/local (npm: 1.4.21 -> 3.7.1)
-	${npm_bin} config set -g prefix /usr/local/
+	${node_bin} ${npm_bin} config set -g prefix /usr/local/
 
 	echo "${package}:Installing: ${pkg}-${ver} (for ${npm_project})"
-	TERM=dumb ${npm_bin} install -g ${pkg}@${ver}
+	TERM=dumb ${node_bin} ${npm_bin} install -g ${pkg}@${ver}
 	echo "${ver}" > "${NODE_PATH}/${pkg}/${pkg}.version"
 	echo "${node_version}" > "${NODE_PATH}/${pkg}/${pkg}.node_version"
 }
@@ -55,17 +55,19 @@ npm_check_n_install () {
 }
 
 npm_install () {
-	unset npm_bin
-	if [ -f /usr/local/bin/npm ] ; then
-		npm_bin="/usr/local/bin/npm"
+	unset node_bin
+	if [ -f /usr/bin/nodejs-v0.10.x ] ; then
+		node_bin="/usr/bin/nodejs-v0.10.x"
 	else
-		npm_bin="/usr/bin/npm"
+		node_bin="/usr/bin/nodejs"
 	fi
-	echo "${package}:npm --version = [`${npm_bin} --version`]"
+
+	npm_bin="/usr/bin/npm"
+	echo "${package}:/usr/bin/npm --version = [`${node_bin} ${npm_bin} --version`]"
 
 	unset node_version
 	node_version=$(node --version || true)
-	echo "${package}:node --version = [`node --version`]"
+	echo "${package}:nodejs --version = [`${node_bin} --version`]"
 
 	npm_project="bb-npm-installer"
 	pkg="npm" ; ver="3.7.1" ; npm_check_n_install
