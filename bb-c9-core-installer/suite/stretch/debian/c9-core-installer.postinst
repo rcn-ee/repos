@@ -35,10 +35,10 @@ export NODE_PATH=/usr/local/lib/node_modules
 
 npm_actually_install () {
 	# npm: force prefix to /usr/local (npm: 1.4.21 -> 3.7.1)
-	${npm_bin} config set -g prefix /usr/local/
+	${node_bin} ${npm_bin} config set -g prefix /usr/local/
 
 	echo "${package}:Installing: ${pkg}-${ver} (for ${npm_project})"
-	TERM=dumb ${npm_bin} install -g ${pkg}@${ver}
+	TERM=dumb ${node_bin} ${npm_bin} install -g ${pkg}@${ver}
 	echo "${ver}" > "${NODE_PATH}/${pkg}/${pkg}.version"
 	echo "${node_version}" > "${NODE_PATH}/${pkg}/${pkg}.node_version"
 }
@@ -68,17 +68,53 @@ npm_check_n_install () {
 }
 
 npm_install () {
-	unset npm_bin
-	if [ -f /usr/local/bin/npm ] ; then
-		npm_bin="/usr/local/bin/npm"
-	else
-		npm_bin="/usr/bin/npm"
-	fi
-	echo "${package}:npm --version = [`${npm_bin} --version`]"
+	node_bin="/usr/bin/nodejs"
+	npm_bin="/usr/bin/npm"
+
+	#/usr/bin/nodejs-v0.10.x
+	#-> /usr/bin/npm (works)
+	#-> /usr/local/bin/npm (works)
+
+	#/usr/bin/nodejs-v0.12.x
+	#-> /usr/bin/npm (broken)
+	#-> /usr/local/bin/npm (works)
 
 	unset node_version
-	node_version=$(node --version || true)
-	echo "${package}:node --version = [`node --version`]"
+	node_version=$(/usr/bin/nodejs --version || true)
+
+	#wheezy + jessie
+	unset test_version
+	if [ -f /usr/bin/nodejs-v0.10.x ] ; then
+		test_version=$(/usr/bin/nodejs-v0.10.x --version || true)
+		if [ "x${test_version}" = "x${node_version}" ] ; then
+			node_bin="/usr/bin/nodejs-v0.10.x"
+			if [ -f /usr/local/bin/npm ] ; then
+				npm_bin="/usr/local/bin/npm"
+			else
+				npm_bin="/usr/bin/npm"
+			fi
+		fi
+	fi
+
+	#jessie + stretch
+	unset test_version
+	if [ -f /usr/bin/nodejs-v0.12.x ] ; then
+		test_version=$(/usr/bin/nodejs-v0.12.x --version || true)
+		if [ "x${test_version}" = "x${node_version}" ] ; then
+			node_bin="/usr/bin/nodejs-v0.12.x"
+			if [ -f /usr/local/bin/npm ] ; then
+				npm_bin="/usr/local/bin/npm"
+			else
+				#bb-npm-installer would make sure this never happens...
+				#nodejs-v0.12.x & /usr/bin/npm broken...
+				node_bin="/usr/bin/nodejs-v0.10.x"
+				npm_bin="/usr/bin/npm"
+			fi
+		fi
+	fi
+
+	echo "${package}:npm: [`${node_bin} ${npm_bin} --version`]"
+	echo "${package}:node: [`${node_bin} --version`]"
 
 	npm_project="c9-core-installer"
 	pkg="winston" ; ver="2.1.1" ; npm_check_n_install
@@ -123,7 +159,7 @@ validdate_file() {
 
 dl_install() {
 	unset node_version
-	node_version=$(node --version || true)
+	node_version=$(/usr/bin/nodejs --version || true)
 	case "${node_version}" in
 	v0.10.38|v0.10.39|v0.10.40|v0.10.41|v0.10.42|v0.10.43)
 		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v0.10.x"
@@ -181,7 +217,7 @@ dl_install() {
 maybe_install_depend () {
 	if [ ! -f "$C9_DIR/node_modules/${pkg}/${package}.version" ] ; then
 		echo "${package}:Installing: ${pkg}-${ver}.tgz (for ${npm_project})"
-		"$NPM" install /var/cache/${package}/${pkg}-${ver}.tgz
+		"$NODE" "$NPM" install /var/cache/${package}/${pkg}-${ver}.tgz
 		echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
 		echo "${node_version}" > "$C9_DIR/node_modules/${pkg}/${package}.node_version"
 	else
@@ -192,7 +228,7 @@ maybe_install_depend () {
 		if [ ! "x${old_version}" = "x${ver}" ] ; then
 			rm -rf "$C9_DIR/node_modules/${pkg}/" || true
 			echo "${package}:Installing: ${pkg}-${ver}.tgz (for ${npm_project})"
-			"$NPM" install /var/cache/${package}/${pkg}-${ver}.tgz
+			"$NODE" "$NPM" install /var/cache/${package}/${pkg}-${ver}.tgz
 			echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
 			echo "${node_version}" > "$C9_DIR/node_modules/${pkg}/${package}.node_version"
 		else
@@ -203,7 +239,7 @@ maybe_install_depend () {
 			if [ ! "x${old_version}" = "x${node_version}" ] ; then
 				rm -rf "$C9_DIR/node_modules/${pkg}/" || true
 				echo "${package}:Installing: ${pkg}-${ver}.tgz (for ${npm_project})"
-				"$NPM" install /var/cache/${package}/${pkg}-${ver}.tgz
+				"$NODE" "$NPM" install /var/cache/${package}/${pkg}-${ver}.tgz
 				echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
 				echo "${node_version}" > "$C9_DIR/node_modules/${pkg}/${package}.node_version"
 			fi
@@ -230,11 +266,11 @@ c9_directory () {
 
 	#node:
 	mkdir -p "$C9_DIR"/node/bin
-	ln -sf $(which node) "$C9_DIR"/node/bin/node
-	ln -sf $(which npm) "$C9_DIR"/node/bin/
+	ln -sf ${node_bin} "$C9_DIR"/node/bin/node
+	ln -sf ${npm_bin} "$C9_DIR"/node/bin/
 
 	# use local npm cache
-	"$NPM" config -g set cache  "$C9_DIR/tmp/.npm"
+	"$NODE" "$NPM" config -g set cache  "$C9_DIR/tmp/.npm"
 
 	# node-gyp uses sytem node or fails with command not found if
 	# we don't bump this node up in the path
@@ -268,7 +304,7 @@ c9_directory () {
 	echo ${package}:python
 	"$PYTHON" virtualenv-12.0.7/virtualenv.py "$C9_DIR/python"
 	PYTHON="$C9_DIR/python/bin/python"
-	"$NPM" config -g set python "$PYTHON"
+	"$NODE" "$NPM" config -g set python "$PYTHON"
 
 	#tmux_install
 	ln -sf $(which tmux) "$C9_DIR"/bin/tmux
@@ -294,7 +330,7 @@ c9_directory () {
 	npm_project="node-gyp@2.0.2"
 
 	echo "${package}:Installing ${npm_project}"
-	"$NPM" install node-gyp@2.0.2
+	"$NODE" "$NPM" install node-gyp@2.0.2
 	echo "2.0.2" > "$C9_DIR/node_modules/node-gyp/${package}.version"
 
 	case "${node_version}" in
@@ -312,7 +348,7 @@ c9_directory () {
 		echo "${package}:Installing ${npm_project}"
 		#npm pack pty.js@0.2.8
 		##stupid: "--unsafe-perm=true" npm actually wants you to install as root then thru sudo!!!
-		"$NPM" install --unsafe-perm=true /var/cache/${package}/pty.js-0.2.8.tgz
+		"$NODE" "$NPM" install --unsafe-perm=true /var/cache/${package}/pty.js-0.2.8.tgz
 		;;
 	v0.12.10|v0.12.11)
 		npm_project="pty.js@0.2.8"
@@ -328,7 +364,7 @@ c9_directory () {
 		echo "${package}:Installing ${npm_project}"
 		#npm pack pty.js@0.2.8
 		##stupid: "--unsafe-perm=true" npm actually wants you to install as root then thru sudo!!!
-		"$NPM" install --unsafe-perm=true /var/cache/${package}/pty.js-0.2.8.tgz
+		"$NODE" "$NPM" install --unsafe-perm=true /var/cache/${package}/pty.js-0.2.8.tgz
 		;;
 	v4.2.2|v4.2.3|v4.2.4|v4.2.5|v4.2.6|v4.3.0|v4.3.1)
 		npm_project="pty.js@0.3.0"
@@ -344,7 +380,7 @@ c9_directory () {
 		echo "${package}:Installing ${npm_project}"
 		#npm pack pty.js@0.3.0
 		##stupid: "--unsafe-perm=true" npm actually wants you to install as root then thru sudo!!!
-		"$NPM" install --unsafe-perm=true /var/cache/${package}/pty.js-0.3.0.tgz
+		"$NODE" "$NPM" install --unsafe-perm=true /var/cache/${package}/pty.js-0.3.0.tgz
 		;;
 	*)
 		npm_project="pty.js@0.3.0"
@@ -360,7 +396,7 @@ c9_directory () {
 		echo "${package}:Installing ${npm_project}"
 		#npm pack pty.js@0.3.0
 		##stupid: "--unsafe-perm=true" npm actually wants you to install as root then thru sudo!!!
-		"$NPM" install --unsafe-perm=true /var/cache/${package}/pty.js-0.3.0.tgz
+		"$NODE" "$NPM" install --unsafe-perm=true /var/cache/${package}/pty.js-0.3.0.tgz
 		;;
 	esac
 
@@ -374,9 +410,9 @@ c9_directory () {
 # vfsextend collab
 
 	#Cleanup:
-	"$NPM" config -g delete cache
-	"$NPM" config -g delete tmp
-	"$NPM" config -g delete python
+	"$NODE" "$NPM" config -g delete cache
+	"$NODE" "$NPM" config -g delete tmp
+	"$NODE" "$NPM" config -g delete python
 
 	systemctl enable cloud9.socket || true
 }
