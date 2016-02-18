@@ -4,14 +4,15 @@
 
 set -e
 
-service="node-red"
-
 # avoid cancelling of "stop" via socket or D-Bus activation
 if [ -d /run/systemd/system ] && [ "$1" = remove ]; then
-    systemctl mask --runtime ${service}.service
-    # stop ${service}.service manually since invoke-rc.d currently doesn't
-    # deal with masked services (see Bug #717109)
-    systemctl stop ${service}.service || true
+	systemctl mask --runtime bonescript.socket
+	systemctl mask --runtime bonescript-autorun.service
+
+	# stop ${service}.service manually since invoke-rc.d currently doesn't
+	# deal with masked services (see Bug #717109)
+	systemctl stop bonescript.socket || true
+	systemctl stop bonescript-autorun.service || true
 fi
 
 # summary of how this script can be called:
@@ -41,9 +42,9 @@ remove_dir () {
 }
 
 remove_all() {
-	wfile="/etc/avahi/services/node-red.service" ; remove_file
-	wdir="${NODE_PATH}/node-red" ; remove_dir
-	wdir="${NODE_PATH}/systemd" ; remove_dir
+	wfile="/etc/avahi/services/bone101.service" ; remove_file
+	wfile="/etc/profile.d/node.sh" ; remove_file
+	wdir="${NODE_PATH}/bonescript" ; remove_dir
 }
 
 case "$1" in
