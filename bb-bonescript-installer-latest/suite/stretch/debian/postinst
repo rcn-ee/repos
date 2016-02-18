@@ -24,6 +24,10 @@ export NODE_PATH=/usr/local/lib/node_modules
 npm_options="--unsafe-perm --progress=false"
 
 npm_actually_install () {
+	if [ "x${node_symlink}" = "xenable" ] ;then
+		ln -sfn /usr/bin/nodejs-v0.10.x /usr/bin/node
+	fi
+
 	# npm: force prefix to /usr/local (npm: 1.4.21 -> 3.7.1)
 	${node_bin} ${npm_bin} config set -g prefix /usr/local/
 
@@ -31,6 +35,10 @@ npm_actually_install () {
 	TERM=dumb ${node_bin} ${npm_bin} install -g ${npm_options} ${pkg}@${ver}
 	echo "${ver}" > "${NODE_PATH}/${pkg}/${pkg}.version"
 	echo "${node_version}" > "${NODE_PATH}/${pkg}/${pkg}.node_version"
+
+	if [ "x${node_symlink}" = "xenable" ] ;then
+		ln -sfn /usr/bin/nodejs-v0.12.x /usr/bin/node
+	fi
 }
 
 npm_check_n_install () {
@@ -58,7 +66,7 @@ npm_check_n_install () {
 }
 
 npm_install () {
-	node_bin="/usr/bin/nodejs"
+	node_bin="/usr/bin/node"
 	npm_bin="/usr/bin/npm"
 
 	#/usr/bin/nodejs-v0.10.x
@@ -70,8 +78,22 @@ npm_install () {
 	#-> /usr/local/bin/npm (works)
 
 	unset node_version
-	#node_version=$(/usr/bin/nodejs --version || true)
-	node_version=$(/usr/bin/nodejs-v0.10.x --version || true)
+	node_version=$(/usr/bin/node --version || true)
+
+	unset node_symlink
+	unset test_version
+	if [ -f /usr/bin/nodejs-v0.12.x ] ; then
+		test_version=$(/usr/bin/nodejs-v0.12.x --version || true)
+		if [ "x${test_version}" = "x${node_version}" ] ; then
+			node_symlink="enable"
+			node_bin="/usr/bin/nodejs-v0.10.x"
+			if [ -f /usr/local/bin/npm ] ; then
+				npm_bin="/usr/local/bin/npm"
+			else
+				npm_bin="/usr/bin/npm"
+			fi
+		fi
+	fi
 
 	#wheezy + jessie
 	unset test_version
