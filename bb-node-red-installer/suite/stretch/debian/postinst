@@ -23,10 +23,10 @@ export NODE_PATH=/usr/local/lib/node_modules
 
 npm_actually_install () {
 	# npm: force prefix to /usr/local (npm: 1.4.21 -> 3.7.1)
-	${npm_bin} config set -g prefix /usr/local/
+	${node_bin} ${npm_bin} config set -g prefix /usr/local/
 
 	echo "${package}:Installing: ${pkg}-${ver} (for ${npm_project})"
-	TERM=dumb ${npm_bin} install -g ${pkg}@${ver}
+	TERM=dumb ${node_bin} ${npm_bin} install -g ${pkg}@${ver}
 	echo "${ver}" > "${NODE_PATH}/${pkg}/${pkg}.version"
 	echo "${node_version}" > "${NODE_PATH}/${pkg}/${pkg}.node_version"
 
@@ -64,17 +64,47 @@ npm_check_n_install () {
 }
 
 npm_install () {
-	unset npm_bin
-	if [ -f /usr/local/bin/npm ] ; then
-		npm_bin="/usr/local/bin/npm"
-	else
-		npm_bin="/usr/bin/npm"
-	fi
-	echo "${package}:npm --version = [`${npm_bin} --version`]"
+	#/usr/bin/nodejs-v0.10.x
+	#-> /usr/bin/npm (works)
+	#-> /usr/local/bin/npm (works)
+
+	#/usr/bin/nodejs-v0.12.x
+	#-> /usr/bin/npm (broken)
+	#-> /usr/local/bin/npm (works)
 
 	unset node_version
-	node_version=$(node --version || true)
-	echo "${package}:node --version = [`node --version`]"
+	node_version=$(/usr/bin/node --version || true)
+
+	unset test_version
+	if [ -f /usr/bin/nodejs-v0.10.x ] ; then
+		test_version=$(/usr/bin/nodejs-v0.10.x --version || true)
+		if [ "x${test_version}" = "x${node_version}" ] ; then
+			node_bin="/usr/bin/nodejs-v0.10.x"
+			if [ -f /usr/local/bin/npm ] ; then
+				npm_bin="/usr/local/bin/npm"
+			else
+				npm_bin="/usr/bin/npm"
+			fi
+		fi
+	fi
+
+	unset test_version
+	if [ -f /usr/bin/nodejs-v0.12.x ] ; then
+		test_version=$(/usr/bin/nodejs-v0.12.x --version || true)
+		if [ "x${test_version}" = "x${node_version}" ] ; then
+			node_bin="/usr/bin/nodejs-v0.10.x"
+			if [ -f /usr/local/bin/npm ] ; then
+				npm_bin="/usr/local/bin/npm"
+			else
+				#nodejs-v0.12.x & /usr/bin/npm broken...
+				node_bin="/usr/bin/nodejs-v0.10.x"
+				npm_bin="/usr/bin/npm"
+			fi
+		fi
+	fi
+
+	echo "${package}:npm: [`${node_bin} ${npm_bin} --version`]"
+	echo "${package}:node: [`${node_bin} --version`]"
 
 	unset js_patch
 	npm_project="node-red"
@@ -106,6 +136,7 @@ npm_install () {
 
 	systemctl enable ${service}.socket || true
 	systemctl start ${service} || true
+	echo "${package}:Installed"
 }
 
 case "$1" in
