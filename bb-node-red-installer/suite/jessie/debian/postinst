@@ -75,6 +75,7 @@ npm_install () {
 	unset node_version
 	node_version=$(/usr/bin/node --version || true)
 
+	#wheezy + jessie
 	unset test_version
 	if [ -f /usr/bin/nodejs-v0.10.x ] ; then
 		test_version=$(/usr/bin/nodejs-v0.10.x --version || true)
@@ -88,6 +89,7 @@ npm_install () {
 		fi
 	fi
 
+	#jessie + stretch
 	unset test_version
 	if [ -f /usr/bin/nodejs-v0.12.x ] ; then
 		test_version=$(/usr/bin/nodejs-v0.12.x --version || true)
@@ -96,6 +98,7 @@ npm_install () {
 			if [ -f /usr/local/bin/npm ] ; then
 				npm_bin="/usr/local/bin/npm"
 			else
+				#bb-npm-installer would make sure this never happens...
 				#nodejs-v0.12.x & /usr/bin/npm broken...
 				node_bin="/usr/bin/nodejs-v0.10.x"
 				npm_bin="/usr/bin/npm"
