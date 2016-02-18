@@ -217,7 +217,7 @@ dl_install() {
 maybe_install_depend () {
 	if [ ! -f "$C9_DIR/node_modules/${pkg}/${package}.version" ] ; then
 		echo "${package}:Installing: ${pkg}-${ver}.tgz (for ${npm_project})"
-		"$NODE" "$NPM" install /var/cache/${package}/${pkg}-${ver}.tgz
+		${NODE} ${NPM} install /var/cache/${package}/${pkg}-${ver}.tgz
 		echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
 		echo "${node_version}" > "$C9_DIR/node_modules/${pkg}/${package}.node_version"
 	else
@@ -228,7 +228,7 @@ maybe_install_depend () {
 		if [ ! "x${old_version}" = "x${ver}" ] ; then
 			rm -rf "$C9_DIR/node_modules/${pkg}/" || true
 			echo "${package}:Installing: ${pkg}-${ver}.tgz (for ${npm_project})"
-			"$NODE" "$NPM" install /var/cache/${package}/${pkg}-${ver}.tgz
+			${NODE} ${NPM} install /var/cache/${package}/${pkg}-${ver}.tgz
 			echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
 			echo "${node_version}" > "$C9_DIR/node_modules/${pkg}/${package}.node_version"
 		else
@@ -239,7 +239,7 @@ maybe_install_depend () {
 			if [ ! "x${old_version}" = "x${node_version}" ] ; then
 				rm -rf "$C9_DIR/node_modules/${pkg}/" || true
 				echo "${package}:Installing: ${pkg}-${ver}.tgz (for ${npm_project})"
-				"$NODE" "$NPM" install /var/cache/${package}/${pkg}-${ver}.tgz
+				${NODE} ${NPM} install /var/cache/${package}/${pkg}-${ver}.tgz
 				echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
 				echo "${node_version}" > "$C9_DIR/node_modules/${pkg}/${package}.node_version"
 			fi
@@ -269,8 +269,11 @@ c9_directory () {
 	ln -sf ${node_bin} "$C9_DIR"/node/bin/node
 	ln -sf ${npm_bin} "$C9_DIR"/node/bin/
 
+	echo "${package}:npm: [`${NODE} ${NPM} --version`]"
+	echo "${package}:node: [`${NODE} --version`]"
+
 	# use local npm cache
-	"$NODE" "$NPM" config -g set cache  "$C9_DIR/tmp/.npm"
+	${NODE} ${NPM} config -g set cache  "$C9_DIR/tmp/.npm"
 
 	# node-gyp uses sytem node or fails with command not found if
 	# we don't bump this node up in the path
@@ -304,7 +307,7 @@ c9_directory () {
 	echo ${package}:python
 	"$PYTHON" virtualenv-12.0.7/virtualenv.py "$C9_DIR/python"
 	PYTHON="$C9_DIR/python/bin/python"
-	"$NODE" "$NPM" config -g set python "$PYTHON"
+	${NODE} ${NPM} config -g set python "$PYTHON"
 
 	#tmux_install
 	ln -sf $(which tmux) "$C9_DIR"/bin/tmux
@@ -325,12 +328,12 @@ c9_directory () {
 
 	echo "${package}:Installing ${npm_project}"
 	#npm pack https://github.com/c9/nak/tarball/c9
-	"$NPM" install /var/cache/${package}/nak-0.3.3.tgz
+	${NODE} ${NPM} install /var/cache/${package}/nak-0.3.3.tgz
 
 	npm_project="node-gyp@2.0.2"
 
 	echo "${package}:Installing ${npm_project}"
-	"$NODE" "$NPM" install node-gyp@2.0.2
+	${NODE} ${NPM} install node-gyp@2.0.2
 	echo "2.0.2" > "$C9_DIR/node_modules/node-gyp/${package}.version"
 
 	case "${node_version}" in
@@ -348,7 +351,7 @@ c9_directory () {
 		echo "${package}:Installing ${npm_project}"
 		#npm pack pty.js@0.2.8
 		##stupid: "--unsafe-perm=true" npm actually wants you to install as root then thru sudo!!!
-		"$NODE" "$NPM" install --unsafe-perm=true /var/cache/${package}/pty.js-0.2.8.tgz
+		${NODE} ${NPM} install --unsafe-perm=true /var/cache/${package}/pty.js-0.2.8.tgz
 		;;
 	v0.12.10|v0.12.11)
 		npm_project="pty.js@0.2.8"
@@ -364,7 +367,7 @@ c9_directory () {
 		echo "${package}:Installing ${npm_project}"
 		#npm pack pty.js@0.2.8
 		##stupid: "--unsafe-perm=true" npm actually wants you to install as root then thru sudo!!!
-		"$NODE" "$NPM" install --unsafe-perm=true /var/cache/${package}/pty.js-0.2.8.tgz
+		${NODE} ${NPM} install --unsafe-perm=true /var/cache/${package}/pty.js-0.2.8.tgz
 		;;
 	v4.2.2|v4.2.3|v4.2.4|v4.2.5|v4.2.6|v4.3.0|v4.3.1)
 		npm_project="pty.js@0.3.0"
@@ -380,7 +383,7 @@ c9_directory () {
 		echo "${package}:Installing ${npm_project}"
 		#npm pack pty.js@0.3.0
 		##stupid: "--unsafe-perm=true" npm actually wants you to install as root then thru sudo!!!
-		"$NODE" "$NPM" install --unsafe-perm=true /var/cache/${package}/pty.js-0.3.0.tgz
+		${NODE} ${NPM} install --unsafe-perm=true /var/cache/${package}/pty.js-0.3.0.tgz
 		;;
 	*)
 		npm_project="pty.js@0.3.0"
@@ -396,7 +399,7 @@ c9_directory () {
 		echo "${package}:Installing ${npm_project}"
 		#npm pack pty.js@0.3.0
 		##stupid: "--unsafe-perm=true" npm actually wants you to install as root then thru sudo!!!
-		"$NODE" "$NPM" install --unsafe-perm=true /var/cache/${package}/pty.js-0.3.0.tgz
+		${NODE} ${NPM} install --unsafe-perm=true /var/cache/${package}/pty.js-0.3.0.tgz
 		;;
 	esac
 
@@ -410,9 +413,9 @@ c9_directory () {
 # vfsextend collab
 
 	#Cleanup:
-	"$NODE" "$NPM" config -g delete cache
-	"$NODE" "$NPM" config -g delete tmp
-	"$NODE" "$NPM" config -g delete python
+	${NODE} ${NPM} config -g delete cache
+	${NODE} ${NPM} config -g delete tmp
+	${NODE} ${NPM} config -g delete python
 
 	systemctl enable cloud9.socket || true
 }
