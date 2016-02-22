@@ -220,6 +220,10 @@ qt5_lxqt () {
 	site="${debian_pool}/main/l"
 	package_name="lxqt-sudo" ; package_version="${package_name}_0.10.0-3" ; check_http
 
+	#https://tracker.debian.org/pkg/libfm-qt
+	site="${debian_pool}/main/libf"
+	package_name="libfm-qt" ; package_version="${package_name}_0.10.0+20151214" ; check_http
+
 	#https://tracker.debian.org/pkg/pcmanfm-qt
 	site="${debian_pool}/main/p"
 	package_name="pcmanfm-qt" ; package_version="${package_name}_0.10.0-2" ; check_http
@@ -266,7 +270,7 @@ nodejs () {
 	package_name="openssl"; package_version="${package_name}_1.0.2f-2"; check_http
 
 	site="${debian_pool}/main/n"
-	filter="4.2"
+	filter="4.3"
 	package_name="nodejs"; package_version="${package_name}_4.2.6~dfsg-1"; check_http
 }
 
