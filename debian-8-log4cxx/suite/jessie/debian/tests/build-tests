@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# testscript to run liblog4cxx unit tests.
+# Part of the Debian package for liblog4cxx
+
+set -e
+
+WORKDIR=$(mktemp -d)
+trap "rm -rf $WORKDIR" 0 INT QUIT ABRT PIPE TERM
+
+# Copy the source tree to $ADTTMP before perparing it for the tests
+cp -r . $WORKDIR ; cd $WORKDIR
+
+# Patching the automake file to use the shared library instead of static linking.
+patch -p1 <debian/tests/src-test-cpp-Makefile-am.patch
+
+# run configure to prepare for building the tests.
+# redirect, as debci seems to interpretate everything to stderr as failure...
+# This is #809661
+./autogen.sh 2>&1
+./configure  2>&1
+
+# run the checks, again #809661
+make check 2>&1 || (echo "MAKE CHECK FAILED" 1>&2; exit 1)
+
+# debugging -- drop all the output into the ADT_ARTIFACTS.
+# (lines kept to offload brain-mermoy :))
+#rm -rf $ADT_ARTIFACTS/dir
+#mkdir -p $ADT_ARTIFACTS/dir
+#cp -r . $ADT_ARTIFACTS/dir

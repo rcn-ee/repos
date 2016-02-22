@@ -1,0 +1,61 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 110-bugfix-LOGCXX-249.dpatch by  <matthew@localhost>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Fixes crash when using ConsoleAppender without setting a layout
+
+@DPATCH@
+diff -urNad log4cxx-0.10.0~/src/changes/changes.xml log4cxx-0.10.0/src/changes/changes.xml
+--- log4cxx-0.10.0~/src/changes/changes.xml	2008-03-31 15:34:52.000000000 -0700
++++ log4cxx-0.10.0/src/changes/changes.xml	2008-07-17 06:58:26.000000000 -0700
+@@ -219,6 +219,7 @@
+ <action issue="LOGCXX-246">Config refresh hangs a client application that uses TelnetAppender</action>
+ <action issue="LOGCXX-247">MSVC project has wrong additional include directories</action>
+ <action issue="LOGCXX-248">ODBCAppender has unicode issues</action>
++<action issue="LOGCXX-249">Console appender crashes if layout is not set</action>
+ <action issue="LOGCXX-251">NDC::cloneStack and NDC::inherit missing in 0.10.0 RC2</action>
+ <action issue="LOGCXX-252">Add documentation for use of operator&lt;&lt; in logging requests</action>
+ <action issue="LOGCXX-253">Transcoder compilation error with utf-8 charset</action>
+diff -urNad log4cxx-0.10.0~/src/main/cpp/writerappender.cpp log4cxx-0.10.0/src/main/cpp/writerappender.cpp
+--- log4cxx-0.10.0~/src/main/cpp/writerappender.cpp	2008-03-31 15:34:09.000000000 -0700
++++ log4cxx-0.10.0/src/main/cpp/writerappender.cpp	2008-07-17 06:57:48.000000000 -0700
+@@ -115,6 +115,10 @@
+ 
+     return false;
+   }
++  
++  if (layout == 0) {
++    return false;
++  }
+ 
+   return true;
+ }
+diff -urNad log4cxx-0.10.0~/src/test/cpp/consoleappendertestcase.cpp log4cxx-0.10.0/src/test/cpp/consoleappendertestcase.cpp
+--- log4cxx-0.10.0~/src/test/cpp/consoleappendertestcase.cpp	2008-03-31 15:33:32.000000000 -0700
++++ log4cxx-0.10.0/src/test/cpp/consoleappendertestcase.cpp	2008-07-17 06:59:42.000000000 -0700
+@@ -33,7 +33,7 @@
+                 //
+                 LOGUNIT_TEST(testDefaultThreshold);
+                 LOGUNIT_TEST(testSetOptionThreshold);
+-
++                LOGUNIT_TEST(testNoLayout);
+    LOGUNIT_TEST_SUITE_END();
+ 
+ 
+@@ -42,6 +42,16 @@
+         WriterAppender* createWriterAppender() const {
+           return new log4cxx::ConsoleAppender();
+         }
++        
++        void testNoLayout() {
++            Pool p;
++            ConsoleAppenderPtr appender(new ConsoleAppender());
++            appender->activateOptions(p);
++            LoggerPtr logger(Logger::getRootLogger());
++            logger->addAppender(appender);
++            LOG4CXX_INFO(logger, "No layout specified for ConsoleAppender");
++            logger->removeAppender(appender);
++        }
+ };
+ 
+ LOGUNIT_TEST_SUITE_REGISTRATION(ConsoleAppenderTestCase);

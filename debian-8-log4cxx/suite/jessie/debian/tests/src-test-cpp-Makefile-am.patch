@@ -1,0 +1,50 @@
+Desciption: Prepare sourcecode to for debci checks
+ The testcase needs to be patched to use the packaged .so, and while
+ on it, we only configure it to build the tests.
+Author: Tobias Frost <tobi@debian.org>
+Last-Update: 2015-06-14
+diff --git a/src/test/cpp/Makefile.am b/src/test/cpp/Makefile.am
+index 626a7f7..863d52c 100644
+--- a/src/test/cpp/Makefile.am
++++ b/src/test/cpp/Makefile.am
+@@ -149,12 +149,13 @@ testsuite_SOURCES = \
+         ndctestcase.cpp \
+         propertyconfiguratortest.cpp 
+ 
+-testsuite_LDADD = \
+-        $(top_builddir)/src/main/cpp/liblog4cxx.la
++#testsuite_LDADD = \
++#        $(top_builddir)/src/main/cpp/liblog4cxx.la
+ 
++testsuite_LDFLAGS = $$(pkg-config --libs liblog4cxx)
+ 
+-testsuite_DEPENDENCIES = \
+-        $(top_builddir)/src/main/cpp/liblog4cxx.la
++#testsuite_DEPENDENCIES = \
++#        $(top_builddir)/src/main/cpp/liblog4cxx.la
+ 
+ check: testsuite
+ 
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 4a68a45..05e6628 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -13,4 +13,4 @@
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+ #
+-SUBDIRS = main examples site test
++SUBDIRS = test
+diff --git a/src/test/cpp/Makefile.am b/src/test/cpp/Makefile.am
+index 626a7f7..763326f 100644
+--- a/src/test/cpp/Makefile.am
++++ b/src/test/cpp/Makefile.am
+@@ -22,7 +22,7 @@ noinst_HEADERS = \
+ 	$(top_srcdir)/src/test/cpp/xml/*.h \
+ 	$(top_srcdir)/src/test/cpp/*.h
+ 
+-INCLUDES = -I$(top_srcdir)/src/main/include -I$(top_builddir)/src/main/include
++#INCLUDES = -I$(top_srcdir)/src/main/include -I$(top_builddir)/src/main/include
+ 
+ noinst_PROGRAMS = testsuite
+ 

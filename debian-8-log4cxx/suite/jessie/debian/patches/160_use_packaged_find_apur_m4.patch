@@ -1,0 +1,17 @@
+Description: Don't use find_apr.m4 and find_apu.m4
+Don't use them from the upstream tar, but use the packaged one from libapr1-dev
+Author: Tobias Frost <tobi@coldtobi.de>
+Forwarded: not-needed, Debian specific
+Last-Update: 2014-03-14
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/autogen.sh
++++ b/autogen.sh
+@@ -24,6 +24,6 @@
+ 
+ rm -f config.cache
+ rm -f config.log
+-aclocal -I .
++aclocal -I /usr/share/apr-1.0/build/
+ autoconf
+ automake -a --copy

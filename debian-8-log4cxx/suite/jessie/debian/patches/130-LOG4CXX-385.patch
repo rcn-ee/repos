@@ -1,0 +1,30 @@
+Description: FTBFS due to double installed header
+Origin: https://issues.apache.org/jira/secure/attachment/12485439/log4cxx-385.patch
+Bug: https://issues.apache.org/jira/browse/LOGCXX-385
+Forwarded: not-needed
+Applied-Upstream: r1511175
+Last-Update: 2014-03-13
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/src/main/include/log4cxx/Makefile.am
++++ b/src/main/include/log4cxx/Makefile.am
+@@ -15,7 +15,7 @@
+ #
+ SUBDIRS = helpers net nt rolling spi varia xml config db private pattern filter
+ log4cxxincdir = $(includedir)/log4cxx
+-log4cxxinc_HEADERS= $(top_srcdir)/src/main/include/log4cxx/*.h log4cxx.h
++log4cxxinc_HEADERS= $(top_srcdir)/src/main/include/log4cxx/*.h
+ DISTCLEANFILES = log4cxx.h
+ EXTRA_DIST = log4cxx.hw
+ 
+--- a/src/main/include/log4cxx/private/Makefile.am
++++ b/src/main/include/log4cxx/private/Makefile.am
+@@ -14,7 +14,7 @@
+ # limitations under the License.
+ #
+ privateincdir = $(includedir)/log4cxx/private
+-privateinc_HEADERS= $(top_builddir)/src/main/include/log4cxx/private/*.h log4cxx_private.h
++privateinc_HEADERS= $(top_builddir)/src/main/include/log4cxx/private/*.h
+ DISTCLEANFILES = log4cxx_private.h
+ EXTRA_DIST = log4cxx_private.hw
+ 
