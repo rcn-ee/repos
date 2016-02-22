@@ -240,9 +240,9 @@ qt5_lxqt () {
 	site="${debian_pool}/main/l"
 	package_name="lxqt-panel" ; package_version="${package_name}_0.10.0-7" ; check_http
 
-#in progress..
+	#https://tracker.debian.org/pkg/lximage-qt
 	site="${debian_pool}/main/l"
-	package_name="lximage-qt" ; package_version="${package_name}_0.4.0-7" ; check_http
+	package_name="lximage-qt" ; package_version="${package_name}_0.4.0+20160108-1" ; check_http
 }
 
 machinekit () {
