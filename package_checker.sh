@@ -326,7 +326,7 @@ ros () {
 	package_name="ros-cmake-modules"; package_version="${package_name}_0.4.0-2"; check_http
 	package_name="ros-message-generation"; package_version="${package_name}_0.3.0-3"; check_http
 	package_name="ros-message-runtime"; package_version="${package_name}_0.4.12-3"; check_http
-	package_name="ros-genmsg"; package_version="${package_name}_0.5.6-3"; check_http
+	package_name="ros-genmsg"; package_version="${package_name}_0.5.6-4"; check_http
 	package_name="ros-genpy"; package_version="${package_name}_0.5.7-5"; check_http
 	package_name="ros-gencpp"; package_version="${package_name}_0.5.3-3"; check_http
 	package_name="ros-genlisp"; package_version="${package_name}_0.4.15-3"; check_http
