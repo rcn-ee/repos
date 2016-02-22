@@ -6,7 +6,7 @@ package_name="libfm-qt"
 debian_pkg_name="${package_name}"
 package_version="0.10.0+20151214"
 package_source="${package_name}_${package_version}.orig.tar.xz"
-src_dir="${package_name}-${package_version}"
+src_dir=""
 
 git_repo=""
 git_sha=""
