@@ -2,14 +2,14 @@ From: Jochen Sprickerhof <git@jochen.sprickerhof.de>
 Date: Thu, 19 Nov 2015 17:27:23 +0100
 Subject: use GNUInstallDirs when installing into /usr
 
-use libdir for libexec as per policy
+use lib for libexec
 ---
  cmake/all.cmake            | 12 ++++++++++++
  cmake/catkin_package.cmake |  6 +++---
  2 files changed, 15 insertions(+), 3 deletions(-)
 
 diff --git a/cmake/all.cmake b/cmake/all.cmake
-index 6910906..8b0ca46 100644
+index 6910906..ce1918f 100644
 --- a/cmake/all.cmake
 +++ b/cmake/all.cmake
 @@ -154,6 +154,17 @@ message(STATUS "catkin ${catkin_VERSION}")
@@ -23,7 +23,7 @@ index 6910906..8b0ca46 100644
 +set(CATKIN_GLOBAL_ETC_DESTINATION "${CMAKE_INSTALL_SYSCONFDIR}")
 +set(CATKIN_GLOBAL_INCLUDE_DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 +set(CATKIN_GLOBAL_LIB_DESTINATION "${CMAKE_INSTALL_LIBDIR}")
-+set(CATKIN_GLOBAL_LIBEXEC_DESTINATION "${CMAKE_INSTALL_LIBDIR}")
++set(CATKIN_GLOBAL_LIBEXEC_DESTINATION lib)
 +set(CATKIN_GLOBAL_PYTHON_DESTINATION ${PYTHON_INSTALL_DIR})
 +set(CATKIN_GLOBAL_SHARE_DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}")
 +else()
