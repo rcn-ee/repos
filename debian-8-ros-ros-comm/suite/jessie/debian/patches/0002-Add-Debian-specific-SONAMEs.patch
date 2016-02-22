@@ -13,9 +13,11 @@ Subject: Add Debian specific SONAMEs
  utilities/xmlrpcpp/CMakeLists.txt        | 1 +
  8 files changed, 10 insertions(+)
 
+diff --git a/clients/roscpp/CMakeLists.txt b/clients/roscpp/CMakeLists.txt
+index 252d43f..bbaaecc 100644
 --- a/clients/roscpp/CMakeLists.txt
 +++ b/clients/roscpp/CMakeLists.txt
-@@ -115,6 +115,7 @@
+@@ -115,6 +115,7 @@ add_library(roscpp
    src/libros/service.cpp
    src/libros/this_node.cpp
    )
@@ -23,9 +25,11 @@ Subject: Add Debian specific SONAMEs
  
  add_dependencies(roscpp roscpp_gencpp rosgraph_msgs_gencpp std_msgs_gencpp)
  
+diff --git a/tools/rosbag/CMakeLists.txt b/tools/rosbag/CMakeLists.txt
+index 4d063ea..2cfdcff 100644
 --- a/tools/rosbag/CMakeLists.txt
 +++ b/tools/rosbag/CMakeLists.txt
-@@ -20,6 +20,7 @@
+@@ -20,6 +20,7 @@ add_library(rosbag
    src/player.cpp
    src/recorder.cpp
    src/time_translator.cpp)
@@ -33,9 +37,11 @@ Subject: Add Debian specific SONAMEs
  
  target_link_libraries(rosbag ${catkin_LIBRARIES} ${Boost_LIBRARIES})
  
+diff --git a/tools/rosbag_storage/CMakeLists.txt b/tools/rosbag_storage/CMakeLists.txt
+index 4ceee01..053bb35 100644
 --- a/tools/rosbag_storage/CMakeLists.txt
 +++ b/tools/rosbag_storage/CMakeLists.txt
-@@ -33,6 +33,7 @@
+@@ -33,6 +33,7 @@ add_library(rosbag_storage
    src/view.cpp
    src/uncompressed_stream.cpp
  )
@@ -43,30 +49,32 @@ Subject: Add Debian specific SONAMEs
  
  target_link_libraries(rosbag_storage ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${BZIP2_LIBRARIES} ${console_bridge_LIBRARIES})
  
+diff --git a/tools/rosconsole/CMakeLists.txt b/tools/rosconsole/CMakeLists.txt
+index f7a4c00..9be7e66 100644
 --- a/tools/rosconsole/CMakeLists.txt
 +++ b/tools/rosconsole/CMakeLists.txt
-@@ -63,8 +63,10 @@
+@@ -63,13 +63,16 @@ ENDIF(${CMAKE_SYSTEM} MATCHES "Darwin-11.*")
  include_directories(include ${catkin_INCLUDE_DIRS} ${rosconsole_backend_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
  
  add_library(rosconsole_backend_interface src/rosconsole/rosconsole_backend.cpp)
-+set_target_properties(rosconsole_backend_interface PROPERTIES VERSION ${rosconsole_VERSION} SOVERSION "0d")
++set_target_properties(rosconsole_backend_interface PROPERTIES VERSION ${rosconsole_VERSION} SOVERSION "1d")
  
  add_library(rosconsole src/rosconsole/rosconsole.cpp)
-+set_target_properties(rosconsole PROPERTIES VERSION ${rosconsole_VERSION} SOVERSION "0d")
++set_target_properties(rosconsole PROPERTIES VERSION ${rosconsole_VERSION} SOVERSION "1d")
  target_link_libraries(rosconsole ${rosconsole_backend_LIBRARIES} ${catkin_LIBRARIES} ${Boost_LIBRARIES})
  
  if(ROSCONSOLE_BACKEND STREQUAL "log4cxx")
-@@ -80,6 +82,7 @@
-   target_link_libraries(rosconsole_glog rosconsole_backend_interface ${GLOG_LIBRARIES})
- elseif(ROSCONSOLE_BACKEND STREQUAL "print")
-   add_library(rosconsole_print src/rosconsole/impl/rosconsole_print.cpp)
-+  set_target_properties(rosconsole_print PROPERTIES VERSION ${rosconsole_VERSION} SOVERSION "0d")
-   target_link_libraries(rosconsole_print rosconsole_backend_interface)
- else()
-   message(FATAL_ERROR "Unknown rosconsole backend '${ROSCONSOLE_BACKEND}'")
+   add_library(rosconsole_log4cxx src/rosconsole/impl/rosconsole_log4cxx.cpp)
+   target_link_libraries(rosconsole_log4cxx rosconsole_backend_interface ${LOG4CXX_LIBRARIES} ${Boost_LIBRARIES})
++  set_target_properties(rosconsole_log4cxx PROPERTIES VERSION ${rosconsole_VERSION} SOVERSION "1d")
+ 
+   if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/test/speed_test.cpp")
+     add_executable(rosconsole_speed_test test/speed_test.cpp)
+diff --git a/tools/topic_tools/CMakeLists.txt b/tools/topic_tools/CMakeLists.txt
+index c9d5605..7745299 100644
 --- a/tools/topic_tools/CMakeLists.txt
 +++ b/tools/topic_tools/CMakeLists.txt
-@@ -27,6 +27,7 @@
+@@ -27,6 +27,7 @@ catkin_package(
  catkin_add_env_hooks(20.transform SHELLS bash DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/env-hooks)
  
  add_library(topic_tools src/shape_shifter.cpp src/parse.cpp)
@@ -74,9 +82,11 @@ Subject: Add Debian specific SONAMEs
  target_link_libraries(topic_tools ${catkin_LIBRARIES})
  
  add_executable(switch_mux src/switch_mux.cpp)
+diff --git a/utilities/message_filters/CMakeLists.txt b/utilities/message_filters/CMakeLists.txt
+index c095f0c..a9a54a8 100644
 --- a/utilities/message_filters/CMakeLists.txt
 +++ b/utilities/message_filters/CMakeLists.txt
-@@ -14,6 +14,7 @@
+@@ -14,6 +14,7 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
  link_directories(${catkin_LIBRARY_DIRS})
  
  add_library(${PROJECT_NAME} src/connection.cpp)
@@ -84,9 +94,11 @@ Subject: Add Debian specific SONAMEs
  target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${Boost_LIBRARIES})
  
  install(TARGETS ${PROJECT_NAME}
+diff --git a/utilities/roslz4/CMakeLists.txt b/utilities/roslz4/CMakeLists.txt
+index 6e539bf..a3d601f 100644
 --- a/utilities/roslz4/CMakeLists.txt
 +++ b/utilities/roslz4/CMakeLists.txt
-@@ -23,6 +23,7 @@
+@@ -23,6 +23,7 @@ catkin_package(
  
  include_directories(include ${lz4_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
  add_library(roslz4 src/lz4s.c src/xxhash.c)
@@ -94,9 +106,11 @@ Subject: Add Debian specific SONAMEs
  target_link_libraries(roslz4 ${lz4_LIBRARIES} ${catkin_LIBRARIES})
  
  if(NOT ANDROID)
+diff --git a/utilities/xmlrpcpp/CMakeLists.txt b/utilities/xmlrpcpp/CMakeLists.txt
+index 89061fd..67b1a4c 100644
 --- a/utilities/xmlrpcpp/CMakeLists.txt
 +++ b/utilities/xmlrpcpp/CMakeLists.txt
-@@ -25,6 +25,7 @@
+@@ -25,6 +25,7 @@ add_library(xmlrpcpp
    src/XmlRpcUtil.cpp
    src/XmlRpcValue.cpp
    )

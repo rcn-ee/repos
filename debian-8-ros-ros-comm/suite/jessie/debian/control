@@ -5,12 +5,12 @@ Uploaders: Thomas Moulard <thomas.moulard@gmail.com>,
            Leopold Palomo-Avellaneda <leo@alaxarxa.net>
 Section: libs
 Priority: optional
-Build-Depends: debhelper (>= 9), python, catkin (>> 0.6.16-2), libroscpp-core-dev,
+Build-Depends: debhelper (>= 9), python, catkin (>= 0.6.16-3), libroscpp-core-dev,
  python-rosunit, libconsole-bridge-dev, libboost-date-time-dev,
  libboost-filesystem-dev, libboost-program-options-dev, libboost-regex-dev,
  libboost-system-dev, libboost-thread-dev, libboost-signals-dev, liblz4-dev,
  ros-message-generation, libbz2-dev, libros-rosgraph-msgs-dev, libstd-msgs-dev,
- dh-python, python-dev
+ dh-python, python-dev, liblog4cxx-dev
 Standards-Version: 3.9.6
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=debian-science/packages/ros/ros-ros-comm.git
 Vcs-Git: git://anonscm.debian.org/debian-science/packages/ros/ros-ros-comm.git
@@ -177,7 +177,7 @@ Description: Robot OS library for rosbag_storage
 Package: librosconsole-dev
 Section: libdevel
 Architecture: any
-Depends: librosconsole0d (= ${binary:Version}), libboost-regex-dev, libboost-system-dev, libboost-thread-dev, libroscpp-core-dev, ${misc:Depends}
+Depends: librosconsole1d (= ${binary:Version}), libboost-regex-dev, libboost-system-dev, libboost-thread-dev, libroscpp-core-dev, liblog4cxx-dev, ${misc:Depends}
 Description: Development files for librosconsole
  This package is part of Robot OS (ROS). It is the ROS console output
  library, a C++ package that supports console output and logging in
@@ -187,10 +187,12 @@ Description: Development files for librosconsole
  .
  This package contains the development files for the library.
 
-Package: librosconsole0d
+Package: librosconsole1d
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Multi-Arch: same
+Conflicts: librosconsole0d
+Replaces: librosconsole0d
 Description: library for librosconsole
  This package is part of Robot OS (ROS). It is the ROS console output
  library, a C++ package that supports console output and logging in
@@ -217,7 +219,7 @@ Architecture: all
 Multi-Arch: allowed
 Depends: ${python:Depends}, ${shlibs:Depends}, ${misc:Depends}, python-rosclean, 
  rosout, python-rospkg, python-rosgraph, python-roslib, python-rosmaster,
- python-rosgraph-msgs, python-netifaces
+ python-rosgraph-msgs, python-netifaces, python-rosparam, python-yaml
 Description: roslaunch tool for Robot OS
  This package is part of Robot OS (ROS). roslaunch is a tool for
  easily launching multiple ROS nodes locally and remotely via SSH, as
