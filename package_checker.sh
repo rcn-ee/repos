@@ -222,7 +222,7 @@ qt5_lxqt () {
 
 	#https://tracker.debian.org/pkg/libfm-qt
 	site="${debian_pool}/main/libf"
-	package_name="libfm-qt" ; package_version="${package_name}_0.10.0+20151214" ; check_http
+	package_name="libfm-qt" ; package_version="${package_name}_0.10.0+20151214-2" ; check_http
 
 	#https://tracker.debian.org/pkg/pcmanfm-qt
 	site="${debian_pool}/main/p"
@@ -333,7 +333,7 @@ ros () {
 	package_name="ros-genmsg"; package_version="${package_name}_0.5.6-4"; check_http
 	package_name="ros-genpy"; package_version="${package_name}_0.5.7-6"; check_http
 	package_name="ros-gencpp"; package_version="${package_name}_0.5.3-4"; check_http
-	package_name="ros-genlisp"; package_version="${package_name}_0.4.15-3"; check_http
+	package_name="ros-genlisp"; package_version="${package_name}_0.4.15-4"; check_http
 	package_name="ros-roscpp-core"; package_version="${package_name}_0.5.6-2"; check_http
 	package_name="ros-std-msgs"; package_version="${package_name}_0.5.9-2"; check_http
 	package_name="ros-common-msgs"; package_version="${package_name}_1.12.3-4"; check_http
