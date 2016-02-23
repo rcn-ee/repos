@@ -1,0 +1,52 @@
+From 1456da7e2d3054882b20c120d817096bea21571e Mon Sep 17 00:00:00 2001
+From: Jon Loeliger <jdl@jdl.com>
+Date: Sat, 21 Jan 2012 15:24:51 -0600
+Subject: [PATCH 7/7] Introduce ${TESTS_BIN} in Makefiles to identify tested
+ executables.
+
+---
+ Makefile             |    6 ++++++
+ tests/Makefile.tests |    6 +++---
+ 2 files changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 510caa6..1169e6c 100644
+--- a/Makefile
++++ b/Makefile
+@@ -193,6 +193,12 @@ fdtput:	$(FDTPUT_OBJS) $(LIBFDT_archive)
+ # Testsuite rules
+ #
+ TESTS_PREFIX=tests/
++
++TESTS_BIN += dtc
++TESTS_BIN += convert-dtsv0
++TESTS_BIN += fdtput
++TESTS_BIN += fdtget
++
+ include tests/Makefile.tests
+ 
+ #
+diff --git a/tests/Makefile.tests b/tests/Makefile.tests
+index 3f92074..2eee708 100644
+--- a/tests/Makefile.tests
++++ b/tests/Makefile.tests
+@@ -65,13 +65,13 @@ tests_clean:
+ 	rm -f $(STD_CLEANFILES:%=$(TESTS_PREFIX)%)
+ 	rm -f $(TESTS_CLEANFILES)
+ 
+-check:	tests dtc convert-dtsv0
++check:	tests ${TESTS_BIN}
+ 	cd $(TESTS_PREFIX); ./run_tests.sh
+ 
+-checkm: tests dtc convert-dtsv0
++checkm: tests ${TESTS_BIN}
+ 	cd $(TESTS_PREFIX); ./run_tests.sh -m 2>&1 | tee vglog.$$$$
+ 
+-checkv:	tests dtc convert-dtsv0
++checkv:	tests ${TESTS_BIN}
+ 	cd $(TESTS_PREFIX); ./run_tests.sh -v
+ 
+ ifneq ($(DEPTARGETS),)
+-- 
+1.7.8.3
+
