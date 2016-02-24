@@ -6,7 +6,7 @@ package_name="ros-common-msgs"
 debian_pkg_name="${package_name}"
 package_version="1.12.4"
 package_source="${package_name}_${package_version}.orig.tar.gz"
-src_dir="${package_name}-${package_version}"
+src_dir="common_msgs-${package_version}"
 
 git_repo=""
 git_sha=""
