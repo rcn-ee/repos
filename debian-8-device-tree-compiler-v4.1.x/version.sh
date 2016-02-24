@@ -18,4 +18,6 @@ debian_patch=""
 debian_diff=""
 local_patch="rcnee1"
 
-jessie_version="~bpo80+20160223+1"
+jessie_version="~bpo80+20160224+1"
+stretch_version="~bpo90+20160224+1"
+xenial_version="~bpo1604+20160224+1"
