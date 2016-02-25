@@ -319,7 +319,7 @@ libsigrok
 echo "others"
 
 site="http://ports.ubuntu.com/pool/universe/c"
-package_name="chromium-browser" ; package_version="${package_name}_48.0.2564.82-0ubuntu1.1222" ; check_http
+package_name="chromium-browser" ; package_version="${package_name}_48.0.2564.116-0ubuntu1.1229" ; check_http
 
 ros () {
 	#https://wiki.debian.org/DebianScience/Robotics/ROS/Packages
@@ -365,7 +365,7 @@ ros () {
 	package_name="ros-random-numbers"; package_version="${package_name}_0.3.0-2"; check_http
 	package_name="ros-geometric-shapes"; package_version="${package_name}_0.4.3-2"; check_http
 	package_name="ros-pluginlib"; package_version="${package_name}_1.10.1-3"; check_http
-	package_name="ros-image-common"; package_version="${package_name}_1.11.10-1"; check_http
+	package_name="ros-image-common"; package_version="${package_name}_1.11.10-2"; check_http
 	package_name="ros-interactive-markers"; package_version="${package_name}_1.11.1-2"; check_http
 	package_name="ros-laser-geometry"; package_version="${package_name}_1.6.4-2"; check_http
 	package_name="ros-rospkg"; package_version="${package_name}_1.0.38-1"; check_http
