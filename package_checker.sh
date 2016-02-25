@@ -385,7 +385,8 @@ ros () {
 	package_name="ros-navigation-msgs"; package_version="${package_name}_1.13.0-1"; check_http
 
 	#needs boost1.58
-	#package_name="ros-vision-opencv"; package_version="${package_name}_1.11.10+ds-1"; check_http
+	site="http://sir.upc.edu/debian-robotics/pool/main/r"
+	package_name="ros-vision-opencv"; package_version="${package_name}_1.11.9-1~drp8+20160222"; check_http
 
 	site="${debian_pool}/main/r"
 	package_name="ros-python-qt-binding"; package_version="${package_name}_0.2.17-1"; check_http
