@@ -114,7 +114,7 @@ qt5_kde () {
 	echo "qt5: kde:"
 
 	site="${debian_pool}/main/s"
-	package_name="solid" ; package_version="${package_name}_5.19.0-1" ; check_http
+	package_name="solid" ; package_version="${package_name}_5.19.0-2" ; check_http
 
 	site="${debian_pool}/main/k"
 	package_name="kcoreaddons" ; package_version="${package_name}_5.19.0-1" ; check_http
@@ -392,7 +392,7 @@ ros () {
 	package_name="ros-python-qt-binding"; package_version="${package_name}_0.2.17-1"; check_http
 
 	#needs: ros-vision-opencv, which needs boost1.58...
-	#package_name="ros-rviz"; package_version="${package_name}_1.11.10+dfsg-1"; check_http
+	package_name="ros-rviz"; package_version="${package_name}_1.11.10+dfsg-1"; check_http
 
 #helpers..
 	site="${debian_pool}/main/r"
