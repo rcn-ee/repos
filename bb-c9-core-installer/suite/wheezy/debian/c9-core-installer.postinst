@@ -73,14 +73,6 @@ npm_install () {
 	node_bin="/usr/bin/nodejs"
 	npm_bin="/usr/bin/npm"
 
-	#/usr/bin/nodejs-v0.10.x
-	#-> /usr/bin/npm (works)
-	#-> /usr/local/bin/npm (works)
-
-	#/usr/bin/nodejs-v0.12.x
-	#-> /usr/bin/npm (broken)
-	#-> /usr/local/bin/npm (works)
-
 	unset node_version
 	node_version=$(/usr/bin/nodejs --version || true)
 
@@ -132,17 +124,17 @@ dl_install() {
 	unset node_version
 	node_version=$(/usr/bin/nodejs --version || true)
 	case "${node_version}" in
-	v0.10.38|v0.10.39|v0.10.40|v0.10.41|v0.10.42|v0.10.43)
+	v0.10.*)
 		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v0.10.x"
 		sha256sum_tgz=${sha256sum_tgz_0_10_x}
 		wfile=${wfile_0_10_x}
 		;;
-	v0.12.10|v0.12.11)
+	v0.12.*)
 		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v0.12.x"
 		sha256sum_tgz=${sha256sum_tgz_0_12_x}
 		wfile=${wfile_0_12_x}
 		;;
-	v4.2.2|v4.2.3|v4.2.4|v4.2.5|v4.2.6|v4.3.0|v4.3.1)
+	v4.2.*|v4.3.*)
 		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v4.x"
 		sha256sum_tgz=${sha256sum_tgz_4_x}
 		wfile=${wfile_4_x}
@@ -290,12 +282,12 @@ c9_directory () {
 	#├── colors@0.6.2
 	#└── isbinaryfile@2.0.0
 
-	#npm pack simplefunc@0.0.2
-	pkg="simplefunc" ; ver="0.0.2" ; maybe_install_depend
-	#npm pack colors@0.6.2
-	pkg="colors" ; ver="0.6.2" ; maybe_install_depend
-	#npm pack isbinaryfile@2.0.0
-	pkg="isbinaryfile" ; ver="2.0.0" ; maybe_install_depend
+	if [ -d /root/.c9/node_modules/simplefunc ] ; then
+		rm -rf /root/.c9/node_modules/simplefunc || true
+		rm -rf /root/.c9/node_modules/colors || true
+		rm -rf /root/.c9/node_modules/isbinaryfile || true
+		rm -rf /root/.c9/node_modules/nak || true
+	fi
 
 	echo "${package}:Installing ${npm_project}"
 	#npm pack https://github.com/c9/nak/tarball/c9
@@ -308,48 +300,54 @@ c9_directory () {
 	echo "2.0.2" > "$C9_DIR/node_modules/node-gyp/${package}.version"
 
 	case "${node_version}" in
-	v0.10.38|v0.10.39|v0.10.40|v0.10.41|v0.10.42|v0.10.43)
+	v0.10.*)
 		npm_project="pty.js@0.2.8"
+
 		#pty.js@0.2.8 node_modules/pty.js
 		#├── extend@1.2.1
 		#└── nan@1.9.0
 
-		#npm pack extend@1.2.1
-		pkg="extend" ; ver="1.2.1" ; maybe_install_depend
-		#npm pack nan@1.9.0
-		pkg="nan" ; ver="1.9.0" ; maybe_install_depend
+		if [ -d /root/.c9/node_modules/extend ] ; then
+			rm -rf /root/.c9/node_modules/extend || true
+			rm -rf /root/.c9/node_modules/nan || true
+			rm -rf /root/.c9/node_modules/pty.js || true
+		fi
 
 		echo "${package}:Installing ${npm_project}"
 		#npm pack pty.js@0.2.8
 		##stupid: "--unsafe-perm=true" npm actually wants you to install as root then thru sudo!!!
 		${NODE} ${NPM} install --unsafe-perm=true ${npm_options} /var/cache/${package}/pty.js-0.2.8.tgz
 		;;
-	v0.12.10|v0.12.11)
+	v0.12.*)
 		npm_project="pty.js@0.2.8"
+
 		#pty.js@0.2.8 node_modules/pty.js
 		#├── extend@1.2.1
 		#└── nan@1.9.0
 
-		#npm pack extend@1.2.1
-		pkg="extend" ; ver="1.2.1" ; maybe_install_depend
-		#npm pack nan@1.9.0
-		pkg="nan" ; ver="1.9.0" ; maybe_install_depend
+		if [ -d /root/.c9/node_modules/extend ] ; then
+			rm -rf /root/.c9/node_modules/extend || true
+			rm -rf /root/.c9/node_modules/nan || true
+			rm -rf /root/.c9/node_modules/pty.js || true
+		fi
 
 		echo "${package}:Installing ${npm_project}"
 		#npm pack pty.js@0.2.8
 		##stupid: "--unsafe-perm=true" npm actually wants you to install as root then thru sudo!!!
 		${NODE} ${NPM} install --unsafe-perm=true ${npm_options} /var/cache/${package}/pty.js-0.2.8.tgz
 		;;
-	v4.2.2|v4.2.3|v4.2.4|v4.2.5|v4.2.6|v4.3.0|v4.3.1)
+	v4.2.*|v4.3.*)
 		npm_project="pty.js@0.3.0"
+
 		#pty.js@0.3.0 node_modules/pty.js
 		#├── extend@1.2.1
 		#└── nan@2.0.5
 
-		#npm pack extend@1.2.1
-		pkg="extend" ; ver="1.2.1" ; maybe_install_depend
-		#npm pack nan@2.0.5
-		pkg="nan" ; ver="2.0.5" ; maybe_install_depend
+		if [ -d /root/.c9/node_modules/extend ] ; then
+			rm -rf /root/.c9/node_modules/extend || true
+			rm -rf /root/.c9/node_modules/nan || true
+			rm -rf /root/.c9/node_modules/pty.js || true
+		fi
 
 		echo "${package}:Installing ${npm_project}"
 		#npm pack pty.js@0.3.0
@@ -358,14 +356,16 @@ c9_directory () {
 		;;
 	*)
 		npm_project="pty.js@0.3.0"
+
 		#pty.js@0.3.0 node_modules/pty.js
 		#├── extend@1.2.1
 		#└── nan@2.0.5
 
-		#npm pack extend@1.2.1
-		pkg="extend" ; ver="1.2.1" ; maybe_install_depend
-		#npm pack nan@2.0.5
-		pkg="nan" ; ver="2.0.5" ; maybe_install_depend
+		if [ -d /root/.c9/node_modules/extend ] ; then
+			rm -rf /root/.c9/node_modules/extend || true
+			rm -rf /root/.c9/node_modules/nan || true
+			rm -rf /root/.c9/node_modules/pty.js || true
+		fi
 
 		echo "${package}:Installing ${npm_project}"
 		#npm pack pty.js@0.3.0
