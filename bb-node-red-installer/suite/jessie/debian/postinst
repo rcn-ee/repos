@@ -80,21 +80,6 @@ npm_install () {
 	unset node_version
 	node_version=$(/usr/bin/nodejs --version || true)
 
-	#wheezy + jessie
-	unset test_version
-	if [ -f /usr/bin/nodejs-v0.10.x ] ; then
-		test_version=$(/usr/bin/nodejs-v0.10.x --version || true)
-		if [ "x${test_version}" = "x${node_version}" ] ; then
-			node_bin="/usr/bin/nodejs-v0.10.x"
-			if [ -f /usr/local/bin/npm ] ; then
-				npm_bin="/usr/local/bin/npm"
-			else
-				npm_bin="/usr/bin/npm"
-			fi
-		fi
-	fi
-
-	#jessie + stretch
 	unset test_version
 	if [ -f /usr/bin/nodejs-v0.12.x ] ; then
 		test_version=$(/usr/bin/nodejs-v0.12.x --version || true)
@@ -105,7 +90,11 @@ npm_install () {
 			else
 				#bb-npm-installer would make sure this never happens...
 				#nodejs-v0.12.x & /usr/bin/npm broken...
-				node_bin="/usr/bin/nodejs-v0.10.x"
+				if [ -f /usr/bin/nodejs-v0.10.x ] ; then
+					node_bin="/usr/bin/nodejs-v0.10.x"
+				else
+					node_bin="/usr/bin/nodejs"
+				fi
 				npm_bin="/usr/bin/npm"
 			fi
 		fi
@@ -118,7 +107,7 @@ npm_install () {
 	npm_project="node-red"
 	pkg="systemd" ; ver="0.2.6" ; npm_check_n_install
 	js_patch="enable"
-	pkg="node-red" ; ver="0.13.2" ; npm_check_n_install
+	pkg="node-red" ; ver="0.13.3" ; npm_check_n_install
 	unset js_patch
 
 	if [ -d /etc/avahi/services/ ] ; then

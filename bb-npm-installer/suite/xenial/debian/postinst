@@ -57,6 +57,7 @@ npm_check_n_install () {
 }
 
 npm_install () {
+	node_bin="/usr/bin/nodejs"
 	npm_bin="/usr/bin/npm"
 
 	#/usr/bin/nodejs-v0.10.x
@@ -72,47 +73,15 @@ npm_install () {
 		node_bin="/usr/bin/nodejs-v0.10.x"
 		node_version=$(/usr/bin/nodejs-v0.10.x --version || true)
 	else
-		node_bin="/usr/bin/node"
-		node_version=$(/usr/bin/node --version || true)
+		node_bin="/usr/bin/nodejs"
+		node_version=$(/usr/bin/nodejs --version || true)
 	fi
-
-	#wheezy + jessie
-	unset test_version
-	if [ -f /usr/bin/nodejs-v0.10.x ] ; then
-		test_version=$(/usr/bin/nodejs-v0.10.x --version || true)
-		if [ "x${test_version}" = "x${node_version}" ] ; then
-			node_bin="/usr/bin/nodejs-v0.10.x"
-#			if [ -f /usr/local/bin/npm ] ; then
-#				npm_bin="/usr/local/bin/npm"
-#			else
-				npm_bin="/usr/bin/npm"
-#			fi
-		fi
-	fi
-
-#	bb-npm-installer always build with nodejs-v0.10.x
-#	#jessie + stretch
-#	unset test_version
-#	if [ -f /usr/bin/nodejs-v0.12.x ] ; then
-#		test_version=$(/usr/bin/nodejs-v0.12.x --version || true)
-#		if [ "x${test_version}" = "x${node_version}" ] ; then
-#			node_bin="/usr/bin/nodejs-v0.12.x"
-#			if [ -f /usr/local/bin/npm ] ; then
-#				npm_bin="/usr/local/bin/npm"
-#			else
-#				#bb-npm-installer would make sure this never happens...
-#				#nodejs-v0.12.x & /usr/bin/npm broken...
-#				node_bin="/usr/bin/nodejs-v0.10.x"
-#				npm_bin="/usr/bin/npm"
-#			fi
-#		fi
-#	fi
 
 	echo "${package}:npm: [`${node_bin} ${npm_bin} --version`]"
 	echo "${package}:node: [`${node_bin} --version`]"
 
 	npm_project="bb-npm-installer"
-	pkg="npm" ; ver="3.7.4" ; npm_check_n_install
+	pkg="npm" ; ver="3.7.5" ; npm_check_n_install
 	echo "${package}:Installed"
 }
 
