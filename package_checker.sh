@@ -285,7 +285,7 @@ libsigrok () {
 
 	site="${debian_pool}/main/libs"
 	#https://packages.debian.org/source/sid/libserialport
-	package_name="libserialport"; package_version="${package_name}_0.1.1-0"; check_http
+	package_name="libserialport"; package_version="${package_name}_0.1.1-1"; check_http
 
 	#https://packages.debian.org/source/sid/libsigrok
 	package_name="libsigrok"; package_version="${package_name}_0.4.0-0"; check_http
