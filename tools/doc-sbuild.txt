@@ -36,3 +36,9 @@ echo "deb-src http://apt-proxy:3142/repos.rcn-ee.net/ubuntu xenial main" >> /etc
 
 apt-get update ; apt-get --yes --allow-unauthenticated install rcn-ee-archive-keyring ; \
 apt-get update ; apt-get clean ; exit
+
+#jessie + nodesource:
+curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
+
+echo 'deb https://deb.nodesource.com/node_0.12 jessie main' > /etc/apt/sources.list.d/nodesource.list
+echo 'deb-src https://deb.nodesource.com/node_0.12 jessie main' >> /etc/apt/sources.list.d/nodesource.list
