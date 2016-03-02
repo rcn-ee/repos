@@ -306,6 +306,11 @@ libsigrok () {
 	package_name="sigrok-firmware-fx2lafw"; package_version="${package_name}_0.1.3-0"; check_http
 }
 
+bbgw () {
+	site="${debian_pool}/main/s"
+	package_name="swig"; package_version="${package_name}_3.0.7-2"; check_http
+}
+
 important
 builds
 mesa
@@ -315,6 +320,7 @@ qt5_lxqt
 #machinekit
 nodejs
 libsigrok
+bbgw
 
 echo "others"
 

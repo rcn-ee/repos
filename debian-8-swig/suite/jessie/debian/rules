@@ -1,0 +1,157 @@
+#!/usr/bin/make -f
+# Sample debian/rules that uses debhelper. GNU copyright 1997 by Joey Hess.
+# This version is for a hypothetical package that builds an
+# architecture-dependant package, as well as an architecture-independent
+# package.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# Support building from Subversion repository
+export DH_ALWAYS_EXCLUDE=.svn
+
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/buildflags.mk
+
+# XXX: patch to pike detection submitted upstream, need to adapt
+# configure args
+MAKEOPTS =
+CONFIGURE_ARGS := \
+	--prefix=/usr --mandir=/usr/share/man	\
+	--with-tclconfig=/usr/lib			\
+	--with-python=/usr/bin/python			\
+	--with-ruby=/usr/bin/ruby			\
+	--with-pike=/usr/bin/pike7.6			\
+	--with-pikeincl=/usr/include/pike/7.6.24	\
+	--with-swiglibdir=/usr/share/swig3.0		\
+	--without-mzscheme				\
+    --program-suffix=3.0
+
+DEB_TARGET_ARCH := $(shell dpkg-architecture -qDEB_HOST_ARCH)
+
+with_java := yes
+no_java_archs := hppa hurd-i386 mips mipsel netbsd-i386
+ifneq ($(DEB_TARGET_ARCH),i386)
+  ifeq ($(DEB_TARGET_ARCH), $(findstring $(DEB_TARGET_ARCH),$(no_java_archs)))
+    with_java := disabled for architecture $(DEB_TARGET_ARCH)
+    NO_PACKAGES +=
+  endif
+endif
+
+with_chicken := yes
+no_chicken_archs := m68k mips mipsel
+ifeq ($(DEB_TARGET_ARCH), $(findstring $(DEB_TARGET_ARCH),$(no_chicken_archs)))
+  with_chicken := disabled for architecture $(DEB_TARGET_ARCH)
+endif
+
+NO_PACKAGES_ARGS = $(foreach p,$(NO_PACKAGES),-N$(p))
+
+ifeq ($(with_java),yes)
+  CONFIGURE_ARGS += \
+	--with-java=/usr/bin/java \
+	--with-javac=/usr/bin/javac
+else
+  CONFIGURE_ARGS += --without-java
+  MAKEOPTS += skip-java=true
+endif
+
+ifeq ($(with_chicken),yes)
+  CONFIGURE_ARGS += \
+	--with-chicken=/usr/bin/chicken \
+	--with-chickencfg=/usr/bin/chicken-config
+else
+  CONFIGURE_ARGS += --without-chicken
+  MAKEOPTS += skip-chicken=true
+endif
+
+configure-stamp: $(QUILT_STAMPFN)
+	dh_testdir
+	dh_autoreconf ./autogen.sh
+	mkdir -p builddir
+	PHP4INC="`php-config --includes`" \
+	cd builddir && ../configure $(CONFIGURE_ARGS)
+	touch configure-stamp
+
+build: build-indep build-arch
+
+build-indep:	build-stamp
+build-arch:	build-stamp
+
+build-stamp: configure-stamp
+	dh_testdir
+	cd builddir && $(MAKE) $(MAKEOPTS)
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f configure-stamp build-stamp install-stamp
+	rm -rf builddir
+	dh_autoreconf_clean
+	dh_clean
+
+install: install-stamp
+install-stamp: build-stamp
+	dh_testdir
+	dh_testroot
+	dh_prep
+	dh_installdirs
+
+	cd builddir && $(MAKE) $(MAKEOPTS) DESTDIR=$(CURDIR)/debian/swig3.0 install
+
+	touch install-stamp
+
+# Build architecture-independent files here.
+# We don't need a dependency on build or install since these are the plain
+# documentation files as included in the distribution.
+binary-indep:	
+	dh_testdir
+	dh_testroot
+	dh_prep -i
+	dh_installdirs -i
+	dh_installdocs -i
+	dh_installexamples -i
+	cd debian/swig3.0-examples/usr/share/doc/swig3.0-examples && mv examples/* . && rmdir examples
+	cp debian/swig3.0-examples.override debian/swig3.0-examples/usr/share/lintian/overrides/swig3.0-examples
+	perl -pi -e 's,^SWIG.*=.*$$,SWIG      = swig,' \
+		`find debian/swig3.0-examples/usr/share/doc/swig3.0-examples -name Makefile`
+	dh_installchangelogs -i
+	dh_link -i
+	dh_compress -i -X.pdf
+	dh_fixperms -i
+	dh_installdeb -i
+	dh_gencontrol -i
+	dh_md5sums -i
+	dh_builddeb -i
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_installdocs -a $(NO_PACKAGES_ARGS) README
+	dh_installexamples -a $(NO_PACKAGES_ARGS)
+	dh_installmenu -a $(NO_PACKAGES_ARGS)
+#	dh_installemacsen -a $(NO_PACKAGES_ARGS)
+#	dh_installinit -a $(NO_PACKAGES_ARGS)
+	dh_installcron -a $(NO_PACKAGES_ARGS)
+	dh_installman -p swig3.0 debian/swig3.0.1
+	dh_install -a --sourcedir=$(CURDIR)
+#	dh_undocumented
+	dh_installchangelogs -a -Nswig3.0 $(NO_PACKAGES_ARGS) CHANGES
+	dh_installchangelogs -pswig3.0 $(NO_PACKAGES_ARGS)
+	dh_compress -a $(NO_PACKAGES_ARGS) -X.pdf
+	dh_link -a $(NO_PACKAGES_ARGS)
+	dh_strip -a $(NO_PACKAGES_ARGS)
+	dh_fixperms -a $(NO_PACKAGES_ARGS)
+	dh_makeshlibs -a $(NO_PACKAGES_ARGS)
+	dh_installdeb -a $(NO_PACKAGES_ARGS)
+	dh_shlibdeps -a $(NO_PACKAGES_ARGS)
+	dh_gencontrol -a $(NO_PACKAGES_ARGS)
+	dh_md5sums -a $(NO_PACKAGES_ARGS)
+	dh_builddeb -a $(NO_PACKAGES_ARGS)
+
+source diff:
+	@echo >&2 'source and diff are obsolete - use dpkg-source -b'; false
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install

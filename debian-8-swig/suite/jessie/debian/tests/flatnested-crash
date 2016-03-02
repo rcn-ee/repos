@@ -1,0 +1,29 @@
+#! /bin/sh
+
+# Regression test for https://bugs.debian.org/768280
+
+set -e
+
+cat <<-'EOF' > nested_scope.i
+%module nested_scope
+%feature ("flatnested");
+
+%inline %{
+class Outer1 {
+    struct Nested1;
+public:
+    struct Nested2;
+};
+struct Outer1::Nested2 {
+    int data;
+};
+%}
+EOF
+
+swig3.0 -version
+swig3.0 -c++ -python nested_scope.i
+echo "Wrapping for Python: okay"
+swig3.0 -c++ -ruby nested_scope.i
+echo "Wrapping for Ruby: okay"
+swig3.0 -c++ -tcl nested_scope.i
+echo "Wrapping for Tcl: okay"
