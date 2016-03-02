@@ -8,5 +8,6 @@ export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
 
 override_dh_install:
+	mv debian/libmraa0/usr/lib/node_modules/mraa/ debian/libmraa0/usr/local/lib/node_modules/mraa
 	mv debian/libmraa0/usr/lib/python2.7/site-packages/ debian/libmraa0/usr/lib/python2.7/dist-packages
 	dh_install --fail-missing
