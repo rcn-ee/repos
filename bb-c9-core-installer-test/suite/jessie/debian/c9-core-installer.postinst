@@ -33,7 +33,7 @@ extract_dir="/opt/cloud9/build/"
 
 export NODE_PATH=/usr/local/lib/node_modules
 
-npm_options="--unsafe-perm=true --progress=false --loglevel=error"
+npm_options="--unsafe-perm=true --progress=false --loglevel=error --prefix /usr/local"
 
 npm_actually_install () {
 	echo "${package}:Installing: ${pkg}-${ver} (for ${npm_project})"
@@ -278,9 +278,8 @@ c9_directory () {
 	#tmux_install
 	ln -sf $(which tmux) "$C9_DIR"/bin/tmux
 
-	${node_bin} ${npm_bin} config set -g prefix /root/.c9/
-
 	export NODE_PATH=/root/.c9/node_modules/
+	npm_options="--unsafe-perm=true --progress=false --loglevel=error --prefix /root/.c9/node_modules"
 
 	if [ -d /root/.c9/node_modules/simplefunc ] ; then
 		rm -rf /root/.c9/node_modules/simplefunc || true
