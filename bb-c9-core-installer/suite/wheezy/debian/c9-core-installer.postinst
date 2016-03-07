@@ -73,8 +73,24 @@ npm_install () {
 	unset node_version
 	node_version=$(/usr/bin/nodejs --version || true)
 
+	#wheezy + jessie
+	unset test_version
+	if [ -f /usr/bin/nodejs-v0.10.x ] ; then
+		test_version=$(/usr/bin/nodejs-v0.10.x --version || true)
+		if [ "x${test_version}" = "x${node_version}" ] ; then
+			node_bin="/usr/bin/nodejs-v0.10.x"
+			if [ -f /usr/local/bin/npm ] ; then
+				npm_bin="/usr/local/bin/npm"
+			else
+				npm_bin="/usr/bin/npm"
+			fi
+		fi
+	fi
+
 	echo "${package}:npm: [`${node_bin} ${npm_bin} --version`]"
 	echo "${package}:node: [`${node_bin} --version`]"
+
+	${node_bin} ${npm_bin} config set -g prefix /usr/local/
 
 	npm_project="c9-core-installer"
 	pkg="winston" ; ver="2.1.1" ; npm_check_n_install
@@ -251,7 +267,7 @@ c9_directory () {
 	ln -sf $(which tmux) "$C9_DIR"/bin/tmux
 
 	export NODE_PATH=/root/.c9/lib/node_modules
-	npm_options="--unsafe-perm=true --progress=false --loglevel=error"
+	npm_options="--unsafe-perm=true --progress=false --loglevel=error --prefix /root/.c9"
 
 	if [ -d /root/.c9/node_modules/simplefunc ] ; then
 		rm -rf /root/.c9/node_modules/simplefunc || true
@@ -289,8 +305,7 @@ c9_directory () {
 	fi
 
 	npm_project="c9-core-installer"
-	pkg="pty.js" ; ver="0.2.8" ; npm_check_n_install
-#	pkg="pty.js" ; ver="0.3.0" ; npm_check_n_install
+	pkg="pty.js" ; ver="0.3.0" ; npm_check_n_install
 
 	module="pty.js" ; fix_npm_lib
 
