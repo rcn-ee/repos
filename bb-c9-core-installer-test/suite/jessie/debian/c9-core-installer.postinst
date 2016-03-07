@@ -6,9 +6,9 @@ set -e
 
 package="c9-core-installer"
 
-core_version="3.1.1380+git20160212"
+core_version="3.1.1670+git20160304"
 
-sha256sum_tgz_0_10_x="40a024928684c8872949ae0ad7770137b460ec200e6fa45ce0ed7a9291ece6c9"
+sha256sum_tgz_0_10_x="225dcb249214e68b6a7c56fc2f9b5e561e33c1897d4e9da5abcccee843bbbb52"
         wfile_0_10_x="c9-core_${core_version}-build.tar.xz"
 
 sha256sum_tgz_0_12_x="687c962bcfb092d970c80ed820be86e97e27e86a953781895bbd8d162587432e"
@@ -344,6 +344,7 @@ c9_directory () {
 	${node_bin} ${npm_bin} config -g delete python
 
 	systemctl enable cloud9.socket || true
+	echo "${package}:Installed"
 }
 
 case "$1" in
