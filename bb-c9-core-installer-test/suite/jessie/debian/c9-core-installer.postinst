@@ -221,8 +221,7 @@ c9_directory () {
 
 	mkdir -p "$C9_DIR"/bin
 	mkdir -p "$C9_DIR"/tmp
-	mkdir -p "$C9_DIR"/node_modules
-	mkdir -p "$C9_DIR"/box_tmp
+	mkdir -p "$C9_DIR"/lib/node_modules
 	cd "$C9_DIR"
 
 	#start install node tmux_install nak ptyjs vfsextend collab
@@ -243,7 +242,7 @@ c9_directory () {
 
 	# node-gyp uses sytem node or fails with command not found if
 	# we don't bump this node up in the path
-	PATH="$C9_DIR/node/bin/:$C9_DIR/node_modules/.bin:$PATH"
+	PATH="$C9_DIR/node/bin/:$C9_DIR/lib/node_modules/.bin:$PATH"
 
 	if [ -d "$C9_DIR"/$VIRTUALENV_VERSION ] ; then
 		rm -rf "$C9_DIR"/$VIRTUALENV_VERSION
@@ -278,13 +277,17 @@ c9_directory () {
 	#tmux_install
 	ln -sf $(which tmux) "$C9_DIR"/bin/tmux
 
-	export NODE_PATH=/root/.c9/node_modules/
-	npm_options="--unsafe-perm=true --progress=false --loglevel=error --prefix /root/.c9/node_modules"
+	export NODE_PATH=/root/.c9/lib/node_modules
+	npm_options="--unsafe-perm=true --progress=false --loglevel=error --prefix /root/.c9"
 
 	if [ -d /root/.c9/node_modules/simplefunc ] ; then
 		rm -rf /root/.c9/node_modules/simplefunc || true
 		rm -rf /root/.c9/node_modules/colors || true
 		rm -rf /root/.c9/node_modules/isbinaryfile || true
+		rm -rf /root/.c9/node_modules/nak || true
+	fi
+
+	if [ -d /root/.c9/node_modules/nak ] ; then
 		rm -rf /root/.c9/node_modules/nak || true
 	fi
 
@@ -297,6 +300,10 @@ c9_directory () {
 	if [ -d /root/.c9/node_modules/extend ] ; then
 		rm -rf /root/.c9/node_modules/extend || true
 		rm -rf /root/.c9/node_modules/nan || true
+		rm -rf /root/.c9/node_modules/pty.js || true
+	fi
+
+	if [ -d /root/.c9/node_modules/pty.js ] ; then
 		rm -rf /root/.c9/node_modules/pty.js || true
 	fi
 
