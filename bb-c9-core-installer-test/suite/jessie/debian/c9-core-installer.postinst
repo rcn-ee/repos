@@ -33,7 +33,7 @@ extract_dir="/opt/cloud9/build/"
 
 export NODE_PATH=/usr/local/lib/node_modules
 
-npm_options="--progress=false --loglevel=error"
+npm_options="--unsafe-perm=true --progress=false --loglevel=error"
 
 npm_actually_install () {
 	# npm: force prefix to /usr/local (npm: 1.4.21 -> 3.7.1)
@@ -211,39 +211,6 @@ dl_install() {
 	fi
 }
 
-maybe_install_depend () {
-	if [ ! -f "$C9_DIR/node_modules/${pkg}/${package}.version" ] ; then
-		echo "${package}:Installing: ${pkg}-${ver}.tgz (for ${npm_project})"
-		${NODE} ${NPM} install ${npm_options} /var/cache/${package}/${pkg}-${ver}.tgz
-		echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
-		echo "${node_version}" > "$C9_DIR/node_modules/${pkg}/${package}.node_version"
-	else
-		unset old_version
-		if [ -f "$C9_DIR/node_modules/${pkg}/${package}.version" ] ; then
-			old_version=$(cat "$C9_DIR/node_modules/${pkg}/${package}.version" || true)
-		fi
-		if [ ! "x${old_version}" = "x${ver}" ] ; then
-			rm -rf "$C9_DIR/node_modules/${pkg}/" || true
-			echo "${package}:Installing: ${pkg}-${ver}.tgz (for ${npm_project})"
-			${NODE} ${NPM} install ${npm_options} /var/cache/${package}/${pkg}-${ver}.tgz
-			echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
-			echo "${node_version}" > "$C9_DIR/node_modules/${pkg}/${package}.node_version"
-		else
-			unset old_version
-			if [ -f "$C9_DIR/node_modules/${pkg}/${package}.node_version" ] ; then
-				old_version=$(cat "$C9_DIR/node_modules/${pkg}/${package}.node_version" || true)
-			fi
-			if [ ! "x${old_version}" = "x${node_version}" ] ; then
-				rm -rf "$C9_DIR/node_modules/${pkg}/" || true
-				echo "${package}:Installing: ${pkg}-${ver}.tgz (for ${npm_project})"
-				${NODE} ${NPM} install ${npm_options} /var/cache/${package}/${pkg}-${ver}.tgz
-				echo "${ver}" > "$C9_DIR/node_modules/${pkg}/${package}.version"
-				echo "${node_version}" > "$C9_DIR/node_modules/${pkg}/${package}.node_version"
-			fi
-		fi
-	fi
-}
-
 c9_directory () {
 	#Based on: https://github.com/c9/install
 	C9_DIR=/root/.c9
@@ -309,12 +276,7 @@ c9_directory () {
 	#tmux_install
 	ln -sf $(which tmux) "$C9_DIR"/bin/tmux
 
-	npm_project="nak"
-
-	#nak@0.3.3 node_modules/nak
-	#├── simplefunc@0.0.2
-	#├── colors@0.6.2
-	#└── isbinaryfile@2.0.0
+	NODE_PATH="$C9_DIR"
 
 	if [ -d /root/.c9/node_modules/simplefunc ] ; then
 		rm -rf /root/.c9/node_modules/simplefunc || true
@@ -323,21 +285,11 @@ c9_directory () {
 		rm -rf /root/.c9/node_modules/nak || true
 	fi
 
-	echo "${package}:Installing ${npm_project}"
-	#npm pack https://github.com/c9/nak/tarball/c9
-	${NODE} ${NPM} install ${npm_options} /var/cache/${package}/nak-0.3.3.tgz
+	npm_project="c9-core-installer"
+	pkg="nak" ; ver="0.3.3" ; npm_check_n_install
 
-	npm_project="node-gyp@2.0.2"
-
-	echo "${package}:Installing ${npm_project}"
-	${NODE} ${NPM} install ${npm_options} node-gyp@2.0.2
-	echo "2.0.2" > "$C9_DIR/node_modules/node-gyp/${package}.version"
-
-	npm_project="pty.js@0.3.0"
-
-	#pty.js@0.3.0 node_modules/pty.js
-	#├── extend@1.2.1
-	#└── nan@2.0.5
+	npm_project="c9-core-installer"
+	pkg="node-gyp" ; ver="2.0.2" ; npm_check_n_install
 
 	if [ -d /root/.c9/node_modules/extend ] ; then
 		rm -rf /root/.c9/node_modules/extend || true
@@ -345,9 +297,8 @@ c9_directory () {
 		rm -rf /root/.c9/node_modules/pty.js || true
 	fi
 
-	echo "${package}:Installing ${npm_project}"
-	#npm pack pty.js@0.3.0
-	${NODE} ${NPM} install --unsafe-perm=true ${npm_options} /var/cache/${package}/pty.js-0.3.0.tgz
+	npm_project="c9-core-installer"
+	pkg="pty.js" ; ver="0.3.0" ; npm_check_n_install
 
 	HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
 	if [ $HASPTY -ne 1 ]; then
