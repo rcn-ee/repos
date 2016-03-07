@@ -36,8 +36,10 @@ export NODE_PATH=/usr/local/lib/node_modules
 npm_options="--unsafe-perm=true --progress=false --loglevel=error"
 
 npm_actually_install () {
-	# npm: force prefix to /usr/local (npm: 1.4.21 -> 3.7.1)
-	${node_bin} ${npm_bin} config set -g prefix /usr/local/
+	if [ "x${fix_local}" = "xenable" ] ; then
+		# npm: force prefix to /usr/local (npm: 1.4.21 -> 3.7.1)
+		${node_bin} ${npm_bin} config set -g prefix /usr/local/
+	fi
 
 	echo "${package}:Installing: ${pkg}-${ver} (for ${npm_project})"
 	TERM=dumb ${node_bin} ${npm_bin} install -g ${npm_options} ${pkg}@${ver}
@@ -113,6 +115,8 @@ npm_install () {
 	echo "${package}:npm: [`${node_bin} ${npm_bin} --version`]"
 	echo "${package}:node: [`${node_bin} --version`]"
 
+
+	fix_local="enable"
 	npm_project="c9-core-installer"
 	pkg="winston" ; ver="2.1.1" ; npm_check_n_install
 
@@ -233,11 +237,14 @@ c9_directory () {
 	ln -sf ${node_bin} "$C9_DIR"/node/bin/node
 	ln -sf ${npm_bin} "$C9_DIR"/node/bin/
 
-	echo "${package}:npm: [`${NODE} ${NPM} --version`]"
-	echo "${package}:node: [`${NODE} --version`]"
+	node_bin="$C9_DIR/node/bin/node"
+	npm_bin="$C9_DIR/node/bin/npm"
+
+	echo "${package}:npm: [`${node_bin} ${npm_bin} --version`]"
+	echo "${package}:node: [`${node_bin} --version`]"
 
 	# use local npm cache
-	${NODE} ${NPM} config -g set cache "$C9_DIR/tmp/.npm"
+	${node_bin} ${npm_bin} config -g set cache "$C9_DIR/tmp/.npm"
 
 	# node-gyp uses sytem node or fails with command not found if
 	# we don't bump this node up in the path
@@ -271,11 +278,12 @@ c9_directory () {
 	echo ${package}:python
 	"$PYTHON" virtualenv-12.0.7/virtualenv.py "$C9_DIR/python"
 	PYTHON="$C9_DIR/python/bin/python"
-	${NODE} ${NPM} config -g set python "$PYTHON"
+	${node_bin} ${npm_bin} config -g set python "$PYTHON"
 
 	#tmux_install
 	ln -sf $(which tmux) "$C9_DIR"/bin/tmux
 
+	unset fix_local
 	NODE_PATH="$C9_DIR"
 
 	if [ -d /root/.c9/node_modules/simplefunc ] ; then
@@ -310,9 +318,9 @@ c9_directory () {
 # vfsextend collab
 
 	#Cleanup:
-	${NODE} ${NPM} config -g delete cache
-	${NODE} ${NPM} config -g delete tmp
-	${NODE} ${NPM} config -g delete python
+	${node_bin} ${npm_bin} config -g delete cache
+	${node_bin} ${npm_bin} config -g delete tmp
+	${node_bin} ${npm_bin} config -g delete python
 
 	systemctl enable cloud9.socket || true
 }
