@@ -20,7 +20,7 @@ package="bb-npm-installer"
 
 export NODE_PATH=/usr/local/lib/node_modules
 
-npm_options="--unsafe-perm --progress=false"
+npm_options="--unsafe-perm --progress=false --loglevel=error"
 
 npm_actually_install () {
 	# npm: force prefix to /usr/local (npm: 1.4.21 -> 3.7.1)
@@ -81,7 +81,7 @@ npm_install () {
 	echo "${package}:node: [`${node_bin} --version`]"
 
 	npm_project="bb-npm-installer"
-	pkg="npm" ; ver="3.7.5" ; npm_check_n_install
+	pkg="npm" ; ver="3.8.0" ; npm_check_n_install
 	echo "${package}:Installed"
 }
 

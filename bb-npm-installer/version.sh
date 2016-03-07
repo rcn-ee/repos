@@ -2,7 +2,7 @@
 
 package_name="bb-npm-installer"
 debian_pkg_name="${package_name}"
-package_version="3.7.5"
+package_version="3.8.0"
 package_source=""
 src_dir=""
 
@@ -16,6 +16,6 @@ debian_untar=""
 debian_patch=""
 local_patch="rcnee1"
 
-jessie_version="~bpo80+20160226+1"
-stretch_version="~bpo90+20160226+1"
-xenial_version="~bpo1604+20160226+1"
+jessie_version="~bpo80+20160307+1"
+stretch_version="~bpo90+20160307+1"
+xenial_version="~bpo1604+20160307+1"
