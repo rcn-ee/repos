@@ -36,11 +36,6 @@ export NODE_PATH=/usr/local/lib/node_modules
 npm_options="--unsafe-perm=true --progress=false --loglevel=error"
 
 npm_actually_install () {
-	if [ "x${fix_local}" = "xenable" ] ; then
-		# npm: force prefix to /usr/local (npm: 1.4.21 -> 3.7.1)
-		${node_bin} ${npm_bin} config set -g prefix /usr/local/
-	fi
-
 	echo "${package}:Installing: ${pkg}-${ver} (for ${npm_project})"
 	TERM=dumb ${node_bin} ${npm_bin} install -g ${npm_options} ${pkg}@${ver}
 	echo "${ver}" > "${NODE_PATH}/${pkg}/${pkg}.version"
@@ -115,8 +110,8 @@ npm_install () {
 	echo "${package}:npm: [`${node_bin} ${npm_bin} --version`]"
 	echo "${package}:node: [`${node_bin} --version`]"
 
+	${node_bin} ${npm_bin} config set -g prefix /usr/local/
 
-	fix_local="enable"
 	npm_project="c9-core-installer"
 	pkg="winston" ; ver="2.1.1" ; npm_check_n_install
 
@@ -283,7 +278,8 @@ c9_directory () {
 	#tmux_install
 	ln -sf $(which tmux) "$C9_DIR"/bin/tmux
 
-	unset fix_local
+	${node_bin} ${npm_bin} config set -g prefix /root/.c9/
+
 	export NODE_PATH=/root/.c9/node_modules/
 
 	if [ -d /root/.c9/node_modules/simplefunc ] ; then
