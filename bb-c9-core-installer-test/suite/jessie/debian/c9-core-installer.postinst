@@ -33,7 +33,7 @@ extract_dir="/opt/cloud9/build/"
 
 export NODE_PATH=/usr/local/lib/node_modules
 
-npm_options="--progress=false"
+npm_options="--progress=false --loglevel=error"
 
 npm_actually_install () {
 	# npm: force prefix to /usr/local (npm: 1.4.21 -> 3.7.1)
@@ -333,80 +333,21 @@ c9_directory () {
 	${NODE} ${NPM} install ${npm_options} node-gyp@2.0.2
 	echo "2.0.2" > "$C9_DIR/node_modules/node-gyp/${package}.version"
 
-	case "${node_version}" in
-	v0.10.*)
-		npm_project="pty.js@0.2.8"
+	npm_project="pty.js@0.3.0"
 
-		#pty.js@0.2.8 node_modules/pty.js
-		#├── extend@1.2.1
-		#└── nan@1.9.0
+	#pty.js@0.3.0 node_modules/pty.js
+	#├── extend@1.2.1
+	#└── nan@2.0.5
 
-		if [ -d /root/.c9/node_modules/extend ] ; then
-			rm -rf /root/.c9/node_modules/extend || true
-			rm -rf /root/.c9/node_modules/nan || true
-			rm -rf /root/.c9/node_modules/pty.js || true
-		fi
+	if [ -d /root/.c9/node_modules/extend ] ; then
+		rm -rf /root/.c9/node_modules/extend || true
+		rm -rf /root/.c9/node_modules/nan || true
+		rm -rf /root/.c9/node_modules/pty.js || true
+	fi
 
-		echo "${package}:Installing ${npm_project}"
-		#npm pack pty.js@0.2.8
-		##stupid: "--unsafe-perm=true" npm actually wants you to install as root then thru sudo!!!
-		${NODE} ${NPM} install --unsafe-perm=true ${npm_options} /var/cache/${package}/pty.js-0.2.8.tgz
-		;;
-	v0.12.*)
-		npm_project="pty.js@0.2.8"
-
-		#pty.js@0.2.8 node_modules/pty.js
-		#├── extend@1.2.1
-		#└── nan@1.9.0
-
-		if [ -d /root/.c9/node_modules/extend ] ; then
-			rm -rf /root/.c9/node_modules/extend || true
-			rm -rf /root/.c9/node_modules/nan || true
-			rm -rf /root/.c9/node_modules/pty.js || true
-		fi
-
-		echo "${package}:Installing ${npm_project}"
-		#npm pack pty.js@0.2.8
-		##stupid: "--unsafe-perm=true" npm actually wants you to install as root then thru sudo!!!
-		${NODE} ${NPM} install --unsafe-perm=true ${npm_options} /var/cache/${package}/pty.js-0.2.8.tgz
-		;;
-	v4.2.*|v4.3.*)
-		npm_project="pty.js@0.3.0"
-
-		#pty.js@0.3.0 node_modules/pty.js
-		#├── extend@1.2.1
-		#└── nan@2.0.5
-
-		if [ -d /root/.c9/node_modules/extend ] ; then
-			rm -rf /root/.c9/node_modules/extend || true
-			rm -rf /root/.c9/node_modules/nan || true
-			rm -rf /root/.c9/node_modules/pty.js || true
-		fi
-
-		echo "${package}:Installing ${npm_project}"
-		#npm pack pty.js@0.3.0
-		##stupid: "--unsafe-perm=true" npm actually wants you to install as root then thru sudo!!!
-		${NODE} ${NPM} install --unsafe-perm=true ${npm_options} /var/cache/${package}/pty.js-0.3.0.tgz
-		;;
-	*)
-		npm_project="pty.js@0.3.0"
-
-		#pty.js@0.3.0 node_modules/pty.js
-		#├── extend@1.2.1
-		#└── nan@2.0.5
-
-		if [ -d /root/.c9/node_modules/extend ] ; then
-			rm -rf /root/.c9/node_modules/extend || true
-			rm -rf /root/.c9/node_modules/nan || true
-			rm -rf /root/.c9/node_modules/pty.js || true
-		fi
-
-		echo "${package}:Installing ${npm_project}"
-		#npm pack pty.js@0.3.0
-		##stupid: "--unsafe-perm=true" npm actually wants you to install as root then thru sudo!!!
-		${NODE} ${NPM} install --unsafe-perm=true ${npm_options} /var/cache/${package}/pty.js-0.3.0.tgz
-		;;
-	esac
+	echo "${package}:Installing ${npm_project}"
+	#npm pack pty.js@0.3.0
+	${NODE} ${NPM} install --unsafe-perm=true ${npm_options} /var/cache/${package}/pty.js-0.3.0.tgz
 
 	HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
 	if [ $HASPTY -ne 1 ]; then

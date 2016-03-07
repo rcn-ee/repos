@@ -4,7 +4,7 @@
 
 package_name="c9-core-installer"
 debian_pkg_name="${package_name}"
-package_version="3.1.1380+git20160212"
+package_version="3.1.1670+git20160304"
 package_source=""
 src_dir=""
 
@@ -13,10 +13,10 @@ git_sha=""
 reprepro_dir="c/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-1"
+debian_version="${package_version}-0"
 debian_untar=""
 debian_patch=""
-local_patch="rcnee2"
+local_patch="rcnee1"
 
 wheezy_version="~bpo70+20160226+1"
 jessie_version="~bpo80+20160226+1"
