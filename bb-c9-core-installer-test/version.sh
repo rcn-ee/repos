@@ -19,6 +19,6 @@ debian_patch=""
 local_patch="rcnee1"
 
 wheezy_version="~bpo70+20160226+1"
-jessie_version="~bpo80+20160226+1"
 stretch_version="~bpo90+20160226+1"
 xenial_version="~bpo1604+20160226+1"
+jessie_version="~bpo80+20160307+1"
