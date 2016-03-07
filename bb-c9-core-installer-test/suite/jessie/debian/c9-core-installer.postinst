@@ -210,6 +210,15 @@ dl_install() {
 	fi
 }
 
+fix_npm_lib () {
+	if [ -d /root/.c9/lib/node_modules/${module}/ ] ; then
+		if [ ! -d /root/.c9/node_modules/${module} ] ; then
+			mkdir -p /root/.c9/node_modules/
+			ln -sf /root/.c9/lib/node_modules/${module}/ /root/.c9/node_modules/
+		fi
+	fi
+}
+
 c9_directory () {
 	#Based on: https://github.com/c9/install
 	C9_DIR=/root/.c9
@@ -294,8 +303,16 @@ c9_directory () {
 	npm_project="c9-core-installer"
 	pkg="nak" ; ver="0.3.3" ; npm_check_n_install
 
+	module="nak" ; fix_npm_lib
+
+	if [ -d /root/.c9/node_modules/node-gyp ] ; then
+		rm -rf /root/.c9/node_modules/node-gyp || true
+	fi
+
 	npm_project="c9-core-installer"
 	pkg="node-gyp" ; ver="2.0.2" ; npm_check_n_install
+
+	module="node-gyp" ; fix_npm_lib
 
 	if [ -d /root/.c9/node_modules/extend ] ; then
 		rm -rf /root/.c9/node_modules/extend || true
@@ -309,6 +326,8 @@ c9_directory () {
 
 	npm_project="c9-core-installer"
 	pkg="pty.js" ; ver="0.3.0" ; npm_check_n_install
+
+	module="pty.js" ; fix_npm_lib
 
 	HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
 	if [ $HASPTY -ne 1 ]; then
