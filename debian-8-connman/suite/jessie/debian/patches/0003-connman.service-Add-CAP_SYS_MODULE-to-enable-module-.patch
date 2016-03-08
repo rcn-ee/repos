@@ -1,0 +1,31 @@
+From 9e96310aeef8aefc8de1b41ade21ad0cc1e17788 Mon Sep 17 00:00:00 2001
+From: Patrik Flykt <patrik.flykt@linux.intel.com>
+Date: Tue, 8 Mar 2016 12:11:54 +0200
+Subject: [PATCH 3/3] connman.service: Add CAP_SYS_MODULE to enable module
+ loading
+
+If iptables functionality is built as modules and the modules are not
+yet loaded, add CAP_SYS_MODULE capability to allow ConnMan to load any
+modules necessary when tethering.
+
+Reported by Brian H. Anderson
+---
+ src/connman.service.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/connman.service.in b/src/connman.service.in
+index 09dfec9..57eaaf9 100644
+--- a/src/connman.service.in
++++ b/src/connman.service.in
+@@ -13,7 +13,7 @@ BusName=net.connman
+ Restart=on-failure
+ ExecStart=@sbindir@/connmand -n
+ StandardOutput=null
+-CapabilityBoundingSet=CAP_KILL CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SYS_TIME
++CapabilityBoundingSet=CAP_KILL CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SYS_TIME CAP_SYS_MODULE
+ ProtectHome=true
+ ProtectSystem=full
+ 
+-- 
+2.7.0
+

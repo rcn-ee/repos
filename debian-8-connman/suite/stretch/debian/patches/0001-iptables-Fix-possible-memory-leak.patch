@@ -1,0 +1,30 @@
+From 754cc1678f5c61501299bbde70a73c58d691609b Mon Sep 17 00:00:00 2001
+From: Niraj Kumar Goit <niraj.g@samsung.com>
+Date: Fri, 22 Jan 2016 16:33:46 +0530
+Subject: [PATCH 1/2] iptables: Fix possible memory leak
+
+This patch free memory allocated to cbd by cb_data_new() when
+get_table() return NULL.
+---
+ src/iptables.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/iptables.c b/src/iptables.c
+index fa2f05b..bc0c763 100644
+--- a/src/iptables.c
++++ b/src/iptables.c
+@@ -2423,8 +2423,10 @@ int __connman_iptables_iterate_chains(const char *table_name,
+ 	struct connman_iptables *table;
+ 
+ 	table = get_table(table_name);
+-	if (!table)
++	if (!table) {
++		g_free(cbd);
+ 		return -EINVAL;
++	}
+ 
+ 	iterate_entries(table->blob_entries->entrytable,
+ 			table->info->valid_hooks,
+-- 
+2.7.0
+
