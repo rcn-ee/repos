@@ -1,24 +1,22 @@
 #!/bin/bash -e
 
-#http://packages.siduction.org/extra/pool/main/c/connman/
-
-mirror="http://packages.siduction.org"
+#https://git.kernel.org/cgit/network/connman/connman.git/
 
 package_name="connman"
 debian_pkg_name="${package_name}"
-package_version="1.31"
+package_version="1.31-git20160308"
 package_source="${package_name}_${package_version}.orig.tar.xz"
-src_dir="${package_name}-${package_version}"
+src_dir="${package_name}_${package_version}"
 
-git_repo=""
-git_sha=""
+git_repo="git://git.kernel.org/pub/scm/network/connman/connman.git"
+git_sha="9e96310aeef8aefc8de1b41ade21ad0cc1e17788"
 reprepro_dir="c/${package_name}"
-dl_path="extra/pool/main/${reprepro_dir}/"
+dl_path=""
 
-debian_version="${package_version}-6"
-debian_untar="${package_name}_${debian_version}.debian.tar.xz"
+debian_version="${package_version}-0"
 debian_patch=""
-local_patch="rcnee2"
+debian_diff=""
+local_patch="rcnee1"
 
 jessie_version="~bpo80+20160308+1"
 stretch_version="~bpo90+20160308+1"
