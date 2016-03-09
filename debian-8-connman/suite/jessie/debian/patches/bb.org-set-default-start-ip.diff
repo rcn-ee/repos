@@ -1,10 +1,17 @@
 diff --git a/src/ippool.c b/src/ippool.c
-index cea1dcc..d8aadbb 100644
+index cea1dcc..ece7ba7 100644
 --- a/src/ippool.c
 +++ b/src/ippool.c
-@@ -237,7 +237,7 @@ static bool is_private_address(uint32_t address)
+@@ -232,12 +232,13 @@ static struct address_info *lookup_info(int index, uint32_t start)
+ 
+ static bool is_private_address(uint32_t address)
+ {
+-	unsigned int a, b;
++	unsigned int a, b, c;
+ 
  	a = (address & 0xff000000) >> 24;
  	b = (address & 0x00ff0000) >> 16;
++	c = (address & 0x0000ff00) >> 8;
  
 -	if (a == 10 || (a == 192 && b == 168) ||
 +	if (a == 10 || (a == 192 && b == 168 && c >= 7) ||
