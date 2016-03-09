@@ -1,0 +1,26 @@
+diff --git a/src/ippool.c b/src/ippool.c
+index cea1dcc..d8aadbb 100644
+--- a/src/ippool.c
++++ b/src/ippool.c
+@@ -237,7 +237,7 @@ static bool is_private_address(uint32_t address)
+ 	a = (address & 0xff000000) >> 24;
+ 	b = (address & 0x00ff0000) >> 16;
+ 
+-	if (a == 10 || (a == 192 && b == 168) ||
++	if (a == 10 || (a == 192 && b == 168 && c >= 7) ||
+ 					(a == 172 && (b >= 16 && b <= 31)))
+ 		return true;
+ 
+diff --git a/src/tethering.c b/src/tethering.c
+index 3153349..86e78dc 100644
+--- a/src/tethering.c
++++ b/src/tethering.c
+@@ -485,7 +485,7 @@ int __connman_private_network_request(DBusMessage *msg, const char *owner)
+ 	pn->fd = fd;
+ 	pn->interface = iface;
+ 	pn->index = index;
+-	pn->pool = __connman_ippool_create(pn->index, 1, 1, ippool_disconnect, pn);
++	pn->pool = __connman_ippool_create(pn->index, 2, 1, ippool_disconnect, pn);
+ 	if (!pn->pool) {
+ 		errno = -ENOMEM;
+ 		goto error;
