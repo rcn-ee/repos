@@ -35,7 +35,7 @@ TI_AM335x_BeagleBone_Green_Wireless)
 	;;
 esac
 
-if [ "x${bt_gpio_en}" = "x" ] ; then
+if [ ! "x${bt_gpio_en}" = "x" ] ; then
 	if [ ! -d /sys/class/gpio/gpio${bt_gpio_en}/ ] ; then
 		echo ${bt_gpio_en} > /sys/class/gpio/export || true
 		sleep 1
