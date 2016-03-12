@@ -29,10 +29,12 @@ mirror="http://${proxy}${debian_server}"
 deboot="sid"
 
 if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
+if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 	dist="wheezy"
 	arch="armhf"
 	options=""
 	setup_update_sbuild
+fi
 fi
 
 dist="jessie"
@@ -41,33 +43,41 @@ options=""
 setup_update_sbuild
 
 if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
+if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 	dist="stretch"
 	arch="armhf"
 	options=""
 	setup_update_sbuild
+fi
 fi
 
 mirror="http://${proxy}${ubuntu_server}"
 deboot="gutsy"
 
 if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
+if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 	dist="trusty"
 	arch="armhf"
 	options="--exclude=debfoster"
 	setup_update_sbuild
 fi
+fi
 
 if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
+if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 	dist="wily"
 	arch="armhf"
 	options="--exclude=debfoster"
 	setup_update_sbuild
 fi
+fi
 
 if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
+if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 	dist="xenial"
 	arch="armhf"
 	options="--exclude=debfoster"
 	setup_update_sbuild
+fi
 fi
 #
