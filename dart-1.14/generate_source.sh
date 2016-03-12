@@ -20,7 +20,11 @@ if [ ! -f dart_${real_package_version}-1.debian.tar.gz ] ; then
 	wget -c ${server}/${real_package_version}/linux_packages/debian_wheezy/dart_${real_package_version}-1.debian.tar.gz
 fi
 
-if [ ! -f ${package_name}__${package_version}-1.debian.tar.gz ] ; then
+if [ ! -f dart_${package_version}-1.debian.tar.gz ] ; then
+	cp -v dart_${real_package_version}-1.debian.tar.gz dart_${package_version}-1.debian.tar.gz
+fi
+
+if [ ! -f ${package_name}_${package_version}-1.debian.tar.gz ] ; then
 	cp -v dart_${real_package_version}-1.debian.tar.gz ${package_name}_${package_version}-1.debian.tar.gz
 fi
 
