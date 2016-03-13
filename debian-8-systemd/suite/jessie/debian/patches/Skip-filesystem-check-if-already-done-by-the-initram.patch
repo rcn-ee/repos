@@ -1,35 +1,48 @@
-From: Michael Biebl <biebl@debian.org>
-Date: Mon, 13 Apr 2015 19:34:23 +0200
+From: Nis Martensen <nis.martensen@web.de>
+Date: Tue, 19 Jan 2016 22:01:43 +0100
 Subject: Skip filesystem check if already done by the initramfs
 
 Newer versions of initramfs-tools already fsck and mount / and /usr in
 the initramfs. Skip the filesystem check in this case.
 
+Based on a previous patch by Michael Biebl <biebl@debian.org>.
+
 Closes: #782522
+Closes: #810748
 ---
- src/fstab-generator/fstab-generator.c | 4 +++-
- units/systemd-fsck-root.service.in    | 1 +
- 2 files changed, 4 insertions(+), 1 deletion(-)
+ src/fstab-generator/fstab-generator.c | 11 ++++++++---
+ units/systemd-fsck-root.service.in    |  1 +
+ 2 files changed, 9 insertions(+), 3 deletions(-)
 
 diff --git a/src/fstab-generator/fstab-generator.c b/src/fstab-generator/fstab-generator.c
-index cb3d9dc..3323884 100644
+index cb3d9dc..1557fb2 100644
 --- a/src/fstab-generator/fstab-generator.c
 +++ b/src/fstab-generator/fstab-generator.c
-@@ -163,11 +163,13 @@ static bool mount_is_network(struct mntent *me) {
- }
- 
- static bool mount_in_initrd(struct mntent *me) {
+@@ -188,6 +188,7 @@ static int add_mount(
+                 *filtered = NULL;
+         _cleanup_fclose_ FILE *f = NULL;
+         int r;
 +        struct stat sb;
-+
-         assert(me);
  
-         return
-                 hasmntopt(me, "x-initrd.mount") ||
--                streq(me->mnt_dir, "/usr");
-+                (streq(me->mnt_dir, "/usr") && stat("/run/initramfs/fsck-usr", &sb) == 0);
- }
+         assert(what);
+         assert(where);
+@@ -241,9 +242,13 @@ static int add_mount(
+                 fprintf(f, "Before=%s\n", post);
  
- static int add_mount(
+         if (passno != 0) {
+-                r = generator_write_fsck_deps(f, arg_dest, what, where, fstype);
+-                if (r < 0)
+-                        return r;
++                if (streq(where, "/usr") && stat("/run/initramfs/fsck-usr", &sb) == 0)
++                        ; /* skip /usr fsck if it has already been checked in the initramfs */
++                else {
++                        r = generator_write_fsck_deps(f, arg_dest, what, where, fstype);
++                        if (r < 0)
++                                return r;
++                }
+         }
+ 
+         fprintf(f,
 diff --git a/units/systemd-fsck-root.service.in b/units/systemd-fsck-root.service.in
 index 4162983..0668107 100644
 --- a/units/systemd-fsck-root.service.in
