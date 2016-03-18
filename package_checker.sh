@@ -312,6 +312,14 @@ bbgw () {
 	package_name="swig"; package_version="${package_name}_3.0.7-2"; check_http
 }
 
+ubuntu () {
+	site="http://ports.ubuntu.com/pool/universe/c"
+	package_name="chromium-browser" ; package_version="${package_name}_48.0.2564.116-0ubuntu1.1229" ; check_http
+
+	site="http://ports.ubuntu.com/pool/main/w"
+	package_name="wpa" ; package_version="${package_name}_2.4-0ubuntu6" ; check_http
+}
+
 important
 builds
 mesa
@@ -322,11 +330,7 @@ qt5_lxqt
 nodejs
 libsigrok
 bbgw
-
-echo "others"
-
-site="http://ports.ubuntu.com/pool/universe/c"
-package_name="chromium-browser" ; package_version="${package_name}_48.0.2564.116-0ubuntu1.1229" ; check_http
+ubuntu
 
 ros () {
 	#https://wiki.debian.org/DebianScience/Robotics/ROS/Packages

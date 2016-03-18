@@ -1,51 +1,97 @@
-wpa (2.3-2.3~bpo80+20160208+1) jessie; urgency=low
+wpa (2.4-0ubuntu6rcnee1~bpo80+20160318+1) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Mon, 08 Feb 2016 16:04:03 -0600
+ -- Robert Nelson <robertcnelson@gmail.com>  Fri, 18 Mar 2016 11:16:39 -0500
 
-wpa (2.3-2.3) unstable; urgency=high
+wpa (2.4-0ubuntu6) xenial; urgency=medium
 
-  * Non-maintainer upload.
-  * Add patch to address CVE-2015-5310.
-    CVE-2015-5310: wpa_supplicant unauthorized WNM Sleep Mode GTK control.
-    (Closes: #804707)
-  * Add patches to address CVE-2015-5314 and CVE-2015-5315.
-    CVE-2015-5314: hostapd: EAP-pwd missing last fragment length validation.
-    CVE-2015-5315: wpa_supplicant: EAP-pwd missing last fragment length
-    validation. (Closes: #804708)
-  * Add patch to address CVE-2015-5316.
-    CVE-2015-5316: EAP-pwd peer error path failure on unexpected Confirm
-    message. (Closes: #804710)
+  * debian/patches/wpasupplicant_band_selection_aa517ae2.patch: add the last 
+    missing 5 GHz band selection related cherry-pick from Debian that was not 
+    included in wpa 2.4 (LP: #1517040)
 
- -- Salvatore Bonaccorso <carnil@debian.org>  Thu, 12 Nov 2015 20:54:12 +0100
+ -- Timo Jyrinki <timo-jyrinki@ubuntu.com>  Tue, 19 Jan 2016 12:36:00 +0200
 
-wpa (2.3-2.2) unstable; urgency=high
+wpa (2.4-0ubuntu5) xenial; urgency=medium
 
-  * Non-maintainer upload.
-  * Add patch to address CVE-2015-4141.
-    CVE-2015-4141: WPS UPnP vulnerability with HTTP chunked transfer
-    encoding. (Closes: #787372)
-  * Add patch to address CVE-2015-4142.
-    CVE-2015-4142: Integer underflow in AP mode WMM Action frame processing.
-    (Closes: #787373)
-  * Add patches to address CVE-2015-414{3,4,5,6}
-    CVE-2015-4143 CVE-2015-4144 CVE-2015-4145 CVE-2015-4146: EAP-pwd missing
-    payload length validation. (Closes: #787371)
-  * Add patch to address 2015-5 vulnerability.
-    NFC: Fix payload length validation in NDEF record parser (Closes: #795740)
-  * Thanks to Julian Wollrath <jwollrath@web.de> for the initial debdiff
-    provided in #787371.
+  * SECURITY UPDATE: unauthorized WNM Sleep Mode GTK control
+    - debian/patches/CVE-2015-5310.patch: Ignore Key Data in WNM Sleep Mode
+      Response frame if no PMF in use in wpa_supplicant/wnm_sta.c.
+    - CVE-2015-5310
+  * SECURITY UPDATE: EAP-pwd missing last fragment length validation
+    - debian/patches/CVE-2015-5315-1.patch: Fix last fragment length
+      validation in src/eap_peer/eap_pwd.c.
+    - debian/patches/CVE-2015-5315-2.patch: Fix last fragment length
+      validation in src/eap_server/eap_server_pwd.c.
+    - CVE-2015-5315
+  * SECURITY UPDATE: EAP-pwd peer error path failure on unexpected Confirm
+    message
+    - debian/patches/CVE-2015-5316.patch: fix error path in
+      src/eap_peer/eap_pwd.c.
+    - CVE-2015-5316
+  * SECURITY UPDATE: denial of service in NDEF record parser
+    - debian/patches/CVE-2015-8041.patch: validate payload lengths in
+      src/wps/ndef.c.
+    - CVE-2015-8041
 
- -- Salvatore Bonaccorso <carnil@debian.org>  Sat, 31 Oct 2015 14:13:50 +0100
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Tue, 10 Nov 2015 13:38:25 -0500
 
-wpa (2.3-2.1) unstable; urgency=medium
+wpa (2.4-0ubuntu4) xenial; urgency=medium
 
-  * Non-maintainer upload.
-  * Import four patches from upstream git (wpasupplicant_band_selection_*.patch),
-    manually unfuzzed, to improve 2.4/5 GHz band selection. (Closes: #795722)
+  * Add debian/system-sleep/wpasupplicant: Call wpa_cli suspend/resume
+    before/after suspend, like the pm-utils hook. In some cases this brings
+    back missing Wifi connection after resuming. (LP: #1422143)
 
- -- Steinar H. Gunderson <sesse@debian.org>  Sun, 30 Aug 2015 14:47:56 +0200
+ -- Martin Pitt <martin.pitt@ubuntu.com>  Mon, 26 Oct 2015 14:24:30 +0100
+
+wpa (2.4-0ubuntu3) wily; urgency=medium
+
+  * debian/patches/dbus-fix-operations-for-p2p-mgmt.patch: fix operations
+    when P2P management interface is used (LP: #1482439)
+
+ -- Ricardo Salveti de Araujo <rsalveti@rsalveti.net>  Wed, 07 Oct 2015 10:21:39 -0300
+
+wpa (2.4-0ubuntu2) wily; urgency=medium
+
+  * debian/config/wpasupplicant/linux:
+    - Reduce the delta to Debian by removing the double setting of CONFIG_AP
+      and CONFIG_P2P. The only actual delta is CONFIG_ANDROID_HAL.
+
+ -- Timo Jyrinki <timo-jyrinki@ubuntu.com>  Mon, 03 Aug 2015 22:03:51 +0300
+
+wpa (2.4-0ubuntu1) wily; urgency=medium
+
+  * New upstream release.
+  * Merge with Debian unstable; remaining changes:
+    - debian/patches/session-ticket.patch: disable the TLS Session Ticket
+      extension to fix auth with 802.1x PEAP on some hardware.
+    - debian/patches/android_hal_fw_path_change.patch: add a DBus method for
+      requesting a firmware change when working with the Android HAL; this is
+      used to set a device in P2P or AP mode; conditional to CONFIG_ANDROID_HAL
+      being enabled.
+    - debian/config/wpasupplicant/linux: enable CONFIG_ANDROID_HAL.
+    - debian/control: Build-Depends on android-headers to get the required wifi
+      headers for the HAL support.
+    - debian/patches/dbus-available-sta.patch: Make the list of connected
+      stations available on DBus for hotspot mode; along with some of the
+      station properties, such as rx/tx packets, bytes, capabilities, etc.
+    - debian/patches/CVE-2015-4141.patch: check chunk size: src/wps/httpread.c
+      - CVE-2015-4141
+    - debian/patches/CVE-2015-4142.patch: check length in src/ap/wmm.c.
+      - CVE-2015-4142
+    - debian/patches/CVE-2015-4143-4146.patch: check lengths in
+        src/eap_peer/eap_pwd.c, src/eap_server/eap_server_pwd.c.
+      - CVE-2015-4143, CVE-2015-4144, CVE-2015-4145, CVE-2015-4146
+    - debian/config/wpasupplicant/linux:
+      - Enable CONFIG_AP_MODE (AP mode support) (LP: #1209511).
+      - Enable CONFIG_P2P (Wi-Fi Direct support).
+  * debian/patches/wpa_supplicant-MACsec-fix-build-failure-for-IEEE8021.patch,
+    debian/patches/include-ieee802_11_common.c-in-wpa_supplicant-build-.patch,
+    d/p/hostapd_fix-hostapd-operation-without-hw_mode-driver-data.patch:
+    dropped patches included upstream.
+  * Refreshed all patches.
+
+ -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Mon, 27 Jul 2015 17:29:24 -0400
 
 wpa (2.3-2) unstable; urgency=high
 
@@ -127,6 +173,103 @@ wpa (2.2-1) unstable; urgency=medium
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 17 Sep 2014 04:52:36 +0200
 
+wpa (2.1-0ubuntu8) wily; urgency=medium
+
+  * SECURITY UPDATE: memcpy overflow in P2P functionality
+    - debian/patches/CVE-2015-1863.patch: validate SID element length in
+      src/p2p/p2p.c.
+    - CVE-2015-1863
+  * SECURITY UPDATE: denial of service via WPS UPnP
+    - debian/patches/CVE-2015-4141.patch: check chunk size in
+      src/wps/httpread.c.
+    - CVE-2015-4141
+  * SECURITY UPDATE: denial of service via AP mode WMM Action frame
+    - debian/patches/CVE-2015-4142.patch: check length in src/ap/wmm.c.
+    - CVE-2015-4142
+  * SECURITY UPDATE: denial of service via EAP-pwd
+    - debian/patches/CVE-2015-4143-4146.patch: check lengths in
+      src/eap_peer/eap_pwd.c, src/eap_server/eap_server_pwd.c.
+    - CVE-2015-4143
+    - CVE-2015-4144
+    - CVE-2015-4145
+    - CVE-2015-4146
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Mon, 15 Jun 2015 10:21:54 -0400
+
+wpa (2.1-0ubuntu7) vivid; urgency=medium
+
+  Cherry-pick from Debian svn:
+  * Add wpasupplicant_fix-systemd-unit-dependencies.patch: Fix systemd unit
+    dependencies for wpasupplicant, it needs to be started before the network
+    target (Closes: 780552, LP: #1431774).
+
+ -- Martin Pitt <martin.pitt@ubuntu.com>  Fri, 27 Mar 2015 14:07:35 +0100
+
+wpa (2.1-0ubuntu6) vivid; urgency=medium
+
+  * debian/patches/dbus-available-sta.patch: Make the list of connected
+    stations available on DBus for hotspot mode; along with some of the
+    station properties, such as rx/tx packets, bytes, capabilities, etc.
+
+ -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Fri, 19 Dec 2014 13:29:30 -0500
+
+wpa (2.1-0ubuntu5) vivid; urgency=medium
+
+  * debian/patches/android_hal_fw_path_change.patch: add a DBus method for
+    requesting a firmware change when working with the Android HAL; this is
+    used to set a device in P2P or AP mode; conditional to CONFIG_ANDROID_HAL
+    being enabled.
+  * debian/config/wpasupplicant/linux: enable CONFIG_ANDROID_HAL.
+  * debian/control: Build-Depends on android-headers to get the required wifi
+    headers for the HAL support.
+
+ -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Mon, 08 Dec 2014 21:05:25 -0500
+
+wpa (2.1-0ubuntu4) utopic; urgency=medium
+
+  * SECURITY UPDATE: arbitrary command execution via unsanitized string
+    passed to action scripts by wpa_cli and hostapd_cli
+    - debian/patches/CVE-2014-3686.patch: added os_exec() helper to
+      src/utils/os.h, src/utils/os_unix.c, src/utils/os_win32.c,
+      use instead of system() in wpa_supplicant/wpa_cli.c,
+      hostapd/hostapd_cli.c.
+    - CVE-2014-3686
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Fri, 10 Oct 2014 09:15:39 -0400
+
+wpa (2.1-0ubuntu3) utopic; urgency=medium
+
+  * debian/patches/git_update_scan_res_for_apscan_1_068e3877.patch: update
+    scan results when using ap_scan=1; this avoids 4-way handshake failures
+    while roaming. (LP: #1348105)
+
+ -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Mon, 22 Sep 2014 18:28:29 +0100
+
+wpa (2.1-0ubuntu2) utopic; urgency=medium
+
+  * No-change rebuild with pkg-create-dbgsym 0.65 so that the full set of
+    debug symbol packages are generated.
+
+ -- Colin Watson <cjwatson@ubuntu.com>  Sat, 26 Jul 2014 22:26:29 +0100
+
+wpa (2.1-0ubuntu1) trusty; urgency=medium
+
+  * New upstream release (LP: #1099755)
+  * debian/get-orig-source: update for new git repository for the current
+    hostap/wpasupplicant versions.
+  * Dropped patches due to being applied upstream and included in the current
+    source tarball:
+    - debian/patches/11_wpa_gui_ftbfs_gcc_4_7.patch
+    - debian/patches/13_human_readable_signal.patch
+    - debian/patches/git_deinit_p2p_context_on_mgmt_remove_ff1f9c8.patch
+    - debian/patches/libnl3-includes.patch
+  * debian/patches/git_accept_client_cert_from_server.patch: revert the commit:
+    "OpenSSL: Do not accept SSL Client certificate for server", which breaks
+    many AAA servers that include both client and server EKUs. Cherry-picked
+    from hostap git commit b62d5b5.
+
+ -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Tue, 04 Mar 2014 16:13:24 -0500
+
 wpa (1.1-1) unstable; urgency=medium
 
   * New upstream release:
@@ -195,6 +338,43 @@ wpa (1.0-3.1) unstable; urgency=low
 
  -- Daniel Kahn Gillmor <dkg@fifthhorseman.net>  Thu, 05 Dec 2013 13:56:15 -0500
 
+wpa (1.0-3ubuntu4) trusty; urgency=low
+
+  * debian/patches/git_deinit_p2p_context_on_mgmt_remove_ff1f9c8.patch:
+    deinitialize the P2P context when the management interface gets removed for
+    whatever reason, such as a suspend/resume cycle. (LP: #1210785)
+
+ -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Mon, 18 Nov 2013 20:31:00 -0500
+
+wpa (1.0-3ubuntu3) trusty; urgency=low
+
+  * debian/config/wpasupplicant/linux: enable EAP-FAST (LP: #34982)
+
+ -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Wed, 30 Oct 2013 09:25:39 -0700
+
+wpa (1.0-3ubuntu2) saucy; urgency=low
+
+  * debian/config/wpasupplicant/linux:
+    - Enable CONFIG_AP_MODE (AP mode support) (LP: #1209511).
+    - Enable CONFIG_P2P (Wi-Fi Direct support).
+
+ -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Thu, 08 Aug 2013 10:20:17 -0400
+
+wpa (1.0-3ubuntu1) raring; urgency=low
+
+  * Merge from Debian unstable. Remaining changes:
+    - Enable CONFIG_IBSS_RSN, so that we can turn back on "secure" adhoc
+      support in NetworkManager using IBSS RSN (WPA2).
+    - debian/wpasupplicant.postinst, debian/hostapd.postinst: Only move
+      sendsigs.omit.d/*.pid if the target isn't the same as the source (as is
+      the case when /lib/init/rw is a symlink to /run)
+    - debian/patches/dbus-activation-cmdline.patch: have wpasupplicant create
+      a pid file in /run/sendsigs.omit.d when activated by DBus.
+    - debian/patches/session-ticket.patch: disable the TLS Session Ticket
+      extension to fix auth with 802.1x PEAP on some hardware.
+
+ -- Logan Rosen <logatronico@gmail.com>  Fri, 30 Nov 2012 11:49:00 -0500
+
 wpa (1.0-3) unstable; urgency=high
 
   * ship forgotten README-P2P.
@@ -206,6 +386,45 @@ wpa (1.0-3) unstable; urgency=high
     length than TLS data length (CVE-2012-4445, DSA 2557-1, Closes: #689990).
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 08 Oct 2012 17:48:04 +0200
+
+wpa (1.0-2ubuntu5) quantal; urgency=low
+
+  * debian/patches/session-ticket.patch: disable the TLS Session Ticket
+    extension to fix auth with 802.1x PEAP on some hardware. (LP: #969343)
+
+ -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Wed, 12 Sep 2012 15:57:50 -0400
+
+wpa (1.0-2ubuntu4) quantal; urgency=low
+
+  * Enable CONFIG_IBSS_RSN, so that we can turn back on "secure" adhoc support
+    in NetworkManager using IBSS RSN (WPA2). (LP: #1046918)
+
+ -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Fri, 07 Sep 2012 15:49:45 -0400
+
+wpa (1.0-2ubuntu3) quantal; urgency=low
+
+  * debian/patches/fix_driver_wext_for_broadcom_wl.patch: Drop the patch, it
+    appears to break at least some scans with some Broadcom devices.
+    (LP: #994739)
+
+ -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Wed, 01 Aug 2012 12:02:44 -0400
+
+wpa (1.0-2ubuntu2) quantal; urgency=low
+
+  * debian/patches/fix_driver_wext_for_broadcom_wl.patch: Add a workaround for
+    Broadcom wl driver's first failing scan (LP: #994739) 
+
+ -- Pau Oliva Fora (pof) <pau@eslack.org>  Mon, 09 Jul 2012 16:44:32 +0200
+
+wpa (1.0-2ubuntu1) quantal; urgency=low
+
+  * debian/wpasupplicant.postinst, debian/hostapd.postinst: Only move
+    sendsigs.omit.d/*.pid if the target isn't the same as the source (as is
+    the case when /lib/init/rw is a symlink to /run)
+  * debian/patches/dbus-activation-cmdline.patch: have wpasupplicant create
+    a pid file in /run/sendsigs.omit.d when activated by DBus.
+
+ -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Fri, 25 May 2012 14:07:55 -0400
 
 wpa (1.0-2) unstable; urgency=low
 
