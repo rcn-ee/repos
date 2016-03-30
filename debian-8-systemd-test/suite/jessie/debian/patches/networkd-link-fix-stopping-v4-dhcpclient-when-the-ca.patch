@@ -1,0 +1,33 @@
+From: Christos Trochalakis <yatiohi@ideopolis.gr>
+Date: Sat, 7 Feb 2015 09:23:19 +0200
+Subject: networkd: link - fix stopping v4 dhcpclient when the carrier is lost
+
+The check for a running v4 dhcpclient was using DHCP_SUPPORT_V6 flag
+instead of DHCP_SUPPORT_V4.
+
+As a result, when the carrier was lost systemd was not cleaning up the
+relevant addresses and routes. If the carrier was regained in another
+environment, with a different subnet and gateway, the system would end
+up with multiple addresses and default gateways and thus a broken
+network configuration. This scenario can be easily reproduced with wifi
+links.
+
+Bug-Debian: http://bugs.debian.org/779571
+Forwarded: No, fixed upstream in 217 as side effect of commit ba179154.
+---
+ src/network/networkd-link.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/network/networkd-link.c b/src/network/networkd-link.c
+index 6257372..8c68199 100644
+--- a/src/network/networkd-link.c
++++ b/src/network/networkd-link.c
+@@ -206,7 +206,7 @@ static int link_stop_clients(Link *link) {
+         if (!link->network)
+                 return 0;
+ 
+-        if (IN_SET(link->network->dhcp, DHCP_SUPPORT_BOTH, DHCP_SUPPORT_V6)) {
++        if (IN_SET(link->network->dhcp, DHCP_SUPPORT_BOTH, DHCP_SUPPORT_V4)) {
+                 assert(link->dhcp_client);
+ 
+                 k = sd_dhcp_client_stop(link->dhcp_client);

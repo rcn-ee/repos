@@ -1,0 +1,170 @@
+#! /bin/sh
+
+set -e
+
+_systemctl() {
+    if [ -d /run/systemd/system ]; then
+        systemctl "$@"
+    fi
+}
+
+_update_catalog() {
+    journalctl --update-catalog || true
+}
+
+# Update Message Catalogs database and reload in response to dpkg triggers
+if [ "$1" = "triggered" ]; then
+    shift
+    for trigger in "$@"; do
+        case $trigger in
+            /usr/lib/systemd/catalog)
+                _update_catalog
+                ;;
+            /etc/init.d)
+                _systemctl daemon-reload
+                ;;
+        esac
+    done
+    exit 0
+fi
+
+# Cleanup state files from the auto-enabler which we used in wheezy
+if dpkg --compare-versions "$2" lt "204-1"; then
+    rm -f /var/lib/systemd/enabled-units
+    rm -f /var/lib/systemd/run-debian-enable-units
+    rm -f /var/lib/systemd/*.symlinks
+fi
+
+# Do a one-time migration of the local time setting
+if dpkg --compare-versions "$2" lt "33-1"; then
+    if [ -f /etc/default/rcS ]; then
+        . /etc/default/rcS
+    fi
+    if [ "$UTC" = "no" ] && [ ! -e /etc/adjtime ]; then
+        printf "0.0 0 0.0\n0\nLOCAL" > /etc/adjtime
+    fi
+fi
+
+# Do a one-time migration of the TMPTIME setting
+if dpkg --compare-versions "$2" lt "204-9"; then
+    # Fix up potentially broken tmp.conf, see Debian#738862
+    if [ -e /etc/tmpfiles.d/tmp.conf ]; then
+        sed -i '/^# Clear \/var\/tmp/d' /etc/tmpfiles.d/tmp.conf
+        sed -i 's,^\(d /var/tmp\),#\1,g' /etc/tmpfiles.d/tmp.conf
+    fi
+
+    if [ -f /etc/default/rcS ]; then
+        . /etc/default/rcS
+    fi
+    if [ ! -e /etc/tmpfiles.d/tmp.conf ]; then
+        case "$TMPTIME" in
+            -*|infinite|infinity)
+                cat > /etc/tmpfiles.d/tmp.conf <<EOF
+# Avoid clearing /tmp by shipping an empty /etc/tmpfiles.d/tmp.conf file
+# which overrides /usr/lib/tmpfiles.d/tmp.conf.
+# This file was automatically created because of local modifications in
+# /etc/default/rcS where TMPTIME was set to infinite.
+EOF
+                ;;
+        esac
+    fi
+fi
+
+# Do a one-time migration of the RAMTMP setting
+if dpkg --compare-versions "$2" lt "204-8"; then
+    if [ -f /etc/default/rcS ]; then
+        . /etc/default/rcS
+    fi
+    if [ -f /etc/default/tmpfs ]; then
+        . /etc/default/tmpfs
+    fi
+    if [ "$RAMTMP" = "yes" ]; then
+        # systemctl enable will work even when systemd is not the active PID 1.
+        systemctl enable tmp.mount || true
+    fi
+fi
+
+if dpkg --compare-versions "$2" lt "40-1"; then
+    # /lib/init/rw has been replaced by /run, so try to remove it on upgrades
+    # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=643699
+    _systemctl stop lib-init-rw.automount lib-init-rw.mount || true
+    if [ -d /lib/init/rw ]; then
+        rmdir --ignore-fail-on-non-empty /lib/init/rw || true
+    fi
+fi
+
+# Create /etc/machine-id
+systemd-machine-id-setup
+
+# Setup system users and groups
+addgroup --system systemd-journal
+
+adduser --quiet --system --group --no-create-home --home /run/systemd \
+    --gecos "systemd Time Synchronization" systemd-timesync
+adduser --quiet --system --group --no-create-home --home /run/systemd/netif \
+    --gecos "systemd Network Management" systemd-network
+adduser --quiet --system --group --no-create-home --home /run/systemd/resolve \
+    --gecos "systemd Resolver" systemd-resolve
+adduser --quiet --system --group --no-create-home --home /run/systemd \
+    --gecos "systemd Bus Proxy" systemd-bus-proxy
+
+# Initial update of the Message Catalogs database
+_update_catalog
+
+# Make systemd-detect-virt utility usable for non-root users
+setcap cap_dac_override,cap_sys_ptrace=ep /usr/bin/systemd-detect-virt || true
+
+# We don’t ship /var/log/journal currently, so only run the following fix for
+# systems where the administrator has explicitly enabled persistent logging by
+# creating /var/log/journal.
+if [ -d /var/log/journal ]; then
+    # Grant read access to /var/log/journal for members of the adm group
+    # via a filesystem ACL. This makes them able to read the journal.
+    # Failure is ignored since there might be file systems mounted without
+    # ACL support.
+    setfacl -R -nm g:adm:rx,d:g:adm:rx /var/log/journal || true
+fi
+
+if [ -n "$2" ]; then
+    _systemctl daemon-reexec || true
+    _systemctl try-restart systemd-logind.service || true
+    _systemctl try-restart systemd-networkd.service || true
+    _systemctl try-restart systemd-resolved.service || true
+    _systemctl try-restart systemd-timesyncd.service || true
+fi
+
+# Enable getty and remote-fs.target by default on new installs, and on
+# upgrades from old systemd versions (where the symlinks included as deb
+# content, and will thus have been removed by dpkg during the upgrade).
+if dpkg --compare-versions "$2" lt "214-1"; then
+    systemctl enable getty@tty1.service || true
+    systemctl enable remote-fs.target || true
+fi
+
+if dpkg --compare-versions "$2" lt "215-13"; then
+    systemctl enable hwclock-save.service || true
+fi
+
+# Re-run systemctl enable for any service that was enabled when preinst was run.
+if dpkg --compare-versions "$2" ge "204"; then
+    while read UNIT ; do
+        systemctl enable $UNIT || true
+    done </run/systemd/was-enabled || true
+fi
+
+# The /dev/log socket and /dev/initctl FIFO have been moved to /run and
+# replaced by symlinks. Create the symlinks manually on upgrades as well.
+# (https://bugs.debian.org/761340). Note that this will break the current
+# journal as we cannot restart it properly (https://bugs.debian.org/771122) so
+# this is mostly an one-time upgrade path from wheezy.
+if dpkg --compare-versions "$2" lt-nl "215-3"; then
+    if [ -p /run/systemd/initctl/fifo ] && [ ! -L /dev/initctl ]; then
+         ln -sf /run/systemd/initctl/fifo /dev/initctl
+    fi
+    if [ -S /run/systemd/journal/dev-log ] && [ ! -L /dev/log ]; then
+         ln -sf /run/systemd/journal/dev-log /dev/log
+    fi
+    _systemctl try-restart systemd-journald.service || true
+fi
+
+#DEBHELPER#

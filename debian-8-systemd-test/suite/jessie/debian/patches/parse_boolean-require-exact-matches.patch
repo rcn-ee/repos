@@ -1,0 +1,46 @@
+From: Ansgar Burchardt <ansgar@debian.org>
+Date: Sun, 27 Jul 2014 15:19:00 +0200
+Subject: parse_boolean: require exact matches
+
+Require exact matches in all cases instead of treating strings
+starting with 't' ('f') as true (false).
+
+This is required for config_parse_protect_system to parse ProtectSystem=full
+correctly: it uses parse_boolean and only tries a more specific parsing
+function if that did not return a valid result. Thus "full" was treated as
+"false" before.
+
+(cherry picked commit from 0f625d0b87139fc18cd565c9b6da05c53a0eb7ab)
+---
+ src/shared/util.c    | 4 ++--
+ src/test/test-util.c | 1 +
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/src/shared/util.c b/src/shared/util.c
+index 103bf2a..f7f9b74 100644
+--- a/src/shared/util.c
++++ b/src/shared/util.c
+@@ -231,9 +231,9 @@ int unlink_noerrno(const char *path) {
+ int parse_boolean(const char *v) {
+         assert(v);
+ 
+-        if (streq(v, "1") || v[0] == 'y' || v[0] == 'Y' || v[0] == 't' || v[0] == 'T' || strcaseeq(v, "on"))
++        if (streq(v, "1") || strcaseeq(v, "yes") || strcaseeq(v, "y") || strcaseeq(v, "true") || strcaseeq(v, "t") || strcaseeq(v, "on"))
+                 return 1;
+-        else if (streq(v, "0") || v[0] == 'n' || v[0] == 'N' || v[0] == 'f' || v[0] == 'F' || strcaseeq(v, "off"))
++        else if (streq(v, "0") || strcaseeq(v, "no") || strcaseeq(v, "n") || strcaseeq(v, "false") || strcaseeq(v, "f") || strcaseeq(v, "off"))
+                 return 0;
+ 
+         return -EINVAL;
+diff --git a/src/test/test-util.c b/src/test/test-util.c
+index ed91a67..9a28ef9 100644
+--- a/src/test/test-util.c
++++ b/src/test/test-util.c
+@@ -129,6 +129,7 @@ static void test_parse_boolean(void) {
+ 
+         assert_se(parse_boolean("garbage") < 0);
+         assert_se(parse_boolean("") < 0);
++        assert_se(parse_boolean("full") < 0);
+ }
+ 
+ static void test_parse_pid(void) {

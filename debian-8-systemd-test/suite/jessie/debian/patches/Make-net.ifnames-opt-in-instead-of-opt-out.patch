@@ -1,0 +1,46 @@
+From: Michael Stapelberg <michael@stapelberg.de>
+Date: Thu, 18 Jul 2013 21:09:42 +0200
+Subject: Make net.ifnames opt-in instead of opt-out
+
+With this commit, you need to actively specify net.ifnames=1 to get
+predictable network interface names:
+http://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/
+
+Also downgrade the "Network interface NamePolicy= disabled on kernel
+commandline, ignoring" message to debug, as we expect this to happen right now
+and it is confusing.
+---
+ src/udev/net/link-config.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/src/udev/net/link-config.c b/src/udev/net/link-config.c
+index 3cc0471..ff65f43 100644
+--- a/src/udev/net/link-config.c
++++ b/src/udev/net/link-config.c
+@@ -200,13 +200,13 @@ static bool enable_name_policy(void) {
+         if (r < 0)
+                 log_warning("Failed to read /proc/cmdline, ignoring: %s", strerror(-r));
+         if (r <= 0)
+-                return true;
++                return false;
+ 
+         FOREACH_WORD_QUOTED(w, l, line, state)
+-                if (strneq(w, "net.ifnames=0", l))
+-                        return false;
++                if (strneq(w, "net.ifnames=1", l))
++                        return true;
+ 
+-        return true;
++        return false;
+ }
+ 
+ int link_config_load(link_config_ctx *ctx) {
+@@ -218,7 +218,7 @@ int link_config_load(link_config_ctx *ctx) {
+ 
+         if (!enable_name_policy()) {
+                 ctx->enable_name_policy = false;
+-                log_info("Network interface NamePolicy= disabled on kernel commandline, ignoring.");
++                log_debug("Network interface NamePolicy= disabled on kernel commandline, ignoring.");
+         }
+ 
+         /* update timestamp */

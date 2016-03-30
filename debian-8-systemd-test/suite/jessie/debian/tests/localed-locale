@@ -1,0 +1,24 @@
+#!/bin/sh
+set -e
+
+ORIG_LOC=`cat /etc/default/locale`
+
+# should activate daemon and work
+STATUS=`localectl`
+echo "$STATUS" | grep -q "System Locale:"
+
+# change locale
+OUT=`localectl set-locale LANG=C LC_CTYPE=en_US.UTF-8 2>&1`
+[ -z "$OUT" ]
+sync
+[ "`cat /etc/default/locale`" = "LANG=C
+LC_CTYPE=en_US.UTF-8" ]
+
+! [ -f /etc/locale.conf ]
+
+STATUS=`localectl`
+echo "$STATUS" | grep -q "System Locale: LANG=C"
+echo "$STATUS" | grep -q "LC_CTYPE=en_US.UTF-8"
+
+# reset locale to original
+echo "$ORIG_LOC" > /etc/default/locale

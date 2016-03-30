@@ -1,0 +1,30 @@
+From: Thomas Blume <Thomas.Blume@suse.com>
+Date: Thu, 17 Jul 2014 11:25:37 +0200
+Subject: detect-virt: Fix Xen domU discovery
+
+The conditional for detection xen virtualization contained a little mistake.
+It is checking for i to be empty: 'if (!i)  {', but it must check for cap instead,
+because: 'cap = strsep(&i, ",")' will set cap to the discovered value and i to
+the next value after the separator.
+Hence, i would be empty, if there is only control_d in domcap, leading to a wrong
+domU detection.
+
+https://bugs.freedesktop.org/show_bug.cgi?id=77271
+(cherry picked from commit a71516dfd1858f37712ef52a288bf5fb274383e0)
+---
+ src/shared/virt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/shared/virt.c b/src/shared/virt.c
+index 774915f..20a8d7c 100644
+--- a/src/shared/virt.c
++++ b/src/shared/virt.c
+@@ -173,7 +173,7 @@ int detect_vm(const char **id) {
+                         if (streq(cap, "control_d"))
+                                 break;
+ 
+-                if (!i)  {
++                if (!cap)  {
+                         _id = "xen";
+                         r = 1;
+                 }

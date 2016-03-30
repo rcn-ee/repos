@@ -1,0 +1,20 @@
+From: =?utf-8?q?Zbigniew_J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sat, 19 Jul 2014 15:35:48 -0400
+Subject: escape: fix return code
+
+(cherry picked from commit 91a81d93b569a98e04566eef1753a0956ba035f3)
+---
+ src/escape/escape.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/escape/escape.c b/src/escape/escape.c
+index ae0c183..ba2fb47 100644
+--- a/src/escape/escape.c
++++ b/src/escape/escape.c
+@@ -235,5 +235,5 @@ int main(int argc, char *argv[]) {
+         fputc('\n', stdout);
+ 
+ finish:
+-        return r ? EXIT_FAILURE : EXIT_SUCCESS;
++        return r <= 0 ? EXIT_FAILURE : EXIT_SUCCESS;
+ }

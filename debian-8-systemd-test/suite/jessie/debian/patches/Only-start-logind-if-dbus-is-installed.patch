@@ -1,0 +1,24 @@
+From: Martin Pitt <martin.pitt@ubuntu.com>
+Date: Mon, 9 Feb 2015 10:53:43 +0100
+Subject: Only start logind if dbus is installed
+
+logind fails to start in environments without dbus, such as LXC containers or
+servers. Add a startup condition to avoid the very noisy startup failure.
+
+Part of #772700
+---
+ units/systemd-logind.service.in | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/units/systemd-logind.service.in b/units/systemd-logind.service.in
+index f087e99..07f65c4 100644
+--- a/units/systemd-logind.service.in
++++ b/units/systemd-logind.service.in
+@@ -12,6 +12,7 @@ Documentation=http://www.freedesktop.org/wiki/Software/systemd/logind
+ Documentation=http://www.freedesktop.org/wiki/Software/systemd/multiseat
+ Wants=user.slice
+ After=nss-user-lookup.target user.slice
++ConditionPathExists=/lib/systemd/system/dbus.service
+ 
+ # Ask for the dbus socket. If running over kdbus, the socket will
+ # not be actually used.

@@ -1,0 +1,72 @@
+From: =?utf-8?q?Zbigniew_J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Thu, 2 Oct 2014 00:11:36 -0400
+Subject: core/swap: only make configured units part of swap.target
+
+We used to make all .swap units either RequiredBy=swap.target or
+WantedBy=swap.target. But swap.target should be the "configured swap
+units", either through /etc/fstab or non-generated .swap units. It
+is surprising when systemd starts treating a swap device that was
+possibly temporarily enabled as a hard dependency for other units.
+So do not add dependencies with swap.target for units gleaned from
+/proc/swaps.
+
+Similarly, we added dependencies for all aliases of the device name,
+which clutters up the dependency graph but does not seem to bring any
+value, since the status of those following units is consistent with
+the main one anyway.
+
+This should be a fix for [1], and it seems the right thing to do
+anyway.
+
+[1] https://bugzilla.redhat.com/show_bug.cgi?id=1114786
+---
+ src/core/swap.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
+
+diff --git a/src/core/swap.c b/src/core/swap.c
+index cec02f5..42c2ef3 100644
+--- a/src/core/swap.c
++++ b/src/core/swap.c
+@@ -213,7 +213,7 @@ static int swap_add_device_links(Swap *s) {
+ }
+ 
+ static int swap_add_default_dependencies(Swap *s) {
+-        bool nofail = false, noauto = false;
++        bool nofail, noauto;
+         int r;
+ 
+         assert(s);
+@@ -228,23 +228,25 @@ static int swap_add_default_dependencies(Swap *s) {
+         if (r < 0)
+                 return r;
+ 
+-        if (s->from_fragment) {
+-                SwapParameters *p = &s->parameters_fragment;
++        if (!s->from_fragment)
++                /* The swap unit can either be for an alternative device name, in which
++                 * case we don't need to add the dependency on swap.target because this unit
++                 * is following a different unit which will have this dependency added,
++                 * or it can be derived from /proc/swaps, in which case it was started
++                 * manually, and should not become a dependency of swap.target. */
++                return 0;
+ 
+-                nofail = p->nofail;
+-                noauto = p->noauto;
+-        }
++        nofail = s->parameters_fragment.nofail;
++        noauto = s->parameters_fragment.noauto;
+ 
+         if (!noauto) {
+                 if (nofail)
+                         r = unit_add_dependency_by_name_inverse(UNIT(s), UNIT_WANTS, SPECIAL_SWAP_TARGET, NULL, true);
+                 else
+                         r = unit_add_two_dependencies_by_name_inverse(UNIT(s), UNIT_AFTER, UNIT_REQUIRES, SPECIAL_SWAP_TARGET, NULL, true);
+-                if (r < 0)
+-                        return r;
+         }
+ 
+-        return 0;
++        return r < 0 ? r : 0;
+ }
+ 
+ static int swap_verify(Swap *s) {

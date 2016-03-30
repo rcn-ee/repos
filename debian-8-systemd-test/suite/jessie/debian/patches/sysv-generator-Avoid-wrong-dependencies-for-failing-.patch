@@ -1,0 +1,39 @@
+From: Michael Biebl <biebl@debian.org>
+Date: Fri, 28 Nov 2014 06:04:48 +0100
+Subject: sysv-generator: Avoid wrong dependencies for failing units
+
+If a service fails to load, we skip fix_order(), which is results in the wrong
+ordering. So instead, just don't add a service to the all_services hash_map, if
+it fails to load.
+
+Bug-Debian: https://bugs.debian.org/771118
+---
+ src/sysv-generator/sysv-generator.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/src/sysv-generator/sysv-generator.c b/src/sysv-generator/sysv-generator.c
+index 677fac4..da6b4f6 100644
+--- a/src/sysv-generator/sysv-generator.c
++++ b/src/sysv-generator/sysv-generator.c
+@@ -768,6 +768,10 @@ static int enumerate_sysv(LookupPaths lp, Hashmap *all_services) {
+                         service->name = name;
+                         service->path = fpath;
+ 
++                        r = load_sysv(service);
++                        if (r < 0)
++                                continue;
++
+                         r = hashmap_put(all_services, service->name, service);
+                         if (r < 0)
+                                 return log_oom();
+@@ -960,10 +964,6 @@ int main(int argc, char *argv[]) {
+         }
+ 
+         HASHMAP_FOREACH(service, all_services, j) {
+-                q = load_sysv(service);
+-                if (q < 0)
+-                        continue;
+-
+                 q = fix_order(service, all_services);
+                 if (q < 0)
+                         continue;
