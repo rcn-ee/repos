@@ -5,15 +5,147 @@ Subject: [PATCH] rfkill
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
- src/rfkill/rfkill.c              | 433 ++++++++++++++++++++++++++++++++-------
- units/systemd-rfkill.service.in  |  21 ++
- units/systemd-rfkill.socket      |  19 ++
- units/systemd-rfkill@.service.in |  21 --
- 4 files changed, 396 insertions(+), 98 deletions(-)
+ Makefile.am                           |   7 +-
+ rules/99-systemd.rules.in             |   3 +-
+ src/core/dbus-socket.c                |   1 +
+ src/core/load-fragment-gperf.gperf.m4 |   1 +
+ src/core/socket.c                     |  12 +-
+ src/core/socket.h                     |   1 +
+ src/rfkill/rfkill.c                   | 433 ++++++++++++++++++++++++++++------
+ units/systemd-rfkill.service.in       |  21 ++
+ units/systemd-rfkill.socket           |  19 ++
+ units/systemd-rfkill@.service.in      |  21 --
+ 10 files changed, 413 insertions(+), 106 deletions(-)
  create mode 100644 units/systemd-rfkill.service.in
  create mode 100644 units/systemd-rfkill.socket
  delete mode 100644 units/systemd-rfkill@.service.in
 
+diff --git a/Makefile.am b/Makefile.am
+index 0c0de21..3473c2b 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -4106,7 +4106,10 @@ rootlibexec_PROGRAMS += \
+ 	systemd-rfkill
+ 
+ nodist_systemunit_DATA += \
+-	units/systemd-rfkill@.service
++	units/systemd-rfkill.service
++
++dist_systemunit_DATA += \
++	units/systemd-rfkill.socket
+ 
+ systemd_rfkill_SOURCES = \
+ 	src/rfkill/rfkill.c
+@@ -4118,7 +4121,7 @@ systemd_rfkill_LDADD = \
+ endif
+ 
+ EXTRA_DIST += \
+-	units/systemd-rfkill@.service.in
++	units/systemd-rfkill.service.in
+ 
+ # ------------------------------------------------------------------------------
+ if HAVE_LIBCRYPTSETUP
+diff --git a/rules/99-systemd.rules.in b/rules/99-systemd.rules.in
+index 4366969..89760e8 100644
+--- a/rules/99-systemd.rules.in
++++ b/rules/99-systemd.rules.in
+@@ -68,7 +68,8 @@ SUBSYSTEM=="leds", KERNEL=="*kbd_backlight", TAG+="systemd", ENV{SYSTEMD_WANTS}+
+ 
+ # Pull in rfkill save/restore for all rfkill devices
+ 
+-SUBSYSTEM=="rfkill", TAG+="systemd", ENV{SYSTEMD_WANTS}+="systemd-rfkill@$name.service"
++SUBSYSTEM=="rfkill", IMPORT{builtin}="path_id"
++SUBSYSTEM=="misc", KERNEL=="rfkill", TAG+="systemd", ENV{SYSTEMD_WANTS}+="systemd-rfkill.socket"
+ 
+ # Asynchronously mount file systems implemented by these modules as
+ # soon as they are loaded.
+diff --git a/src/core/dbus-socket.c b/src/core/dbus-socket.c
+index ad135a1..3cace98 100644
+--- a/src/core/dbus-socket.c
++++ b/src/core/dbus-socket.c
+@@ -96,6 +96,7 @@ const sd_bus_vtable bus_socket_vtable[] = {
+         SD_BUS_PROPERTY("SocketMode", "u", bus_property_get_mode, offsetof(Socket, socket_mode), SD_BUS_VTABLE_PROPERTY_CONST),
+         SD_BUS_PROPERTY("DirectoryMode", "u", bus_property_get_mode, offsetof(Socket, directory_mode), SD_BUS_VTABLE_PROPERTY_CONST),
+         SD_BUS_PROPERTY("Accept", "b", bus_property_get_bool, offsetof(Socket, accept), SD_BUS_VTABLE_PROPERTY_CONST),
++        SD_BUS_PROPERTY("Writable", "b", bus_property_get_bool, offsetof(Socket, writable), SD_BUS_VTABLE_PROPERTY_CONST),
+         SD_BUS_PROPERTY("KeepAlive", "b", bus_property_get_bool, offsetof(Socket, keep_alive), SD_BUS_VTABLE_PROPERTY_CONST),
+         SD_BUS_PROPERTY("Priority", "i", bus_property_get_int, offsetof(Socket, priority), SD_BUS_VTABLE_PROPERTY_CONST),
+         SD_BUS_PROPERTY("ReceiveBuffer", "t", bus_property_get_size, offsetof(Socket, receive_buffer), SD_BUS_VTABLE_PROPERTY_CONST),
+diff --git a/src/core/load-fragment-gperf.gperf.m4 b/src/core/load-fragment-gperf.gperf.m4
+index 03dfbc5..83c33f3 100644
+--- a/src/core/load-fragment-gperf.gperf.m4
++++ b/src/core/load-fragment-gperf.gperf.m4
+@@ -228,6 +228,7 @@ Socket.SocketGroup,              config_parse_unit_string_printf,    0,
+ Socket.SocketMode,               config_parse_mode,                  0,                             offsetof(Socket, socket_mode)
+ Socket.DirectoryMode,            config_parse_mode,                  0,                             offsetof(Socket, directory_mode)
+ Socket.Accept,                   config_parse_bool,                  0,                             offsetof(Socket, accept)
++Socket.Writable,                 config_parse_bool,                  0,                             offsetof(Socket, writable)
+ Socket.MaxConnections,           config_parse_unsigned,              0,                             offsetof(Socket, max_connections)
+ Socket.KeepAlive,                config_parse_bool,                  0,                             offsetof(Socket, keep_alive)
+ Socket.Priority,                 config_parse_int,                   0,                             offsetof(Socket, priority)
+diff --git a/src/core/socket.c b/src/core/socket.c
+index c58a7f0..1d1cbb1 100644
+--- a/src/core/socket.c
++++ b/src/core/socket.c
+@@ -489,7 +489,8 @@ static void socket_dump(Unit *u, FILE *f, const char *prefix) {
+                 "%sPassCredentials: %s\n"
+                 "%sPassSecurity: %s\n"
+                 "%sTCPCongestion: %s\n"
+-                "%sRemoveOnStop: %s\n",
++                "%sRemoveOnStop: %s\n"
++                "%sWritable: %s\n",
+                 prefix, socket_state_to_string(s->state),
+                 prefix, socket_result_to_string(s->result),
+                 prefix, socket_address_bind_ipv6_only_to_string(s->bind_ipv6_only),
+@@ -503,7 +504,8 @@ static void socket_dump(Unit *u, FILE *f, const char *prefix) {
+                 prefix, yes_no(s->pass_cred),
+                 prefix, yes_no(s->pass_sec),
+                 prefix, strna(s->tcp_congestion),
+-                prefix, yes_no(s->remove_on_stop));
++                prefix, yes_no(s->remove_on_stop),
++                prefix, yes_no(s->writable));
+ 
+         if (s->control_pid > 0)
+                 fprintf(f,
+@@ -956,7 +958,7 @@ fail:
+ 
+ static int special_address_create(
+                 const char *path,
+-                int *_fd) {
++                int *_fd, bool writable) {
+ 
+         int fd = -1, r = 0;
+         struct stat st;
+@@ -964,7 +966,7 @@ static int special_address_create(
+         assert(path);
+         assert(_fd);
+ 
+-        fd = open(path, O_RDONLY|O_CLOEXEC|O_NOCTTY|O_NONBLOCK|O_NOFOLLOW);
++        fd = open(path, (writable ? O_RDWR : O_RDONLY)|O_CLOEXEC|O_NOCTTY|O_NONBLOCK|O_NOFOLLOW);
+         if (fd < 0) {
+                 r = -errno;
+                 goto fail;
+@@ -1116,7 +1118,7 @@ static int socket_open_fds(Socket *s) {
+ 
+                         r = special_address_create(
+                                         p->path,
+-                                        &p->fd);
++                                        &p->fd, s->writable);
+                         if (r < 0)
+                                 goto rollback;
+ 
+diff --git a/src/core/socket.h b/src/core/socket.h
+index 39e00de..9a30f7d 100644
+--- a/src/core/socket.h
++++ b/src/core/socket.h
+@@ -131,6 +131,7 @@ struct Socket {
+ 
+         bool accept;
+         bool remove_on_stop;
++        bool writable;
+ 
+         /* Socket options */
+         bool keep_alive;
 diff --git a/src/rfkill/rfkill.c b/src/rfkill/rfkill.c
 index c7c6592..d8a2f36 100644
 --- a/src/rfkill/rfkill.c
