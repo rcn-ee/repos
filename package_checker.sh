@@ -309,7 +309,7 @@ libsigrok () {
 
 bbgw () {
 	site="${debian_pool}/main/s"
-	package_name="swig"; package_version="${package_name}_3.0.7-2"; check_http
+	package_name="swig"; package_version="${package_name}_3.0.8-0"; check_http
 }
 
 ubuntu () {
