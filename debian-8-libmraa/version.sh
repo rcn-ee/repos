@@ -4,12 +4,12 @@
 
 package_name="libmraa"
 debian_pkg_name="${package_name}"
-package_version="0.9.5-git20160302"
+package_version="0.9.5-git20160410"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
 git_repo="https://github.com/Pillar1989/mraa"
-git_sha="59cce4139bd38233328cbeb8d5ad676395d78735"
+git_sha="0cd186cae431d2c8fec1665b353ef22f524897b4"
 reprepro_dir="libm/${package_name}"
 dl_path=""
 
@@ -18,4 +18,4 @@ debian_patch=""
 debian_diff=""
 local_patch="rcnee1"
 
-jessie_version="~bpo80+20160302+1"
+jessie_version="~bpo80+20160410+1"
