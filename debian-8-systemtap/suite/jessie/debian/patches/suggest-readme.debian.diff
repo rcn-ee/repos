@@ -1,0 +1,14 @@
+Description: suggest README.Debian if stap fails, many users don't know this even though they should
+Author: Timo Juhani Lindfors <timo.lindfors@iki.fi>
+Forwarded: not-needed
+--- a/main.cxx
++++ b/main.cxx
+@@ -1226,6 +1226,8 @@
+     cleanup (s, rc);
+ 
+     assert_no_interrupts();
++    if (rc)
++      cerr << _("Tip: /usr/share/doc/systemtap/README.Debian should help you get started.") << endl;
+     return (rc) ? EXIT_FAILURE : EXIT_SUCCESS;
+   }
+   catch (const interrupt_exception& e) {
