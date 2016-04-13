@@ -1,0 +1,35 @@
+Description: Tweak D-Bus/systemd service activation configuration files:
+ * log wpa_supplicant messages to syslog
+ * activate control socket interface so that wpa_cli can be used by D-Bus
+   activated wpa_supplicant daemon
+Author: Kel Modderman <kel@otaku42.de>
+---
+--- a/wpa_supplicant/dbus/fi.epitest.hostap.WPASupplicant.service.in
++++ b/wpa_supplicant/dbus/fi.epitest.hostap.WPASupplicant.service.in
+@@ -1,5 +1,5 @@
+ [D-BUS Service]
+ Name=fi.epitest.hostap.WPASupplicant
+-Exec=@BINDIR@/wpa_supplicant -u
++Exec=@BINDIR@/wpa_supplicant -u -s -O /run/wpa_supplicant
+ User=root
+ SystemdService=wpa_supplicant.service
+--- a/wpa_supplicant/dbus/fi.w1.wpa_supplicant1.service.in
++++ b/wpa_supplicant/dbus/fi.w1.wpa_supplicant1.service.in
+@@ -1,5 +1,5 @@
+ [D-BUS Service]
+ Name=fi.w1.wpa_supplicant1
+-Exec=@BINDIR@/wpa_supplicant -u
++Exec=@BINDIR@/wpa_supplicant -u -s -O /run/wpa_supplicant
+ User=root
+ SystemdService=wpa_supplicant.service
+--- a/wpa_supplicant/systemd/wpa_supplicant.service.in
++++ b/wpa_supplicant/systemd/wpa_supplicant.service.in
+@@ -4,7 +4,7 @@ Description=WPA supplicant
+ [Service]
+ Type=dbus
+ BusName=fi.epitest.hostap.WPASupplicant
+-ExecStart=@BINDIR@/wpa_supplicant -u
++ExecStart=@BINDIR@/wpa_supplicant -u -s -O /run/wpa_supplicant
+ 
+ [Install]
+ WantedBy=multi-user.target
