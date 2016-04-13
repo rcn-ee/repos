@@ -20,3 +20,4 @@ local_patch="rcnee1"
 
 jessie_version="~bpo80+20160413+1"
 stretch_version="~bpo90+20160413+1"
+xenial_version="~bpo1604+20160413+1"
