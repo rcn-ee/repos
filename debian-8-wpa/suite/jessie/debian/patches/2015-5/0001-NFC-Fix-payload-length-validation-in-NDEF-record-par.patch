@@ -33,11 +33,9 @@ Signed-off-by: Jouni Malinen <j@w1.fi>
  src/wps/ndef.c | 5 ++++-
  1 file changed, 4 insertions(+), 1 deletion(-)
 
-Index: wpa-2.4/src/wps/ndef.c
-===================================================================
---- wpa-2.4.orig/src/wps/ndef.c	2015-11-10 13:40:54.870943792 -0500
-+++ wpa-2.4/src/wps/ndef.c	2015-11-10 13:41:44.159371239 -0500
-@@ -48,6 +48,8 @@
+--- a/src/wps/ndef.c
++++ b/src/wps/ndef.c
+@@ -48,6 +48,8 @@ static int ndef_parse_record(const u8 *d
  		if (size < 6)
  			return -1;
  		record->payload_length = ntohl(*(u32 *)pos);
@@ -46,7 +44,7 @@ Index: wpa-2.4/src/wps/ndef.c
  		pos += sizeof(u32);
  	}
  
-@@ -68,7 +70,8 @@
+@@ -68,7 +70,8 @@ static int ndef_parse_record(const u8 *d
  	pos += record->payload_length;
  
  	record->total_length = pos - data;
