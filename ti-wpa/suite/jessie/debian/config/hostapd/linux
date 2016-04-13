@@ -34,7 +34,6 @@ CONFIG_DRIVER_NL80211=y
 # Use libnl 3.2 libraries (if this is selected, CONFIG_LIBNL20 is ignored)
 CONFIG_LIBNL32=y
 
-
 # Driver interface for FreeBSD net80211 layer (e.g., Atheros driver)
 #CONFIG_DRIVER_BSD=y
 #CFLAGS += -I/usr/local/include
@@ -55,6 +54,9 @@ CONFIG_RSN_PREAUTH=y
 CONFIG_PEERKEY=y
 
 # IEEE 802.11w (management frame protection)
+# This version is an experimental implementation based on IEEE 802.11w/D1.0
+# draft and is subject to change since the standard has not yet been finalized.
+# Driver support is also needed for IEEE 802.11w.
 CONFIG_IEEE80211W=y
 
 # Integrated EAP server
@@ -113,6 +115,8 @@ CONFIG_EAP_FAST=y
 
 # Wi-Fi Protected Setup (WPS)
 CONFIG_WPS=y
+# Enable WSC 2.0 support
+CONFIG_WPS2=y
 # Enable UPnP support for external WPS Registrars
 CONFIG_WPS_UPNP=y
 # Enable WPS support with NFC config method
@@ -187,7 +191,7 @@ CONFIG_FULL_DYNAMIC_VLAN=y
 # Note: This requires libnl 3.1 or newer.
 CONFIG_VLAN_NETLINK=y
 
-# Remove support for dumping internal state through control interface commands
+# Remove support for dumping state into a file on SIGUSR1 signal
 # This can be used to reduce binary size at the cost of disabling a debugging
 # option.
 #CONFIG_NO_DUMP_STATE=y
