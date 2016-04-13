@@ -23,6 +23,11 @@
 
 board=$(cat /proc/device-tree/model | sed "s/ /_/g")
 case "${board}" in
+TI_AM335x_BeagleBone_Black_Wireless)
+	bt_gpio_en="28"
+	bt_port="/dev/ttyS3"
+	bt_settings="texas 300000"
+	;;
 TI_AM335x_BeagleBone_Green_Wireless)
 	bt_gpio_en="60"
 	bt_port="/dev/ttyS3"
