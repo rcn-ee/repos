@@ -1,0 +1,26 @@
+commit aa517ae22784aff08d3d9e38ad101b4b5c9828fb
+Author: Hahn, Maital <maitalm@ti.com>
+Date:   Wed Jul 8 13:13:11 2015 +0000
+
+    wpa_supplicant: Fix a typo in wpa_scan_result_compar()
+    
+    A typo in wpa_scan_result_compar() caused wrong scan results sorting
+    (and wrong roaming decision). This fixes a copy-paste regression
+    introduced by commit a1b790eb9d7514d1a6e0582a07f695a1564caa59 ('Select
+    AP based on estimated maximum throughput').
+    
+    Signed-off-by: Maital Hahn <maitalm@ti.com>
+
+Index: wpa-2.4/wpa_supplicant/scan.c
+===================================================================
+--- wpa-2.4.orig/wpa_supplicant/scan.c	2016-01-19 08:12:59.289733277 -0500
++++ wpa-2.4/wpa_supplicant/scan.c	2016-01-19 08:12:59.289733277 -0500
+@@ -1652,7 +1652,7 @@
+ 		snr_a_full = wa->snr;
+ 		snr_a = MIN(wa->snr, GREAT_SNR);
+ 		snr_b_full = wb->snr;
+-		snr_b = MIN(wa->snr, GREAT_SNR);
++		snr_b = MIN(wb->snr, GREAT_SNR);
+ 	} else {
+ 		/* Level is not in dBm, so we can't calculate
+ 		 * SNR. Just use raw level (units unknown). */

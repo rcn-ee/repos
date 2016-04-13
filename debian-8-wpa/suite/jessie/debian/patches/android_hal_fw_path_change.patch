@@ -1,0 +1,192 @@
+From: Mathieu Trudel-Lapierre <mathieu.trudel-lapierre@canonical.com>
+Subject: Add SetInterfaceFirmware method for hybris firmware changes
+
+Allow system services to request a firmware mode change for hybris devices
+from wpasupplicant; this is used on some Android devices to enable AP mode
+or Wifi-Direct/P2P support.
+
+---
+ wpa_supplicant/Makefile                 |    5 +
+ wpa_supplicant/dbus/Makefile            |    5 +
+ wpa_supplicant/dbus/dbus_new.c          |   10 +++
+ wpa_supplicant/dbus/dbus_new_handlers.c |   92 ++++++++++++++++++++++++++++++++
+ wpa_supplicant/dbus/dbus_new_handlers.h |    3 +
+ 5 files changed, 115 insertions(+)
+
+Index: b/wpa_supplicant/dbus/dbus_new.c
+===================================================================
+--- a/wpa_supplicant/dbus/dbus_new.c
++++ b/wpa_supplicant/dbus/dbus_new.c
+@@ -2039,6 +2039,16 @@ static const struct wpa_dbus_method_desc
+ 		  END_ARGS
+ 	  }
+ 	},
++#ifdef CONFIG_ANDROID_HAL
++	{ "SetInterfaceFirmware", WPAS_DBUS_NEW_INTERFACE,
++	  (WPADBusMethodHandler) &wpas_dbus_handler_set_interface_firmware,
++	  {
++		  { "path", "o", ARG_IN },
++		  { "firmware", "s", ARG_IN },
++		  END_ARGS
++	  }
++	},
++#endif /* CONFIG_ANDROID_HAL */
+ 	{ "RemoveInterface", WPAS_DBUS_NEW_INTERFACE,
+ 	  (WPADBusMethodHandler) wpas_dbus_handler_remove_interface,
+ 	  {
+Index: b/wpa_supplicant/dbus/dbus_new_handlers.c
+===================================================================
+--- a/wpa_supplicant/dbus/dbus_new_handlers.c
++++ b/wpa_supplicant/dbus/dbus_new_handlers.c
+@@ -32,6 +32,10 @@
+ #include "dbus_dict_helpers.h"
+ #include "dbus_common_i.h"
+ #include "drivers/driver.h"
++#ifdef CONFIG_ANDROID_HAL
++#include <dlfcn.h>
++#include <android/hardware_legacy/wifi.h>
++#endif
+ 
+ static const char * const debug_strings[] = {
+ 	"excessive", "msgdump", "debug", "info", "warning", "error", NULL
+@@ -632,6 +636,94 @@ oom:
+ 	goto out;
+ }
+ 
++#ifdef CONFIG_ANDROID_HAL
++/**
++ * wpas_dbus_handler_set_interface_firmware - Change firmware for interface
++ * @message: Pointer to incoming dbus message
++ * @global: %wpa_supplicant global data structure
++ * Returns: a dbus message containing a UINT32 indicating success (1) or
++ *          failure (0), or returns a dbus error message with more information
++ *
++ * Handler function for "SetInterfaceFirmware" method call. Handles requests
++ * by dbus clients to set a different firmware mode for an interface.
++ */
++DBusMessage * wpas_dbus_handler_set_interface_firmware(DBusMessage *message,
++						       struct wpa_global *global)
++{
++	DBusMessageIter iter_dict;
++	DBusMessage *reply = NULL;
++	DBusMessageIter iter;
++	void *libwifi;
++	const char *iface, *firmware, *path;
++	int fw_type, res;
++
++	if (!dbus_message_get_args(message, NULL,
++	                           DBUS_TYPE_OBJECT_PATH, &iface,
++	                           DBUS_TYPE_STRING, &firmware,
++			           DBUS_TYPE_INVALID))
++		return wpas_dbus_error_invalid_args(message, NULL);
++
++	libwifi = dlopen("libwifi.so.1", RTLD_LAZY);
++	if (libwifi) {
++		int (*check_wifi_hal)();
++		const char * (*get_fw_path)(int);
++		int (*change_fw_path)(const char *);
++
++		*(void **) (&check_wifi_hal)
++			= dlsym(libwifi, "wifi_compat_check_availability");
++		*(void **) (&get_fw_path)
++			= dlsym(libwifi, "wifi_get_fw_path");
++		*(void **) (&change_fw_path)
++			= dlsym(libwifi, "wifi_change_fw_path");
++
++		if (!check_wifi_hal || !get_fw_path || !change_fw_path) {
++			reply = wpas_dbus_error_unknown_error(
++				message, "Required Android HAL libwifi "
++				"version not available.");
++			goto out;
++		}
++
++		if (!(*check_wifi_hal)()) {
++			reply = wpas_dbus_error_unknown_error(
++				message, "This function is not supported "
++				"on this system.");
++			goto out;
++		}
++
++		if (os_strcasecmp(firmware, "sta") == 0) {
++			fw_type = WIFI_GET_FW_PATH_STA;
++		}
++		else if (os_strcasecmp(firmware, "ap") == 0) {
++			fw_type = WIFI_GET_FW_PATH_AP;
++		}
++		else if (os_strcasecmp(firmware, "p2p") == 0) {
++			fw_type = WIFI_GET_FW_PATH_P2P;
++		}
++		else {
++			reply = wpas_dbus_error_invalid_args(
++				message, "wpa_supplicant couldn't recognize the "
++				"firmware mode string. Valid options are: "
++			        "AP, STA, P2P");
++			goto out;
++		}
++
++		path = (*get_fw_path)(fw_type);
++		res = (*change_fw_path)(path);
++		if (res < 0) {
++			reply = wpas_dbus_error_unknown_error(
++				message, "The wireless device mode change "
++				"failed.");
++			goto out;
++		}
++	}
++
++out:
++	if (libwifi)
++		dlclose(libwifi);
++	return reply;
++}
++#endif /* CONFIG_ANDROID_HAL */
++
+ 
+ /**
+  * wpas_dbus_handler_remove_interface - Request deregistration of an interface
+Index: b/wpa_supplicant/dbus/dbus_new_handlers.h
+===================================================================
+--- a/wpa_supplicant/dbus/dbus_new_handlers.h
++++ b/wpa_supplicant/dbus/dbus_new_handlers.h
+@@ -49,6 +49,9 @@ dbus_bool_t wpas_dbus_simple_array_array
+ DBusMessage * wpas_dbus_handler_create_interface(DBusMessage *message,
+ 						 struct wpa_global *global);
+ 
++DBusMessage * wpas_dbus_handler_set_interface_firmware(DBusMessage *message,
++						       struct wpa_global *global);
++
+ DBusMessage * wpas_dbus_handler_remove_interface(DBusMessage *message,
+ 						 struct wpa_global *global);
+ 
+Index: b/wpa_supplicant/dbus/Makefile
+===================================================================
+--- a/wpa_supplicant/dbus/Makefile
++++ b/wpa_supplicant/dbus/Makefile
+@@ -67,6 +67,11 @@ LIB_OBJS += dbus_old_handlers_wps.o
+ LIB_OBJS += dbus_new_handlers_wps.o
+ endif
+ 
++ifdef CONFIG_ANDROID_HAL
++CFLAGS += -DCONFIG_ANDROID_HAL
++LIBS += -ldl
++endif
++
+ libwpadbus.a: $(LIB_OBJS)
+ 	$(AR) crT $@ $?
+ 
+Index: b/wpa_supplicant/Makefile
+===================================================================
+--- a/wpa_supplicant/Makefile
++++ b/wpa_supplicant/Makefile
+@@ -1586,6 +1586,11 @@ EXTRALIBS += WbemUuid.Lib
+ endif
+ endif
+ 
++ifdef CONFIG_ANDROID_HAL
++CFLAGS += -DCONFIG_ANDROID_HAL
++LIBS += -ldl
++endif
++
+ ifndef LDO
+ LDO=$(CC)
+ endif

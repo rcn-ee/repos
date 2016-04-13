@@ -1,0 +1,20 @@
+wpasupplicant: fix systemd unit dependencies
+
+wpasupplicant needs to be started before the network target
+(Closes: 780552).
+
+Debian bug: https://bugs.debian.org/780552
+Debian bug: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=769186#41
+systemd upstream bug: https://bugs.freedesktop.org/show_bug.cgi?id=86707#c3
+
+Signed-off-by: Stefan Lippers-Hollmann <s.l-h@gmx.de>
+
+--- a/wpa_supplicant/systemd/wpa_supplicant.service.in
++++ b/wpa_supplicant/systemd/wpa_supplicant.service.in
+@@ -1,5 +1,6 @@
+ [Unit]
+ Description=WPA supplicant
++Before=network.target
+ 
+ [Service]
+ Type=dbus
