@@ -2,7 +2,7 @@
 
 package_name="bb-bonescript-installer-beta"
 debian_pkg_name="${package_name}"
-package_version="0.5.0~beta3"
+package_version="0.5.0~beta4"
 package_source=""
 src_dir=""
 
@@ -16,6 +16,6 @@ debian_untar=""
 debian_patch=""
 local_patch="rcnee1"
 
-jessie_version="~bpo80+20160226+1"
-stretch_version="~bpo90+20160226+1"
-xenial_version="~bpo1604+20160226+1"
+jessie_version="~bpo80+20160421+1"
+stretch_version="~bpo90+20160421+1"
+xenial_version="~bpo1604+20160421+1"
