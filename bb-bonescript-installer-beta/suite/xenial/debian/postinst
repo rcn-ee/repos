@@ -28,8 +28,8 @@ npm_actually_install () {
 	${node_bin} ${npm_bin} config set -g prefix /usr/local/
 
 	echo "${package}:Installing: ${pkg}-${ver} (for ${npm_project})"
-	#TERM=dumb ${node_bin} ${npm_bin} install -g ${npm_options} ${pkg}@${ver}
-	TERM=dumb ${node_bin} ${npm_bin} install -g ${npm_options} github:jadonk/bonescript#90f2367839be34b683988c5ad2cbfd0691f3a56a
+	TERM=dumb ${node_bin} ${npm_bin} install -g ${npm_options} ${pkg}@${ver}
+	#TERM=dumb ${node_bin} ${npm_bin} install -g ${npm_options} github:jadonk/bonescript#90f2367839be34b683988c5ad2cbfd0691f3a56a
 	echo "${ver}" > "${NODE_PATH}/${pkg}/${pkg}.version"
 	echo "${node_version}" > "${NODE_PATH}/${pkg}/${pkg}.node_version"
 }
