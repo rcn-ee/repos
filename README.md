@@ -34,6 +34,12 @@ deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ xenial main
 #deb-src [arch=armhf] http://repos.rcn-ee.com/ubuntu/ xenial main
 ```
 
+Ubuntu 16.10: (Yakkety): http://repos.rcn-ee.com/ubuntu/
+```
+deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ yakkety main
+#deb-src [arch=armhf] http://repos.rcn-ee.com/ubuntu/ yakkety main
+```
+
 keyring:
 ```
 sudo apt-get install rcn-ee-archive-keyring
