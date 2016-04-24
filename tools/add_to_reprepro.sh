@@ -16,53 +16,26 @@ run () {
 	fi
 }
 
-dist="debian"
-suite="wheezy"
-if [ -d suite/${suite}/ ] ; then
+runner () {
 	repo="${base}${dist}/"
-	deb_arch="armhf"
-	rcn_ee_version="${wheezy_version}"
-	run
-fi
+	if [ -d ./suite/${suite}/ ] ; then
+		run
+	fi
+}
 
-suite="jessie"
-if [ -d suite/${suite}/ ] ; then
-	repo="${base}${dist}/"
+start_run () {
+	dist="debian"
 	deb_arch="armhf"
-	rcn_ee_version="${jessie_version}"
-	run
-fi
+	suite="wheezy" ; runner
+	suite="jessie" ; runner
+	suite="stretch" ; runner
 
-suite="stretch"
-if [ -d suite/${suite}/ ] ; then
-	repo="${base}${dist}/"
-	deb_arch="armhf"
-	rcn_ee_version="${stretch_version}"
-	run
-fi
+	dist="ubuntu"
+	suite="trusty" ; runner
+	suite="wily" ; runner
+	suite="xenial" ; runner
+	suite="yakkety" ; runner
+}
 
-dist="ubuntu"
-suite="trusty"
-if [ -d suite/${suite}/ ] ; then
-	repo="${base}${dist}/"
-	deb_arch="armhf"
-	rcn_ee_version="${trusty_version}"
-	run
-fi
-
-suite="wily"
-if [ -d suite/${suite}/ ] ; then
-	repo="${base}${dist}/"
-	deb_arch="armhf"
-	rcn_ee_version="${wily_version}"
-	run
-fi
-
-suite="xenial"
-if [ -d suite/${suite}/ ] ; then
-	repo="${base}${dist}/"
-	deb_arch="armhf"
-	rcn_ee_version="${xenial_version}"
-	run
-fi
+start_run
 #

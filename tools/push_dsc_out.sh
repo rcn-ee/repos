@@ -18,35 +18,25 @@ run () {
 	echo "*******************************"
 }
 
-dist="debian"
-suite="wheezy"
-if [ -d suite/${suite}/ ] ; then
-	run
-fi
+runner () {
+	if [ -d ./suite/${suite}/ ] ; then
+		run
+	fi
+}
 
-suite="jessie"
-if [ -d suite/${suite}/ ] ; then
-	run
-fi
+start_run () {
+	dist="debian"
+	deb_arch="armhf"
+	suite="wheezy" ; runner
+	suite="jessie" ; runner
+	suite="stretch" ; runner
 
-suite="stretch"
-if [ -d suite/${suite}/ ] ; then
-	run
-fi
+	dist="ubuntu"
+	suite="trusty" ; runner
+	suite="wily" ; runner
+	suite="xenial" ; runner
+	suite="yakkety" ; runner
+}
 
-dist="ubuntu"
-suite="trusty"
-if [ -d suite/${suite}/ ] ; then
-	run
-fi
-
-suite="wily"
-if [ -d suite/${suite}/ ] ; then
-	run
-fi
-
-suite="xenial"
-if [ -d suite/${suite}/ ] ; then
-	run
-fi
+start_run
 #
