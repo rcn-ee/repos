@@ -1,0 +1,27 @@
+Description: gemspec: load asciidoctor/version from system is not available locally
+ This fixes running tests under autopkgtest
+Author: Antonio Terceiro <terceiro@debian.org>
+Origin: vendor
+Forwarded: no
+Last-Update: 2015-11-17
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/asciidoctor.gemspec
++++ b/asciidoctor.gemspec
+@@ -1,5 +1,6 @@
+ # -*- encoding: utf-8 -*-
+-require File.expand_path '../lib/asciidoctor/version', __FILE__
++$LOAD_PATH << File.expand_path('../lib', __FILE__)
++require 'asciidoctor/version'
+ 
+ Gem::Specification.new do |s|
+   s.name              = 'asciidoctor'
+--- a/Rakefile
++++ b/Rakefile
+@@ -1,4 +1,5 @@
+-require File.expand_path '../lib/asciidoctor/version', __FILE__
++$LOAD_PATH << File.expand_path('../lib', __FILE__)
++require 'asciidoctor/version'
+ 
+ def prepare_test_env
+   # rather than hardcoding gc settings in test task,
