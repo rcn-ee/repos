@@ -94,6 +94,9 @@ jekyll () {
 
 	site="${debian_pool}/main/c"
 	package_name="coffeescript"; package_version="${package_name}_1.10.0~dfsg-1"; check_http
+
+	site="${debian_pool}/main/r"
+	package_name="ruby-coffee-script-source"; package_version="${package_name}_1.9.1.1-1"; check_http
 exit 2
 }
 
