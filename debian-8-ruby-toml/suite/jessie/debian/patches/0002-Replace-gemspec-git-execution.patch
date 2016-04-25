@@ -1,0 +1,22 @@
+From: Youhei SASAKI <uwabami@gfd-dennou.org>
+Date: Wed, 4 Nov 2015 20:47:44 +0900
+Subject: Replace gemspec git execution
+
+Signed-off-by: Youhei SASAKI <uwabami@gfd-dennou.org>
+---
+ toml.gemspec | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/toml.gemspec b/toml.gemspec
+index 420799f..f7b842f 100644
+--- a/toml.gemspec
++++ b/toml.gemspec
+@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
+ 
+   s.add_development_dependency "rake"
+ 
+-  all_files       = `git ls-files -z`.split("\x0")
++  all_files       = [".gitignore",".travis.yml","CHANGELOG.md","Gemfile","LICENSE","README.md","Rakefile","lib/toml.rb","lib/toml/generator.rb","lib/toml/key.rb","lib/toml/monkey_patch.rb","lib/toml/parser.rb","lib/toml/parslet.rb","lib/toml/table.rb","lib/toml/transformer.rb","lib/toml/version.rb","script/bootstrap","script/cibuild","script/console","script/toml-test-decoder-interface.rb","script/toml-test-encoder-interface.rb","test/empty.toml","test/hard_example.toml","test/spec.toml","test/test_empty.rb","test/test_generator.rb","test/test_parser.rb","test/test_parser_hard.rb","test/test_table_arrays.rb","test/tmp.rb","toml.gemspec"]
+   s.files         = all_files.grep(%r{^(bin|lib)/})
+   s.executables   = all_files.grep(%r{^bin/}) { |f| File.basename(f) }
+   s.require_paths = ["lib"]
