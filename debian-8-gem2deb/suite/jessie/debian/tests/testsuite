@@ -1,0 +1,10 @@
+#!/bin/sh
+
+mv lib lib.off
+
+rake DEBUG=yes TESTOPTS=-v
+status=$?
+
+mv lib.off lib
+
+exit $status
