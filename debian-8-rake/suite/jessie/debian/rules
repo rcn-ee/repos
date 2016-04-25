@@ -1,0 +1,11 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@ --buildsystem=ruby --with ruby
+
+override_dh_clean:
+	$(RM) test/data/dryrun/temp_main
+	$(RM) test/data/dryrun/temp_two
+	$(RM) -r test/data/file_creation_task/build/
+	$(RM) -r test/data/file_creation_task/src/
+	dh_clean

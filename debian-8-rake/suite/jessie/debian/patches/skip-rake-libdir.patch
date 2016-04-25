@@ -1,0 +1,44 @@
+Description: rake/testtask: never include -I/usr/lib/ruby/vendor_ruby
+Author: Antonio Terceiro
+Origin: vendor
+Forwarded: not-needed
+Last-Update: 2016-02-29
+--- a/lib/rake/testtask.rb
++++ b/lib/rake/testtask.rb
+@@ -188,12 +188,7 @@ module Rake
+     end
+ 
+     def rake_include_arg # :nodoc:
+-      spec = Gem.loaded_specs['rake']
+-      if spec.respond_to?(:default_gem?) && spec.default_gem?
+-        ""
+-      else
+-        "-I\"#{rake_lib_dir}\""
+-      end
++      ""
+     end
+ 
+     def rake_lib_dir # :nodoc:
+--- a/test/test_rake_test_task.rb
++++ b/test/test_rake_test_task.rb
+@@ -82,20 +82,6 @@ class TestRakeTestTask < Rake::TestCase
+     assert_equal '-e "ARGV.each{|f| require f}"', test_task.run_code
+   end
+ 
+-  def test_run_code_rake
+-    spec = Gem::Specification.new 'rake', 0
+-    spec.loaded_from = File.join Gem::Specification.dirs.last, 'rake-0.gemspec'
+-    rake, Gem.loaded_specs['rake'] = Gem.loaded_specs['rake'], spec
+-
+-    test_task = Rake::TestTask.new do |t|
+-      t.loader = :rake
+-    end
+-
+-    assert_match(/\A-I".*?" ".*?"\Z/, test_task.run_code)
+-  ensure
+-    Gem.loaded_specs['rake'] = rake
+-  end
+-
+   def test_run_code_rake_default_gem
+     skip 'this ruby does not have default gems' unless
+       Gem::Specification.method_defined? :default_specifications_dir

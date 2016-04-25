@@ -1,0 +1,25 @@
+Description: support as-installed tests
+ When running tests with autopkgtest, don't try to load files from the source
+ package.
+Author: Antonio Terceiro <terceiro@debian.org>
+Forwarded: not-needed
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/test/helper.rb
++++ b/test/helper.rb
+@@ -49,8 +49,13 @@ class Rake::TestCase < Minitest::Test
+     @verbose = ENV['VERBOSE']
+ 
+     @rake_exec = File.join @rake_root, 'bin', 'rake'
+-    @rake_lib  = File.join @rake_root, 'lib'
+-    @ruby_options = ["-I#{@rake_lib}", "-I."]
++    if ENV['ADTTMP']
++      @rake_lib  = '/usr/lib/ruby/vendor_ruby'
++      @ruby_options = []
++    else
++      @rake_lib  = File.join @rake_root, 'lib'
++      @ruby_options = ["-I#{@rake_lib}", "-I."]
++    end
+ 
+     @orig_pwd = Dir.pwd
+     @orig_appdata      = ENV['APPDATA']

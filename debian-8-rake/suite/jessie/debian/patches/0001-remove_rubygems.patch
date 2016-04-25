@@ -1,0 +1,26 @@
+From c6408410db046a22f0a8157e04cb5cb76ac5e32d Mon Sep 17 00:00:00 2001
+From: Antonio Terceiro <terceiro@debian.org>
+Date: Sat, 19 Nov 2011 18:06:57 -0200
+Subject: [PATCH] Remove `require 'rubygems'`
+
+---
+ bin/rake             |    6 ------
+ lib/rake/rdoctask.rb |    5 +----
+ test/helper.rb       |    5 -----
+ 3 files changed, 1 insertions(+), 15 deletions(-)
+
+--- a/bin/rake
++++ b/bin/rake
+@@ -22,12 +22,6 @@
+ # IN THE SOFTWARE.
+ #++
+ 
+-begin
+-  require 'rubygems'
+-  gem 'rake'
+-rescue LoadError
+-end
+-
+ require 'rake'
+ 
+ Rake.application.run
