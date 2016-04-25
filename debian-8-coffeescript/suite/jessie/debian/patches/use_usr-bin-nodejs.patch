@@ -1,0 +1,32 @@
+Description: Use /usr/bin/nodejs (not /usr/bin/env node)
+Author: Jonas Smedegaard <dr@jones.dk>
+Forwarded: no
+Last-Update: 2012-08-06
+
+--- a/bin/cake
++++ b/bin/cake
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env node
++#!/usr/bin/nodejs
+ 
+ var path = require('path');
+ var fs   = require('fs');
+--- a/bin/coffee
++++ b/bin/coffee
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env node
++#!/usr/bin/nodejs
+ 
+ var path = require('path');
+ var fs   = require('fs');
+--- a/Cakefile
++++ b/Cakefile
+@@ -32,7 +32,7 @@
+ 
+ # Run a CoffeeScript through our node/coffee interpreter.
+ run = (args, cb) ->
+-  proc =         spawn 'node', ['bin/coffee'].concat(args)
++  proc =         spawn 'nodejs', ['bin/coffee'].concat(args)
+   proc.stderr.on 'data', (buffer) -> console.log buffer.toString()
+   proc.on        'exit', (status) ->
+     process.exit(1) if status != 0

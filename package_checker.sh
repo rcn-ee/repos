@@ -91,6 +91,9 @@ jekyll () {
 	site="${debian_pool}/main/r"
 	package_name="ruby-jekyll-feed"; package_version="${package_name}_0.3.1-1"; check_http
 	package_name="ruby-jekyll-gist"; package_version="${package_name}_1.1.0-1"; check_http
+
+	site="${debian_pool}/main/c"
+	package_name="coffeescript"; package_version="${package_name}_1.10.0~dfsg-1"; check_http
 exit 2
 }
 
