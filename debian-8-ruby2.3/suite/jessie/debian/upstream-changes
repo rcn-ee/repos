@@ -1,9 +1,0 @@
-#!/bin/sh
-
-set -e
-
-version=$(dpkg-parsechangelog -SVersion | cut -d - -f 1)
-
-files=$(git diff --name-only upstream/${version}.. | grep -v ^debian)
-
-git log -p --no-merges --cherry-pick upstream/${version}.. -- $files
