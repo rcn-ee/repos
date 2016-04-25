@@ -1,0 +1,22 @@
+From: Youhei SASAKI <uwabami@gfd-dennou.org>
+Date: Sun, 6 Dec 2015 21:31:43 +0900
+Subject: Add patch: Replace git execution from gemspec
+
+Signed-off-by: Youhei SASAKI <uwabami@gfd-dennou.org>
+---
+ jekyll-paginate.gemspec | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/jekyll-paginate.gemspec b/jekyll-paginate.gemspec
+index ab46067..7a5709b 100644
+--- a/jekyll-paginate.gemspec
++++ b/jekyll-paginate.gemspec
+@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
+   spec.homepage      = "https://github.com/jekyll/jekyll-paginate"
+   spec.license       = "MIT"
+ 
+-  spec.files         = `git ls-files -z`.split("\x0")
++  spec.files         = [".gitignore",".rspec",".travis.yml","Gemfile","History.markdown","LICENSE.txt","README.md","Rakefile","jekyll-paginate.gemspec","lib/jekyll-paginate.rb","lib/jekyll-paginate/pager.rb","lib/jekyll-paginate/pagination.rb","lib/jekyll-paginate/version.rb","metadata.yml","script/bootstrap","script/cibuild","script/unbundle","spec/pager_spec.rb","spec/pagination_spec.rb","spec/source/_posts/2014-05-20-blah.html","spec/source/_posts/2014-05-21-bleh.html","spec/source/_posts/2014-05-22-humor.html","spec/source/_posts/2014-05-23-hey-there.html","spec/source/_posts/2014-05-24-whateva.html","spec/source/_posts/2014-05-25-oh-yes.html","spec/source/contacts/index.html","spec/source/index.html","spec/spec_helper.rb"]
+   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
+   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
+   spec.require_paths = ["lib"]
