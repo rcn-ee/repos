@@ -1,0 +1,22 @@
+From: Youhei SASAKI <uwabami@gfd-dennou.org>
+Date: Sun, 27 Dec 2015 23:44:31 +0900
+Subject: Remove relative LOAD_PATH from bin/jekyll
+
+Signed-off-by: Youhei SASAKI <uwabami@gfd-dennou.org>
+---
+ bin/jekyll | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/bin/jekyll b/bin/jekyll
+index 67705b5..7a8e635 100755
+--- a/bin/jekyll
++++ b/bin/jekyll
+@@ -1,8 +1,6 @@
+ #!/usr/bin/env ruby
+ STDOUT.sync = true
+ 
+-$:.unshift File.join(File.dirname(__FILE__), *%w{ .. lib })
+-
+ require 'jekyll'
+ require 'mercenary'
+ 

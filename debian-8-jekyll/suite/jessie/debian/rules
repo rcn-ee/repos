@@ -1,0 +1,43 @@
+#!/usr/bin/make -f
+#export DH_VERBOSE=1
+#
+# Uncomment to ignore all test failures (but the tests will run anyway)
+#export DH_RUBY_IGNORE_TESTS=all
+#
+# Uncomment to ignore some test failures (but the tests will run anyway).
+# Valid values:
+#export DH_RUBY_IGNORE_TESTS=ruby1.8 ruby1.9.1 require-rubygems
+#
+# If you need to specify the .gemspec (eg there is more than one)
+#export DH_RUBY_GEMSPEC=gem.gemspec
+
+%:
+	dh $@ --buildsystem=ruby --with ruby
+
+override_dh_auto_install:
+	mkdir -p $(CURDIR)/site/js
+	install -m644 debian/missing-sources/html5shiv.js \
+	  $(CURDIR)/site/js/
+	install -m644 debian/missing-sources/respond.js \
+	  $(CURDIR)/site/js/
+	install -m644 debian/missing-sources/normalize.css \
+	  $(CURDIR)/site/_sass/_normalize.scss
+	mkdir -p $(CURDIR)/lib/site_template/js
+	install -m644 debian/missing-sources/html5shiv.js \
+	  $(CURDIR)/lib/site_template/js/
+	install -m644 debian/missing-sources/respond.js \
+	  $(CURDIR)/lib/site_template/js/
+	install -m644 debian/missing-sources/normalize.css \
+	  $(CURDIR)/lib/site_template/_sass/_normalize.scss
+	dh_auto_install
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -fr $(CURDIR)/site/js
+	rm -fr $(CURDIR)/lib/site_template/js
+	rm -fr $(CURDIR)/site/_sass/_normalize.scss
+	rm -fr $(CURDIR)/lib/site_template/_sass/_normalize.scss
+	rm -fr $(CURDIR)/.sass-cache
+	rm -fr $(CURDIR)/test/dest
+	rm -fr $(CURDIR)/coverage
+	rm -fr $(CURDIR)/test/source/.jekyll-metadata
