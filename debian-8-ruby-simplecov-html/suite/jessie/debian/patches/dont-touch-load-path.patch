@@ -1,0 +1,17 @@
+Description: avoid touching the $LOAD_PATH
+ This fixes getting coverage report on a project that is also already installed
+ locally as a Debian package
+Author: Antonio Terceiro <terceiro@debian.org>
+Origin: vendor
+Forwarded: not-needed
+Last-Update: 2015-10-22
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/lib/simplecov-html.rb
++++ b/lib/simplecov-html.rb
+@@ -106,5 +106,4 @@ module SimpleCov
+   end
+ end
+ 
+-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__)))
+ require "simplecov-html/version"

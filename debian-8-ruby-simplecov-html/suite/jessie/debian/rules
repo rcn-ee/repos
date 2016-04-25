@@ -1,0 +1,20 @@
+#!/usr/bin/make -f
+
+export GEM2DEB_TEST_RUNNER = --check-dependencies
+
+%:
+	dh $@ --buildsystem=ruby --with ruby
+
+override_dh_auto_install:
+	mkdir -p assets/javascripts/libraries
+	cp /usr/share/javascript/jquery/jquery.js           assets/javascripts/libraries/jquery.js
+	cp /usr/share/javascript/highlight.js/highlight.js  assets/javascripts/plugins/highlight.js
+	cp debian/jquery.dataTables.js                      assets/javascripts/plugins/jquery.dataTables.js
+	sprockets --include=assets/javascripts assets/javascripts/application.js > public/application.js
+	dh_auto_install
+
+override_dh_auto_clean:
+	rm -f assets/javascripts/libraries/jquery.js
+	rm -f assets/javascripts/plugins/highlight.js
+	rm -f assets/javascripts/plugins/jquery.dataTables.js
+	rm -f public/application.js
