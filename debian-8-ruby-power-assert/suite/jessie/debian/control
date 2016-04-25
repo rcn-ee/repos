@@ -1,0 +1,27 @@
+Source: ruby-power-assert
+Section: ruby
+Priority: optional
+Maintainer: Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>
+Uploaders: Cédric Boutillier <boutil@debian.org>
+Build-Depends: debhelper (>= 9~),
+               gem2deb,
+               rake,
+               ruby-test-unit
+Standards-Version: 3.9.7
+Vcs-Git: git://anonscm.debian.org/pkg-ruby-extras/ruby-power-assert.git
+Vcs-Browser: https://anonscm.debian.org/cgit/pkg-ruby-extras/ruby-power-assert.git
+Homepage: https://github.com/k-tsj/power_assert
+Testsuite: autopkgtest-pkg-ruby
+XS-Ruby-Versions: all
+
+Package: ruby-power-assert
+Architecture: all
+XB-Ruby-Versions: ${ruby:Versions}
+# Note: this package is part of the "interpreter bundled" set. As such it should not depend on ruby and needs to be Multi-Arch aware.
+Multi-Arch: foreign
+Depends: ${misc:Depends},
+         ${shlibs:Depends}
+Description: library showing values of variables and method calls in an expression
+ Power Assert shows each value of variables and method calls in the
+ expression. It is useful for testing, providing which value wasn't
+ correct when the condition is not satisfied.
