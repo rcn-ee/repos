@@ -1,0 +1,13 @@
+#!/usr/bin/make -f
+
+export GEM2DEB_TEST_RUNNER = --check-dependencies
+
+%:
+	dh $@ --buildsystem=ruby --with ruby
+
+override_dh_installchangelogs:
+	dh_installchangelogs CHANGELOG.md
+
+clean:
+	dh clean --buildsystem=ruby --with ruby
+	find . -name coverage |xargs rm -rf

@@ -1,0 +1,53 @@
+Description: Fix sample appication in test suite
+ Load "simplecov" from the $LOAD_PATH, trusting it is correct.
+Author: Antonio Terceiro <terceiro@debian.org>
+Origin: vendor
+Forwarded: not-needed
+Last-Update: 2015-09-15
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/spec/fixtures/deleted_source_sample.rb
++++ b/spec/fixtures/deleted_source_sample.rb
+@@ -1,5 +1,4 @@
+-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "..", ".."))
+-require "lib/simplecov"
++require "simplecov"
+ SimpleCov.start { command_name "Test" }
+ 
+ dir = File.expand_path(File.dirname(__FILE__))
+--- a/spec/fixtures/frameworks/rspec_bad.rb
++++ b/spec/fixtures/frameworks/rspec_bad.rb
+@@ -1,5 +1,4 @@
+-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "..", "..", ".."))
+-require "lib/simplecov"
++require "simplecov"
+ require "rspec"
+ SimpleCov.start
+ describe "exit status" do
+--- a/spec/fixtures/frameworks/rspec_good.rb
++++ b/spec/fixtures/frameworks/rspec_good.rb
+@@ -1,5 +1,4 @@
+-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "..", "..", ".."))
+-require "lib/simplecov"
++require "simplecov"
+ require "rspec"
+ SimpleCov.start
+ describe "exit status" do
+--- a/spec/fixtures/frameworks/testunit_bad.rb
++++ b/spec/fixtures/frameworks/testunit_bad.rb
+@@ -1,5 +1,4 @@
+-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "..", "..", ".."))
+-require "lib/simplecov"
++require "simplecov"
+ SimpleCov.start
+ require "test/unit"
+ class FooTest < Test::Unit::TestCase
+--- a/spec/fixtures/frameworks/testunit_good.rb
++++ b/spec/fixtures/frameworks/testunit_good.rb
+@@ -1,5 +1,4 @@
+-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "..", "..", ".."))
+-require "lib/simplecov"
++require "simplecov"
+ SimpleCov.start
+ require "test/unit"
+ class FooTest < Test::Unit::TestCase
