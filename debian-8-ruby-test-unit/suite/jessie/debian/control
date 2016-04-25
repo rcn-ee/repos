@@ -1,0 +1,30 @@
+Source: ruby-test-unit
+Section: ruby
+Priority: optional
+Maintainer: Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>
+Uploaders: Cédric Boutillier <boutil@debian.org>
+Build-Depends: debhelper (>= 9),
+               gem2deb,
+               ruby-power-assert
+Standards-Version: 3.9.7
+Vcs-Git: https://anonscm.debian.org/pkg-ruby-extras/ruby-test-unit.git
+Vcs-Browser: https://anonscm.debian.org/cgit/pkg-ruby-extras/ruby-test-unit.git
+Homepage: http://test-unit.github.io/
+Testsuite: autopkgtest-pkg-ruby
+XS-Ruby-Versions: all
+
+Package: ruby-test-unit
+Architecture: all
+XB-Ruby-Versions: ${ruby:Versions}
+# Note: this package is part of the "interpreter bundled" set. As such it should not depend on ruby and needs to be Multi-Arch aware.
+Multi-Arch: foreign
+Depends: ruby-power-assert,
+         ${misc:Depends},
+         ${shlibs:Depends}
+Description: unit testing framework for Ruby
+ Test::Unit (test-unit) is a unit testing framework for Ruby, based on xUnit
+ principles. It allows writing tests, checking results and automated testing in
+ Ruby.
+ .
+ Note that this version of Test::Unit will override the one possibly shipped
+ with the Ruby interpreter.
