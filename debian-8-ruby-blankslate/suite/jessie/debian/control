@@ -1,0 +1,29 @@
+Source: ruby-blankslate
+Section: ruby
+Priority: optional
+Maintainer: Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>
+Uploaders: Cédric Boutillier <boutil@debian.org>
+Build-Depends: debhelper (>= 9~),
+               gem2deb,
+               ruby-rspec
+Standards-Version: 3.9.6
+Vcs-Git: git://anonscm.debian.org/pkg-ruby-extras/ruby-blankslate.git
+Vcs-Browser: https://anonscm.debian.org/cgit/pkg-ruby-extras/ruby-blankslate.git
+Homepage: http://github.com/masover/blankslate
+Testsuite: autopkgtest-pkg-ruby
+XS-Ruby-Versions: all
+
+Package: ruby-blankslate
+Architecture: all
+XB-Ruby-Versions: ${ruby:Versions}
+Depends: ruby | ruby-interpreter,
+         ${misc:Depends},
+         ${shlibs:Depends}
+Replaces: ruby-builder (<< 3.0.0-2~)
+Breaks: ruby-builder (<< 3.0.0-2~)
+Description: Ruby library providing a class with no predefined methods
+ BlankSlate provides an abstract base class with no predefined
+ methods (except for __send__ and __id__).
+ .
+ BlankSlate is useful as a base class when writing classes that
+ depend upon method_missing (e.g. dynamic proxies).
