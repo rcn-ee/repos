@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -e
+
+rc=0
+while read gem version; do
+  if ruby2.3 -e "gem '${gem}', '>= ${version}'"; then
+    echo "${gem} (>= ${version}) OK"
+  else
+    rc=$(($rc + 1))
+  fi
+done < gems/bundled_gems
+
+exit $rc

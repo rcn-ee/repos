@@ -1,0 +1,23 @@
+Upstream tarballs
+=================
+
+Ruby released tarballs will modify/remove files during the clean target, what
+would force the maintainers to shuffle those files around to make sure the
+source directory matches the upstream tarball after `debian/rules clean`.
+Because of this, and since we are already using dh_autoreconf anyway, the orig
+tarballs used in this package come from the git repository at
+https://github.com/ruby/ruby (see debian/watch).
+
+After downloading with uscan, it's usually a good idea to recompress with xz as
+it makes the tarball a lot smaller.
+
+Additional sources
+==================
+
+Source for lib/rdoc/generator/template/darkfish/js/jquery.js (which is minified
+and thus cannot be properly modified as is) is available at
+debian/missing-sources/jquery.js.
+
+When libruby* is installed, however,
+/usr/lib/ruby/*/rdoc/generator/template/darkfish/js/jquery.js is a symlink
+to jquery.js provided by the libjs-jquery package.

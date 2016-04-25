@@ -1,0 +1,29 @@
+#!/bin/sh
+
+set -e
+
+if [ $# -ne 1 ]; then
+  echo "usage: $0 NEWVERSION"
+  exit 1
+fi
+
+old_source=$(dpkg-parsechangelog -SSource)
+old_version=${old_source##ruby}
+
+new_version="$1"
+new_source="ruby${new_version}"
+new_api_version="${new_version}.0"
+
+files_to_change=$(grep -rl "${old_source}" debian/ | grep -v changelog)
+
+set -x
+sed -i -e "s/${old_source}/${new_source}/g; s/${old_version}.\[0-9]/${new_api_version}/g; s/${old_version}/${new_version}/g" $files_to_change
+
+rename "s/${old_source}/${new_source}/" debian/*${old_source}*
+
+# manpages
+sed -i -e "s/\(gem\|rdoc\)${old_version}/\1${new_version}/gi" \
+	debian/manpages/* debian/*.manpages
+rename "s/${old_version}/${new_version}/g" debian/manpages/*
+
+dch --package "${new_source}" --newversion "${new_version}.0-1" "Ruby $new_version"

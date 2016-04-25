@@ -1,0 +1,17 @@
+#!/bin/sh
+
+set -eu
+
+# test multi-arch support
+arch=$(dpkg-architecture -qDEB_HOST_MULTIARCH)
+libdir=usr/lib
+archlibdir=usr/lib/${arch}
+
+# files that should NOT exist
+test '!' -f  debian/tmp/${libdir}/libruby-${RUBY_VERSION}.so.${RUBY_VERSION}
+test '!' -f  debian/tmp/${libdir}/pkgconfig/ruby-${RUBY_VERSION}.pc
+
+# files that should exist
+ls -1 debian/tmp/${archlibdir}/libruby-${RUBY_VERSION}.so.${RUBY_VERSION}
+ls -1 debian/tmp/${archlibdir}/pkgconfig/ruby-${RUBY_VERSION}.pc
+ls -1 debian/tmp/${libdir}/ruby/gems/${RUBY_API_VERSION}/specifications/default/json-*.gemspec

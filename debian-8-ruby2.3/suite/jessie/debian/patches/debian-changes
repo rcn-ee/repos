@@ -1,0 +1,186 @@
+This patch file represents the entire difference between the package as shipped
+by Debian and the official upstream sources. The goal is to maintain this file
+as small as possible, avoiding non-upstreamed patches at all costs.
+
+The Debian packaging is maintained in the following Git repository:
+
+  http://anonscm.debian.org/gitweb/?p=collab-maint/ruby.git
+
+To obtain a view of the individual commits that affect non-Debian-specific
+files, you can clone that repository, and from the master branch, run:
+
+  $ ./debian/upstream-changes
+
+--- ruby2.3-2.3.0.orig/configure.in
++++ ruby2.3-2.3.0/configure.in
+@@ -3646,7 +3646,7 @@ AS_CASE("$enable_shared", [yes], [
+ 	LIBRUBY_ALIASES='lib$(RUBY_SO_NAME).so.$(MAJOR).$(MINOR) lib$(RUBY_SO_NAME).so'
+ 	],
+     [linux* | gnu* | k*bsd*-gnu | atheos* | kopensolaris*-gnu | haiku*], [
+-	LIBRUBY_DLDFLAGS='-Wl,-soname,lib$(RUBY_SO_NAME).so.$(MAJOR).$(MINOR)'" $LDFLAGS_OPTDIR"
++	LIBRUBY_DLDFLAGS='-Wl,-soname,lib$(RUBY_SO_NAME).so.$(MAJOR).$(MINOR)'" $LDFLAGS $LDFLAGS_OPTDIR"
+ 	LIBRUBY_ALIASES='lib$(RUBY_SO_NAME).so.$(MAJOR).$(MINOR) lib$(RUBY_SO_NAME).so'
+ 	if test "$load_relative" = yes; then
+ 	    libprefix="'\$\${ORIGIN}/../${libdir_basename}'"
+--- ruby2.3-2.3.0.orig/ext/bigdecimal/bigdecimal.gemspec
++++ ruby2.3-2.3.0/ext/bigdecimal/bigdecimal.gemspec
+@@ -1,11 +1,10 @@
+ # -*- ruby -*-
+ _VERSION = "1.2.8"
+-date = %w$Date::                           $[1]
+ 
+ Gem::Specification.new do |s|
+   s.name = "bigdecimal"
+   s.version = _VERSION
+-  s.date = date
++  s.date = RUBY_RELEASE_DATE
+   s.license = 'ruby'
+   s.summary = "Arbitrary-precision decimal floating-point number library."
+   s.homepage = "http://www.ruby-lang.org"
+--- ruby2.3-2.3.0.orig/ext/io/console/io-console.gemspec
++++ ruby2.3-2.3.0/ext/io/console/io-console.gemspec
+@@ -1,11 +1,10 @@
+ # -*- ruby -*-
+ _VERSION = "0.4.5"
+-date = %w$Date::                           $[1]
+ 
+ Gem::Specification.new do |s|
+   s.name = "io-console"
+   s.version = _VERSION
+-  s.date = date
++  s.date = RUBY_RELEASE_DATE
+   s.summary = "Console interface"
+   s.email = "nobu@ruby-lang.org"
+   s.description = "add console capabilities to IO instances."
+--- ruby2.3-2.3.0.orig/ext/json/json.gemspec
++++ ruby2.3-2.3.0/ext/json/json.gemspec
+@@ -1,6 +1,7 @@
+ Gem::Specification.new do |s|
+   s.name = "json"
+   s.version = "1.8.3"
++  s.date = RUBY_RELEASE_DATE
+   s.summary = "This json is bundled with Ruby"
+   s.executables = []
+   s.files = ["json.rb", "json/add/bigdecimal.rb", "json/add/complex.rb", "json/add/core.rb", "json/add/date.rb", "json/add/date_time.rb", "json/add/exception.rb", "json/add/ostruct.rb", "json/add/range.rb", "json/add/rational.rb", "json/add/regexp.rb", "json/add/struct.rb", "json/add/symbol.rb", "json/add/time.rb", "json/common.rb", "json/ext.rb", "json/ext/generator.bundle", "json/ext/parser.bundle", "json/generic_object.rb", "json/version.rb"]
+--- ruby2.3-2.3.0.orig/include/ruby/ruby.h
++++ ruby2.3-2.3.0/include/ruby/ruby.h
+@@ -26,6 +26,13 @@ extern "C" {
+ #include RUBY_EXTCONF_H
+ #endif
+ 
++#if defined(__cplusplus)
++/* __builtin_choose_expr and __builtin_types_compatible aren't available
++ * on C++.  See https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html */
++# undef HAVE_BUILTIN___BUILTIN_CHOOSE_EXPR_CONSTANT_P
++# undef HAVE_BUILTIN___BUILTIN_TYPES_COMPATIBLE_P
++#endif
++
+ #include "defines.h"
+ 
+ #define NORETURN_STYLE_NEW 1
+--- ruby2.3-2.3.0.orig/lib/ostruct.rb
++++ ruby2.3-2.3.0/lib/ostruct.rb
+@@ -71,6 +71,11 @@
+ # of these properties compared to using a Hash or a Struct.
+ #
+ class OpenStruct
++  # :nodoc:
++  class << self
++    alias allocate new
++  end
++
+   #
+   # Creates a new OpenStruct object.  By default, the resulting OpenStruct
+   # object will have no attributes.
+--- ruby2.3-2.3.0.orig/lib/rdoc/generator/json_index.rb
++++ ruby2.3-2.3.0/lib/rdoc/generator/json_index.rb
+@@ -175,7 +175,7 @@ class RDoc::Generator::JsonIndex
+     debug_msg "Writing gzipped search index to %s" % outfile
+ 
+     Zlib::GzipWriter.open(outfile) do |gz|
+-      gz.mtime = File.mtime(search_index_file)
++      gz.mtime = -1
+       gz.orig_name = search_index_file.basename.to_s
+       gz.write search_index
+       gz.close
+@@ -193,7 +193,7 @@ class RDoc::Generator::JsonIndex
+         debug_msg "Writing gzipped file to %s" % outfile
+ 
+         Zlib::GzipWriter.open(outfile) do |gz|
+-          gz.mtime = File.mtime(dest)
++          gz.mtime = -1
+           gz.orig_name = dest.basename.to_s
+           gz.write data
+           gz.close
+--- ruby2.3-2.3.0.orig/lib/rdoc/rdoc.gemspec
++++ ruby2.3-2.3.0/lib/rdoc/rdoc.gemspec
+@@ -1,6 +1,7 @@
+ Gem::Specification.new do |s|
+   s.name = "rdoc"
+   s.version = "4.2.1"
++  s.date = RUBY_RELEASE_DATE
+   s.summary = "This rdoc is bundled with Ruby"
+   s.executables = ["rdoc", "ri"]
+   s.files = ["rdoc.rb", "rdoc/alias.rb", "rdoc/anon_class.rb", "rdoc/any_method.rb", "rdoc/attr.rb", "rdoc/class_module.rb", "rdoc/code_object.rb", "rdoc/code_objects.rb", "rdoc/comment.rb", "rdoc/constant.rb", "rdoc/context.rb", "rdoc/context/section.rb", "rdoc/cross_reference.rb", "rdoc/encoding.rb", "rdoc/erb_partial.rb", "rdoc/erbio.rb", "rdoc/extend.rb", "rdoc/generator.rb", "rdoc/generator/darkfish.rb", "rdoc/generator/json_index.rb", "rdoc/generator/markup.rb", "rdoc/generator/pot.rb", "rdoc/generator/pot/message_extractor.rb", "rdoc/generator/pot/po.rb", "rdoc/generator/pot/po_entry.rb", "rdoc/generator/ri.rb", "rdoc/ghost_method.rb", "rdoc/i18n.rb", "rdoc/i18n/locale.rb", "rdoc/i18n/text.rb", "rdoc/include.rb", "rdoc/known_classes.rb", "rdoc/markdown.rb", "rdoc/markdown/entities.rb", "rdoc/markdown/literals_1_9.rb", "rdoc/markup.rb", "rdoc/markup/attr_changer.rb", "rdoc/markup/attr_span.rb", "rdoc/markup/attribute_manager.rb", "rdoc/markup/attributes.rb", "rdoc/markup/blank_line.rb", "rdoc/markup/block_quote.rb", "rdoc/markup/document.rb", "rdoc/markup/formatter.rb", "rdoc/markup/formatter_test_case.rb", "rdoc/markup/hard_break.rb", "rdoc/markup/heading.rb", "rdoc/markup/include.rb", "rdoc/markup/indented_paragraph.rb", "rdoc/markup/inline.rb", "rdoc/markup/list.rb", "rdoc/markup/list_item.rb", "rdoc/markup/paragraph.rb", "rdoc/markup/parser.rb", "rdoc/markup/pre_process.rb", "rdoc/markup/raw.rb", "rdoc/markup/rule.rb", "rdoc/markup/special.rb", "rdoc/markup/text_formatter_test_case.rb", "rdoc/markup/to_ansi.rb", "rdoc/markup/to_bs.rb", "rdoc/markup/to_html.rb", "rdoc/markup/to_html_crossref.rb", "rdoc/markup/to_html_snippet.rb", "rdoc/markup/to_joined_paragraph.rb", "rdoc/markup/to_label.rb", "rdoc/markup/to_markdown.rb", "rdoc/markup/to_rdoc.rb", "rdoc/markup/to_table_of_contents.rb", "rdoc/markup/to_test.rb", "rdoc/markup/to_tt_only.rb", "rdoc/markup/verbatim.rb", "rdoc/meta_method.rb", "rdoc/method_attr.rb", "rdoc/mixin.rb", "rdoc/normal_class.rb", "rdoc/normal_module.rb", "rdoc/options.rb", "rdoc/parser.rb", "rdoc/parser/c.rb", "rdoc/parser/changelog.rb", "rdoc/parser/markdown.rb", "rdoc/parser/rd.rb", "rdoc/parser/ruby.rb", "rdoc/parser/ruby_tools.rb", "rdoc/parser/simple.rb", "rdoc/parser/text.rb", "rdoc/rd.rb", "rdoc/rd/block_parser.rb", "rdoc/rd/inline.rb", "rdoc/rd/inline_parser.rb", "rdoc/rdoc.rb", "rdoc/require.rb", "rdoc/ri.rb", "rdoc/ri/driver.rb", "rdoc/ri/formatter.rb", "rdoc/ri/paths.rb", "rdoc/ri/store.rb", "rdoc/ri/task.rb", "rdoc/ruby_lex.rb", "rdoc/ruby_token.rb", "rdoc/rubygems_hook.rb", "rdoc/servlet.rb", "rdoc/single_class.rb", "rdoc/stats.rb", "rdoc/stats/normal.rb", "rdoc/stats/quiet.rb", "rdoc/stats/verbose.rb", "rdoc/store.rb", "rdoc/task.rb", "rdoc/test_case.rb", "rdoc/text.rb", "rdoc/token_stream.rb", "rdoc/tom_doc.rb", "rdoc/top_level.rb"]
+--- ruby2.3-2.3.0.orig/lib/rubygems/specification.rb
++++ ruby2.3-2.3.0/lib/rubygems/specification.rb
+@@ -1753,7 +1753,9 @@ class Gem::Specification < Gem::BasicSpe
+                 raise(Gem::InvalidSpecificationException,
+                       "invalid date format in specification: #{date.inspect}")
+               end
+-            when Time, DateLike then
++            when Time then
++              Time.utc(date.utc.year, date.utc.month, date.utc.day)
++            when DateLike then
+               Time.utc(date.year, date.month, date.day)
+             else
+               TODAY
+--- ruby2.3-2.3.0.orig/proc.c
++++ ruby2.3-2.3.0/proc.c
+@@ -2646,6 +2646,7 @@ proc_binding(VALUE self)
+     GetProcPtr(self, proc);
+     envval = rb_vm_proc_envval(proc);
+     iseq = proc->block.iseq;
++    if (SYMBOL_P(iseq)) goto error;
+     if (RUBY_VM_IFUNC_P(iseq)) {
+ 	struct vm_ifunc *ifunc = (struct vm_ifunc *)iseq;
+ 	if (IS_METHOD_PROC_IFUNC(ifunc)) {
+@@ -2654,6 +2655,7 @@ proc_binding(VALUE self)
+ 	    iseq = rb_method_iseq(method);
+ 	}
+ 	else {
++	  error:
+ 	    rb_raise(rb_eArgError, "Can't create Binding from C level Proc");
+ 	}
+     }
+--- ruby2.3-2.3.0.orig/test/ostruct/test_ostruct.rb
++++ ruby2.3-2.3.0/test/ostruct/test_ostruct.rb
+@@ -23,6 +23,10 @@ class TC_OpenStruct < Test::Unit::TestCa
+     assert_respond_to(o, :a=)
+   end
+ 
++  def test_respond_to_allocated
++    assert_not_respond_to(OpenStruct.allocate, :a)
++  end
++
+   def test_equality
+     o1 = OpenStruct.new
+     o2 = OpenStruct.new
+--- ruby2.3-2.3.0.orig/test/ruby/test_symbol.rb
++++ ruby2.3-2.3.0/test/ruby/test_symbol.rb
+@@ -176,6 +176,15 @@ class TestSymbol < Test::Unit::TestCase
+     end;
+   end
+ 
++  def test_to_proc_binding
++    assert_separately([], <<~"end;", timeout: 1) # do
++      bug12137 = '[ruby-core:74100] [Bug #12137]'
++      assert_raise(ArgumentError, bug12137) {
++        :succ.to_proc.binding
++      }
++    end;
++  end
++
+   def test_call
+     o = Object.new
+     def o.foo(x, y); x + y; end

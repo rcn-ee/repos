@@ -1,0 +1,65 @@
+#!/bin/sh
+
+exec 2>&1
+set -e
+#set -x
+
+KNOW_FAILURES=$(dirname $(readlink -f $0))/known-failures.txt
+
+tests="$@"
+
+cleanup() {
+  rm -rf "$ADTTMP"
+}
+if [ -z "$ADTTMP" ]; then
+  ADTTMP=$(mktemp -d)
+  trap cleanup INT TERM EXIT
+fi
+
+cp -r 'test/' $ADTTMP
+cd $ADTTMP
+
+if [ -z "$tests" ]; then
+  # FIXME for now, we are excluding the tests for C extensions; couldn't figure
+  # out how to properly build them without building everything else
+  tests=$(find 'test/' -name 'test_*.rb' -and -not -path '*-ext-*' | sort)
+fi
+
+pass=0
+fail=0
+fail_expected=0
+total=0
+
+for t in $tests; do
+  if ruby2.3 test/runner.rb $t >log 2>&1; then
+    echo "PASS $t"
+    pass=$(($pass + 1))
+  else
+    if grep "^$t$" $KNOW_FAILURES; then
+      fail_expected=$(($fail_expected + 1))
+      echo "FAIL (EXPECTED) $t"
+      echo "FAIL (EXPECTED) $t" | sed -e 's/./-/g'
+    else
+      fail=$(($fail + 1))
+      echo "FAIL $t"
+      echo "FAIL $t" | sed -e 's/./-/g'
+    fi
+    echo
+    cat log
+  fi
+  total=$(($total + 1))
+done
+rm -f log
+
+echo
+echo "Finished"
+echo '--------'
+echo "   Tests executed: $(($total))"
+echo "             PASS: $pass"
+echo "             FAIL: $fail"
+echo "EXPECTED FAILURES: $fail_expected"
+echo
+
+if [ $fail -gt 0 ]; then
+  exit 1
+fi
