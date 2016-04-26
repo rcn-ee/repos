@@ -145,6 +145,14 @@ npm_install () {
 		fi
 	fi
 
+	if [ -f /etc/connman/main.conf ] ; then
+		unset check_connman
+		check_connman=$(cat /etc/connman/main.conf | grep NetworkInterfaceBlacklist | grep SoftAp0 || true)
+		if [ "x${check_connman}" = "x" ] ; then
+			sudo sed -i -e 's:=usb0:=usb0,SoftAp0:g' /etc/connman/main.conf
+		fi
+	fi
+
 	systemctl start ${service} || true
 	echo "${package}:Installed"
 }
