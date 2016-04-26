@@ -97,8 +97,7 @@ jekyll () {
 
 	site="${debian_pool}/main/r"
 	package_name="ruby-coffee-script-source"; package_version="${package_name}_1.9.1.1-1"; check_http
-	package_name="ruby-blankslate"; package_version="${package_name}_3.1.3-1"; check_http
-exit 2
+#	package_name="ruby-blankslate"; package_version="${package_name}_3.1.3-1"; check_http
 }
 
 mesa () {
@@ -432,7 +431,6 @@ ros () {
 }
 
 ros
-jekyll
 
 #really slow...
 exit
