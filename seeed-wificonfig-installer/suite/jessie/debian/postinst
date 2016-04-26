@@ -5,6 +5,7 @@
 set -e
 
 package="seeed-wificonfig-installer"
+service="wifidog-gateway"
 
 # summary of how this script can be called:
 #        * <postinst> `configure' <most-recently-configured-version>
@@ -57,11 +58,9 @@ npm_actually_install_depend () {
 	if [ -d ${NODE_PATH}/${pkg}/ ] ; then
 		npm_options="--unsafe-perm --progress=false --loglevel=error --prefix /usr/local/lib/node_modules/${pkg}/"
 		echo "${package}:Installing: ${pkg_depend}-${ver} (for ${npm_project})"
-		cd ${NODE_PATH}/${pkg}/
 		TERM=dumb ${node_bin} ${npm_bin} install ${npm_options} ${pkg_depend}@${ver}
 		echo "${ver}" > "${NODE_PATH}/${pkg}/node_modules/${pkg_depend}/${pkg_depend}.version"
 		echo "${node_version}" > "${NODE_PATH}/${pkg}/node_modules/${pkg_depend}/${pkg_depend}.node_version"
-		cd -
 	fi
 }
 
@@ -136,8 +135,17 @@ npm_install () {
 		mkdir -p ${NODE_PATH}/${pkg}/log/ || true
 	fi
 
-	#systemctl enable ${service}.socket || true
-	#systemctl start ${service} || true
+	echo "${package}:disabling connman dns service"
+
+	if [ -f /lib/systemd/system/connman.service ] ; then
+		unset check_connman
+		check_connman=$(cat /lib/systemd/system/connman.service | grep ExecStart | grep nodnsproxy || true)
+		if [ "x${check_connman}" = "x" ] ; then
+			sudo sed -i -e 's:-n:-n --nodnsproxy:g' /lib/systemd/system/connman.service
+		fi
+	fi
+
+	systemctl start ${service} || true
 	echo "${package}:Installed"
 }
 
