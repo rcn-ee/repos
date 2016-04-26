@@ -26,28 +26,29 @@ npm_options="--unsafe-perm --progress=false --loglevel=error --prefix /usr/local
 npm_actually_install () {
 	echo "${package}:Installing: ${pkg}-${ver} (for ${npm_project})"
 	TERM=dumb ${node_bin} ${npm_bin} install -g ${npm_options} ${pkg}@${ver}
-	echo "${ver}" > "${NODE_PATH}/${pkg}/${pkg}.version"
-	echo "${node_version}" > "${NODE_PATH}/${pkg}/${pkg}.node_version"
+	echo "${ver}" > "${pkg_path}/${pkg}.version"
+	echo "${node_version}" > "${pkg_path}/${pkg}.node_version"
 }
 
 npm_check_n_install () {
-	if [ ! -f "${NODE_PATH}/${pkg}/${pkg}.version" ] ; then
+	pkg_path="${NODE_PATH}/${pkg}"
+	if [ ! -f "${pkg_path}/${pkg}.version" ] ; then
 		npm_actually_install
 	else
 		unset old_version
-		if [ -f "${NODE_PATH}/${pkg}/${pkg}.version" ] ; then
-			old_version=$(cat "${NODE_PATH}/${pkg}/${pkg}.version" || true)
+		if [ -f "${pkg_path}/${pkg}.version" ] ; then
+			old_version=$(cat "${pkg_path}/${pkg}.version" || true)
 		fi
 		if [ ! "x${old_version}" = "x${ver}" ] ; then
-			rm -rf "${NODE_PATH}/${pkg}/" || true
+			rm -rf "${pkg_path}/" || true
 			npm_actually_install
 		else
 			unset old_version
-			if [ -f "${NODE_PATH}/${pkg}/${pkg}.node_version" ] ; then
-				old_version=$(cat "${NODE_PATH}/${pkg}/${pkg}.node_version" || true)
+			if [ -f "${pkg_path}/${pkg}.node_version" ] ; then
+				old_version=$(cat "${pkg_path}/${pkg}.node_version" || true)
 			fi
 			if [ ! "x${old_version}" = "x${node_version}" ] ; then
-				rm -rf "${NODE_PATH}/${pkg}/" || true
+				rm -rf "${pkg_path}/" || true
 				npm_actually_install
 			fi
 		fi
@@ -59,29 +60,30 @@ npm_actually_install_depend () {
 		npm_options="--unsafe-perm --progress=false --loglevel=error --prefix /usr/local/lib/node_modules/${pkg}/"
 		echo "${package}:Installing: ${pkg_depend}-${ver} (for ${npm_project})"
 		TERM=dumb ${node_bin} ${npm_bin} install ${npm_options} ${pkg_depend}@${ver}
-		echo "${ver}" > "${NODE_PATH}/${pkg}/node_modules/${pkg_depend}/${pkg_depend}.version"
-		echo "${node_version}" > "${NODE_PATH}/${pkg}/node_modules/${pkg_depend}/${pkg_depend}.node_version"
+		echo "${ver}" > "${pkg_depend_path}/${pkg_depend}.version"
+		echo "${node_version}" > "${pkg_depend_path}/${pkg_depend}.node_version"
 	fi
 }
 
 npm_check_n_install_depend () {
-	if [ ! -f "${NODE_PATH}/${pkg}/node_modules/${pkg_depend}/${pkg_depend}.version" ] ; then
+	pkg_depend_path="${NODE_PATH}/${pkg}/node_modules/${pkg_depend}"
+	if [ ! -f "${pkg_depend_path}/${pkg_depend}.version" ] ; then
 		npm_actually_install_depend
 	else
 		unset old_version
-		if [ -f "${NODE_PATH}/${pkg}/node_modules/${pkg_depend}/${pkg_depend}.version" ] ; then
-			old_version=$(cat "${NODE_PATH}/${pkg}/node_modules/${pkg_depend}/${pkg_depend}.version" || true)
+		if [ -f "${pkg_depend_path}/${pkg_depend}.version" ] ; then
+			old_version=$(cat "${pkg_depend_path}/${pkg_depend}.version" || true)
 		fi
 		if [ ! "x${old_version}" = "x${ver}" ] ; then
-			rm -rf "${NODE_PATH}/${pkg}/node_modules/${pkg_depend}/" || true
+			rm -rf "${pkg_depend_path}/" || true
 			npm_actually_install_depend
 		else
 			unset old_version
-			if [ -f "${NODE_PATH}/${pkg}/node_modules/${pkg_depend}/${pkg_depend}.node_version" ] ; then
-				old_version=$(cat "${NODE_PATH}/${pkg}/node_modules/${pkg_depend}/${pkg_depend}.node_version" || true)
+			if [ -f "${pkg_depend_path}/${pkg_depend}.node_version" ] ; then
+				old_version=$(cat "${pkg_depend_path}/${pkg_depend}.node_version" || true)
 			fi
 			if [ ! "x${old_version}" = "x${node_version}" ] ; then
-				rm -rf "${NODE_PATH}/${pkg}/node_modules/${pkg_depend}/" || true
+				rm -rf "${pkg_depend_path}/" || true
 				npm_actually_install_depend
 			fi
 		fi
@@ -153,6 +155,7 @@ npm_install () {
 		fi
 	fi
 
+	systemctl enable ${service}.service || true
 	systemctl start ${service} || true
 	echo "${package}:Installed"
 }
