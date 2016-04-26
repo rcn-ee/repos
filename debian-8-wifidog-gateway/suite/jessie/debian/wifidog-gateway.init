@@ -1,0 +1,58 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:	    wifidog-gateway
+# Required-Start:    $local_fs $remote_fs $network $syslog $named
+# Required-Stop:     $local_fs $remote_fs $network $syslog $named
+# Default-Start:     2 3 4 5
+# Default-Stop:	0 1 6
+# X-Interactive:     true
+# Short-Description: Start/stop wifidog gateway daemon
+### END INIT INFO
+
+DAEMON_BIN=/usr/bin/wifidog
+WDCTL_BIN=/usr/bin/wdctl
+DAEMON_DEFS=/etc/default/wifidog-gateway
+DAEMON_CONF=/etc/wifidog.conf
+LOG_FILE=/var/log/wifidog
+LOG_LEVEL=6
+OPTIONS=""
+NAME=wifidog-gateway
+DESC="Wifidog Gateway"
+
+[ -x "$DAEMON_BIN" ] || exit 0
+[ -s "$DAEMON_DEFS" ] && . $DAEMON_DEFS
+[ ! -r "$DAEMON_CONF" ] && echo "Configuration file $DAEMON_CONF not present or unreadable" && exit 0
+[ "$WIFIDOG_ENABLED" != "yes" ] && echo "$NAME disabled. see /etc/default/wifidog-gateway." && exit 0
+
+DAEMON_OPTS="-c $DAEMON_CONF -s -d $LOG_LEVEL"
+
+. /lib/lsb/init-functions
+
+case "$1" in
+	start)
+		log_daemon_msg "Starting $DESC" "$NAME"
+		start-stop-daemon --start --oknodo --quiet --exec "$DAEMON_BIN" -- $DAEMON_OPTS > $LOG_FILE 2>&1
+		log_end_msg "$?"
+		;;
+	stop)
+		log_daemon_msg "Stopping $DESC" "$NAME"
+		start-stop-daemon --stop --oknodo --quiet --exec "$DAEMON_BIN" > $LOG_FILE 2>&1
+		log_end_msg "$?"
+		;;
+	restart|reload|force-reload)
+		$0 stop
+		sleep 2
+		$0 start
+		;;
+	status)
+		$WDCTL_BIN status
+		exit $?
+		;;
+	*)
+		N=/etc/init.d/$NAME
+		echo "Usage: $N {start|stop|restart|force-reload|reload|status}" >&2
+		exit 1
+		;;
+esac
+
+exit 0
