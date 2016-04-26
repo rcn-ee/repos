@@ -55,14 +55,13 @@ npm_check_n_install () {
 
 npm_actually_install_depend () {
 	if [ -d ${NODE_PATH}/${pkg}/ ] ; then
+		npm_options="--unsafe-perm --progress=false --loglevel=error --prefix /usr/local/lib/node_modules/${pkg}/"
 		echo "${package}:Installing: ${pkg_depend}-${ver} (for ${npm_project})"
 		cd ${NODE_PATH}/${pkg}/
-		export NODE_PATH=/usr/local/lib/node_modules/${pkg}/node_modules/
 		TERM=dumb ${node_bin} ${npm_bin} install ${npm_options} ${pkg_depend}@${ver}
 		echo "${ver}" > "${NODE_PATH}/${pkg}/node_modules/${pkg_depend}/${pkg_depend}.version"
 		echo "${node_version}" > "${NODE_PATH}/${pkg}/node_modules/${pkg_depend}/${pkg_depend}.node_version"
 		cd -
-		export NODE_PATH=/usr/local/lib/node_modules
 	fi
 }
 
