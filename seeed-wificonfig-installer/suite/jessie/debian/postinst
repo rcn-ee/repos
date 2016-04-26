@@ -129,7 +129,12 @@ npm_install () {
 
 	npm_project="wificonfig"
 	pkg="wificonfig" ; ver="0.0.1" ; npm_check_n_install
+	pkg_depend="async" ; ver="2.0.0-rc.3" ; npm_check_n_install_depend
 	pkg_depend="connman-api" ; ver="0.3.4" ; npm_check_n_install_depend
+
+	if [ ! -d ${NODE_PATH}/${pkg}/log/ ] ; then
+		mkdir -p ${NODE_PATH}/${pkg}/log/ || true
+	fi
 
 	#systemctl enable ${service}.socket || true
 	#systemctl start ${service} || true
