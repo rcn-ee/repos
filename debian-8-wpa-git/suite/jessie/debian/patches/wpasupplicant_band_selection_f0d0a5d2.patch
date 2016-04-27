@@ -1,0 +1,158 @@
+commit f0d0a5d23bd406a60358add9fa101b49dc9f9039
+Author: Mukesh Agrawal <quiche@chromium.org>
+Date:   Tue Apr 8 17:54:49 2014 -0700
+
+    Improve BSS selection with default noise floor values
+    
+    When noise floor measurements are not available, compute SNR
+    using default values for the noise floor. This helps steer us
+    towards 5 GHz BSSes in high signal strength environments.
+    
+    In more detail...
+    
+    Existing code prefers a 5 GHz BSS when the 5 GHz BSS's signal
+    strength is "close" to that of the 2.4 GHz BSS, or when both SNRs
+    are large. However, the mwifiex driver does not provide noise
+    floor measurements, so we can't compute SNRs.
+    
+    Because mwifiex doesn't provide NF measurements, the "large SNR"
+    code wasn't effective. By using default values for the noise floor,
+    we can again compute SNRs, and decide that the SNR is high enough
+    that we shouldn't worry about the exact difference in SNR.
+    
+    The default noise floor values (one for 2.4 GHz, and one for 5 GHz)
+    were chosen by measurement in a noisy environment, so they should be
+    conservative.
+    
+    Note that while this patch is motivated by mwifiex, it affects
+    ath9k as well. Although ath9k provides noise floor measurements
+    in general, it will sometimes fail to provide a measurement for
+    one or more specific channels.
+    
+    As a result of this patch, we'll always compare BSSes based on SNR
+    (either measured or estimated), rather than sometimes comparing
+    based on signal strength. ("Always" assumes that the
+    WPA_SCAN_LEVEL_DBM flag is set. It is for mwifiex and ath9k.)
+    
+    While there:
+    - fix a whitespace issue (spaces -> tab)
+    - clean up existing comments
+    - update dump_scan_res to indicate whether the noise floor is
+      measured, or default
+    
+    Signed-hostap: mukesh agrawal <quiche@chromium.org>
+
+Index: wpa-2.3/wpa_supplicant/scan.c
+===================================================================
+--- wpa-2.3.orig/wpa_supplicant/scan.c
++++ wpa-2.3/wpa_supplicant/scan.c
+@@ -1543,11 +1543,12 @@ struct wpabuf * wpa_scan_get_vendor_ie_m
+  */
+ #define GREAT_SNR 30
+ 
++#define IS_5GHZ(n) (n > 4000)
++
+ /* Compare function for sorting scan results. Return >0 if @b is considered
+  * better. */
+ static int wpa_scan_result_compar(const void *a, const void *b)
+ {
+-#define IS_5GHZ(n) (n > 4000)
+ #define MIN(a,b) a < b ? a : b
+ 	struct wpa_scan_res **_wa = (void *) a;
+ 	struct wpa_scan_res **_wb = (void *) b;
+@@ -1575,18 +1576,18 @@ static int wpa_scan_result_compar(const
+ 	    (wb->caps & IEEE80211_CAP_PRIVACY) == 0)
+ 		return -1;
+ 
+-	if ((wa->flags & wb->flags & WPA_SCAN_LEVEL_DBM) &&
+-	    !((wa->flags | wb->flags) & WPA_SCAN_NOISE_INVALID)) {
++	if (wa->flags & wb->flags & WPA_SCAN_LEVEL_DBM) {
+ 		snr_a = MIN(wa->level - wa->noise, GREAT_SNR);
+ 		snr_b = MIN(wb->level - wb->noise, GREAT_SNR);
+ 	} else {
+-		/* Not suitable information to calculate SNR, so use level */
++		/* Level is not in dBm, so we can't calculate
++		 * SNR. Just use raw level (units unknown). */
+ 		snr_a = wa->level;
+ 		snr_b = wb->level;
+ 	}
+ 
+-	/* best/max rate preferred if SNR close enough */
+-        if ((snr_a && snr_b && abs(snr_b - snr_a) < 5) ||
++	/* if SNR is close, decide by max rate or frequency band */
++	if ((snr_a && snr_b && abs(snr_b - snr_a) < 5) ||
+ 	    (wa->qual && wb->qual && abs(wb->qual - wa->qual) < 10)) {
+ 		maxrate_a = wpa_scan_get_max_rate(wa);
+ 		maxrate_b = wpa_scan_get_max_rate(wb);
+@@ -1596,8 +1597,6 @@ static int wpa_scan_result_compar(const
+ 			return IS_5GHZ(wa->freq) ? -1 : 1;
+ 	}
+ 
+-	/* use freq for channel preference */
+-
+ 	/* all things being equal, use SNR; if SNRs are
+ 	 * identical, use quality values since some drivers may only report
+ 	 * that value and leave the signal level zero */
+@@ -1605,7 +1604,6 @@ static int wpa_scan_result_compar(const
+ 		return wb->qual - wa->qual;
+ 	return snr_b - snr_a;
+ #undef MIN
+-#undef IS_5GHZ
+ }
+ 
+ 
+@@ -1670,15 +1668,15 @@ static void dump_scan_res(struct wpa_sca
+ 	for (i = 0; i < scan_res->num; i++) {
+ 		struct wpa_scan_res *r = scan_res->res[i];
+ 		u8 *pos;
+-		if ((r->flags & (WPA_SCAN_LEVEL_DBM | WPA_SCAN_NOISE_INVALID))
+-		    == WPA_SCAN_LEVEL_DBM) {
++		if (r->flags & WPA_SCAN_LEVEL_DBM) {
+ 			int snr = r->level - r->noise;
++			int noise_valid = !(r->flags & WPA_SCAN_NOISE_INVALID);
++
+ 			wpa_printf(MSG_EXCESSIVE, MACSTR " freq=%d qual=%d "
+-				   "noise=%d level=%d snr=%d%s flags=0x%x "
+-				   "age=%u",
++				   "noise=%d%s level=%d snr=%d%s flags=0x%x age=%u",
+ 				   MAC2STR(r->bssid), r->freq, r->qual,
+-				   r->noise, r->level, snr,
+-				   snr >= GREAT_SNR ? "*" : "", r->flags,
++				   r->noise, noise_valid ? "" : "~", r->level,
++				   snr, snr >= GREAT_SNR ? "*" : "", r->flags,
+ 				   r->age);
+ 		} else {
+ 			wpa_printf(MSG_EXCESSIVE, MACSTR " freq=%d qual=%d "
+@@ -1751,6 +1749,14 @@ static void filter_scan_res(struct wpa_s
+ }
+ 
+ 
++/*
++ * Noise floor values to use when we have signal strength
++ * measurements, but no noise floor measurments. These values were
++ * measured in an office environment with many APs.
++ */
++#define DEFAULT_NOISE_FLOOR_2GHZ (-89)
++#define DEFAULT_NOISE_FLOOR_5GHZ (-92)
++
+ /**
+  * wpa_supplicant_get_scan_results - Get scan results
+  * @wpa_s: Pointer to wpa_supplicant data
+@@ -1784,6 +1790,17 @@ wpa_supplicant_get_scan_results(struct w
+ 	}
+ 	filter_scan_res(wpa_s, scan_res);
+ 
++	for (i = 0; i < scan_res->num; i++) {
++		struct wpa_scan_res *scan_res_item = scan_res->res[i];
++
++		if (scan_res_item->flags & WPA_SCAN_NOISE_INVALID) {
++			scan_res_item->noise =
++				IS_5GHZ(scan_res_item->freq) ?
++				DEFAULT_NOISE_FLOOR_5GHZ :
++				DEFAULT_NOISE_FLOOR_2GHZ;
++		}
++	}
++
+ #ifdef CONFIG_WPS
+ 	if (wpas_wps_searching(wpa_s)) {
+ 		wpa_dbg(wpa_s, MSG_DEBUG, "WPS: Order scan results with WPS "
