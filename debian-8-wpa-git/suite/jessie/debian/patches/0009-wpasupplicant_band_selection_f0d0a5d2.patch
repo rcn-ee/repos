@@ -1,4 +1,4 @@
-From fbf8c00db94c1e940dead1f71d7b9efaa444b3c8 Mon Sep 17 00:00:00 2001
+From 98431c69ebbe87f3dc03128d2ef6ba50112cacfc Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 26 Apr 2016 20:52:46 -0500
 Subject: [PATCH 09/12] wpasupplicant_band_selection_f0d0a5d2
@@ -8,10 +8,10 @@ Subject: [PATCH 09/12] wpasupplicant_band_selection_f0d0a5d2
  1 file changed, 32 insertions(+), 15 deletions(-)
 
 diff --git a/wpa_supplicant/scan.c b/wpa_supplicant/scan.c
-index cb2c8d6..a9c31a8 100644
+index 08af9fb..05dd1d6 100644
 --- a/wpa_supplicant/scan.c
 +++ b/wpa_supplicant/scan.c
-@@ -1568,11 +1568,12 @@ struct wpabuf * wpa_scan_get_vendor_ie_multi(const struct wpa_scan_res *res,
+@@ -1591,11 +1591,12 @@ struct wpabuf * wpa_scan_get_vendor_ie_multi(const struct wpa_scan_res *res,
   */
  #define GREAT_SNR 30
  
@@ -25,7 +25,7 @@ index cb2c8d6..a9c31a8 100644
  #define MIN(a,b) a < b ? a : b
  	struct wpa_scan_res **_wa = (void *) a;
  	struct wpa_scan_res **_wb = (void *) b;
-@@ -1600,18 +1601,18 @@ static int wpa_scan_result_compar(const void *a, const void *b)
+@@ -1623,18 +1624,18 @@ static int wpa_scan_result_compar(const void *a, const void *b)
  	    (wb->caps & IEEE80211_CAP_PRIVACY) == 0)
  		return -1;
  
@@ -49,7 +49,7 @@ index cb2c8d6..a9c31a8 100644
  	    (wa->qual && wb->qual && abs(wb->qual - wa->qual) < 10)) {
  		maxrate_a = wpa_scan_get_max_rate(wa);
  		maxrate_b = wpa_scan_get_max_rate(wb);
-@@ -1621,8 +1622,6 @@ static int wpa_scan_result_compar(const void *a, const void *b)
+@@ -1644,8 +1645,6 @@ static int wpa_scan_result_compar(const void *a, const void *b)
  			return IS_5GHZ(wa->freq) ? -1 : 1;
  	}
  
@@ -58,7 +58,7 @@ index cb2c8d6..a9c31a8 100644
  	/* all things being equal, use SNR; if SNRs are
  	 * identical, use quality values since some drivers may only report
  	 * that value and leave the signal level zero */
-@@ -1630,7 +1629,6 @@ static int wpa_scan_result_compar(const void *a, const void *b)
+@@ -1653,7 +1652,6 @@ static int wpa_scan_result_compar(const void *a, const void *b)
  		return wb->qual - wa->qual;
  	return snr_b - snr_a;
  #undef MIN
@@ -66,7 +66,7 @@ index cb2c8d6..a9c31a8 100644
  }
  
  
-@@ -1695,15 +1693,15 @@ static void dump_scan_res(struct wpa_scan_results *scan_res)
+@@ -1718,15 +1716,15 @@ static void dump_scan_res(struct wpa_scan_results *scan_res)
  	for (i = 0; i < scan_res->num; i++) {
  		struct wpa_scan_res *r = scan_res->res[i];
  		u8 *pos;
@@ -88,7 +88,7 @@ index cb2c8d6..a9c31a8 100644
  				   r->age);
  		} else {
  			wpa_printf(MSG_EXCESSIVE, MACSTR " freq=%d qual=%d "
-@@ -1776,6 +1774,14 @@ static void filter_scan_res(struct wpa_supplicant *wpa_s,
+@@ -1799,6 +1797,14 @@ static void filter_scan_res(struct wpa_supplicant *wpa_s,
  }
  
  
@@ -103,7 +103,7 @@ index cb2c8d6..a9c31a8 100644
  /**
   * wpa_supplicant_get_scan_results - Get scan results
   * @wpa_s: Pointer to wpa_supplicant data
-@@ -1809,6 +1815,17 @@ wpa_supplicant_get_scan_results(struct wpa_supplicant *wpa_s,
+@@ -1832,6 +1838,17 @@ wpa_supplicant_get_scan_results(struct wpa_supplicant *wpa_s,
  	}
  	filter_scan_res(wpa_s, scan_res);
  
