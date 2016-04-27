@@ -27,10 +27,8 @@ ${git} "${wdir}/0005-wpa_gui_knotify_support.patch"
 ${git} "${wdir}/0006-wpa_gui_desktop_add-keywords-entry.patch"
 ${git} "${wdir}/0007-wpasupplicant_fix-systemd-unit-dependencies.patch"
 ${git} "${wdir}/0008-wpasupplicant_P2P-Validate-SSID-element-length-befor.patch"
-${git} "${wdir}/0009-wpasupplicant_band_selection_a1b790eb.patch"
-${git} "${wdir}/0010-wpasupplicant_band_selection_8b2b718d.patch"
-${git} "${wdir}/0011-wpasupplicant_band_selection_aa517ae2.patch"
-number=11 ; git format-patch -${number} -o ${wdir}/
+${git} "${wdir}/0009-wpasupplicant_band_selection_aa517ae2.patch"
+number=9 ; git format-patch -${number} -o ${wdir}/
 
 ${git} "${wdir}/2015-2/0001-WPS-Fix-HTTP-chunked-transfer-encoding-parser.patch"
 number=1 ; git format-patch -${number} -o ${wdir}/2015-2/
