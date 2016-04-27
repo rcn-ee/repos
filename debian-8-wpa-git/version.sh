@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 mirror="http://http.debian.net/debian"
-#https://w1.fi/cgit/hostap/log/?ofs=2300
+#https://w1.fi/cgit/hostap/log/?ofs=2050
 
 package_name="wpa"
 debian_pkg_name="${package_name}"

@@ -1,8 +1,12 @@
-WNM: Ignore Key Data in WNM Sleep Mode Response frame if no PMF in use
+From 0aa802ae86d0d827f51cac47fd562dce1196ad64 Mon Sep 17 00:00:00 2001
+From: Jouni Malinen <j@w1.fi>
+Date: Sun, 25 Oct 2015 15:45:50 +0200
+Subject: [PATCH] WNM: Ignore Key Data in WNM Sleep Mode Response frame if no
+ PMF in use
 
 WNM Sleep Mode Response frame is used to update GTK/IGTK only if PMF is
 enabled. Verify that PMF is in use before using this field on station
-side to avoid accepting unauthenticated key updates.
+side to avoid accepting unauthenticated key updates. (CVE-2015-5310)
 
 Signed-off-by: Jouni Malinen <j@w1.fi>
 ---
@@ -26,6 +30,6 @@ index 954de67..7d79499 100644
  	while (ptr + 1 < end) {
  		if (ptr + 2 + ptr[1] > end) {
  			wpa_printf(MSG_DEBUG, "WNM: Invalid Key Data element "
-
 -- 
-Jouni Malinen                                            PGP id EFC895FA
+2.8.0.rc3
+

@@ -1,22 +1,25 @@
-[PATCH] EAP-pwd server: Fix last fragment length validation
+From ebc3771321f1c56ba9ee195d4c09eb5b946b947b Mon Sep 17 00:00:00 2001
+From: Jouni Malinen <j@w1.fi>
+Date: Sun, 1 Nov 2015 18:24:16 +0200
+Subject: [PATCH 1/2] EAP-pwd server: Fix last fragment length validation
 
 All but the last fragment had their length checked against the remaining
 room in the reassembly buffer. This allowed a suitably constructed last
 fragment frame to try to add extra data that would go beyond the buffer.
 The length validation code in wpabuf_put_data() prevents an actual
 buffer write overflow from occurring, but this results in process
-termination.
+termination. (CVE-2015-5314)
 
 Signed-off-by: Jouni Malinen <j@w1.fi>
 ---
  src/eap_server/eap_server_pwd.c | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
-Index: wpa-2.4/src/eap_server/eap_server_pwd.c
-===================================================================
---- wpa-2.4.orig/src/eap_server/eap_server_pwd.c	2015-11-09 06:52:05.766539755 -0600
-+++ wpa-2.4/src/eap_server/eap_server_pwd.c	2015-11-09 06:52:05.766539755 -0600
-@@ -947,7 +947,7 @@
+diff --git a/src/eap_server/eap_server_pwd.c b/src/eap_server/eap_server_pwd.c
+index f8d536a..f57649b 100644
+--- a/src/eap_server/eap_server_pwd.c
++++ b/src/eap_server/eap_server_pwd.c
+@@ -947,7 +947,7 @@ static void eap_pwd_process(struct eap_sm *sm, void *priv,
  	/*
  	 * the first and all intermediate fragments have the M bit set
  	 */
@@ -25,7 +28,7 @@ Index: wpa-2.4/src/eap_server/eap_server_pwd.c
  		if ((data->in_frag_pos + len) > wpabuf_size(data->inbuf)) {
  			wpa_printf(MSG_DEBUG, "EAP-pwd: Buffer overflow "
  				   "attack detected! (%d+%d > %d)",
-@@ -958,6 +958,8 @@
+@@ -958,6 +958,8 @@ static void eap_pwd_process(struct eap_sm *sm, void *priv,
  		}
  		wpabuf_put_data(data->inbuf, pos, len);
  		data->in_frag_pos += len;
@@ -34,7 +37,7 @@ Index: wpa-2.4/src/eap_server/eap_server_pwd.c
  		wpa_printf(MSG_DEBUG, "EAP-pwd: Got a %d byte fragment",
  			   (int) len);
  		return;
-@@ -967,8 +969,6 @@
+@@ -967,8 +969,6 @@ static void eap_pwd_process(struct eap_sm *sm, void *priv,
  	 * buffering fragments so that's how we know it's the last)
  	 */
  	if (data->in_frag_pos) {
@@ -43,3 +46,6 @@ Index: wpa-2.4/src/eap_server/eap_server_pwd.c
  		pos = wpabuf_head_u8(data->inbuf);
  		len = data->in_frag_pos;
  		wpa_printf(MSG_DEBUG, "EAP-pwd: Last fragment, %d bytes",
+-- 
+2.8.0.rc3
+

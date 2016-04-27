@@ -1,9 +1,14 @@
-Description: Debian does not use pam_console but uses group membership
- to control access to D-Bus. Activating both options in the conf file
- makes it work on Debian and Ubuntu.
-Author: Michael Biebl <biebl@debian.org>
-Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=15;bug=412179
+From 6c4b58703d72ed2ae8390e251a5bf621abfbe989 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Tue, 26 Apr 2016 20:48:25 -0500
+Subject: [PATCH 2/9] dbus_group_policy
+
 ---
+ wpa_supplicant/dbus/dbus-wpa_supplicant.conf | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/wpa_supplicant/dbus/dbus-wpa_supplicant.conf b/wpa_supplicant/dbus/dbus-wpa_supplicant.conf
+index c091234..e1fb010 100644
 --- a/wpa_supplicant/dbus/dbus-wpa_supplicant.conf
 +++ b/wpa_supplicant/dbus/dbus-wpa_supplicant.conf
 @@ -14,6 +14,14 @@
@@ -21,3 +26,6 @@ Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=15;bug=412179
          <policy context="default">
                  <deny own="fi.epitest.hostap.WPASupplicant"/>
                  <deny send_destination="fi.epitest.hostap.WPASupplicant"/>
+-- 
+2.8.0.rc3
+
