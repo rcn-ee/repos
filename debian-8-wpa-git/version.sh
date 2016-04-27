@@ -1,16 +1,16 @@
 #!/bin/bash -e
 
 mirror="http://http.debian.net/debian"
-#https://w1.fi/cgit/hostap/log/?ofs=3000
+#https://w1.fi/cgit/hostap/log/?ofs=2900
 
 package_name="wpa"
 debian_pkg_name="${package_name}"
-package_version="2.4~dev-git20141204"
+package_version="2.4~dev-git20141209"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
 git_repo="https://github.com/rcn-ee/hostap"
-git_sha="5085ffb8f8e3863ad0f36d21e2946fc0b128c413"
+git_sha="42a697256e030debf4c76164f1541dab929d9e35"
 reprepro_dir="w/${package_name}"
 dl_path=""
 

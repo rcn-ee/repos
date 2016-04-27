@@ -1,4 +1,4 @@
-From 9e59499f9d014c6152eb31a5d9a30e1205737294 Mon Sep 17 00:00:00 2001
+From 23b5bbe5d23c970606b90fe551c0923e61fe5db9 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 26 Apr 2016 20:52:46 -0500
 Subject: [PATCH 10/12] wpasupplicant_band_selection_a1b790eb
@@ -11,7 +11,7 @@ Subject: [PATCH 10/12] wpasupplicant_band_selection_a1b790eb
  4 files changed, 223 insertions(+), 24 deletions(-)
 
 diff --git a/src/drivers/driver.h b/src/drivers/driver.h
-index 2c6c4ec..12bd936 100644
+index 54050db..7fd29ae 100644
 --- a/src/drivers/driver.h
 +++ b/src/drivers/driver.h
 @@ -206,6 +206,9 @@ struct hostapd_hw_modes {
@@ -34,7 +34,7 @@ index 2c6c4ec..12bd936 100644
  	size_t beacon_ie_len;
  	/*
 diff --git a/wpa_supplicant/scan.c b/wpa_supplicant/scan.c
-index f15f70d..c860f1f 100644
+index 99347a2..daf3c33 100644
 --- a/wpa_supplicant/scan.c
 +++ b/wpa_supplicant/scan.c
 @@ -1560,8 +1560,8 @@ static int wpa_scan_result_compar(const void *a, const void *b)
@@ -316,7 +316,7 @@ index f15f70d..c860f1f 100644
  
  #ifdef CONFIG_WPS
 diff --git a/wpa_supplicant/wpa_supplicant.c b/wpa_supplicant/wpa_supplicant.c
-index 903bd0d..eac6c28 100644
+index 68fcbef..9e16ffa 100644
 --- a/wpa_supplicant/wpa_supplicant.c
 +++ b/wpa_supplicant/wpa_supplicant.c
 @@ -3802,6 +3802,23 @@ static int wpa_supplicant_init_iface(struct wpa_supplicant *wpa_s,
