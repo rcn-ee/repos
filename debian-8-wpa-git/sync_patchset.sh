@@ -10,7 +10,7 @@ if [ ! -f ./git/.git/config ] ; then
 else
 	cd ./git/
 	git checkout master -f
-	git branch -D tmp
+	git branch -D tmp || true
 fi
 
 git pull
@@ -25,8 +25,6 @@ ${git} "${wdir}/0003-wpa_gui_menu_exec_path.patch"
 ${git} "${wdir}/0004-dbus_service_syslog.patch"
 ${git} "${wdir}/0005-wpa_gui_knotify_support.patch"
 ${git} "${wdir}/0006-wpa_gui_desktop_add-keywords-entry.patch"
-${git} "${wdir}/0007-wpa_supplicant-MACsec-fix-build-failure-for-IEEE8021.patch"
-${git} "${wdir}/0008-include-ieee802_11_common.c-in-wpa_supplicant-build.patch"
 ${git} "${wdir}/0009-hostapd_fix-hostapd-operation-without-hw_mode-driver.patch"
 ${git} "${wdir}/0010-wpasupplicant_fix-systemd-unit-dependencies.patch"
 ${git} "${wdir}/0011-wpasupplicant_P2P-Validate-SSID-element-length-befor.patch"
@@ -34,7 +32,7 @@ ${git} "${wdir}/0012-wpasupplicant_band_selection_f0d0a5d2.patch"
 ${git} "${wdir}/0013-wpasupplicant_band_selection_a1b790eb.patch"
 ${git} "${wdir}/0014-wpasupplicant_band_selection_8b2b718d.patch"
 ${git} "${wdir}/0015-wpasupplicant_band_selection_aa517ae2.patch"
-number=15 ; git format-patch -${number} -o ${wdir}/
+number=13 ; git format-patch -${number} -o ${wdir}/
 
 ${git} "${wdir}/2015-2/0001-WPS-Fix-HTTP-chunked-transfer-encoding-parser.patch"
 number=1 ; git format-patch -${number} -o ${wdir}/2015-2/

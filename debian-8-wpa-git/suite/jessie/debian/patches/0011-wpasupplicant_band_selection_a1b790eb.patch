@@ -1,7 +1,7 @@
-From ef26f7516a644041b06ae056c28af5be0c1174fa Mon Sep 17 00:00:00 2001
+From e96125e624e7144595ff24a8f2985581b9536307 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 26 Apr 2016 20:52:46 -0500
-Subject: [PATCH 13/15] wpasupplicant_band_selection_a1b790eb
+Subject: [PATCH 11/13] wpasupplicant_band_selection_a1b790eb
 
 ---
  src/drivers/driver.h              |   5 +
@@ -11,7 +11,7 @@ Subject: [PATCH 13/15] wpasupplicant_band_selection_a1b790eb
  4 files changed, 223 insertions(+), 24 deletions(-)
 
 diff --git a/src/drivers/driver.h b/src/drivers/driver.h
-index 6af7294..89907ae 100644
+index 36f6f69..03e8b06 100644
 --- a/src/drivers/driver.h
 +++ b/src/drivers/driver.h
 @@ -202,6 +202,9 @@ struct hostapd_hw_modes {
@@ -316,7 +316,7 @@ index 95d9504..78b4e7c 100644
  
  #ifdef CONFIG_WPS
 diff --git a/wpa_supplicant/wpa_supplicant.c b/wpa_supplicant/wpa_supplicant.c
-index cd3a2ce..9e15f1c 100644
+index a061f8e..18b78f8 100644
 --- a/wpa_supplicant/wpa_supplicant.c
 +++ b/wpa_supplicant/wpa_supplicant.c
 @@ -3761,6 +3761,23 @@ static int wpa_supplicant_init_iface(struct wpa_supplicant *wpa_s,
@@ -344,7 +344,7 @@ index cd3a2ce..9e15f1c 100644
  	capa_res = wpa_drv_get_capa(wpa_s, &capa);
  	if (capa_res == 0) {
 diff --git a/wpa_supplicant/wpa_supplicant_i.h b/wpa_supplicant/wpa_supplicant_i.h
-index 6974ba2..cdd9905 100644
+index ba9df62..4d6b26c 100644
 --- a/wpa_supplicant/wpa_supplicant_i.h
 +++ b/wpa_supplicant/wpa_supplicant_i.h
 @@ -826,6 +826,12 @@ struct wpa_supplicant {
