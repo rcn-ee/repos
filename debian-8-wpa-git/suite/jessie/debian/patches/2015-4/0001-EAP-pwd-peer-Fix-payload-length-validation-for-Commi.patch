@@ -1,4 +1,4 @@
-From dd2f043c9c43d156494e33d7ce22db96e6ef42c7 Mon Sep 17 00:00:00 2001
+From 000e8e55448e67bd26cdd6adfd329b79d30316e8 Mon Sep 17 00:00:00 2001
 From: Jouni Malinen <j@w1.fi>
 Date: Fri, 1 May 2015 16:37:45 +0300
 Subject: [PATCH 1/5] EAP-pwd peer: Fix payload length validation for Commit
@@ -22,10 +22,10 @@ Signed-off-by: Jouni Malinen <j@w1.fi>
  1 file changed, 29 insertions(+)
 
 diff --git a/src/eap_peer/eap_pwd.c b/src/eap_peer/eap_pwd.c
-index f2b0926..a629437 100644
+index 1c915ed..669d2d2 100644
 --- a/src/eap_peer/eap_pwd.c
 +++ b/src/eap_peer/eap_pwd.c
-@@ -355,6 +355,23 @@ eap_pwd_perform_commit_exchange(struct eap_sm *sm, struct eap_pwd_data *data,
+@@ -301,6 +301,23 @@ eap_pwd_perform_commit_exchange(struct eap_sm *sm, struct eap_pwd_data *data,
  	BIGNUM *mask = NULL, *x = NULL, *y = NULL, *cofactor = NULL;
  	u16 offset;
  	u8 *ptr, *scalar = NULL, *element = NULL;
@@ -49,7 +49,7 @@ index f2b0926..a629437 100644
  
  	if (((data->private_value = BN_new()) == NULL) ||
  	    ((data->my_element = EC_POINT_new(data->grp->group)) == NULL) ||
-@@ -554,6 +571,18 @@ eap_pwd_perform_confirm_exchange(struct eap_sm *sm, struct eap_pwd_data *data,
+@@ -500,6 +517,18 @@ eap_pwd_perform_confirm_exchange(struct eap_sm *sm, struct eap_pwd_data *data,
  	u8 conf[SHA256_MAC_LEN], *cruft = NULL, *ptr;
  	int offset;
  
@@ -69,5 +69,5 @@ index f2b0926..a629437 100644
  	 * first build up the ciphersuite which is group | random_function |
  	 *	prf
 -- 
-1.9.1
+2.8.0.rc3
 

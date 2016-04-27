@@ -1,7 +1,7 @@
-From 8057821706784608b828e769ccefbced95591e50 Mon Sep 17 00:00:00 2001
+From 069e75c0f900fc43836dc1338e8703ce0c150448 Mon Sep 17 00:00:00 2001
 From: Jouni Malinen <j@w1.fi>
 Date: Sun, 1 Nov 2015 18:18:17 +0200
-Subject: [PATCH] EAP-pwd peer: Fix last fragment length validation
+Subject: [PATCH 2/2] EAP-pwd peer: Fix last fragment length validation
 
 All but the last fragment had their length checked against the remaining
 room in the reassembly buffer. This allowed a suitably constructed last
@@ -16,10 +16,10 @@ Signed-off-by: Jouni Malinen <j@w1.fi>
  1 file changed, 3 insertions(+), 4 deletions(-)
 
 diff --git a/src/eap_peer/eap_pwd.c b/src/eap_peer/eap_pwd.c
-index 1f78544..75ceef1 100644
+index ac0db99..fbe8ed5 100644
 --- a/src/eap_peer/eap_pwd.c
 +++ b/src/eap_peer/eap_pwd.c
-@@ -903,7 +903,7 @@ eap_pwd_process(struct eap_sm *sm, void *priv, struct eap_method_ret *ret,
+@@ -841,7 +841,7 @@ eap_pwd_process(struct eap_sm *sm, void *priv, struct eap_method_ret *ret,
  	/*
  	 * buffer and ACK the fragment
  	 */
@@ -28,7 +28,7 @@ index 1f78544..75ceef1 100644
  		data->in_frag_pos += len;
  		if (data->in_frag_pos > wpabuf_size(data->inbuf)) {
  			wpa_printf(MSG_INFO, "EAP-pwd: Buffer overflow attack "
-@@ -916,7 +916,8 @@ eap_pwd_process(struct eap_sm *sm, void *priv, struct eap_method_ret *ret,
+@@ -854,7 +854,8 @@ eap_pwd_process(struct eap_sm *sm, void *priv, struct eap_method_ret *ret,
  			return NULL;
  		}
  		wpabuf_put_data(data->inbuf, pos, len);
@@ -38,7 +38,7 @@ index 1f78544..75ceef1 100644
  		resp = eap_msg_alloc(EAP_VENDOR_IETF, EAP_TYPE_PWD,
  				     EAP_PWD_HDR_SIZE,
  				     EAP_CODE_RESPONSE, eap_get_id(reqData));
-@@ -930,10 +931,8 @@ eap_pwd_process(struct eap_sm *sm, void *priv, struct eap_method_ret *ret,
+@@ -868,10 +869,8 @@ eap_pwd_process(struct eap_sm *sm, void *priv, struct eap_method_ret *ret,
  	 * we're buffering and this is the last fragment
  	 */
  	if (data->in_frag_pos) {
@@ -50,5 +50,5 @@ index 1f78544..75ceef1 100644
  		len = data->in_frag_pos;
  	}
 -- 
-1.9.1
+2.8.0.rc3
 

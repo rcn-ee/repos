@@ -1,7 +1,14 @@
-Description: Use KDE's KNotify when running under KDE
-Author: Raphael Geissert <geissert@debian.org>
-Bug-Debian: http://bugs.debian.org/582793
+From 515f7083b1bbffc342a3d11069eba10c3e9b5330 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Tue, 26 Apr 2016 20:48:25 -0500
+Subject: [PATCH 05/15] wpa_gui_knotify_support
+
 ---
+ wpa_supplicant/wpa_gui-qt4/wpagui.cpp | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/wpa_supplicant/wpa_gui-qt4/wpagui.cpp b/wpa_supplicant/wpa_gui-qt4/wpagui.cpp
+index 6bba8d2..30657c9 100644
 --- a/wpa_supplicant/wpa_gui-qt4/wpagui.cpp
 +++ b/wpa_supplicant/wpa_gui-qt4/wpagui.cpp
 @@ -11,11 +11,14 @@
@@ -19,7 +26,7 @@ Bug-Debian: http://bugs.debian.org/582793
  
  #include "wpagui.h"
  #include "dirent.h"
-@@ -1329,10 +1332,21 @@ void WpaGui::createTrayIcon(bool trayOnl
+@@ -1329,10 +1332,21 @@ void WpaGui::createTrayIcon(bool trayOnly)
  void WpaGui::showTrayMessage(QSystemTrayIcon::MessageIcon type, int sec,
  			     const QString & msg)
  {
@@ -43,3 +50,6 @@ Bug-Debian: http://bugs.debian.org/582793
  		return;
  
  	tray_icon->showMessage(qAppName(), msg, type, sec * 1000);
+-- 
+2.8.0.rc3
+

@@ -1,22 +1,15 @@
-From 2d4e9c2eb811978a4097b7d249eca3c7e9c510e5 Mon Sep 17 00:00:00 2001
-From: Jouni Malinen <j@w1.fi>
-Date: Sun, 12 Oct 2014 17:03:25 +0300
-Subject: [PATCH] Include ieee802_11_common.c in wpa_supplicant build
- unconditionally
+From 14d33f45c8e780d962e59df0172e32113f55aac2 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Tue, 26 Apr 2016 20:50:40 -0500
+Subject: [PATCH 08/15] include-ieee802_11_common.c-in-wpa_supplicant-build
 
-This is needed for number of items and it was possible to make a build
-configuration that did not include ieee802_11_common.c while still
-trying to use functions from there. While it would be possible to add
-NEED_80211_COMMON=y to all the cases where this file is needed, the
-extra complexity from this is not really justifiable anymore, so include
-the file unconditionally.
-
-Signed-off-by: Jouni Malinen <j@w1.fi>
 ---
  wpa_supplicant/Android.mk | 7 -------
  wpa_supplicant/Makefile   | 7 -------
  2 files changed, 14 deletions(-)
 
+diff --git a/wpa_supplicant/Android.mk b/wpa_supplicant/Android.mk
+index 43c3eed..6238114 100644
 --- a/wpa_supplicant/Android.mk
 +++ b/wpa_supplicant/Android.mk
 @@ -193,7 +193,6 @@ endif
@@ -66,6 +59,8 @@ Signed-off-by: Jouni Malinen <j@w1.fi>
  
  ifdef NEED_EAP_COMMON
  OBJS += src/eap_common/eap_common.c
+diff --git a/wpa_supplicant/Makefile b/wpa_supplicant/Makefile
+index 9b79a70..1265028 100644
 --- a/wpa_supplicant/Makefile
 +++ b/wpa_supplicant/Makefile
 @@ -194,7 +194,6 @@ endif
@@ -115,3 +110,6 @@ Signed-off-by: Jouni Malinen <j@w1.fi>
  
  ifdef NEED_EAP_COMMON
  OBJS += ../src/eap_common/eap_common.o
+-- 
+2.8.0.rc3
+

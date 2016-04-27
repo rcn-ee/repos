@@ -1,0 +1,25 @@
+From 0fb5536693bc046051a6c2ba252f75d4e284960a Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Tue, 26 Apr 2016 20:52:46 -0500
+Subject: [PATCH 14/15] wpasupplicant_band_selection_8b2b718d
+
+---
+ wpa_supplicant/scan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/wpa_supplicant/scan.c b/wpa_supplicant/scan.c
+index 78b4e7c..979ba10 100644
+--- a/wpa_supplicant/scan.c
++++ b/wpa_supplicant/scan.c
+@@ -1810,7 +1810,7 @@ static unsigned int max_ht40_rate(int snr)
+ 		return 81000; /* HT40 MCS4 */
+ 	if (snr < 22)
+ 		return 108000; /* HT40 MCS5 */
+-	if (snr < 22)
++	if (snr < 24)
+ 		return 121500; /* HT40 MCS6 */
+ 	return 135000; /* HT40 MCS7 */
+ }
+-- 
+2.8.0.rc3
+
