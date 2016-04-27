@@ -16,7 +16,7 @@ dl_path=""
 debian_version="${package_version}-0"
 debian_patch=""
 debian_diff=""
-local_patch="rcnee1"
+local_patch="rcnee2"
 
 #sed -i -e 's:4.10.02.06:4.11.00.00:g' ./debian/cmem-mod-dkms.install
 #sed -i -e 's:4.10.02.06:4.11.00.00:g' ./debian/control
