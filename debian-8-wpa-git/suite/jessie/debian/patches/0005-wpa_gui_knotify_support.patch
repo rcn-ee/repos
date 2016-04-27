@@ -1,4 +1,4 @@
-From 7fea2a09470c2fa97675467141de6274f1b75b0b Mon Sep 17 00:00:00 2001
+From c21a5ea244ee9b964bb20832338c88ba79486404 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 26 Apr 2016 20:48:25 -0500
 Subject: [PATCH 05/12] wpa_gui_knotify_support
@@ -8,7 +8,7 @@ Subject: [PATCH 05/12] wpa_gui_knotify_support
  1 file changed, 16 insertions(+), 2 deletions(-)
 
 diff --git a/wpa_supplicant/wpa_gui-qt4/wpagui.cpp b/wpa_supplicant/wpa_gui-qt4/wpagui.cpp
-index 91874d4..5b00256 100644
+index 6276176..f05cddd 100644
 --- a/wpa_supplicant/wpa_gui-qt4/wpagui.cpp
 +++ b/wpa_supplicant/wpa_gui-qt4/wpagui.cpp
 @@ -11,11 +11,14 @@
@@ -26,15 +26,15 @@ index 91874d4..5b00256 100644
  
  #include "wpagui.h"
  #include "dirent.h"
-@@ -1330,10 +1333,21 @@ void WpaGui::createTrayIcon(bool trayOnly)
+@@ -1337,10 +1340,21 @@ void WpaGui::createTrayIcon(bool trayOnly)
  void WpaGui::showTrayMessage(QSystemTrayIcon::MessageIcon type, int sec,
  			     const QString & msg)
  {
 -	if (!QSystemTrayIcon::supportsMessages())
-+	if (isVisible() || !tray_icon || !tray_icon->isVisible())
++	if (isVisible() || !tray_icon || !tray_icon->isVisible() || quietMode)
  		return;
  
--	if (isVisible() || !tray_icon || !tray_icon->isVisible())
+-	if (isVisible() || !tray_icon || !tray_icon->isVisible() || quietMode)
 +	/* first try to use KDE's notifications system if running under
 +	 * a KDE session */
 +	if (getenv("KDE_FULL_SESSION") != NULL) {
