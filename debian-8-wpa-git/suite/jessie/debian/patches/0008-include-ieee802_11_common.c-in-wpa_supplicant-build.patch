@@ -1,4 +1,4 @@
-From b1247b457d5be97a8dc9936a9c2afb265843b951 Mon Sep 17 00:00:00 2001
+From 501f66ae97e28515fb606e4e2e87ba64f8c4b81b Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 26 Apr 2016 20:50:40 -0500
 Subject: [PATCH 08/15] include-ieee802_11_common.c-in-wpa_supplicant-build
@@ -9,10 +9,10 @@ Subject: [PATCH 08/15] include-ieee802_11_common.c-in-wpa_supplicant-build
  2 files changed, 14 deletions(-)
 
 diff --git a/wpa_supplicant/Android.mk b/wpa_supplicant/Android.mk
-index 43c3eed..6238114 100644
+index 4681b8b..3e028f9 100644
 --- a/wpa_supplicant/Android.mk
 +++ b/wpa_supplicant/Android.mk
-@@ -193,7 +193,6 @@ endif
+@@ -191,7 +191,6 @@ endif
  ifdef CONFIG_IEEE80211R
  L_CFLAGS += -DCONFIG_IEEE80211R
  OBJS += src/rsn_supp/wpa_ft.c
@@ -20,7 +20,7 @@ index 43c3eed..6238114 100644
  NEED_SHA256=y
  NEED_AES_OMAC1=y
  endif
-@@ -263,7 +262,6 @@ OBJS += src/utils/bitfield.c
+@@ -261,7 +260,6 @@ OBJS += src/utils/bitfield.c
  L_CFLAGS += -DCONFIG_P2P
  NEED_GAS=y
  NEED_OFFCHANNEL=y
@@ -28,7 +28,7 @@ index 43c3eed..6238114 100644
  CONFIG_WPS=y
  CONFIG_AP=y
  ifdef CONFIG_P2P_STRICT
-@@ -635,7 +633,6 @@ CONFIG_IEEE8021X_EAPOL=y
+@@ -633,7 +631,6 @@ CONFIG_IEEE8021X_EAPOL=y
  NEED_DH_GROUPS=y
  NEED_SHA256=y
  NEED_BASE64=y
@@ -36,7 +36,7 @@ index 43c3eed..6238114 100644
  NEED_AES_CBC=y
  NEED_MODEXP=y
  
-@@ -744,7 +741,6 @@ endif
+@@ -742,7 +739,6 @@ endif
  endif
  
  ifdef CONFIG_AP
@@ -44,7 +44,7 @@ index 43c3eed..6238114 100644
  NEED_EAP_COMMON=y
  NEED_RSN_AUTHENTICATOR=y
  L_CFLAGS += -DCONFIG_AP
-@@ -1368,14 +1364,11 @@ OBJS += src/utils/base64.c
+@@ -1366,14 +1362,11 @@ OBJS += src/utils/base64.c
  endif
  
  ifdef NEED_SME
@@ -60,7 +60,7 @@ index 43c3eed..6238114 100644
  ifdef NEED_EAP_COMMON
  OBJS += src/eap_common/eap_common.c
 diff --git a/wpa_supplicant/Makefile b/wpa_supplicant/Makefile
-index 9b79a70..1265028 100644
+index 1d7afc6..22d7c8f 100644
 --- a/wpa_supplicant/Makefile
 +++ b/wpa_supplicant/Makefile
 @@ -194,7 +194,6 @@ endif

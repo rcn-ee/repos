@@ -1,4 +1,4 @@
-From 47792b48ce898644a531117c9d8486e14a1b5528 Mon Sep 17 00:00:00 2001
+From ef26f7516a644041b06ae056c28af5be0c1174fa Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 26 Apr 2016 20:52:46 -0500
 Subject: [PATCH 13/15] wpasupplicant_band_selection_a1b790eb
@@ -316,10 +316,10 @@ index 95d9504..78b4e7c 100644
  
  #ifdef CONFIG_WPS
 diff --git a/wpa_supplicant/wpa_supplicant.c b/wpa_supplicant/wpa_supplicant.c
-index 268e242..4a3174e 100644
+index cd3a2ce..9e15f1c 100644
 --- a/wpa_supplicant/wpa_supplicant.c
 +++ b/wpa_supplicant/wpa_supplicant.c
-@@ -3760,6 +3760,23 @@ static int wpa_supplicant_init_iface(struct wpa_supplicant *wpa_s,
+@@ -3761,6 +3761,23 @@ static int wpa_supplicant_init_iface(struct wpa_supplicant *wpa_s,
  	wpa_s->hw.modes = wpa_drv_get_hw_feature_data(wpa_s,
  						      &wpa_s->hw.num_modes,
  						      &wpa_s->hw.flags);
@@ -341,8 +341,8 @@ index 268e242..4a3174e 100644
 +		}
 +	}
  
- 	if (wpa_drv_get_capa(wpa_s, &capa) == 0) {
- 		wpa_s->drv_capa_known = 1;
+ 	capa_res = wpa_drv_get_capa(wpa_s, &capa);
+ 	if (capa_res == 0) {
 diff --git a/wpa_supplicant/wpa_supplicant_i.h b/wpa_supplicant/wpa_supplicant_i.h
 index 6974ba2..cdd9905 100644
 --- a/wpa_supplicant/wpa_supplicant_i.h
