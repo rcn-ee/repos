@@ -1,4 +1,4 @@
-From 2f977ca86c3c534dcdd5f6448e360d3435e6d2c1 Mon Sep 17 00:00:00 2001
+From b2c07d57f03867e88ab3a3602bf549e1339a20f8 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 26 Apr 2016 20:52:46 -0500
 Subject: [PATCH 10/12] wpasupplicant_band_selection_a1b790eb
@@ -11,10 +11,10 @@ Subject: [PATCH 10/12] wpasupplicant_band_selection_a1b790eb
  4 files changed, 223 insertions(+), 24 deletions(-)
 
 diff --git a/src/drivers/driver.h b/src/drivers/driver.h
-index edad030..79d0e5e 100644
+index 05f6a05..4c49a7d 100644
 --- a/src/drivers/driver.h
 +++ b/src/drivers/driver.h
-@@ -205,6 +205,9 @@ struct hostapd_hw_modes {
+@@ -206,6 +206,9 @@ struct hostapd_hw_modes {
   * @tsf: Timestamp
   * @age: Age of the information in milliseconds (i.e., how many milliseconds
   * ago the last Beacon or Probe Response frame was received)
@@ -24,7 +24,7 @@ index edad030..79d0e5e 100644
   * @ie_len: length of the following IE field in octets
   * @beacon_ie_len: length of the following Beacon IE field in octets
   *
-@@ -228,6 +231,8 @@ struct wpa_scan_res {
+@@ -229,6 +232,8 @@ struct wpa_scan_res {
  	int level;
  	u64 tsf;
  	unsigned int age;
@@ -316,7 +316,7 @@ index f15f70d..c860f1f 100644
  
  #ifdef CONFIG_WPS
 diff --git a/wpa_supplicant/wpa_supplicant.c b/wpa_supplicant/wpa_supplicant.c
-index 8261c66..c0c10d8 100644
+index 96125a1..4f2daae 100644
 --- a/wpa_supplicant/wpa_supplicant.c
 +++ b/wpa_supplicant/wpa_supplicant.c
 @@ -3794,6 +3794,23 @@ static int wpa_supplicant_init_iface(struct wpa_supplicant *wpa_s,
@@ -344,10 +344,10 @@ index 8261c66..c0c10d8 100644
  	capa_res = wpa_drv_get_capa(wpa_s, &capa);
  	if (capa_res == 0) {
 diff --git a/wpa_supplicant/wpa_supplicant_i.h b/wpa_supplicant/wpa_supplicant_i.h
-index d475cc9..b087ac7 100644
+index a5227dd..2e61b0f 100644
 --- a/wpa_supplicant/wpa_supplicant_i.h
 +++ b/wpa_supplicant/wpa_supplicant_i.h
-@@ -842,6 +842,12 @@ struct wpa_supplicant {
+@@ -868,6 +868,12 @@ struct wpa_supplicant {
  		u16 num_modes;
  		u16 flags;
  	} hw;
