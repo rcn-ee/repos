@@ -16,7 +16,7 @@ fi
 git pull
 git checkout ${git_sha} -b tmp
 
-wdir="../../suite/jessie/debian/patches"
+wdir="../suite/jessie/debian/patches"
 git="git am"
 
 ${git} "${wdir}/0001-use_pkg-config_for_pcsc-lite_module.patch"
