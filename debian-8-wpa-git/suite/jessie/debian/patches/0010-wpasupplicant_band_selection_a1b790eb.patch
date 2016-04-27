@@ -1,4 +1,4 @@
-From b78414ddf98ea6a6a2a1a73ff109a2a7a1a86bb8 Mon Sep 17 00:00:00 2001
+From 3d97909a192866e9bafecd605582b27bc6a44dd8 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
 Date: Tue, 26 Apr 2016 20:52:46 -0500
 Subject: [PATCH 10/12] wpasupplicant_band_selection_a1b790eb
@@ -11,7 +11,7 @@ Subject: [PATCH 10/12] wpasupplicant_band_selection_a1b790eb
  4 files changed, 223 insertions(+), 24 deletions(-)
 
 diff --git a/src/drivers/driver.h b/src/drivers/driver.h
-index f94f57a..b3e5d23 100644
+index b8ee825..7589a55 100644
 --- a/src/drivers/driver.h
 +++ b/src/drivers/driver.h
 @@ -206,6 +206,9 @@ struct hostapd_hw_modes {
@@ -34,7 +34,7 @@ index f94f57a..b3e5d23 100644
  	size_t beacon_ie_len;
  	/*
 diff --git a/wpa_supplicant/scan.c b/wpa_supplicant/scan.c
-index 1d31806..0d646d1 100644
+index 53ecb02..7963f5c 100644
 --- a/wpa_supplicant/scan.c
 +++ b/wpa_supplicant/scan.c
 @@ -1562,8 +1562,8 @@ static int wpa_scan_result_compar(const void *a, const void *b)
@@ -316,10 +316,10 @@ index 1d31806..0d646d1 100644
  
  #ifdef CONFIG_WPS
 diff --git a/wpa_supplicant/wpa_supplicant.c b/wpa_supplicant/wpa_supplicant.c
-index 995c8d8..c56b793 100644
+index cb99067..55cd77b 100644
 --- a/wpa_supplicant/wpa_supplicant.c
 +++ b/wpa_supplicant/wpa_supplicant.c
-@@ -3797,6 +3797,23 @@ static int wpa_supplicant_init_iface(struct wpa_supplicant *wpa_s,
+@@ -3831,6 +3831,23 @@ static int wpa_supplicant_init_iface(struct wpa_supplicant *wpa_s,
  	wpa_s->hw.modes = wpa_drv_get_hw_feature_data(wpa_s,
  						      &wpa_s->hw.num_modes,
  						      &wpa_s->hw.flags);
@@ -344,10 +344,10 @@ index 995c8d8..c56b793 100644
  	capa_res = wpa_drv_get_capa(wpa_s, &capa);
  	if (capa_res == 0) {
 diff --git a/wpa_supplicant/wpa_supplicant_i.h b/wpa_supplicant/wpa_supplicant_i.h
-index b0f3866..3d945fe 100644
+index 52137d4..416c599 100644
 --- a/wpa_supplicant/wpa_supplicant_i.h
 +++ b/wpa_supplicant/wpa_supplicant_i.h
-@@ -871,6 +871,12 @@ struct wpa_supplicant {
+@@ -874,6 +874,12 @@ struct wpa_supplicant {
  		u16 num_modes;
  		u16 flags;
  	} hw;
