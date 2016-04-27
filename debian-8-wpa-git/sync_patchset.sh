@@ -2,13 +2,13 @@
 
 . version.sh
 
-mkdir -p ./ignore/hostap
+mkdir -p ./git/
 
-if [ ! -f ./ignore/hostap/.git/config ] ; then
-	git clone https://github.com/rcn-ee/hostap ./ignore/hostap
-	cd ./ignore/hostap/
+if [ ! -f ./git/.git/config ] ; then
+	git clone https://github.com/rcn-ee/hostap ./git/
+	cd ./git/
 else
-	cd ./ignore/hostap/
+	cd ./git/
 	git checkout master -f
 	git branch -D tmp
 fi
@@ -61,5 +61,8 @@ number=2 ; git format-patch -${number} -o ${wdir}/2015-7/
 
 ${git} "${wdir}/2015-8/0001-EAP-pwd-peer-Fix-error-path-for-unexpected-Confirm-m.patch"
 number=1 ; git format-patch -${number} -o ${wdir}/2015-8/
+
+git checkout master -f
+git branch -D tmp
 
 cd ../../
