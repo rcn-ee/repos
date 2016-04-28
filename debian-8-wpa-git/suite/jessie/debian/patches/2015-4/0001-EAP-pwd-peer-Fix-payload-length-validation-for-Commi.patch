@@ -1,4 +1,4 @@
-From 1ac1e670284bfb02ef07a5fa25f985f0d90c3329 Mon Sep 17 00:00:00 2001
+From 6b5ed32ac23d96014d77308297538cb076cc4d81 Mon Sep 17 00:00:00 2001
 From: Jouni Malinen <j@w1.fi>
 Date: Fri, 1 May 2015 16:37:45 +0300
 Subject: [PATCH 1/5] EAP-pwd peer: Fix payload length validation for Commit
@@ -22,7 +22,7 @@ Signed-off-by: Jouni Malinen <j@w1.fi>
  1 file changed, 29 insertions(+)
 
 diff --git a/src/eap_peer/eap_pwd.c b/src/eap_peer/eap_pwd.c
-index 059bbee..a129c5a 100644
+index 1c915ed..669d2d2 100644
 --- a/src/eap_peer/eap_pwd.c
 +++ b/src/eap_peer/eap_pwd.c
 @@ -301,6 +301,23 @@ eap_pwd_perform_commit_exchange(struct eap_sm *sm, struct eap_pwd_data *data,

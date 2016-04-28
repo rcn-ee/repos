@@ -1,4 +1,4 @@
-From 0aa802ae86d0d827f51cac47fd562dce1196ad64 Mon Sep 17 00:00:00 2001
+From 1585dc356e4145426aa42d88557d8aa1d0dcc521 Mon Sep 17 00:00:00 2001
 From: Jouni Malinen <j@w1.fi>
 Date: Sun, 25 Oct 2015 15:45:50 +0200
 Subject: [PATCH] WNM: Ignore Key Data in WNM Sleep Mode Response frame if no
@@ -14,10 +14,10 @@ Signed-off-by: Jouni Malinen <j@w1.fi>
  1 file changed, 6 insertions(+)
 
 diff --git a/wpa_supplicant/wnm_sta.c b/wpa_supplicant/wnm_sta.c
-index 954de67..7d79499 100644
+index 4a792c4..e08480a 100644
 --- a/wpa_supplicant/wnm_sta.c
 +++ b/wpa_supplicant/wnm_sta.c
-@@ -187,6 +187,12 @@ static void wnm_sleep_mode_exit_success(struct wpa_supplicant *wpa_s,
+@@ -186,6 +186,12 @@ static void wnm_sleep_mode_exit_success(struct wpa_supplicant *wpa_s,
  	end = ptr + key_len_total;
  	wpa_hexdump_key(MSG_DEBUG, "WNM: Key Data", ptr, key_len_total);
  
