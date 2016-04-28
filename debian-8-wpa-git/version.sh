@@ -5,12 +5,12 @@ mirror="http://http.debian.net/debian"
 
 package_name="wpa"
 debian_pkg_name="${package_name}"
-package_version="2.4~dev-git20141030-b1"
+package_version="2.4~dev-git20141030-b2"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
 git_repo="https://github.com/rcn-ee/hostap"
-git_sha="96a6c4c0980d27840c6225b3a4023416789317d9"
+git_sha="6897556455bd18f3e87b56636a06f8dc8a9336f8"
 reprepro_dir="w/${package_name}"
 dl_path=""
 
