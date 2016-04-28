@@ -19,6 +19,9 @@ git checkout ${git_sha} -b tmp
 wdir="../suite/jessie/debian/patches"
 git="git am"
 
+git revert --no-edit 21efc940f6e7f07b84b7e5c5867f3d81594c4fb0 -s
+number=1 ; git format-patch -${number} -o ${wdir}/reverts/
+
 ${git} "${wdir}/0001-use_pkg-config_for_pcsc-lite_module.patch"
 ${git} "${wdir}/0002-dbus_group_policy.patch"
 ${git} "${wdir}/0003-wpa_gui_menu_exec_path.patch"
