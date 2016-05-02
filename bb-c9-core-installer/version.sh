@@ -4,7 +4,7 @@
 
 package_name="c9-core-installer"
 debian_pkg_name="${package_name}"
-package_version="3.1.1670+git20160304"
+package_version="3.1.2374+git20160430"
 package_source=""
 src_dir=""
 
@@ -18,7 +18,8 @@ debian_untar=""
 debian_patch=""
 local_patch="rcnee2"
 
-wheezy_version="~bpo70+20160307+1"
-jessie_version="~bpo80+20160307+1"
-stretch_version="~bpo90+20160307+1"
-xenial_version="~bpo1604+20160307+1"
+wheezy_version="~bpo70+20160502+1"
+jessie_version="~bpo80+20160502+1"
+stretch_version="~bpo90+20160502+1"
+xenial_version="~bpo1604+20160502+1"
+yakkety_version="~bpo1610+20160502+1"
