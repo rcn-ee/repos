@@ -27,7 +27,14 @@ git_clone () {
 pkg_install () {
 	git_repo="https://github.com/beagleboard/bone101"
 	git_target_dir="/var/lib/cloud9"
-	git_clone
+
+	if [ -d ${git_target_dir}/ ] ; then
+		cd ${git_target_dir}/
+		git reset HEAD --hard
+		git pull --no-edit https://github.com/beagleboard/bone101 master
+	else
+		git_clone
+	fi
 
 	if [ -f ${git_target_dir}/.git/config ] ; then
 		cd ${git_target_dir}/
