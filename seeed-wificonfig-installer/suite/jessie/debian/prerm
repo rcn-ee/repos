@@ -9,9 +9,11 @@ service="wifidog-gateway"
 # avoid cancelling of "stop" via socket or D-Bus activation
 if [ -d /run/systemd/system ] && [ "$1" = remove ]; then
     systemctl mask --runtime ${service}.service
+    systemctl mask --runtime wificonfig.service
     # stop ${service}.service manually since invoke-rc.d currently doesn't
     # deal with masked services (see Bug #717109)
     systemctl stop ${service}.service || true
+    systemctl stop wificonfig.service || true
 fi
 
 # summary of how this script can be called:
