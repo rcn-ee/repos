@@ -6,7 +6,7 @@ service="wifidog-gateway"
 
 # drop the temporary mask from prerm
 if [ -d /run/systemd/system ] && [ "$1" = remove ]; then
-        systemctl unmask --runtime ${service}.service
+        systemctl unmask --runtime ${service}.socket
         systemctl unmask --runtime wificonfig.service
 fi
 
