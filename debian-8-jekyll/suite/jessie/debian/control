@@ -1,40 +1,40 @@
 Source: jekyll
 Maintainer: Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>
-Uploaders: Youhei SASAKI <uwabami@gfd-dennou.org>
+Uploaders: Youhei SASAKI <uwabami@gfd-dennou.org>,
+           Dominique Dumont <dod@debian.org>
 Section: ruby
 Priority: optional
 Build-Depends: debhelper (>= 9),
-			gem2deb (>= 0.2.13~),
-			rake,
-			ruby-liquid,
-			ruby-kramdown,
-			ruby-mercenary,
-			ruby-safe-yaml,
-			ruby-colorator,
-			ruby-rouge,
-			ruby-jekyll-sass-converter,
-			ruby-jekyll-watch,
-			ruby-toml (>= 0.1.2-2~),
-			ruby-shoulda,
-			cucumber,
-			ruby-simplecov,
-			ruby-jekyll-test-plugin,
-			ruby-jekyll-test-plugin-malicious,
-			ruby-minitest-reporters,
-			ruby-minitest,
-			ruby-rspec-mocks,
-			ruby-test-unit,
-			ruby-jekyll-paginate,
-			ruby-jekyll-coffeescript (>= 1.0.1-2~),
-			ruby-jekyll-feed,
-			ruby-jekyll-gist,
-			ruby-mime-types,
-			ruby-rdiscount,
-			ruby-pygments.rb,
-			ruby-redcarpet,
-			ruby-classifier-reborn,
-			xdg-utils
-Standards-Version: 3.9.6
+               gem2deb (>= 0.2.13~),
+               rake,
+               ruby-liquid,
+               ruby-kramdown,
+               ruby-mercenary,
+               ruby-safe-yaml,
+               ruby-colorator,
+               ruby-classifier,
+               ruby-pygments.rb,
+               ruby-redcarpet,
+               ruby-toml,
+               ruby-jekyll-paginate,
+               ruby-jekyll-gist,
+               ruby-jekyll-coffeescript,
+               ruby-jekyll-sass-converter,
+               ruby-jekyll-watch,
+               ruby-shoulda,
+               ruby-rr,
+               cucumber,
+               ruby-redcloth,
+               ruby-maruku,
+               ruby-rdiscount,
+               xdg-utils,
+               ruby-mime-types,
+               ruby-activesupport,
+               ruby-jekyll-test-plugin,
+               ruby-jekyll-test-plugin-malicious,
+               ruby-test-unit,
+               ruby-rouge
+Standards-Version: 3.9.5
 Vcs-Browser: http://anonscm.debian.org/gitweb?p=pkg-ruby-extras/jekyll.git;a=summary
 Vcs-Git: git://anonscm.debian.org/pkg-ruby-extras/jekyll.git
 Homepage: http://github.com/mojombo/jekyll
@@ -43,31 +43,26 @@ XS-Ruby-Versions: all
 Package: jekyll
 Architecture: all
 Depends: ${misc:Depends},
-		${shlibs:Depends},
-		ruby | ruby-interpreter,
-		ruby-liquid,
-		ruby-kramdown,
-		ruby-mercenary,
-		ruby-safe-yaml,
-		ruby-colorator,
-		ruby-rouge,
-		ruby-jekyll-sass-converter,
-		ruby-jekyll-watch,
-		ruby-toml (>= 0.1.2-2~),
-		ruby-jekyll-paginate,
-		ruby-jekyll-coffeescript (>= 1.0.1-2~),
-		ruby-jekyll-feed,
-		ruby-jekyll-gist,
-		ruby-mime-types,
-		ruby-rdiscount,
-		ruby-pygments.rb,
-		ruby-redcarpet,
-		ruby-classifier-reborn,
-		xdg-utils
+         ${shlibs:Depends},
+         ruby | ruby-interpreter,
+         ruby-liquid,
+         ruby-kramdown,
+         ruby-mercenary,
+         ruby-safe-yaml,
+         ruby-colorator,
+         ruby-classifier,
+         ruby-pygments.rb,
+         ruby-redcarpet,
+         ruby-toml,
+         ruby-jekyll-paginate,
+         ruby-jekyll-gist,
+         ruby-jekyll-coffeescript,
+         ruby-jekyll-sass-converter,
+         ruby-jekyll-watch
 Recommends: ruby-sequel,
-		ruby-sequel-pg,
-		ruby-mysql
-XB-Ruby-Versions: ${ruby:Versions}
+            ruby-sequel-pg,
+            ruby-mysql,
+            ruby-rouge
 Description: Simple, blog aware, static site generator
  Jekyll is a simple, blog aware, static site generator. It takes a
  template directory (representing the raw form of a website), runs it
@@ -78,3 +73,4 @@ Description: Simple, blog aware, static site generator
  This is also the engine behind GitHub Pages(http://pages.github.com),
  which you can use to host your project's page or blog right here from
  GitHub.
+XB-Ruby-Versions: ${ruby:Versions}

@@ -14,30 +14,40 @@
 %:
 	dh $@ --buildsystem=ruby --with ruby
 
-override_dh_auto_install:
-	mkdir -p $(CURDIR)/site/js
-	install -m644 debian/missing-sources/html5shiv.js \
-	  $(CURDIR)/site/js/
-	install -m644 debian/missing-sources/respond.js \
-	  $(CURDIR)/site/js/
-	install -m644 debian/missing-sources/normalize.css \
-	  $(CURDIR)/site/_sass/_normalize.scss
-	mkdir -p $(CURDIR)/lib/site_template/js
-	install -m644 debian/missing-sources/html5shiv.js \
-	  $(CURDIR)/lib/site_template/js/
-	install -m644 debian/missing-sources/respond.js \
-	  $(CURDIR)/lib/site_template/js/
-	install -m644 debian/missing-sources/normalize.css \
-	  $(CURDIR)/lib/site_template/_sass/_normalize.scss
-	dh_auto_install
-
-override_dh_auto_clean:
+override_dh_auto_clean: recover_original_test_sources
 	dh_auto_clean
 	rm -fr $(CURDIR)/site/js
-	rm -fr $(CURDIR)/lib/site_template/js
-	rm -fr $(CURDIR)/site/_sass/_normalize.scss
-	rm -fr $(CURDIR)/lib/site_template/_sass/_normalize.scss
-	rm -fr $(CURDIR)/.sass-cache
+	rm -fr $(CURDIR)/site/_includes/css/normalize.css
 	rm -fr $(CURDIR)/test/dest
-	rm -fr $(CURDIR)/coverage
-	rm -fr $(CURDIR)/test/source/.jekyll-metadata
+	rm -fr $(CURDIR)/.sass-cache
+
+override_dh_auto_build: prepare_test
+	dh_auto_build
+	mkdir -p $(CURDIR)/site/js
+	cp debian/missing-sources/*.js $(CURDIR)/site/js
+	cp debian/missing-sources/normalize.css $(CURDIR)/site/_includes/css/
+
+override_dh_installchangelogs:
+	dh_installchangelogs History.markdown
+
+prepare_test:
+	( cd  $(CURDIR)/test/source/_methods && \
+	  rm -f um_hi.md && ln -s ./site/generate.md um_hi.md )
+	( cd  $(CURDIR)/test/source/_data && \
+	  rm -f products.yml && ln -s ../products.yml products.yml )
+	( cd $(CURDIR)/test/source/_includes && rm -f tmp && ln -s /tmp tmp )
+	( cd $(CURDIR)/test/source/symlink-test && \
+	  rm -f _data && ln -s ../_data . && \
+	  rm -f symlinked-dir && ln -s ../css symlinked-dir && \
+	  rm -f symlinked-file && ln -s ../index.html symlinked-file )
+
+recover_original_test_sources:
+	( cd $(CURDIR)/test/source/_methods && \
+	  rm -f um_hi.md && cp $(CURDIR)/debian/test-sources/um_hi.md . )
+	( cd $(CURDIR)/test/source/_data && \
+	  rm -f products.yml && cp $(CURDIR)/debian/test-sources/products.yml . )
+	( cd $(CURDIR)/test/source/_includes && rm -f tmp )
+	( cd $(CURDIR)/test/source/symlink-test && \
+	  rm -fr _data  && \
+	  rm -fr symlinked-dir && \
+	  rm -fr symlinked-file && cp $(CURDIR)/debian/test-sources/symlinked-file . )
