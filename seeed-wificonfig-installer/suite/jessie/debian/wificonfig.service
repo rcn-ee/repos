@@ -1,13 +1,7 @@
 [Unit]
 Description=wificonfig Service
-After=wifidog-gateway.service
 
 [Service]
-Type=simple
-ExecStart=/usr/bin/seeed-wificonfig.sh
-KillSignal=SIGINT
-Restart=on-failure
-RestartSec=5
-
-[Install]
-WantedBy=multi-user.target
+WorkingDirectory=/usr/local/lib/node_modules/wificonfig
+ExecStart=/usr/bin/nodejs ./bin/www
+SyslogIdentifier=wificonfig

@@ -129,8 +129,7 @@ npm_install () {
 	systemctl enable ${service}.service || true
 	systemctl start ${service} || true
 
-	systemctl enable wificonfig.service || true
-	systemctl start wificonfig || true
+	systemctl enable wificonfig.socket || true
 	echo "${package}:Installed"
 }
 
