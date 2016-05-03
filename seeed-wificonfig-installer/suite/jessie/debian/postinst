@@ -101,12 +101,14 @@ npm_install () {
 	fi
 
 	echo "${package}:disabling connman dns service"
+	unset restart_connman
 
 	if [ -f /lib/systemd/system/connman.service ] ; then
 		unset check_connman
 		check_connman=$(cat /lib/systemd/system/connman.service | grep ExecStart | grep nodnsproxy || true)
 		if [ "x${check_connman}" = "x" ] ; then
-			sudo sed -i -e 's:-n:-n --nodnsproxy:g' /lib/systemd/system/connman.service
+			sed -i -e 's:-n:-n --nodnsproxy:g' /lib/systemd/system/connman.service
+			restart_connman="enable"
 		fi
 	fi
 
@@ -114,22 +116,30 @@ npm_install () {
 		unset check_connman
 		check_connman=$(cat /etc/connman/main.conf | grep NetworkInterfaceBlacklist | grep SoftAp0 || true)
 		if [ "x${check_connman}" = "x" ] ; then
-			sudo sed -i -e 's:=usb0:=SoftAp0,usb0:g' /etc/connman/main.conf
+			sed -i -e 's:=usb0:=SoftAp0,usb0:g' /etc/connman/main.conf
+			restart_connman="enable"
 		fi
 	fi
 
 	if [ -f /etc/connman/main.conf ] ; then
 		sed -i -e 's:usb0,SoftAp0:SoftAp0,usb0:g' /etc/connman/main.conf
+		restart_connman="enable"
 	fi
 
 	if [ -f /var/lib/connman/settings ] ; then
 		sed -i -e 's:Tethering=true:Tethering=false:g' /var/lib/connman/settings
+		restart_connman="enable"
+	fi
+
+	if [ "x${restart_connman}" = "xenable" ] ; then
+		systemctl restart connman.service || true
 	fi
 
 	systemctl enable ${service}.service || true
 	systemctl start ${service} || true
 
-	systemctl enable wificonfig.socket || true
+	systemctl disable wificonfig.socket || true
+	systemctl disable wificonfig.service || true
 	echo "${package}:Installed"
 }
 
