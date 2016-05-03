@@ -21,12 +21,9 @@ service="bonescript"
 
 export NODE_PATH=/usr/local/lib/node_modules
 
-npm_options="--unsafe-perm --progress=false"
+npm_options="--unsafe-perm=true --progress=false --loglevel=error --prefix /usr/local"
 
 npm_actually_install () {
-	# npm: force prefix to /usr/local (npm: 1.4.21 -> 3.7.1)
-	${node_bin} ${npm_bin} config set -g prefix /usr/local/
-
 	echo "${package}:Installing: ${pkg}-${ver} (for ${npm_project})"
 	TERM=dumb ${node_bin} ${npm_bin} install -g ${npm_options} ${pkg}@${ver}
 	#TERM=dumb ${node_bin} ${npm_bin} install -g ${npm_options} github:jadonk/bonescript#90f2367839be34b683988c5ad2cbfd0691f3a56a
@@ -103,7 +100,7 @@ npm_install () {
 	echo "${package}:node: [`${node_bin} --version`]"
 
 	npm_project="bonescript"
-	pkg="bonescript" ; ver="0.5.0-beta4" ; npm_check_n_install
+	pkg="bonescript" ; ver="0.5.0-beta5" ; npm_check_n_install
 
 	if [ -d /etc/avahi/services/ ] ; then
 		#Annouce http server via DNS Sevice Discovery
