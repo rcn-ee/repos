@@ -87,15 +87,6 @@ builds () {
 	package_name="extra-cmake-modules" ; package_version="${package_name}_5.19.0-1" ; check_http
 }
 
-jekyll () {
-	site="${debian_pool}/main/r"
-	package_name="ruby-jekyll-feed"; package_version="${package_name}_0.3.1-1"; check_http
-	package_name="ruby-jekyll-gist"; package_version="${package_name}_1.1.0-1"; check_http
-
-	site="${debian_pool}/main/c"
-	package_name="coffeescript"; package_version="${package_name}_1.10.0~dfsg-1"; check_http
-}
-
 mesa () {
 	echo "llvm/mesa:"
 
@@ -331,7 +322,6 @@ ubuntu () {
 
 important
 builds
-jekyll
 mesa
 qt5_kde
 qt5_apps
