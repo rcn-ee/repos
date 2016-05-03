@@ -1,9 +1,0 @@
-#!/usr/bin/make -f
-
-%:
-	dh $@ --buildsystem=ruby --with ruby
-
-override_dh_auto_install:
-	dh_auto_install
-	$(RM) debian/ruby-coffee-script-source/usr/lib/ruby/vendor_ruby/coffee_script/coffee-script.js
-	dh_link usr/share/javascript/coffeescript/coffee-script.js usr/lib/ruby/vendor_ruby/coffee_script/coffee-script.js
