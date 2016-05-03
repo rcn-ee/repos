@@ -43,7 +43,7 @@ pkg_install () {
 		/usr/bin/jekyll build --destination bone101
 
 		echo "#!/bin/bash" > ${git_target_dir}/update.sh
-		echo "/usr/bin/jekyll build --destination bone101" >> ${git_target_dir}/update.sh
+		echo "sudo /usr/bin/jekyll build --destination bone101" >> ${git_target_dir}/update.sh
 		chmod +x ${git_target_dir}/update.sh
 	fi
 
@@ -53,6 +53,7 @@ pkg_install () {
 
 	#disable jekyll autorun
 	systemctl stop ${service}.service || true
+	systemctl disable ${service}.service || true
 	echo "${package}:Installed"
 }
 
