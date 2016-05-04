@@ -37,8 +37,6 @@ if [ ! -f /tmp/wifi.up ] ; then
 fi
 
 sleep 2
-systemctl start wifidog-gateway.service || true
-sleep 2
 systemctl stop bonescript.socket || true
 systemctl disable bonescript.socket || true
 systemctl start wificonfig.service || true
