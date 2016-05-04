@@ -33,10 +33,12 @@ if [ ! -f /tmp/wifi.up ] ; then
 	iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
 	iptables -A FORWARD -i wlan0 -o SoftAp0 -m state --state RELATED,ESTABLISHED -j ACCEPT
 	iptables -A FORWARD -i SoftAp0 -o wlan0 -j ACCEPT
+
+	sleep 1
+
 	touch /tmp/wifi.up
 fi
 
-sleep 2
 systemctl stop bonescript.socket || true
 systemctl disable bonescript.socket || true
 systemctl start wificonfig.service || true
