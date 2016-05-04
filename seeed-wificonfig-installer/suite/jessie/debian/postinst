@@ -141,6 +141,10 @@ npm_install () {
 	systemctl disable wificonfig.socket || true
 	systemctl disable wificonfig.service || true
 
+	#disable bonescript port 80...
+	systemctl stop bonescript.socket || true
+	systemctl disable bonescript.socket || true
+
 	mkdir -p /etc/wificonfig/ || true
 	echo "${package}:Installed"
 }
