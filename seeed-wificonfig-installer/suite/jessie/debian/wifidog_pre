@@ -36,10 +36,9 @@ if [ ! -f /tmp/wifi.up ] ; then
 	touch /tmp/wifi.up
 fi
 
-#FIXME: (little racy, but this works, "/usr/bin/wifidog -f -d 7" needs to go into it's own service file...)
+sleep 2
+systemctl start wifidog-gateway.service || true
+sleep 2
 systemctl stop bonescript.socket || true
 systemctl disable bonescript.socket || true
 systemctl start wificonfig.service || true
-
-#/usr/bin/wifidog -f -d 7
-#systemctl start wificonfig.service || true
