@@ -1,10 +1,10 @@
 [Unit]
-Description=wifidog gateway Service
-After=wifidog-pre-startup.service
+Description=wifidog pre gateway Service
+After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/wifidog
+ExecStart=/usr/bin/wifidog_pre
 KillSignal=SIGINT
 Restart=on-failure
 RestartSec=5

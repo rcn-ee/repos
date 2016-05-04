@@ -4,16 +4,16 @@
 
 set -e
 
-service="wifidog-gateway"
-
 # avoid cancelling of "stop" via socket or D-Bus activation
 if [ -d /run/systemd/system ] && [ "$1" = remove ]; then
-    systemctl mask --runtime ${service}.service
-    systemctl mask --runtime wificonfig.socket
-    # stop ${service}.service manually since invoke-rc.d currently doesn't
-    # deal with masked services (see Bug #717109)
-    systemctl stop ${service}.service || true
-    systemctl stop wificonfig.socket || true
+	systemctl mask --runtime wifidog-pre-startup.service || true
+	systemctl mask --runtime wifidog-gateway.service || true
+	systemctl mask --runtime wificonfig.socket || true
+	# stop ${service}.service manually since invoke-rc.d currently doesn't
+	# deal with masked services (see Bug #717109)
+	systemctl stop wifidog-pre-startup.service || true
+	systemctl stop wifidog-gateway.service || true
+	systemctl stop wificonfig.service || true
 fi
 
 # dh_installdeb will replace this with shell code automatically

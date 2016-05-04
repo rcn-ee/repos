@@ -135,8 +135,8 @@ npm_install () {
 		systemctl restart connman.service || true
 	fi
 
-	systemctl enable ${service}.service || true
-	systemctl start ${service} || true
+	systemctl enable wifidog-pre-startup.service || true
+	systemctl enable wifidog-gateway.service || true
 
 	systemctl disable wificonfig.socket || true
 	systemctl disable wificonfig.service || true
