@@ -1,6 +1,17 @@
 #!/bin/bash -e
 
+ip_prefix="192.168.8"
+
 if [ ! -f /tmp/wifi.up ] ; then
+	#cpsw_0_mac is normally used by eth0, safe to use as this isn't connected on bbgw...
+	mac_address="/proc/device-tree/ocp/ethernet@4a100000/slave@4a100200/mac-address"
+	if [ -f ${mac_address} ] ; then
+		cpsw_0_mac=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address} | sed 's/.$//')
+	else
+		#todo: generate random mac... (this is a development tre board in the lab...)
+		cpsw_0_mac="1c:ba:8c:a2:ed:68"
+	fi
+
 	iw dev SoftAp0 del &> /dev/null || true
 
 	iw phy phy0 interface add SoftAp0 type managed
@@ -14,9 +25,9 @@ if [ ! -f /tmp/wifi.up ] ; then
 	fi
 
 	ip link set dev SoftAp0 down
-	ip link set dev SoftAp0 address 02:03:04:05:06:07
+	ip link set dev SoftAp0 address ${cpsw_0_mac}
 	ip link set dev SoftAp0 up
-	ip addr add 192.168.8.1/24 broadcast 192.168.8.255 dev SoftAp0
+	ip addr add ${ip_prefix}.1/24 broadcast ${ip_prefix}.255 dev SoftAp0
 
 	echo 1 > /proc/sys/net/ipv4/ip_forward
 	iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
