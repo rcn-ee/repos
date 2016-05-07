@@ -2,7 +2,7 @@
 
 #https://github.com/Seeed-Studio/beaglebone-getting-started
 
-package_name="bb-doc-seeed-bbgw-getting-started"
+package_name="doc-seeed-bbgw-getting-started"
 debian_pkg_name="${package_name}"
 package_version="1.20160507"
 package_source=""
