@@ -62,6 +62,25 @@ npm_check_n_install () {
 	fi
 }
 
+npm_git_install () {
+	if [ -d /usr/local/lib/node_modules/node-red-node-beaglebone/ ] ; then
+		rm -rf /usr/local/lib/node_modules/node-red-node-beaglebone/ || true
+	fi
+
+	if [ -d /tmp/node-red-nodes/ ] ; then
+		rm -rf /tmp/node-red-nodes/ || true
+	fi
+
+	git clone -b nodejs_v0.12.x https://github.com/rcn-ee/node-red-nodes/ /tmp/node-red-nodes --depth=1
+	if [ -d /tmp/node-red-nodes/hardware/BBB/ ] ; then
+		cd /tmp/node-red-nodes/hardware/BBB/
+		TERM=dumb ${node_bin} ${npm_bin} install -g ${npm_options}
+		cd -
+		sync
+		rm -rf /tmp/node-red-nodes/
+	fi
+}
+
 npm_install () {
 	node_bin="/usr/bin/nodejs"
 	npm_bin="/usr/bin/npm"
@@ -108,6 +127,8 @@ npm_install () {
 	unset js_patch
 #https://github.com/theoctal/octalbonescript/issues/62
 #	pkg="node-red-node-beaglebone" ; ver="0.1.6" ; npm_check_n_install
+
+	npm_git_install
 #only in jessie. (i need to fix this)
 #	pkg="node-red-node-upm" ; ver="0.3.0" ; npm_check_n_install
 	pkg="node-red-node-mongodb" ; ver="0.0.5" ; npm_check_n_install
