@@ -94,7 +94,7 @@ npm_install () {
 	echo "${package}:node: [`${node_bin} --version`]"
 
 	npm_project="wificonfig"
-	pkg="wificonfig" ; ver="0.0.9" ; npm_check_n_install
+	pkg="wificonfig" ; ver="0.1.0" ; npm_check_n_install
 
 	if [ ! -d ${NODE_PATH}/${pkg}/log/ ] ; then
 		mkdir -p ${NODE_PATH}/${pkg}/log/ || true
@@ -145,6 +145,8 @@ npm_install () {
 	systemctl stop bonescript.socket || true
 	systemctl disable bonescript.socket || true
 
+	systemctl stop bonescript-autorun.service || true
+	systemctl disable bonescript-autorun.service || true
 	mkdir -p /etc/wificonfig/ || true
 	echo "${package}:Installed"
 }

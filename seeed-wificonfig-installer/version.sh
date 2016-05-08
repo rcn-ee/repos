@@ -2,7 +2,7 @@
 
 package_name="seeed-wificonfig-installer"
 debian_pkg_name="${package_name}"
-package_version="0.0.9"
+package_version="0.1.0"
 package_source=""
 src_dir=""
 
@@ -15,4 +15,4 @@ debian_version="${package_version}-0rcnee1"
 debian_untar=""
 debian_patch=""
 
-jessie_version="~bpo80+20160507+1"
+jessie_version="~bpo80+20160508+1"
