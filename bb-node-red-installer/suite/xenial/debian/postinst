@@ -71,13 +71,22 @@ npm_git_install () {
 		rm -rf /tmp/node-red-nodes/ || true
 	fi
 
-	git clone -b nodejs_v0.12.x https://github.com/rcn-ee/node-red-nodes/ /tmp/node-red-nodes --depth=1
+	git clone -b bbgw https://github.com/rcn-ee/node-red-nodes/ /tmp/node-red-nodes --depth=1
 	if [ -d /tmp/node-red-nodes/hardware/BBB/ ] ; then
 		cd /tmp/node-red-nodes/hardware/BBB/
 		TERM=dumb ${node_bin} ${npm_bin} install -g ${npm_options}
 		cd -
 		sync
 		rm -rf /tmp/node-red-nodes/
+		touch /usr/local/lib/node_modules/node-red-node-beaglebone/.bbgw-dont-load
+	fi
+
+	if [ -d /usr/local/lib/node_modules/node-red-node-upm/ ] ; then
+		rm -rf /usr/local/lib/node_modules/node-red-node-upm/ || true
+	fi
+
+	if [ -d /usr/local/lib/node_modules/node-red-node-bb-upm/ ] ; then
+		rm -rf /usr/local/lib/node_modules/node-red-node-bb-upm/ || true
 	fi
 }
 
@@ -127,11 +136,11 @@ npm_install () {
 	unset js_patch
 #https://github.com/theoctal/octalbonescript/issues/62
 #	pkg="node-red-node-beaglebone" ; ver="0.1.6" ; npm_check_n_install
+#only in jessie. (i need to fix this)
+#	pkg="node-red-node-upm" ; ver="0.3.0" ; npm_check_n_install
 
 	npm_git_install
 
-#only in jessie. (i need to fix this)
-#	pkg="node-red-node-upm" ; ver="0.3.0" ; npm_check_n_install
 	pkg="node-red-node-mongodb" ; ver="0.0.5" ; npm_check_n_install
 
 	if [ -d /etc/avahi/services/ ] ; then
