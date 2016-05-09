@@ -89,8 +89,7 @@ npm_git_install () {
 		rm -rf /usr/local/lib/node_modules/node-red-node-bb-upm/ || true
 	fi
 
-#	TERM=dumb ${node_bin} ${npm_bin} install -g ${npm_options} https://github.com/Pillar1989/Node-Red-Node-BB-UPM#BBGW
-	TERM=dumb ${node_bin} ${npm_bin} install -g ${npm_options} https://github.com/rcn-ee/Node-Red-Node-BB-UPM#BBGW
+	TERM=dumb ${node_bin} ${npm_bin} install -g ${npm_options} https://github.com/Pillar1989/Node-Red-Node-BB-UPM#BBGW
 }
 
 npm_install () {
@@ -137,6 +136,12 @@ npm_install () {
 	js_patch="enable"
 	pkg="node-red" ; ver="0.13.4" ; npm_check_n_install
 	unset js_patch
+
+	if [ -d /usr/lib/node_modules/mraa ] ; then
+		ln -sf /usr/lib/node_modules/mraa /usr/local/lib/node_modules || true
+		ln -sf /usr/lib/node_modules/jsupm* /usr/local/lib/node_modules || true
+	fi
+
 #https://github.com/theoctal/octalbonescript/issues/62
 #	pkg="node-red-node-beaglebone" ; ver="0.1.6" ; npm_check_n_install
 #	pkg="node-red-node-upm" ; ver="0.3.0" ; npm_check_n_install
