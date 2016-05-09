@@ -5,7 +5,7 @@ Uploaders: Thomas Moulard <thomas.moulard@gmail.com>,
            Jochen Sprickerhof <debian@jochen.sprickerhof.de>,
            Leopold Palomo-Avellaneda <leo@alaxarxa.net>
 Build-Depends: debhelper (>= 9),
-		catkin (>> 0.6.16-2), libroscpp-core-dev, ros-message-generation, libstd-msgs-dev,
+		catkin, libroscpp-core-dev, ros-message-generation, libstd-msgs-dev,
 		python-all, python-setuptools, dh-python,
 		libgeometry-msgs-dev, libactionlib-msgs-dev,
 		libconsole-bridge-dev, python-rospy, libpython-dev,
@@ -27,6 +27,8 @@ Vcs-Git: git://anonscm.debian.org/debian-science/packages/ros/ros-geometry.git
 Package: libtf0d
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
+Breaks: libtf-dev (<< 1.11.7-2)
+Replaces: libtf-dev (<< 1.11.7-2)
 Multi-Arch: same
 Description: Robot OS tf transform library to keep track of multiple coordinate frames
  tf is a package that lets the user keep track of multiple coordinate frames
@@ -106,7 +108,7 @@ Description: Robot OS conversion library between tf and Eigen and KDL
 Package: libtf-conversions-dev
 Section: libdevel
 Architecture: any
-Depends: ${misc:Depends}, libtf-conversions0d ( = ${binary:Version}), liborocos-kdl-dev
+Depends: ${misc:Depends}, libtf-conversions0d ( = ${binary:Version}), liborocos-kdl-dev, libeigen3-dev
 Description: Robot OS conversion library between Eigen, KDL and tf - development files
  This package contains a set of conversion functions to convert
  common tf datatypes (point, vector, pose, etc) into semantically

@@ -1,0 +1,59 @@
+From: Michael Biebl <biebl@debian.org>
+Date: Sat, 26 Apr 2014 14:25:41 +0200
+Subject: Add targets for compatibility with Debian insserv system facilities
+
+---
+ Makefile.am                         |  5 +++++
+ src/sysv-generator/sysv-generator.c |  3 +++
+ units/mail-transport-agent.target   | 12 ++++++++++++
+ 3 files changed, 20 insertions(+)
+ create mode 100644 units/mail-transport-agent.target
+
+diff --git a/Makefile.am b/Makefile.am
+index ce93c8c..31c86de 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -539,6 +539,11 @@ nodist_systemunit_DATA = \
+ 	units/systemd-nspawn@.service \
+ 	units/systemd-update-done.service
+ 
++if HAVE_SYSV_COMPAT
++nodist_systemunit_DATA += \
++	units/mail-transport-agent.target
++endif
++
+ dist_userunit_DATA = \
+ 	units/user/basic.target \
+ 	units/user/default.target \
+diff --git a/src/sysv-generator/sysv-generator.c b/src/sysv-generator/sysv-generator.c
+index b7837d8..7931e90 100644
+--- a/src/sysv-generator/sysv-generator.c
++++ b/src/sysv-generator/sysv-generator.c
+@@ -277,6 +277,9 @@ static int sysv_translate_facility(const char *name, const char *filename, char
+                 "remote_fs",            SPECIAL_REMOTE_FS_TARGET,
+                 "syslog",               NULL,
+                 "time",                 SPECIAL_TIME_SYNC_TARGET,
++                /* Debian defined facilities */
++                "x-display-manager",    "display-manager.service",
++                "mail-transport-agent", "mail-transport-agent.target",
+         };
+ 
+         unsigned i;
+diff --git a/units/mail-transport-agent.target b/units/mail-transport-agent.target
+new file mode 100644
+index 0000000..4d74ec7
+--- /dev/null
++++ b/units/mail-transport-agent.target
+@@ -0,0 +1,12 @@
++#  This file is part of systemd.
++#
++#  systemd is free software; you can redistribute it and/or modify it
++#  under the terms of the GNU Lesser General Public License as published by
++#  the Free Software Foundation; either version 2.1 of the License, or
++#  (at your option) any later version.
++
++#  This exists mostly for compatibility with SysV/LSB units
++#  depending on the $mail-transport-agent system facility.
++[Unit]
++Description=Mail Transport Agent
++RefuseManualStart=yes

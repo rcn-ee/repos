@@ -1,0 +1,25 @@
+From: Martin Pitt <martin.pitt@ubuntu.com>
+Date: Thu, 20 Nov 2014 14:37:08 +0100
+Subject: tmpfiles.d: Create /var/lib/container
+
+Create /var/lib/container so that it exists with an appropriate mode. We want
+0700 by default so that users on the host aren't able to call suid root
+binaries in the container. This becomes a security issue if a user can enter a
+container as root, create a suid root binary, and call that from the host.
+(This assumes that containers are caged by mandatory access control or are
+started as user).
+---
+ tmpfiles.d/var.conf | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/tmpfiles.d/var.conf b/tmpfiles.d/var.conf
+index 4b63e41..d9545fe 100644
+--- a/tmpfiles.d/var.conf
++++ b/tmpfiles.d/var.conf
+@@ -18,4 +18,6 @@ f /var/log/btmp 0600 root utmp -
+ d /var/cache 0755 - - -
+ 
+ d /var/lib 0755 - - -
++d /var/lib/container 0700 - - -
++
+ d /var/spool 0755 - - -

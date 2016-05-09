@@ -1,0 +1,90 @@
+From: Jon Severinsson <jon@severinsson.net>
+Date: Thu, 3 Jul 2014 18:00:00 +0200
+Subject: Do not order rcS.d services after local-fs.target if they do not
+ explicitly depending on $local_fs.
+
+---
+ man/systemd.special.xml                   | 9 +++++++++
+ src/insserv-generator/insserv-generator.c | 2 +-
+ src/shared/special.h                      | 2 +-
+ src/sysv-generator/sysv-generator.c       | 7 ++-----
+ 4 files changed, 13 insertions(+), 7 deletions(-)
+
+diff --git a/man/systemd.special.xml b/man/systemd.special.xml
+index f84639e..36e4fc2 100644
+--- a/man/systemd.special.xml
++++ b/man/systemd.special.xml
+@@ -368,6 +368,15 @@
+                                         that have the
+                                         <option>auto</option> mount
+                                         option set.</para>
++
++                                        <para>systemd automatically
++                                        adds dependencies of type
++                                        <varname>After=</varname> for
++                                        this target unit to all SysV
++                                        init script service units with
++                                        an LSB header referring to the
++                                        <literal>$local_fs</literal>
++                                        facility.</para>
+                                 </listitem>
+                         </varlistentry>
+                         <varlistentry>
+diff --git a/src/insserv-generator/insserv-generator.c b/src/insserv-generator/insserv-generator.c
+index d86ee29..6c10735 100644
+--- a/src/insserv-generator/insserv-generator.c
++++ b/src/insserv-generator/insserv-generator.c
+@@ -62,7 +62,7 @@ static int sysv_translate_facility(const char *name, const char *filename, char
+ 
+         static const char * const table[] = {
+                 /* LSB defined facilities */
+-                "local_fs",             NULL,
++                "local_fs",             SPECIAL_LOCAL_FS_TARGET,
+                 "network",              SPECIAL_NETWORK_TARGET,
+                 "named",                SPECIAL_NSS_LOOKUP_TARGET,
+                 "portmap",              SPECIAL_RPCBIND_TARGET,
+diff --git a/src/shared/special.h b/src/shared/special.h
+index 2fe5db5..9c22f19 100644
+--- a/src/shared/special.h
++++ b/src/shared/special.h
+@@ -49,7 +49,7 @@
+ #define SPECIAL_BUSNAMES_TARGET "busnames.target"
+ #define SPECIAL_TIMERS_TARGET "timers.target"
+ #define SPECIAL_PATHS_TARGET "paths.target"
+-#define SPECIAL_LOCAL_FS_TARGET "local-fs.target"
++#define SPECIAL_LOCAL_FS_TARGET "local-fs.target"         /* LSB's $local_fs */
+ #define SPECIAL_LOCAL_FS_PRE_TARGET "local-fs-pre.target"
+ #define SPECIAL_INITRD_FS_TARGET "initrd-fs.target"
+ #define SPECIAL_INITRD_ROOT_FS_TARGET "initrd-root-fs.target"
+diff --git a/src/sysv-generator/sysv-generator.c b/src/sysv-generator/sysv-generator.c
+index 22d9cc2..820d79e 100644
+--- a/src/sysv-generator/sysv-generator.c
++++ b/src/sysv-generator/sysv-generator.c
+@@ -73,9 +73,6 @@ static const struct {
+            UP must be read before DOWN */
+ };
+ 
+-/* Sysinit services uses DefaultDependencies=no, so explicitly order after a safe subset. */
+-#define SYSINIT_AFTER "local-fs.target"
+-
+ typedef struct SysvStub {
+         char *name;
+         char *path;
+@@ -165,7 +162,7 @@ static int generate_unit_file(SysvStub *s) {
+                 s->path, s->description);
+ 
+         if (s->sysinit)
+-                fprintf(f, "DefaultDependencies=no\nAfter=" SYSINIT_AFTER "\n");
++                fprintf(f, "DefaultDependencies=no\n");
+         if (!isempty(before))
+                 fprintf(f, "Before=%s\n", before);
+         if (!isempty(after))
+@@ -246,7 +243,7 @@ static int sysv_translate_facility(const char *name, const char *filename, char
+ 
+         static const char * const table[] = {
+                 /* LSB defined facilities */
+-                "local_fs",             NULL,
++                "local_fs",             SPECIAL_LOCAL_FS_TARGET,
+                 "network",              SPECIAL_NETWORK_ONLINE_TARGET,
+                 "named",                SPECIAL_NSS_LOOKUP_TARGET,
+                 "portmap",              SPECIAL_RPCBIND_TARGET,

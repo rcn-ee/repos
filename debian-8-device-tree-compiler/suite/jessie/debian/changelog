@@ -1,0 +1,115 @@
+device-tree-compiler (1.4.0+dfsg-2) unstable; urgency=medium
+
+  * Fix out of date homepage url
+  * Fix pre-depends-directly-on-multiarch-support error
+
+ -- Riku Voipio <riku.voipio@linaro.org>  Mon, 17 Aug 2015 15:12:51 +0300
+
+device-tree-compiler (1.4.0+dfsg-1) unstable; urgency=low
+
+  * REALLY update to upstream version 1.4.0, closes: #725745
+
+ -- Riku Voipio <riku.voipio@linaro.org>  Fri, 03 Jan 2014 16:22:27 +0200
+
+device-tree-compiler (1.4.0-2) unstable; urgency=low
+
+  * Convert to multiarch
+
+ -- Riku Voipio <riku.voipio@linaro.org>  Fri, 23 Aug 2013 14:58:19 +0300
+
+device-tree-compiler (1.4.0-1) unstable; urgency=low
+
+  * Added myself to maintainers
+  * New upstream version, closes: #713991
+
+ -- Riku Voipio <riku.voipio@linaro.org>  Mon, 12 Aug 2013 15:36:00 +0300
+
+device-tree-compiler (1.3.0-4) unstable; urgency=low
+
+  * Revert accidental source format change.
+
+ -- Hector Oron <zumbi@pergolesi.debian.org>  Sat, 27 Apr 2013 09:59:06 +0000
+
+device-tree-compiler (1.3.0-3) unstable; urgency=low
+
+  * libfdt-dev: Missing header file prevents the library usage
+    Thanks Domenico Andreoli (Closes: #706137)
+
+ -- Hector Oron <zumbi@debian.org>  Sat, 27 Apr 2013 07:47:09 +0000
+
+device-tree-compiler (1.3.0-2) unstable; urgency=low
+
+  * Add libfdt package (Closes: #477565)
+    - Thanks Dmitry Eremin-Solenikov and Aurelien Jarno for patch.
+  * Backport upstream fixes as patches until 2012-1-21.
+  * Reword package description to generalize architecture support.
+    - Removes OpenFirmware and PowerPC references.
+  * Update dtc manpage and include fdtget, fdtput, fdtdump, convert-dtsv0,
+    dtdiff manpages.
+  * d/rules: Add build-arch and build-indep targets.
+  * d/README.source: refer to quilt patching system.
+  * Remove Apps top-level section from doc-base.
+
+ -- Hector Oron <zumbi@debian.org>  Sat, 28 Jan 2012 01:16:09 +0100
+
+device-tree-compiler (1.3.0-1) unstable; urgency=low
+
+  * New upstream release. (Closes: #572945)
+  * New maintainer. (Closes: #649290)
+  * New VCS repository.
+  * Update homepage stanza (Closes: #497605)
+  * Update standards version.
+  * Compile with -fPIC. Fixes ftbfs on amd64.
+  * Use dpkg 1.0 format.
+  * Backport upstream fixes as patches until 2011-10-26.
+
+ -- Hector Oron <zumbi@debian.org>  Tue, 22 Nov 2011 12:23:38 +0000
+
+device-tree-compiler (1.1.0.dfsg-1) unstable; urgency=low
+
+  * New upstream release.
+  * Fix lintian warning "copyright-without-copyright-notice".
+    + Update debian/copyright.
+
+ -- Aurélien GÉRÔME <ag@roxor.cx>  Sat, 16 Feb 2008 17:08:36 +0100
+
+device-tree-compiler (1.0.0.dfsg-1) unstable; urgency=low
+
+  * New upstream release. (Closes: #438479)
+    + Fix missing /chosen node, as it has been removed from DTS.
+      (Closes: #436234)
+  * Remove ftdump from the upstream tarball.
+    + This file has no license notice.
+    + Fix conflict with the freetype2-demos package. (Closes: #434890)
+    + David Gibson told me that he would not bother even installing
+      ftdump. It was meant to be a debugging tool, dumping a blob
+      back into text format, but it never got very far and he has
+      been meaning to get rid of it.
+  * Update tests/dumptrees.c in the upstream tarball with GIT commit
+    08c0be206d5d6b035db11048d19be33216332f2b.
+    + Fix missing copyright and license notices.
+  * Update debian/copyright.
+    + Mention dual GPLv2+/BSD licensing of libfdt.
+    + Add Jon Loeliger as an upstream author.
+  * Bump Standards-Version to 3.7.3.
+  * Add the Homepage field and remove it from the long description.
+  * Add the Vcs-Git/Vcs-Browser fields.
+  * Add the XS-DM-Upload-Allowed field.
+  * Rewrite short and long descriptions in debian/control.
+  * Rewrite debian/rules to handle the noopt build option.
+  * Write and add a manpage for dtc.
+  * Add documentation under /usr/share/doc/device-tree-compiler/.
+    + Add Build-Depends on texlive and texlive-latex-extra.
+    + Add debian/doc-base.dtc-manual and debian/doc-base.dtc-paper.
+    + Create a Makefile to build dtc-paper.tex.
+      - Add quilt support to build system.
+      - Add 01_build_doc.diff.
+    + Update debian/rules to prepare documentation.
+
+ -- Aurélien GÉRÔME <ag@roxor.cx>  Sat, 22 Dec 2007 04:02:24 +0100
+
+device-tree-compiler (0.1~git20070226-1) experimental; urgency=low
+
+  * Initial release. (Closes: #413290)
+
+ -- Aurélien GÉRÔME <ag@roxor.cx>  Sat,  3 Mar 2007 23:13:14 +0100

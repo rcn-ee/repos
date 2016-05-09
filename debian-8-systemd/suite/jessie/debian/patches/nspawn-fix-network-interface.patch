@@ -1,0 +1,22 @@
+From: Tom Gundersen <teg@jklm.no>
+Date: Thu, 28 Aug 2014 12:15:51 +0200
+Subject: nspawn: fix --network-interface
+
+Use SETLINK when modifying an existing link.
+---
+ src/nspawn/nspawn.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/nspawn/nspawn.c b/src/nspawn/nspawn.c
+index c13e625..85191ce 100644
+--- a/src/nspawn/nspawn.c
++++ b/src/nspawn/nspawn.c
+@@ -1760,7 +1760,7 @@ static int move_network_interfaces(pid_t pid) {
+                 if (ifi < 0)
+                         return ifi;
+ 
+-                r = sd_rtnl_message_new_link(rtnl, &m, RTM_NEWLINK, ifi);
++                r = sd_rtnl_message_new_link(rtnl, &m, RTM_SETLINK, ifi);
+                 if (r < 0) {
+                         log_error("Failed to allocate netlink message: %s", strerror(-r));
+                         return r;

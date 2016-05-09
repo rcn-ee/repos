@@ -1,0 +1,135 @@
+#!/usr/bin/make -f
+
+export DEB_BUILD_MAINT_OPTIONS=hardening=+all
+include /usr/share/dpkg/buildflags.mk
+
+# The build system doesn't use CPPFLAGS, pass them to CFLAGS/CXXFLAGS to
+# enable the missing (hardening) flags
+DEB_CFLAGS_MAINT_APPEND   = -MMD -Wall $(shell dpkg-buildflags --get CPPFLAGS)
+DEB_CXXFLAGS_MAINT_APPEND = $(shell dpkg-buildflags --get CPPFLAGS)
+DEB_LDFLAGS_MAINT_APPEND  = -Wl,--as-needed
+export DEB_CFLAGS_MAINT_APPEND DEB_CXXFLAGS_MAINT_APPEND DEB_LDFLAGS_MAINT_APPEND
+
+UCFLAGS   = -MMD -Wall -g -Os -fPIC
+
+BINDIR    = /sbin
+V = 1
+
+DEB_BUILD_GNU_TYPE := $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+DEB_HOST_GNU_TYPE  := $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
+	CC=$(DEB_HOST_GNU_TYPE)-gcc
+endif
+
+export CC BINDIR V
+
+DEB_HOST_ARCH_OS              ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
+HOSTAPD_DOT_CONFIG            := debian/config/hostapd/$(DEB_HOST_ARCH_OS)
+WPASUPPLICANT_DOT_CONFIG      := debian/config/wpasupplicant/$(DEB_HOST_ARCH_OS)
+WPASUPPLICANT_UDEB_DOT_CONFIG := debian/config/wpasupplicant/$(DEB_HOST_ARCH_OS)-udeb
+VERSION                       := $(shell dpkg-parsechangelog | sed -ne 's,^Version: *\([0-9]*:\)\?\(.*\)$$,\2,p')
+
+### start dh overrides
+override_dh_auto_configure:
+	dh_auto_configure --sourcedirectory=wpa_supplicant/wpa_gui-qt4 \
+	                  --buildsystem=qmake
+
+override_dh_auto_build:
+	# build documentation
+	dh_auto_build --sourcedirectory=wpa_supplicant/doc/docbook \
+	              --buildsystem=makefile \
+		      --parallel \
+		      -- man
+	# build wpasupplicant-udeb
+	cp -v --remove-destination $(WPASUPPLICANT_UDEB_DOT_CONFIG) wpa_supplicant/.config
+	CFLAGS="$(UCFLAGS)" dh_auto_build --sourcedirectory=wpa_supplicant \
+	              --buildsystem=makefile \
+		      --parallel
+	mv -v wpa_supplicant/wpa_supplicant wpa_supplicant/wpa_supplicant-udeb
+	dh_auto_clean --sourcedirectory=wpa_supplicant \
+	              --buildsystem=makefile
+	# build wpasupplicant
+	cp -v --remove-destination $(WPASUPPLICANT_DOT_CONFIG) wpa_supplicant/.config
+	dh_auto_build --sourcedirectory=wpa_supplicant \
+	              --buildsystem=makefile \
+		      --parallel
+	# build wpa_gui-qt4
+	dh_auto_build --sourcedirectory=wpa_supplicant/wpa_gui-qt4 \
+	              --buildsystem=qmake \
+		      --parallel
+	dh_auto_clean --sourcedirectory=src --buildsystem=makefile
+	# build hostapd
+	cp -v --remove-destination $(HOSTAPD_DOT_CONFIG) hostapd/.config
+	dh_auto_build --sourcedirectory=hostapd \
+	              --buildsystem=makefile \
+		      --parallel
+	dh_auto_clean --sourcedirectory=src --buildsystem=makefile
+
+override_dh_auto_clean:
+	dh_auto_clean --sourcedirectory=wpa_supplicant/doc/docbook \
+	              --buildsystem=makefile
+	dh_auto_clean --sourcedirectory=wpa_supplicant \
+	              --buildsystem=makefile
+	dh_auto_clean --sourcedirectory=wpa_supplicant/wpa_gui-qt4 \
+	              --buildsystem=qmake
+	-find wpa_supplicant/wpa_gui-qt4 -type d \
+		-name \.moc -o -name \.ui -o -name \.obj -exec rm -rf {} \;
+	dh_auto_clean --sourcedirectory=hostapd \
+	              --buildsystem=makefile
+
+override_dh_auto_install:
+	$(info Skip dh_auto_install ...)
+
+override_dh_clean:
+	# make sure to remove the staging directory for the udeb
+	rm -rf debian/wpasupplicant-udeb
+	dh_clean wpa_supplicant/.config \
+		 hostapd/.config \
+		 wpa_supplicant/wpa_supplicant-udeb
+
+override_dh_install:
+	dh_install
+	# install systemd support
+	install --mode=644 -D wpa_supplicant/systemd/wpa_supplicant.service \
+		debian/wpasupplicant/lib/systemd/system/wpa_supplicant.service
+	# install D-Bus service activation files & configuration
+	install --mode=644 -D wpa_supplicant/dbus/dbus-wpa_supplicant.conf \
+		debian/wpasupplicant/etc/dbus-1/system.d/wpa_supplicant.conf
+	install --mode=644 -D wpa_supplicant/dbus/fi.epitest.hostap.WPASupplicant.service \
+		debian/wpasupplicant/usr/share/dbus-1/system-services/fi.epitest.hostap.WPASupplicant.service
+	install --mode=644 -D wpa_supplicant/dbus/fi.w1.wpa_supplicant1.service \
+		debian/wpasupplicant/usr/share/dbus-1/system-services/fi.w1.wpa_supplicant1.service
+	install --mode=755 -D wpa_supplicant/examples/60_wpa_supplicant \
+		debian/wpasupplicant/usr/lib/pm-utils/sleep.d/60_wpa_supplicant
+	# install ifupdown hook scripts
+	install --mode=755 -D debian/ifupdown/action_wpa.sh \
+		debian/wpasupplicant/etc/wpa_supplicant/action_wpa.sh
+	install --mode=755 -D debian/ifupdown/functions.sh \
+		debian/wpasupplicant/etc/wpa_supplicant/functions.sh
+	install --mode=755 -D debian/ifupdown/wpasupplicant.sh \
+		debian/wpasupplicant/etc/wpa_supplicant/ifupdown.sh
+	install --mode=755 -D debian/ifupdown/hostapd.sh \
+		debian/hostapd/etc/hostapd/ifupdown.sh
+	# Install udeb
+	install --mode=755 -D wpa_supplicant/wpa_supplicant-udeb \
+		debian/wpasupplicant-udeb/sbin/wpa_supplicant
+
+override_dh_installchangelogs:
+	dh_installchangelogs --package=hostapd hostapd/ChangeLog
+	dh_installchangelogs --package=wpasupplicant wpa_supplicant/ChangeLog
+	dh_installchangelogs --package=wpagui wpa_supplicant/ChangeLog
+
+override_dh_gencontrol:
+	dh_gencontrol -phostapd -- '-v1:$(VERSION)'
+	dh_gencontrol --remaining-packages
+
+override_dh_builddeb:
+	dh_builddeb -- -Zxz -z6
+### end dh overrides
+
+%:
+	dh ${@} --parallel
+
+get-orig-source:
+	chmod +x $(CURDIR)/debian/get-orig-source
+	$(CURDIR)/debian/get-orig-source $(CURDIR)

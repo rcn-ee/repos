@@ -1,0 +1,62 @@
+From: Simon Glass <sjg@chromium.org>
+Date: Wed, 21 Sep 2011 20:32:44 +0000 (-0700)
+Subject: Create Makefile.utils and move ftdump into it
+X-Git-Url: http://git.jdl.com/gitweb/?p=dtc.git;a=commitdiff_plain;h=9ebd9b4a56e54656431111e5ea7cd74e651910bf
+
+Create Makefile.utils and move ftdump into it
+
+We want to avoid a separate Makefile include for each utility, so this sets
+up a general one for utilities.
+
+Acked-by: David Gibson <david@gibson.dropbear.id.au>
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+
+diff --git a/Makefile b/Makefile
+index 2172d9a..380a705 100644
+--- a/Makefile
++++ b/Makefile
+@@ -105,7 +105,7 @@ endef
+ 
+ include Makefile.convert-dtsv0
+ include Makefile.dtc
+-include Makefile.ftdump
++include Makefile.utils
+ 
+ BIN += convert-dtsv0
+ BIN += dtc
+diff --git a/Makefile.ftdump b/Makefile.ftdump
+deleted file mode 100644
+index 2744a18..0000000
+--- a/Makefile.ftdump
++++ /dev/null
+@@ -1,13 +0,0 @@
+-#
+-# This is not a complete Makefile of itself.
+-# Instead, it is designed to be easily embeddable
+-# into other systems of Makefiles.
+-#
+-
+-FTDUMP_SRCS = \
+-	ftdump.c \
+-	util.c
+-
+-FTDUMP_GEN_SRCS =
+-
+-FTDUMP_OBJS = $(FTDUMP_SRCS:%.c=%.o) $(FTDUMP_GEN_SRCS:%.c=%.o)
+diff --git a/Makefile.utils b/Makefile.utils
+new file mode 100644
+index 0000000..0ed9297
+--- /dev/null
++++ b/Makefile.utils
+@@ -0,0 +1,10 @@
++#
++# This is not a complete Makefile of itself.  Instead, it is designed to
++# be easily embeddable into other systems of Makefiles.
++#
++
++FTDUMP_SRCS = \
++	ftdump.c \
++	util.c
++
++FTDUMP_OBJS = $(FTDUMP_SRCS:%.c=%.o)

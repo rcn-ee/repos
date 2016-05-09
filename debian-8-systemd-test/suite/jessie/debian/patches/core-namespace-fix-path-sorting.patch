@@ -1,0 +1,58 @@
+From: Michal Schmidt <mschmidt@redhat.com>
+Date: Mon, 16 Mar 2015 22:04:21 +0100
+Subject: core/namespace: fix path sorting
+
+The comparison function we use for qsorting paths is overly indifferent.
+Consider these 3 paths for sorting:
+ /foo
+ /bar
+ /foo/foo
+qsort() may compare:
+ "/foo" with "/bar" => 0, indifference
+ "/bar" with "/foo/foo" => 0, indifference
+and assume transitively that "/foo" and "/foo/foo" are also indifferent.
+
+But this is wrong, we want "/foo" sorted before "/foo/foo".
+The comparison function must be transitive.
+
+Use path_compare(), which behaves properly.
+
+Fixes: https://bugzilla.redhat.com/show_bug.cgi?id=1184016
+
+(cherry-picked from commit a0827e2b123010c46cfe4f03eebba57d92f9efc4)
+---
+ src/core/namespace.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
+
+diff --git a/src/core/namespace.c b/src/core/namespace.c
+index 5466b7b..23a85df 100644
+--- a/src/core/namespace.c
++++ b/src/core/namespace.c
+@@ -89,9 +89,11 @@ static int append_mounts(BindMount **p, char **strv, MountMode mode) {
+ 
+ static int mount_path_compare(const void *a, const void *b) {
+         const BindMount *p = a, *q = b;
++        int d;
+ 
+-        if (path_equal(p->path, q->path)) {
++        d = path_compare(p->path, q->path);
+ 
++        if (!d) {
+                 /* If the paths are equal, check the mode */
+                 if (p->mode < q->mode)
+                         return -1;
+@@ -103,13 +105,7 @@ static int mount_path_compare(const void *a, const void *b) {
+         }
+ 
+         /* If the paths are not equal, then order prefixes first */
+-        if (path_startswith(p->path, q->path))
+-                return 1;
+-
+-        if (path_startswith(q->path, p->path))
+-                return -1;
+-
+-        return 0;
++        return d;
+ }
+ 
+ static void drop_duplicates(BindMount *m, unsigned *n) {

@@ -144,4 +144,8 @@ setup_repo
 suite="xenial"
 archs="arm64 armhf source"
 setup_repo
+
+suite="yakkety"
+archs="armhf source"
+setup_repo
 #

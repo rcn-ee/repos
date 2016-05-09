@@ -1,8 +1,31 @@
-systemd (215-17+deb8u3rcnee1~bpo80+20151222+1) jessie; urgency=low
+systemd (215-17+deb8u4rcnee1~bpo80+20160313+1) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Tue, 22 Dec 2015 19:45:53 -0600
+ -- Robert Nelson <robertcnelson@gmail.com>  Sun, 13 Mar 2016 18:42:43 -0500
+
+systemd (215-17+deb8u4) stable; urgency=medium
+
+  [ Martin Pitt ]
+  * debian/udev.prerm: Add missing "deconfigure" action. (Closes: #809744)
+  * udev.postinst: Don't call addgroup with --quiet, so that if the "input"
+    group already exists as a non-system group you get a sensible error
+    message. Some broken tutorials forget the --system option.
+    (Closes: #769948, LP: #1455956)
+  * systemd.postinst: Drop the --quiet from the addgroup calls as well, same
+    reason as above. (Closes: #762275)
+
+  [ Michael Biebl ]
+  * Make sure all swap units are ordered before the swap target. This avoids
+    that swap devices are being stopped prematurely during shutdown.
+    (Closes: #805133)
+  * Only skip the filesystem check for /usr if the /run/initramfs/fsck-usr
+    flag file exists. Otherwise we break booting with dracut which uses
+    systemd inside the initramfs. (Closes: #810748)
+  * Fix --network-interface in systemd-nspawn to not fail when modifying an
+    existing link. (Closes: #813696)
+
+ -- Michael Biebl <biebl@debian.org>  Thu, 03 Mar 2016 19:51:22 +0100
 
 systemd (215-17+deb8u3) stable; urgency=medium
 

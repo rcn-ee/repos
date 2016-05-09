@@ -1,0 +1,19 @@
+#!/bin/sh
+# /usr/lib/emacsen-common/packages/remove/systemtap-common
+set -e
+PACKAGE=systemtap-common
+
+FLAVOR=$1
+elc_dir=/usr/share/${FLAVOR}/site-lisp/${PACKAGE}
+
+case "${FLAVOR}" in
+    emacs)
+        ;;
+    *)
+        echo remove/${PACKAGE}: Purging byte-compiled files for ${FLAVOR}
+        rm -f ${elc_dir}/*.elc ${elc_dir}/*.el
+        rmdir ${elc_dir} || true
+        ;;
+esac
+
+exit 0;

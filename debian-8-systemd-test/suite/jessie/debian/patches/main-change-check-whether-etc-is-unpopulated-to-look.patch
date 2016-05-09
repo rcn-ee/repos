@@ -1,0 +1,31 @@
+From: Lennart Poettering <lennart@poettering.net>
+Date: Fri, 4 Jul 2014 03:13:05 +0200
+Subject: main: change check whether /etc is unpopulated to look for
+ /etc/machine-id
+
+Previously, we checked whether /etc was completely empty. This makes it
+difficult though for container managers such as nspawn to install a
+small number of files (such as /etc/timezone), and have the system
+otherwise populate its own tree.
+
+Hence, change this by looking for /etc/machine-id, which should be a
+good sign whether /etc is populated or not.
+
+(cherry picked from commit baa1bdf70f21848fbe01d3f383ae0f59d86a9bf3)
+---
+ src/core/main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/core/main.c b/src/core/main.c
+index 38835fc..1ca8999 100644
+--- a/src/core/main.c
++++ b/src/core/main.c
+@@ -1543,7 +1543,7 @@ int main(int argc, char *argv[]) {
+                 if (in_initrd())
+                         log_info("Running in initial RAM disk.");
+ 
+-                empty_etc = dir_is_empty("/etc") > 0;
++                empty_etc = access("/etc/machine-id", F_OK) < 0;
+                 if (empty_etc)
+                         log_info("Running with unpopulated /etc.");
+         } else {

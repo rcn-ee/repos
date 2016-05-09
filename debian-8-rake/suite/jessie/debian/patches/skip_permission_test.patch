@@ -1,0 +1,22 @@
+Description: skip test that is doomed to fail under fakeroot
+ This test assumes a given file cannot be deleted after being chmod'd to 000,
+ but under fakeroot the system will go ahead and delete the file no matter
+ what.
+ .
+ This patch is most probably Debian-specific.
+Author: Antonio Terceiro <terceiro@debian.org>
+Origin: vendor
+Forwarded: not-needed
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/test/test_rake_clean.rb
++++ b/test/test_rake_clean.rb
+@@ -11,7 +11,7 @@ class TestRakeClean < Rake::TestCase
+       "Clobber should require clean"
+   end
+ 
+-  def test_cleanup
++  def skip_under_fakeroot__test_cleanup
+     file_name = create_undeletable_file
+ 
+     out, _ = capture_io do

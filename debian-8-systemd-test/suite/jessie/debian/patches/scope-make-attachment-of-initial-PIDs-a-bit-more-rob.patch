@@ -1,0 +1,191 @@
+From: Lennart Poettering <lennart@poettering.net>
+Date: Wed, 10 Dec 2014 22:06:44 +0100
+Subject: scope: make attachment of initial PIDs a bit more robust
+
+---
+ src/core/cgroup.c        | 42 ++++++++++++++++++++++++++++++------------
+ src/core/cgroup.h        |  1 +
+ src/core/execute.c       |  2 +-
+ src/core/scope.c         |  8 +-------
+ src/shared/cgroup-util.c | 18 ++++++++++++++----
+ src/shared/cgroup-util.h |  4 ++--
+ 6 files changed, 49 insertions(+), 26 deletions(-)
+
+diff --git a/src/core/cgroup.c b/src/core/cgroup.c
+index 77acd2e..a7ef88d 100644
+--- a/src/core/cgroup.c
++++ b/src/core/cgroup.c
+@@ -593,7 +593,6 @@ static const char *migrate_callback(CGroupControllerMask mask, void *userdata) {
+ }
+ 
+ static int unit_create_cgroups(Unit *u, CGroupControllerMask mask) {
+-        _cleanup_free_ char *path = NULL;
+         CGroupContext *c;
+         int r;
+ 
+@@ -603,18 +602,22 @@ static int unit_create_cgroups(Unit *u, CGroupControllerMask mask) {
+         if (!c)
+                 return 0;
+ 
+-        path = unit_default_cgroup_path(u);
+-        if (!path)
+-                return log_oom();
++        if (!u->cgroup_path) {
++                _cleanup_free_ char *path = NULL;
+ 
+-        r = hashmap_put(u->manager->cgroup_unit, path, u);
+-        if (r < 0) {
+-                log_error(r == -EEXIST ? "cgroup %s exists already: %s" : "hashmap_put failed for %s: %s", path, strerror(-r));
+-                return r;
+-        }
+-        if (r > 0) {
+-                u->cgroup_path = path;
+-                path = NULL;
++                path = unit_default_cgroup_path(u);
++                if (!path)
++                        return log_oom();
++
++                r = hashmap_put(u->manager->cgroup_unit, path, u);
++                if (r < 0) {
++                        log_error(r == -EEXIST ? "cgroup %s exists already: %s" : "hashmap_put failed for %s: %s", path, strerror(-r));
++                        return r;
++                }
++                if (r > 0) {
++                        u->cgroup_path = path;
++                        path = NULL;
++                }
+         }
+ 
+         /* First, create our own group */
+@@ -640,6 +643,21 @@ static int unit_create_cgroups(Unit *u, CGroupControllerMask mask) {
+         return 0;
+ }
+ 
++int unit_attach_pids_to_cgroup(Unit *u) {
++        int r;
++        assert(u);
++
++        r = unit_realize_cgroup(u);
++        if (r < 0)
++                return r;
++
++        r = cg_attach_many_everywhere(u->manager->cgroup_supported, u->cgroup_path, u->pids, migrate_callback, u);
++        if (r < 0)
++                return r;
++
++        return 0;
++}
++
+ static bool unit_has_mask_realized(Unit *u, CGroupControllerMask mask) {
+         assert(u);
+ 
+diff --git a/src/core/cgroup.h b/src/core/cgroup.h
+index d299872..8a22a26 100644
+--- a/src/core/cgroup.h
++++ b/src/core/cgroup.h
+@@ -108,6 +108,7 @@ CGroupControllerMask unit_get_target_mask(Unit *u);
+ void unit_update_cgroup_members_masks(Unit *u);
+ int unit_realize_cgroup(Unit *u);
+ void unit_destroy_cgroup(Unit *u);
++int unit_attach_pids_to_cgroup(Unit *u);
+ 
+ int manager_setup_cgroup(Manager *m);
+ void manager_shutdown_cgroup(Manager *m, bool delete);
+diff --git a/src/core/execute.c b/src/core/execute.c
+index 6b09402..4efafc9 100644
+--- a/src/core/execute.c
++++ b/src/core/execute.c
+@@ -1406,7 +1406,7 @@ int exec_spawn(ExecCommand *command,
+                 }
+ 
+                 if (cgroup_path) {
+-                        err = cg_attach_everywhere(cgroup_supported, cgroup_path, 0);
++                        err = cg_attach_everywhere(cgroup_supported, cgroup_path, 0, NULL, NULL);
+                         if (err < 0) {
+                                 r = EXIT_CGROUP;
+                                 goto fail_child;
+diff --git a/src/core/scope.c b/src/core/scope.c
+index e8f9e8d..273d7ba 100644
+--- a/src/core/scope.c
++++ b/src/core/scope.c
+@@ -288,13 +288,7 @@ static int scope_start(Unit *u) {
+         if (!u->transient && UNIT(s)->manager->n_reloading <= 0)
+                 return -ENOENT;
+ 
+-        r = unit_realize_cgroup(u);
+-        if (r < 0) {
+-                log_error("Failed to realize cgroup: %s", strerror(-r));
+-                return r;
+-        }
+-
+-        r = cg_attach_many_everywhere(u->manager->cgroup_supported, u->cgroup_path, UNIT(s)->pids);
++        r = unit_attach_pids_to_cgroup(u);
+         if (r < 0)
+                 return r;
+ 
+diff --git a/src/shared/cgroup-util.c b/src/shared/cgroup-util.c
+index c1c4d40..af9471b 100644
+--- a/src/shared/cgroup-util.c
++++ b/src/shared/cgroup-util.c
+@@ -1628,7 +1628,7 @@ int cg_create_everywhere(CGroupControllerMask supported, CGroupControllerMask ma
+         return 0;
+ }
+ 
+-int cg_attach_everywhere(CGroupControllerMask supported, const char *path, pid_t pid) {
++int cg_attach_everywhere(CGroupControllerMask supported, const char *path, pid_t pid, cg_migrate_callback_t path_callback, void *userdata) {
+         CGroupControllerMask bit = 1;
+         const char *n;
+         int r;
+@@ -1638,8 +1638,18 @@ int cg_attach_everywhere(CGroupControllerMask supported, const char *path, pid_t
+                 return r;
+ 
+         NULSTR_FOREACH(n, mask_names) {
+-                if (supported & bit)
++
++                if (supported & bit) {
++                        const char *p = NULL;
++
++                        if (path_callback)
++                                p = path_callback(bit, userdata);
++
++                        if (!p)
++                                p = path;
++
+                         cg_attach_fallback(n, path, pid);
++                }
+ 
+                 bit <<= 1;
+         }
+@@ -1647,7 +1657,7 @@ int cg_attach_everywhere(CGroupControllerMask supported, const char *path, pid_t
+         return 0;
+ }
+ 
+-int cg_attach_many_everywhere(CGroupControllerMask supported, const char *path, Set* pids) {
++int cg_attach_many_everywhere(CGroupControllerMask supported, const char *path, Set* pids, cg_migrate_callback_t path_callback, void *userdata) {
+         Iterator i;
+         void *pidp;
+         int r = 0;
+@@ -1656,7 +1666,7 @@ int cg_attach_many_everywhere(CGroupControllerMask supported, const char *path,
+                 pid_t pid = PTR_TO_LONG(pidp);
+                 int q;
+ 
+-                q = cg_attach_everywhere(supported, path, pid);
++                q = cg_attach_everywhere(supported, path, pid, path_callback, userdata);
+                 if (q < 0)
+                         r = q;
+         }
+diff --git a/src/shared/cgroup-util.h b/src/shared/cgroup-util.h
+index aca4e44..b3425ca 100644
+--- a/src/shared/cgroup-util.h
++++ b/src/shared/cgroup-util.h
+@@ -125,8 +125,8 @@ int cg_slice_to_path(const char *unit, char **ret);
+ typedef const char* (*cg_migrate_callback_t)(CGroupControllerMask mask, void *userdata);
+ 
+ int cg_create_everywhere(CGroupControllerMask supported, CGroupControllerMask mask, const char *path);
+-int cg_attach_everywhere(CGroupControllerMask supported, const char *path, pid_t pid);
+-int cg_attach_many_everywhere(CGroupControllerMask supported, const char *path, Set* pids);
++int cg_attach_everywhere(CGroupControllerMask supported, const char *path, pid_t pid, cg_migrate_callback_t callback, void *userdata);
++int cg_attach_many_everywhere(CGroupControllerMask supported, const char *path, Set* pids, cg_migrate_callback_t callback, void *userdata);
+ int cg_migrate_everywhere(CGroupControllerMask supported, const char *from, const char *to, cg_migrate_callback_t callback, void *userdata);
+ int cg_trim_everywhere(CGroupControllerMask supported, const char *path, bool delete_root);
+ 

@@ -1,0 +1,50 @@
+systemd for Debian
+==================
+
+systemd can be installed alongside sysvinit and will not change the
+behaviour of the system out of the box.  This is intentional.  To test
+systemd, add:
+
+init=/bin/systemd
+
+to the kernel command line and then rebooting, or install the
+systemd-sysv package.
+
+Enabling persistent logging in journald
+=======================================
+
+To enable persistent logging, create /var/log/journal and set up proper
+permissions:
+
+install -d -g systemd-journal /var/log/journal
+setfacl -R -nm g:adm:rx,d:g:adm:rx /var/log/journal
+
+ -- Tollef Fog Heen <tfheen@debian.org>, Wed, 12 Oct 2011 08:43:50 +0200
+
+Debugging boot/shutdown problems
+================================
+
+The "debug-shell" service starts a root shell on VT 9 which is available very
+early during boot and very late during shutdown. You can temporarily enable
+this when booting the system does not get sufficiently far to get a desktop or
+even the text console logins (getty), or when shutdown hangs eternally.
+
+For boot problems the recommended way is to append "systemd.debug-shell" to the
+kernel command line in the bootloader.
+For shutdown problems, run "systemctl start debug-shell" as root, then shut
+down.
+
+WARNING: Please avoid "systemctl enable debug-shell" as this will start the
+debug shell permanently which is a SECURITY HOLE as it allows unauthenticated
+and unrestricted root access to your computer if you forget to disable it!
+Please only enable it if you cannot pass "systemd.debug-shell" to the boot
+loader for some reason, and then immediately run "systemctl disable debug-shell"
+after booting.
+
+Once the boot/shutdown problem happened, switch to VT9 (Ctrl+Alt+F9). There you
+can use the usual systemctl or journalctl commands, or any other Linux shell
+command to list or kill processes. For example, run "systemctl list-jobs" to
+see what's currently being run, or "systemctl" to find units which are not in
+the expected state (e. g. "failed" for boot or still "active" during shutdown),
+and then get more detailled information with "systemctl status -l foo.service"
+to get a service "foo"'s status and recent logging.

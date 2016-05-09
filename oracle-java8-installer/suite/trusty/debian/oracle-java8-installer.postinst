@@ -16,10 +16,10 @@ VER='0.6alpha'
 
 case $(dpkg --print-architecture) in
 'i386'|'i586'|'i686') arch=i386; dld=i586;
-  SHA256SUM_TGZ="21026a8d789f479d3905a4ead0c97fd5190aa9b4d1bfc66413e9136513ca84a2" #must be modified for each release
+  SHA256SUM_TGZ="f2889b778538fe3d20b2d37d0de3c3204de86126aadb75c1bb38d11255b41e92" #must be modified for each release
   ;; 
 'amd64'  ) arch=amd64; dld=x64;
-  SHA256SUM_TGZ="7e95ad5fa1c75bc65d54aaac9e9986063d0a442f39a53f77909b044cef63dc0a" #must be modified for each release 
+  SHA256SUM_TGZ="a47dc0962a57b27a0cc00b9f11a53dc3add40c98633ba49a2419b845e4dedf43" #must be modified for each release 
   ;; 
 arm*      )
   arch=arm
@@ -34,12 +34,12 @@ arm*      )
 			else
 				# Hardfloat
 				dld='arm32-vfp-hflt'
-				SHA256SUM_TGZ="35855580355584865bade416d23cc164792d7fa2581a140e6034724c520be45c" #must be modified for each release
+				SHA256SUM_TGZ="c3af7a080cd74f7350680a020749b8161f78f66d1f16cda91bf758c3e58b524b" #must be modified for each release
 			fi
 		fi
 	elif [ `uname -m` = "armv8l" ] || [ `uname -m` = "arm64" ] || [ `uname -m` = "aarch64" ]; then
 		dld='arm64-vfp-hflt'
-		SHA256SUM_TGZ="29ead39d88c2fbf5eebf126ded24c2a129227a3ae9f255f1b5688a2403912527" #must be modified for each release
+		SHA256SUM_TGZ="d194595d0c6d2f0b6fad36da489e26a65e3825af85c051ce3c84d5a1f5a96b31" #must be modified for each release
 	else
 		echo "Oracle JDK 8 only supports ARM v6/v7/v8 hardfloat."
 		arch=''
@@ -54,19 +54,19 @@ esac
 ########Variables
 
 if [ ! $arch = "arm" ]; then
-	JAVA_VERSION=8u66 #must be modified for each release jdk-8u5-linux-x64.tar.gz
-	J_DIR=jdk1.8.0_66 #must be modified for each release
+	JAVA_VERSION=8u77 #must be modified for each release jdk-8u5-linux-x64.tar.gz
+	J_DIR=jdk1.8.0_77 #must be modified for each release
 	FILENAME=jdk-${JAVA_VERSION}-linux-${dld}.tar.gz
-	PARTNER_URL=http://download.oracle.com/otn-pub/java/jdk/8u66-b17/$FILENAME #must be modified for each release
-	for JAVA_VERSION_OLD2 in `seq 1 65`; do #must be modified for each release
+	PARTNER_URL=http://download.oracle.com/otn-pub/java/jdk/8u77-b03/$FILENAME #must be modified for each release
+	for JAVA_VERSION_OLD2 in `seq 1 76`; do #must be modified for each release
 	   FILENAMES_OLD2="jdk-8u${JAVA_VERSION_OLD2}-linux-${dld}*.tar.gz $FILENAMES_OLD2"
 	done
 else
-	JAVA_VERSION=8u65 #must be modified for each release jdk-8-linux-arm-vfp-hflt.tar.gz
-	J_DIR=jdk1.8.0_65 #must be modified for each release
+	JAVA_VERSION=8u77 #must be modified for each release jdk-8-linux-arm-vfp-hflt.tar.gz
+	J_DIR=jdk1.8.0_77 #must be modified for each release
 	FILENAME=jdk-${JAVA_VERSION}-linux-${dld}.tar.gz
-	PARTNER_URL=http://download.oracle.com/otn-pub/java/jdk/8u65-b17/$FILENAME #must be modified for each release
-	for JAVA_VERSION_OLD1 in `seq 1 64`; do #must be modified for each release
+	PARTNER_URL=http://download.oracle.com/otn-pub/java/jdk/8u77-b03/$FILENAME #must be modified for each release
+	for JAVA_VERSION_OLD1 in `seq 1 76`; do #must be modified for each release
 		FILENAMES_OLD1="jdk-8u${JAVA_VERSION_OLD1}-linux-${dld}*.tar.gz $FILENAMES_OLD1 jdk-8-*.tar.gz"
 	done
 fi
@@ -134,21 +134,38 @@ fp_download_and_unpack() {
         unset ftp_proxy
     fi
 
-		# setting wget options
-		:> wgetrc
-		echo "noclobber = off" >> wgetrc
-		echo "dir_prefix = ." >> wgetrc
-		echo "dirstruct = off" >> wgetrc
-		echo "verbose = on" >> wgetrc
-		echo "progress = dot:mega" >> wgetrc
-		echo "tries = 5" >> wgetrc
+		# if /var/cache/oracle-jdk8-installer/wgetrc exists, use it for downloading java
+		if [ -f /var/cache/oracle-jdk8-installer/wgetrc ]; then
 
-		# downloading jdk8
-		echo "Downloading Oracle Java 8..."
-		WGETRC=wgetrc wget --continue --no-check-certificate -O $FILENAME --header "Cookie: oraclelicense=a" $PARTNER_URL \
-			|| fp_exit_with_error "download failed"
-		echo "Download done."
+			# downloading jdk8
+			echo "Using wget settings from /var/cache/oracle-jdk8-installer/wgetrc"
+			echo "Downloading Oracle Java 8..."
+			WGETRC=wgetrc wget --continue --no-check-certificate -O $FILENAME --header "Cookie: oraclelicense=a" $PARTNER_URL \
+				|| fp_exit_with_error "download failed"
+			echo "Download done."
 
+		#if it's not, use the settings below (which also creates /var/cache/oracle-jdk8-installer/wgetrc)
+		else
+
+			# setting wget options
+			:> wgetrc
+			echo "noclobber = off" >> wgetrc
+			echo "dir_prefix = ." >> wgetrc
+			echo "dirstruct = off" >> wgetrc
+			echo "verbose = on" >> wgetrc
+			echo "progress = dot:mega" >> wgetrc
+			echo "tries = 5" >> wgetrc
+
+			# downloading jdk8
+			echo "No /var/cache/oracle-jdk8-installer/wgetrc file found."
+			echo "Creating /var/cache/oracle-jdk8-installer/wgetrc and"
+			echo "using default oracle-java8-installer wgetrc settings for it."
+			echo "Downloading Oracle Java 8..."
+			WGETRC=wgetrc wget --continue --no-check-certificate -O $FILENAME --header "Cookie: oraclelicense=a" $PARTNER_URL \
+				|| fp_exit_with_error "download failed"
+			echo "Download done."
+
+		fi
 
 	fi # end if local file
 

@@ -1,0 +1,13 @@
+Description: make sure debian version is visible in e.g. "stap -V"
+Author: Timo Juhani Lindfors <timo.lindfors@iki.fi>
+Forwarded: not-needed
+--- a/git_version.sh
++++ b/git_version.sh
+@@ -1,4 +1,7 @@
+ #!/bin/sh
++
++exec debian/debversion.sh debian/changelog > git_version.h
++
+ #
+ # Generate some basic versioning information which can be piped to a header.
+ #

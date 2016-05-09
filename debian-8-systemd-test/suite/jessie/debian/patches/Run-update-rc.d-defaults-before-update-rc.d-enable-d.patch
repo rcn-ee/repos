@@ -1,0 +1,68 @@
+From: Michael Stapelberg <stapelberg@debian.org>
+Date: Sun, 27 Oct 2013 20:25:10 +0100
+Subject: Run update-rc.d defaults before update-rc.d <enable|disable>
+
+Closes: #722523
+---
+ src/systemctl/systemctl.c | 47 ++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 46 insertions(+), 1 deletion(-)
+
+diff --git a/src/systemctl/systemctl.c b/src/systemctl/systemctl.c
+index eea3bd0..5b53aad 100644
+--- a/src/systemctl/systemctl.c
++++ b/src/systemctl/systemctl.c
+@@ -5072,8 +5072,53 @@ static int enable_sysv_units(const char *verb, char **args) {
+                     continue;
+                 }
+ 
++                /* Run update-rc.d <file> defaults first to ensure the K- and
++                 * S-symlinks are present. If they are missing, update-rc.d
++                 * <enable|disable> will fail. See
++                 * http://bugs.debian.org/722523 */
+                 argv[c++] = basename(p);
+-                argv[c++] = verb;
++                argv[c++] = "defaults";
++                argv[c] = NULL;
++
++                l = strv_join((char**)argv, " ");
++                if (!l) {
++                        r = log_oom();
++                        goto finish;
++                }
++
++                log_info("Executing %s", l);
++                free(l);
++
++                pid = fork();
++                if (pid < 0) {
++                        log_error("Failed to fork: %m");
++                        r = -errno;
++                        goto finish;
++                } else if (pid == 0) {
++                        /* Child */
++
++                        execv(argv[0], (char**) argv);
++                        _exit(EXIT_FAILURE);
++                }
++
++                j = wait_for_terminate(pid, &status);
++                if (j < 0) {
++                        log_error("Failed to wait for child: %s", strerror(-r));
++                        r = j;
++                        goto finish;
++                }
++
++                if (status.si_code == CLD_EXITED) {
++                        if (status.si_status != 0) {
++                                r = -EINVAL;
++                                goto finish;
++                        }
++                } else {
++                        r = -EPROTO;
++                        goto finish;
++                }
++
++                argv[c-1] = verb;
+                 argv[c] = NULL;
+ 
+                 l = strv_join((char**)argv, " ");

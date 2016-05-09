@@ -1,15 +1,11 @@
 #!/bin/sh
 
-if [ -d /usr/lib/ccache ]; then
-    export PATH="/usr/lib/ccache:$PATH"
-fi
-debian/rules clean 2>&1
-dpkg-source --before-build .
-debian/rules build 2>&1
 [ -e debian/tests.home ] || mkdir debian/tests.home
 export HOME="$(pwd)/debian/tests.home"
-xvfb-run -a --server-args="-screen 0 1024x768x24+32" \
-    dbus-launch --exit-with-session debian/tests/testsuite.xsession
-ret=$?
-rm -rf debian/tests.home
-exit $ret
+mkdir "$HOME"/.config || true
+xvfb-run -a --server-args="-screen 0 1024x768x24" \
+    Xephyr -reset -br -screen 1024x768 :2 & x_pid=$!
+
+trap "kill ${x_pid}; rm -rf debian/tests.home" EXIT
+
+DISPLAY=:2 dbus-launch --exit-with-session debian/tests/testsuite.xsession

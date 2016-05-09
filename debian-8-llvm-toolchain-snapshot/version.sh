@@ -4,7 +4,7 @@ mirror="http://http.debian.net/debian"
 
 package_name="llvm-toolchain-snapshot"
 debian_pkg_name="${package_name}"
-package_version="3.8~svn254193"
+package_version="3.9~svn262954"
 
 git_repo=""
 git_sha=""

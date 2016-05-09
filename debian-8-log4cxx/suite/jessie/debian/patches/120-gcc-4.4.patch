@@ -1,0 +1,18 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 120-gcc-4.4.dpatch by Martin Michlmayr <tbm@cyrius.com>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: FTBFS with GCC 4.4: missing #include
+
+@DPATCH@
+diff -urNad log4cxx-0.10.0~/src/examples/cpp/console.cpp log4cxx-0.10.0/src/examples/cpp/console.cpp
+--- log4cxx-0.10.0~/src/examples/cpp/console.cpp	2009-12-21 17:09:09.000000000 +0100
++++ log4cxx-0.10.0/src/examples/cpp/console.cpp	2009-12-21 17:09:24.000000000 +0100
+@@ -15,6 +15,7 @@
+  * limitations under the License.
+  */
+ 
++#include <stdio.h>
+ #include <stdlib.h>
+ #include <log4cxx/logger.h>
+ #include <log4cxx/consoleappender.h>

@@ -1,0 +1,39 @@
+From: Harald Hoyer <harald@redhat.com>
+Date: Wed, 3 Sep 2014 13:22:40 +0200
+Subject: base_filesystem_create: do not try to create "/root" if it exists
+
+The check, if the directory/file already exists is only executed, if
+there is a symlink target specified. In case of "/root", there is none,
+so it is unconditionally tried to create the directory.
+
+In case of a readonly filesystem, errno != EEXIST, but errno == EROFS,
+so base_filesystem_create() and switch_root does not succeed.
+
+This patch checks for existance not only in the symlink case.
+
+(cherry picked from commit 6f4f8056d3f972c1e6ee7f5fc40ed283fd93152a)
+---
+ src/shared/base-filesystem.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/shared/base-filesystem.c b/src/shared/base-filesystem.c
+index addd26c..ba8b829 100644
+--- a/src/shared/base-filesystem.c
++++ b/src/shared/base-filesystem.c
+@@ -62,13 +62,13 @@ int base_filesystem_create(const char *root) {
+                 return -errno;
+ 
+         for (i = 0; i < ELEMENTSOF(table); i ++) {
++                if (faccessat(fd, table[i].dir, F_OK, AT_SYMLINK_NOFOLLOW) >= 0)
++                        continue;
++
+                 if (table[i].target) {
+                         const char *target = NULL;
+                         const char *s;
+ 
+-                        if (faccessat(fd, table[i].dir, F_OK, AT_SYMLINK_NOFOLLOW) >= 0)
+-                                continue;
+-
+                         /* check if one of the targets exists */
+                         NULSTR_FOREACH(s, table[i].target) {
+                                 if (faccessat(fd, s, F_OK, AT_SYMLINK_NOFOLLOW) < 0)

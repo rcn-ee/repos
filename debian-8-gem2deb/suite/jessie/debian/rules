@@ -1,0 +1,28 @@
+#!/usr/bin/make -f
+#export DH_VERBOSE=1
+%:
+	dh $@
+
+ruby_versions := $(shell ruby -Ilib ./bin/dh_ruby --print-supported)
+
+override_dh_auto_build: $(ruby_versions)
+	mkdir -p man/gem2deb man/gem2deb-test-runner
+	for i in bin/*; do pod2man -c "" -r "" $$i > man/gem2deb/$$(basename $$i).1; done
+	mv man/gem2deb/gem2deb-test-runner.1 man/gem2deb-test-runner
+
+override_dh_install:
+	dh_install -pgem2deb -Xgem2deb-test-runner -Xtest_runner.rb -Xmetadata.rb -Xtesttask.rb -Xspectask.rb -Xbanner.rb
+	dh_install -pgem2deb-test-runner
+
+.PHONY: $(ruby_versions)
+
+$(ruby_versions):
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+	# NO_PKG_MANGLE=1 only useful on Ubuntu buildds, to disable pkgbinarymangler
+	NO_PKG_MANGLE=1 $@ -S rake test:unit TESTOPTS=-v
+else
+	@echo "Skipping tests for $@ as DEB_BUILD_OPTIONS contains 'nocheck'"
+endif
+
+override_dh_auto_clean:
+	rm -rf man/

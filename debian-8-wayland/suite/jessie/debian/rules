@@ -1,0 +1,35 @@
+#!/usr/bin/make -f
+
+SOURCE=wayland
+
+# Kill *.la files, and forget no-one:
+override_dh_install:
+	find debian/tmp -name '*.la' -delete
+	dh_install --fail-missing
+
+override_dh_makeshlibs:
+	dh_makeshlibs -plibwayland-client0 \
+		-V 'libwayland-client0 (>= 1.2.0)' -- -c4
+	dh_makeshlibs -plibwayland-cursor0 \
+		-V 'libwayland-cursor0 (>= 1.0.4)' -- -c4
+	dh_makeshlibs -plibwayland-server0 \
+		-V 'libwayland-server0 (>= 1.2.0)' -- -c4
+
+# Debug package:
+override_dh_strip:
+	dh_strip -plibwayland-client0 --dbg-package=libwayland-client0-dbg
+	dh_strip -plibwayland-cursor0 --dbg-package=libwayland-cursor0-dbg
+	dh_strip -plibwayland-server0 --dbg-package=libwayland-server0-dbg
+	dh_strip -a --remaining-packages
+
+override_dh_auto_test:
+	# the test suite does not pass completely in headless mode
+	dh_auto_test || true
+
+%:
+	dh $@ --with quilt,autoreconf --builddirectory=build/
+
+# For maintainer use only, generate a tarball:
+gentarball: UV=$(shell dpkg-parsechangelog|awk '/^Version:/ {print $$2}'|sed 's/-.*$$//')
+gentarball:
+	git archive --format=tar upstream-experimental --prefix=$(SOURCE)-$(UV)/ | gzip -9 > ../$(SOURCE)_$(UV).orig.tar.gz

@@ -1,0 +1,40 @@
+Source: device-tree-compiler
+Section: devel
+Priority: extra
+Maintainer: Hector Oron <zumbi@debian.org>
+Uploaders: Riku Voipio <riku.voipio@linaro.org>
+Standards-Version: 3.9.5
+Build-Depends: debhelper (>= 5), quilt, flex, bison, texlive, texlive-latex-extra
+Homepage: https://git.kernel.org/cgit/utils/dtc/dtc.git
+Vcs-Git: git://anonscm.debian.org/crosstoolchain/device-tree-compiler.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=crosstoolchain/device-tree-compiler.git
+
+Package: device-tree-compiler
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: foreign
+Description: Device Tree Compiler for Flat Device Trees
+ Device Tree Compiler, dtc, takes as input a device-tree in
+ a given format and outputs a device-tree in another format
+ for booting kernels on embedded systems.
+ .
+ Typically, the input format is "dts", a human readable source
+ format, and creates a "dtb", or binary format as output.
+
+Package: libfdt1
+Architecture: any
+Section: libs
+Multi-Arch: same
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: Flat Device Trees manipulation library
+ This is a library containing functions for manipulating Flat Device Trees.
+
+Package: libfdt-dev
+Architecture: any
+Section: libdevel
+Depends: libfdt1 (= ${binary:Version}), ${misc:Depends}
+Description: Flat Device Trees manipulation library - development files
+ This is a library containing functions for manipulating Flat Device Trees.
+ .
+ This package contains the files needed for development against libfdt.

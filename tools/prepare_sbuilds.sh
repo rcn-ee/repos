@@ -6,6 +6,8 @@ proxy="apt-proxy:3142/"
 debian_server="ftp.us.debian.org/debian"
 ubuntu_server="ports.ubuntu.com"
 
+builder=`cat /etc/hostname`
+
 setup_update_sbuild () {
 	if [ ! -f /usr/share/debootstrap/scripts/${dist} ] ; then
 		sudo ln -s /usr/share/debootstrap/scripts/${deboot} /usr/share/debootstrap/scripts/${dist}
@@ -25,35 +27,78 @@ echo "\$distribution = 'stretch';" >> ~/.sbuildrc
 
 mirror="http://${proxy}${debian_server}"
 deboot="sid"
-dist="wheezy"
-arch="armhf"
-options=""
-setup_update_sbuild
+
+if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
+if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
+if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
+	dist="wheezy"
+	arch="armhf"
+	options=""
+	setup_update_sbuild
+fi
+fi
+fi
 
 dist="jessie"
 arch="armhf"
 options=""
 setup_update_sbuild
 
-dist="stretch"
-arch="armhf"
-options=""
-setup_update_sbuild
+if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
+if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
+if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
+	dist="stretch"
+	arch="armhf"
+	options=""
+	setup_update_sbuild
+fi
+fi
+fi
 
 mirror="http://${proxy}${ubuntu_server}"
 deboot="gutsy"
-dist="trusty"
-arch="armhf"
-options="--exclude=debfoster"
-setup_update_sbuild
 
-dist="wily"
-arch="armhf"
-options="--exclude=debfoster"
-setup_update_sbuild
+if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
+if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
+if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
+	dist="trusty"
+	arch="armhf"
+	options="--exclude=debfoster"
+	setup_update_sbuild
+fi
+fi
+fi
 
-dist="xenial"
-arch="armhf"
-options="--exclude=debfoster"
-setup_update_sbuild
+if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
+if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
+if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
+	dist="wily"
+	arch="armhf"
+	options="--exclude=debfoster"
+	setup_update_sbuild
+fi
+fi
+fi
+
+if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
+if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
+if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
+	dist="xenial"
+	arch="armhf"
+	options="--exclude=debfoster"
+	setup_update_sbuild
+fi
+fi
+fi
+
+if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
+if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
+if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
+	dist="yakkety"
+	arch="armhf"
+	options="--exclude=debfoster"
+	setup_update_sbuild
+fi
+fi
+fi
 #

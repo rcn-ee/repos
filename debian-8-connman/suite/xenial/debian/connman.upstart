@@ -1,0 +1,9 @@
+description "Connection Manager"
+
+start on started dbus
+stop on stopping dbus
+
+expect fork
+respawn
+
+exec connmand --nobacktrace

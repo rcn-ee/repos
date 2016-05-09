@@ -1,0 +1,55 @@
+From: Josh Boyer <jwboyer@linux.vnet.ibm.com>
+Date: Tue, 28 Jun 2011 12:47:09 +0000 (-0400)
+Subject: dtc: Remove unused check variable
+X-Git-Url: http://git.jdl.com/gitweb/?p=dtc.git;a=commitdiff_plain;h=0a5aca98ba104ec4101322ccaf36da45064ad3ce
+
+dtc: Remove unused check variable
+
+Commit 376ab6f2 removed the old style check functionality from DTC,
+however the check option and variable were not removed.  This leads to
+build failures when -Werror=unused-but-set-variable is specified:
+
+	dtc.c: In function 'main':
+	dtc.c:102:17: error: variable 'check' set but not used [-Werror=unused-but-set-variable]
+	cc1: all warnings being treated as errors
+	make: *** [dtc.o] Error 1
+	make: *** Waiting for unfinished jobs....
+
+Remove the check variable.
+
+Signed-off-by: Josh Boyer <jwboyer@linux.vnet.ibm.com>
+Acked-by: David Gibson <david@gibson.dropbear.id.au>
+---
+
+diff --git a/dtc.c b/dtc.c
+index cbc0193..15d2fc2 100644
+--- a/dtc.c
++++ b/dtc.c
+@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
+ 	const char *inform = "dts";
+ 	const char *outform = "dts";
+ 	const char *outname = "-";
+-	int force = 0, check = 0, sort = 0;
++	int force = 0, sort = 0;
+ 	const char *arg;
+ 	int opt;
+ 	FILE *outf = NULL;
+@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
+ 	minsize    = 0;
+ 	padsize    = 0;
+ 
+-	while ((opt = getopt(argc, argv, "hI:O:o:V:R:S:p:fcqb:vH:s")) != EOF) {
++	while ((opt = getopt(argc, argv, "hI:O:o:V:R:S:p:fqb:vH:s")) != EOF) {
+ 		switch (opt) {
+ 		case 'I':
+ 			inform = optarg;
+@@ -137,9 +137,6 @@ int main(int argc, char *argv[])
+ 		case 'f':
+ 			force = 1;
+ 			break;
+-		case 'c':
+-			check = 1;
+-			break;
+ 		case 'q':
+ 			quiet++;
+ 			break;

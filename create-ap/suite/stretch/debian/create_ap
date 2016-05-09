@@ -511,6 +511,9 @@ networkmanager_add_unmanaged() {
     ADDED_UNMANAGED="${ADDED_UNMANAGED} ${1} "
     mutex_unlock
 
+    local nm_pid=$(pidof NetworkManager)
+    [[ -n "$nm_pid" ]] && kill -HUP $nm_pid
+
     return 0
 }
 
@@ -551,14 +554,21 @@ networkmanager_rm_unmanaged() {
     ADDED_UNMANAGED="${ADDED_UNMANAGED/ ${1} /}"
     mutex_unlock
 
+    local nm_pid=$(pidof NetworkManager)
+    [[ -n "$nm_pid" ]] && kill -HUP $nm_pid
+
     return 0
 }
 
 networkmanager_fix_unmanaged() {
     [[ -f ${NETWORKMANAGER_CONF} ]] || return
+
     mutex_lock
     sed -e "/^unmanaged-devices=.*/d" -i ${NETWORKMANAGER_CONF}
     mutex_unlock
+
+    local nm_pid=$(pidof NetworkManager)
+    [[ -n "$nm_pid" ]] && kill -HUP $nm_pid
 }
 
 networkmanager_rm_unmanaged_if_needed() {
@@ -1518,6 +1528,15 @@ fi
 [[ $HIDDEN -eq 1 ]] && echo "Access Point's SSID is hidden!"
 
 [[ $ISOLATE_CLIENTS -eq 1 ]] && echo "Access Point's clients will be isolated!"
+
+if [ "x${SSID}" = "xBeagleBone" ] ; then
+    if [ -f /etc/wlan0-mac ] ; then
+        ssid_append=$(cat /etc/wlan0-mac | cut -b 13-17 | sed 's/://g' || true)
+        if [ ! "x${ssid_append}" = "x" ] ; then
+            SSID="${SSID}-${ssid_append}"
+        fi
+    fi
+fi
 
 # hostapd config
 cat << EOF > $CONFDIR/hostapd.conf

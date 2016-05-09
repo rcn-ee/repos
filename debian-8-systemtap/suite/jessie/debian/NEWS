@@ -1,0 +1,49 @@
+systemtap (1.4-1) unstable; urgency=low
+
+  This release fixes security vulnerabilities in SystemTap
+  (CVE-2010-4170, CVE-2010-4171)
+  There is a change is the runtime behavior of SystemTap. All users
+  that are currently part of 'stapdev' group would also have to be added
+  to the 'stapusr' (limited-privilege powers) group.
+ 
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Fri, 25 Feb 2011 01:18:30 +0530
+
+systemtap (0.9.9+0git20090910-1) experimental; urgency=low
+
+  This release supports execution of precompiled and signed probe modules
+  by unpriviledged users. This feature is experimental and should be used
+  with care. If used incorrectly it can cause security problems. See
+  upstream NEWS file for details.
+
+ -- Євгеній Мещеряков <eugen@debian.org>  Fri, 11 Sep 2009 21:33:37 +0200
+
+systemtap (0.0.20081220-1) experimental; urgency=low
+
+  In this version runtime component (staprun) and documentation were split
+  into separate packages. Runtime component can be found in systemtap-runtime
+  package. Documentation is now in systemtap-doc package.
+
+ -- Євгеній Мещеряков <eugen@debian.org>  Tue, 23 Dec 2008 21:11:56 +0100
+
+systemtap (0.0.20070825-1) unstable; urgency=low
+
+  This version of systemtap does not use sudo to run /usr/bin/staprun binary.
+  Instead, staprun is installed suid-root. To be able to run systemtap scripts
+  you must be in group 'stapdev'. It is also possible to run some precompiled
+  scripts for users in group 'stapusr'. As usual, root can run any scripts.
+  See /usr/share/doc/systemtap/README.security for details on new security
+  model.
+
+ -- Eugeniy Meshcheryakov <eugen@debian.org>  Tue, 28 Aug 2007 15:45:34 +0200
+
+systemtap (0.0.20060930-1) unstable; urgency=low
+
+  This version of systemtap does not contain stapd program anymore, it was
+  replaced by staprun program. You need to adjust your /etc/sudoers file
+  to be able to run systemtap as non-root. Please, replace references to
+  /usr/lib/systemtap/stapd with /usr/bin/staprun. New entry should look
+  like this:
+
+     auser   ALL=(root) /usr/bin/staprun
+
+ -- Eugeniy Meshcheryakov <eugen@debian.org>  Sun,  1 Oct 2006 20:54:05 +0200

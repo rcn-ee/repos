@@ -1,0 +1,83 @@
+Description: Work around renaming of ccache-swig binary
+ The package suffixes binaries with the major version, which changes
+ ccache-swig to ccache-swig3.0. However, ccache is sensitive to the
+ name of its binary. The test did not take the program-suffix configure
+ option into account.
+ .
+ This is fixed with this patch, however, the original name will not
+ work anymore here (ccache-swig is probably broken now, calling it
+ via the installed symlink should work though).
+ .
+ The patch replaces the macro MYNAME to refer to the installed name
+ of the ccache-swig binary.
+
+Author: Torsten Landschoff <torsten@debian.org>
+Bug-Debian: http://bugs.debian.org/786618
+Origin: Debian
+Forwarded: no
+
+Index: swig/CCache/Makefile.in
+===================================================================
+--- swig.orig/CCache/Makefile.in	2015-10-31 00:20:45.031046135 +0100
++++ swig/CCache/Makefile.in	2015-10-31 00:20:45.027046135 +0100
+@@ -24,6 +24,7 @@
+ OBJS= ccache.o mdfour.o hash.o execute.o util.o args.o stats.o \
+ 	cleanup.o snprintf.o unify.o
+ HEADERS = ccache.h mdfour.h
++CPPFLAGS = -DMYNAME='"$(shell echo '$(PACKAGE_NAME)' | sed '$(transform)')$(EXEEXT)"'
+ 
+ all: $(PACKAGE_NAME)$(EXEEXT)
+ 
+Index: swig/CCache/ccache.h
+===================================================================
+--- swig.orig/CCache/ccache.h	2015-10-31 00:20:45.031046135 +0100
++++ swig/CCache/ccache.h	2015-10-31 00:20:45.027046135 +0100
+@@ -49,8 +49,6 @@
+ #define STATUS_FATAL 4
+ #define STATUS_NOCACHE 5
+ 
+-#define MYNAME PACKAGE_NAME
+-
+ #define LIMIT_MULTIPLE 0.8
+ 
+ /* default maximum cache size */
+Index: swig/CCache/ccache.c
+===================================================================
+--- swig.orig/CCache/ccache.c	2015-10-31 00:20:45.031046135 +0100
++++ swig/CCache/ccache.c	2015-10-31 00:32:34.511016463 +0100
+@@ -753,6 +753,16 @@
+ 	exit(0);
+ }
+ 
++/* Return true if path looks like a ccache binary path. */
++static int is_ccache_name(const char *path)
++{
++	char *base = str_basename(path);
++	int result = strcmp(base, MYNAME) == 0 || strcmp(base, PACKAGE_NAME) == 0;
++	free(base);
++	return result;
++}
++
++
+ /* find the real compiler. We just search the PATH to find a executable of the 
+    same name that isn't a link to ourselves */
+ static void find_compiler(int argc, char **argv)
+@@ -765,7 +775,7 @@
+ 	base = str_basename(argv[0]);
+ 
+ 	/* we might be being invoked like "ccache gcc -c foo.c" */
+-	if (strcmp(base, MYNAME) == 0) {
++	if (is_ccache_name(argv[0])) {
+ 		args_remove_first(orig_args);
+ 		free(base);
+ 		if (strchr(argv[1],'/')
+@@ -1345,8 +1355,7 @@
+ 
+ 
+ 	/* check if we are being invoked as "ccache" */
+-	if (strlen(argv[0]) >= strlen(MYNAME) &&
+-	    strcmp(argv[0] + strlen(argv[0]) - strlen(MYNAME), MYNAME) == 0) {
++	if (is_ccache_name(argv[0])) {
+ 		if (argc < 2) {
+ 			usage();
+ 			exit(1);

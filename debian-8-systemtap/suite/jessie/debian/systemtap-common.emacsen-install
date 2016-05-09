@@ -1,0 +1,42 @@
+#!/bin/sh
+# /usr/lib/emacsen-common/packages/install/systemtap-common
+set -e
+PACKAGE=systemtap-common
+
+FLAVOR=$1
+
+byte_compile_options="-batch -f batch-byte-compile"
+el_files="systemtap-init.el systemtap-mode.el"
+el_dir=/usr/share/emacs/site-lisp/${PACKAGE}/
+elc_dir=/usr/share/${FLAVOR}/site-lisp/${PACKAGE}/
+
+case "${FLAVOR}" in
+    emacs)
+        ;;
+    emacs23|emacs24|emacs-snapshot)
+        echo install/${PACKAGE}: Handling install of emacsen flavor ${FLAVOR}
+        [ -d ${elc_dir} ] || mkdir ${elc_dir}
+
+        # Symlink the .el files (emacsen policy 6E)
+        for i in ${el_files}; do
+            ln -fs ../../../emacs/site-lisp/${PACKAGE}/${i} ${elc_dir}/${i}
+        done
+
+        # Byte compile them
+        cd ${elc_dir}
+        LOG=`mktemp -t elc.XXXXXXXXXXXX`
+        if ! ${FLAVOR} ${byte_compile_options} ${el_files} > ${LOG} 2>&1; then
+            echo Byte-compilation failed:
+            cat ${LOG}
+            rm ${LOG}
+            exit 1
+        fi
+        rm ${LOG}
+        ;;
+    *)
+        echo install/${PACKAGE}: Ignoring unsupported flavor ${FLAVOR}
+        ;;
+esac
+
+exit 0;
+

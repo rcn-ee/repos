@@ -41,7 +41,8 @@ endif
 
 WANT_DEBUG       ?= 0
 
-WANT_SHARED_LIBS ?= 0
+COMPONENT_SHARED_LIB_BUILD := 1
+WANT_SHARED_LIBS ?= 1
 
 # Set up Google API keys, see http://www.chromium.org/developers/how-tos/api-keys .
 # Note: these are for Ubuntu use ONLY. For your own distribution,
@@ -149,9 +150,6 @@ GYP_DEFINES += use_allocator=none
 GYP_DEFINES += disable_sse2=1
 endif
 
-# Do this for every architecture. More than 4GB of memory is too much to expect
-# of builders.
-COMPONENT_SHARED_LIB_BUILD := 1
 
 ifeq (1,$(COMPONENT_SHARED_LIB_BUILD))
 BROWSER_GYP_DEFINES += component=shared_library

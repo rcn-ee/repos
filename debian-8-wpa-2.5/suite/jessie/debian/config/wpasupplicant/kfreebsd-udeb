@@ -1,0 +1,13 @@
+# Debian's wpa_supplicant build time configuration
+CONFIG_DRIVER_BSD=y
+LIBS += -lbsd
+CONFIG_CTRL_IFACE=y
+CONFIG_BACKEND=file
+CONFIG_MAIN=main
+CONFIG_OS=unix
+CONFIG_ELOOP=eloop
+CONFIG_L2_PACKET=freebsd
+
+# enable syslog support, as requested by d-i/ netcfg
+CONFIG_DEBUG_SYSLOG=y
+CONFIG_DEBUG_SYSLOG_FACILITY=LOG_DAEMON

@@ -1,0 +1,69 @@
+Subject: fix crash using "flatnested" feature for out-of-scope defined nested classes
+Origin: upstream, https://github.com/swig/swig/commit/8bc38dc0070740d1a4b1ec522f80c7e292a74850
+Author: Vladimir Kalinin <vkalinin@opendesign.com>
+Bug-Debian: https://bugs.debian.org/768280
+
+commit 8bc38dc0070740d1a4b1ec522f80c7e292a74850
+Date:   Tue Nov 4 19:30:53 2014 +0300
+
+    fixes "flatnested"  feature for out-of-scope defined nested classes
+
+diff --git a/Examples/test-suite/nested_scope.i b/Examples/test-suite/nested_scope.i
+index 7894783..059b735 100644
+--- a/Examples/test-suite/nested_scope.i
++++ b/Examples/test-suite/nested_scope.i
+@@ -26,4 +26,15 @@ namespace ns {
+ #endif
+ 	};
+ }
++#ifndef __clang__
++		class Outer1 {
++			struct Nested1;
++		public:
++			struct Nested2;
++		};
++		struct Outer1::Nested2 {
++			int data;
++		};
++#endif
++
+ %}
+diff --git a/Source/CParse/parser.y b/Source/CParse/parser.y
+index 61b0462..c4061b1 100644
+--- a/Source/CParse/parser.y
++++ b/Source/CParse/parser.y
+@@ -1018,7 +1018,7 @@ static Node *nested_forward_declaration(const char *storage, const char *kind, S
+     }
+   }
+ 
+-  if (!GetFlag(currentOuterClass, "nested")) {
++  if (!currentOuterClass || !GetFlag(currentOuterClass, "nested")) {
+     if (nn && Equal(nodeType(nn), "classforward")) {
+       Node *n = nn;
+       SWIG_WARN_NODE_BEGIN(n);
+@@ -3451,8 +3451,14 @@ cpp_class_decl  : storage_class cpptype idcolon inherit LBRACE {
+ 		   nscope = Getattr($<node>$, "nested:nscope");
+ 		   Delattr($<node>$, "nested:innerscope");
+ 		   Delattr($<node>$, "nested:nscope");
+-		   if (nscope_inner && Strcmp(nodeType(nscope_inner), "class") == 0) /* actual parent class for this class */
+-		     Setattr($$, "nested:outer", nscope_inner);
++		   if (nscope_inner && Strcmp(nodeType(nscope_inner), "class") == 0) { /* actual parent class for this class */
++		     Node* forward_declaration = Swig_symbol_clookup_no_inherit(Getattr($<node>$,"name"), Getattr(nscope_inner, "symtab"));
++		     if (forward_declaration) {
++		       Setattr($<node>$, "access", Getattr(forward_declaration, "access"));
++		     }
++		     Setattr($<node>$, "nested:outer", nscope_inner);
++		     SetFlag($<node>$, "nested");
++                   }
+ 		   if (!currentOuterClass)
+ 		     inclass = 0;
+ 		   cscope = Getattr($$, "prev_symtab");
+@@ -3531,6 +3537,8 @@ cpp_class_decl  : storage_class cpptype idcolon inherit LBRACE {
+ 		   } else if (nscope_inner) {
+ 		     /* this is tricky */
+ 		     /* we add the declaration in the original namespace */
++		     if (Strcmp(nodeType(nscope_inner), "class") == 0 && cparse_cplusplus && ignore_nested_classes && !GetFlag($$, "feature:flatnested"))
++		       $$ = nested_forward_declaration($1, $2, $3, Copy($3), $9);
+ 		     appendChild(nscope_inner, $$);
+ 		     Swig_symbol_setscope(Getattr(nscope_inner, "symtab"));
+ 		     Delete(Namespaceprefix);

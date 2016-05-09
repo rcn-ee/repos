@@ -1,0 +1,98 @@
+Description: Fix Crashes on exit from multithreaded program using log4cxx
+Author: Stephan Sürken <stephan.suerken@1und1.de>
+Origin: http://mail-archives.apache.org/mod_mbox/logging-log4cxx-dev/200901.mbox/%3c1232120052.30824.62.camel@bjhlinux%3e
+Bug: https://issues.apache.org/jira/browse/LOGCXX-322
+Bug-Debian: http://bugs.debian.org/578649
+Applied-Upstream: no
+Last-Update: 2014-03-14
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+diff -urNad log4cxx-0.10.0~/src/main/cpp/aprinitializer.cpp log4cxx-0.10.0/src/main/cpp/aprinitializer.cpp
+--- log4cxx-0.10.0~/src/main/cpp/aprinitializer.cpp	2008-04-01 00:34:09.000000000 +0200
++++ log4cxx-0.10.0/src/main/cpp/aprinitializer.cpp	2010-07-06 16:04:28.000000000 +0200
+@@ -42,7 +42,7 @@
+ }
+ 
+ APRInitializer::~APRInitializer() {
+-    apr_terminate();
++    //apr_terminate();
+     isDestructed = true;
+ }
+ 
+diff -urNad log4cxx-0.10.0~/src/main/cpp/level.cpp log4cxx-0.10.0/src/main/cpp/level.cpp
+--- log4cxx-0.10.0~/src/main/cpp/level.cpp	2008-04-01 00:34:09.000000000 +0200
++++ log4cxx-0.10.0/src/main/cpp/level.cpp	2010-07-06 16:04:34.000000000 +0200
+@@ -30,44 +30,44 @@
+ IMPLEMENT_LOG4CXX_OBJECT_WITH_CUSTOM_CLASS(Level, LevelClass)
+ 
+ LevelPtr Level::getOff() {
+-   static LevelPtr level(new Level(Level::OFF_INT, LOG4CXX_STR("OFF"), 0));
+-   return level;
++   static LevelPtr *level = new LevelPtr(new Level(Level::OFF_INT, LOG4CXX_STR("OFF"), 0));
++   return *level;
+ }
+ 
+ LevelPtr Level::getFatal() {
+-   static LevelPtr level(new Level(Level::FATAL_INT, LOG4CXX_STR("FATAL"), 0));
+-   return level;
++   static LevelPtr *level = new LevelPtr((new Level(Level::FATAL_INT, LOG4CXX_STR("FATAL"), 0)));
++   return *level;
+ }
+ 
+ LevelPtr Level::getError() {
+-   static LevelPtr level(new Level(Level::ERROR_INT, LOG4CXX_STR("ERROR"), 3));
+-   return level;
++   static LevelPtr *level = new LevelPtr((new Level(Level::ERROR_INT, LOG4CXX_STR("ERROR"), 3)));
++   return *level;
+ }
+ 
+ LevelPtr Level::getWarn() {
+-   static LevelPtr level(new Level(Level::WARN_INT, LOG4CXX_STR("WARN"), 4));
+-   return level;
++   static LevelPtr *level = new LevelPtr((new Level(Level::WARN_INT, LOG4CXX_STR("WARN"), 4)));
++   return *level;
+ }
+ 
+ LevelPtr Level::getInfo() {
+-   static LevelPtr level(new Level(Level::INFO_INT, LOG4CXX_STR("INFO"), 6));
+-   return level;
++   static LevelPtr *level = new LevelPtr((new Level(Level::INFO_INT, LOG4CXX_STR("INFO"), 6)));
++   return *level;
+ }
+ 
+ LevelPtr Level::getDebug() {
+-   static LevelPtr level(new Level(Level::DEBUG_INT, LOG4CXX_STR("DEBUG"), 7));
+-   return level;
++   static LevelPtr *level = new LevelPtr((new Level(Level::DEBUG_INT, LOG4CXX_STR("DEBUG"), 7)));
++   return *level;
+ }
+ 
+ LevelPtr Level::getTrace() {
+-   static LevelPtr level(new Level(Level::TRACE_INT, LOG4CXX_STR("TRACE"), 7));
+-   return level;
++   static LevelPtr *level = new LevelPtr((new Level(Level::TRACE_INT, LOG4CXX_STR("TRACE"), 7)));
++   return *level;
+ }
+ 
+ 
+ LevelPtr Level::getAll() {
+-   static LevelPtr level(new Level(Level::ALL_INT, LOG4CXX_STR("ALL"), 7));
+-   return level;
++   static LevelPtr *level = new LevelPtr((new Level(Level::ALL_INT, LOG4CXX_STR("ALL"), 7)));
++   return *level;
+ }
+ 
+ 
+diff -urNad log4cxx-0.10.0~/src/main/cpp/logmanager.cpp log4cxx-0.10.0/src/main/cpp/logmanager.cpp
+--- log4cxx-0.10.0~/src/main/cpp/logmanager.cpp	2008-04-01 00:34:09.000000000 +0200
++++ log4cxx-0.10.0/src/main/cpp/logmanager.cpp	2010-07-06 16:04:21.000000000 +0200
+@@ -57,7 +57,8 @@
+    //     call to initialize APR and trigger "start" of logging clock
+    //
+    APRInitializer::initialize();
+-   static spi::RepositorySelectorPtr selector;
++   static spi::RepositorySelectorPtr * pselector = new spi::RepositorySelectorPtr;
++   static spi::RepositorySelectorPtr & selector = * pselector;
+    return selector;
+ }
+ 

@@ -1,0 +1,20 @@
+From: Tom Gundersen <teg@jklm.no>
+Date: Mon, 27 Oct 2014 17:15:42 +0100
+Subject: units: tmpfiles-setup-dev - allow unsafe file creation to happen in
+ /dev at boot
+
+This will allow us to mark static device nodes with '!' to indicate that they should only be created at early boot.
+---
+ units/systemd-tmpfiles-setup-dev.service.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/units/systemd-tmpfiles-setup-dev.service.in b/units/systemd-tmpfiles-setup-dev.service.in
+index 06346d3..0b66c53 100644
+--- a/units/systemd-tmpfiles-setup-dev.service.in
++++ b/units/systemd-tmpfiles-setup-dev.service.in
+@@ -17,4 +17,4 @@ ConditionCapability=CAP_SYS_MODULE
+ [Service]
+ Type=oneshot
+ RemainAfterExit=yes
+-ExecStart=@rootbindir@/systemd-tmpfiles --prefix=/dev --create
++ExecStart=@rootbindir@/systemd-tmpfiles --prefix=/dev --create --boot

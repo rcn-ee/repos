@@ -25,6 +25,9 @@ run () {
 	if [ "x${suite}" = "xxenial" ] ; then
 		backport="bpo1604+"
 	fi
+	if [ "x${suite}" = "xyakkety" ] ; then
+		backport="bpo1610+"
+	fi
 
 	if [ "x${debian_version}" = "x" ] ; then
 		echo "${debian_pkg_name} (${package_version}${local_patch}~${backport}${simple_date}+1) ${suite}; urgency=low" > ${wfile}
@@ -97,6 +100,15 @@ if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${xenial_version}"
 	cat ${DIR}/version.sh | grep -v xenial_version > ${DIR}/new-version.sh
 	echo "xenial_version=\"~bpo1604+${simple_date}+1\"" >> ${DIR}/new-version.sh
+	mv ${DIR}/new-version.sh ${DIR}/version.sh
+	run
+fi
+
+suite="yakkety"
+if [ -d ${DIR}/suite/${suite}/ ] ; then
+	rcn_ee_version="${yakkety_version}"
+	cat ${DIR}/version.sh | grep -v yakkety_version > ${DIR}/new-version.sh
+	echo "yakkety_version=\"~bpo1610+${simple_date}+1\"" >> ${DIR}/new-version.sh
 	mv ${DIR}/new-version.sh ${DIR}/version.sh
 	run
 fi

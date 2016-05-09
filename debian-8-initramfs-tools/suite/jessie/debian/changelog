@@ -1,14 +1,40 @@
-initramfs-tools (0.120-1rcnee2~bpo80+20151210+1) jessie; urgency=low
+initramfs-tools (0.120+deb8u1-1rcnee1~bpo80+20160229+1) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Thu, 10 Dec 2015 13:51:15 -0600
+ -- Robert Nelson <robertcnelson@gmail.com>  Mon, 29 Feb 2016 14:27:41 -0600
 
-initramfs-tools (0.120-1rcnee1~bpo80+20151007+1) jessie; urgency=low
+initramfs-tools (0.120+deb8u1) jessie; urgency=medium
 
-  * Rebuild for repos.rcn-ee.com
+  [ Ben Hutchings ]
+  * [c367d7d] scripts/functions: Use shell to create stamp file instead of
+    'touch' (Closes: #783291)
+  * [d22b95b] update-initramfs: Run 'sync' after writing the initramfs
+    (Closes: #783620)
+  * [c22cefe] hook-functions: Add support for nvme devices with MODULES=dep
+    (Closes: #785147)
+  * [e0b23a1] hook-functions: Add support for LVM/LUKS on mmcblk and nvme
+    devices with MODULES=dep (Closes: #747871, #810808)
+  * [0e905aa] scripts/functions: Fix fsck display options (Closes: #781239)
 
- -- Robert Nelson <robertcnelson@gmail.com>  Wed, 07 Oct 2015 10:37:51 -0500
+  [ Laurent Bigonville ]
+  * [3c4b38a] Support fsck.mode= and fsck.repair= parameters as known by
+    systemd-fsck (Closes: #783410, #792557)
+  * [dcb0f0c] Run new panic scripts just before dropping to a shell
+    (Closes: #602331)
+
+  [ Boris Egorov ]
+  * [2c82cf4] mkinitramfs: fix bashism in script (Closes: #633582)
+
+  [ Andy Whitcroft ]
+  * [97b664e] When adding i8042 also add psmouse as some keyboards are behind
+    the mouse (Closes: #795839)
+
+  [ Salvatore Bonaccorso ]
+  * [71e5b62] scripts/nfs: Check return value from nfs_mount_root_impl
+    (Closes: #782641)
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Sat, 20 Feb 2016 15:48:17 +0000
 
 initramfs-tools (0.120) unstable; urgency=medium
 

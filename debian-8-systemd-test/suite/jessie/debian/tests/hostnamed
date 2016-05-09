@@ -1,0 +1,23 @@
+#!/bin/sh
+set -e
+
+ORIG_HOST=`cat /etc/hostname`
+
+# should activate daemon and work
+STATUS=`hostnamectl`
+echo "$STATUS" | grep -q "Static hostname: $ORIG_HOST"
+echo "$STATUS" | grep -q "Kernel:.* `uname -r`"
+
+# change hostname
+OUT=`hostnamectl set-hostname testhost 2>&1`
+[ -z "$OUT" ]
+[ "`cat /etc/hostname`" = "testhost" ]
+STATUS=`hostnamectl`
+echo "$STATUS" | grep -q "Static hostname: testhost"
+
+# reset to original
+OUT=`hostnamectl set-hostname $ORIG_HOST 2>&1`
+[ -z "$OUT" ]
+[ "`cat /etc/hostname`" = "$ORIG_HOST" ]
+STATUS=`hostnamectl`
+echo "$STATUS" | grep -q "Static hostname: $ORIG_HOST"
