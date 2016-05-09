@@ -11,8 +11,8 @@ git_sha=""
 reprepro_dir="s/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee1"
+debian_version="${package_version}-0rcnee2"
 debian_untar=""
 debian_patch=""
 
-jessie_version="~bpo80+20160508+1"
+jessie_version="~bpo80+20160509+1"
