@@ -43,7 +43,15 @@ pkg_install () {
 		/usr/bin/jekyll build --destination bone101
 
 		echo "#!/bin/bash" > ${git_target_dir}/update.sh
-		echo "sudo /usr/bin/jekyll build --destination bone101" >> ${git_target_dir}/update.sh
+		echo "" >> ${git_target_dir}/update.sh
+		echo "if ! id | grep -q root; then" >> ${git_target_dir}/update.sh
+		echo "        echo \"must be run as root\"" >> ${git_target_dir}/update.sh
+		echo "        exit" >> ${git_target_dir}/update.sh
+		echo "fi" >> ${git_target_dir}/update.sh
+		echo "" >> ${git_target_dir}/update.sh
+		echo "git reset HEAD --hard" >> ${git_target_dir}/update.sh
+		echo "git pull --no-edit https://github.com/beagleboard/bone101 master" >> ${git_target_dir}/update.sh
+		echo "/usr/bin/jekyll build --destination bone101" >> ${git_target_dir}/update.sh
 		chmod +x ${git_target_dir}/update.sh
 	fi
 
