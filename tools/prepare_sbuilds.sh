@@ -35,14 +35,6 @@ echo "\$distribution = 'stretch';" >> ~/.sbuildrc
 mirror="http://${proxy}${debian_server}"
 deboot="sid"
 
-dist="jessie"
-flavor="-nodejs-v0.12.x"
-arch="armhf"
-options="--chroot-suffix=${flavor}-sbuild"
-setup_update_sbuild
-
-exit 2
-
 if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
 if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
