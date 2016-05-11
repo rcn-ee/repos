@@ -24,11 +24,7 @@ setup_update_sbuild () {
 		sbuild-createchroot ${options} --arch=${arch} --make-sbuild-tarball=/var/lib/sbuild/${dist}-${arch}${flavor}.tar.gz ${dist} `mktemp -d` ${mirror}
 	else
 		chown -R root:root /var/lib/sbuild/${dist}-${arch}${flavor}.tar.gz
-		if [ "x${flavor}" = "x" ] ; then
-			sbuild-update -udcar ${dist}-${arch}-sbuild
-		else
-			sbuild-update -udcar ${dist}-${arch}${flavor}
-		fi
+		sbuild-update -udcar ${dist}-${arch}${flavor}-sbuild
 	fi
 }
 
