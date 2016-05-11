@@ -55,6 +55,29 @@ npm_check_n_install () {
 	fi
 }
 
+npm_git_install () {
+	if [ -d /usr/local/lib/node_modules/wificonfig/ ] ; then
+		rm -rf /usr/local/lib/node_modules/wificonfig/ || true
+	fi
+
+	wrepo="wifidog-server"
+	if [ -d /tmp/wifidog-server/ ] ; then
+		rm -rf /tmp/wifidog-server/ || true
+	fi
+
+	git clone -b BBGW https://github.com/Pillar1989/${wrepo} /tmp/${wrepo} --depth=1
+	if [ -d /tmp/${wrepo}/ ] ; then
+		cd /tmp/${wrepo}/
+		sed -i -e 's://192.168.8.1/::g' routes/index.js
+		sed -i -e 's/http:bone101/bone101/g' routes/index.js
+		sed -i -e 's:bone101/Support/bone101/:/bone101/Support/bone101/:g' routes/index.js
+		TERM=dumb ${node_bin} ${npm_bin} install -g ${npm_options}
+		cd -
+		sync
+		rm -rf /tmp/${wrepo}/
+	fi
+}
+
 npm_install () {
 	node_bin="/usr/bin/nodejs"
 	npm_bin="/usr/bin/npm"
@@ -94,7 +117,10 @@ npm_install () {
 	echo "${package}:node: [`${node_bin} --version`]"
 
 	npm_project="wificonfig"
-	pkg="wificonfig" ; ver="0.1.0" ; npm_check_n_install
+	#released version..
+	#pkg="wificonfig" ; ver="0.1.0" ; npm_check_n_install
+	#git version..
+	npm_git_install
 
 	if [ ! -d ${NODE_PATH}/${pkg}/log/ ] ; then
 		mkdir -p ${NODE_PATH}/${pkg}/log/ || true
