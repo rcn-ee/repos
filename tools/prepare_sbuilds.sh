@@ -20,11 +20,15 @@ setup_update_sbuild () {
 		ln -s /usr/share/debootstrap/scripts/${deboot} /usr/share/debootstrap/scripts/${dist}
 	fi
 
-	if [ ! -f /var/lib/sbuild/${dist}${flavor}-${arch}.tar.gz ] ; then
-		sbuild-createchroot ${options} --arch=${arch} --make-sbuild-tarball=/var/lib/sbuild/${dist}${flavor}-${arch}.tar.gz ${dist} `mktemp -d` ${mirror}
+	if [ ! -f /var/lib/sbuild/${dist}-${arch}${flavor}.tar.gz ] ; then
+		sbuild-createchroot ${options} --arch=${arch} --make-sbuild-tarball=/var/lib/sbuild/${dist}-${arch}${flavor}.tar.gz ${dist} `mktemp -d` ${mirror}
 	else
-		chown -R root:root /var/lib/sbuild/${dist}${flavor}-${arch}.tar.gz
-		sbuild-update -udcar ${dist}${flavor}-${arch}-sbuild
+		chown -R root:root /var/lib/sbuild/${dist}-${arch}${flavor}.tar.gz
+		if [ "x${flavor}" = "x" ] ; then
+			sbuild-update -udcar ${dist}-${arch}-sbuild
+		else
+			sbuild-update -udcar ${dist}-${arch}${flavor}
+		fi
 	fi
 }
 
@@ -34,6 +38,14 @@ echo "\$distribution = 'stretch';" >> ~/.sbuildrc
 
 mirror="http://${proxy}${debian_server}"
 deboot="sid"
+
+dist="jessie"
+flavor="-nodejs-v0.12.x"
+arch="armhf"
+options="--chroot-suffix=${flavor}-sbuild"
+setup_update_sbuild
+
+exit 2
 
 if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
 if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
@@ -56,19 +68,19 @@ setup_update_sbuild
 dist="jessie"
 flavor="-nodejs-v0.12.x"
 arch="armhf"
-options=""
+options="--chroot-suffix=${flavor}-sbuild"
 setup_update_sbuild
 
 dist="jessie"
 flavor="-nodejs-v4.x"
 arch="armhf"
-options=""
+options="--chroot-suffix=${flavor}-sbuild"
 setup_update_sbuild
 
 dist="jessie"
 flavor="-nodejs-v6.x"
 arch="armhf"
-options=""
+options="--chroot-suffix=${flavor}-sbuild"
 setup_update_sbuild
 
 if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
