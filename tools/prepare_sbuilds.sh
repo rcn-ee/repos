@@ -1,5 +1,10 @@
 #!/bin/bash -e
 
+if ! id | grep -q root; then
+	echo "must be run as root"
+	exit
+fi
+
 #proxy=""
 proxy="apt-proxy:3142/"
 
@@ -8,16 +13,18 @@ ubuntu_server="ports.ubuntu.com"
 
 builder=`cat /etc/hostname`
 
+unset flavor
+
 setup_update_sbuild () {
 	if [ ! -f /usr/share/debootstrap/scripts/${dist} ] ; then
-		sudo ln -s /usr/share/debootstrap/scripts/${deboot} /usr/share/debootstrap/scripts/${dist}
+		ln -s /usr/share/debootstrap/scripts/${deboot} /usr/share/debootstrap/scripts/${dist}
 	fi
 
-	if [ ! -f /var/lib/sbuild/${dist}-${arch}.tar.gz ] ; then
-		sudo sbuild-createchroot ${options} --arch=${arch} --make-sbuild-tarball=/var/lib/sbuild/${dist}-${arch}.tar.gz ${dist} `mktemp -d` ${mirror}
+	if [ ! -f /var/lib/sbuild/${dist}${flavor}-${arch}.tar.gz ] ; then
+		sbuild-createchroot ${options} --arch=${arch} --make-sbuild-tarball=/var/lib/sbuild/${dist}${flavor}-${arch}.tar.gz ${dist} `mktemp -d` ${mirror}
 	else
-		sudo chown -R root:root /var/lib/sbuild/${dist}-${arch}.tar.gz
-		sudo sbuild-update -udcar ${dist}-${arch}-sbuild
+		chown -R root:root /var/lib/sbuild/${dist}${flavor}-${arch}.tar.gz
+		sbuild-update -udcar ${dist}${flavor}-${arch}-sbuild
 	fi
 }
 
@@ -32,6 +39,7 @@ if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
 if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	dist="wheezy"
+	unset flavor
 	arch="armhf"
 	options=""
 	setup_update_sbuild
@@ -40,6 +48,25 @@ fi
 fi
 
 dist="jessie"
+unset flavor
+arch="armhf"
+options=""
+setup_update_sbuild
+
+dist="jessie"
+flavor="-nodejs-v0.12.x"
+arch="armhf"
+options=""
+setup_update_sbuild
+
+dist="jessie"
+flavor="-nodejs-v4.x"
+arch="armhf"
+options=""
+setup_update_sbuild
+
+dist="jessie"
+flavor="-nodejs-v6.x"
 arch="armhf"
 options=""
 setup_update_sbuild
@@ -48,6 +75,7 @@ if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
 if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	dist="stretch"
+	unset flavor
 	arch="armhf"
 	options=""
 	setup_update_sbuild
@@ -62,6 +90,7 @@ if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
 if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	dist="trusty"
+	unset flavor
 	arch="armhf"
 	options="--exclude=debfoster"
 	setup_update_sbuild
@@ -73,6 +102,7 @@ if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
 if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	dist="wily"
+	unset flavor
 	arch="armhf"
 	options="--exclude=debfoster"
 	setup_update_sbuild
@@ -84,6 +114,7 @@ if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
 if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	dist="xenial"
+	unset flavor
 	arch="armhf"
 	options="--exclude=debfoster"
 	setup_update_sbuild
@@ -95,6 +126,7 @@ if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
 if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	dist="yakkety"
+	unset flavor
 	arch="armhf"
 	options="--exclude=debfoster"
 	setup_update_sbuild
