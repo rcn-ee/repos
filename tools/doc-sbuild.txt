@@ -44,11 +44,38 @@ echo "deb-src http://apt-proxy:3142/ports.ubuntu.com yakkety main universe" >> /
 echo "deb http://apt-proxy:3142/repos.rcn-ee.net/ubuntu yakkety main" >> /etc/apt/sources.list ; \
 echo "deb-src http://apt-proxy:3142/repos.rcn-ee.net/ubuntu yakkety main" >> /etc/apt/sources.list
 
-apt-get update ; apt-get --yes --allow-unauthenticated install rcn-ee-archive-keyring ; \
+apt-get update ; apt-get --yes --allow-unauthenticated install apt-transport-https rcn-ee-archive-keyring ; \
 apt-get update ; apt-get clean ; exit
 
-#jessie + nodesource:
-curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
+#debian jessie/nodejs:
+sudo sbuild-shell source:jessie-armhf-nodejs-v0.12.x-sbuild
 
-echo 'deb https://deb.nodesource.com/node_0.12 jessie main' > /etc/apt/sources.list.d/nodesource.list
-echo 'deb-src https://deb.nodesource.com/node_0.12 jessie main' >> /etc/apt/sources.list.d/nodesource.list
+echo "deb http://apt-proxy:3142/repos.rcn-ee.net/debian jessie main" >> /etc/apt/sources.list ; \
+echo "deb-src http://apt-proxy:3142/repos.rcn-ee.net/debian jessie main" >> /etc/apt/sources.list ;
+apt-get update ; apt-get --yes --allow-unauthenticated install apt-transport-https curl rcn-ee-archive-keyring ; \
+curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - ; \
+echo 'deb https://deb.nodesource.com/node_0.12 jessie main' > /etc/apt/sources.list.d/nodesource.list ; \
+echo 'deb-src https://deb.nodesource.com/node_0.12 jessie main' >> /etc/apt/sources.list.d/nodesource.list ; \
+apt-get update ; apt-get clean ; exit
+
+sudo sbuild-shell source:jessie-armhf-nodejs-v4.x-sbuild
+
+echo "deb http://apt-proxy:3142/repos.rcn-ee.net/debian jessie main" >> /etc/apt/sources.list ; \
+echo "deb-src http://apt-proxy:3142/repos.rcn-ee.net/debian jessie main" >> /etc/apt/sources.list ;
+apt-get update ; apt-get --yes --allow-unauthenticated install apt-transport-https curl rcn-ee-archive-keyring ; \
+curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - ; \
+echo 'deb https://deb.nodesource.com/node_4.x jessie main' > /etc/apt/sources.list.d/nodesource.list ; \
+echo 'deb-src https://deb.nodesource.com/node_4.x jessie main' >> /etc/apt/sources.list.d/nodesource.list ; \
+apt-get update ; apt-get clean ; exit
+
+sudo sbuild-shell source:jessie-armhf-nodejs-v6.x-sbuild
+
+echo "deb http://apt-proxy:3142/repos.rcn-ee.net/debian jessie main" >> /etc/apt/sources.list ; \
+echo "deb-src http://apt-proxy:3142/repos.rcn-ee.net/debian jessie main" >> /etc/apt/sources.list ;
+apt-get update ; apt-get --yes --allow-unauthenticated install apt-transport-https curl rcn-ee-archive-keyring ; \
+curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - ; \
+echo 'deb https://deb.nodesource.com/node_6.x jessie main' > /etc/apt/sources.list.d/nodesource.list ; \
+echo 'deb-src https://deb.nodesource.com/node_6.x jessie main' >> /etc/apt/sources.list.d/nodesource.list ; \
+apt-get update ; apt-get clean ; exit
+
+#
