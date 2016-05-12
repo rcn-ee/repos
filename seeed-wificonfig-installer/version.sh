@@ -11,7 +11,7 @@ git_sha=""
 reprepro_dir="s/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee7"
+debian_version="${package_version}-0rcnee8"
 debian_untar=""
 debian_patch=""
 debian_dl_file="https://github.com/rcn-ee/npm-package-wificonfig/raw/master/deploy/wificonfig-0.1.0-e4e30e7-v0.12.13.tar.xz"

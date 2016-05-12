@@ -48,12 +48,13 @@ if [ ! -f /tmp/wifi.up ] ; then
 	ip link set dev SoftAp0 up
 	ip addr add ${ip_prefix}.1/24 broadcast ${ip_prefix}.255 dev SoftAp0
 
-	if [ ! "x${wlan_0_mac}" = "x" ] ; then
-		ip link set dev wlan0 down
-		ip link set dev wlan0 address ${wlan_0_mac}
-		ip link set dev wlan0 up
-		rm -rf /var/lib/connman/wifi_deadbeef0000_*/ || true
-	fi
+	#FIXME:http://processors.wiki.ti.com/index.php/WL18xx_Writing_MAC_address#Setting_a_Permanent_MAC_Address_in_the_NVS_File
+	#if [ ! "x${wlan_0_mac}" = "x" ] ; then
+	#	ip link set dev wlan0 down
+	#	ip link set dev wlan0 address ${wlan_0_mac}
+	#	ip link set dev wlan0 up
+	#	rm -rf /var/lib/connman/wifi_deadbeef0000_*/ || true
+	#fi
 
 	echo 1 > /proc/sys/net/ipv4/ip_forward
 	iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
