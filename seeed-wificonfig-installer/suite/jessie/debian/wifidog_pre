@@ -52,6 +52,7 @@ if [ ! -f /tmp/wifi.up ] ; then
 		ip link set dev wlan0 down
 		ip link set dev wlan0 address ${wlan_0_mac}
 		ip link set dev wlan0 up
+		rm -rf /var/lib/connman/wifi_deadbeef0000_*/ || true
 	fi
 
 	echo 1 > /proc/sys/net/ipv4/ip_forward

@@ -57,6 +57,12 @@ run () {
 		cp -rv ${DIR}/suite/${suite}/* ./
 	fi
 
+	if [ ! "x${debian_dl_file}" = "x" ] ; then
+		cd ./debian/
+		wget -c ${debian_dl_file}
+		cd ../
+	fi
+
 	debuild -us -uc -S
 
 	cd ${DIR}/
