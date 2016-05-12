@@ -17,17 +17,18 @@ set -e
 # the debian-policy package
 
 case "$1" in
-    configure)
-        systemctl enable bb-wl18xx-bluetooth.service || true
-    ;;
+	configure)
+		systemctl enable bb-wl18xx-bluetooth.service || true
+		systemctl enable bb-wl18xx-wlan0.service || true
+	;;
 
-    abort-upgrade|abort-remove|abort-deconfigure)
-    ;;
+	abort-upgrade|abort-remove|abort-deconfigure)
+	;;
 
-    *)
-        echo "postinst called with unknown argument \`$1'" >&2
-        exit 1
-    ;;
+	*)
+		echo "postinst called with unknown argument \`$1'" >&2
+		exit 1
+	;;
 esac
 
 # dh_installdeb will replace this with shell code automatically

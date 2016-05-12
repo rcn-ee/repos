@@ -4,24 +4,6 @@ ip_prefix="192.168.8"
 
 if [ ! -f /tmp/wifi.up ] ; then
 
-	unset wlan_0_mac
-	board=$(cat /proc/device-tree/model | sed "s/ /_/g")
-	case "${board}" in
-	TI_AM335x_BeagleBone_Green_Wireless)
-		eeprom="/sys/bus/i2c/devices/0-0050/eeprom"
-		;;
-	*)
-		unset eeprom
-		;;
-	esac
-
-	if [ -f ${eeprom} ] ; then
-		wlan_0_mac=$(hexdump -e '8/1 "%c"' ${eeprom} -n 72 | tail -1 | cut -b 5-8 || true)
-		if [ ! "x${wlan_0_mac}" = "xA335" ] ; then
-			wlan_0_mac=$(hexdump -e '8/1 "%c"' ${eeprom} -n 72 | tail -1 | cut -b 5-16 | sed 's/\(..\)/\1:/g;s/:$//' || true)
-		fi
-	fi
-
 	#cpsw_0_mac is normally used by eth0, safe to use as this isn't connected on bbgw...
 	mac_address="/proc/device-tree/ocp/ethernet@4a100000/slave@4a100200/mac-address"
 	if [ -f ${mac_address} ] ; then
@@ -47,14 +29,6 @@ if [ ! -f /tmp/wifi.up ] ; then
 	ip link set dev SoftAp0 address ${cpsw_0_mac}
 	ip link set dev SoftAp0 up
 	ip addr add ${ip_prefix}.1/24 broadcast ${ip_prefix}.255 dev SoftAp0
-
-	#FIXME:http://processors.wiki.ti.com/index.php/WL18xx_Writing_MAC_address#Setting_a_Permanent_MAC_Address_in_the_NVS_File
-	#if [ ! "x${wlan_0_mac}" = "x" ] ; then
-	#	ip link set dev wlan0 down
-	#	ip link set dev wlan0 address ${wlan_0_mac}
-	#	ip link set dev wlan0 up
-	#	rm -rf /var/lib/connman/wifi_deadbeef0000_*/ || true
-	#fi
 
 	echo 1 > /proc/sys/net/ipv4/ip_forward
 	iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
