@@ -6,6 +6,7 @@ set -e
 
 package="seeed-wificonfig-installer"
 service="wifidog-gateway"
+npm_file="wificonfig-0.1.5-8da2e95-v0.12.13.tar.xz"
 
 # summary of how this script can be called:
 #        * <postinst> `configure' <most-recently-configured-version>
@@ -57,48 +58,20 @@ npm_check_n_install () {
 
 npm_pkg_install () {
 	systemctl stop wificonfig.service || true
-	if [ -d /usr/local/lib/node_modules/wificonfig/ ] ; then
-		rm -rf /usr/local/lib/node_modules/wificonfig/ || true
+	if [ -d /usr/local/lib/node_modules/${npm_project}/ ] ; then
+		rm -rf /usr/local/lib/node_modules/${npm_project}/ || true
 	fi
 
-	echo "${package}:updating: /usr/local/lib/node_modules/wificonfig/"
-	tar xf /var/cache/${package}/wificonfig-0.1.5-8da2e95-v0.12.13.tar.xz -C /usr/local/lib/node_modules/
+	echo "${package}:updating: /usr/local/lib/node_modules/${npm_project}/"
+	tar xf /var/cache/${package}/${npm_file} -C /usr/local/lib/node_modules/
 }
 
 npm_install () {
 	node_bin="/usr/bin/nodejs"
 	npm_bin="/usr/bin/npm"
 
-	#/usr/bin/nodejs-v0.10.x
-	#-> /usr/bin/npm (works)
-	#-> /usr/local/bin/npm (works)
-
-	#/usr/bin/nodejs-v0.12.x (not built anymore, use nodesource...)
-	#-> /usr/bin/npm (broken)
-	#-> /usr/local/bin/npm (works)
-
 	unset node_version
 	node_version=$(/usr/bin/nodejs --version || true)
-
-	unset test_version
-	if [ -f /usr/bin/nodejs-v0.12.x ] ; then
-		test_version=$(/usr/bin/nodejs-v0.12.x --version || true)
-		if [ "x${test_version}" = "x${node_version}" ] ; then
-			node_bin="/usr/bin/nodejs-v0.12.x"
-			if [ -f /usr/local/bin/npm ] ; then
-				npm_bin="/usr/local/bin/npm"
-			else
-				#bb-npm-installer would make sure this never happens...
-				#nodejs-v0.12.x & /usr/bin/npm broken...
-				if [ -f /usr/bin/nodejs-v0.10.x ] ; then
-					node_bin="/usr/bin/nodejs-v0.10.x"
-				else
-					node_bin="/usr/bin/nodejs"
-				fi
-				npm_bin="/usr/bin/npm"
-			fi
-		fi
-	fi
 
 	echo "${package}:npm: [`${node_bin} ${npm_bin} --version`]"
 	echo "${package}:node: [`${node_bin} --version`]"
@@ -139,8 +112,12 @@ npm_install () {
 	fi
 
 	if [ -f /var/lib/connman/settings ] ; then
-		sed -i -e 's:Tethering=true:Tethering=false:g' /var/lib/connman/settings
-		restart_connman="enable"
+		unset check_connman
+		check_connman=$(cat /var/lib/connman/settings | grep Tethering=true || true)
+		if [ "x${check_connman}" = "x" ] ; then
+			sed -i -e 's:Tethering=true:Tethering=false:g' /var/lib/connman/settings
+			restart_connman="enable"
+		fo
 	fi
 
 	if [ "x${restart_connman}" = "xenable" ] ; then

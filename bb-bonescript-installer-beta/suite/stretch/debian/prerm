@@ -6,9 +6,8 @@ set -e
 
 # avoid cancelling of "stop" via socket or D-Bus activation
 if [ -d /run/systemd/system ] && [ "$1" = remove ]; then
-	systemctl mask --runtime bonescript.socket
-	systemctl mask --runtime bonescript-autorun.service
-
+	systemctl mask --runtime bonescript.socket || true
+	systemctl mask --runtime bonescript-autorun.service || true
 	# stop ${service}.service manually since invoke-rc.d currently doesn't
 	# deal with masked services (see Bug #717109)
 	systemctl stop bonescript.socket || true
@@ -26,9 +25,6 @@ fi
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
-export NODE_PATH=/usr/local/lib/node_modules
-
-
 remove_file () {
 	if [ -f ${wfile} ] ; then
 		rm -f ${wfile} || true
@@ -44,7 +40,6 @@ remove_dir () {
 remove_all() {
 	wfile="/etc/avahi/services/bone101.service" ; remove_file
 	wfile="/etc/profile.d/node.sh" ; remove_file
-	wfile="/etc/avahi/services/bone101.service" ; remove_file
 }
 
 case "$1" in

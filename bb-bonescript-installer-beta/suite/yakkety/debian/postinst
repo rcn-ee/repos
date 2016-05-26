@@ -6,6 +6,7 @@ set -e
 
 package="bb-bonescript-installer"
 service="bonescript"
+npm_file="bonescript-0.5.0-beta7-0cb9978-v0.12.13.tar.xz"
 
 # summary of how this script can be called:
 #        * <postinst> `configure' <most-recently-configured-version>
@@ -27,32 +28,43 @@ npm_actually_install () {
 	echo "${package}:Installing: ${pkg}-${ver} (for ${npm_project})"
 	TERM=dumb ${node_bin} ${npm_bin} install -g ${npm_options} ${pkg}@${ver}
 	#TERM=dumb ${node_bin} ${npm_bin} install -g ${npm_options} github:jadonk/bonescript#90f2367839be34b683988c5ad2cbfd0691f3a56a
-	echo "${ver}" > "${NODE_PATH}/${pkg}/${pkg}.version"
-	echo "${node_version}" > "${NODE_PATH}/${pkg}/${pkg}.node_version"
+	echo "${ver}" > "${pkg_path}/${pkg}.version"
+	echo "${node_version}" > "${pkg_path}/${pkg}.node_version"
 }
 
 npm_check_n_install () {
-	if [ ! -f "${NODE_PATH}/${pkg}/${pkg}.version" ] ; then
+	pkg_path="${NODE_PATH}/${pkg}"
+	if [ ! -f "${pkg_path}/${pkg}.version" ] ; then
 		npm_actually_install
 	else
 		unset old_version
-		if [ -f "${NODE_PATH}/${pkg}/${pkg}.version" ] ; then
-			old_version=$(cat "${NODE_PATH}/${pkg}/${pkg}.version" || true)
+		if [ -f "${pkg_path}/${pkg}.version" ] ; then
+			old_version=$(cat "${pkg_path}/${pkg}.version" || true)
 		fi
 		if [ ! "x${old_version}" = "x${ver}" ] ; then
-			rm -rf "${NODE_PATH}/${pkg}/" || true
+			rm -rf "${pkg_path}/" || true
 			npm_actually_install
 		else
 			unset old_version
-			if [ -f "${NODE_PATH}/${pkg}/${pkg}.node_version" ] ; then
-				old_version=$(cat "${NODE_PATH}/${pkg}/${pkg}.node_version" || true)
+			if [ -f "${pkg_path}/${pkg}.node_version" ] ; then
+				old_version=$(cat "${pkg_path}/${pkg}.node_version" || true)
 			fi
 			if [ ! "x${old_version}" = "x${node_version}" ] ; then
-				rm -rf "${NODE_PATH}/${pkg}/" || true
+				rm -rf "${pkg_path}/" || true
 				npm_actually_install
 			fi
 		fi
 	fi
+}
+
+npm_pkg_install () {
+	systemctl stop bonescript-autorun.service || true
+	if [ -d /usr/local/lib/node_modules/${npm_project}/ ] ; then
+		rm -rf /usr/local/lib/node_modules/${npm_project}/ || true
+	fi
+
+	echo "${package}:updating: /usr/local/lib/node_modules/${npm_project}/"
+	tar xf /var/cache/${package}/${npm_file} -C /usr/local/lib/node_modules/
 }
 
 npm_install () {
@@ -62,45 +74,12 @@ npm_install () {
 	unset node_version
 	node_version=$(/usr/bin/nodejs --version || true)
 
-	#wheezy + jessie
-	unset test_version
-	if [ -f /usr/bin/nodejs-v0.10.x ] ; then
-		test_version=$(/usr/bin/nodejs-v0.10.x --version || true)
-		if [ "x${test_version}" = "x${node_version}" ] ; then
-			node_bin="/usr/bin/nodejs-v0.10.x"
-			if [ -f /usr/local/bin/npm ] ; then
-				npm_bin="/usr/local/bin/npm"
-			else
-				npm_bin="/usr/bin/npm"
-			fi
-		fi
-	fi
-
-	#jessie + stretch
-	unset test_version
-	if [ -f /usr/bin/nodejs-v0.12.x ] ; then
-		#/usr/bin/nodejs-v0.12.x
-		#-> /usr/bin/npm (broken)
-		#-> /usr/local/bin/npm (works)
-		test_version=$(/usr/bin/nodejs-v0.12.x --version || true)
-		if [ "x${test_version}" = "x${node_version}" ] ; then
-			node_bin="/usr/bin/nodejs-v0.12.x"
-			if [ -f /usr/local/bin/npm ] ; then
-				npm_bin="/usr/local/bin/npm"
-			else
-				#bb-npm-installer would make sure this never happens...
-				#nodejs-v0.12.x & /usr/bin/npm broken...
-				node_bin="/usr/bin/nodejs-v0.10.x"
-				npm_bin="/usr/bin/npm"
-			fi
-		fi
-	fi
-
 	echo "${package}:npm: [`${node_bin} ${npm_bin} --version`]"
 	echo "${package}:node: [`${node_bin} --version`]"
 
 	npm_project="bonescript"
-	pkg="bonescript" ; ver="0.5.0-beta5" ; npm_check_n_install
+#	pkg="bonescript" ; ver="0.5.0-beta7" ; npm_check_n_install
+	npm_pkg_install
 
 	if [ -d /etc/avahi/services/ ] ; then
 		#Annouce http server via DNS Sevice Discovery
