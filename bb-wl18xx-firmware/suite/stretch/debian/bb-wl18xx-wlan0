@@ -32,7 +32,7 @@ TI_AM335x_BeagleBone_Green_Wireless)
 	;;
 esac
 
-if [ -f ${eeprom} ] ; then
+if [ ! "x${eeprom}" = "x" ] ; then
 	wlan_0_mac=$(hexdump -e '8/1 "%c"' ${eeprom} -n 72 | tail -1 | cut -b 5-8 || true)
 	if [ ! "x${wlan_0_mac}" = "xA335" ] ; then
 		wlan_0_mac=$(hexdump -e '8/1 "%c"' ${eeprom} -n 72 | tail -1 | cut -b 5-16 | sed 's/\(..\)/\1:/g;s/:$//' || true)
