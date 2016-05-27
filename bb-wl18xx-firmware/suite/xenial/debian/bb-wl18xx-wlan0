@@ -32,6 +32,34 @@ TI_AM335x_BeagleBone_Green_Wireless)
 	;;
 esac
 
+cylon_leds () {
+	if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
+		BASE=/sys/class/leds/beaglebone\:green\:usr
+		echo none > ${BASE}0/trigger
+		echo none > ${BASE}1/trigger
+
+		STATE=1
+		while : ; do
+			case $STATE in
+			1)	echo 255 > ${BASE}0/brightness
+				echo 0   > ${BASE}1/brightness
+				STATE=2
+				;;
+			2)	echo 255 > ${BASE}1/brightness
+				echo 0   > ${BASE}0/brightness
+				STATE=1
+				;;
+			*)	echo 255 > ${BASE}0/brightness
+				echo 0   > ${BASE}1/brightness
+				STATE=2
+				;;
+			esac
+			sleep 0.1
+		done
+		fi
+	fi
+}
+
 if [ ! "x${eeprom}" = "x" ] ; then
 	wlan_0_mac=$(hexdump -e '8/1 "%c"' ${eeprom} -n 72 | tail -1 | cut -b 5-8 || true)
 	if [ ! "x${wlan_0_mac}" = "xA335" ] ; then
@@ -45,8 +73,14 @@ if [ ! "x${eeprom}" = "x" ] ; then
 			new_mac=$(echo ${current_mac} | awk -F 'NVS: ' '{print $2}' || true)
 			if [ ! "x${new_mac}" = "x" ] ; then
 				if [ ! "x${new_mac}" = "x${wlan_0_mac}" ] ; then
+					cylon_leds & CYLON_PID=$!
 					${cal_bin} set nvs_mac ${firmware} ${wlan_0_mac} || true
 					update-initramfs -u
+					[ -e /proc/$CYLON_PID ]  && kill $CYLON_PID
+					if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
+						echo default-on > /sys/class/leds/beaglebone\:green\:usr0/trigger
+						echo default-on > /sys/class/leds/beaglebone\:green\:usr1/trigger
+					fi
 				fi
 			fi
 		fi
