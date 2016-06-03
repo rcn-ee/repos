@@ -62,25 +62,25 @@ cylon_leds () {
 if [ ! "x${eeprom}" = "x" ] ; then
 	wlan_0_mac=$(hexdump -e '8/1 "%c"' ${eeprom} -n 72 | tail -1 | cut -b 5-8 || true)
 	if [ ! "x${wlan_0_mac}" = "xA335" ] ; then
-		wlan_0_mac=$(hexdump -e '8/1 "%c"' ${eeprom} -n 72 | tail -1 | cut -b 5-16 | sed 's/\(..\)/\1:/g;s/:$//' || true)
+		wlan_0_mac=$(hexdump -e '8/1 "%c"' ${eeprom} -n 72 | tail -1 | cut -b 5-16 | sed 's/\(..\)/\1:/g;s/:$//' | awk '{print toupper($0)}' || true)
+		echo "eeprom=[${wlan_0_mac}]"
 	fi
 
 	cal_bin="/usr/local/bin/calibrator"
 	if [ -f ${cal_bin} ] ; then
-		current_mac=$(${cal_bin} get nvs_mac ${firmware} || true)
-		if [ ! "x${current_mac}" = "x" ] ; then
-			new_mac=$(echo ${current_mac} | awk -F 'NVS: ' '{print $2}' || true)
-			if [ ! "x${new_mac}" = "x" ] ; then
-				if [ ! "x${new_mac}" = "x${wlan_0_mac}" ] ; then
-					cylon_leds & CYLON_PID=$!
-					${cal_bin} set nvs_mac ${firmware} ${wlan_0_mac} || true
-					update-initramfs -u
-					[ -e /proc/$CYLON_PID ]  && kill $CYLON_PID
-					if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
-						echo default-on > /sys/class/leds/beaglebone\:green\:usr0/trigger
-						echo default-on > /sys/class/leds/beaglebone\:green\:usr1/trigger
-					fi
-				fi
+		current_mac=$(${cal_bin} get nvs_mac ${firmware} | awk -F 'NVS: ' '{print $2}' | awk '{print toupper($0)}' || true)
+		echo "${firmware}=[${current_mac}]"
+		if [ ! "x${current_mac}" = "x${wlan_0_mac}" ] ; then
+			cylon_leds & CYLON_PID=$!
+			${cal_bin} set nvs_mac ${firmware} ${wlan_0_mac} || true
+			echo "updating: /boot/initrd.img"
+			update-initramfs -u
+			sync
+			echo "/boot/initrd.img: update complete"
+			[ -e /proc/$CYLON_PID ]  && kill $CYLON_PID
+			if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
+				echo default-on > /sys/class/leds/beaglebone\:green\:usr0/trigger
+				echo default-on > /sys/class/leds/beaglebone\:green\:usr1/trigger
 			fi
 		fi
 	fi
