@@ -50,7 +50,7 @@ run () {
 			if [ "x${sbuild_chroot}" = "x" ] ; then
 				options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite}"
 			else
-				options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite} --chroot=${suite}-${deb_arch}-${sbuild_chroot}"
+				options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite} --chroot=${suite}-${deb_arch}-${sbuild_chroot}-sbuild"
 			fi
 
 			if [ ! "x${dsc_file}" = "x" ] ; then
