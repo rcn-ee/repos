@@ -6,6 +6,9 @@ localdir="/mnt/farm"
 
 build () {
 	if [ -f ${localdir}/incoming/${suite}/${debian_pkg_name}_${debian_version}/${dsc_file} ] ; then
+		echo "-----------------"
+		echo "sbuild ${options} http://httphost/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}/${dsc_file}"
+		echo "-----------------"
 		sbuild ${options} http://httphost/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}/${dsc_file}
 
 		if [ -f *.changes ] ; then
@@ -44,7 +47,11 @@ run () {
 			cd ./${suite}
 
 			dsc_file=$(ls ${localdir}/incoming/${suite}/${debian_pkg_name}_${debian_version}/ | grep dsc)
-			options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite}"
+			if [ "x${sbuild_chroot}" = "x" ] ; then
+				options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite}"
+			else
+				options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite} --chroot=${suite}-${deb_arch}-${sbuild_chroot}"
+			fi
 
 			if [ ! "x${dsc_file}" = "x" ] ; then
 				build

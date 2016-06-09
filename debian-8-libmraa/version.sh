@@ -17,5 +17,6 @@ debian_version="${package_version}-0"
 debian_patch=""
 debian_diff=""
 local_patch="rcnee1"
+sbuild_chroot="nodejs-v0.12.x"
 
 jessie_version="~bpo80+20160609+1"
