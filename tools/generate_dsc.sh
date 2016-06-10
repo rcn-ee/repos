@@ -57,9 +57,27 @@ run () {
 		cp -rv ${DIR}/suite/${suite}/* ./
 	fi
 
-	if [ ! "x${debian_dl_file}" = "x" ] ; then
+	if [ ! "x${debian_dl_1}" = "x" ] ; then
 		cd ./debian/
-		wget -c ${debian_dl_file}
+		wget -c ${debian_dl_1}
+		cd ../
+	fi
+
+	if [ ! "x${debian_dl_2}" = "x" ] ; then
+		cd ./debian/
+		wget -c ${debian_dl_2}
+		cd ../
+	fi
+
+	if [ ! "x${debian_dl_3}" = "x" ] ; then
+		cd ./debian/
+		wget -c ${debian_dl_3}
+		cd ../
+	fi
+
+	if [ ! "x${debian_dl_4}" = "x" ] ; then
+		cd ./debian/
+		wget -c ${debian_dl_4}
 		cd ../
 	fi
 
