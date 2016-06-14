@@ -1,0 +1,108 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.de Vb \" Begin verbatim text
+.ft CW
+.nf
+.ne \\$1
+..
+.de Ve \" End verbatim text
+.ft R
+.fi
+..
+.TH GOFMT 1 "2012-05-13"
+.\" Please adjust this date whenever revising the manpage.
+.SH NAME
+gofmt \- formats Go programs
+.SH SYNOPSIS
+.B gofmt
+.RI [ flags ]
+.RI [
+.IR "path ..."
+.RI ]
+.SH DESCRIPTION
+Without an explicit path, it processes the standard input. Given a file,
+it operates on that file; given a directory, it operates on all .go
+files in that directory, recursively. (Files starting with a period are
+ignored.) By default, gofmt prints the reformatted sources to standard
+output.
+
+.SH OPTIONS
+.TP
+.B \-d
+Do not print reformatted sources to standard output.
+If a file's formatting is different than gofmt's, print diffs
+to standard output.
+.TP
+.B \-e
+Print all (including spurious) errors.
+.TP
+.B \-l
+Do not print reformatted sources to standard output.
+If a file's formatting is different from gofmt's, print its name
+to standard output.
+.TP
+.B \-r rule
+Apply the rewrite rule to the source before reformatting.
+.TP
+.B \-s
+Try to simplify code (after applying the rewrite rule, if any).
+.TP
+.B \-w
+Do not print reformatted sources to standard output.
+If a file's formatting is different from gofmt's, overwrite it
+with gofmt's version.
+.P
+Formatting control flags:
+.TP
+.B \-comments=true
+Print comments; if false, all comments are elided from the output.
+.TP
+.B \-tabs=true
+Indent with tabs; if false, spaces are used instead.
+.TP
+.B \-tabwidth=8
+Tab width in spaces.
+.P
+
+The rewrite rule specified with the \-r flag must be a string of the
+form:
+
+.Vb 6
+\&      pattern -> replacement
+.Ve
+
+Both pattern and replacement must be valid Go expressions. In the
+pattern, single-character lowercase identifiers serve as wildcards
+matching arbitrary sub-expressions; those expressions will be
+substituted for the same identifiers in the replacement.
+
+When gofmt reads from standard input, it accepts either a full Go
+program or a program fragment. A program fragment must be a
+syntactically valid declaration list, statement list, or expression.
+When formatting such a fragment, gofmt preserves leading indentation as
+well as leading and trailing spaces, so that individual sections of a Go
+program can be formatted by piping them through gofmt.
+.SH EXAMPLES
+To check files for unnecessary parentheses:
+
+.Vb 6
+\&      gofmt \-r '(a) \-> a' \-l *.go
+.Ve
+
+To remove the parentheses:
+
+.Vb 6
+\&      gofmt \-r '(a) \-> a' \-w *.go
+.Ve
+
+To convert the package tree from explicit slice upper bounds to implicit
+ones:
+
+.Vb 6
+\&      gofmt \-r 'α[β:len(α)] \-> α[β:]' \-w $GOROOT/src/pkg
+.Ve
+.SH BUGS
+The implementation of \-r is a bit slow.
+.SH AUTHOR
+.PP
+This manual page was written by Michael Stapelberg <stapelberg@debian.org>,
+for the Debian project (and may be used by others).

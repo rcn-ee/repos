@@ -1,0 +1,33 @@
+The golang package is generated only for i386, amd64, armel, armhf and
+kfreebsd-* architectures, because of upstream restrictions.
+
+Quoting from upstream documentation (http://golang.org/doc/install.html):
+
+    The Go compilers support three instruction sets.  There are
+    important differences in the quality of the compilers for the
+    different architectures.
+
+    amd64 (a.k.a. x86-64); 6g,6l,6c,6a
+        The most mature implementation. The compiler has an effective
+        optimizer (registerizer) and generates good code (although
+        gccgo can do noticeably better sometimes).
+
+    386 (a.k.a. x86 or x86-32); 8g,8l,8c,8a
+        Comparable to the amd64 port.
+
+    arm (a.k.a. ARM); 5g,5l,5c,5a
+        Incomplete. It only supports Linux binaries, the optimizer is
+        incomplete, and floating point uses the VFP unit. However, all
+        tests pass. Work on the optimizer is continuing. Tested
+        against a Nexus One.
+
+    Except for things like low-level operating system interface code,
+    the run-time support is the same in all ports and includes a
+    mark-and-sweep garbage collector (a fancier one is in the works),
+    efficient array and string slicing, support for segmented stacks,
+    and a strong goroutine implementation.
+
+    The compilers can target the FreeBSD, Linux, and OS X
+    (a.k.a. Darwin) operating systems.
+
+ -- Ondřej Surý <ondrej@debian.org>, Thu, 28 Apr 2011 11:33:26 +0200

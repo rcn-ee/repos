@@ -1,0 +1,87 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.de Vb \" Begin verbatim text
+.ft CW
+.nf
+.ne \\$1
+..
+.de Ve \" End verbatim text
+.ft R
+.fi
+..
+.TH GO-TESTFLAG 7 "2012-05-13"
+.\" Please adjust this date whenever revising the manpage.
+.SH NAME
+go \- tool for managing Go source code
+.SH DESCRIPTION
+The 'go test' command takes both flags that apply to 'go test' itself
+and flags that apply to the resulting test binary.
+
+The test binary, called pkg.test, where pkg is the name of the
+directory containing the package sources, has its own flags:
+
+.TP
+.B \-test.v
+Verbose output: log all tests as they are run.
+.TP
+.B \-test.run pattern
+Run only those tests and examples matching the regular expression.
+.TP
+.B \-test.bench pattern
+Run benchmarks matching the regular expression.
+By default, no benchmarks run.
+.TP
+.B \-test.cpuprofile cpu.out
+Write a CPU profile to the specified file before exiting.
+.TP
+.B \-test.memprofile mem.out
+Write a memory profile to the specified file when all tests
+are complete.
+.TP
+.B \-test.memprofilerate n
+Enable more precise (and expensive) memory profiles by setting
+runtime.MemProfileRate.  See 'godoc runtime MemProfileRate'.
+To profile all memory allocations, use \-test.memprofilerate=1
+and set the environment variable GOGC=off to disable the
+garbage collector, provided the test can run in the available
+memory without garbage collection.
+.TP
+.B \-test.parallel n
+Allow parallel execution of test functions that call t.Parallel.
+The value of this flag is the maximum number of tests to run
+simultaneously; by default, it is set to the value of GOMAXPROCS.
+.TP
+.B \-test.short
+Tell long-running tests to shorten their run time.
+It is off by default but set during all.bash so that installing
+the Go tree can run a sanity check but not spend time running
+exhaustive tests.
+.TP
+.B \-test.timeout t
+If a test runs longer than t, panic.
+.TP
+.B \-test.benchtime n
+Run enough iterations of each benchmark to take n seconds.
+The default is 1 second.
+.TP
+.B \-test.cpu 1,2,4
+Specify a list of GOMAXPROCS values for which the tests or
+benchmarks should be executed.  The default is the current value
+of GOMAXPROCS.
+.P
+For convenience, each of these \-test.X flags of the test binary is
+also available as the flag \-X in 'go test' itself.  Flags not listed
+here are passed through unaltered.  For instance, the command
+
+.Vb 6
+\&      go test \-x \-v \-cpuprofile=prof.out \-dir=testdata \-update
+.Ve
+
+will compile the test binary and then run it as
+
+.Vb 6
+\&      pkg.test \-test.v \-test.cpuprofile=prof.out \-dir=testdata \-update
+.Ve
+.SH AUTHOR
+.PP
+This manual page was written by Michael Stapelberg <stapelberg@debian.org>,
+for the Debian project (and may be used by others).

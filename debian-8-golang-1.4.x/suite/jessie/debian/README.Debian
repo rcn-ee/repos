@@ -1,0 +1,21 @@
+== Cross-Compilation
+
+Go supports cross-compilation. The environment variables GOOS (e.g. linux,
+netbsd, …) and GOARCH (amd64, 386, arm) influence the resulting binary.
+
+For example, to compile helloworld for linux_386, use:
+
+    ~/gocode/src/helloworld $ GOARCH=386 go build                             
+    ~/gocode/src/helloworld $ file helloworld
+    helloworld: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV),
+    statically linked, not stripped
+
+If you get an error message like this:
+
+    ~/gocode/src/helloworld $ GOARCH=386 go build
+    go build runtime: linux/386 must be bootstrapped using make.bash
+
+…you are missing the appropriate golang-go-$GOOS-$GOARCH debian package,
+i.e. golang-go-linux-386 in this case.
+
+-- Michael Stapelberg <stapelberg@debian.org>  Fri, 07 Jun 2013 22:34:12 +0200

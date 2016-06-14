@@ -1,0 +1,21 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+	remove|deconfigure)
+		update-alternatives --remove go /usr/lib/go/bin/go
+		;;
+
+	upgrade|failed-upgrade)
+		;;
+
+	*)
+		echo >&2 "prerm called with unknown argument: $1"
+		exit 0
+		;;
+esac
+
+
+#DEBHELPER#
+
+exit 0

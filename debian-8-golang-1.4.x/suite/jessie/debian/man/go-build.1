@@ -1,0 +1,80 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.TH GO-BUILD 1 "2012-05-13"
+.\" Please adjust this date whenever revising the manpage.
+.SH NAME
+go \- tool for managing Go source code
+.SH SYNOPSIS
+.B go build
+.RB [\|\-o
+.IR output \|]
+.RB [
+.IR "build flags"
+.RB ]
+.RB [
+.IR packages
+.RB ]
+.SH DESCRIPTION
+Build compiles the packages named by the import paths,
+along with their dependencies, but it does not install the results.
+
+If the arguments are a list of .go files, build treats them as a list
+of source files specifying a single package.
+
+When the command line specifies a single main package,
+build writes the resulting executable to output.
+Otherwise build compiles the packages but discards the results,
+serving only as a check that the packages can be built.
+
+The \-o flag specifies the output file name.  If not specified, the
+name is packagename.a (for a non-main package) or the base
+name of the first source file (for a main package).
+.SH OPTIONS
+The build flags are shared by the build, install, run, and test commands:
+.TP
+.B \-a
+force rebuilding of packages that are already up-to-date.
+.TP
+.B \-n
+print the commands but do not run them.
+.TP
+.B \-p n
+the number of builds that can be run in parallel. The default is the number of CPUs available.
+.TP
+.B \-v
+print the names of packages as they are compiled.
+.TP
+.B \-work
+print the name of the temporary work directory and do not delete it when exiting.
+.TP
+.B \-x
+print the commands.
+.TP
+.B \-compiler name
+name of compiler to use, as in runtime.Compiler (gccgo or gc)
+.TP
+.B \-gccgoflags 'arg list'
+arguments to pass on each gccgo compiler/linker invocation
+.TP
+.B \-gcflags 'arg list'
+arguments to pass on each 5g, 6g, or 8g compiler invocation
+.TP
+.B \-ldflags 'flag list'
+arguments to pass on each 5l, 6l, or 8l linker invocation
+.TP
+.B \-tags 'tag list'
+a list of build tags to consider satisfied during the build.
+See the documentation for the go/build package for
+more information about build tags.
+.P
+For more about specifying packages, see \fBgo-packages\fP(7).
+.P
+For more about where packages and binaries are installed, see \fBgo-gopath\fP(1).
+
+.SH SEE ALSO
+.BR go-install (1),
+.BR go-get (1),
+.BR go-clean (1).
+.SH AUTHOR
+.PP
+This manual page was written by Michael Stapelberg <stapelberg@debian.org>,
+for the Debian project (and may be used by others).

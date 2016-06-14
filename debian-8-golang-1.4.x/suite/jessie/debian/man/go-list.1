@@ -1,0 +1,104 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.de Vb \" Begin verbatim text
+.ft CW
+.nf
+.ne \\$1
+..
+.de Ve \" End verbatim text
+.ft R
+.fi
+..
+.TH GO-LIST 1 "2012-05-13"
+.\" Please adjust this date whenever revising the manpage.
+.SH NAME
+go \- tool for managing Go source code
+.SH SYNOPSIS
+.B go list
+.RB [\|\-e\|]
+.RB [\|\-f
+.IR format \|]
+.RB [\|\-json\|]
+.RB [
+.IR packages
+.RB ]
+.SH DESCRIPTION
+List lists the packages named by the import paths, one per line.
+
+The default output shows the package import path:
+
+.Vb 6
+\&      code.google.com/p/google-api-go-client/books/v1
+\&      code.google.com/p/goauth2/oauth
+\&      code.google.com/p/sqlite
+.Ve
+
+.SH OPTIONS
+
+.TP
+.B \-f
+The \-f flag specifies an alternate format for the list,
+using the syntax of package template.  The default output
+is equivalent to \-f '{{.ImportPath}}'.  The struct
+being passed to the template is:
+
+.Vb 6
+\&      type Package struct {
+\&          Dir        string // directory containing package sources
+\&          ImportPath string // import path of package in dir
+\&          Name       string // package name
+\&          Doc        string // package documentation string
+\&          Target     string // install path
+\&          Goroot     bool   // is this package in the Go root?
+\&          Standard   bool   // is this package part of the standard Go library?
+\&          Stale      bool   // would 'go install' do anything for this package?
+\&          Root       string // Go root or Go path dir containing this package
+\&      
+\&          // Source files
+\&          GoFiles  []string  // .go source files (excluding CgoFiles, TestGoFiles, XTestGoFiles)
+\&          CgoFiles []string  // .go sources files that import "C"
+\&          CFiles   []string  // .c source files
+\&          HFiles   []string  // .h source files
+\&          SFiles   []string  // .s source files
+\&          SysoFiles []string // .syso object files to add to archive
+\&      
+\&          // Cgo directives
+\&          CgoCFLAGS    []string // cgo: flags for C compiler
+\&          CgoLDFLAGS   []string // cgo: flags for linker
+\&          CgoPkgConfig []string // cgo: pkg-config names
+\&      
+\&          // Dependency information
+\&          Imports []string // import paths used by this package
+\&          Deps    []string // all (recursively) imported dependencies
+\&      
+\&          // Error information
+\&          Incomplete bool            // this package or a dependency has an error
+\&          Error      *PackageError   // error loading package
+\&          DepsErrors []*PackageError // errors loading dependencies
+\&      
+\&          TestGoFiles  []string // _test.go files in package
+\&          TestImports  []string // imports from TestGoFiles
+\&          XTestGoFiles []string // _test.go files outside package
+\&          XTestImports []string // imports from XTestGoFiles
+\&      }
+.Ve
+.TP
+.B \-json
+The \-json flag causes the package data to be printed in JSON format
+instead of using the template format.
+.TP
+.B \-e
+The \-e flag changes the handling of erroneous packages, those that
+cannot be found or are malformed.  By default, the list command
+prints an error to standard error for each erroneous package and
+omits the packages from consideration during the usual printing.
+With the \-e flag, the list command never prints errors to standard
+error and instead processes the erroneous packages with the usual
+printing.  Erroneous packages will have a non-empty ImportPath and
+a non-nil Error field; other information may or may not be missing
+(zeroed).
+.P
+For more about specifying packages, see \fBgo-packages\fP(7).
+.SH AUTHOR
+.PP
+This manual page was written by Michael Stapelberg <stapelberg@debian.org>,
+for the Debian project (and may be used by others).

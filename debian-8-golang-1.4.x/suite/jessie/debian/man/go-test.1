@@ -1,0 +1,75 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.de Vb \" Begin verbatim text
+.ft CW
+.nf
+.ne \\$1
+..
+.de Ve \" End verbatim text
+.ft R
+.fi
+..
+.TH GO-TEST 1 "2012-05-13"
+.\" Please adjust this date whenever revising the manpage.
+.SH NAME
+go \- tool for managing Go source code
+.SH SYNOPSIS
+.B go test
+.RB [\|\-c\|]
+.RB [\|\-i\|]
+.RB [
+.IR "build flags"
+.RB ]
+.RB [
+.IR packages
+.RB ]
+.RB [
+.IR "flags for test binary"
+.RB ]
+.SH DESCRIPTION
+"Go test" automates testing the packages named by the import paths.
+It prints a summary of the test results in the format:
+
+.Vb 6
+\&      ok   archive/tar   0.011s
+\&      FAIL archive/zip   0.022s
+\&      ok   compress/gzip 0.033s
+\&      ...
+.Ve
+
+followed by detailed output for each failed package.
+
+"Go test" recompiles each package along with any files with names matching
+the file pattern "*_test.go".  These additional files can contain test functions,
+benchmark functions, and example functions.  See \fBgo-testfunc\fP(7) for more.
+
+By default, go test needs no arguments.  It compiles and tests the package
+with source in the current directory, including tests, and runs the tests.
+
+The package is built in a temporary directory so it does not interfere with the
+non-test installation.
+
+.SH OPTIONS
+
+In addition to the build flags, the flags handled by 'go test' itself are:
+
+.TP
+.B \-c
+Compile the test binary to pkg.test but do not run it.
+.TP
+.B \-i
+Install packages that are dependencies of the test.
+Do not run the test.
+.P
+The test binary also accepts flags that control execution of the test; these
+flags are also accessible by 'go test'.  See \fBgo-testflag\fP(7) for details.
+.P
+For more about build flags, see \fBgo-build\fP(1).
+.P
+For more about specifying packages, see \fBgo-packages\fP(7).
+.SH SEE ALSO
+.BR go-build (1),
+.BR go-vet (1).
+.SH AUTHOR
+.PP
+This manual page was written by Michael Stapelberg <stapelberg@debian.org>,
+for the Debian project (and may be used by others).

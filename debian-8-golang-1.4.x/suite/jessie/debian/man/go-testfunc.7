@@ -1,0 +1,63 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.de Vb \" Begin verbatim text
+.ft CW
+.nf
+.ne \\$1
+..
+.de Ve \" End verbatim text
+.ft R
+.fi
+..
+.TH GO-TESTFUNC 7 "2012-05-13"
+.\" Please adjust this date whenever revising the manpage.
+.SH NAME
+go \- tool for managing Go source code
+.SH DESCRIPTION
+The 'go test' command expects to find test, benchmark, and example functions
+in the "*_test.go" files corresponding to the package under test.
+
+A test function is one named TestXXX (where XXX is any alphanumeric string
+not starting with a lower case letter) and should have the signature,
+
+.Vb 6
+\&      func TestXXX(t *testing.T) { ... }
+.Ve
+
+A benchmark function is one named BenchmarkXXX and should have the signature,
+
+.Vb 6
+\&      func BenchmarkXXX(b *testing.B) { ... }
+.Ve
+
+An example function is similar to a test function but, instead of using *testing.T
+to report success or failure, prints output to os.Stdout and os.Stderr.
+That output is compared against the function's "Output:" comment, which
+must be the last comment in the function body (see example below). An
+example with no such comment, or with no text after "Output:" is compiled
+but not executed.
+
+Godoc displays the body of ExampleXXX to demonstrate the use
+of the function, constant, or variable XXX.  An example of a method M with
+receiver type T or *T is named ExampleT_M.  There may be multiple examples
+for a given function, constant, or variable, distinguished by a trailing _xxx,
+where xxx is a suffix not beginning with an upper case letter.
+
+Here is an example of an example:
+
+.Vb 6
+\&      func ExamplePrintln() {
+\&          Println("The output of\\nthis example.")
+\&          // Output: The output of
+\&          // this example.
+\&      }
+.Ve
+
+The entire test file is presented as the example when it contains a single
+example function, at least one other function, type, variable, or constant
+declaration, and no test or benchmark functions.
+
+See the documentation of the testing package for more information.
+.SH AUTHOR
+.PP
+This manual page was written by Michael Stapelberg <stapelberg@debian.org>,
+for the Debian project (and may be used by others).

@@ -1,0 +1,27 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+    configure)
+	# Very ugly hack to set timestamps same as /usr/lib/go/bin/go
+	find /usr/lib/go/pkg -exec touch -r /usr/lib/go/bin/go {} \;
+	# Setup alternatives
+	# Priority: base of 100 + go version; 1.4.2 = 100 + 42; 1.5 = 100 + 50
+	go=$(/usr/lib/go/bin/go version | awk '{
+		gsub(/^go1|[.]/, "", $3);
+		gsub(/([^0-9.]+.*)$/, "", $3);
+		if ($3 ~ /^[0-9]$/) {
+			$3 = $3 "0";
+		};
+		print $3;
+	}')
+	priority=$(( 100 + $go ))
+	update-alternatives \
+		--install /usr/bin/go go /usr/lib/go/bin/go $priority \
+		--slave /usr/bin/gofmt gofmt /usr/lib/go/bin/gofmt
+	;;
+    *)
+	;;
+esac
+
+#DEBHELPER#

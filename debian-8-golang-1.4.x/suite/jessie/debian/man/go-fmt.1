@@ -1,0 +1,37 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.TH GO-FMT 1 "2012-06-15"
+.\" Please adjust this date whenever revising the manpage.
+.SH NAME
+go \- tool for managing Go source code
+.SH SYNOPSIS
+.B go fmt
+.RB [\|\-n\|]
+.RB [\|\-x\|]
+.RB [
+.IR packages
+.RB ]
+.SH DESCRIPTION
+Fmt runs the command 'gofmt \-l \-w' on the packages named
+by the import paths.  It prints the names of the files that are modified.
+.P
+For more about gofmt, see 'godoc gofmt'.
+.P
+For more about specifying packages, see \fBgo-packages\fP(7).
+.P
+To run gofmt with specific options, run gofmt itself.
+.SH OPTIONS
+.TP
+.B \-n
+The \-n flag causes tool to print the command that would be
+executed but not execute it.
+.TP
+.B \-x
+The \-x flag causes clean to print remove commands as it executes them.
+.SH SEE ALSO
+.BR go-doc (1),
+.BR go-fix (1),
+.BR go-vet (1).
+.SH AUTHOR
+.PP
+This manual page was written by Michael Stapelberg <stapelberg@debian.org>,
+for the Debian project (and may be used by others).

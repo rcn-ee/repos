@@ -1,0 +1,59 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.TH GO-GET 1 "2012-06-15"
+.\" Please adjust this date whenever revising the manpage.
+.SH NAME
+go \- tool for managing Go source code
+.SH SYNOPSIS
+.B go get
+.RB [\|\-a\|]
+.RB [\|\-d\|]
+.RB [\|\-fix\|]
+.RB [\|\-n\|]
+.RB [\|\-p
+.IR n \|]
+.RB [\|\-u\|]
+.RB [\|\-v\|]
+.RB [\|\-x\|]
+.RB [
+.IR packages
+.RB ]
+.SH DESCRIPTION
+Get downloads and installs the packages named by the import paths,
+along with their dependencies.
+
+When checking out or updating a package, get looks for a branch or tag that
+matches the locally installed version of Go. The most important rule is that if
+the local installation is running version "go1", get searches for a branch or
+tag named "go1". If no such version exists it retrieves the most recent version
+of the package.
+
+.SH OPTIONS
+.TP
+.B \-a, \-n, \-v, \-x, \-p
+The \-a, \-n, \-v, \-x, and \-p flags have the same meaning as in 'go build'
+and 'go install'.  See \fBgo-build\fP(1).
+.TP
+.B \-d
+The \-d flag instructs get to stop after downloading the packages; that is,
+it instructs get not to install the packages.
+.TP
+.B \-fix
+The \-fix flag instructs get to run the fix tool on the downloaded packages
+before resolving dependencies or building the code.
+.TP
+.B \-u
+The \-u flag instructs get to use the network to update the named packages
+and their dependencies.  By default, get uses the network to check out
+missing packages but does not use it to look for updates to existing packages.
+.P
+For more about specifying packages, see \fBgo-packages\fP(7).
+.P
+For more about how 'go get' finds source code to download, see \fBgo-remote\fP(7).
+.SH SEE ALSO
+.BR go-build (1),
+.BR go-install (1),
+.BR go-clean (1).
+.SH AUTHOR
+.PP
+This manual page was written by Michael Stapelberg <stapelberg@debian.org>,
+for the Debian project (and may be used by others).
