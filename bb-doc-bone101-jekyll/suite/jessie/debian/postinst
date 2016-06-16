@@ -30,17 +30,9 @@ pkg_install () {
 	git_target_dir="/var/lib/cloud9"
 
 	if [ -d ${git_target_dir}/ ] ; then
-		cd ${git_target_dir}/
-		git reset HEAD --hard
-
-		#
-		git checkout master -f || true
-		git branch -D gh-pages || true
-
-		git pull --no-edit https://github.com/beagleboard/bone101 master
-	else
-		git_clone
+		rm -rf ${git_target_dir}/ || true
 	fi
+	git_clone
 
 	if [ -f ${git_target_dir}/.git/config ] ; then
 		cd ${git_target_dir}/
