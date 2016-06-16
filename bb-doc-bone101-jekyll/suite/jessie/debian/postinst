@@ -21,16 +21,22 @@ service="jekyll-autorun"
 
 git_clone () {
 	mkdir -p ${git_target_dir} || true
-	git clone ${git_repo} ${git_target_dir} --depth 1 || true
+	git clone -b ${git_branch} ${git_repo} ${git_target_dir} --depth 1 || true
 }
 
 pkg_install () {
 	git_repo="https://github.com/beagleboard/bone101"
+	git_branch="master"
 	git_target_dir="/var/lib/cloud9"
 
 	if [ -d ${git_target_dir}/ ] ; then
 		cd ${git_target_dir}/
 		git reset HEAD --hard
+
+		#
+		git checkout master -f || true
+		git branch -D gh-pages || true
+
 		git pull --no-edit https://github.com/beagleboard/bone101 master
 	else
 		git_clone
