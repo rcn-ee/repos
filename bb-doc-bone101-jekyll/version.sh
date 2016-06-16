@@ -2,7 +2,7 @@
 
 package_name="bb-doc-bone101-jekyll"
 debian_pkg_name="${package_name}"
-package_version="1.20160510"
+package_version="1.20160615"
 package_source=""
 src_dir=""
 
@@ -15,4 +15,4 @@ debian_version="${package_version}-0rcnee1"
 debian_untar=""
 debian_patch=""
 
-jessie_version="~bpo80+20160510+1"
+jessie_version="~bpo80+20160616+1"
