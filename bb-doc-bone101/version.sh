@@ -1,10 +1,10 @@
 #!/bin/bash -e
 
-package_name="bb-doc-bone101"
+package_name="bone101"
 debian_pkg_name="${package_name}"
 package_version="1.1.3"
-package_source=""
-src_dir=""
+package_source="${package_name}_${package_version}.orig.tar.gz"
+src_dir="${package_name}-${package_version}
 
 git_repo=""
 git_sha=""
