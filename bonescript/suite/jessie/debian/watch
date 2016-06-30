@@ -1,0 +1,38 @@
+# watch control file for uscan
+
+# See uscan(1) for how to set this file properly
+#  * uupdate(1) for upgrade a source code package
+#  * gbp-import-orig(1) with --uscan for upgrade GIT repo
+
+# Uncomment to activate the configuration. Erase unused portions.
+# Line continuations are performed with the tailing \\
+
+# Many complications around package and version strings can be worked
+# around using the "opts=" prefix.  See PER-SITE OPTIONS in uscan(1).
+
+# Compulsory line, this is a version 3 file
+version=3
+
+# Uncomment to examine a Webpage
+# <Webpage URL> <string match>
+#http://www.example.com/downloads.php bone101-(.*)\.(?:tar.gz|tar.bz2|tar.xz)
+
+# Uncomment to examine a Webserver directory
+#http://www.example.com/pub/bone101-(.*)\.(?:tar.gz|tar.bz2|tar.xz)
+
+# Uncommment to examine a FTP server
+#ftp://ftp.example.com/pub/bone101-(.*)\.(?:tar.gz|tar.bz2|tar.xz) debian uupdate
+
+# Uncomment to find new files on SourceForge (via qa.debian.org redirector)
+#http://sf.net/bone101/bone101-src-(.+)\.(?:tar.gz|tar.bz2|tar.xz)
+
+# Uncomment to find new files on Google Code
+#http://code.google.com/p/bone101/downloads/list?can=1 .*/bone101-(\d[\d.]*)\.(?:tar.gz|tar.bz2|tar.xz)
+
+# Uncomment to find new files on GitHub using the tags page:
+https://github.com/beagleboard/beagleboard/tags .*/(\d[\d\.]*)\.(?:tar.gz|tar.bz2|tar.xz)
+
+# Uncomment to use the cryptographic signature in a detached file with
+# ".asc" suffix using the "pgpsigurlmangle" option.
+# opts=<options> <Webpage URL> <string match>
+#opts=pgpsigurlmangle=s/$/.asc/ http://ftp.example.org/bone101/download.html pub/bone101-([\d\.]*)\.(?:tar.gz|tar.bz2|tar.xz)
