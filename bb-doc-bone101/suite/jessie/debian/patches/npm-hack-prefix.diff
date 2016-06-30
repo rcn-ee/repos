@@ -1,13 +1,13 @@
 diff --git a/Makefile b/Makefile
-index 9fc8e0d..9769369 100644
+index 9fc8e0d..3df81dc 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -16,6 +16,8 @@ endif
  ifdef NPM
  	mkdir -p node_modules
  	cd node_modules
-+	npm config set cache /tmp/.npm
-+	npm config set userconfig /tmp/.npmrc
++	npm config set cache $(PWD)/debian/tmp/.npm
++	npm config set userconfig $(PWD)/debian/tmp/.npmrc
  	$(NPM) install --unsafe-perm=true --progress=false --loglevel=error async@2.0.0-rc.6
  	$(NPM) install --unsafe-perm=true --progress=false --loglevel=error sensortag@1.2.2
  	cd ..
