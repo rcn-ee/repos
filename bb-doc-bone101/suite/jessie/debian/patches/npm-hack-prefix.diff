@@ -1,0 +1,15 @@
+diff --git a/Makefile b/Makefile
+index 9fc8e0d..b29087a 100644
+--- a/Makefile
++++ b/Makefile
+@@ -16,8 +16,8 @@ endif
+ ifdef NPM
+ 	mkdir -p node_modules
+ 	cd node_modules
+-	$(NPM) install --unsafe-perm=true --progress=false --loglevel=error async@2.0.0-rc.6
+-	$(NPM) install --unsafe-perm=true --progress=false --loglevel=error sensortag@1.2.2
++	$(NPM) install --unsafe-perm=true --progress=false --loglevel=error --prefix ./ async@2.0.0-rc.6
++	$(NPM) install --unsafe-perm=true --progress=false --loglevel=error --prefix ./ sensortag@1.2.2
+ 	cd ..
+ else
+ 	@echo npm not found
