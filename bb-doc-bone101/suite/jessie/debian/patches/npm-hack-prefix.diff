@@ -1,11 +1,12 @@
 diff --git a/Makefile b/Makefile
-index 9fc8e0d..73c7fd5 100644
+index 9fc8e0d..abeac54 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -14,6 +14,8 @@ else
+@@ -14,6 +14,9 @@ else
  	$(error jekyll not installed)
  endif
  ifdef NPM
++	mkdir -p $(CURDIR)/debian/tmp/
 +	$(NPM) config set cache $(CURDIR)/debian/tmp/.npm
 +	$(NPM) config set userconfig $(CURDIR)/debian/tmp/.npmrc
  	mkdir -p node_modules
