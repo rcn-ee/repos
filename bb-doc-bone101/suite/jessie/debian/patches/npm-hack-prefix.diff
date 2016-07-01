@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index 9fc8e0d..f7352b0 100644
+index 9fc8e0d..5c265d0 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -14,6 +14,12 @@ else
@@ -9,9 +9,9 @@ index 9fc8e0d..f7352b0 100644
 +	mkdir -p $(CURDIR)/debian/tmp/.npm
 +	mkdir -p $(CURDIR)/debian/tmp/.npmrc
 +	export HOME=$(CURDIR)
-+	$(NPM) npm config ls -l
 +	$(NPM) config set cache $(CURDIR)/debian/tmp/.npm
 +	$(NPM) config set userconfig $(CURDIR)/debian/tmp/.npmrc
++	$(NPM) npm config ls -l
  	mkdir -p node_modules
  	cd node_modules
  	$(NPM) install --unsafe-perm=true --progress=false --loglevel=error async@2.0.0-rc.6
