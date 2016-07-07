@@ -11,10 +11,10 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee5"
+debian_version="${package_version}-0rcnee6"
 debian_untar=""
 debian_patch=""
 sbuild_chroot="nodejs-v0.12.x"
 debian_dl_1="https://github.com/rcn-ee/npm-package-bonescript/raw/master/deploy/bonescript-0.5.0-v0.12.15.tar.xz"
 
-jessie_version="~bpo80+20160706+1"
+jessie_version="~bpo80+20160707+1"
