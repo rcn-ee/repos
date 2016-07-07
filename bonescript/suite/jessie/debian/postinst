@@ -4,6 +4,10 @@
 
 set -e
 
+echo "NODE_PATH=/usr/local/lib/node_modules" > /etc/default/node
+echo "export NODE_PATH=/usr/local/lib/node_modules" > /etc/profile.d/node.sh
+chmod 755 /etc/profile.d/node.sh
+
 systemctl enable bonescript.socket || true
 systemctl enable bonescript-autorun.service || true
 systemctl enable cloud9.socket || true
