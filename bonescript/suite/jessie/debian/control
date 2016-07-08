@@ -10,9 +10,20 @@ Vcs-Git: git://github.com/beagleboard/bonescript.git
 Vcs-Browser: http://github.com/beagleboard/bonescript
 
 Package: bonescript
-Replaces: bb-bonescript-installer-beta
 Architecture: any
+Provides: bb-bonescript-installer-beta
+Replaces: bb-bonescript-installer-beta (<< 0.5.0~beta7-0rcnee1~bpo80+20160526+1~)
+Breaks: bb-bonescript-installer-beta (<< 0.5.0~beta7-0rcnee1~bpo80+20160526+1~)
 Depends: ${misc:Depends}, nodejs (>= 0.12.15)
 Description: JavaScript library for BeagleBone
  JavaScript library for BeagleBone with interactive
  web server including browser-based calls.
+
+Package: bb-bonescript-installer-beta
+Architecture: all
+Depends:
+    bonescript,
+    ${misc:Depends}
+Section: libs
+Description: transitional dummy package for bonescript
+ This is a transitional dummy package. It can safely be removed.
