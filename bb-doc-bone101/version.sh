@@ -11,7 +11,7 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee12"
+debian_version="${package_version}-0rcnee13"
 debian_untar=""
 debian_patch=""
 sbuild_chroot="nodejs-v0.12.x"
@@ -19,4 +19,4 @@ debian_dl_1="https://github.com/rcn-ee/npm-package-bb-doc-bone101/raw/master/dep
 debian_dl_2="https://github.com/rcn-ee/npm-package-bb-doc-bone101/raw/master/deploy/sensortag-1.2.2-v0.12.15.tar.xz"
 
 
-jessie_version="~bpo80+20160701+1"
+jessie_version="~bpo80+20160708+1"

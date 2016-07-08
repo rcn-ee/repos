@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index 9fc8e0d..b083758 100644
+index 9fc8e0d..fd07078 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -16,8 +16,8 @@ endif
@@ -8,8 +8,16 @@ index 9fc8e0d..b083758 100644
  	cd node_modules
 -	$(NPM) install --unsafe-perm=true --progress=false --loglevel=error async@2.0.0-rc.6
 -	$(NPM) install --unsafe-perm=true --progress=false --loglevel=error sensortag@1.2.2
-+	tar xf debian/async-2.0.0-rc.6-v0.12.15.tar.xz -C ./node_modules/
-+	tar xf debian/sensortag-1.2.2-v0.12.15.tar.xz -C ./node_modules/
++	tar xf ./debian/async-2.0.0-rc.6-v0.12.15.tar.xz -C ./
++	tar xf ./debian/sensortag-1.2.2-v0.12.15.tar.xz -C ./
  	cd ..
  else
  	@echo npm not found
+@@ -37,6 +37,7 @@ endif
+ install: ./bone101
+ 	install -m 0755 -d $(DESTDIR)$(PREFIX)/share/bone101
+ 	cp -dr --preserve=mode,timestamp ./bone101/* $(DESTDIR)$(PREFIX)/share/bone101/
++	rm -rf $(DESTDIR)$(PREFIX)/share/bone101/debian/
+ 	install -m 0755 -d $(DESTDIR)$(CLOUD9_DIR)
+ 	install -m 0755 -d $(DESTDIR)$(CLOUD9_DIR)/.c9
+ 	cp -dr --preserve=mode,timestamp ./.c9/* $(DESTDIR)$(CLOUD9_DIR)/.c9
