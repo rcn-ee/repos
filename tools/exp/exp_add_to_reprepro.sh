@@ -16,20 +16,26 @@ run () {
 	fi
 }
 
-dist="debian"
-suite="jessie"
-if [ -d suite/${suite}/ ] ; then
+runner () {
 	repo="${base}${dist}-exp/"
-	deb_arch="armhf"
-	rcn_ee_version="${jessie_version}"
-	run
-fi
+	if [ -d ./suite/${suite}/ ] ; then
+		run
+	fi
+}
 
-suite="stretch"
-if [ -d suite/${suite}/ ] ; then
-	repo="${base}${dist}-exp/"
+start_run () {
+	dist="debian"
 	deb_arch="armhf"
-	rcn_ee_version="${jessie_version}"
-	run
-fi
+	suite="wheezy" ; runner
+	suite="jessie" ; runner
+	suite="stretch" ; runner
+
+	dist="ubuntu"
+	suite="trusty" ; runner
+	suite="wily" ; runner
+	suite="xenial" ; runner
+	suite="yakkety" ; runner
+}
+
+start_run
 #
