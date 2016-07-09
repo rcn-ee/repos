@@ -8,12 +8,10 @@ set -e
 if [ -d /run/systemd/system ] && [ "$1" = remove ]; then
 	systemctl mask --runtime bonescript.socket || true
 	systemctl mask --runtime bonescript-autorun.service || true
-	systemctl mask --runtime cloud9.socket || true
 	# stop ${service}.service manually since invoke-rc.d currently doesn't
 	# deal with masked services (see Bug #717109)
 	systemctl stop bonescript.socket || true
 	systemctl stop bonescript-autorun.service || true
-	systemctl stop cloud9.socket || true
 fi
 
 # dh_installdeb will replace this with shell code automatically

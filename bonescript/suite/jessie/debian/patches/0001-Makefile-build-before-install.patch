@@ -1,26 +1,16 @@
-Description: Makefile: build before install
- Makefile adjusted to build in 'make' before 'make install'.
- .
- bonescript (0.5.0-1~bpo80+20160629+1) jessie; urgency=low
- .
-   * Initial release.
-Author: Jason Kridner <jdk@ti.com>
+From f2c1798d100b4c09ee461b63019ff6d291c1b674 Mon Sep 17 00:00:00 2001
+From: Jason Kridner <jkridner@beagleboard.org>
+Date: Thu, 30 Jun 2016 20:18:10 +0000
+Subject: [PATCH 1/4] Makefile: build before install
 
 ---
-The information above should follow the Patch Tagging Guidelines, please
-checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
-are templates for supplementary fields that you might want to add:
+ Makefile | 25 +++++++++++--------------
+ 1 file changed, 11 insertions(+), 14 deletions(-)
 
-Origin: <vendor|upstream|other>, <url of original patch>
-Bug: <url in upstream bugtracker>
-Bug-Debian: http://bugs.debian.org/<bugnumber>
-Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
-Forwarded: <no|not-needed|url proving that it has been forwarded>
-Reviewed-By: <name and email of someone who approved the patch>
-Last-Update: <YYYY-MM-DD>
-
---- bonescript-0.5.0.orig/Makefile
-+++ bonescript-0.5.0/Makefile
+diff --git a/Makefile b/Makefile
+index d315db9..6e890f5 100644
+--- a/Makefile
++++ b/Makefile
 @@ -1,5 +1,5 @@
  PREFIX:=/usr/local
 -npm_options:=--unsafe-perm=true --progress=false --loglevel=error --prefix $(DESTDIR)$(PREFIX)
@@ -28,7 +18,7 @@ Last-Update: <YYYY-MM-DD>
  NODE_PATH:=$(DESTDIR)$(PREFIX)/lib/node_modules
  NODEJS:=nodejs
  NPM:=npm
-@@ -7,37 +7,34 @@ NPM:=npm
+@@ -7,29 +7,28 @@ NPM:=npm
  ver=$(shell nodejs -pe "require('./package.json').version")
  npm_version=$(shell $(NPM) --version)
  node_version=$(shell $(NODEJS) --version)
@@ -38,11 +28,11 @@ Last-Update: <YYYY-MM-DD>
 -	@echo "ver=$(ver)"
 -	@echo "npm_version=$(npm_version)"
 -	@echo "node_version=$(node_version)"
-+	mkdir -p $(bs_path) ; mkdir -p ./build/etc/
++	mkdir -p $(bs_path)
 +	echo $(ver) > $(bs_path)/bonescript.version
 +	echo $(node_version) > $(bs_path)/bonescript.node_version
 +	echo $(npm_version) > $(bs_path)/bonescript.npm_version
-+	tar xf debian/bonescript-0.5.0-v0.12.15-rcnee1.tar.xz -C $(bs_path)/../
++	TERM=dumb $(NPM) install -g $(npm_options) --prefix ./build
 +	cp -dr --preserve=mode,timestamp etc/* ./build/etc/
  
  clean:
@@ -68,7 +58,7 @@ Last-Update: <YYYY-MM-DD>
  	install -m 0755 -d $(DESTDIR)/lib/systemd/system
  	install -m 0644 systemd/bonescript.socket $(DESTDIR)/lib/systemd/system/
  	install -m 0644 systemd/bonescript.service $(DESTDIR)/lib/systemd/system/
- 	install -m 0644 systemd/bonescript-autorun.service $(DESTDIR)/lib/systemd/system/
+@@ -37,7 +36,5 @@ install:
  	systemctl enable bonescript.socket || true
  	systemctl enable bonescript.service || true
  	systemctl enable bonescript-autorun.service || true
@@ -76,3 +66,6 @@ Last-Update: <YYYY-MM-DD>
 -	install -m 0644 etc/avahi/services/bone101.service $(DESTDIR)/etc/avahi/services/
  
  .PHONY: clean test install
+-- 
+2.8.1
+

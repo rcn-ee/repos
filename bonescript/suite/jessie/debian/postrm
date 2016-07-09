@@ -6,7 +6,6 @@ set -e
 if [ -d /run/systemd/system ] && [ "$1" = remove ]; then
 	systemctl unmask --runtime bonescript.socket || true
 	systemctl unmask --runtime bonescript-autorun.service || true
-	systemctl unmask --runtime cloud9.socket || true
 fi
 
 #DEBHELPER#
