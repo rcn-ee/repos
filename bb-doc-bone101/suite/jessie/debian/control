@@ -4,7 +4,7 @@ Priority: extra
 Maintainer: Jason Kridner <jdk@ti.com>
 Build-Depends: debhelper (>=9),
                jekyll,
-               nodejs
+               nodejs (>= 0.12.15)
 Standards-Version: 3.9.5
 Homepage: https://jadonk.github.io/bone101
 Vcs-Git: git://github.com/jadonk/bone101.git
@@ -12,6 +12,10 @@ Vcs-Browser: http://github.com/jadonk/bone101
 
 Package: bone101
 Architecture: armhf
+Provides: bb-doc-bone101-jekyll
+Replaces: bb-doc-bone101-jekyll (<< 1.20160615-0rcnee3~bpo80+20160616+1~)
+Breaks: bb-doc-bone101-jekyll (<< 1.20160615-0rcnee3~bpo80+20160616+1~)
 Depends: ${misc:Depends}
 Description: interactive web documentation for BeagleBone
  Interactive web documentation for BeagleBone
+

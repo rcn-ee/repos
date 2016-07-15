@@ -11,9 +11,9 @@ git_sha=""
 reprepro_dir="s/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee6"
+debian_version="${package_version}-0rcnee8"
 debian_untar=""
 debian_patch=""
-debian_dl_1="https://github.com/rcn-ee/npm-package-wificonfig/raw/master/deploy/wificonfig-0.1.5-39fe0fb-v0.12.13.tar.xz"
+debian_dl_1="https://github.com/rcn-ee/npm-package-wificonfig/raw/master/deploy/wificonfig-0.1.5-2a7ba99-v0.12.15-bbgw-bone101-dir-change.tar.xz"
 
-jessie_version="~bpo80+20160616+1"
+jessie_version="~bpo80+20160708+1"

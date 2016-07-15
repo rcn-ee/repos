@@ -1,0 +1,43 @@
+From 444f08ec0752926e9297cf0cae689825525d49cd Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Sat, 9 Jul 2016 09:23:13 -0500
+Subject: [PATCH 4/4] cloud9 systemd files are provided by the
+ c9-core-installer
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ systemd/cloud9.service | 9 ---------
+ systemd/cloud9.socket  | 5 -----
+ 2 files changed, 14 deletions(-)
+ delete mode 100644 systemd/cloud9.service
+ delete mode 100644 systemd/cloud9.socket
+
+diff --git a/systemd/cloud9.service b/systemd/cloud9.service
+deleted file mode 100644
+index 5205918..0000000
+--- a/systemd/cloud9.service
++++ /dev/null
+@@ -1,9 +0,0 @@
+-[Unit]
+-Description=Cloud9 IDE
+-ConditionPathExists=|/var/lib/cloud9
+-
+-[Service]
+-WorkingDirectory=/opt/cloud9
+-EnvironmentFile=/etc/default/cloud9
+-ExecStart=/usr/bin/node server.js -w /var/lib/cloud9
+-SyslogIdentifier=cloud9ide
+diff --git a/systemd/cloud9.socket b/systemd/cloud9.socket
+deleted file mode 100644
+index 9708c67..0000000
+--- a/systemd/cloud9.socket
++++ /dev/null
+@@ -1,5 +0,0 @@
+-[Socket]
+-ListenStream=3000
+-
+-[Install]
+-WantedBy=sockets.target
+-- 
+2.8.1
+

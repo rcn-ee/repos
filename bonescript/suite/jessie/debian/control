@@ -3,7 +3,7 @@ Section: libs
 Priority: extra
 Maintainer: Jason Kridner <jdk@ti.com>
 Build-Depends: debhelper (>=9),
-               nodejs
+               nodejs (>= 0.12.15)
 Standards-Version: 3.9.5
 Homepage: https://beagleboard.org/bonescript
 Vcs-Git: git://github.com/beagleboard/bonescript.git
@@ -11,7 +11,12 @@ Vcs-Browser: http://github.com/beagleboard/bonescript
 
 Package: bonescript
 Architecture: any
-Depends: ${misc:Depends}
+Provides: bb-bonescript-installer-beta
+Replaces: bb-bonescript-installer-beta (<< 0.5.0~beta7-0rcnee1~bpo80+20160526+1~)
+Breaks: bb-bonescript-installer-beta (<< 0.5.0~beta7-0rcnee1~bpo80+20160526+1~)
+Pre-Depends: bone101
+Depends: ${misc:Depends}, nodejs (>= 0.12.15)
 Description: JavaScript library for BeagleBone
  JavaScript library for BeagleBone with interactive
  web server including browser-based calls.
+
