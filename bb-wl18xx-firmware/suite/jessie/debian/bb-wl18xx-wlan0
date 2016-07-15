@@ -20,18 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-unset wlan_0_mac
-board=$(cat /proc/device-tree/model | sed "s/ /_/g")
-case "${board}" in
-TI_AM335x_BeagleBone_Green_Wireless)
-	eeprom="/sys/bus/i2c/devices/0-0050/eeprom"
-	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
-	;;
-*)
-	unset eeprom
-	;;
-esac
-
 cylon_leds () {
 	if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
 		BASE=/sys/class/leds/beaglebone\:green\:usr
@@ -59,13 +47,7 @@ cylon_leds () {
 	fi
 }
 
-if [ ! "x${eeprom}" = "x" ] ; then
-	wlan_0_mac=$(hexdump -e '8/1 "%c"' ${eeprom} -n 72 | tail -1 | cut -b 5-8 || true)
-	if [ ! "x${wlan_0_mac}" = "xA335" ] ; then
-		wlan_0_mac=$(hexdump -e '8/1 "%c"' ${eeprom} -n 72 | tail -1 | cut -b 5-16 | sed 's/\(..\)/\1:/g;s/:$//' | awk '{print toupper($0)}' || true)
-		echo "eeprom=[${wlan_0_mac}]"
-	fi
-
+set_wlan0_mac () {
 	cal_bin="/usr/local/bin/calibrator"
 	if [ -f ${cal_bin} ] ; then
 		current_mac=$(${cal_bin} get nvs_mac ${firmware} | awk -F 'NVS: ' '{print $2}' | awk '{print toupper($0)}' || true)
@@ -84,4 +66,41 @@ if [ ! "x${eeprom}" = "x" ] ; then
 			fi
 		fi
 	fi
-fi
+}
+
+set_wlan0_mac_from_eeprom () {
+	wlan_0_mac=$(hexdump -e '8/1 "%c"' ${eeprom} -n 72 | tail -1 | cut -b 5-8 || true)
+	if [ ! "x${wlan_0_mac}" = "xA335" ] ; then
+		wlan_0_mac=$(hexdump -e '8/1 "%c"' ${eeprom} -n 72 | tail -1 | cut -b 5-16 | sed 's/\(..\)/\1:/g;s/:$//' | awk '{print toupper($0)}' || true)
+		echo "eeprom=[${wlan_0_mac}]"
+	fi
+	set_wlan0_mac
+}
+
+set_wlan0_mac_from_cpsw_0 () {
+	mac_address="/proc/device-tree/ocp/ethernet@4a100000/slave@4a100200/mac-address"
+	if [ -f ${mac_address} ] ; then
+		cpsw_0_mac=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address} | sed 's/.$//')
+	else
+		#todo: generate random mac... (this is a development tre board in the lab...)
+		cpsw_0_mac="1c:ba:8c:a2:ed:68"
+	fi
+	wlan_0_mac="${cpsw_0_mac}"
+	echo "cspw_0_mac=[${wlan_0_mac}]"
+	set_wlan0_mac
+}
+
+board=$(cat /proc/device-tree/model | sed "s/ /_/g")
+case "${board}" in
+TI_AM335x_BeagleBone_Green_Wireless)
+	eeprom="/sys/bus/i2c/devices/0-0050/eeprom"
+	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
+	set_wlan0_mac_from_eeprom
+	;;
+TI_AM335x_BeagleBone_Black_Wireless)
+	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
+	set_wlan0_mac_from_cpsw_0
+	;;
+*)
+	;;
+esac
