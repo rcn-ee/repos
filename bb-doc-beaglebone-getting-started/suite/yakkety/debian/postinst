@@ -6,7 +6,8 @@ set -e
 
 package="doc-beaglebone-getting-started"
 core_version="2016-07-18"
-wfile_img="beaglebone-getting-started-${core_version}.iso"
+wfile_iso="beaglebone-getting-started-${core_version}.iso"
+wfile_iso_xz="beaglebone-getting-started-${core_version}.iso.xz"
 
 # summary of how this script can be called:
 #        * <postinst> `configure' <most-recently-configured-version>
@@ -23,11 +24,11 @@ wfile_img="beaglebone-getting-started-${core_version}.iso"
 just_install () {
 	cd /var/cache/${package}/
 
-	if [ ! -f ${wfile_img} ] ; then
-		unxz ${wfile_img_xz}
+	if [ ! -f ${wfile_iso} ] ; then
+		unxz ${wfile_iso_xz}
 	fi
 
-	if [ -f ${wfile_img} ] ; then
+	if [ -f ${wfile_iso} ] ; then
 		ln -sf /var/cache/${package}/beaglebone-getting-started-${core_version}.iso /var/local/bb_usb_mass_storage.iso
 	fi
 }
