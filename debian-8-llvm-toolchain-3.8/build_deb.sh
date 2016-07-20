@@ -23,10 +23,12 @@ run () {
 			mkdir -p ${out_dir}/
 			cp -v *orig* ${out_dir}/ || true
 			cp -v *debian* ${out_dir}/ || true
+			cp -v *tar* ${out_dir}/ || true
 			cp -v *.changes ${out_dir}/ || true
 			cp -v *.deb ${out_dir}/ || true
 			cp -v *.dsc ${out_dir}/ || true
 			cp -v *.udeb ${out_dir}/ || true
+			cp -v *.diff.gz ${out_dir}/ || true
 			cp -v *${deb_arch}.build ${out_dir} || true
 		fi
 
