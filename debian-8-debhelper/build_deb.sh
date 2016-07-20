@@ -7,7 +7,7 @@ sudo mount -a
 localdir="/mnt/farm"
 
 run () {
-	out_dir="${localdir}/outgoing/${suite}/${deb_arch}/${debian_pkg_name}"
+	out_dir="${localdir}/outgoing/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}"
 	if [ -f /var/lib/sbuild/${suite}-${deb_arch}.tar.gz ] ; then
 		if [ -d ./${suite} ] ; then
 			rm -rf ./${suite}/
@@ -17,7 +17,7 @@ run () {
 		cd ./${suite}
 
 		options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite}"
-		sbuild ${options} ${mirror}/${dl_path}${package_name}.dsc
+		sbuild ${options} ${mirror}/${dl_path}${package_name}_${debian_version}.dsc
 
 		if [ -f *.changes ] ; then
 			mkdir -p ${out_dir}/
