@@ -18,7 +18,7 @@ run () {
 
 dist="debian"
 suite="jessie"
-repo="${base}${dist}/"
-deb_arch=armhf
+repo="${base}${dist}-exp/"
+deb_arch="armhf"
 run
 
