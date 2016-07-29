@@ -54,6 +54,12 @@ options=""
 setup_update_sbuild
 
 dist="jessie"
+flavor="-exp"
+arch="armhf"
+options="--chroot-suffix=${flavor}-sbuild"
+setup_update_sbuild
+
+dist="jessie"
 flavor="-nodejs-v0.12.x"
 arch="armhf"
 options="--chroot-suffix=${flavor}-sbuild"
