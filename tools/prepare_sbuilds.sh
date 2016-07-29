@@ -83,7 +83,7 @@ if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	dist="stretch"
 	unset flavor
 	arch="armhf"
-	options=""
+	options="--exclude=debfoster"
 	setup_update_sbuild
 fi
 fi
