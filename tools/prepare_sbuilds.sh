@@ -54,6 +54,12 @@ options=""
 setup_update_sbuild
 
 dist="jessie"
+flavor="-exp"
+arch="armhf"
+options="--chroot-suffix=${flavor}-sbuild"
+setup_update_sbuild
+
+dist="jessie"
 flavor="-nodejs-v0.12.x"
 arch="armhf"
 options="--chroot-suffix=${flavor}-sbuild"
@@ -77,7 +83,7 @@ if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	dist="stretch"
 	unset flavor
 	arch="armhf"
-	options=""
+	options="--exclude=debfoster"
 	setup_update_sbuild
 fi
 fi
