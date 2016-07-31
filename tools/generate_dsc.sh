@@ -101,7 +101,6 @@ start_run () {
 
 	dist="ubuntu"
 	suite="trusty" ; runner
-	suite="wily" ; runner
 	suite="xenial" ; runner
 	suite="yakkety" ; runner
 }

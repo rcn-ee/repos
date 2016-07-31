@@ -101,18 +101,6 @@ fi
 if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
 if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
-	dist="wily"
-	unset flavor
-	arch="armhf"
-	options="--exclude=debfoster"
-	setup_update_sbuild
-fi
-fi
-fi
-
-if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
-if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
-if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	dist="xenial"
 	unset flavor
 	arch="armhf"

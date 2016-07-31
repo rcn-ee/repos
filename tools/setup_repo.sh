@@ -137,6 +137,7 @@ suite="vivid"
 archs="armhf source"
 setup_repo
 
+#old: July 28 2016
 suite="wily"
 archs="armhf source"
 setup_repo

@@ -22,12 +22,6 @@ deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ trusty main
 #deb-src [arch=armhf] http://repos.rcn-ee.com/ubuntu/ trusty main
 ```
 
-Ubuntu 15.10: (Wily): http://repos.rcn-ee.com/ubuntu/
-```
-deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ wily main
-#deb-src [arch=armhf] http://repos.rcn-ee.com/ubuntu/ wily main
-```
-
 Ubuntu 16.04 lts: (Xenial): http://repos.rcn-ee.com/ubuntu/
 ```
 deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ xenial main
