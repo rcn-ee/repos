@@ -11,6 +11,7 @@ git_sha=""
 reprepro_dir="s/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-7~bpo8+1"
+debian_version="${package_version}-7~bpo8+2"
 debian_untar=""
 debian_patch=""
+sbuild_chroot="exp"
