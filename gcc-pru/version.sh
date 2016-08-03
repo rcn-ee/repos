@@ -16,4 +16,4 @@ debian_version="${package_version}-0rcnee0"
 debian_untar=""
 debian_patch=""
 
-jessie_version="-1"
+jessie_version="~bpo80+20160803+1"
