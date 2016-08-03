@@ -14,4 +14,4 @@ dl_path="pool/main/${reprepro_dir}/"
 debian_version="${package_version}-7~bpo8+2"
 debian_untar=""
 debian_patch=""
-sbuild_chroot="exp"
+
