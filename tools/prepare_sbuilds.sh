@@ -35,7 +35,6 @@ echo "\$distribution = 'stretch';" >> ~/.sbuildrc
 mirror="http://${proxy}${debian_server}"
 deboot="sid"
 
-if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
 if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	dist="wheezy"
@@ -43,7 +42,6 @@ if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	arch="armhf"
 	options=""
 	setup_update_sbuild
-fi
 fi
 fi
 
@@ -77,7 +75,6 @@ arch="armhf"
 options="--chroot-suffix=${flavor}-sbuild"
 setup_update_sbuild
 
-if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
 if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	dist="stretch"
@@ -87,12 +84,10 @@ if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	setup_update_sbuild
 fi
 fi
-fi
 
 mirror="http://${proxy}${ubuntu_server}"
 deboot="gutsy"
 
-if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
 if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	dist="trusty"
@@ -102,9 +97,7 @@ if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	setup_update_sbuild
 fi
 fi
-fi
 
-if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
 if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	dist="xenial"
@@ -114,9 +107,7 @@ if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	setup_update_sbuild
 fi
 fi
-fi
 
-if [ ! "x${builder}" = "xa4-imx6q-wandboard-2gb" ] ; then
 if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	dist="yakkety"
@@ -124,7 +115,6 @@ if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	arch="armhf"
 	options="--exclude=debfoster"
 	setup_update_sbuild
-fi
 fi
 fi
 #
