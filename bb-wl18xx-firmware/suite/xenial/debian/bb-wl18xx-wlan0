@@ -28,9 +28,7 @@ check_for_nl80211 () {
 		is_driver_loaded=$(${cal_bin} --help 2>&1 || true)
 		if [ "xnl80211 not found." = "x${is_driver_loaded}" ] ; then
 			echo "nl80211 not found."
-			sleep 1
-			modprobe wl18xx || true
-			sleep 4
+			sleep 5
 		else
 			echo "nl80211 found."
 			break
