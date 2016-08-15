@@ -20,9 +20,29 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+cal_bin="/usr/local/bin/calibrator"
+
+check_for_nl80211 () {
+	while : ; do
+		unset is_driver_loaded
+		is_driver_loaded=$(${cal_bin} --help 2>&1 || true)
+		if [ "xnl80211 not found." = "x${is_driver_loaded}" ] ; then
+			echo "nl80211 not found."
+			sleep 1
+			modprobe wl18xx || true
+			sleep 4
+		else
+			echo "nl80211 found."
+			break
+		fi
+	done
+}
+
 cylon_leds () {
 	if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
 		BASE=/sys/class/leds/beaglebone\:green\:usr
+		old_trigger_0=$(cat ${BASE}0/trigger)
+		old_trigger_1=$(cat ${BASE}1/trigger)
 		echo none > ${BASE}0/trigger
 		echo none > ${BASE}1/trigger
 
@@ -48,8 +68,8 @@ cylon_leds () {
 }
 
 set_wlan0_mac () {
-	cal_bin="/usr/local/bin/calibrator"
 	if [ -f ${cal_bin} ] ; then
+		check_for_nl80211
 		current_mac=$(${cal_bin} get nvs_mac ${firmware} | awk -F 'NVS: ' '{print $2}' | awk '{print toupper($0)}' || true)
 		echo "${firmware}=[${current_mac}]"
 		if [ ! "x${current_mac}" = "x${wlan_0_mac}" ] ; then
@@ -61,8 +81,8 @@ set_wlan0_mac () {
 			echo "/boot/initrd.img: update complete"
 			[ -e /proc/$CYLON_PID ]  && kill $CYLON_PID
 			if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
-				echo default-on > /sys/class/leds/beaglebone\:green\:usr0/trigger
-				echo default-on > /sys/class/leds/beaglebone\:green\:usr1/trigger
+				echo ${old_trigger_0} > /sys/class/leds/beaglebone\:green\:usr0/trigger
+				echo ${old_trigger_1} > /sys/class/leds/beaglebone\:green\:usr1/trigger
 			fi
 		fi
 	fi
@@ -80,10 +100,10 @@ set_wlan0_mac_from_eeprom () {
 set_wlan0_mac_from_cpsw_0 () {
 	mac_address="/proc/device-tree/ocp/ethernet@4a100000/slave@4a100200/mac-address"
 	if [ -f ${mac_address} ] ; then
-		cpsw_0_mac=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address} | sed 's/.$//')
+		cpsw_0_mac=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address} | sed 's/.$//' | awk '{print toupper($0)}')
 	else
 		#todo: generate random mac... (this is a development tre board in the lab...)
-		cpsw_0_mac="1c:ba:8c:a2:ed:68"
+		cpsw_0_mac="1C:BA:8C:A2:ED:68"
 	fi
 	wlan_0_mac="${cpsw_0_mac}"
 	echo "cspw_0_mac=[${wlan_0_mac}]"
