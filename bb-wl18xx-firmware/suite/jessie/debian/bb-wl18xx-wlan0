@@ -115,6 +115,8 @@ set_wlan_0_mac () {
 				printf '\x'${offset4}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x00000004)) status=none
 				printf '\x'${offset5}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x00000003)) status=none
 
+				echo "Writing mac address ${wlan_0_mac} to file ${firmware}"
+
 				echo "updating: /boot/initrd.img"
 				update-initramfs -u
 				sync
