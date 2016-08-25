@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/bash -e
 #
 # Copyright (c) 2016 Robert Nelson <robertcnelson@gmail.com>
 #
@@ -65,7 +65,7 @@ cylon_leds () {
 	fi
 }
 
-set_wlan0_mac () {
+set_wlan_0_mac () {
 	if [ -f ${firmware} ] ; then
 		if [ -f ${cal_bin} ] ; then
 			check_for_nl80211
@@ -101,19 +101,19 @@ set_wlan0_mac () {
 			if [ ! "x${current_mac}" = "x${wlan_0_mac}" ] ; then
 				cylon_leds & CYLON_PID=$!
 
-				mac0=$(echo ${wlan0_mac} | cut -b 1-2)
-				mac1=$(echo ${wlan0_mac} | cut -b 4-5)
-				mac2=$(echo ${wlan0_mac} | cut -b 7-8)
-				mac3=$(echo ${wlan0_mac} | cut -b 10-11)
-				mac4=$(echo ${wlan0_mac} | cut -b 13-14)
-				mac5=$(echo ${wlan0_mac} | cut -b 16-17)
+				offset0=$(echo ${wlan_0_mac} | cut -b 1-2)
+				offset1=$(echo ${wlan_0_mac} | cut -b 4-5)
+				offset2=$(echo ${wlan_0_mac} | cut -b 7-8)
+				offset3=$(echo ${wlan_0_mac} | cut -b 10-11)
+				offset4=$(echo ${wlan_0_mac} | cut -b 13-14)
+				offset5=$(echo ${wlan_0_mac} | cut -b 16-17)
 
-				printf '\x'${mac0}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x0000000b)) status=none
-				printf '\x'${mac1}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x0000000a)) status=none
-				printf '\x'${mac2}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x00000006)) status=none
-				printf '\x'${mac3}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x00000005)) status=none
-				printf '\x'${mac4}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x00000004)) status=none
-				printf '\x'${mac5}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x00000003)) status=none
+				printf '\x'${offset0}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x0000000b)) status=none
+				printf '\x'${offset1}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x0000000a)) status=none
+				printf '\x'${offset2}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x00000006)) status=none
+				printf '\x'${offset3}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x00000005)) status=none
+				printf '\x'${offset4}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x00000004)) status=none
+				printf '\x'${offset5}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x00000003)) status=none
 
 				echo "updating: /boot/initrd.img"
 				update-initramfs -u
@@ -129,16 +129,16 @@ set_wlan0_mac () {
 	fi
 }
 
-set_wlan0_mac_from_eeprom () {
+set_wlan_0_mac_from_eeprom () {
 	wlan_0_mac=$(hexdump -e '8/1 "%c"' ${eeprom} -n 72 | tail -1 | cut -b 5-8 || true)
 	if [ ! "x${wlan_0_mac}" = "xA335" ] ; then
 		wlan_0_mac=$(hexdump -e '8/1 "%c"' ${eeprom} -n 72 | tail -1 | cut -b 5-16 | sed 's/\(..\)/\1:/g;s/:$//' | awk '{print toupper($0)}' || true)
 	fi
-	echo "wlan0_mac=[${wlan_0_mac}]"
-	set_wlan0_mac
+	echo "wlan_0_mac=[${wlan_0_mac}]"
+	set_wlan_0_mac
 }
 
-set_wlan0_mac_from_cpsw_0 () {
+set_wlan_0_mac_from_cpsw_0 () {
 	mac_address="/proc/device-tree/ocp/ethernet@4a100000/slave@4a100200/mac-address"
 	if [ -f ${mac_address} ] ; then
 		cpsw_0_mac=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address} | sed 's/.$//' | awk '{print toupper($0)}')
@@ -147,8 +147,8 @@ set_wlan0_mac_from_cpsw_0 () {
 		cpsw_0_mac="1C:BA:8C:A2:ED:68"
 	fi
 	wlan_0_mac="${cpsw_0_mac}"
-	echo "wlan0_mac=[${wlan_0_mac}]"
-	set_wlan0_mac
+	echo "wlan_0_mac=[${wlan_0_mac}]"
+	set_wlan_0_mac
 }
 
 board=$(cat /proc/device-tree/model | sed "s/ /_/g")
@@ -156,11 +156,11 @@ case "${board}" in
 TI_AM335x_BeagleBone_Green_Wireless)
 	eeprom="/sys/bus/i2c/devices/0-0050/eeprom"
 	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
-	set_wlan0_mac_from_eeprom
+	set_wlan_0_mac_from_eeprom
 	;;
 TI_AM335x_BeagleBone_Black_Wireless)
 	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
-	set_wlan0_mac_from_cpsw_0
+	set_wlan_0_mac_from_cpsw_0
 	;;
 *)
 	;;
