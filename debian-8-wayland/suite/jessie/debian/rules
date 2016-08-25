@@ -2,6 +2,12 @@
 
 SOURCE=wayland
 
+BUILD_DOC=
+
+# Don't build the documentation when not building arch:all packages
+override_dh_auto_configure-arch:
+	dh_auto_configure -- --disable-documentation
+
 # Kill *.la files, and forget no-one:
 override_dh_install:
 	find debian/tmp -name '*.la' -delete
@@ -17,9 +23,9 @@ override_dh_makeshlibs:
 
 # Debug package:
 override_dh_strip:
-	dh_strip -plibwayland-client0 --dbg-package=libwayland-client0-dbg
-	dh_strip -plibwayland-cursor0 --dbg-package=libwayland-cursor0-dbg
-	dh_strip -plibwayland-server0 --dbg-package=libwayland-server0-dbg
+	dh_strip -plibwayland-client0 --dbgsym-migration='libwayland-client0 (<< 1.10.0-2)'
+	dh_strip -plibwayland-cursor0 --dbgsym-migration='libwayland-cursor0 (<< 1.10.0-2)'
+	dh_strip -plibwayland-server0 --dbgsym-migration='libwayland-server0 (<< 1.10.0-2)'
 	dh_strip -a --remaining-packages
 
 override_dh_auto_test:
