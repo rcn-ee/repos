@@ -78,7 +78,7 @@ builds () {
 	echo "build tools:"
 
 	site="${debian_pool}/main/c"
-	package_name="cmake" ; package_version="${package_name}_3.4.1-2" ; check_http
+	package_name="cmake" ; package_version="${package_name}_3.5.2-2" ; check_http
 
 	site="${debian_pool}/main/p"
 	package_name="pkg-kde-tools" ; package_version="${package_name}_0.15.20" ; check_http
