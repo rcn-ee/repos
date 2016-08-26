@@ -1,7 +1,5 @@
-Index: libdrm/xf86drm.h
-===================================================================
---- libdrm.orig/xf86drm.h
-+++ libdrm/xf86drm.h
+--- a/xf86drm.h
++++ b/xf86drm.h
 @@ -74,7 +74,7 @@ extern "C" {
  /* Default /dev/dri directory permissions 0755 */
  #define DRM_DEV_DIRMODE	 	\
@@ -9,5 +7,5 @@ Index: libdrm/xf86drm.h
 -#define DRM_DEV_MODE	 (S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP)
 +#define DRM_DEV_MODE	 (S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH)
  
- #define DRM_DIR_NAME  "/dev/dri"
- #define DRM_DEV_NAME  "%s/card%d"
+ #ifdef __OpenBSD__
+ #define DRM_DIR_NAME  "/dev"

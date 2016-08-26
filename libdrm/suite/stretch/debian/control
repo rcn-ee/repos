@@ -16,7 +16,7 @@ Build-Depends:
  libpciaccess-dev,
  valgrind [amd64 armhf i386 mips mipsel powerpc s390x],
  libbsd-dev [kfreebsd-any],
-Standards-Version: 3.9.6
+Standards-Version: 3.9.8
 Section: libs
 Vcs-Git: https://anonscm.debian.org/git/pkg-xorg/lib/libdrm.git
 Vcs-Browser: https://anonscm.debian.org/cgit/pkg-xorg/lib/libdrm.git
@@ -35,12 +35,10 @@ Depends:
  libdrm-freedreno1 (= ${binary:Version}) [any-arm arm64],
  libdrm-etnaviv0 (= ${binary:Version}) [any-arm],
  libdrm-exynos1 (= ${binary:Version}) [any-arm],
- libdrm-tegra0 (= ${binary:Version}) [any-arm],
+ libdrm-tegra0 (= ${binary:Version}) [any-arm arm64],
  libkms1 (= ${binary:Version}) [linux-any],
  ${misc:Depends},
 Multi-Arch: same
-Replaces:
- linux-libc-dev (<< 2.6.32-10)
 Description: Userspace interface to kernel DRM services -- development files
  This library implements the userspace interface to the kernel DRM
  services.  DRM stands for "Direct Rendering Manager", which is the
@@ -309,7 +307,7 @@ Description: Userspace interface to exynos-specific kernel DRM services -- debug
  This package provides the debugging symbols for the libdrm-exynos1 package.
 
 Package: libdrm-tegra0
-Architecture: any-arm
+Architecture: any-arm arm64
 Depends:
  ${shlibs:Depends},
  ${misc:Depends},
@@ -325,7 +323,7 @@ Description: Userspace interface to tegra-specific kernel DRM services -- runtim
 Package: libdrm-tegra0-dbg
 Section: debug
 Priority: extra
-Architecture: any-arm
+Architecture: any-arm arm64
 Depends:
  libdrm-tegra0 (= ${binary:Version}),
  ${misc:Depends},
