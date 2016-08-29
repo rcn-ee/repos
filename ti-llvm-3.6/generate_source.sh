@@ -28,11 +28,11 @@ fi
 mkdir -p ${DIR}/ti-llvm-3.6-3.6
 git clone --reference ${DIR}/ignore/llvm/ https://github.com/rcn-ee/llvm ${DIR}/ti-llvm-3.6-3.6
 cd ${DIR}/ti-llvm-3.6-3.6/
-git checkout c7f6029e454b70dffa3d04d500966a6ecf24a1fe -b tmp
+git checkout 798386e2513c812ab4b01df5b57c88b225e756bb -b tmp
 cd ${DIR}/ti-llvm-3.6-3.6/tools
 git clone --reference ${DIR}/ignore/clang/ https://github.com/rcn-ee/clang
 cd ${DIR}/ti-llvm-3.6-3.6/tools/clang
-git checkout 588b1961bfa2c1722db13fd4b68a2477d1cf0e5d -b tmp
+git checkout 5d6b4dfcaf29619cffbb2013a1e0a02e70e0154e -b tmp
 cd ${DIR}/ti-llvm-3.6-3.6/
 find . | grep .git | xargs rm -rf
 cd ${DIR}
