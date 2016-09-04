@@ -1,0 +1,26 @@
+diff --git a/dart/runtime/BUILD.gn b/dart/runtime/BUILD.gn
+index 6e987c4..f2d15cb 100644
+--- a/dart/runtime/BUILD.gn
++++ b/dart/runtime/BUILD.gn
+@@ -59,6 +59,8 @@ config("dart_config") {
+     "-Wall",
+     "-Wextra", # Also known as -W.
+     "-Wno-unused-parameter",
++    "-Wno-unused-variable",
++    "-Wno-strict-overflow",
+     "-Wnon-virtual-dtor",
+     "-Wvla",
+     "-Wno-conversion-null",
+diff --git a/dart/tools/gyp/configurations.gypi b/dart/tools/gyp/configurations.gypi
+index 6a4b796..40a3c9e 100644
+--- a/dart/tools/gyp/configurations.gypi
++++ b/dart/tools/gyp/configurations.gypi
+@@ -8,6 +8,8 @@
+       '-Wall',
+       '-Wextra', # Also known as -W.
+       '-Wno-unused-parameter',
++      '-Wno-unused-variable',
++      '-Wno-strict-overflow',
+     ],
+ 
+     # Default value.  This may be overridden in a containing project gyp.
