@@ -95,7 +95,7 @@ mesa () {
 	package_name="llvm-toolchain-3.7" ; package_version="${package_name}_3.7.1-2" ; check_http
 	package_name="llvm-toolchain-3.8" ; package_version="${package_name}_3.8.1-10" ; check_http
 	package_name="llvm-toolchain-3.9" ; package_version="${package_name}_3.9-1" ; check_http
-	package_name="llvm-toolchain-snapshot" ; package_version="${package_name}_4.0~svn276280-1~exp1" ; check_http
+	package_name="llvm-toolchain-snapshot" ; package_version="${package_name}_4.0~svn279916-1" ; check_http
 
 	site="${debian_pool}/main/libc"
 	filter="0.2"
