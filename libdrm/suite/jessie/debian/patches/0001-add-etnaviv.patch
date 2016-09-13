@@ -116,11 +116,10 @@ index 0000000..a3a2295
 +include $(BUILD_SHARED_LIBRARY)
 diff --git a/etnaviv/Makefile.am b/etnaviv/Makefile.am
 new file mode 100644
-index 0000000..1c40e56
+index 0000000..be96ba8
 --- /dev/null
 +++ b/etnaviv/Makefile.am
-@@ -0,0 +1,27 @@
-+AUTOMAKE_OPTIONS=subdir-objects
+@@ -0,0 +1,26 @@
 +include Makefile.sources
 +
 +AM_CFLAGS = \
@@ -131,7 +130,7 @@ index 0000000..1c40e56
 +
 +libdrm_etnaviv_ladir = $(libdir)
 +libdrm_etnaviv_la_LTLIBRARIES = libdrm_etnaviv.la
-+libdrm_etnaviv_la_LDFLAGS = -version-number 0:0:0 -no-undefined
++libdrm_etnaviv_la_LDFLAGS = -version-number 1:0:0 -no-undefined
 +libdrm_etnaviv_la_LIBADD = \
 +	../libdrm.la \
 +	@PTHREADSTUBS_LIBS@ \
@@ -167,14 +166,14 @@ index 0000000..5258056
 +	etnaviv_drmif.h
 diff --git a/etnaviv/etnaviv-symbol-check b/etnaviv/etnaviv-symbol-check
 new file mode 100755
-index 0000000..7795023
+index 0000000..77c94c6
 --- /dev/null
 +++ b/etnaviv/etnaviv-symbol-check
 @@ -0,0 +1,45 @@
 +#!/bin/bash
 +
 +# The following symbols (past the first five) are taken from the public headers.
-+# A list of the latter should be available Makefile.sources/LIBDRM_FREEDRENO_H_FILES
++# A list of the latter should be available Makefile.sources/LIBDRM_ETNAVIV_H_FILES
 +
 +FUNCS=$(nm -D --format=bsd --defined-only ${1-.libs/libdrm_etnaviv.so} | awk '{print $3}'| while read func; do
 +( grep -q "^$func$" || echo $func )  <<EOF
@@ -1124,10 +1123,10 @@ index 0000000..f954ca4
 +}
 diff --git a/etnaviv/etnaviv_drm.h b/etnaviv/etnaviv_drm.h
 new file mode 100644
-index 0000000..462241c
+index 0000000..2584c1c
 --- /dev/null
 +++ b/etnaviv/etnaviv_drm.h
-@@ -0,0 +1,225 @@
+@@ -0,0 +1,233 @@
 +/*
 + * Copyright (C) 2015 Etnaviv Project
 + *
@@ -1148,6 +1147,10 @@ index 0000000..462241c
 +#define __ETNAVIV_DRM_H__
 +
 +#include "drm.h"
++
++#if defined(__cplusplus)
++extern "C" {
++#endif
 +
 +/* Please note that modifications to all structs defined here are
 + * subject to backwards-compatibility constraints:
@@ -1306,7 +1309,7 @@ index 0000000..462241c
 +struct drm_etnaviv_wait_fence {
 +	__u32 pipe;           /* in */
 +	__u32 fence;          /* in */
-+	__u32 flags;          /* in, mask of ETNA_WAIT_x  */
++	__u32 flags;          /* in, mask of ETNA_WAIT_x */
 +	__u32 pad;
 +	struct drm_etnaviv_timespec timeout;   /* in */
 +};
@@ -1323,7 +1326,7 @@ index 0000000..462241c
 +struct drm_etnaviv_gem_wait {
 +	__u32 pipe;				/* in */
 +	__u32 handle;				/* in, bo to be waited for */
-+	__u32 flags;                            /* in, mask of ETNA_WAIT_x  */
++	__u32 flags;				/* in, mask of ETNA_WAIT_x  */
 +	__u32 pad;
 +	struct drm_etnaviv_timespec timeout;	/* in */
 +};
@@ -1351,6 +1354,10 @@ index 0000000..462241c
 +#define DRM_IOCTL_ETNAVIV_WAIT_FENCE   DRM_IOW(DRM_COMMAND_BASE + DRM_ETNAVIV_WAIT_FENCE, struct drm_etnaviv_wait_fence)
 +#define DRM_IOCTL_ETNAVIV_GEM_USERPTR  DRM_IOWR(DRM_COMMAND_BASE + DRM_ETNAVIV_GEM_USERPTR, struct drm_etnaviv_gem_userptr)
 +#define DRM_IOCTL_ETNAVIV_GEM_WAIT     DRM_IOW(DRM_COMMAND_BASE + DRM_ETNAVIV_GEM_WAIT, struct drm_etnaviv_gem_wait)
++
++#if defined(__cplusplus)
++}
++#endif
 +
 +#endif /* __ETNAVIV_DRM_H__ */
 diff --git a/etnaviv/etnaviv_drmif.h b/etnaviv/etnaviv_drmif.h
@@ -1814,10 +1821,10 @@ index 0000000..402b71d
 +}
 diff --git a/etnaviv/etnaviv_priv.h b/etnaviv/etnaviv_priv.h
 new file mode 100644
-index 0000000..42d9a45
+index 0000000..6bb0c8d
 --- /dev/null
 +++ b/etnaviv/etnaviv_priv.h
-@@ -0,0 +1,200 @@
+@@ -0,0 +1,199 @@
 +/*
 + * Copyright (C) 2014-2015 Etnaviv Project
 + *
@@ -1865,15 +1872,14 @@ index 0000000..42d9a45
 +#include "util_double_list.h"
 +
 +#include "etnaviv_drmif.h"
-+//#include "drm.h"
 +#include "etnaviv_drm.h"
 +
-+#define VIV_FEATURES_WORD_COUNT 6
++#define VIV_FEATURES_WORD_COUNT 7
 +
 +struct etna_specs {
 +	uint32_t model;
 +	uint32_t revision;
-+	uint32_t features[VIV_FEATURES_WORD_COUNT + 1];
++	uint32_t features[VIV_FEATURES_WORD_COUNT];
 +	uint32_t stream_count;
 +	uint32_t register_max;
 +	uint32_t thread_count;
@@ -2099,10 +2105,10 @@ index 0000000..0631864
 +	etnaviv_bo_cache_test.c
 diff --git a/tests/etnaviv/cmdstream.xml.h b/tests/etnaviv/cmdstream.xml.h
 new file mode 100644
-index 0000000..844f829
+index 0000000..109285c
 --- /dev/null
 +++ b/tests/etnaviv/cmdstream.xml.h
-@@ -0,0 +1,218 @@
+@@ -0,0 +1,242 @@
 +#ifndef CMDSTREAM_XML
 +#define CMDSTREAM_XML
 +
@@ -2113,10 +2119,34 @@ index 0000000..844f829
 +git clone git://0x04.net/rules-ng-ng
 +
 +The rules-ng-ng source files this header was generated from are:
-+- /home/orion/projects/etna_viv/rnndb/cmdstream.xml (  12589 bytes, from 2013-09-01 10:53:22)
-+- /home/orion/projects/etna_viv/rnndb/common.xml    (  18379 bytes, from 2014-01-27 15:58:05)
++- cmdstream.xml (  12621 bytes, from 2016-09-06 14:44:16)
++- copyright.xml (   1597 bytes, from 2016-09-06 14:44:16)
++- common.xml    (  20583 bytes, from 2016-09-06 14:14:12)
 +
-+Copyright (C) 2013
++Copyright (C) 2012-2016 by the following authors:
++- Wladimir J. van der Laan <laanwj@gmail.com>
++- Christian Gmeiner <christian.gmeiner@gmail.com>
++- Lucas Stach <l.stach@pengutronix.de>
++- Russell King <rmk@arm.linux.org.uk>
++
++Permission is hereby granted, free of charge, to any person obtaining a
++copy of this software and associated documentation files (the "Software"),
++to deal in the Software without restriction, including without limitation
++the rights to use, copy, modify, merge, publish, distribute, sub license,
++and/or sell copies of the Software, and to permit persons to whom the
++Software is furnished to do so, subject to the following conditions:
++
++The above copyright notice and this permission notice (including the
++next paragraph) shall be included in all copies or substantial portions
++of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
++THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
++DEALINGS IN THE SOFTWARE.
 +*/
 +
 +
@@ -2323,10 +2353,10 @@ index 0000000..844f829
 +#endif /* CMDSTREAM_XML */
 diff --git a/tests/etnaviv/etnaviv_2d_test.c b/tests/etnaviv/etnaviv_2d_test.c
 new file mode 100644
-index 0000000..f18c289
+index 0000000..10751c7
 --- /dev/null
 +++ b/tests/etnaviv/etnaviv_2d_test.c
-@@ -0,0 +1,238 @@
+@@ -0,0 +1,240 @@
 +/*
 + * Copyright (C) 2014-2015 Etnaviv Project
 + *
@@ -2512,33 +2542,33 @@ index 0000000..f18c289
 +	dev = etna_device_new(fd);
 +	if (!dev) {
 +		ret = 2;
-+		goto fail;
++		goto out;
 +	}
 +
 +	/* TODO: we assume that core 0 is a 2D capable one */
 +	gpu = etna_gpu_new(dev, 0);
 +	if (!gpu) {
 +		ret = 3;
-+		goto fail;
++		goto out_device;
 +	}
 +
 +	pipe = etna_pipe_new(gpu, ETNA_PIPE_2D);
 +	if (!pipe) {
 +		ret = 4;
-+		goto fail;
++		goto out_gpu;
 +	}
 +
 +	bmp = etna_bo_new(dev, bmp_size, ETNA_BO_UNCACHED);
 +	if (!bmp) {
 +		ret = 5;
-+		goto fail;
++		goto out_pipe;
 +	}
 +	memset(etna_bo_map(bmp), 0, bmp_size);
 +
 +	stream = etna_cmd_stream_new(pipe, 0x300, NULL, NULL);
 +	if (!stream) {
 +		ret = 6;
-+		goto fail;
++		goto out_bo;
 +	}
 +
 +	/* generate command sequence */
@@ -2548,29 +2578,31 @@ index 0000000..f18c289
 +
 +	bmp_dump32(etna_bo_map(bmp), width, height, false, "/tmp/etna.bmp");
 +
-+fail:
-+	if (stream)
-+		etna_cmd_stream_del(stream);
++	etna_cmd_stream_del(stream);
 +
-+	if (pipe)
-+		etna_pipe_del(pipe);
++out_bo:
++    etna_bo_del(bmp);
 +
-+	if (gpu)
-+		etna_gpu_del(gpu);
++out_pipe:
++	etna_pipe_del(pipe);
 +
-+	if (dev)
-+		etna_device_del(dev);
++out_gpu:
++	etna_gpu_del(gpu);
 +
++out_device:
++	etna_device_del(dev);
++
++out:
 +	close(fd);
 +
 +	return ret;
 +}
 diff --git a/tests/etnaviv/etnaviv_bo_cache_test.c b/tests/etnaviv/etnaviv_bo_cache_test.c
 new file mode 100644
-index 0000000..1f18573
+index 0000000..fb01f8d
 --- /dev/null
 +++ b/tests/etnaviv/etnaviv_bo_cache_test.c
-@@ -0,0 +1,122 @@
+@@ -0,0 +1,121 @@
 +/*
 + * Copyright (C) 2016 Etnaviv Project
 + *
@@ -2679,23 +2711,22 @@ index 0000000..1f18573
 +	dev = etna_device_new(fd);
 +	if (!dev) {
 +		ret = 2;
-+		goto fail;
++		goto out;
 +	}
 +
 +	test_cache(dev);
 +	test_size_rounding(dev);
 +
-+fail:
-+	if (dev)
-+		etna_device_del(dev);
++	etna_device_del(dev);
 +
++out:
 +	close(fd);
 +
 +	return ret;
 +}
 diff --git a/tests/etnaviv/etnaviv_cmd_stream_test.c b/tests/etnaviv/etnaviv_cmd_stream_test.c
 new file mode 100644
-index 0000000..4188eff
+index 0000000..13e61aa
 --- /dev/null
 +++ b/tests/etnaviv/etnaviv_cmd_stream_test.c
 @@ -0,0 +1,123 @@
@@ -2746,7 +2777,7 @@ index 0000000..4188eff
 +	assert(stream);
 +	assert(etna_cmd_stream_avail(stream) == 2);
 +	etna_cmd_stream_del(stream);
-+	
++
 +	stream = etna_cmd_stream_new(NULL, 20, NULL, NULL);
 +	assert(stream);
 +	assert(etna_cmd_stream_avail(stream) == 18);
@@ -2775,7 +2806,7 @@ index 0000000..4188eff
 +	stream = etna_cmd_stream_new(NULL, 6, NULL, NULL);
 +	assert(stream);
 +	assert(etna_cmd_stream_avail(stream) == 4);
-+	
++
 +	etna_cmd_stream_emit(stream, 0x1);
 +	assert(etna_cmd_stream_avail(stream) == 3);
 +
@@ -2824,10 +2855,10 @@ index 0000000..4188eff
 +}
 diff --git a/tests/etnaviv/state.xml.h b/tests/etnaviv/state.xml.h
 new file mode 100644
-index 0000000..e7b36df
+index 0000000..e1ecbf3
 --- /dev/null
 +++ b/tests/etnaviv/state.xml.h
-@@ -0,0 +1,348 @@
+@@ -0,0 +1,375 @@
 +#ifndef STATE_XML
 +#define STATE_XML
 +
@@ -2838,14 +2869,38 @@ index 0000000..e7b36df
 +git clone git://0x04.net/rules-ng-ng
 +
 +The rules-ng-ng source files this header was generated from are:
-+- /home/orion/projects/etna_viv/rnndb/state.xml    (  18526 bytes, from 2013-09-11 16:52:32)
-+- /home/orion/projects/etna_viv/rnndb/common.xml   (  18379 bytes, from 2014-01-27 15:58:05)
-+- /home/orion/projects/etna_viv/rnndb/state_hi.xml (  22236 bytes, from 2014-01-27 15:56:46)
-+- /home/orion/projects/etna_viv/rnndb/state_2d.xml (  51191 bytes, from 2013-10-04 06:36:55)
-+- /home/orion/projects/etna_viv/rnndb/state_3d.xml (  54570 bytes, from 2013-10-12 15:25:03)
-+- /home/orion/projects/etna_viv/rnndb/state_vg.xml (   5942 bytes, from 2013-09-01 10:53:22)
++- state.xml     (  18940 bytes, from 2016-09-06 14:14:12)
++- common.xml    (  20583 bytes, from 2016-09-06 14:14:12)
++- state_hi.xml  (  25653 bytes, from 2016-09-06 14:45:17)
++- copyright.xml (   1597 bytes, from 2016-09-06 14:44:16)
++- state_2d.xml  (  51552 bytes, from 2016-09-06 14:44:16)
++- state_3d.xml  (  54603 bytes, from 2016-09-06 14:44:16)
++- state_vg.xml  (   5975 bytes, from 2016-09-06 14:44:16)
 +
-+Copyright (C) 2013
++Copyright (C) 2012-2016 by the following authors:
++- Wladimir J. van der Laan <laanwj@gmail.com>
++- Christian Gmeiner <christian.gmeiner@gmail.com>
++- Lucas Stach <l.stach@pengutronix.de>
++- Russell King <rmk@arm.linux.org.uk>
++
++Permission is hereby granted, free of charge, to any person obtaining a
++copy of this software and associated documentation files (the "Software"),
++to deal in the Software without restriction, including without limitation
++the rights to use, copy, modify, merge, publish, distribute, sub license,
++and/or sell copies of the Software, and to permit persons to whom the
++Software is furnished to do so, subject to the following conditions:
++
++The above copyright notice and this permission notice (including the
++next paragraph) shall be included in all copies or substantial portions
++of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
++THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
++DEALINGS IN THE SOFTWARE.
 +*/
 +
 +
@@ -3040,7 +3095,10 @@ index 0000000..e7b36df
 +
 +#define VIVS_GL_FLUSH_MMU					0x00003810
 +#define VIVS_GL_FLUSH_MMU_FLUSH_FEMMU				0x00000001
-+#define VIVS_GL_FLUSH_MMU_FLUSH_PEMMU				0x00000002
++#define VIVS_GL_FLUSH_MMU_FLUSH_UNK1				0x00000002
++#define VIVS_GL_FLUSH_MMU_FLUSH_UNK2				0x00000004
++#define VIVS_GL_FLUSH_MMU_FLUSH_PEMMU				0x00000008
++#define VIVS_GL_FLUSH_MMU_FLUSH_UNK4				0x00000010
 +
 +#define VIVS_GL_VERTEX_ELEMENT_CONFIG				0x00003814
 +
@@ -3178,10 +3236,10 @@ index 0000000..e7b36df
 +#endif /* STATE_XML */
 diff --git a/tests/etnaviv/state_2d.xml.h b/tests/etnaviv/state_2d.xml.h
 new file mode 100644
-index 0000000..fb22cfa
+index 0000000..715eed4
 --- /dev/null
 +++ b/tests/etnaviv/state_2d.xml.h
-@@ -0,0 +1,1473 @@
+@@ -0,0 +1,1497 @@
 +#ifndef STATE_2D_XML
 +#define STATE_2D_XML
 +
@@ -3192,14 +3250,38 @@ index 0000000..fb22cfa
 +git clone git://0x04.net/rules-ng-ng
 +
 +The rules-ng-ng source files this header was generated from are:
-+- /home/orion/projects/etna_viv/rnndb/state.xml    (  18526 bytes, from 2013-09-11 16:52:32)
-+- /home/orion/projects/etna_viv/rnndb/common.xml   (  18379 bytes, from 2014-01-27 15:58:05)
-+- /home/orion/projects/etna_viv/rnndb/state_hi.xml (  22236 bytes, from 2014-01-27 15:56:46)
-+- /home/orion/projects/etna_viv/rnndb/state_2d.xml (  51191 bytes, from 2013-10-04 06:36:55)
-+- /home/orion/projects/etna_viv/rnndb/state_3d.xml (  54570 bytes, from 2013-10-12 15:25:03)
-+- /home/orion/projects/etna_viv/rnndb/state_vg.xml (   5942 bytes, from 2013-09-01 10:53:22)
++- state.xml     (  18940 bytes, from 2016-09-06 14:14:12)
++- common.xml    (  20583 bytes, from 2016-09-06 14:14:12)
++- state_hi.xml  (  25653 bytes, from 2016-09-06 14:45:17)
++- copyright.xml (   1597 bytes, from 2016-09-06 14:44:16)
++- state_2d.xml  (  51552 bytes, from 2016-09-06 14:44:16)
++- state_3d.xml  (  54603 bytes, from 2016-09-06 14:44:16)
++- state_vg.xml  (   5975 bytes, from 2016-09-06 14:44:16)
 +
-+Copyright (C) 2013
++Copyright (C) 2012-2016 by the following authors:
++- Wladimir J. van der Laan <laanwj@gmail.com>
++- Christian Gmeiner <christian.gmeiner@gmail.com>
++- Lucas Stach <l.stach@pengutronix.de>
++- Russell King <rmk@arm.linux.org.uk>
++
++Permission is hereby granted, free of charge, to any person obtaining a
++copy of this software and associated documentation files (the "Software"),
++to deal in the Software without restriction, including without limitation
++the rights to use, copy, modify, merge, publish, distribute, sub license,
++and/or sell copies of the Software, and to permit persons to whom the
++Software is furnished to do so, subject to the following conditions:
++
++The above copyright notice and this permission notice (including the
++next paragraph) shall be included in all copies or substantial portions
++of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
++THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
++DEALINGS IN THE SOFTWARE.
 +*/
 +
 +

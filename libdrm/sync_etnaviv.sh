@@ -3,7 +3,7 @@
 mkdir -p ./ignore/etnaviv
 
 if [ ! -f ./ignore/etnaviv/.git/config ] ; then
-	git clone -b libdrm_etnaviv_v1 https://github.com/austriancoder/libdrm ./ignore/etnaviv
+	git clone -b libdrm_etnaviv_v2 https://github.com/austriancoder/libdrm ./ignore/etnaviv
 fi
 
 cd ./ignore/etnaviv/
