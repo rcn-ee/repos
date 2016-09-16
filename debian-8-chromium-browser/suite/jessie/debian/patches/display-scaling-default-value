@@ -6,7 +6,7 @@ Forwarded: not-needed
 
 --- a/ui/views/widget/desktop_aura/desktop_screen_x11.cc
 +++ b/ui/views/widget/desktop_aura/desktop_screen_x11.cc
-@@ -314,7 +314,7 @@ std::vector<gfx::Display> DesktopScreenX
+@@ -325,7 +325,7 @@ std::vector<gfx::Display> DesktopScreenX
  
    // As per-display scale factor is not supported right now,
    // the X11 root window's scale factor is always used.
@@ -15,7 +15,7 @@ Forwarded: not-needed
    for (int i = 0; i < resources->noutput; ++i) {
      RROutput output_id = resources->outputs[i];
      gfx::XScopedPtr<XRROutputInfo,
-@@ -341,11 +341,13 @@ std::vector<gfx::Display> DesktopScreenX
+@@ -353,11 +353,13 @@ std::vector<gfx::Display> DesktopScreenX
        gfx::Display display(display_id, crtc_bounds);
  
        // An integer that forces discrete steps.

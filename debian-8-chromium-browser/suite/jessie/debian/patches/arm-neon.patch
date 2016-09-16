@@ -6,7 +6,7 @@ Bug-Ubuntu: 1084852
 
 --- a/third_party/webrtc/common_audio/common_audio.gyp
 +++ b/third_party/webrtc/common_audio/common_audio.gyp
-@@ -150,7 +150,7 @@
+@@ -149,7 +149,7 @@
              'signal_processing/spl_sqrt_floor.c',
            ],
            'conditions': [
@@ -15,24 +15,12 @@ Bug-Ubuntu: 1084852
                'sources': [
                  'signal_processing/filter_ar_fast_q12_armv7.S',
                ],
---- a/third_party/webrtc/common_audio/resampler/sinc_resampler.cc
-+++ b/third_party/webrtc/common_audio/resampler/sinc_resampler.cc
-@@ -139,8 +139,7 @@ void SincResampler::InitializeCPUSpecifi
- #elif defined(WEBRTC_DETECT_NEON)
- #define CONVOLVE_FUNC convolve_proc_
- void SincResampler::InitializeCPUSpecificFeatures() {
--  convolve_proc_ = WebRtc_GetCPUFeaturesARM() & kCPUFeatureNEON ?
--      Convolve_NEON : Convolve_C;
-+  convolve_proc_ = Convolve_C;
- }
- #else
- // Unknown architecture.
 --- a/third_party/webrtc/modules/audio_coding/codecs/isac/isacfix.gypi
 +++ b/third_party/webrtc/modules/audio_coding/codecs/isac/isacfix.gypi
-@@ -82,7 +82,7 @@
-             'WEBRTC_LINUX',
-           ],
-         }],
+@@ -77,7 +77,7 @@
+         'fix/source/structs.h',
+       ],
+       'conditions': [
 -        ['target_arch=="arm" and arm_version>=7', {
 +        ['target_arch=="arm" and arm_version>=7 and arm_neon==1', {
            'sources': [

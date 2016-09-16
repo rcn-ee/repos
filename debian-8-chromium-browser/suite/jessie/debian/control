@@ -3,7 +3,7 @@ Section: web
 Priority: optional
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XS-Testsuite: autopkgtest
-Vcs-Bzr: https://code.launchpad.net/~chromium-team/chromium-browser/trusty-working
+Vcs-Bzr: https://code.launchpad.net/~chromium-team/chromium-browser/yakkety-working
 Homepage: http://code.google.com/chromium/
 Build-Depends:
 	debhelper (>= 9),
@@ -15,11 +15,12 @@ Build-Depends:
 	python,
 	bison,
 	gperf,
-	clang (>= 3.7),
+	clang (>= 3.9),
 	libpulse-dev,
 	libcups2-dev | libcupsys2-dev,
 	libasound2-dev,
 	libnss3-dev,
+	mesa-common-dev,
 	libgles2-mesa-dev [armel armhf],
 	libpci-dev,
 	libxtst-dev,
@@ -37,7 +38,24 @@ Build-Depends:
 	libxkbcommon-dev,
 	libssl-dev,
 	libpam0g-dev,
+	libffi-dev,
 	chrpath,
+	libre2-dev,
+	yasm,
+	libopus-dev,
+	zlib1g-dev,
+	libspeex-dev,
+	libspeechd-dev,
+	libexpat-dev,
+	libpng-dev,
+	libxml2-dev,
+	libjpeg-dev,
+	libwebp-dev,
+	libxslt-dev,
+	libsrtp-dev,
+	libjsoncpp-dev,
+	libevent-dev,
+	libharfbuzz-dev,
 	gcc-4.9,
 	g++-4.9,
 	xdg-utils
@@ -55,7 +73,7 @@ Recommends: chromium-browser-l10n
 Suggests: webaccounts-chromium-extension,
 	unity-chromium-extension,
 	adobe-flashplugin
-Provides: www-browser, chromium-browser-inspector
+Provides: www-browser, chromium-browser-inspector, exec<usr/bin/chromium-browser>, mime<text/html>, mime<x-scheme-handler/http>, mime<x-scheme-handler/https>
 Replaces: chromium-browser-inspector
 Conflicts: chromium-browser-inspector
 Description: Chromium web browser, open-source version of Chrome

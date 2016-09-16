@@ -1,0 +1,26 @@
+--- a/sandbox/linux/seccomp-bpf-helpers/baseline_policy.cc
++++ b/sandbox/linux/seccomp-bpf-helpers/baseline_policy.cc
+@@ -164,7 +164,7 @@ ResultExpr EvaluateSyscallImpl(int fs_de
+     return RestrictFutex();
+ 
+   if (sysno == __NR_set_robust_list)
+-    return Error(EPERM);
++    return Allow();
+ 
+   if (sysno == __NR_getpriority || sysno ==__NR_setpriority)
+     return RestrictGetSetpriority(current_pid);
+--- a/sandbox/linux/seccomp-bpf-helpers/syscall_sets.cc
++++ b/sandbox/linux/seccomp-bpf-helpers/syscall_sets.cc
+@@ -401,10 +401,11 @@ bool SyscallSets::IsAllowedProcessStartO
+ bool SyscallSets::IsAllowedFutex(int sysno) {
+   switch (sysno) {
+     case __NR_get_robust_list:
+-    case __NR_set_robust_list:
+     case __NR_futex:
+     default:
+       return false;
++    case __NR_set_robust_list:
++      return true;
+   }
+ }
+ 

@@ -1,6 +1,6 @@
 --- a/chrome/browser/browser_resources.grd
 +++ b/chrome/browser/browser_resources.grd
-@@ -261,6 +261,7 @@
+@@ -298,6 +298,7 @@
        </if>
        <if expr="desktop_linux or (is_android and enable_plugins)">
          <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_linux.json" type="BINDATA" />
@@ -10,7 +10,7 @@
          <include name="IDR_POLICY_CSS" file="resources\policy_android.css" type="BINDATA"/>
 --- a/chrome/browser/plugins/plugin_finder.cc
 +++ b/chrome/browser/plugins/plugin_finder.cc
-@@ -151,13 +151,50 @@ void RecordBuiltInPluginListError(Plugin
+@@ -153,13 +153,50 @@ void RecordBuiltInPluginListError(Plugin
                              static_cast<int>(PluginListError::NUM_VALUES));
  }
  
@@ -61,7 +61,7 @@
  // static
  PluginFinder* PluginFinder::GetInstance() {
    // PluginFinder::GetInstance() is the only method that's allowed to call
-@@ -186,6 +223,8 @@ void PluginFinder::Init() {
+@@ -188,6 +225,8 @@ void PluginFinder::Init() {
  
  // static
  base::DictionaryValue* PluginFinder::LoadBuiltInPluginList() {
@@ -70,7 +70,7 @@
    base::StringPiece json_resource(
        ResourceBundle::GetSharedInstance().GetRawDataResource(
            IDR_PLUGIN_DB_JSON));
-@@ -320,15 +359,19 @@ void PluginFinder::ReinitializePlugins(
+@@ -308,15 +347,19 @@ void PluginFinder::ReinitializePlugins(
    if (version <= version_)
      return;
  
@@ -94,7 +94,7 @@
  
 --- a/chrome/browser/plugins/plugin_finder.h
 +++ b/chrome/browser/plugins/plugin_finder.h
-@@ -85,6 +85,15 @@ class PluginFinder {
+@@ -78,6 +78,15 @@ class PluginFinder {
    // Returns NULL if the plugin list couldn't be parsed.
    static base::DictionaryValue* LoadBuiltInPluginList();
  

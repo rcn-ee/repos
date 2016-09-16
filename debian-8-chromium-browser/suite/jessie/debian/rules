@@ -1,123 +1,193 @@
 #!/usr/bin/make -f
 
-DEBIAN_NAME		:= $(shell dpkg-parsechangelog | sed -n 's/^Source: *\(.*\)$$/\1/ p')
-DEBIAN_VERSION		:= $(shell dpkg-parsechangelog | sed -n 's/^Version: *\(.*\)$$/\1/ p')
-DEBIAN_UPSTREAM_VERSION	:= $(shell echo $(DEBIAN_VERSION) | sed 's/^\(.*\)-[^-]*$$/\1/')
-DEBIAN_REVISION		:= $(shell echo $(DEBIAN_VERSION) | sed 's/^.*r\([^-]*\)-.*/\1/')
-DEBIAN_DIST		:= $(shell lsb_release -ds | tr -d '()' |sed -e 's/\#/ /g')
+DEBIAN_NAME := $(shell dpkg-parsechangelog | sed -n 's/^Source: *\(.*\)$$/\1/ p')
+DEBIAN_VERSION := $(shell dpkg-parsechangelog | sed -n 's/^Version: *\(.*\)$$/\1/ p')
+DEBIAN_UPSTREAM_VERSION := $(shell echo $(DEBIAN_VERSION) | sed 's/^\(.*\)-[^-]*$$/\1/')
+DEBIAN_REVISION := $(shell echo $(DEBIAN_VERSION) | sed 's/^.*r\([^-]*\)-.*/\1/')
+DEBIAN_DIST := $(shell lsb_release -ds | tr -d '()' |sed -e 's/\#/ /g')
 DEBIAN_DIST_NAME	:= $(shell lsb_release -si |sed -e 's/\#/ /g')
-DEBIAN_DIST_VERSION	:= $(shell lsb_release -sr |sed -e 's/\#/ /g')
-
-DEBIAN_CODECS_NAME      := $(subst browser,codecs-ffmpeg,$(DEBIAN_NAME))
-DEBIAN_DRIVER_NAME      := $(subst browser,chromedriver,$(DEBIAN_NAME))
-
-DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
-export DEB_HOST_ARCH
-DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
-DEB_HOST_ARCH_CPU ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_CPU)
-DEB_BUILD_ARCH ?= $(shell dpkg-architecture -qDEB_BUILD_ARCH)
-DEB_BUILD_ARCH_BITS ?= $(shell dpkg-architecture -qDEB_BUILD_ARCH_BITS)
 
 DEB_TAR_SRCDIR := .
 SRC_DIR        := $(CURDIR)/$(DEB_TAR_SRCDIR)
-LIB_DIR        := usr/lib/$(DEBIAN_NAME)
+LIB_DIR        := usr/lib/chromium-browser
 BINARY_PACKAGE_COMPRESSION ?= xz
 FFMPEG_DIR     := third_party/ffmpeg
 FFMPEG_SRC_DIR := $(SRC_DIR)/$(FFMPEG_DIR)
 NINJA          := ninja
-SNAPPY_PKGR_TO_USE := $(shell which snappy)
 
-# Whitelist LP provided new langs only in release builds, PPAs ship them all
-WANT_ONLY_WHITELISTED_NEW_LANGS ?= 0
-
-ifneq (,$(findstring Ubuntu,$(DEBIAN_DIST)))
+#ifneq (,$(findstring Ubuntu,$(DEBIAN_DIST)))
 DISTRIBUTION=UBUNTU
-UBUNTU_DIST=$(DEBIAN_DIST)
-endif
-
-ifneq (,$(findstring Debian,$(DEBIAN_DIST)))
-DISTRIBUTION=DEBIAN
-endif
-
-WANT_DEBUG       ?= 0
+#UBUNTU_DIST=$(DEBIAN_DIST)
+#endif
 
 COMPONENT_SHARED_LIB_BUILD := 1
-WANT_SHARED_LIBS ?= 1
 
 # Set up Google API keys, see http://www.chromium.org/developers/how-tos/api-keys .
 # Note: these are for Ubuntu use ONLY. For your own distribution,
 # please get your own set of keys.
 # Permission to add API keys, from Paweł Hajdan, To chad.miller@canonical.com
 # msgid: CAADNaOFSFoch68NM1SGpCTRXqmspyKQgUPUtsF7SGRsRXiHZcg@mail.gmail.com
-GOOGLEAPI_APIKEY_UBUNTU := AIzaSyAQfxPJiounkhOjODEO5ZieffeBv6yft2Q
-GOOGLEAPI_CLIENTID_UBUNTU := 424119844901.apps.googleusercontent.com
-GOOGLEAPI_CLIENTSECRET_UBUNTU := AIienwDlGIIsHoKnNHmWGXyJ
+GOOGLEAPI_APIKEY_UBUNTU := AIzaSyDGQzx0c0ptZVDriLi9Wblo2voeLnmPq-o
+GOOGLEAPI_CLIENTID_UBUNTU := 424119844901-tilod0e1nm0dt85e1evrdfp3cc3ec01d.apps.googleusercontent.com
+GOOGLEAPI_CLIENTSECRET_UBUNTU := WCCejhqORuxKG272GAWxsPIU
 
-GYP_PARAMS := --depth=$(CURDIR) --format=ninja
+gyp_params := --depth=$(CURDIR) --format=ninja
 
-BROWSER_GYP_DEFINES =
-FFMPEG_GYP_DEFINES =
-GYP_DEFINES =
+browser_defines :=
+ffmpeg_defines :=
+defines :=
 
-# Build the launchpad translations (already landed upstream)
-GYP_DEFINES += use_third_party_translations=1
+# enable verbose build messages
+export DH_VERBOSE=1
 
-# Always add debug symbols, and strip them when we don't want them.
-#GYP_DEFINES += release_extra_cflags="-g"
+# enable all build hardening flags
+export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 
-# Don't fail on compilation warnings.
-GYP_DEFINES += werror=$(NULL)
+# Don't let dh_installinit install *.default in /etc/default
+DEB_DH_INSTALLINIT_ARGS += --noscripts --onlyscripts
 
-# We are never using a sysroot-based toolchain; override the wrong
-# autodetection for arm.
-GYP_DEFINES += sysroot=
+# Don't let scour touch the svg files
+DEB_DH_SCOUR_ARGS += -Xsvg
 
-# NO NO NO, we never want to use bundled binutils. No. Just no.
-GYP_DEFINES += linux_use_bundled_binutils=0
+DEB_DH_BUILDDEB_ARGS += -- -Z $(BINARY_PACKAGE_COMPRESSION)
 
-# Link directly to library instead of using dlopen.
-GYP_DEFINES += linux_link_gsettings=1
+# FFmpeg-mt
+# Don't build it as part of chromium. Build it separately twice, once with
+# the Chrome branding to gain the extra codecs, and once without branding.
+# The ffmpeg_branding variable controls which codecs are built inside the ffmpeg lib.
+# By default, ffmpeg_branding equals to "Chromium" and only builds the ogg/vorbis/theora codecs.
+# When set to "Chrome", it also builds aac/ac3/mpeg4audio/h264/mov/mp3
+DEB_DH_SHLIBDEPS_ARGS_chromium-codecs-ffmpeg := -l$(CURDIR)/debian/chromium-codecs-ffmpeg/$(LIB_DIR)
+DEB_DH_SHLIBDEPS_ARGS_chromium-codecs-ffmpeg-extra := -l$(CURDIR)/debian/chromium-codecs-ffmpeg-extra/$(LIB_DIR)
 
-# Disable NaCl until we figure out what to do with the private toolchain
-GYP_DEFINES += disable_nacl=1
+### SYNC TO DEBIAN RULES start
+
+# linker flags to avoid memory allocation issues on i386
+export LDFLAGS+=-Wl,--no-keep-memory -Wl,--reduce-memory-overheads -Wl,--hash-size=7919
+
+# more verbose linker output
+export LDFLAGS+=-Wl,--stats
+
+# use the gold linker to avoid memory exhaustion issues at link time
+export CFLAGS+=-fuse-ld=gold
+export CXXFLAGS+=-fuse-ld=gold
+
+# treat all warnings as errors
+defines+=werror=
+
+# build with gcc instead of clang
+defines+=clang=0
+defines+=clang_use_chrome_plugins=
+
+# disabled features
+defines+=use_ozone=0 \
+         use_gconf=0 \
+         use_sysroot=0 \
+         use_allocator=none \
+         linux_breakpad=0 \
+         linux_use_libgps=0 \
+         linux_use_gold_flags=0 \
+         linux_use_bundled_gold=0 \
+         linux_use_bundled_binutils=0 \
+         remoting=0 \
+         disable_nacl=1 \
+         enable_google_now=0 \
+         enable_remoting_host=0 \
+         enable_prod_wallet_service=0 \
+
+# enabled features
+defines+=enable_hidpi=1 \
+         enable_webrtc=1 \
+         use_gio=1 \
+         use_pulseaudio=1 \
+         use_gnome_keyring=1 \
+         linux_link_libpci=1 \
+         linux_link_gsettings=1 \
+         linux_link_libspeechd=1 \
+         linux_link_gnome_keyring=1 \
+
+# system libraries to use
+defines+=use_system_re2=1 \
+         use_system_yasm=1 \
+         use_system_opus=1 \
+         use_system_zlib=1 \
+         use_system_speex=1 \
+         use_system_expat=1 \
+         use_system_libpng=1 \
+         use_system_libxml=1 \
+         use_system_libjpeg=1 \
+         use_system_libwebp=1 \
+         use_system_libxslt=1 \
+         use_system_libsrtp=1 \
+         use_system_jsoncpp=1 \
+         use_system_libevent=1 \
+         use_system_harfbuzz=0 \
+         use_system_xdg_utils=1 \
+
+### Debian diversion, not prop on all codecs
+browser_defines+=proprietary_codecs=1
+
+ffmpeg_defines += \
+	use_system_vpx=0 \
+	release_extra_cflags=-g \
+	$(NULL)
+ffmpeg_std_defines   := $(NULL)
+ffmpeg_extra_defines := ffmpeg_branding=Chrome
+### Debian diversion end
+
+# use embedded protobuf for now (bug #764911)
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=764911
+defines+=use_system_protobuf=0 \
+
+# icu
+defines+=use_system_icu=0 \
+         #icu_use_data_file_flag=0 \
+         #want_separate_host_toolset=0 \
+
+# reduce the size of debugging symbols
+defines+=remove_webcore_debug_symbols=1
+
+# some notes about embedded libraries
+#  use_system_libusb=0 requires modified source that exposes libusb_interrupt_handle_event api
+#  use_system_libvpx=0 need to run unbundler
+#  use_system_sqlite=0 build fails
+#  can't use system nss since net/third_party/nss is heavily patched
+#  can't use system ots (open text *summarizer*) since that's not google's ots (open text *sanitizer*)
+
+# make gyp a little more informative
+options+=--check \
+         --debug=includes \
+
+### SYNC TO DEBIAN RULES end
+
+defines += dont_embed_build_metadata=0
 
 # do not use third_party/gold as the linker.
-GYP_DEFINES += linux_use_gold_binary=0 linux_use_gold_flags=0
+defines += linux_use_gold_binary=0 linux_use_gold_flags=0 linux_use_bundled_gold=0
 
 # enable features that we want.
-GYP_DEFINES += enable_webrtc=1
-
-# get resources for high dpi and touch
-GYP_DEFINES += use_aura=1
-GYP_DEFINES += enable_hidpi=1
-GYP_DEFINES += enable_touch_ui=1
-
-GYP_DEFINES += enable_hangout_services_extension=1
-
+defines += enable_mdns=1
+defines += use_nss_verifier=1
+defines += enable_touch_ui=1
+defines += enable_hangout_services_extension=1
 # add support and stubbed implementation of widevine (needed for EME)
-GYP_DEFINES += enable_widevine=1 enable_pepper_cdms=1
+defines += enable_widevine=0 enable_pepper_cdms=1
 
-# Prefer gcc/g++ over clang until clang is better tested in Ubuntu.
-GYP_DEFINES += clang=0
-#ubuntu/clang
-#GYP_DEFINES += clang=1
-#GYP_DEFINES += clang_use_chrome_plugins=0
-
-#GYP_DEFINES += use_ozone=1 ozone_auto_platforms=0 ozone_platform_mir=1 ozone_platform_wayland=0
-#GYP_DEFINES += use_ozone=1
-#GYP_DEFINES += ozone_platform_mir=1
+#defines += use_ozone=1 ozone_auto_platforms=0 ozone_platform_mir=1 ozone_platform_wayland=0
+#defines += use_ozone=1
+#defines += ozone_platform_mir=1
 
 # Intentional configuration, not bug work-arounds.
 ifeq (arm,$(DEB_HOST_ARCH_CPU))
 
-GYP_DEFINES += \
+defines += \
 	arm_neon=0 \
 	target_arch=arm \
 	use_cups=1 \
 	$(NULL)
 
  ifeq (armel,$(DEB_HOST_ARCH))
-GYP_DEFINES += \
+defines += \
 	v8_use_arm_eabi_hardfloat=false \
 	arm_float_abi=soft \
 	arm_thumb=0 \
@@ -125,10 +195,10 @@ GYP_DEFINES += \
 	$(NULL)
  endif
  ifeq (armhf,$(DEB_HOST_ARCH))
-GYP_PARAMS += -DUSE_EABI_HARDFLOAT 
+gyp_params += -DUSE_EABI_HARDFLOAT 
 # ARN Neon optional flag is off because it causes build errors, AND testing
 # /proc/cpuinfo contents can't work with a sandbox anyway.
-GYP_DEFINES += \
+defines += \
 	arm_neon_optional=0 \
 	v8_use_arm_eabi_hardfloat=true \
 	arm_fpu=vfpv3-d16 \
@@ -140,84 +210,42 @@ GYP_DEFINES += \
  endif
 endif
 ifeq (amd64,$(DEB_HOST_ARCH))
-GYP_DEFINES += target_arch=x64
+defines += target_arch=x64
 endif
 ifeq (i386,$(DEB_HOST_ARCH))
-GYP_DEFINES += target_arch=ia32
+defines += target_arch=ia32
 # SEGV on component builds, 2013-05
-GYP_DEFINES += use_allocator=none
+defines += use_allocator=none
 # Some mobile CPUs don't support SSE instructions. SIGILL. 2014-08
-GYP_DEFINES += disable_sse2=1
+defines += disable_sse2=1
+endif
+ifeq (armhf,$(DEB_HOST_ARCH))
+# SEGV on armhf, 2016-06
+GYP_DEFINES += use_allocator=none
 endif
 
-
 ifeq (1,$(COMPONENT_SHARED_LIB_BUILD))
-BROWSER_GYP_DEFINES += component=shared_library
-FFMPEG_GYP_DEFINES += component=shared_library
+browser_defines += component=shared_library
+ffmpeg_defines += component=shared_library
 endif
 
 # Webkit library is enormous. Exclude for now.
-GYP_DEFINES += remove_webcore_debug_symbols=1
+defines += remove_webcore_debug_symbols=1
 
-# Don't let dh_installinit install *.default in /etc/default
-DEB_DH_INSTALLINIT_ARGS += --noscripts --onlyscripts
-
-# Don't let scour touch the svg files
-DEB_DH_SCOUR_ARGS += -Xsvg
-
-DEB_DH_BUILDDEB_ARGS += -- -Z $(BINARY_PACKAGE_COMPRESSION)
-
-ifneq (0,$(WANT_DEBUG))
-BUILD_TYPE := Debug
-else
 BUILD_TYPE := Release
 # Add symbols
-GYP_DEFINES += linux_dump_symbols=1
-GYP_DEFINES += logging_like_official_build=1
-endif
-
-BUILD_ARGS := -v 
-BUILD_ARGS += -C $(DEB_TAR_SRCDIR)/out/$(BUILD_TYPE)
+defines += linux_dump_symbols=1
+defines += logging_like_official_build=1
 
 # Shared libraries
-ifeq (1,$(WANT_SHARED_LIBS))
-GYP_DEFINES += library=shared_library
+ifeq (1,$(COMPONENT_SHARED_LIB_BUILD))
+defines += library=shared_library
 endif
-
-#post-patches::
-#	sed -i 's^\("/usr/lib/nss"\)^/*REM \1 REM*/"/usr/lib/$(DEB_HOST_MULTIARCH)/nss"/**/^' $(DEB_TAR_SRCDIR)/crypto/nss_util.cc
-#	perl $(CURDIR)/debian/enable-dist-patches.pl $(DEBIAN_DIST_VERSION) $(CURDIR)/debian/patches/series
 
 subst_files = \
-	debian/$(DEBIAN_NAME).sh \
+	debian/chromium-browser.sh \
 	$(NULL)
 
-# FFmpeg-mt
-# Don't build it as part of chromium. Build it separately twice, once with
-# the Chrome branding to gain the extra codecs, and once without branding.
-# The ffmpeg_branding variable controls which codecs are built inside the ffmpeg lib.
-# By default, ffmpeg_branding equals to "Chromium" and only builds the ogg/vorbis/theora codecs.
-# When set to "Chrome", it also builds aac/ac3/mpeg4audio/h264/mov/mp3
-DEB_DH_SHLIBDEPS_ARGS_$(DEBIAN_CODECS_NAME) := -l$(CURDIR)/debian/$(DEBIAN_CODECS_NAME)/$(LIB_DIR)
-DEB_DH_SHLIBDEPS_ARGS_$(DEBIAN_CODECS_NAME)-extra := -l$(CURDIR)/debian/$(DEBIAN_CODECS_NAME)-extra/$(LIB_DIR)
-BROWSER_GYP_DEFINES += \
-	proprietary_codecs=1 \
-	$(NULL)
-FFMPEG_GYP_DEFINES += \
-	use_system_vpx=0 \
-	release_extra_cflags=-g \
-	$(NULL)
-FFMPEG_STD_GYP_DEFINES   = $(NULL)
-FFMPEG_EXTRA_GYP_DEFINES = ffmpeg_branding=Chrome
-
-# Precise doesn't set some settings.
-ifeq (,$(filter 12.04%,$(UBUNTU_DIST)))
-# enable compile-time dependency on gnome-keyring
-GYP_DEFINES += use_gnome_keyring=1 linux_link_gnome_keyring=1
-# controlling the use of GConf (the classic GNOME configuration
-# and GIO, which contains GSettings (the new GNOME config system)
-GYP_DEFINES += use_gconf=1 use_gio=1
-endif
 
 # Build chrome and chrome_sandbox, and chromedriver
 BUILD_TARGETS := \
@@ -225,14 +253,13 @@ BUILD_TARGETS := \
 	chrome \
 	chrome_sandbox \
 	chromedriver \
-	remoting_all \
 	$(NULL)
 
 # Needed to preserve the suid and make the sandbox happy
 DEB_FIXPERMS_EXCLUDE := chrome-sandbox
 
 ifneq (,$(GOOGLEAPI_APIKEY_$(DISTRIBUTION)))
-GYP_DEFINES += \
+defines += \
 	google_api_key='$(GOOGLEAPI_APIKEY_$(DISTRIBUTION))' \
 	google_default_client_id='$(GOOGLEAPI_CLIENTID_$(DISTRIBUTION))' \
 	google_default_client_secret='$(GOOGLEAPI_CLIENTSECRET_$(DISTRIBUTION))'
@@ -246,6 +273,7 @@ else
 CROSS_BUILD = CC=$$(which gcc-4.9 gcc |head -1) CXX=$$(which g++-4.9 g++ |head -1)
 #ubuntu/clang
 #CROSS_BUILD = CC=clang CXX=clang++
+#CROSS_BUILD = CC=gcc CXX=g++
 endif
 
 
@@ -256,7 +284,7 @@ endif
 # Debian Policy §4.9
 binary binary-arch binary-indep build build-arch build-indep clean install install-arch install-indep patch:
 	@set -eux
-	dh --sourcedirectory=$(DEB_TAR_SRCDIR) --builddirectory=$(DEB_TAR_SRCDIR)/out/$(BUILD_TYPE)-chromium --with quilt $@
+	dh $@ --sourcedirectory=$(DEB_TAR_SRCDIR) --builddirectory=$(DEB_TAR_SRCDIR)/out --with quilt
 
 # BZR build-deb rule
 get-packaged-orig-source: URL=https://commondatastorage.googleapis.com/chromium-browser-official/chromium-$(ORIG_VERSION).tar.xz
@@ -276,8 +304,7 @@ get-orig-source:
 
 
 
-### Below here, rules that support those above required ones.  "override_dh_"*
-### are of course DH customizations.
+### Below here, rules that support those above required ones.
 
 override_dh_auto_configure:
 	# Don't configure here. We configure and build many times in 'build'.
@@ -294,20 +321,20 @@ override_dh_builddeb:
 override_dh_installman:
 	# install does this
 
-override_dh_install-arch: local-install-arch compare-arch
-
-override_dh_install-indep: local-install-indep compare-indep
-
 override_dh_shlibdeps:
 	dh_shlibdeps -l$(CURDIR)/debian/chromium-browser/usr/lib/chromium-browser/libs/ |grep -v "dpkg-shlibdeps: warning: can't extract name and version from library name" || true
 
-local-install-arch: S_CR_PATH := apps/chromium/current
-local-install-arch: SNAPPY_ROOT := debian/snappy/$(S_CR_PATH)
-local-install-arch: PKG_DIRS := $(addprefix debian/,$(shell dh_listpackages))
-local-install-arch: TRASH := .deps gen obj.host obj.target \*.lock obj build.\* .landmines mksnapshot.ia32 protoc pyproto re2c resources xdg-mime yasm \*.TOC \*.stamp product_logo_\*png gen\* lib/\* lib libvpx_obj_int_extract .ninja\* chrome-wrapper \*.breakpad.\* java_mojo dump_syms 
-local-install-arch:
+override_dh_install-arch: INDEP_MATCH = ^usr/lib/chromium-browser/.\*\locales/.\*.pak$$
+override_dh_install-arch: PKG_DIRS := $(addprefix debian/,$(shell dh_listpackages -a))
+override_dh_install-arch: T := verify-install-integrity-dep
+override_dh_install-arch: SPACE := $(eval) $(eval)
+override_dh_install-arch: S_CR_PATH := apps/chromium/current
+override_dh_install-arch: TRASH := .deps gen obj obj.host obj.target \*.lock build.\* .landmines mksnapshot\* protoc pyproto re2c resources yasm \*.TOC \*.stamp product_logo_\*png gen\* lib/\* lib libvpx_obj_int_extract .ninja\* chrome-wrapper \*.breakpad.\* java_mojo dump_syms browser_test_resources ar_sample_test_driver unittests app_streaming/dev locales remoting_locales
+override_dh_install-arch:
 	@set -eux
 	# Two stages: Install out of source tree. Copy to packaging.
+
+	mkdir -p $(T)
 
 ifeq (1,$(COMPONENT_SHARED_LIB_BUILD))
 	mkdir -p                                                          $(CURDIR)/debian/tmp-std/$(LIB_DIR)/libs
@@ -318,17 +345,17 @@ ifeq (1,$(COMPONENT_SHARED_LIB_BUILD))
 endif
 
 	mkdir -p $(CURDIR)/debian/tmp/$(LIB_DIR)
-	(cd $(SRC_DIR)/out/$(BUILD_TYPE)-chromium; tar cf - . $(foreach excl,$(TRASH),--exclude=$(excl) );) | (cd debian/tmp/$(LIB_DIR); tar xvf -;)
+	(cd $(SRC_DIR)/out/$(BUILD_TYPE)-chromium && tar --remove-files $(foreach excl,$(TRASH),--exclude=$(excl) ) --dereference -cf - .;) | (cd debian/tmp/$(LIB_DIR) && tar xvf -;)
+	(cd $(SRC_DIR)/out/$(BUILD_TYPE)-chromium && tar --remove-files -cf - $$(find *locales -type f -name en-US.pak) --dereference;) | (cd debian/tmp/$(LIB_DIR) && tar xvf -;)
 ifeq (1,$(COMPONENT_SHARED_LIB_BUILD))
 	mkdir -p debian/tmp/$(LIB_DIR)/libs
 	cp $(SRC_DIR)/out/$(BUILD_TYPE)-chromium/lib/*.so debian/tmp/$(LIB_DIR)/libs/
 endif
-
-	(cd $(SRC_DIR)/out/$(BUILD_TYPE)-chromium; tar cf - xdg-settings;) | (cd debian/tmp/$(LIB_DIR); tar xvf -;)
-
-ifneq ($(SNAPPY_PKGR_TO_USE),)
-	mkdir -p $(SNAPPY_ROOT)/private/libs
-	mkdir -p $(SNAPPY_ROOT)/meta
+#
+	# NaCL may be blacklisted, so only include it when it's been built
+ifeq (,$(filter disable_nacl=1,$(defines)))
+	cp -a $(SRC_DIR)/out/$(BUILD_TYPE)-chromium/libppGoogleNaClPluginChrome.so debian/chromium-browser/$(LIB_DIR)/
+	cp -a $(SRC_DIR)/out/$(BUILD_TYPE)-chromium/nacl_irt_* debian/chromium-browser/$(LIB_DIR)/
 endif
 
 	# Icons
@@ -343,29 +370,19 @@ endif
 	  fi; \
 	done
 	cp -a debian/chromium-browser.svg debian/chromium-browser/usr/share/icons/hicolor/scalable/apps
-ifneq ($(SNAPPY_PKGR_TO_USE),)
-	cp -a debian/chromium-browser.svg $(SNAPPY_ROOT)/meta/chromium.svg
-endif
 
+
+	# Record files that were built, so we can compare later that we instlled everything.
+	find debian/tmp debian/tmp-extra debian/tmp-std -type f |cut -d/ -f3- >$(T)/unfiltered-built
+	grep -vE \($(subst $(SPACE),\|,$(BUILT_UNUSED_MATCH))\) $(T)/unfiltered-built $(foreach expr,$(RENAMED_FILE), |sed -r -e $(expr)) |grep -vE \($(subst $(SPACE),\|,$(INDEP_MATCH))\) | LC_ALL=C sort >$(T)/built
+
+	#
+	#
 	##### Copy installed to package ####
-	(cd debian/tmp/$(LIB_DIR); tar cf - . --exclude=chromedriver;) | (cd debian/chromium-browser/$(LIB_DIR); tar xvf -;)
-ifneq ($(SNAPPY_PKGR_TO_USE),)
-	(cd debian/tmp/$(LIB_DIR); tar cf - .;) | (cd $(SNAPPY_ROOT)/private; tar xvf -;)
-endif
-	# prev missed "libs"
-	(cd debian/tmp/$(LIB_DIR)/libs; tar cf - .;) | (cd debian/chromium-browser/$(LIB_DIR)/libs/; tar xvf -;)
-ifneq ($(SNAPPY_PKGR_TO_USE),)
-	(cd debian/tmp/$(LIB_DIR)/libs; tar cf - .;) | (cd $(SNAPPY_ROOT)/private/libs; tar xvf -;)
-	(cd debian/tmp-extra/$(LIB_DIR); tar cf - .;) | (cd $(SNAPPY_ROOT)/private; tar xvf -;)
-endif
+	(cd debian/tmp/$(LIB_DIR) && tar --remove-files --exclude=chromedriver --dereference -cf - .;) | (cd debian/chromium-browser/$(LIB_DIR) && tar xvf -;)
 
 ifeq (1,$(COMPONENT_SHARED_LIB_BUILD))
 	# Set the directory for looking up component libraries.
-ifneq ($(SNAPPY_PKGR_TO_USE),)
-	find $(SNAPPY_ROOT)/private/libs             -type f -name \*.so             -execdir chrpath --replace "\$$ORIGIN" {} \;
-	find $(SNAPPY_ROOT)/private      -maxdepth 1 -type f -name \*.so             -execdir chrpath --replace "\$$ORIGIN/libs" {} \;
-	find $(SNAPPY_ROOT)/private      -maxdepth 1 -type f             -executable -execdir chrpath --replace "\$$ORIGIN/libs" {} \;
-endif
 	find debian/*/$(LIB_DIR)/libs             -type f -name \*.so             -execdir chrpath --replace "\$$ORIGIN" {} \;
 	find debian/*/$(LIB_DIR)      -maxdepth 1 -type f -name \*.so             -execdir chrpath --replace "\$$ORIGIN/libs" {} \;
 	find debian/*/$(LIB_DIR)      -maxdepth 1 -type f             -executable -execdir chrpath --replace "\$$ORIGIN/libs" {} \;
@@ -373,14 +390,7 @@ endif
 
 	# Launcher script
 	cp -a debian/chromium-browser.sh debian/chromium-browser/usr/bin/chromium-browser
-ifneq ($(SNAPPY_PKGR_TO_USE),)
-	cp -a debian/chromium-browser.sh $(SNAPPY_ROOT)/chromium
-endif
 	chmod 755 debian/chromium-browser/usr/bin/chromium-browser
-ifneq ($(SNAPPY_PKGR_TO_USE),)
-	chmod 755 $(SNAPPY_ROOT)/chromium
-	sed -i -e 's,$(LIB_DIR),$(S_CR_PATH)/private,' $(SNAPPY_ROOT)/chromium
-endif
 
 	# Preferences
 	cp -a debian/chromium-browser.default debian/chromium-browser/etc/chromium-browser/default
@@ -389,34 +399,17 @@ endif
 	# chromium dereferences all symlinks before starting its children making
 	# the Gnome System Monitor confused with icons
 	mv debian/chromium-browser/$(LIB_DIR)/chrome debian/chromium-browser/$(LIB_DIR)/chromium-browser
-ifneq ($(SNAPPY_PKGR_TO_USE),)
-	mv $(SNAPPY_ROOT)/private/chrome $(SNAPPY_ROOT)/private/chromium-browser
-endif
 
 	# "you have to change the underscore from the build target into a hyphen".
 	# https://code.google.com/p/chromium/wiki/LinuxSUIDSandbox
 	mv debian/chromium-browser/$(LIB_DIR)/chrome_sandbox debian/chromium-browser/$(LIB_DIR)/chrome-sandbox
-ifneq ($(SNAPPY_PKGR_TO_USE),)
-	mv $(SNAPPY_ROOT)/private/chrome_sandbox $(SNAPPY_ROOT)/private/chrome-sandbox
-endif
 	chmod 4755 debian/chromium-browser/$(LIB_DIR)/chrome-sandbox
-ifneq ($(SNAPPY_PKGR_TO_USE),)
-	chmod 4755 $(SNAPPY_ROOT)/private/chrome-sandbox
-endif
 
 	# Manpage is for wrong program name, and it's in a weird place.  Use and destroy.
 	mkdir -p debian/chromium-browser/usr/share/man/man1
 	mv debian/chromium-browser/$(LIB_DIR)/chrome.1 debian/chromium-browser/usr/share/man/man1/chromium-browser.1
 	gzip -f -9 debian/chromium-browser/usr/share/man/man1/chromium-browser.1
 
-	# NaCL may be blacklisted, so only include it when it's been built
-ifeq (,$(filter disable_nacl=1,$(GYP_DEFINES)))
-	cp -a $(SRC_DIR)/out/$(BUILD_TYPE)-chromium/libppGoogleNaClPluginChrome.so debian/chromium-browser/$(LIB_DIR)/
-	cp -a $(SRC_DIR)/out/$(BUILD_TYPE)-chromium/nacl_irt_* debian/chromium-browser/$(LIB_DIR)/
-endif
-	# Locales: only keep en-US in the main deb
-	# Discard everything except en-US
-	find debian/chromium-browser/$(LIB_DIR)/locales debian/chromium-browser/$(LIB_DIR)/remoting_locales -type f \! -name en-US.pak -print -delete
 	# this should find almost nothing
 	find debian/chromium-browser/$(LIB_DIR) -type f -name \*.pak -print
 
@@ -425,13 +418,13 @@ ifneq (,$(findstring Ubuntu,$(DEBIAN_DIST)))
 	# we need space on the CD, so remove duplicates of the doc files
 	# (See LP: #194574 as for why we don't let cdbs do it)
 	@for doc in copyright AUTHORS changelog.Debian.gz ; do \
-	  F=debian/$(DEBIAN_NAME)/usr/share/doc/$(DEBIAN_NAME)/$$doc ; \
-	  for file in `find $(addsuffix /usr/share/doc,$(filter-out debian/$(DEBIAN_NAME),$(PKG_DIRS))) -type f -name $$doc -print`; do \
+	  F=debian/chromium-browser/usr/share/doc/chromium-browser/$$doc ; \
+	  for file in `find $(addsuffix /usr/share/doc,$(filter-out debian/chromium-browser,$(PKG_DIRS))) -type f -name $$doc -print`; do \
 	    cmp -s $$file $$F ; \
 	    if [ $$? -eq 0 ] ; then \
 	      rm -f $$file ; \
-	      echo "  symlinking $$doc in '"`echo $$file | awk 'BEGIN{ FS="/"} { print $$2 }'`"' to file in '$(DEBIAN_NAME)'" ; \
-	      ( cd `dirname $$file` ; ln -s ../$(DEBIAN_NAME)/$$doc ) ; \
+	      echo "  symlinking $$doc in '"`echo $$file | awk 'BEGIN{ FS="/"} { print $$2 }'`"' to file in 'chromium-browser'" ; \
+	      ( cd `dirname $$file` && ln -s ../chromium-browser/$$doc ) ; \
 	    fi ; \
 	  done ; \
 	done
@@ -439,31 +432,70 @@ endif
 
 	dh_install -a
 
-	dh_listpackages -a |grep -v -- -dbg |while read pkg; do dh_strip --package=$$pkg --dbg-package=$${pkg}-dbg; done
 
-ifneq ($(SNAPPY_PKGR_TO_USE),)
-	DEB_HOST_ARCH="$(DEB_HOST_ARCH)" SNAPPY="$(SNAPPY_ROOT)" make -f debian/generate-snappy.mk
-	find $(SNAPPY_ROOT) -type f -exec strip {} \;
-	pushd $(SNAPPY_ROOT)/private/libs && for try in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do LC_ALL=C ldd *.so ../*.so ../*.a ../chromium-browser |grep -v " => not found" |grep " => " |cut -d\( -f1 |sort |uniq |while read want arrow foundat; do test -f "$$want" || test -z "$$foundat" || cp -v "$$foundat" ./; done; done
-	-popd
+	# compare built to packaged
+	DUPES=`find $(PKG_DIRS) -type f -print | grep -v /DEBIAN/ | cut -d/ -f3- | LC_ALL=C sort | uniq -c | grep -vE '^ *2 .*/libs/libffmpeg.so$$' | grep -vE '^  *1 '` || true; \
+	set -e; \
+	if [ "Z$$DUPES" != Z ] ; then \
+	  echo " => Found duplicates:\n $$DUPES" ; \
+	  exit 1 ; \
+	fi; \
 
-	cd ..; $(SNAPPY_PKGR_TO_USE) build $(CURDIR)/$(SNAPPY_ROOT) || true
-endif
+	find $(PKG_DIRS) -type f |grep -v /DEBIAN |cut -d/ -f3- |grep -v ^usr/lib/debug/ | LC_ALL=C sort >$(T)/unfiltered-packaged
+	grep -vE \($(subst $(SPACE),\|,$(PACKAGED_NOT_FROM_TREE_MATCH))\) $(T)/unfiltered-packaged |grep -vE \($(subst $(SPACE),\|,$(INDEP_MATCH))\) >$(T)/packaged ; \
+	if ! diff -U0 $(T)/built $(T)/packaged; then \
+	  echo " => Found archdep differences, please investigate. $(T)/built $(T)/packaged" ; \
+	  exit 1; \
+	fi
+
+	for expr in $(BUILT_UNUSED_MATCH); do if ! grep -E $$expr $(T)/unfiltered-built >/dev/null; then echo "Warning: Unused built matcher: $$expr in $(T)/unfiltered-built "; fi; done
+	for expr in $(PACKAGED_NOT_FROM_TREE_MATCH); do if ! grep -E $$expr $(T)/unfiltered-packaged >/dev/null; then echo "Warning: Unused packaged matcher: $$expr"; fi; done
+	rm -r $(T)
 
 
-local-install-indep:
+override_dh_install-indep: INDEP_MATCH = ^usr/lib/chromium-browser/.\*\(?\!\<pseudo-\)locales/.\*.pak$$
+override_dh_install-indep: SPACE := $(eval) $(eval)
+override_dh_install-indep: T := verify-install-integrity-indep
+override_dh_install-indep:
 	@set -eux
+
+	mkdir -p "$(T)"
+
+	### Step 1: install into tmp
+	mkdir -p debian/tmp/$(LIB_DIR)
+	(cd $(SRC_DIR)/out/$(BUILD_TYPE)-chromium && tar --remove-files -cf - $$(find *locales -type f -name \*.pak \! -name en-US.pak) --dereference;) | (cd debian/tmp/$(LIB_DIR) && tar xvf -;)
+
+	# record built so we can compare later
+	mkdir -p $(T)
+	find debian/tmp debian/tmp-extra -type f |cut -d/ -f3- >$(T)/unfiltered-built
+	grep -E \($(subst $(SPACE),\|,$(INDEP_MATCH))\) $(T)/unfiltered-built $(foreach expr,$(RENAMED_FILE), |sed -r -e $(expr)) |grep -v /en-US.pak | LC_ALL=C sort >$(T)/built
+
+
+	### Step 2: install into packages
 	dh_install -i
+
 	install --directory debian/chromium-browser/etc/chromium-browser/customizations
 	install --owner=root --mode=0644 --no-target-directory debian/chromium-browser-customization-example debian/chromium-browser/etc/chromium-browser/customizations/00-example
-	find debian/chromium-browser-l10n/$(LIB_DIR)/remoting_locales debian/chromium-browser-l10n/$(LIB_DIR)/locales -name en-US.pak -print -delete
+
+	dh_listpackages -i |while read pkgname; do find debian/$${pkgname} -type f; done |grep -v /DEBIAN |cut -d/ -f3- |grep -v ^usr/lib/debug/ | LC_ALL=C sort >$(T)/unfiltered-packaged
+	grep -E \($(subst $(SPACE),\|,$(INDEP_MATCH))\) $(T)/unfiltered-packaged |grep -v /en-US.pak >$(T)/packaged || true
+	if ! diff -U0 $(T)/built $(T)/packaged; then \
+	  echo " => Found indep differences, please investigate. $(T)/built $(T)/packaged"; \
+	  exit 1; \
+	fi
+
+	rm -r $(T)
+
 
 override_dh_clean:
 	@set -eux
+	dh_clean
 	test -d chrome
 	rm -rf $(SRC_DIR)/out 
-	dh_clean debian/chromium-browser.sh debian/*-stamp debian/stamp-* debian/tmp-* build-stamp* $(subst_files) $(FFMPEG_SRC_DIR)/yasm
+	rm -rf debian/chromium-browser.sh debian/*-stamp debian/stamp-* debian/tmp-* build-stamp* $(subst_files) $(FFMPEG_SRC_DIR)/yasm
 	rm -rf debian/snappy
+	rm -rf verify-install-integrity-indep verify-install-integrity-arch
+	rm -rf launchpad-translations
 
 	find $(SRC_DIR) \( -name \*.pyc -o -name \*.pyo -name \*.o \) -delete
 	find $(SRC_DIR) -regex '.*/\([^/]*\)/\1[^/]*\.\(Makefile\|\(target\|host\)\.mk\)' -delete
@@ -471,7 +503,7 @@ override_dh_clean:
 	set +x
 	echo
 	echo VERIFICATION:
-	cd ..; for crypto in md5 sha1 sha224 sha256 sha384 sha512; do $${crypto}sum 'chromium-browser_$(DEBIAN_UPSTREAM_VERSION).orig.tar.xz' |sed -e 's/-browser//' -e "s/^/$${crypto}  /"; done
+	cd .. && for crypto in md5 sha1 sha224 sha256 sha384 sha512; do $${crypto}sum 'chromium-browser_$(DEBIAN_UPSTREAM_VERSION).orig.tar.xz' |sed -e 's/-browser//' -e "s/^/$${crypto}  /"; done
 	echo VERIFICATION-
 	echo Compare to https://commondatastorage.googleapis.com/chromium-browser-official/chromium-$(DEBIAN_UPSTREAM_VERSION).tar.xz.hashes
 	echo
@@ -487,38 +519,40 @@ debian/chromium-browser.sh: debian/chromium-browser.sh.in
     -e 's/@UPSTREAM_VERSION@/$(DEBIAN_UPSTREAM_VERSION)/g' \
     $< > $@
 
+debian/appstream.yaml: debian/appstream.yaml.in
+	sed -e 's/VERSION/$(DEBIAN_DIST_VERSION)/g' \
+    -e 's/DATE/$(shell date --iso-8601=minutes --utc)/g' \
+    $< > $@
 
 # This is really configure+build in one step. b depends on c.
-build-stamp: GYP_ENV = GYP_GENERATORS=ninja
-build-stamp: GYP_ENV += GYP_DEFINES="$(GYP_DEFINES) $(BROWSER_GYP_DEFINES)"
+build-stamp: gyp_env := GYP_GENERATORS=ninja GYP_DEFINES="$(defines) $(browser_defines)"
+build-stamp: BUILD_ARGS := -v -C $(DEB_TAR_SRCDIR)/out/$(BUILD_TYPE)
 build-stamp: debian/chromium-browser.sh
 	@set -eux
-	test ! -e $(SRC_DIR)/out/$(BUILD_TYPE)
+	test ! -e $(SRC_DIR)/out/$(BUILD_TYPE)-chromium
 	# Upstream changes often. Fail when they introduce a config flag we don't know about.
 	-diff --ignore-case --suppress-common-lines --unified=0 debian/known_gyp_flags <(sed -e "/: *'<(/{ s,.*'<(,,g; s,).*,,; p; }" -e d build/common.gypi | LC_ALL=C sort -u |grep -v '^\(win_\|mac_\|android_\|.san\|..san\|msvs_\|ios_\|goma_\|windows_\|wix_\|directx_\)') || echo This seems bad.
 
-	cd $(SRC_DIR) && $(GYP_ENV) $(CROSS_BUILD) build/gyp_chromium build/all.gyp $(GYP_PARAMS)
+	cd $(SRC_DIR) && $(gyp_env) $(CROSS_BUILD) build/gyp_chromium build/all.gyp $(gyp_params)
 
 	### build
 	while sleep 1200; do echo "#  I ATEN'T DEAD"; done& $(BUILD_DEFINES) $(NINJA) $(BUILD_ARGS) $(BUILD_TARGETS) && { kill \%1; sleep 1; echo; true; } || { kill \%1; exit 1; sleep 2; echo; false; }
-
-	mv $(SRC_DIR)/out/$(BUILD_TYPE) $(SRC_DIR)/out/$(BUILD_TYPE)-chromium
+	mv -v $(DEB_TAR_SRCDIR)/out/$(BUILD_TYPE) $(DEB_TAR_SRCDIR)/out/$(BUILD_TYPE)-chromium
 	touch $@
 
-build-stamp-ffmpeg-%: GYP_DEFINES += $(FFMPEG_EXTRA_GYP_DEFINES) $(FFMPEG_GYP_DEFINES)
-build-stamp-ffmpeg-%: GYP_ENV = GYP_GENERATORS=ninja
-build-stamp-ffmpeg-%: GYP_ENV += GYP_DEFINES="$(GYP_DEFINES)"
+build-stamp-ffmpeg-%: gyp_env := GYP_GENERATORS=ninja GYP_DEFINES="$(defines) $(ffmpeg_extra_defines) $(ffmpeg_defines)"
+build-stamp-ffmpeg-%: BUILD_ARGS := -v -C $(DEB_TAR_SRCDIR)/out/$(BUILD_TYPE)
 build-stamp-ffmpeg-%: TARGET := lib/libffmpeg.so
 build-stamp-ffmpeg-%:
 	@set -eux
 	### configure
-	test ! -e $(SRC_DIR)/out/$(BUILD_TYPE)
-	cd $(SRC_DIR) && $(GYP_ENV) $(CROSS_BUILD) build/gyp_chromium build/all.gyp $(GYP_PARAMS)
+	test ! -e $(SRC_DIR)/out/$(BUILD_TYPE)-ffmpeg-$*
+	cd $(SRC_DIR) && $(gyp_env) $(CROSS_BUILD) build/gyp_chromium build/all.gyp $(gyp_params)
 
 	### build
 	$(NINJA) $(BUILD_ARGS) $(TARGET)
 	mkdir -p debian/tmp-$*/$(LIB_DIR)
-	mv -v $(SRC_DIR)/out/$(BUILD_TYPE) $(SRC_DIR)/out/$(BUILD_TYPE)-ffmpeg-$*
+	mv -v $(DEB_TAR_SRCDIR)/out/$(BUILD_TYPE) $(DEB_TAR_SRCDIR)/out/$(BUILD_TYPE)-ffmpeg-$*
 	touch $@
 
 
@@ -530,18 +564,19 @@ build-stamp-ffmpeg-%:
 # used later to join expressions in alternation; a dot should suffice.
 # Useful: https://code.google.com/p/chromium/codesearch#search/q=package:chromium
 ## webkit tests
-#BUILT_UNUSED_MATCH  = ^usr/lib/chromium-browser/AHEM____.TTF$$
+#BUILT_UNUSED_MATCH := ^usr/lib/chromium-browser/AHEM____.TTF$$
 #BUILT_UNUSED_MATCH += ^usr/lib/chromium-browser/fonts.conf$$
 #BUILT_UNUSED_MATCH += ^usr/lib/chromium-browser/libTestNetscapePlugIn.so$$
 #BUILT_UNUSED_MATCH += ^usr/lib/chromium-browser/plugins/libTestNetscapePlugIn.so$$
 #BUILT_UNUSED_MATCH += ^usr/lib/chromium-browser/ImageDiff$$
 ## xdg-utils install dep
 #BUILT_UNUSED_MATCH += ^usr/lib/chromium-browser/xdg-settings$$
-BUILT_UNUSED_MATCH += ^usr/lib/chromium-browser/xdg-mime$$
+#BUILT_UNUSED_MATCH += ^usr/lib/chromium-browser/xdg-mime$$
+BUILT_UNUSED_MATCH += ^usr/lib/chromium-browser/ar_sample_test_driver$$
 
-INDEP_MATCH = ^usr/lib/chromium-browser/.\*\(?\!\<pseudo-\)locales/.\*.pak$$
+INDEP_MATCH := ^usr/lib/chromium-browser/.\*\(?\!\<pseudo-\)locales/.\*.pak$$
 
-PACKAGED_NOT_FROM_TREE_MATCH  = ^usr/share/applications/chromium-browser.desktop$$
+PACKAGED_NOT_FROM_TREE_MATCH := ^usr/share/applications/chromium-browser.desktop$$
 PACKAGED_NOT_FROM_TREE_MATCH += ^usr/share/apport/package-hooks/chromium-browser.py$$
 PACKAGED_NOT_FROM_TREE_MATCH += ^usr/share/doc/chromium-browser/README.source$$
 PACKAGED_NOT_FROM_TREE_MATCH += ^usr/share/doc/chromium-browser/TODO.Debian$$
@@ -562,66 +597,26 @@ PACKAGED_NOT_FROM_TREE_MATCH += ^etc/chromium-browser/customizations/00-example$
 # pre-packaging listing. All of this is done AFTER removing items
 # BUILD_UNUSED_MATCH .  Quote for regexp, then shell, then Make.
 #  Man pages are moved, renamed, compressed.
-RENAMED_FILE  = s,^usr/lib/chromium-browser/chrome.1\$$,usr/share/man/man1/chromium-browser.1.gz,
+RENAMED_FILE := s,^usr/lib/chromium-browser/chrome.1\$$,usr/share/man/man1/chromium-browser.1.gz,
 #  Sandbox name is wrong. Upstream builder deficiency.
 RENAMED_FILE += s,^usr/lib/chromium-browser/chrome_sandbox$$,usr/lib/chromium-browser/chrome-sandbox,
 #  Executable name is different.
 RENAMED_FILE += s,^usr/lib/chromium-browser/chrome$$,usr/lib/chromium-browser/chromium-browser,
 
-compare-indep: INDEP_MATCH = ^usr/lib/chromium-browser/.\*\(?\!\<pseudo-\)locales/.\*.pak$$
-compare-indep: SPACE := $(eval) $(eval)
-compare-indep:
-	@set -eux; \
-	T=$$(mktemp -d -t chromium-comparisons-XXXXXXX); \
-	test "$${T}"; \
-	test -d $${T}; \
-	find debian/tmp debian/tmp-extra -type f |cut -d/ -f3- >$${T}/unfiltered-built; \
-	grep -E \($(subst $(SPACE),\|,$(INDEP_MATCH))\) $${T}/unfiltered-built $(foreach expr,$(RENAMED_FILE), |sed -r -e $(expr))  |grep -v /en-US.pak | LC_ALL=C sort >$${T}/built; \
-	dh_listpackages -i |while read pkgname; do find debian/$${pkgname} -type f; done |grep -v /DEBIAN |cut -d/ -f3- |grep -v ^usr/lib/debug/ | LC_ALL=C sort >$${T}/unfiltered-packaged; \
-	grep -E \($(subst $(SPACE),\|,$(INDEP_MATCH))\) $${T}/unfiltered-packaged |grep -v /en-US.pak >$${T}/packaged || true; \
-	if ! diff -U0 $${T}/built $${T}/packaged; then  \
-	  echo " => Found indep differences, please investigate. $${T}/built $${T}/packaged" ; \
-	  exit 1; \
-	fi; \
-	rm -r $${T}
-
-compare-arch: INDEP_MATCH = ^usr/lib/chromium-browser/.\*\locales/.\*.pak$$
-compare-arch: PKG_DIRS := $(addprefix debian/,$(shell dh_listpackages -a))
-compare-arch: SPACE := $(eval) $(eval)
-compare-arch:
-	@set -eux; \
-	T=$$(mktemp -d -t chromium-comparisons-XXXXXXX);\
-	test "$${T}"; \
-	test -d $${T};\
-	DUPES=`find $(PKG_DIRS) -type f -print | grep -v /DEBIAN/ | cut -d/ -f3- | LC_ALL=C sort | uniq -c | grep -vE '^ *2 .*/libs/libffmpeg.so$$' | grep -vE '^  *1 '` || true; \
-	if [ "Z$$DUPES" != Z ] ; then \
-	  echo " => Found duplicates:\n $$DUPES" ; \
-	  exit 1 ; \
-	fi; \
-	find debian/tmp debian/tmp-extra debian/tmp-std -type f |cut -d/ -f3- >$${T}/unfiltered-built ;\
-	grep -vE \($(subst $(SPACE),\|,$(BUILT_UNUSED_MATCH))\) $${T}/unfiltered-built $(foreach expr,$(RENAMED_FILE), |sed -r -e $(expr)) |grep -vE \($(subst $(SPACE),\|,$(INDEP_MATCH))\) | LC_ALL=C sort >$${T}/built ;\
-	find $(PKG_DIRS) -type f |grep -v /DEBIAN |cut -d/ -f3- |grep -v ^usr/lib/debug/ | LC_ALL=C sort >$${T}/unfiltered-packaged ;\
-	grep -vE \($(subst $(SPACE),\|,$(PACKAGED_NOT_FROM_TREE_MATCH))\) $${T}/unfiltered-packaged |grep -vE \($(subst $(SPACE),\|,$(INDEP_MATCH))\) >$${T}/packaged ;\
-	if ! diff -U0 $${T}/built $${T}/packaged; then \
-	  echo " => Found archdep differences, please investigate. $${T}/built $${T}/packaged" ; \
-	  exit 1; \
-	fi; \
-	for expr in $(BUILT_UNUSED_MATCH); do if ! grep -E $$expr $${T}/unfiltered-built >/dev/null; then echo "Warning: Unused built matcher: $$expr in $${T}/unfiltered-built "; fi; done; \
-	for expr in $(PACKAGED_NOT_FROM_TREE_MATCH); do if ! grep -E $$expr $${T}/unfiltered-packaged >/dev/null; then echo "Warning: Unused packaged matcher: $$expr"; fi; done; \
-	rm -r $${T};
 
 ###############################################################################################
 # Translations
 
 # New langs with enough coverage to land in official builds
 # (leave empty to accept all new lang)
+patch-translations: T := launchpad-translations
 patch-translations: GRIT_WHITELISTED_LANGS ?= ca@valencia eu gl ug gd
 patch-translations: TRANSLATIONS_TOOLS_BRANCH  := http://bazaar.launchpad.net/~chromium-team/chromium-browser/chromium-translations-tools.head
 patch-translations: TRANSLATIONS_EXPORT_BRANCH := http://bazaar.launchpad.net/~chromium-team/chromium-browser/chromium-translations-exports.head
 patch-translations: GRIT_TEMPLATES := chrome/app/chromium_strings.grd chrome/app/generated_resources.grd components/policy/resources/policy_templates.grd ui/strings/ui_strings.grd webkit/glue/resources/webkit_resources.grd 
 patch-translations: OTHER_GRIT_TEMPLATES := ui/strings/app_locale_settings.grd chrome/app/resources/locale_settings.grd chrome/app/resources/locale_settings_linux.grd 
 patch-translations: MAPPED_GRIT_TEMPLATES := --map-template-names ui/strings/ui_strings.grd=ui/strings/app_strings.grd 
-patch-translations: GRIT_CONVERTER_FLAGS := --create-patches translations-patches --import-gettext ../translations-export --export-grit $${T}/translations-grit --build-gyp-file build/common.gypi --other-grd-files $$(echo $(OTHER_GRIT_TEMPLATES) | tr ' ' ',') $(MAPPED_GRIT_TEMPLATES) 
+patch-translations: GRIT_CONVERTER_FLAGS := --create-patches translations-patches --import-gettext ../translations-export --export-grit $(T)/translations-grit --build-gyp-file build/common.gypi --other-grd-files $$(echo $(OTHER_GRIT_TEMPLATES) | tr ' ' ',') $(MAPPED_GRIT_TEMPLATES) 
 ifeq (1,$(WANT_ONLY_WHITELISTED_NEW_LANGS))
 patch-translations: GRIT_CONVERTER_FLAGS += --whitelisted-new-langs $$(echo $(GRIT_WHITELISTED_LANGS) | tr ' ' ',')
 endif
@@ -630,21 +625,21 @@ patch-translations:
 	@set -eux
 	ls $(GRIT_TEMPLATES)
 	ls $(OTHER_GRIT_TEMPLATES)
-	T=$$(mktemp --directory --tmpdir=.. -t chromium-launchpad-translations-XXXXXXX)
-	test "$${T}"
-	test -d $${T}
-	test -d $${T}/translations-tools || bzr export $${T}/translations-tools $(TRANSLATIONS_TOOLS_BRANCH)
-	test -d $${T}/translations-export || bzr export $${T}/translations-export $(TRANSLATIONS_EXPORT_BRANCH)
-	( cd $(DEB_TAR_SRCDIR); $${T}/translations-tools/chromium2pot.py $(GRIT_CONVERTER_FLAGS) $$(ls $(GRIT_TEMPLATES)); )
+	test "$(T)"
+	test -d $(T)
+	test -d $(T)/translations-tools || bzr export $(T)/translations-tools $(TRANSLATIONS_TOOLS_BRANCH)
+	test -d $(T)/translations-export || bzr export $(T)/translations-export $(TRANSLATIONS_EXPORT_BRANCH)
+	( cd $(DEB_TAR_SRCDIR) && $(T)/translations-tools/chromium2pot.py $(GRIT_CONVERTER_FLAGS) $$(ls $(GRIT_TEMPLATES)); )
 	quilt delete "$(PATCH_FILE)" || true
 	quilt new "$(PATCH_FILE)"
-	( cd $${T}/translations-grit && find * -type f ) |while read updatedfile; do \
+	( cd $(T)/translations-grit && find * -type f ) |while read updatedfile; do \
 		quilt add -P "$(PATCH_FILE)" $(DEB_TAR_SRCDIR)/"$$updatedfile"; \
-		cp $${T}/translations-grit/"$$updatedfile" $(DEB_TAR_SRCDIR)/"$$updatedfile"; \
+		cp $(T)/translations-grit/"$$updatedfile" $(DEB_TAR_SRCDIR)/"$$updatedfile"; \
 	done
 	{ echo "Description: Contributed translations from Launchpad. "; echo; } |quilt header -r "$(PATCH_FILE)"
 	quilt refresh -pab --no-timestamps "$(PATCH_FILE)";
 	echo "Patch needs committing."
+	rm -rf "$(T)"
 
 
 

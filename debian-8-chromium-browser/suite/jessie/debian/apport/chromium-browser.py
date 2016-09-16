@@ -195,7 +195,10 @@ def add_info(report, hookui, userdir=None):
     else:
         user_dir = get_user_profile_dir()
 
-    user_prefs(report, user_dir + "/Preferences")
+    try:
+        user_prefs(report, user_dir + "/Preferences")
+    except OSError:
+        pass
 
     list_installed_plugins(report)
 

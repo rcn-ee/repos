@@ -4,7 +4,15 @@ Bug-Upstream: https://bugs.freedesktop.org/show_bug.cgi?id=92170
 
 --- a/chrome/browser/shell_integration_linux.cc
 +++ b/chrome/browser/shell_integration_linux.cc
-@@ -56,6 +56,11 @@ using content::BrowserThread;
+@@ -151,6 +151,7 @@ bool SetDefaultWebClient(const std::stri
+   argv.push_back(shell_integration_linux::GetDesktopName(env.get()));
+ 
+   int exit_code;
++  GetChromeVersionOfScript(kXdgSettings, &argv[0]);
+   bool ran_ok = LaunchXdgUtility(argv, &exit_code);
+   if (ran_ok && exit_code == EXIT_XDG_SETTINGS_SYNTAX_ERROR) {
+     if (GetChromeVersionOfScript(kXdgSettings, &argv[0])) {
+@@ -249,6 +250,11 @@ namespace shell_integration_linux {
  
  namespace {
  
@@ -16,90 +24,30 @@ Bug-Upstream: https://bugs.freedesktop.org/show_bug.cgi?id=92170
  // The Categories for the App Launcher desktop shortcut. Should be the same as
  // the Chrome desktop shortcut, so they are in the same sub-menu.
  const char kAppListCategories[] = "Network;WebBrowser;";
-@@ -132,6 +137,7 @@ std::string CreateShortcutIcon(const gfx
+@@ -299,6 +305,7 @@ std::string CreateShortcutIcon(const gfx
      argv.push_back(temp_file_path.value());
      argv.push_back(icon_name);
      int exit_code;
 +    GetChromeVersionOfScript(kXdgSettings, &argv[0]);
-     if (!LaunchXdgUtility(argv, &exit_code) || exit_code) {
+     if (!shell_integration::LaunchXdgUtility(argv, &exit_code) || exit_code) {
        LOG(WARNING) << "Could not install icon " << icon_name << ".png at size "
                     << width << ".";
-@@ -231,6 +237,7 @@ bool CreateShortcutInApplicationsMenu(co
+@@ -398,6 +405,7 @@ bool CreateShortcutInApplicationsMenu(co
      argv.push_back(temp_directory_path.value());
    argv.push_back(temp_file_path.value());
    int exit_code;
 +  GetChromeVersionOfScript(kXdgSettings, &argv[0]);
-   LaunchXdgUtility(argv, &exit_code);
+   shell_integration::LaunchXdgUtility(argv, &exit_code);
    return exit_code == 0;
  }
-@@ -254,6 +261,7 @@ void DeleteShortcutInApplicationsMenu(
+@@ -421,6 +429,7 @@ void DeleteShortcutInApplicationsMenu(
      argv.push_back(directory_filename.value());
    argv.push_back(shortcut_filename.value());
    int exit_code;
 +  GetChromeVersionOfScript(kXdgSettings, &argv[0]);
-   LaunchXdgUtility(argv, &exit_code);
+   shell_integration::LaunchXdgUtility(argv, &exit_code);
  }
  
-@@ -310,7 +318,6 @@ const char kDesktopEntry[] = "Desktop En
- const char kXdgOpenShebang[] = "#!/usr/bin/env xdg-open";
- #endif
- 
--const char kXdgSettings[] = "xdg-settings";
- const char kXdgSettingsDefaultBrowser[] = "default-web-browser";
- const char kXdgSettingsDefaultSchemeHandler[] = "default-url-scheme-handler";
- 
-@@ -353,6 +360,7 @@ bool GetChromeVersionOfScript(const std:
- 
- // Value returned by xdg-settings if it can't understand our request.
- const int EXIT_XDG_SETTINGS_SYNTAX_ERROR = 1;
-+const int EXIT_XDG_SETTINGS_FILE_NOT_EXIST = 2;
- 
- // We delegate the difficulty of setting the default browser and default url
- // scheme handler in Linux desktop environments to an xdg utility, xdg-settings.
-@@ -364,6 +372,11 @@ const int EXIT_XDG_SETTINGS_SYNTAX_ERROR
- // system fails, as the system copy may be missing capabilities of the Chrome
- // copy.
- 
-+// As of 2015-10 and earlier, xdg settings fails for desktop files that have
-+// more than one Exec line. We catch this kind of failure and try our own
-+// version of the script.
-+// https://bugs.freedesktop.org/show_bug.cgi?id=92170
-+
- // If |protocol| is empty this function sets Chrome as the default browser,
- // otherwise it sets Chrome as the default handler application for |protocol|.
- bool SetDefaultWebClient(const std::string& protocol) {
-@@ -384,13 +397,8 @@ bool SetDefaultWebClient(const std::stri
-   argv.push_back(shell_integration_linux::GetDesktopName(env.get()));
- 
-   int exit_code;
-+  GetChromeVersionOfScript(kXdgSettings, &argv[0]);
-   bool ran_ok = LaunchXdgUtility(argv, &exit_code);
--  if (ran_ok && exit_code == EXIT_XDG_SETTINGS_SYNTAX_ERROR) {
--    if (GetChromeVersionOfScript(kXdgSettings, &argv[0])) {
--      ran_ok = LaunchXdgUtility(argv, &exit_code);
--    }
--  }
--
-   return ran_ok && exit_code == EXIT_SUCCESS;
- #endif
- }
-@@ -420,15 +428,9 @@ ShellIntegration::DefaultWebClientState
- 
-   std::string reply;
-   int success_code;
-+  GetChromeVersionOfScript(kXdgSettings, &argv[0]);
-   bool ran_ok = base::GetAppOutputWithExitCode(base::CommandLine(argv), &reply,
-                                                &success_code);
--  if (ran_ok && success_code == EXIT_XDG_SETTINGS_SYNTAX_ERROR) {
--    if (GetChromeVersionOfScript(kXdgSettings, &argv[0])) {
--      ran_ok = base::GetAppOutputWithExitCode(base::CommandLine(argv), &reply,
--                                              &success_code);
--    }
--  }
--
-   if (!ran_ok || success_code != EXIT_SUCCESS) {
-     // xdg-settings failed: we can't determine or set the default browser.
-     return ShellIntegration::UNKNOWN_DEFAULT;
 --- a/third_party/xdg-utils/scripts/xdg-desktop-icon
 +++ b/third_party/xdg-utils/scripts/xdg-desktop-icon
 @@ -231,11 +231,16 @@ first_word()
