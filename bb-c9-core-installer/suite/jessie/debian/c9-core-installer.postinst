@@ -6,21 +6,18 @@ set -e
 
 package="c9-core-installer"
 
-core_version="3.1.2374+git20160430"
+core_version="3.1.3088+git20160915"
 
-sha256sum_tgz_0_10_x="49d8c8fd255f679380ec2dfb749769d784d3a0503ec72ed2fceac06f7d1690a8"
-        wfile_0_10_x="c9-core_${core_version}-build.tar.xz"
-
-sha256sum_tgz_0_12_x="777e2ec9725f915ae5e2a0cf61d938e1ed0e159e6274049598110204a69b590e"
+#deb https://deb.nodesource.com/node_0.12 jessie main
+sha256sum_tgz_0_12_x="cb0b88b435948dce4b7719f8019a033df5be8df8d4133936ef908a3c5c2c84ab"
         wfile_0_12_x="c9-core_${core_version}-build.tar.xz"
 
-   sha256sum_tgz_4_x="3164854cf0a73999ac7d38da7d447a31699d2938deccbf9d69953f34c5513947"
+#deb https://deb.nodesource.com/node_4.x jessie main
+   sha256sum_tgz_4_x="e91cd16a5e751c6211422ec3972f4ce81dfca046c03f43fb4eef8c97405c557e"
            wfile_4_x="c9-core_${core_version}-build.tar.xz"
 
-   sha256sum_tgz_5_x="65c10f9d6f37a96c6111d9fb37ca7141b8d6e4952c9dd3cdbe077f22fcef86d1"
-           wfile_5_x="c9-core_${core_version}-build.tar.xz"
-
-   sha256sum_tgz_6_x="4ba558cfafda791fb05d0f89d39647e3d01fcc18a7691adb27ba35ea7c532955"
+#deb https://deb.nodesource.com/node_6.x jessie main
+   sha256sum_tgz_6_x="23bc170e546d4a7ab8e33ae9a8e0c99d880ff9045752e756d1c426579826a63c"
            wfile_6_x="c9-core_${core_version}-build.tar.xz"
 
 extract_dir="/opt/cloud9/build/"
@@ -39,6 +36,7 @@ extract_dir="/opt/cloud9/build/"
 
 export NODE_PATH=/usr/local/lib/node_modules
 
+#FIXME: this changed for v6.x+
 npm_options="--unsafe-perm=true --progress=false --loglevel=error --prefix /usr/local"
 
 npm_actually_install () {
@@ -163,35 +161,29 @@ dl_install() {
 	unset node_version
 	node_version=$(/usr/bin/nodejs --version || true)
 	case "${node_version}" in
-	v0.10.*)
-		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v0.10.x"
-		sha256sum_tgz=${sha256sum_tgz_0_10_x}
-		wfile=${wfile_0_10_x}
-		;;
 	v0.12.*)
 		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v0.12.x"
 		sha256sum_tgz=${sha256sum_tgz_0_12_x}
 		wfile=${wfile_0_12_x}
+		pty_js_version="0.3.0"
 		;;
 	v4.*)
 		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v4.x"
 		sha256sum_tgz=${sha256sum_tgz_4_x}
 		wfile=${wfile_4_x}
-		;;
-	v5.*)
-		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v5.x"
-		sha256sum_tgz=${sha256sum_tgz_5_x}
-		wfile=${wfile_5_x}
+		pty_js_version="0.3.0"
 		;;
 	v6.*)
 		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v6.x"
 		sha256sum_tgz=${sha256sum_tgz_6_x}
 		wfile=${wfile_6_x}
+		pty_js_version="0.3.1"
 		;;
 	*)
 		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v6.x"
 		sha256sum_tgz=${sha256sum_tgz_6_x}
 		wfile=${wfile_6_x}
+		pty_js_version="0.3.1"
 		;;
 	esac
 
@@ -341,7 +333,7 @@ c9_directory () {
 	fi
 
 	npm_project="c9-core-installer"
-	pkg="pty.js" ; ver="0.3.0" ; npm_check_n_install
+	pkg="pty.js" ; ver="${pty_js_version}" ; npm_check_n_install
 
 	module="pty.js" ; fix_npm_lib
 
