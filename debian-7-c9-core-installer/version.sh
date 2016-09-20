@@ -18,7 +18,4 @@ debian_untar=""
 debian_patch=""
 local_patch="rcnee2"
 
-jessie_version="~bpo80+20160502+1"
-stretch_version="~bpo90+20160502+1"
-xenial_version="~bpo1604+20160502+1"
-yakkety_version="~bpo1610+20160502+1"
+wheezy_version="~bpo70+20160502+1"
