@@ -6,8 +6,12 @@ TI_AM335x_BeagleBone_Green_Wireless)
 	if [ -f /sys/class/leds/wl18xx_wl_en/brightness ] ; then
 		echo 1 > /sys/class/leds/wl18xx_wl_en/brightness || true
 	fi
-	ifconfig wlan0 up
+	ifconfig wlan0 up || true
+	#FIXME: what! Yes, the 1st fails, but the 2nd succceds...
+	sleep 1;
+	ifconfig wlan0 up || true
 	;;
 *)
+	ifconfig wlan0 up || true
 	;;
 esac
