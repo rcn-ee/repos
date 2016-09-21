@@ -10,8 +10,10 @@ TI_AM335x_BeagleBone_Green_Wireless)
 	#FIXME: what! Yes, the 1st fails, but the 2nd succceds...
 	sleep 1;
 	ifconfig wlan0 up || true
+	systemctl restart connman || true
 	;;
 *)
 	ifconfig wlan0 up || true
+	systemctl restart connman || true
 	;;
 esac
