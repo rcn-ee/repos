@@ -1,0 +1,13 @@
+#!/bin/bash -e
+
+board=$(cat /proc/device-tree/model | sed "s/ /_/g")
+case "${board}" in
+TI_AM335x_BeagleBone_Green_Wireless)
+	if [ -f /sys/class/leds/wl18xx_wl_en/brightness ] ; then
+		echo 0 > /sys/class/leds/wl18xx_wl_en/brightness || true
+	fi
+	ifconfig wlan0 down
+	;;
+*)
+	;;
+esac

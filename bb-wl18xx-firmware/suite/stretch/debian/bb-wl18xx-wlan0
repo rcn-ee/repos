@@ -23,6 +23,9 @@
 cal_bin="/usr/local/bin/calibrator"
 
 check_for_nl80211 () {
+	if [ -f /sys/class/leds/wl18xx_wl_en/brightness ] ; then
+		echo 1 > /sys/class/leds/wl18xx_wl_en/brightness || true
+	fi
 	while : ; do
 		unset is_driver_loaded
 		is_driver_loaded=$(${cal_bin} --help 2>&1 || true)
@@ -39,8 +42,6 @@ check_for_nl80211 () {
 cylon_leds () {
 	if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
 		BASE=/sys/class/leds/beaglebone\:green\:usr
-		old_trigger_0=$(cat ${BASE}0/trigger)
-		old_trigger_1=$(cat ${BASE}1/trigger)
 		echo none > ${BASE}0/trigger
 		echo none > ${BASE}1/trigger
 
@@ -67,12 +68,19 @@ cylon_leds () {
 
 set_wlan_0_mac () {
 	if [ -f ${firmware} ] ; then
+		#FIXME: cal_bin is deprecieated..
 		if [ -f ${cal_bin} ] ; then
 			check_for_nl80211
 			current_mac=$(${cal_bin} get nvs_mac ${firmware} | awk -F 'NVS: ' '{print $2}' | awk '{print toupper($0)}' || true)
 			echo "${firmware}=[${current_mac}]"
 
 			if [ ! "x${current_mac}" = "x${wlan_0_mac}" ] ; then
+
+				if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
+					old_trigger_0=$(cat /sys/class/leds/beaglebone\:green\:usr0/trigger)
+					old_trigger_1=$(cat /sys/class/leds/beaglebone\:green\:usr1/trigger)
+				fi
+
 				cylon_leds & CYLON_PID=$!
 
 				${cal_bin} set nvs_mac ${firmware} ${wlan_0_mac} || true
@@ -99,6 +107,12 @@ set_wlan_0_mac () {
 			echo "${firmware}=[${current_mac}]"
 
 			if [ ! "x${current_mac}" = "x${wlan_0_mac}" ] ; then
+
+				if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
+					old_trigger_0=$(cat /sys/class/leds/beaglebone\:green\:usr0/trigger)
+					old_trigger_1=$(cat /sys/class/leds/beaglebone\:green\:usr1/trigger)
+				fi
+
 				cylon_leds & CYLON_PID=$!
 
 				offset0=$(echo ${wlan_0_mac} | cut -b 1-2)
@@ -159,6 +173,10 @@ TI_AM335x_BeagleBone_Green_Wireless)
 	eeprom="/sys/bus/i2c/devices/0-0050/eeprom"
 	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
 	set_wlan_0_mac_from_eeprom
+	#make sure wl18xx_wl_en is on...
+	if [ -f /sys/class/leds/wl18xx_wl_en/brightness ] ; then
+		echo 1 > /sys/class/leds/wl18xx_wl_en/brightness || true
+	fi
 	;;
 TI_AM335x_BeagleBone_Black_Wireless)
 	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
