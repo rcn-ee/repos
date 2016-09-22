@@ -4,7 +4,7 @@ mirror="http://http.debian.net/debian"
 
 package_name="mesa"
 debian_pkg_name="${package_name}"
-package_version="12.0.2"
+package_version="12.0.3"
 package_source="${package_name}_${package_version}.orig.tar.gz"
 src_dir="${package_name}-${package_version}"
 
@@ -18,6 +18,6 @@ debian_untar=""
 debian_patch="${package_name}_${debian_version}.diff.gz"
 local_patch="rcnee0"
 
-jessie_version="~bpo80+20160913+1"
-stretch_version="~bpo90+20160913+1"
-xenial_version="~bpo1604+20160913+1"
+jessie_version="~bpo80+20160921+1"
+stretch_version="~bpo90+20160921+1"
+xenial_version="~bpo1604+20160921+1"

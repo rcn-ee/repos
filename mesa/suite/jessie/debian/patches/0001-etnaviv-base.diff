@@ -1722,10 +1722,10 @@ index 0000000..9848e87
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_compiler.c b/src/gallium/drivers/etnaviv/etnaviv_compiler.c
 new file mode 100644
-index 0000000..7a239ae
+index 0000000..e37d667
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_compiler.c
-@@ -0,0 +1,2470 @@
+@@ -0,0 +1,2473 @@
 +/*
 + * Copyright (c) 2012-2015 Etnaviv Project
 + *
@@ -4050,8 +4050,11 @@ index 0000000..7a239ae
 +    etna_compile_fill_in_labels(c);
 +
 +    ret = etna_compile_check_limits(c);
-+    if (!ret)
++    if (!ret) {
++        FREE(shader);
++        shader = NULL;
 +        goto out;
++    }
 +
 +    /* fill in output structure */
 +    shader->processor = c->info.processor;
@@ -9399,10 +9402,10 @@ index 0000000..636bedb
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_shader.c b/src/gallium/drivers/etnaviv/etnaviv_shader.c
 new file mode 100644
-index 0000000..a01c274
+index 0000000..3e960b1
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_shader.c
-@@ -0,0 +1,261 @@
+@@ -0,0 +1,264 @@
 +/*
 + * Copyright (c) 2012-2015 Etnaviv Project
 + *
@@ -9581,6 +9584,9 @@ index 0000000..a01c274
 +                              const struct compiled_vertex_elements_state *ves)
 +{
 +    unsigned num_temps, cur_temp, num_vs_inputs;
++
++    if (!vs)
++        return false;
 +
 +    /* Number of vertex elements determines number of VS inputs. Otherwise,
 +     * the GPU crashes. Allocate any unused vertex elements to VS temporary
