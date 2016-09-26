@@ -1,0 +1,43 @@
+From 5cb400d181dbe2c8ebbf10b262cbf75118731828 Mon Sep 17 00:00:00 2001
+From: Michael Prokop <mika@debian.org>
+Date: Sat, 2 Jul 2016 10:42:01 +0200
+Subject: [PATCH 3/3] mkinitramfs: consider *.conf files only, also from
+ /lib/modprobe.d/ + don't complain about empty dirs
+
+We should ignore dpkg backup files like
+/etc/modprobe.d/pptpd.conf.dpkg-remove and since kmod cares only
+about *.conf anyway just copy *.conf files.
+
+While at it also support *.conf files from /lib/modprobe.d/.
+
+Stop complaining about empty directy with
+`cp: cannot stat '/etc/modprobe.d/*': No such file or directory`.
+
+Thanks: Ben Hutchings <ben@decadent.org.uk> for reviewing
+Closes: #829280
+---
+ mkinitramfs | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/mkinitramfs b/mkinitramfs
+index b64c7fb..dee6bc3 100755
+--- a/mkinitramfs
++++ b/mkinitramfs
+@@ -278,8 +278,12 @@ ln -s /proc/mounts "${DESTDIR}/etc/mtab"
+ # module-init-tools
+ copy_exec /sbin/modprobe /sbin
+ copy_exec /sbin/rmmod /sbin
+-mkdir -p "${DESTDIR}/etc/modprobe.d"
+-cp -a /etc/modprobe.d/* "${DESTDIR}/etc/modprobe.d/"
++mkdir -p "${DESTDIR}/etc/modprobe.d" "${DESTDIR}/lib/modprobe.d"
++for file in /etc/modprobe.d/*.conf /lib/modprobe.d/*.conf ; do
++	if test -e "$file" || test -L "$file" ; then
++		copy_file config "$file"
++	fi
++done
+ 
+ # workaround: libgcc always needed on old-abi arm
+ if [ "$DPKG_ARCH" = arm ] || [ "$DPKG_ARCH" = armeb ]; then
+-- 
+2.9.3
+
