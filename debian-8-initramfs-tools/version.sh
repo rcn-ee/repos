@@ -17,6 +17,6 @@ dl_path="pool/main/${reprepro_dir}/"
 debian_version="${package_version}-1"
 debian_untar=""
 debian_patch=""
-local_patch="rcnee2"
+local_patch="rcnee3"
 
-jessie_version="~bpo80+20160926+1"
+jessie_version="~bpo80+20160927+1"
