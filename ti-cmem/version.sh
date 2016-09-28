@@ -4,25 +4,25 @@
 
 package_name="cmem"
 debian_pkg_name="${package_name}"
-package_version="4.11.00.00-git20160427"
+package_version="4.12.00.00-git20160926"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
 git_repo="git://git.ti.com/ipc/ludev.git"
-git_sha="852e97b5584cbdb6aa0fdef02a7c4e245409bcb6"
+git_sha="d6d3e84c84d0e84a9b96c3f6f789ac642d03afcb"
 reprepro_dir="c/${package_name}"
 dl_path=""
 
 debian_version="${package_version}-0"
 debian_patch=""
 debian_diff=""
-local_patch="rcnee2"
+local_patch="rcnee1"
 
-#sed -i -e 's:4.10.02.06:4.11.00.00:g' ./debian/cmem-mod-dkms.install
-#sed -i -e 's:4.10.02.06:4.11.00.00:g' ./debian/control
-#sed -i -e 's:4.10.02.06:4.11.00.00:g' ./debian/cmem-mod-dkms.dkms
+#sed -i -e 's:4.11.00.00:4.12.00.00:g' ./debian/cmem-mod-dkms.install
+#sed -i -e 's:4.11.00.00:4.12.00.00:g' ./debian/control
+#sed -i -e 's:4.11.00.00:4.12.00.00:g' ./debian/cmem-mod-dkms.dkms
 
-jessie_version="~bpo80+20160427+1"
-stretch_version="~bpo90+20160427+1"
-xenial_version="~bpo1604+20160427+1"
-yakkety_version="~bpo1610+20160427+1"
+jessie_version="~bpo80+20160928+1"
+stretch_version="~bpo90+20160928+1"
+xenial_version="~bpo1604+20160928+1"
+yakkety_version="~bpo1610+20160928+1"
