@@ -100,7 +100,7 @@ mesa () {
 	package_name="libclc" ; package_version="${package_name}_0.2.0+git20160907-1" ; check_http
 
 	site="${debian_pool}/main/libd"
-	package_name="libdrm" ; package_version="${package_name}_2.4.70-1" ; check_http
+	package_name="libdrm" ; package_version="${package_name}_2.4.71-1" ; check_http
 
 	site="${debian_pool}/main/libv"
 	package_name="libvdpau" ; package_version="${package_name}_1.1.1-3" ; check_http
