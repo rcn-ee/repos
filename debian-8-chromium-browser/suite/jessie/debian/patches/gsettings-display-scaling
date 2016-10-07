@@ -4,7 +4,7 @@ Forwarded: yes
 
 --- a/build/linux/system.gyp
 +++ b/build/linux/system.gyp
-@@ -34,7 +34,12 @@
+@@ -36,7 +36,12 @@
        'g_settings_get_boolean',
        'g_settings_get_int',
        'g_settings_get_strv',
@@ -19,14 +19,14 @@ Forwarded: yes
        'pci_alloc',
 --- a/ui/views/views.gyp
 +++ b/ui/views/views.gyp
-@@ -769,6 +769,7 @@
+@@ -781,6 +781,7 @@
            'dependencies': [
              '../../build/linux/system.gyp:x11',
              '../../build/linux/system.gyp:xrandr',
 +            '../../build/linux/system.gyp:gio',
              '../events/devices/events_devices.gyp:events_devices',
-             '../events/platform/x11/x11_events_platform.gyp:x11_events_platform',
-             '../gfx/x/gfx_x11.gyp:gfx_x11',
+             '../events/devices/x11/events_devices_x11.gyp:events_devices_x11',
+             '../events/keycodes/events_keycodes.gyp:keycodes_x11',
 --- a/ui/views/widget/desktop_aura/desktop_screen_x11.cc
 +++ b/ui/views/widget/desktop_aura/desktop_screen_x11.cc
 @@ -7,7 +7,12 @@
@@ -43,9 +43,9 @@ Forwarded: yes
  #undef RootWindow
  
  #include "base/logging.h"
-@@ -286,6 +291,29 @@ std::vector<gfx::Display> DesktopScreenX
-     return GetFallbackDisplayList();
-   }
+@@ -305,6 +310,29 @@ std::vector<display::Display> DesktopScr
+   primary_display_index_ = 0;
+   RROutput primary_display_id = XRRGetOutputPrimary(xdisplay_, x_root_window_);
  
 +#ifdef USE_GLIB
 +  GSettingsSchemaSource* gsettings_schema_source =
@@ -73,12 +73,10 @@ Forwarded: yes
    bool has_work_area = false;
    gfx::Rect work_area_in_pixels;
    std::vector<int> value;
-@@ -324,7 +352,27 @@ std::vector<gfx::Display> DesktopScreenX
+@@ -343,7 +371,27 @@ std::vector<display::Display> DesktopScr
        gfx::Rect crtc_bounds(crtc->x, crtc->y, crtc->width, crtc->height);
-       gfx::Display display(display_id, crtc_bounds);
+       display::Display display(display_id, crtc_bounds);
  
--      if (!gfx::Display::HasForceDeviceScaleFactor()) {
-+      // An integer that forces discrete steps.
 +      int density_indicator = 0;
 +#ifdef USE_GLIB
 +      if (display_scales != NULL) {
@@ -97,7 +95,8 @@ Forwarded: yes
 +        DVLOG(1) << "Set " << output_info->name << " screen scaling to "
 +                 << device_scale_factor << " from gsettings.";
 +        display.SetScaleAndBounds(device_scale_factor, crtc_bounds);
-+      } else if (!gfx::Display::HasForceDeviceScaleFactor()) {
++      } else
+       if (!display::Display::HasForceDeviceScaleFactor()) {
 +        DVLOG(1) << "Didn't use gsettings info at all.  Picked " << device_scale_factor;
          display.SetScaleAndBounds(device_scale_factor, crtc_bounds);
        }

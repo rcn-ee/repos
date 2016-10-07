@@ -60,10 +60,8 @@ DEB_DH_BUILDDEB_ARGS += -- -Z $(BINARY_PACKAGE_COMPRESSION)
 DEB_DH_SHLIBDEPS_ARGS_chromium-codecs-ffmpeg := -l$(CURDIR)/debian/chromium-codecs-ffmpeg/$(LIB_DIR)
 DEB_DH_SHLIBDEPS_ARGS_chromium-codecs-ffmpeg-extra := -l$(CURDIR)/debian/chromium-codecs-ffmpeg-extra/$(LIB_DIR)
 
-### SYNC TO DEBIAN RULES start
-
 # linker flags to avoid memory allocation issues on i386
-export LDFLAGS+=-Wl,--no-keep-memory -Wl,--reduce-memory-overheads -Wl,--hash-size=7919
+export LDFLAGS+=-Wl,--no-keep-memory
 
 # more verbose linker output
 export LDFLAGS+=-Wl,--stats
@@ -71,6 +69,10 @@ export LDFLAGS+=-Wl,--stats
 # use the gold linker to avoid memory exhaustion issues at link time
 export CFLAGS+=-fuse-ld=gold
 export CXXFLAGS+=-fuse-ld=gold
+export LDFLAGS+=-fuse-ld=gold
+
+# See https://bugs.chromium.org/p/v8/issues/detail?id=3782
+export CFLAGS+=-fno-delete-null-pointer-checks
 
 # treat all warnings as errors
 defines+=werror=
@@ -99,6 +101,7 @@ defines+=use_ozone=0 \
 defines+=enable_hidpi=1 \
          enable_webrtc=1 \
          use_gio=1 \
+         use_cups=1 \
          use_pulseaudio=1 \
          use_gnome_keyring=1 \
          linux_link_libpci=1 \
@@ -114,26 +117,24 @@ defines+=use_system_re2=1 \
          use_system_speex=1 \
          use_system_expat=1 \
          use_system_libpng=1 \
-         use_system_libxml=1 \
+         use_system_libxml=0 \
          use_system_libjpeg=1 \
-         use_system_libwebp=1 \
-         use_system_libxslt=1 \
-         use_system_libsrtp=1 \
-         use_system_jsoncpp=1 \
-         use_system_libevent=1 \
+         use_system_libwebp=0 \
+         use_system_libxslt=0 \
+         use_system_libsrtp=0 \
+         use_system_jsoncpp=0 \
+         use_system_libevent=0 \
          use_system_harfbuzz=0 \
          use_system_xdg_utils=1 \
 
-### Debian diversion, not prop on all codecs
 browser_defines+=proprietary_codecs=1
 
 ffmpeg_defines += \
-	use_system_vpx=0 \
-	release_extra_cflags=-g \
-	$(NULL)
+         use_system_vpx=0 \
+         release_extra_cflags=-g \
+
 ffmpeg_std_defines   := $(NULL)
 ffmpeg_extra_defines := ffmpeg_branding=Chrome
-### Debian diversion end
 
 # use embedded protobuf for now (bug #764911)
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=764911
@@ -158,8 +159,6 @@ defines+=remove_webcore_debug_symbols=1
 options+=--check \
          --debug=includes \
 
-### SYNC TO DEBIAN RULES end
-
 defines += dont_embed_build_metadata=0
 
 # do not use third_party/gold as the linker.
@@ -171,7 +170,7 @@ defines += use_nss_verifier=1
 defines += enable_touch_ui=1
 defines += enable_hangout_services_extension=1
 # add support and stubbed implementation of widevine (needed for EME)
-defines += enable_widevine=0 enable_pepper_cdms=1
+defines += enable_widevine=1 enable_pepper_cdms=1
 
 #defines += use_ozone=1 ozone_auto_platforms=0 ozone_platform_mir=1 ozone_platform_wayland=0
 #defines += use_ozone=1
@@ -183,7 +182,6 @@ ifeq (arm,$(DEB_HOST_ARCH_CPU))
 defines += \
 	arm_neon=0 \
 	target_arch=arm \
-	use_cups=1 \
 	$(NULL)
 
  ifeq (armel,$(DEB_HOST_ARCH))
@@ -223,6 +221,9 @@ ifeq (armhf,$(DEB_HOST_ARCH))
 # SEGV on armhf, 2016-06
 GYP_DEFINES += use_allocator=none
 endif
+ifeq (arm64,$(DEB_HOST_ARCH))
+defines += target_arch=arm64
+endif
 
 ifeq (1,$(COMPONENT_SHARED_LIB_BUILD))
 browser_defines += component=shared_library
@@ -255,8 +256,7 @@ BUILD_TARGETS := \
 	chromedriver \
 	$(NULL)
 
-# Needed to preserve the suid and make the sandbox happy
-DEB_FIXPERMS_EXCLUDE := chrome-sandbox
+
 
 ifneq (,$(GOOGLEAPI_APIKEY_$(DISTRIBUTION)))
 defines += \
@@ -271,9 +271,7 @@ ifneq ($(DEB_HOST_ARCH),$(DEB_BUILD_ARCH))
 CROSS_BUILD = PKG_CONFIG_PATH=/usr/lib/$(DEB_HOST_MULTIARCH)/pkgconfig:/usr/$(DEB_HOST_MULTIARCH)/lib/pkgconfig CXX=$(DEB_HOST_GNU_TYPE)-g++ CC=$(DEB_HOST_GNU_TYPE)-gcc AR=$(DEB_HOST_GNU_TYPE)-ar AS=$(DEB_HOST_GNU_TYPE)-as CPP=$(DEB_HOST_GNU_TYPE)-cpp LD=$(DEB_HOST_GNU_TYPE)-ld
 else
 CROSS_BUILD = CC=$$(which gcc-4.9 gcc |head -1) CXX=$$(which g++-4.9 g++ |head -1)
-#ubuntu/clang
-#CROSS_BUILD = CC=clang CXX=clang++
-#CROSS_BUILD = CC=gcc CXX=g++
+#CROSS_BUILD = CC=gcc-5 CXX=g++-5
 endif
 
 
@@ -313,16 +311,19 @@ override_dh_auto_configure:
 override_dh_auto_build: build-stamp build-stamp-ffmpeg-extra
 
 override_dh_fixperms:
-	dh_fixperms --exclude $(DEB_FIXPERMS_EXCLUDE)
+	dh_fixperms --exclude chrome-sandbox
 
 override_dh_builddeb:
 	dh_builddeb -- -Zxz
+
+#override_dh_strip:
+#	dh_strip --dbgsym-migration='chromium-browser-dbg (<< 52), chromium-codecs-ffmpeg (<<52), chromium-codecs-ffmpeg-extra (<<52), chromium-chromedriver (<<52)'
 
 override_dh_installman:
 	# install does this
 
 override_dh_shlibdeps:
-	dh_shlibdeps -l$(CURDIR)/debian/chromium-browser/usr/lib/chromium-browser/libs/ |grep -v "dpkg-shlibdeps: warning: can't extract name and version from library name" || true
+	dh_shlibdeps -l$(CURDIR)/debian/chromium-browser/usr/lib/chromium-browser/libs/
 
 override_dh_install-arch: INDEP_MATCH = ^usr/lib/chromium-browser/.\*\locales/.\*.pak$$
 override_dh_install-arch: PKG_DIRS := $(addprefix debian/,$(shell dh_listpackages -a))
@@ -564,15 +565,7 @@ build-stamp-ffmpeg-%:
 # used later to join expressions in alternation; a dot should suffice.
 # Useful: https://code.google.com/p/chromium/codesearch#search/q=package:chromium
 ## webkit tests
-#BUILT_UNUSED_MATCH := ^usr/lib/chromium-browser/AHEM____.TTF$$
-#BUILT_UNUSED_MATCH += ^usr/lib/chromium-browser/fonts.conf$$
-#BUILT_UNUSED_MATCH += ^usr/lib/chromium-browser/libTestNetscapePlugIn.so$$
-#BUILT_UNUSED_MATCH += ^usr/lib/chromium-browser/plugins/libTestNetscapePlugIn.so$$
-#BUILT_UNUSED_MATCH += ^usr/lib/chromium-browser/ImageDiff$$
-## xdg-utils install dep
-#BUILT_UNUSED_MATCH += ^usr/lib/chromium-browser/xdg-settings$$
-#BUILT_UNUSED_MATCH += ^usr/lib/chromium-browser/xdg-mime$$
-BUILT_UNUSED_MATCH += ^usr/lib/chromium-browser/ar_sample_test_driver$$
+BUILT_UNUSED_MATCH := ^usr/lib/chromium-browser/ar_sample_test_driver$$
 
 INDEP_MATCH := ^usr/lib/chromium-browser/.\*\(?\!\<pseudo-\)locales/.\*.pak$$
 

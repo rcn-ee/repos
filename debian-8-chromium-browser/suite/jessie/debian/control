@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XS-Testsuite: autopkgtest
 Vcs-Bzr: https://code.launchpad.net/~chromium-team/chromium-browser/yakkety-working
-Homepage: http://code.google.com/chromium/
+Homepage: https://chromium.googlesource.com/chromium/src/
 Build-Depends:
 	debhelper (>= 9),
 	dh-buildinfo,
@@ -14,8 +14,10 @@ Build-Depends:
 	quilt,
 	python,
 	bison,
+	gcc-4.9,
+	g++-4.9,
+	clang-3.9,
 	gperf,
-	clang (>= 3.9),
 	libpulse-dev,
 	libcups2-dev | libcupsys2-dev,
 	libasound2-dev,
@@ -54,15 +56,12 @@ Build-Depends:
 	libxslt-dev,
 	libsrtp-dev,
 	libjsoncpp-dev,
-	libevent-dev,
 	libharfbuzz-dev,
-	gcc-4.9,
-	g++-4.9,
 	xdg-utils
 Standards-Version: 3.9.6
 
 Package: chromium-browser
-Architecture: armhf armel i386 amd64
+Architecture: armhf armel i386 amd64 arm64
 Pre-Depends: dpkg (>= 1.15.6)
 Depends: ${shlibs:Depends}, ${misc:Depends},
 	bash (>= 4),
@@ -81,7 +80,7 @@ Description: Chromium web browser, open-source version of Chrome
  stable way for all Internet users to experience the web.
 
 Package: chromium-browser-dbg
-Architecture: armhf armel i386 amd64
+Architecture: armhf armel i386 amd64 arm64
 Priority: extra
 Section: debug
 Pre-Depends: dpkg (>= 1.15.6)
@@ -106,7 +105,7 @@ Description: chromium-browser language packages
  sk, sl, sr, sv, sw, ta, te, th, tr, ug, uk, vi, zh-CN, zh-TW
 
 Package: chromium-codecs-ffmpeg
-Architecture: armhf armel i386 amd64
+Architecture: armhf armel i386 amd64 arm64
 Pre-Depends: dpkg (>= 1.15.6)
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Conflicts: chromium-codecs-ffmpeg-extra, chromium-browser (<< 44)
@@ -120,7 +119,7 @@ Description: Free ffmpeg codecs for the Chromium Browser
  included. See chromium-codecs-ffmpeg-extra for additional codecs
 
 Package: chromium-codecs-ffmpeg-dbg
-Architecture: armhf armel i386 amd64
+Architecture: armhf armel i386 amd64 arm64
 Section: debug
 Priority: extra
 Pre-Depends: dpkg (>= 1.15.6)
@@ -131,7 +130,7 @@ Description: chromium-codecs-ffmpeg debug symbols
  Debug symbols for the free ffmpeg-mt codecs
 
 Package: chromium-codecs-ffmpeg-extra
-Architecture: armhf armel i386 amd64
+Architecture: armhf armel i386 amd64 arm64
 Pre-Depends: dpkg (>= 1.15.6)
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Conflicts: chromium-codecs-ffmpeg, chromium-browser (<< 44)
@@ -146,7 +145,7 @@ Description: Extra ffmpeg codecs for the Chromium Browser
  chromium-codecs-ffmpeg if you prefer only the patent-free codecs
 
 Package: chromium-codecs-ffmpeg-extra-dbg
-Architecture: armhf armel i386 amd64
+Architecture: armhf armel i386 amd64 arm64
 Section: debug
 Priority: extra
 Pre-Depends: dpkg (>= 1.15.6)
@@ -157,7 +156,7 @@ Description: chromium-codecs-ffmpeg-extra debug symbols
  Debug symbols for the extra ffmpeg-mt codecs
 
 Package: chromium-chromedriver
-Architecture: armhf armel i386 amd64
+Architecture: armhf armel i386 amd64 arm64
 Pre-Depends: dpkg (>= 1.15.6)
 Depends: ${shlibs:Depends}, ${misc:Depends}, chromium-browser (>= 4.0.203.0~)
 Description: WebDriver driver for the Chromium Browser
@@ -167,7 +166,7 @@ Description: WebDriver driver for the Chromium Browser
  See http://code.google.com/p/selenium/wiki/ChromeDriver for details.
 
 Package: chromium-chromedriver-dbg
-Architecture: armhf armel i386 amd64
+Architecture: armhf armel i386 amd64 arm64
 Pre-Depends: dpkg (>= 1.15.6)
 Section: debug
 Priority: extra

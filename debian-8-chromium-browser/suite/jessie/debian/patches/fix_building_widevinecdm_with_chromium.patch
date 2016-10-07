@@ -1,6 +1,6 @@
 --- a/chrome/common/chrome_content_client.cc
 +++ b/chrome/common/chrome_content_client.cc
-@@ -204,9 +204,8 @@ void ComputeBuiltInPlugins(std::vector<c
+@@ -207,9 +207,8 @@ void ComputeBuiltInPlugins(std::vector<c
      widevine_cdm.path = adapter_path;
      widevine_cdm.name = kWidevineCdmDisplayName;
      widevine_cdm.description =
@@ -11,3 +11,14 @@
      content::WebPluginMimeType widevine_cdm_mime_type(
          kWidevineCdmPluginMimeType, kWidevineCdmPluginExtension,
          kWidevineCdmPluginMimeTypeDescription);
+--- a/third_party/widevine/cdm/widevine_cdm_common.h
++++ b/third_party/widevine/cdm/widevine_cdm_common.h
+@@ -56,7 +56,7 @@ const char kCdmSupportedCodecVp9[] = "vp
+ const char kCdmSupportedCodecAvc1[] = "avc1";
+ #endif  // defined(USE_PROPRIETARY_CODECS)
+ 
+-#if defined(OS_MACOSX) || defined(OS_WIN)
++#if defined(OS_MACOSX) || defined(OS_WIN) || 1
+ // CDM is installed by the component installer instead of the Chrome installer.
+ #define WIDEVINE_CDM_IS_COMPONENT
+ #endif  // defined(OS_MACOSX) || defined(OS_WIN)
