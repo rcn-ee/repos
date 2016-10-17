@@ -435,12 +435,11 @@ endif
 
 
 	# compare built to packaged
-	DUPES=`find $(PKG_DIRS) -type f -print | grep -v /DEBIAN/ | cut -d/ -f3- | LC_ALL=C sort | uniq -c | grep -vE '^ *2 .*/libs/libffmpeg.so$$' | grep -vE '^  *1 '` || true; \
-	set -e; \
-	if [ "Z$$DUPES" != Z ] ; then \
-	  echo " => Found duplicates:\n $$DUPES" ; \
-	  exit 1 ; \
-	fi; \
+	DUPES=`find $(PKG_DIRS) -type f -print | grep -v /DEBIAN/ | cut -d/ -f3- | LC_ALL=C sort | uniq -c | grep -vE '^ *2 .*/libs/libffmpeg.so$$' | grep -vE '^  *1 '` || true;
+	if [ "Z$$DUPES" != Z ] ; then
+	  echo " => Found duplicates:\n $$DUPES" ;
+	  exit 1 ;
+	fi;
 
 	find $(PKG_DIRS) -type f |grep -v /DEBIAN |cut -d/ -f3- |grep -v ^usr/lib/debug/ | LC_ALL=C sort >$(T)/unfiltered-packaged
 	grep -vE \($(subst $(SPACE),\|,$(PACKAGED_NOT_FROM_TREE_MATCH))\) $(T)/unfiltered-packaged |grep -vE \($(subst $(SPACE),\|,$(INDEP_MATCH))\) >$(T)/packaged ; \
@@ -459,8 +458,6 @@ override_dh_install-indep: SPACE := $(eval) $(eval)
 override_dh_install-indep: T := verify-install-integrity-indep
 override_dh_install-indep:
 	@set -eux
-
-	mkdir -p "$(T)"
 
 	### Step 1: install into tmp
 	mkdir -p debian/tmp/$(LIB_DIR)

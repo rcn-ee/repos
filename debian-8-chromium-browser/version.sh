@@ -14,8 +14,8 @@ git_sha=""
 reprepro_dir="c/${package_name}"
 dl_path="pool/universe/${reprepro_dir}/"
 
-debian_version="${package_version}-0ubuntu0.16.04.1.1254"
+debian_version="${package_version}-0ubuntu1.1307"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 
-jessie_version="~bpo80+20161007+1"
+jessie_version="~bpo80+20161016+1"
