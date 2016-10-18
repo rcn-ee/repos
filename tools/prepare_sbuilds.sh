@@ -15,6 +15,10 @@ builder=`cat /etc/hostname`
 
 unset flavor
 
+wget -c https://rcn-ee.com/mirror/debootstrap/debootstrap_1.0.82_all.deb
+dpkg -i debootstrap_1.0.82_all.deb
+rm -rf debootstrap_1.0.82_all.deb
+
 setup_update_sbuild () {
 	if [ ! -f /usr/share/debootstrap/scripts/${dist} ] ; then
 		ln -s /usr/share/debootstrap/scripts/${deboot} /usr/share/debootstrap/scripts/${dist}
