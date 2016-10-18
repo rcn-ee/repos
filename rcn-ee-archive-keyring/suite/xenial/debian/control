@@ -2,20 +2,15 @@ Source: rcn-ee-archive-keyring
 Section: misc
 Priority: extra
 Maintainer: Robert Nelson <robertcnelson@gmail.com>
-Build-Depends: debhelper (>= 9)
-Build-Depends-Indep: gnupg
+Build-Depends: debhelper (>= 9), gnupg
 Standards-Version: 3.9.6
+Homepage: https://github.com/rcn-ee/repos/tree/master/rcn-ee-archive-keyring
 
 Package: rcn-ee-archive-keyring
 Architecture: all
-Depends: ${misc:Depends},
- apt (>= 0.7.25.1),
- ubuntu-keyring,
- gpgv
+Multi-Arch: foreign
+Depends: gpgv, ${misc:Depends}
 Recommends: gnupg
-Description: GnuPG archive keys of the rcn-ee archive
- The archive project digitally signs its release files. This package contains
- the archive keys used for that and can be used to support signature 
- verification ("apt-secure") for:
-  - Release signature verification for rcn-ee (Release.gpg)
-  - Packages, Sources md5sum verification against Release
+Description: GnuPG keys of the rcn-ee archive
+ The rcn-ee project digitally signs its Release files. This package contains
+ the archive keys used for that.
