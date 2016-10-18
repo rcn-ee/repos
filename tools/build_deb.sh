@@ -76,6 +76,7 @@ start_run () {
 	suite="trusty" ; runner
 	suite="xenial" ; runner
 	suite="yakkety" ; runner
+	suite="zesty" ; runner
 }
 
 cleanup () {
@@ -85,6 +86,7 @@ cleanup () {
 	suite="trusty" ; cleanup_suite
 	suite="xenial" ; cleanup_suite
 	suite="yakkety" ; cleanup_suite
+	suite="zesty" ; cleanup_suite
 }
 
 start_run

@@ -34,6 +34,12 @@ deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ yakkety main
 #deb-src [arch=armhf] http://repos.rcn-ee.com/ubuntu/ yakkety main
 ```
 
+Ubuntu 17.04: (Zesty): http://repos.rcn-ee.com/ubuntu/
+```
+deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ zesty main
+#deb-src [arch=armhf] http://repos.rcn-ee.com/ubuntu/ zesty main
+```
+
 keyring:
 ```
 sudo apt-get install rcn-ee-archive-keyring

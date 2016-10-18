@@ -60,6 +60,16 @@ echo "deb-src http://apt-proxy:3142/repos.rcn-ee.net/ubuntu yakkety main" >> /et
 apt-get update ; apt-get --yes --allow-unauthenticated install apt-transport-https rcn-ee-archive-keyring ; \
 apt-get update ; apt-get clean ; exit
 
+#ubuntu zesty
+sudo sbuild-shell source:zesty-armhf-sbuild
+
+echo "deb http://apt-proxy:3142/ports.ubuntu.com zesty main universe" > /etc/apt/sources.list ; \
+echo "deb-src http://apt-proxy:3142/ports.ubuntu.com zesty main universe" >> /etc/apt/sources.list ; \
+echo "deb http://apt-proxy:3142/repos.rcn-ee.net/ubuntu zesty main" >> /etc/apt/sources.list ; \
+echo "deb-src http://apt-proxy:3142/repos.rcn-ee.net/ubuntu zesty main" >> /etc/apt/sources.list ; \
+apt-get update ; apt-get --yes --allow-unauthenticated install apt-transport-https rcn-ee-archive-keyring ; \
+apt-get update ; apt-get clean ; exit
+
 #debian jessie/nodejs:
 sudo sbuild-shell source:jessie-armhf-nodejs-v0.12.x-sbuild
 

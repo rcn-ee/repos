@@ -103,6 +103,7 @@ start_run () {
 	suite="trusty" ; runner
 	suite="xenial" ; runner
 	suite="yakkety" ; runner
+	suite="zesty" ; runner
 }
 
 start_run

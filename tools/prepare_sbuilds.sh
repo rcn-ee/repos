@@ -35,14 +35,12 @@ echo "\$distribution = 'stretch';" >> ~/.sbuildrc
 mirror="http://${proxy}${debian_server}"
 deboot="sid"
 
-if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	dist="wheezy"
 	unset flavor
 	arch="armhf"
 	options=""
 	setup_update_sbuild
-fi
 fi
 
 dist="jessie"
@@ -75,7 +73,6 @@ arch="armhf"
 options="--chroot-suffix=${flavor}-sbuild"
 setup_update_sbuild
 
-if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	dist="stretch"
 	unset flavor
@@ -83,12 +80,10 @@ if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	options="--exclude=debfoster"
 	setup_update_sbuild
 fi
-fi
 
 mirror="http://${proxy}${ubuntu_server}"
 deboot="gutsy"
 
-if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	dist="trusty"
 	unset flavor
@@ -96,9 +91,7 @@ if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	options="--exclude=debfoster"
 	setup_update_sbuild
 fi
-fi
 
-if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	dist="xenial"
 	unset flavor
@@ -106,9 +99,7 @@ if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	options="--exclude=debfoster"
 	setup_update_sbuild
 fi
-fi
 
-if [ ! "x${builder}" = "xb5-omap5-igep0050-4gb" ] ; then
 if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	dist="yakkety"
 	unset flavor
@@ -116,5 +107,12 @@ if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	options="--exclude=debfoster"
 	setup_update_sbuild
 fi
+
+if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
+	dist="zesty"
+	unset flavor
+	arch="armhf"
+	options="--exclude=debfoster"
+	setup_update_sbuild
 fi
 #

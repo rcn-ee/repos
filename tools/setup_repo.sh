@@ -149,4 +149,8 @@ setup_repo
 suite="yakkety"
 archs="armhf source"
 setup_repo
+
+suite="zesty"
+archs="armhf source"
+setup_repo
 #
