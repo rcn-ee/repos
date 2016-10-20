@@ -69,21 +69,25 @@ esac
 #               };
 #       };
 
-if [ -f /sys/class/leds/wl18xx_bt_en/brightness ] ; then
-	echo ${bt_enable} > /sys/class/leds/wl18xx_bt_en/brightness || true
-	hciattach ${bt_port} ${bt_settings} || true
-else
-	if [ ! "x${bt_gpio_en}" = "x" ] ; then
-		if [ ! -d /sys/class/gpio/gpio${bt_gpio_en}/ ] ; then
-			echo ${bt_gpio_en} > /sys/class/gpio/export || true
-			sleep 1
-		fi
-		if [ -d /sys/class/gpio/gpio${bt_gpio_en}/ ] ; then
-			echo out > /sys/class/gpio/gpio${bt_gpio_en}/direction || true
-			sleep 1
-			echo 1 > /sys/class/gpio/gpio${bt_gpio_en}/value || true
-			sleep 1
-			hciattach ${bt_port} ${bt_settings} || true
+hciattach_bin=$(which hciattach)
+
+if [ -f ${hciattach_bin} ] ; then
+	if [ -f /sys/class/leds/wl18xx_bt_en/brightness ] ; then
+		echo ${bt_enable} > /sys/class/leds/wl18xx_bt_en/brightness || true
+		${hciattach_bin} ${bt_port} ${bt_settings} || true
+	else
+		if [ ! "x${bt_gpio_en}" = "x" ] ; then
+			if [ ! -d /sys/class/gpio/gpio${bt_gpio_en}/ ] ; then
+				echo ${bt_gpio_en} > /sys/class/gpio/export || true
+				sleep 1
+			fi
+			if [ -d /sys/class/gpio/gpio${bt_gpio_en}/ ] ; then
+				echo out > /sys/class/gpio/gpio${bt_gpio_en}/direction || true
+				sleep 1
+				echo 1 > /sys/class/gpio/gpio${bt_gpio_en}/value || true
+				sleep 1
+				${hciattach_bin} ${bt_port} ${bt_settings} || true
+			fi
 		fi
 	fi
 fi

@@ -20,25 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-cal_bin="/usr/local/bin/calibrator"
-
-check_for_nl80211 () {
-	if [ -f /sys/class/leds/wl18xx_wl_en/brightness ] ; then
-		echo 1 > /sys/class/leds/wl18xx_wl_en/brightness || true
-	fi
-	while : ; do
-		unset is_driver_loaded
-		is_driver_loaded=$(${cal_bin} --help 2>&1 || true)
-		if [ "xnl80211 not found." = "x${is_driver_loaded}" ] ; then
-			echo "nl80211 not found."
-			sleep 5
-		else
-			echo "nl80211 found."
-			break
-		fi
-	done
-}
-
 cylon_leds () {
 	if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
 		BASE=/sys/class/leds/beaglebone\:green\:usr
@@ -68,78 +49,49 @@ cylon_leds () {
 
 set_wlan_0_mac () {
 	if [ -f ${firmware} ] ; then
-		#FIXME: cal_bin is deprecieated..
-		if [ -f ${cal_bin} ] ; then
-			check_for_nl80211
-			current_mac=$(${cal_bin} get nvs_mac ${firmware} | awk -F 'NVS: ' '{print $2}' | awk '{print toupper($0)}' || true)
-			echo "${firmware}=[${current_mac}]"
+		firmware_dump=$(hexdump -ve '1/1 "%.2x"' ${firmware} -n 12 | awk '{print toupper($0)}')
+		offset0=$(echo ${firmware_dump} | cut -b 23-24)
+		offset1=$(echo ${firmware_dump} | cut -b 21-22)
+		offset2=$(echo ${firmware_dump} | cut -b 13-14)
+		offset3=$(echo ${firmware_dump} | cut -b 11-12)
+		offset4=$(echo ${firmware_dump} | cut -b 9-10)
+		offset5=$(echo ${firmware_dump} | cut -b 7-8)
+		current_mac="${offset0}:${offset1}:${offset2}:${offset3}:${offset4}:${offset5}"
+		echo "${firmware}=[${current_mac}]"
 
-			if [ ! "x${current_mac}" = "x${wlan_0_mac}" ] ; then
+		if [ ! "x${current_mac}" = "x${wlan_0_mac}" ] ; then
 
-				if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
-					old_trigger_0=$(cat /sys/class/leds/beaglebone\:green\:usr0/trigger)
-					old_trigger_1=$(cat /sys/class/leds/beaglebone\:green\:usr1/trigger)
-				fi
-
-				cylon_leds & CYLON_PID=$!
-
-				${cal_bin} set nvs_mac ${firmware} ${wlan_0_mac} || true
-
-				echo "updating: /boot/initrd.img"
-				update-initramfs -u
-				sync
-				echo "/boot/initrd.img: update complete"
-				[ -e /proc/$CYLON_PID ]  && kill $CYLON_PID
-				if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
-					echo ${old_trigger_0} > /sys/class/leds/beaglebone\:green\:usr0/trigger
-					echo ${old_trigger_1} > /sys/class/leds/beaglebone\:green\:usr1/trigger
-				fi
+			if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
+				old_trigger_0=$(cat /sys/class/leds/beaglebone\:green\:usr0/trigger)
+				old_trigger_1=$(cat /sys/class/leds/beaglebone\:green\:usr1/trigger)
 			fi
-		else
-			firmware_dump=$(hexdump -ve '1/1 "%.2x"' ${firmware} -n 12 | awk '{print toupper($0)}')
-			offset0=$(echo ${firmware_dump} | cut -b 23-24)
-			offset1=$(echo ${firmware_dump} | cut -b 21-22)
-			offset2=$(echo ${firmware_dump} | cut -b 13-14)
-			offset3=$(echo ${firmware_dump} | cut -b 11-12)
-			offset4=$(echo ${firmware_dump} | cut -b 9-10)
-			offset5=$(echo ${firmware_dump} | cut -b 7-8)
-			current_mac="${offset0}:${offset1}:${offset2}:${offset3}:${offset4}:${offset5}"
-			echo "${firmware}=[${current_mac}]"
 
-			if [ ! "x${current_mac}" = "x${wlan_0_mac}" ] ; then
+			cylon_leds & CYLON_PID=$!
 
-				if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
-					old_trigger_0=$(cat /sys/class/leds/beaglebone\:green\:usr0/trigger)
-					old_trigger_1=$(cat /sys/class/leds/beaglebone\:green\:usr1/trigger)
-				fi
+			offset0=$(echo ${wlan_0_mac} | cut -b 1-2)
+			offset1=$(echo ${wlan_0_mac} | cut -b 4-5)
+			offset2=$(echo ${wlan_0_mac} | cut -b 7-8)
+			offset3=$(echo ${wlan_0_mac} | cut -b 10-11)
+			offset4=$(echo ${wlan_0_mac} | cut -b 13-14)
+			offset5=$(echo ${wlan_0_mac} | cut -b 16-17)
 
-				cylon_leds & CYLON_PID=$!
+			printf '\x'${offset0}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x0000000b)) status=none
+			printf '\x'${offset1}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x0000000a)) status=none
+			printf '\x'${offset2}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x00000006)) status=none
+			printf '\x'${offset3}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x00000005)) status=none
+			printf '\x'${offset4}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x00000004)) status=none
+			printf '\x'${offset5}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x00000003)) status=none
 
-				offset0=$(echo ${wlan_0_mac} | cut -b 1-2)
-				offset1=$(echo ${wlan_0_mac} | cut -b 4-5)
-				offset2=$(echo ${wlan_0_mac} | cut -b 7-8)
-				offset3=$(echo ${wlan_0_mac} | cut -b 10-11)
-				offset4=$(echo ${wlan_0_mac} | cut -b 13-14)
-				offset5=$(echo ${wlan_0_mac} | cut -b 16-17)
+			echo "Writing mac address ${wlan_0_mac} to file ${firmware}"
 
-				printf '\x'${offset0}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x0000000b)) status=none
-				printf '\x'${offset1}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x0000000a)) status=none
-				printf '\x'${offset2}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x00000006)) status=none
-				printf '\x'${offset3}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x00000005)) status=none
-				printf '\x'${offset4}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x00000004)) status=none
-				printf '\x'${offset5}'' | dd conv=notrunc of=${firmware} bs=1 seek=$((0x00000003)) status=none
-
-				echo "Writing mac address ${wlan_0_mac} to file ${firmware}"
-
-				echo "updating: /boot/initrd.img"
-				update-initramfs -u
-				sync
-				echo "/boot/initrd.img: update complete"
-				[ -e /proc/$CYLON_PID ]  && kill $CYLON_PID
-				if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
-					echo ${old_trigger_0} > /sys/class/leds/beaglebone\:green\:usr0/trigger
-					echo ${old_trigger_1} > /sys/class/leds/beaglebone\:green\:usr1/trigger
-				fi
+			echo "updating: /boot/initrd.img"
+			update-initramfs -u
+			sync
+			echo "/boot/initrd.img: update complete"
+			[ -e /proc/$CYLON_PID ]  && kill $CYLON_PID
+			if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
+				echo ${old_trigger_0} > /sys/class/leds/beaglebone\:green\:usr0/trigger
+				echo ${old_trigger_1} > /sys/class/leds/beaglebone\:green\:usr1/trigger
 			fi
 		fi
 	fi
