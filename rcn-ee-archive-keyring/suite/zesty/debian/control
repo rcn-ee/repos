@@ -1,16 +1,16 @@
 Source: rcn-ee-archive-keyring
 Section: misc
-Priority: extra
+Priority: optional
 Maintainer: Robert Nelson <robertcnelson@gmail.com>
-Build-Depends: debhelper (>= 9), gnupg
 Standards-Version: 3.9.6
+Build-Depends: debhelper (>= 9), gnupg, debian-keyring
 Homepage: https://github.com/rcn-ee/repos/tree/master/rcn-ee-archive-keyring
 
 Package: rcn-ee-archive-keyring
 Architecture: all
 Multi-Arch: foreign
-Depends: gpgv, ${misc:Depends}
-Recommends: gnupg
+Depends: gpgv
+Recommends: gnupg | gnupg1
 Description: GnuPG keys of the rcn-ee archive
  The rcn-ee project digitally signs its Release files. This package contains
  the archive keys used for that.

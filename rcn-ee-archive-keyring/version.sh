@@ -2,7 +2,7 @@
 
 package_name="rcn-ee-archive-keyring"
 debian_pkg_name="${package_name}"
-package_version="2016.10.18"
+package_version="2016.10.24"
 package_source=""
 src_dir=""
 
@@ -15,4 +15,4 @@ debian_version="${package_version}"
 debian_untar=""
 debian_patch=""
 
-zesty_version="~bpo1704+20161018+1"
+zesty_version="~bpo1704+20161024+1"
