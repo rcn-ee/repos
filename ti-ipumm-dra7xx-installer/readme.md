@@ -34,5 +34,5 @@ cd tisdk  ; \
 ```
 cd build
 . conf/setenv
-MACHINE=am57xx-evm bitbake opencl-monitor
+MACHINE=am57xx-evm bitbake ipumm-fw
 ```
