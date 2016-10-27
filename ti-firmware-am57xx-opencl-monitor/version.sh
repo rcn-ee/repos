@@ -15,11 +15,6 @@ debian_version="${package_version}-0rcnee1"
 debian_untar=""
 debian_patch=""
 
-
-wheezy_version="~bpo70+20151017+1"
-trusty_version="~bpo1404+20151017+1"
-vivid_version="~bpo1504+20151017+1"
-wily_version="~bpo1510+20151017+1"
 jessie_version="~bpo80+20161027+1"
 stretch_version="~bpo90+20161027+1"
 xenial_version="~bpo1604+20161027+1"
