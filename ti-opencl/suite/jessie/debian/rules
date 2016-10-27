@@ -6,6 +6,9 @@ export DH_VERBOSE=1
 %:
 	dh $@
 
+override_dh_auto_clean:
+	dh_auto_clean -- BUILD_AM57=1
+
 # Currently the monitor must be built in an X86 cross-compile environment
 # If doing an opencl build/install on an ARM platform the monitor files
 # must be copied over.
