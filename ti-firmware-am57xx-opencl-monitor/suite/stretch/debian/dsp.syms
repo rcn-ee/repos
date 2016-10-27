@@ -15,8 +15,8 @@
 MEMORY
 {
     DDR:    o = 0x80000000 l = 0x19000000
-    MSMC:   o = 0x0C000000 l = 0x00400000
-    L2SRAM: o = 0x00800000 l = 0x000C0000
+    MSMC:   o = 0x0C000000 l = 0x00000001
+    L2SRAM: o = 0x00808000 l = 0x00020000
 }
 
 SECTIONS
@@ -25,13 +25,12 @@ SECTIONS
 
     .mem_ddr  > DDR
     .mem_msm  > MSMC
-    .mem_l2   > L2SRAM
 
-    /*-------------------------------------------------------------------------
-    * Deprecated for the .mem versions above. Left in for transition period.
-    *------------------------------------------------------------------------*/
-    .opencl_local  > L2SRAM
-    .opencl_msmc   > MSMC
+    GROUP
+    {
+        .mem_l2: align(128)
+        .ocl_local_overlay:*   align(128) run_start(_ocl_local_overlay_start)
+    } > L2SRAM
 
     GROUP
     {
@@ -51,6 +50,7 @@ SECTIONS
     .sysmem     > DDR
 }
 
+--export _ocl_local_overlay_start
 --symbol_map=acosd=acos
 --symbol_map=acoshd=acosh
 --symbol_map=acospid=acospi
