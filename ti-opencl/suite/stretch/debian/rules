@@ -22,6 +22,9 @@ override_dh_auto_build:
 override_dh_auto_install:
 	dh_auto_install -- BUILD_OUTPUT=lib BUILD_AM57=1 ARM_LLVM_DIR=/opt/ti-llvm-3.6
 
+override_dh_auto_test:
+	dh_auto_test -- BUILD_AM57=1
+
 # A bug in pkgbinarymangle causes it to try to strip foreign-arch objects
 # located in /usr/share.
 override_dh_strip:
