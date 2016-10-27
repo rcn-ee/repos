@@ -1,0 +1,32 @@
+From 692e60e347a6a33e4033deef4e9f05df434e9fff Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Thu, 27 Oct 2016 17:07:13 -0500
+Subject: [PATCH] gcc6: fix: -Werror=unused-result
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ host/src/core/dsp/tal/mbox_impl_msgq.cpp | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/host/src/core/dsp/tal/mbox_impl_msgq.cpp b/host/src/core/dsp/tal/mbox_impl_msgq.cpp
+index 0ce649b..11c7d13 100644
+--- a/host/src/core/dsp/tal/mbox_impl_msgq.cpp
++++ b/host/src/core/dsp/tal/mbox_impl_msgq.cpp
+@@ -283,7 +283,13 @@ static void lost_dsp()
+             "echo " + dspname + " >/sys/bus/platform/drivers/omap-rproc/unbind; "
+             "echo " + dspname + " >/sys/bus/platform/drivers/omap-rproc/bind";
+ 
+-        system(command.c_str());
++        /* gcc6: error: ignoring return value of 'int system(const char*)', [-Werror=unused-result] */
++        int ret_code = system(command.c_str());
++        if (ret_code != 0)
++        {
++             sleep(2);
++             _exit(EXIT_FAILURE);
++        }
+     }
+ 
+     /* Sleep again before exiting to make sure all DSPs are finished resetting
+-- 
+2.9.3
+
