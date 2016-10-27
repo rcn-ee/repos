@@ -4,12 +4,12 @@
 
 package_name="gdbproxy-mod-dkms"
 debian_pkg_name="${package_name}"
-package_version="1.0.1-git20150805"
+package_version="1.1.0-git20160327"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
 git_repo="git://git.ti.com/sdo-emu/gdbc6x.git"
-git_sha="653f7d0a345bede0542326090b622b885545c712"
+git_sha="df0b8f6f4e9ba5b9c94ea8c17c6dfeae37c1c9d1"
 reprepro_dir="g/${package_name}"
 dl_path=""
 
@@ -18,5 +18,6 @@ debian_patch=""
 debian_diff=""
 
 wheezy_version="~bpo70+20151016+1"
-jessie_version="~bpo80+20151016+1"
-stretch_version="~bpo90+20151016+1"
+jessie_version="~bpo80+20161027+1"
+stretch_version="~bpo90+20161027+1"
+xenial_version="~bpo1604+20161027+1"
