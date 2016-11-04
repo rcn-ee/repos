@@ -325,9 +325,9 @@ ubuntu () {
 important
 builds
 mesa
-qt5_kde
-qt5_apps
-qt5_lxqt
+#qt5_kde
+#qt5_apps
+#qt5_lxqt
 #machinekit
 nodejs
 libsigrok
@@ -418,7 +418,7 @@ ros () {
 	package_name="ros-rosdep"; package_version="${package_name}_0.11.4-2"; check_http
 }
 
-ros
+#ros
 
 #really slow...
 exit
