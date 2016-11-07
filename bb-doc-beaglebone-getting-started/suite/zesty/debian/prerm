@@ -19,13 +19,13 @@ package="doc-beaglebone-getting-started"
 
 remove_file () {
 	if [ -f /var/cache/${package}/${wfile} ] ; then
-		rm -f /var/cache/${package}/${wfile}
+		rm -f /var/cache/${package}/${wfile} || true
 	fi
 }
 
 remove_dir () {
 	if [ -d ${wdir} ] ; then
-		rm -rf ${wdir}
+		rm -rf ${wdir} || true
 	fi
 }
 
