@@ -1,0 +1,763 @@
+<!--
+Texas Instruments Manifest Format 2.0
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<!-- @Start Style -->
+<!-- Default style in case someone doesnt have Internet Access -->
+<style type="text/css" id="internalStyle">
+	body, div, p {
+		font-family: Lucida Grande, Verdana, Geneva, Arial, sans-serif;
+		font-size: 13px;
+		line-height: 1.3;
+	}
+	body {
+		margin: 20px;
+	}
+	h1 {
+		font-size: 150%;
+	}
+	h2 {
+		font-size: 120%;
+	}
+	h3 {
+		font-size: 100%;
+	}
+	img {
+		border: 0px;
+		vertical-align: middle;
+	}
+	table, th, td, tr {
+		border: 1px solid black;
+		font-family: Lucida Grande, Verdana, Geneva, Arial, sans-serif;
+		font-size: 13px;
+		line-height: 1.3;
+		empty-cells: show;
+		padding: 5px;
+	}
+	table {
+		border-collapse: collapse;
+		width: 100%;
+	}
+	tr {
+		page-break-inside: avoid;
+	}
+	#TIlogoLeft {
+		background-color: black;
+		padding: 0;
+		width: 20%;
+	}
+	#TIlogoRight {
+		background-color: red;
+		padding: 0;
+	}
+	#ProductName {
+		text-align: center;
+	}
+	#ReleaseDate {
+		text-align: center;
+	}
+	.LogoSection {
+		margin: 0;
+		padding: 0;
+	}
+	.HeaderSection {
+		margin: 25px 0 25px 0;
+		padding: 0;
+	}
+	.LegendSection {
+		margin: 25px 0 25px 0;
+	}
+	.ExportSection {
+		margin: 25px 0 25px 0;
+	}
+	.DisclaimerSection {
+		margin: 25px 0 25px 0;
+	}
+	.CreditSection {
+		margin: 25px 0 25px 0;
+	}
+	.LicenseSection {
+		margin: 25px 0 25px 0;
+	}
+	.ManifestTable {
+		margin: 25px 0 25px 0;
+	}
+</style>
+<!-- Override style from TI if they have Internet Access -->
+<link type="text/css" rel="stylesheet" href="timanifeststyle.css">
+<!-- @End Style -->
+<title>Texas Instruments Manifest</title>
+</head>
+
+<body><!-- Logo display, will need to fix up the URLs, this is just for testing.. Image alternate display not wporking well yet -->
+<div class="LogoSection">
+<table>
+  <tbody>
+    <tr>
+      <td id="TIlogoLeft">
+        <a href="http://www.ti.com/">
+          <!-- img src="tilogo.gif" alt="Texas Instruments Incorporated" -->
+		  <img alt="" src="data:image/gif;base64,R0lGODlh3gA2AKIAAAAAAP///7u7u29vbz8/PwYGBujo6BgYGCH5BAAAAAAALAAAAADeADYAAAP/CLrc/jDKSau9OOvNu/9gKI5kaZ5oqq5s675wLM90bd94ru987//AoHBILBqPyKRyyWw6n9CodHorDALYLIHKJVqz2q44eAUHtoDB4DBu48rgLQErcNtnX7NhMDcICIB3gix5ZmtqAAZZew8EAo+QkQIDNVZqiIM1cHGKZ4YPAmaiAWw0c1gFmZqjB3SbZ6kNe6WhsAeOlDV0qjSFAXUAp7lwuREFtVsFgMvLB7fNAM+BCs+lDLd8BNYOuxfV22PL0RiWlwO1u3kDqejAEsjR6GB86FsHoYwA6gxWnVgGEegUuIelWJk6jswAGlXQ36J1xBSoQwfulIEDr/6l+VeK/+AehrAGOHRnAWRBbbWegckXAV6wk4AeRQtDQBEaBYsYlMl2hUCsBt0iKgilT9EfAlfO7SmzdKkrkQUT/fqZSECqLCSlntH375IAA1tqGUilLIBSNVnU+NmJNBRVChlF1QwAdlRWBy5P3QymwCLBYhs73cTHYBq3X33nDQ2wcWuBgef0FRD4GK3jU3VCZZUJAIw1OGg0P+4bFiubOWoOsEP1+KvZn3wurDbZ6lfcuw3yYkFjRSeYzRe7ARAbW0K3PmGIMi0OFDG1Mmha+RnufAHn3xL9ha6uTZ/rXagZ1GKAtTsHeWb+FEQvHILuX4+mLzj2j2r4TrFesTwMbE5Cuv8JzbTSGuRV1xgfUJFC3WbA0JWFalcItpgf8YU2yT/qATaedent5cBb8zk0DzIitgfKbonRFV9Wp2xl3UXq5Ccibp05598BnRigiAIJmrZAexkJQIuBwzX4CB3SQbeYQkPVAUco63DI2HzsAdYAiAvEZdYlaVQ5wXs3+bQAjovEUoBRR9LVAFLaPXCcY/KMqVRasQB5kiJgLcYgTkJiuCWKC2ZpIY/z/LRhYefkBAGW1HTyRy2UjObLHxSAOZ948EUVGCSC3SLZbB7iZKOLc2GRRgMH/VhdHnJwFCgD8iEGx0VKvpqbO+hoaCppEg3UiTES1CTkhNaQ+Qs4LQGql07/lET4mIQ6SvTSVGZ9Bmhz/bkYzK+PFKtpje6wumRm1wrLZzSdQASoZvyswdmSuk7p616HfkjBTxZBQucFgqXCFKdn1NpiUlQJhs8kteBWG0AbATbXS2tBlaeoVkmJRova4KkGPmhMFdiSYmq8cbTRYhrlkiHaNufJ9mIgVqEXnAOJM5JE4sgjudQ8bF82x+cKBP4Iiedecyjgx2/WtMNjjhcL9h+S4xq9RYJgsbeeUbmdrPTSQbPccsyijEXOfI8xyuinVJH1wdkS/MQ2Bc5Iq08DyHYwGglvPyCilbz0fa8GLV7r9+Btb7CJ14Qnzg8HpdKoOOF5Py752JNXvrblNphzEHnmnF/a+ecTbA465qKPXnnppkuOeuqKr8465K+z7nrsfc9Ouyq23z5I7rrfwXvvbhSQAAA7" />
+        </a>
+      </td>
+      <td id="TILogoRight">
+        <!-- img src="titagline.gif" alt="Technology for Innovators(tm)"-->
+		<img alt="" src="data:image/gif;base64,R0lGODlhOgEaALMAAP8AAP////92dv+3t/+Njf/W1v/t7f8hIf/19f+jo//Hx/8/P/9cXP/j4//6+v/+/iH5BAAAAAAALAAAAAA6ARoAAAT/EMhJq7046827/2AojmRpnmiqrmzrvnAsz3Rt33iu73zv/8CgcEgsGo/IpHLJbDqft0NDMCBQodis1jcADBKE7nYcCpjPgU5AQBKkVYOHAeRudqtXsh60/vRHdSoBBCGBNAkLe4o4f2psgG8pjR6GM5OLmDB/DA0GBoQADAgICRIBBQUOYgwGCg2kEgudBgUHAIGcBg0MsZ0NCnMGYgsBtqEGAbCynrW3AQONgcIFBgiErK6wAAfUtLbCscWiowoAyLDczLZu0AIJCAYOoJn0G38ObAwPEvLEts/O1vUhsA8AAjGonEmA9W6hGAVpEjiQoKBAhT8HJSRkVyEQQAAJ//a5YeMPQIFyACqCnJjSIgFCB4oB+HOSokWOAB6wIWCxnk8MfYh5QsYg5sVHfQLVMSqhztJIxWIaC6QzJy8KfZgqrNT0zR+nUNl8fSMvZ6IDwJCJRfoI7IR4Cub9nDsha6RwR02xUZpGq1utUWUq9FKgYV6/abgOHjt45tquEgY0SDDHoJg+fxhXolKNrmfH/EoR5EdAKmjQfB1qvPmGIQIJ3g4gC2egVF7LqxtP8Ng2cViTKFUCIGbNFKEEmB/VbDlYdqLRn+du8oTg6jjbmfe+CbTM2+BcuySgbQVtQoOCt7s3U8wbsqGs3ZppZLnylwFe8Uql825ogANPckUnYDoOCogxQGXADajggjcw4AA8DSSyTQASMmjhhTQscBWGHHbo4YcghijiiCSWaOKJKKao4oostugiFBEAADs=" />
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div><div class="HeaderSection">
+<h1 id="ProductName">
+<!-- @Start Product -->
+Programmable Real-time Unit (PRU) Software Support Package Manifest
+<!-- @End Product -->
+</h1>
+
+<h2 id="ReleaseDate">
+<!-- @Start Date -->
+06-14-2016
+<!-- @End Date -->
+</h2>
+
+
+<h2 id="SRASID">
+<!-- @Start Date -->
+Manifest ID - SRAS00002976
+<!-- @End Date -->
+</h2>
+</div><div class="LegendSection">
+<h2>Legend</h2>
+<p>(explanation of the fields in the Manifest Table below)</p>
+<table>
+<tbody>
+<tr>
+<td>
+<b>Software Name </b>
+</td>
+<td>
+The name of the application or file
+</td>
+</tr>
+<tr>
+<td>
+<b>Version</b>
+</td>
+<td>
+Version of the application or file
+</td>
+</tr>
+<tr>
+<td>
+<b>License Type</b>
+</td>
+<td>
+Type of license(s) under which TI will be providing
+software to the licensee (e.g. BSD-3-Clause, GPL-2.0, TI TSPA License, TI
+Commercial License). The license could be under Commercial terms or Open Source. See Open Source Reference License Disclaimer in
+the Disclaimers Section. Whenever possible, TI will use an <a href="http://spdx.org/licenses/"> SPDX Short Identifier </a> for an Open Source
+License. TI Commercial license terms are not usually included in the manifest and are conveyed through a variety
+of means such as a clickwrap license upon install,
+a signed license agreement and so forth.
+</td>
+</tr>
+<tr>
+<td>
+<b>Location</b>
+</td>
+<td>
+The directory name and path on the media or a specific file where the Software is located. Typically fully qualified path names
+are not used and instead the relevant top level directory of the application is given.
+A notation often used in the manifests is [as installed]/directory/*. Note that the asterisk implies that all
+files under that directory are licensed as the License Type field denotes. Any exceptions to this will
+generally be denoted as [as installed]/directory/* except as noted below which means as shown in subsequent rows of
+the manifest.
+</td>
+</tr>
+<tr>
+<td>
+<b>Delivered As</b>
+</td>
+<td>
+This field will either be &#8220;Source&#8221;, &#8220;Binary&#8221; or &#8220;Source
+and Binary&#8221; and is the primary form the content of the Software is delivered
+in. If the Software is delivered in an archive format, this field
+applies to the contents of the archive. If the word Limited is used
+with Source, as in &#8220;Limited Source&#8221; or &#8220;Limited Source and Binary&#8221; then
+only portions of the Source for the application are provided.
+</td>
+</tr>
+<tr>
+<td>
+<b>Modified by TI</b>
+</td>
+<td>
+This field will either be &#8220;Yes&#8221; or &#8220;No&#8221;. A &#8220;Yes&#8221; means
+TI has made changes to the Software. A &#8220;No&#8221; means TI has not made any
+changes. Note: This field is not applicable for Software &#8220;Obtained
+from&#8221; TI.
+</td>
+</tr>
+<tr>
+<td>
+<b>Obtained from</b>
+</td>
+<td>
+This field specifies from where or from whom TI obtained
+the Software. It may be a URL to an Open Source site, a 3<sup>rd</sup>
+party licensor, or TI. See Links Disclaimer in the Disclaimers
+Section.
+</td>
+</tr>
+</tbody>
+</table>
+</div><div class="DisclaimerSection">
+<h2>Disclaimers</h2>
+<h3>Export Control Classification Number (ECCN)</h3>
+<p>Any use of ECCNs listed in the Manifest is at the user&#8217;s risk
+and without recourse to TI. Your
+company, as the exporter of record, is responsible for determining the
+correct classification of any item at
+the time of export. Any export classification by TI of Software is for
+TI&#8217;s internal use only and shall not be construed as a representation
+or warranty
+regarding the proper export classification for such Software or whether
+an export
+license or other documentation is required for exporting such Software</p>
+<h3>Links in the Manifest</h3>
+<p>Any
+links appearing on this Manifest
+(for example in the &#8220;Obtained from&#8221; field) were verified at the time
+the Manifest was created. TI makes no guarantee that any listed links
+will
+remain active in the future.</p>
+<h3>Open Source License References</h3>
+<p>Your company is responsible for confirming the
+applicable license terms for any open source Software
+listed in this Manifest that was not &#8220;Obtained from&#8221; TI. Any open
+source license
+specified in this Manifest for Software that was
+not &#8220;Obtained from&#8221; TI is for TI&#8217;s internal use only and shall not be
+construed as a representation or warranty regarding the proper open
+source license terms
+for such Software.</p>
+</div><div class="ExportSection">
+<h2>Export Information</h2>
+<p>ECCN for Software included in this release:</p>
+Publicly Available  - Open Source or TI TSPA License
+</div><div class="ManifestTable">
+<!-- h2>Manifest Table</h2 -->
+
+ <table>
+ <tbody>
+
+ <h2>
+  Programmable Real-time Unit (PRU) Software Support Package Manifest Table
+ </h2>
+
+
+ <p>
+
+ See the Legend above for a description of these columns.
+
+ </p>
+
+ <table id="targetpackages" name="targetpackages">
+ <thead>
+ 	<tr>
+ 		<td><b>Software Name</b></td>
+ 		<td><b>Version</b></td>
+ 		<td><b>License Type</b></td>
+ 		<td><b>Delivered As</b></td>
+ 		<td><b>Modified by TI</b></td>
+ 		<td></td>
+ 		<td></td>
+ 	</tr>
+ </thead>
+
+
+ <tbody>
+ 	<tr>
+ 		<td id="name" name="name" rowspan="2">
+ pruss_remoteproc
+ </td>
+ 		<td id="version" name="version" rowspan="2">
+ 4.4
+ </td>
+ 		<td id="license" name="license" rowspan="2">
+ GPL-2.0
+ </td>
+ 		<td id="delivered" name="delivered" rowspan="2">
+ Source
+ </td>
+ 		<td id="modified" name="modified" rowspan="2">
+ N/A
+ </td>
+ 		<td><b>Location</b></td>
+ 		<td id="location" name="location">
+ /drivers /remoteproc
+ </td>
+ 	</tr>
+ 	<tr>
+ 		<td><b>Obtained from</b></td>
+ 		<td id="obtained" name="obtained">
+ TI
+ </td>
+ 	</tr>
+
+ <tbody>
+ 	<tr>
+ 		<td id="name" name="name" rowspan="2">
+ PRU Register Headers
+ </td>
+ 		<td id="version" name="version" rowspan="2">
+ 5.00.00
+ </td>
+ 		<td id="license" name="license" rowspan="2">
+ BSD-3-Clause
+ </td>
+ 		<td id="delivered" name="delivered" rowspan="2">
+ Source
+ </td>
+ 		<td id="modified" name="modified" rowspan="2">
+ N/A
+ </td>
+ 		<td><b>Location</b></td>
+ 		<td id="location" name="location">
+ /include
+ </td>
+ 	</tr>
+ 	<tr>
+ 		<td><b>Obtained from</b></td>
+ 		<td id="obtained" name="obtained">
+ TI
+ </td>
+ 	</tr>
+
+ <tbody>
+ 	<tr>
+ 		<td id="name" name="name" rowspan="2">
+ Kernel Headers – pru_virtio_ids.h
+ </td>
+ 		<td id="version" name="version" rowspan="2">
+ 4.4
+ </td>
+ 		<td id="license" name="license" rowspan="2">
+ BSD-3-Clause
+ </td>
+ 		<td id="delivered" name="delivered" rowspan="2">
+ Source
+ </td>
+ 		<td id="modified" name="modified" rowspan="2">
+ Yes
+ </td>
+ 		<td><b>Location</b></td>
+ 		<td id="location" name="location">
+ /include
+ </td>
+ 	</tr>
+ 	<tr>
+ 		<td><b>Obtained from</b></td>
+ 		<td id="obtained" name="obtained">
+ kernel.org 1
+ </td>
+ 	</tr>
+
+ <tbody>
+ 	<tr>
+ 		<td id="name" name="name" rowspan="2">
+ PRU C Examples
+ </td>
+ 		<td id="version" name="version" rowspan="2">
+ 5.00.00
+ </td>
+ 		<td id="license" name="license" rowspan="2">
+ BSD-3-Clause
+ </td>
+ 		<td id="delivered" name="delivered" rowspan="2">
+ Source
+ </td>
+ 		<td id="modified" name="modified" rowspan="2">
+ N/A
+ </td>
+ 		<td><b>Location</b></td>
+ 		<td id="location" name="location">
+ /examples
+ </td>
+ 	</tr>
+ 	<tr>
+ 		<td><b>Obtained from</b></td>
+ 		<td id="obtained" name="obtained">
+ TI
+ </td>
+ 	</tr>
+
+ <tbody>
+ 	<tr>
+ 		<td id="name" name="name" rowspan="2">
+ Kernel Headers –rsc_types.h
+ </td>
+ 		<td id="version" name="version" rowspan="2">
+ 4.4
+ </td>
+ 		<td id="license" name="license" rowspan="2">
+ BSD-3-Clause
+ </td>
+ 		<td id="delivered" name="delivered" rowspan="2">
+ Source
+ </td>
+ 		<td id="modified" name="modified" rowspan="2">
+ Yes
+ </td>
+ 		<td><b>Location</b></td>
+ 		<td id="location" name="location">
+ /include
+ </td>
+ 	</tr>
+ 	<tr>
+ 		<td><b>Obtained from</b></td>
+ 		<td id="obtained" name="obtained">
+ kernel.org 3
+ </td>
+ 	</tr>
+
+ <tbody>
+ 	<tr>
+ 		<td id="name" name="name" rowspan="2">
+ Kernel Headers – pru_types.h
+ </td>
+ 		<td id="version" name="version" rowspan="2">
+ 4.4
+ </td>
+ 		<td id="license" name="license" rowspan="2">
+ BSD-3-Clause
+ </td>
+ 		<td id="delivered" name="delivered" rowspan="2">
+ Source
+ </td>
+ 		<td id="modified" name="modified" rowspan="2">
+ N/A
+ </td>
+ 		<td><b>Location</b></td>
+ 		<td id="location" name="location">
+ /include
+ </td>
+ 	</tr>
+ 	<tr>
+ 		<td><b>Obtained from</b></td>
+ 		<td id="obtained" name="obtained">
+ TI
+ </td>
+ 	</tr>
+
+ <tbody>
+ 	<tr>
+ 		<td id="name" name="name" rowspan="2">
+ Kernel Headers – types.h
+ </td>
+ 		<td id="version" name="version" rowspan="2">
+ 4.4
+ </td>
+ 		<td id="license" name="license" rowspan="2">
+ GPL-2.0
+ </td>
+ 		<td id="delivered" name="delivered" rowspan="2">
+ Source
+ </td>
+ 		<td id="modified" name="modified" rowspan="2">
+ Yes
+ </td>
+ 		<td><b>Location</b></td>
+ 		<td id="location" name="location">
+ /include
+ </td>
+ 	</tr>
+ 	<tr>
+ 		<td><b>Obtained from</b></td>
+ 		<td id="obtained" name="obtained">
+ kernel.org 4
+ </td>
+ 	</tr>
+
+ <tbody>
+ 	<tr>
+ 		<td id="name" name="name" rowspan="2">
+ Kernel Headers – pru_virtio_ring.h
+ </td>
+ 		<td id="version" name="version" rowspan="2">
+ 4.4
+ </td>
+ 		<td id="license" name="license" rowspan="2">
+ BSD-3-Clause
+ </td>
+ 		<td id="delivered" name="delivered" rowspan="2">
+ Source
+ </td>
+ 		<td id="modified" name="modified" rowspan="2">
+ Yes
+ </td>
+ 		<td><b>Location</b></td>
+ 		<td id="location" name="location">
+ /include
+ </td>
+ 	</tr>
+ 	<tr>
+ 		<td><b>Obtained from</b></td>
+ 		<td id="obtained" name="obtained">
+ kernel.org 2
+ </td>
+ 	</tr>
+
+ <tbody>
+ 	<tr>
+ 		<td id="name" name="name" rowspan="2">
+ PRU Cape Demos
+ </td>
+ 		<td id="version" name="version" rowspan="2">
+ 5.00.00
+ </td>
+ 		<td id="license" name="license" rowspan="2">
+ BSD-3-Clause
+ </td>
+ 		<td id="delivered" name="delivered" rowspan="2">
+ Source
+ </td>
+ 		<td id="modified" name="modified" rowspan="2">
+ N/A
+ </td>
+ 		<td><b>Location</b></td>
+ 		<td id="location" name="location">
+ /pru_cape/pru_demo
+ </td>
+ 	</tr>
+ 	<tr>
+ 		<td><b>Obtained from</b></td>
+ 		<td id="obtained" name="obtained">
+ TI
+ </td>
+ 	</tr>
+
+ <tbody>
+ 	<tr>
+ 		<td id="name" name="name" rowspan="2">
+ PRU Cape Firmware
+ </td>
+ 		<td id="version" name="version" rowspan="2">
+ 5.00.00
+ </td>
+ 		<td id="license" name="license" rowspan="2">
+ BSD-3-Clause
+ </td>
+ 		<td id="delivered" name="delivered" rowspan="2">
+ Source
+ </td>
+ 		<td id="modified" name="modified" rowspan="2">
+ N/A
+ </td>
+ 		<td><b>Location</b></td>
+ 		<td id="location" name="location">
+ /pru_cape/pru_fw
+ </td>
+ 	</tr>
+ 	<tr>
+ 		<td><b>Obtained from</b></td>
+ 		<td id="obtained" name="obtained">
+ TI
+ </td>
+ 	</tr>
+
+ <tbody>
+ 	<tr>
+ 		<td id="name" name="name" rowspan="2">
+ PRU Cape Demo Binaries
+ </td>
+ 		<td id="version" name="version" rowspan="2">
+ 5.00.00
+ </td>
+ 		<td id="license" name="license" rowspan="2">
+ BSD-3-Clause, newlib
+ </td>
+ 		<td id="delivered" name="delivered" rowspan="2">
+ Binaries
+ </td>
+ 		<td id="modified" name="modified" rowspan="2">
+ N/A
+ </td>
+ 		<td><b>Location</b></td>
+ 		<td id="location" name="location">
+ /pru_cape/bin
+ </td>
+ 	</tr>
+ 	<tr>
+ 		<td><b>Obtained from</b></td>
+ 		<td id="obtained" name="obtained">
+ TI
+ </td>
+ 	</tr>
+
+ <tbody>
+ 	<tr>
+ 		<td id="name" name="name" rowspan="2">
+ PRU Labs
+ </td>
+ 		<td id="version" name="version" rowspan="2">
+ 5.00.00
+ </td>
+ 		<td id="license" name="license" rowspan="2">
+ BSD-3-Clause
+ </td>
+ 		<td id="delivered" name="delivered" rowspan="2">
+ Source
+ </td>
+ 		<td id="modified" name="modified" rowspan="2">
+ N/A
+ </td>
+ 		<td><b>Location</b></td>
+ 		<td id="location" name="location">
+ /labs
+ </td>
+ 	</tr>
+ 	<tr>
+ 		<td><b>Obtained from</b></td>
+ 		<td id="obtained" name="obtained">
+ TI
+ </td>
+ 	</tr>
+
+ <tbody>
+ 	<tr>
+ 		<td id="name" name="name" rowspan="2">
+ PRU_CAPE.gel
+ </td>
+ 		<td id="version" name="version" rowspan="2">
+ N/A
+ </td>
+ 		<td id="license" name="license" rowspan="2">
+ Public Domain
+ </td>
+ 		<td id="delivered" name="delivered" rowspan="2">
+ Source
+ </td>
+ 		<td id="modified" name="modified" rowspan="2">
+ No
+ </td>
+ 		<td><b>Location</b></td>
+ 		<td id="location" name="location">
+ /pru_cape
+ </td>
+ 	</tr>
+ 	<tr>
+ 		<td><b>Obtained from</b></td>
+ 		<td id="obtained" name="obtained">
+ TI
+ </td>
+ 	</tr>
+
+ <tbody>
+ 	<tr>
+ 		<td id="name" name="name" rowspan="2">
+ RPMsg PRU Library Source
+ </td>
+ 		<td id="version" name="version" rowspan="2">
+ 5.00.00
+ </td>
+ 		<td id="license" name="license" rowspan="2">
+ BSD-3-Clause
+ </td>
+ 		<td id="delivered" name="delivered" rowspan="2">
+ Source
+ </td>
+ 		<td id="modified" name="modified" rowspan="2">
+ N/A
+ </td>
+ 		<td><b>Location</b></td>
+ 		<td id="location" name="location">
+ /lib/src/rpmsg_lib
+ </td>
+ 	</tr>
+ 	<tr>
+ 		<td><b>Obtained from</b></td>
+ 		<td id="obtained" name="obtained">
+ TI
+ </td>
+ 	</tr>
+
+ <tbody>
+ 	<tr>
+ 		<td id="name" name="name" rowspan="2">
+ RPMsg PRU Library
+ </td>
+ 		<td id="version" name="version" rowspan="2">
+ 5.00.00
+ </td>
+ 		<td id="license" name="license" rowspan="2">
+ BSD-3-Clause
+ </td>
+ 		<td id="delivered" name="delivered" rowspan="2">
+ Binaries
+ </td>
+ 		<td id="modified" name="modified" rowspan="2">
+ N/A
+ </td>
+ 		<td><b>Location</b></td>
+ 		<td id="location" name="location">
+ /lib/rpmsg_lib.lib
+ </td>
+ 	</tr>
+ 	<tr>
+ 		<td><b>Obtained from</b></td>
+ 		<td id="obtained" name="obtained">
+ TI
+ </td>
+ 	</tr>
+
+ <tbody>
+ 	<tr>
+ 		<td id="name" name="name" rowspan="2">
+ RPMsg PRU Linux Driver
+ </td>
+ 		<td id="version" name="version" rowspan="2">
+ 5.00.00
+ </td>
+ 		<td id="license" name="license" rowspan="2">
+ GPL-2.0
+ </td>
+ 		<td id="delivered" name="delivered" rowspan="2">
+ Source
+ </td>
+ 		<td id="modified" name="modified" rowspan="2">
+ N/A
+ </td>
+ 		<td><b>Location</b></td>
+ 		<td id="location" name="location">
+ /patches/
+ </td>
+ 	</tr>
+ 	<tr>
+ 		<td><b>Obtained from</b></td>
+ 		<td id="obtained" name="obtained">
+ TI
+ </td>
+ 	</tr>
+
+ </tbody>
+ </table>
+ (1) Obtained from the kernel in include/uapi/linux/virtio_ids.h(2) Obtained from the kernel in drivers/virtio/virtio_ring.h(3) Obtained from the kernel in include/linux/remoteproc.h(4) Obtained from the kernel in include/linux/types.h
+ </p>
+ </p>
+ <p>
+
+</div><div class="CreditSection">
+<h2>Credits</h2>
+<BR> <BR><BR><BR><BR>
+</div><div class="LicenseSection">
+<h2>Licenses</h2>
+<BR><h3><b> Programmable Real-time Unit (PRU) Software Support Package Licenses </b></h3><BR> <BR><BR>Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com/ <BR> <BR> <BR>Redistribution and use in source and binary forms, with or without <BR>modification, are permitted provided that the following conditions <BR>are met:<BR><BR>	* Redistributions of source code must retain the above copyright <BR>	  notice, this list of conditions and the following disclaimer.<BR><BR>	* Redistributions in binary form must reproduce the above copyright<BR>	  notice, this list of conditions and the following disclaimer in the <BR>	  documentation and/or other materials provided with the   <BR>	  distribution.<BR><BR>	* Neither the name of Texas Instruments Incorporated nor the names of<BR>	  its contributors may be used to endorse or promote products derived<BR>	  from this software without specific prior written permission.<BR><BR>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS <BR>"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT <BR>LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR<BR>A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT <BR>OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, <BR>SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT <BR>LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,<BR>DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY<BR>THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT <BR>(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE <BR>OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<BR><BR><BR>GNU GENERAL PUBLIC LICENSE<BR>Version 2, June 1991<BR><BR>Copyright (C) 1989, 1991 Free Software Foundation, Inc.,<BR>51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA<BR>Everyone is permitted to copy and distribute verbatim copies<BR>of this license document, but changing it is not allowed.<BR><BR>Preamble<BR><BR>The licenses for most software are designed to take away your<BR>freedom to share and change it. By contrast, the GNU General Public<BR>License is intended to guarantee your freedom to share and change free<BR>software--to make sure the software is free for all its users. This<BR>General Public License applies to most of the Free Software<BR>Foundation's software and to any other program whose authors commit to<BR>using it. (Some other Free Software Foundation software is covered by<BR>the GNU Lesser General Public License instead.) You can apply it to<BR>your programs, too.<BR><BR>When we speak of free software, we are referring to freedom, not<BR>price. Our General Public Licenses are designed to make sure that you<BR>have the freedom to distribute copies of free software (and charge for<BR>this service if you wish), that you receive source code or can get it<BR>if you want it, that you can change the software or use pieces of it<BR>in new free programs; and that you know you can do these things.<BR><BR>To protect your rights, we need to make restrictions that forbid<BR>anyone to deny you these rights or to ask you to surrender the rights.<BR>These restrictions translate to certain responsibilities for you if you<BR>distribute copies of the software, or if you modify it.<BR><BR>For example, if you distribute copies of such a program, whether<BR>gratis or for a fee, you must give the recipients all the rights that<BR>you have. You must make sure that they, too, receive or can get the<BR>source code. And you must show them these terms so they know their<BR>rights.<BR><BR>We protect your rights with two steps: (1) copyright the software, and<BR>(2) offer you this license which gives you legal permission to copy,<BR>distribute and/or modify the software.<BR><BR>Also, for each author's protection and ours, we want to make certain<BR>that everyone understands that there is no warranty for this free<BR>software. If the software is modified by someone else and passed on, we<BR>want its recipients to know that what they have is not the original, so<BR>that any problems introduced by others will not reflect on the original<BR>authors' reputations.<BR><BR>Finally, any free program is threatened constantly by software<BR>patents. We wish to avoid the danger that redistributors of a free<BR>program will individually obtain patent licenses, in effect making the<BR>program proprietary. To prevent this, we have made it clear that any<BR>patent must be licensed for everyone's free use or not licensed at all.<BR><BR>The precise terms and conditions for copying, distribution and<BR>modification follow.<BR><BR>GNU GENERAL PUBLIC LICENSE<BR>TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION<BR><BR>0. This License applies to any program or other work which contains<BR>a notice placed by the copyright holder saying it may be distributed<BR>under the terms of this General Public License. The "Program", below,<BR>refers to any such program or work, and a "work based on the Program"<BR>means either the Program or any derivative work under copyright law:<BR>that is to say, a work containing the Program or a portion of it,<BR>either verbatim or with modifications and/or translated into another<BR>language. (Hereinafter, translation is included without limitation in<BR>the term "modification".) Each licensee is addressed as "you".<BR><BR>Activities other than copying, distribution and modification are not<BR>covered by this License; they are outside its scope. The act of<BR>running the Program is not restricted, and the output from the Program<BR>is covered only if its contents constitute a work based on the<BR>Program (independent of having been made by running the Program).<BR>Whether that is true depends on what the Program does.<BR><BR>1. You may copy and distribute verbatim copies of the Program's<BR>source code as you receive it, in any medium, provided that you<BR>conspicuously and appropriately publish on each copy an appropriate<BR>copyright notice and disclaimer of warranty; keep intact all the<BR>notices that refer to this License and to the absence of any warranty;<BR>and give any other recipients of the Program a copy of this License<BR>along with the Program.<BR><BR>You may charge a fee for the physical act of transferring a copy, and<BR>you may at your option offer warranty protection in exchange for a fee.<BR><BR>2. You may modify your copy or copies of the Program or any portion<BR>of it, thus forming a work based on the Program, and copy and<BR>distribute such modifications or work under the terms of Section 1<BR>above, provided that you also meet all of these conditions:<BR><BR>a) You must cause the modified files to carry prominent notices<BR>stating that you changed the files and the date of any change.<BR><BR>b) You must cause any work that you distribute or publish, that in<BR>whole or in part contains or is derived from the Program or any<BR>part thereof, to be licensed as a whole at no charge to all third<BR>parties under the terms of this License.<BR><BR>c) If the modified program normally reads commands interactively<BR>when run, you must cause it, when started running for such<BR>interactive use in the most ordinary way, to print or display an<BR>announcement including an appropriate copyright notice and a<BR>notice that there is no warranty (or else, saying that you provide<BR>a warranty) and that users may redistribute the program under<BR>these conditions, and telling the user how to view a copy of this<BR>License. (Exception: if the Program itself is interactive but<BR>does not normally print such an announcement, your work based on<BR>the Program is not required to print an announcement.)<BR><BR>These requirements apply to the modified work as a whole. If<BR>identifiable sections of that work are not derived from the Program,<BR>and can be reasonably considered independent and separate works in<BR>themselves, then this License, and its terms, do not apply to those<BR>sections when you distribute them as separate works. But when you<BR>distribute the same sections as part of a whole which is a work based<BR>on the Program, the distribution of the whole must be on the terms of<BR>this License, whose permissions for other licensees extend to the<BR>entire whole, and thus to each and every part regardless of who wrote it.<BR><BR>Thus, it is not the intent of this section to claim rights or contest<BR>your rights to work written entirely by you; rather, the intent is to<BR>exercise the right to control the distribution of derivative or<BR>collective works based on the Program.<BR><BR>In addition, mere aggregation of another work not based on the Program<BR>with the Program (or with a work based on the Program) on a volume of<BR>a storage or distribution medium does not bring the other work under<BR>the scope of this License.<BR><BR>3. You may copy and distribute the Program (or a work based on it,<BR>under Section 2) in object code or executable form under the terms of<BR>Sections 1 and 2 above provided that you also do one of the following:<BR><BR>a) Accompany it with the complete corresponding machine-readable<BR>source code, which must be distributed under the terms of Sections<BR>1 and 2 above on a medium customarily used for software interchange; or,<BR><BR>b) Accompany it with a written offer, valid for at least three<BR>years, to give any third party, for a charge no more than your<BR>cost of physically performing source distribution, a complete<BR>machine-readable copy of the corresponding source code, to be<BR>distributed under the terms of Sections 1 and 2 above on a medium<BR>customarily used for software interchange; or,<BR><BR>c) Accompany it with the information you received as to the offer<BR>to distribute corresponding source code. (This alternative is<BR>allowed only for noncommercial distribution and only if you<BR>received the program in object code or executable form with such<BR>an offer, in accord with Subsection b above.)<BR><BR>The source code for a work means the preferred form of the work for<BR>making modifications to it. For an executable work, complete source<BR>code means all the source code for all modules it contains, plus any<BR>associated interface definition files, plus the scripts used to<BR>control compilation and installation of the executable. However, as a<BR>special exception, the source code distributed need not include<BR>anything that is normally distributed (in either source or binary<BR>form) with the major components (compiler, kernel, and so on) of the<BR>operating system on which the executable runs, unless that component<BR>itself accompanies the executable.<BR><BR>If distribution of executable or object code is made by offering<BR>access to copy from a designated place, then offering equivalent<BR>access to copy the source code from the same place counts as<BR>distribution of the source code, even though third parties are not<BR>compelled to copy the source along with the object code.<BR><BR>4. You may not copy, modify, sublicense, or distribute the Program<BR>except as expressly provided under this License. Any attempt<BR>otherwise to copy, modify, sublicense or distribute the Program is<BR>void, and will automatically terminate your rights under this License.<BR>However, parties who have received copies, or rights, from you under<BR>this License will not have their licenses terminated so long as such<BR>parties remain in full compliance.<BR><BR>5. You are not required to accept this License, since you have not<BR>signed it. However, nothing else grants you permission to modify or<BR>distribute the Program or its derivative works. These actions are<BR>prohibited by law if you do not accept this License. Therefore, by<BR>modifying or distributing the Program (or any work based on the<BR>Program), you indicate your acceptance of this License to do so, and<BR>all its terms and conditions for copying, distributing or modifying<BR>the Program or works based on it.<BR><BR>6. Each time you redistribute the Program (or any work based on the<BR>Program), the recipient automatically receives a license from the<BR>original licensor to copy, distribute or modify the Program subject to<BR>these terms and conditions. You may not impose any further<BR>restrictions on the recipients' exercise of the rights granted herein.<BR>You are not responsible for enforcing compliance by third parties to<BR>this License.<BR><BR>7. If, as a consequence of a court judgment or allegation of patent<BR>infringement or for any other reason (not limited to patent issues),<BR>conditions are imposed on you (whether by court order, agreement or<BR>otherwise) that contradict the conditions of this License, they do not<BR>excuse you from the conditions of this License. If you cannot<BR>distribute so as to satisfy simultaneously your obligations under this<BR>License and any other pertinent obligations, then as a consequence you<BR>may not distribute the Program at all. For example, if a patent<BR>license would not permit royalty-free redistribution of the Program by<BR>all those who receive copies directly or indirectly through you, then<BR>the only way you could satisfy both it and this License would be to<BR>refrain entirely from distribution of the Program.<BR><BR>If any portion of this section is held invalid or unenforceable under<BR>any particular circumstance, the balance of the section is intended to<BR>apply and the section as a whole is intended to apply in other<BR>circumstances.<BR><BR>It is not the purpose of this section to induce you to infringe any<BR>patents or other property right claims or to contest validity of any<BR>such claims; this section has the sole purpose of protecting the<BR>integrity of the free software distribution system, which is<BR>implemented by public license practices. Many people have made<BR>generous contributions to the wide range of software distributed<BR>through that system in reliance on consistent application of that<BR>system; it is up to the author/donor to decide if he or she is willing<BR>to distribute software through any other system and a licensee cannot<BR>impose that choice.<BR><BR>This section is intended to make thoroughly clear what is believed to<BR>be a consequence of the rest of this License.<BR><BR>8. If the distribution and/or use of the Program is restricted in<BR>certain countries either by patents or by copyrighted interfaces, the<BR>original copyright holder who places the Program under this License<BR>may add an explicit geographical distribution limitation excluding<BR>those countries, so that distribution is permitted only in or among<BR>countries not thus excluded. In such case, this License incorporates<BR>the limitation as if written in the body of this License.<BR><BR>9. The Free Software Foundation may publish revised and/or new versions<BR>of the General Public License from time to time. Such new versions will<BR>be similar in spirit to the present version, but may differ in detail to<BR>address new problems or concerns.<BR><BR>Each version is given a distinguishing version number. If the Program<BR>specifies a version number of this License which applies to it and "any<BR>later version", you have the option of following the terms and conditions<BR>either of that version or of any later version published by the Free<BR>Software Foundation. If the Program does not specify a version number of<BR>this License, you may choose any version ever published by the Free Software<BR>Foundation.<BR><BR>10. If you wish to incorporate parts of the Program into other free<BR>programs whose distribution conditions are different, write to the author<BR>to ask for permission. For software which is copyrighted by the Free<BR>Software Foundation, write to the Free Software Foundation; we sometimes<BR>make exceptions for this. Our decision will be guided by the two goals<BR>of preserving the free status of all derivatives of our free software and<BR>of promoting the sharing and reuse of software generally.<BR><BR>NO WARRANTY<BR><BR>11. BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY<BR>FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN<BR>OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES<BR>PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED<BR>OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF<BR>MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS<BR>TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU. SHOULD THE<BR>PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING,<BR>REPAIR OR CORRECTION.<BR><BR>12. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING<BR>WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR<BR>REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES,<BR>INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING<BR>OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED<BR>TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY<BR>YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER<BR>PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE<BR>POSSIBILITY OF SUCH DAMAGES.<BR><BR>END OF TERMS AND CONDITIONS<BR><BR>How to Apply These Terms to Your New Programs<BR><BR>If you develop a new program, and you want it to be of the greatest<BR>possible use to the public, the best way to achieve this is to make it<BR>free software which everyone can redistribute and change under these terms.<BR><BR>To do so, attach the following notices to the program. It is safest<BR>to attach them to the start of each source file to most effectively<BR>convey the exclusion of warranty; and each file should have at least<BR>the "copyright" line and a pointer to where the full notice is found.<BR><BR>&ltone line to give the program's name and a brief idea of what it does.><BR>Copyright (C) &ltyear> &ltname of author><BR><BR>This program is free software; you can redistribute it and/or modify<BR>it under the terms of the GNU General Public License as published by<BR>the Free Software Foundation; either version 2 of the License, or<BR>(at your option) any later version.<BR><BR>This program is distributed in the hope that it will be useful,<BR>but WITHOUT ANY WARRANTY; without even the implied warranty of<BR>MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the<BR>GNU General Public License for more details.<BR><BR>You should have received a copy of the GNU General Public License along<BR>with this program; if not, write to the Free Software Foundation, Inc.,<BR>51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.<BR><BR>Also add information on how to contact you by electronic and paper mail.<BR><BR>If the program is interactive, make it output a short notice like this<BR>when it starts in an interactive mode:<BR><BR>Gnomovision version 69, Copyright (C) year name of author<BR>Gnomovision comes with ABSOLUTELY NO WARRANTY; for details type `show w'.<BR>This is free software, and you are welcome to redistribute it<BR>under certain conditions; type `show c' for details.<BR><BR>The hypothetical commands `show w' and `show c' should show the appropriate<BR>parts of the General Public License. Of course, the commands you use may<BR>be called something other than `show w' and `show c'; they could even be<BR>mouse-clicks or menu items--whatever suits your program.<BR><BR>You should also get your employer (if you work as a programmer) or your<BR>school, if any, to sign a "copyright disclaimer" for the program, if<BR>necessary. Here is a sample; alter the names:<BR><BR>Yoyodyne, Inc., hereby disclaims all copyright interest in the program<BR>`Gnomovision' (which makes passes at compilers) written by James Hacker.<BR><BR>&ltsignature of Ty Coon>, 1 April 1989<BR>Ty Coon, President of Vice<BR><BR>This General Public License does not permit incorporating your program into<BR>proprietary programs. If your program is a subroutine library, you may<BR>consider it more useful to permit linking proprietary applications with the<BR>library. If this is what you want to do, use the GNU Lesser General<BR>Public License instead of this License.<BR><BR><BR><BR>Newlib License<BR><BR>The newlib subdirectory is a collection of software from several sources.<BR><BR>Each file may have its own copyright/license that is embedded in the source<BR>file. Unless otherwise noted in the body of the source file(s), the following copyright<BR>notices will apply to the contents of the newlib subdirectory:<BR><BR>(1) Red Hat Incorporated<BR><BR>Copyright (c) 1994-2009 Red Hat, Inc. All rights reserved.<BR><BR>This copyrighted material is made available to anyone wishing to use,<BR>modify, copy, or redistribute it subject to the terms and conditions<BR>of the BSD License. This program is distributed in the hope that<BR>it will be useful, but WITHOUT ANY WARRANTY expressed or implied,<BR>including the implied warranties of MERCHANTABILITY or FITNESS FOR<BR>A PARTICULAR PURPOSE. A copy of this license is available at<BR>http://www.opensource.org/licenses. Any Red Hat trademarks that are<BR>incorporated in the source code or documentation are not subject to<BR>the BSD License and may only be used or replicated with the express<BR>permission of Red Hat, Inc.<BR><BR>(2) University of California, Berkeley<BR><BR>Copyright (c) 1981-2000 The Regents of the University of California.<BR>All rights reserved.<BR><BR>Redistribution and use in source and binary forms, with or without modification,<BR>are permitted provided that the following conditions are met:<BR><BR>* Redistributions of source code must retain the above copyright notice,<BR>this list of conditions and the following disclaimer.<BR>* Redistributions in binary form must reproduce the above copyright notice,<BR>this list of conditions and the following disclaimer in the documentation<BR>and/or other materials provided with the distribution.<BR>* Neither the name of the University nor the names of its contributors<BR>may be used to endorse or promote products derived from this software<BR>without specific prior written permission.<BR><BR>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"<BR>AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<BR>WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.<BR>IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,<BR>INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT<BR>NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR<BR>PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,<BR>WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)<BR>ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY<BR>OF SUCH DAMAGE.<BR><BR>(3) David M. Gay (AT&T 1991, Lucent 1998)<BR><BR>The author of this software is David M. Gay.<BR><BR>Copyright (c) 1991 by AT&T.<BR><BR>Permission to use, copy, modify, and distribute this software for any<BR>purpose without fee is hereby granted, provided that this entire notice<BR>is included in all copies of any software which is or includes a copy<BR>or modification of this software and in all copies of the supporting<BR>documentation for such software.<BR><BR>THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED<BR>WARRANTY. IN PARTICULAR, NEITHER THE AUTHOR NOR AT&T MAKES ANY<BR>REPRESENTATION OR WARRANTY OF ANY KIND CONCERNING THE MERCHANTABILITY<BR>OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.<BR><BR>-------------------------------------------------------------------<BR><BR>The author of this software is David M. Gay.<BR><BR>Copyright (C) 1998-2001 by Lucent Technologies<BR>All Rights Reserved<BR><BR>Permission to use, copy, modify, and distribute this software and<BR>its documentation for any purpose and without fee is hereby<BR>granted, provided that the above copyright notice appear in all<BR>copies and that both that the copyright notice and this<BR>permission notice and warranty disclaimer appear in supporting<BR>documentation, and that the name of Lucent or any of its entities<BR>not be used in advertising or publicity pertaining to<BR>distribution of the software without specific, written prior<BR>permission.<BR><BR>LUCENT DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,<BR>INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS.<BR>IN NO EVENT SHALL LUCENT OR ANY OF ITS ENTITIES BE LIABLE FOR ANY<BR>SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES<BR>WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER<BR>IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,<BR>ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF<BR>THIS SOFTWARE.<BR><BR><BR>(4) Advanced Micro Devices<BR><BR>Copyright 1989, 1990 Advanced Micro Devices, Inc.<BR><BR>This software is the property of Advanced Micro Devices, Inc (AMD) which<BR>specifically grants the user the right to modify, use and distribute this<BR>software provided this notice is not removed or altered. All other rights<BR>are reserved by AMD.<BR><BR>AMD MAKES NO WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, WITH REGARD TO THIS<BR>SOFTWARE. IN NO EVENT SHALL AMD BE LIABLE FOR INCIDENTAL OR CONSEQUENTIAL<BR>DAMAGES IN CONNECTION WITH OR ARISING FROM THE FURNISHING, PERFORMANCE, OR<BR>USE OF THIS SOFTWARE.<BR><BR>So that all may benefit from your experience, please report any problems<BR>or suggestions about this software to the 29K Technical Support Center at<BR>800-29-29-AMD (800-292-9263) in the USA, or 0800-89-1131 in the UK, or<BR>0031-11-1129 in Japan, toll free. The direct dial number is 512-462-4118.<BR><BR>Advanced Micro Devices, Inc.<BR>29K Support Products<BR>Mail Stop 573<BR>5900 E. Ben White Blvd.<BR>Austin, TX 78741<BR>800-292-9263<BR><BR>(5)<BR><BR>(6)<BR><BR>(7) Sun Microsystems<BR><BR>Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.<BR><BR>Developed at SunPro, a Sun Microsystems, Inc. business.<BR>Permission to use, copy, modify, and distribute this<BR>software is freely granted, provided that this notice is preserved.<BR><BR>(8) Hewlett Packard<BR><BR>(c) Copyright 1986 HEWLETT-PACKARD COMPANY<BR><BR>To anyone who acknowledges that this file is provided "AS IS"<BR>without any express or implied warranty:<BR>permission to use, copy, modify, and distribute this file<BR>for any purpose is hereby granted without fee, provided that<BR>the above copyright notice and this notice appears in all<BR>copies, and that the name of Hewlett-Packard Company not be<BR>used in advertising or publicity pertaining to distribution<BR>of the software without specific, written prior permission.<BR>Hewlett-Packard Company makes no representations about the<BR>suitability of this software for any purpose.<BR><BR>(9) Hans-Peter Nilsson<BR><BR>Copyright (C) 2001 Hans-Peter Nilsson<BR><BR>Permission to use, copy, modify, and distribute this software is<BR>freely granted, provided that the above copyright notice, this notice<BR>and the following disclaimer are preserved with no changes.<BR><BR>THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR<BR>IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED<BR>WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR<BR>PURPOSE.<BR><BR>(10) Stephane Carrez (m68hc11-elf/m68hc12-elf targets only)<BR><BR>Copyright (C) 1999, 2000, 2001, 2002 Stephane Carrez (stcarrez@nerim.fr)<BR><BR>The authors hereby grant permission to use, copy, modify, distribute,<BR>and license this software and its documentation for any purpose, provided<BR>that existing copyright notices are retained in all copies and that this<BR>notice is included verbatim in any distributions. No written agreement,<BR>license, or royalty fee is required for any of the authorized uses.<BR>Modifications to this software may be copyrighted by their authors<BR>and need not follow the licensing terms described here, provided that<BR>the new terms are clearly indicated on the first page of each file where<BR>they apply.<BR><BR>(11) Christopher G. Demetriou<BR><BR>Copyright (c) 2001 Christopher G. Demetriou<BR>All rights reserved.<BR><BR>Redistribution and use in source and binary forms, with or without<BR>modification, are permitted provided that the following conditions<BR>are met:<BR>1. Redistributions of source code must retain the above copyright<BR>notice, this list of conditions and the following disclaimer.<BR>2. Redistributions in binary form must reproduce the above copyright<BR>notice, this list of conditions and the following disclaimer in the<BR>documentation and/or other materials provided with the distribution.<BR>3. The name of the author may not be used to endorse or promote products<BR>derived from this software without specific prior written permission.<BR><BR>THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR<BR>IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES<BR>OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.<BR>IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,<BR>INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT<BR>NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,<BR>DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY<BR>THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<BR>(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF<BR>THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<BR><BR>(12) SuperH, Inc.<BR><BR>Copyright 2002 SuperH, Inc. All rights reserved<BR><BR>This software is the property of SuperH, Inc (SuperH) which specifically<BR>grants the user the right to modify, use and distribute this software<BR>provided this notice is not removed or altered. All other rights are<BR>reserved by SuperH.<BR><BR>SUPERH MAKES NO WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, WITH REGARD TO<BR>THIS SOFTWARE. IN NO EVENT SHALL SUPERH BE LIABLE FOR INDIRECT, SPECIAL,<BR>INCIDENTAL OR CONSEQUENTIAL DAMAGES IN CONNECTION WITH OR ARISING FROM<BR>THE FURNISHING, PERFORMANCE, OR USE OF THIS SOFTWARE.<BR><BR>So that all may benefit from your experience, please report any problems<BR>or suggestions about this software to the SuperH Support Center via<BR>e-mail at softwaresupport@superh.com .<BR><BR>SuperH, Inc.<BR>405 River Oaks Parkway<BR>San Jose<BR>CA 95134<BR>USA<BR><BR>(13) Royal Institute of Technology<BR><BR>Copyright (c) 1999 Kungliga Tekniska Högskolan<BR>(Royal Institute of Technology, Stockholm, Sweden).<BR>All rights reserved.<BR><BR>Redistribution and use in source and binary forms, with or without<BR>modification, are permitted provided that the following conditions<BR>are met:<BR><BR>1. Redistributions of source code must retain the above copyright<BR>notice, this list of conditions and the following disclaimer.<BR><BR>2. Redistributions in binary form must reproduce the above copyright<BR>notice, this list of conditions and the following disclaimer in the<BR>documentation and/or other materials provided with the distribution.<BR><BR>3. Neither the name of KTH nor the names of its contributors may be<BR>used to endorse or promote products derived from this software without<BR>specific prior written permission.<BR><BR>THIS SOFTWARE IS PROVIDED BY KTH AND ITS CONTRIBUTORS ``AS IS'' AND ANY<BR>EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE<BR>IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR<BR>PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL KTH OR ITS CONTRIBUTORS BE<BR>LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR<BR>CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF<BR>SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR<BR>BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,<BR>WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR<BR>OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF<BR>ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<BR><BR>(14) Alexey Zelkin<BR><BR>Copyright (c) 2000, 2001 Alexey Zelkin &ltphantom@FreeBSD.org><BR>All rights reserved.<BR><BR>Redistribution and use in source and binary forms, with or without<BR>modification, are permitted provided that the following conditions<BR>are met:<BR>1. Redistributions of source code must retain the above copyright<BR>notice, this list of conditions and the following disclaimer.<BR>2. Redistributions in binary form must reproduce the above copyright<BR>notice, this list of conditions and the following disclaimer in the<BR>documentation and/or other materials provided with the distribution.<BR><BR>THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND<BR>ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE<BR>IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE<BR>ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE<BR>FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL<BR>DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS<BR>OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)<BR>HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT<BR>LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY<BR>OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF<BR>SUCH DAMAGE.<BR><BR>(15) Andrey A. Chernov<BR><BR>Copyright (C) 1997 by Andrey A. Chernov, Moscow, Russia.<BR>All rights reserved.<BR><BR>Redistribution and use in source and binary forms, with or without<BR>modification, are permitted provided that the following conditions<BR>are met:<BR>1. Redistributions of source code must retain the above copyright<BR>notice, this list of conditions and the following disclaimer.<BR>2. Redistributions in binary form must reproduce the above copyright<BR>notice, this list of conditions and the following disclaimer in the<BR>documentation and/or other materials provided with the distribution.<BR><BR>THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND<BR>ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE<BR>IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE<BR>ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE<BR>FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL<BR>DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS<BR>OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)<BR>HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT<BR>LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY<BR>OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF<BR>SUCH DAMAGE.<BR><BR>(16) FreeBSD<BR><BR>Copyright (c) 1997-2002 FreeBSD Project.<BR>All rights reserved.<BR><BR>Redistribution and use in source and binary forms, with or without<BR>modification, are permitted provided that the following conditions<BR>are met:<BR>1. Redistributions of source code must retain the above copyright<BR>notice, this list of conditions and the following disclaimer.<BR>2. Redistributions in binary form must reproduce the above copyright<BR>notice, this list of conditions and the following disclaimer in the<BR>documentation and/or other materials provided with the distribution.<BR><BR>THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND<BR>ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE<BR>IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE<BR>ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE<BR>FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL<BR>DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS<BR>OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)<BR>HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT<BR>LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY<BR>OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF<BR>SUCH DAMAGE.<BR><BR>(17) S. L. Moshier<BR><BR>Author: S. L. Moshier.<BR><BR>Copyright (c) 1984,2000 S.L. Moshier<BR><BR>Permission to use, copy, modify, and distribute this software for any<BR>purpose without fee is hereby granted, provided that this entire notice<BR>is included in all copies of any software which is or includes a copy<BR>or modification of this software and in all copies of the supporting<BR>documentation for such software.<BR><BR>THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED<BR>WARRANTY. IN PARTICULAR, THE AUTHOR MAKES NO REPRESENTATION<BR>OR WARRANTY OF ANY KIND CONCERNING THE MERCHANTABILITY OF THIS<BR>SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.<BR><BR>(18) Citrus Project<BR><BR>Copyright (c)1999 Citrus Project,<BR>All rights reserved.<BR><BR>Redistribution and use in source and binary forms, with or without<BR>modification, are permitted provided that the following conditions<BR>are met:<BR>1. Redistributions of source code must retain the above copyright<BR>notice, this list of conditions and the following disclaimer.<BR>2. Redistributions in binary form must reproduce the above copyright<BR>notice, this list of conditions and the following disclaimer in the<BR>documentation and/or other materials provided with the distribution.<BR><BR>THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND<BR>ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE<BR>IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE<BR>ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE<BR>FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL<BR>DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS<BR>OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)<BR>HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT<BR>LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY<BR>OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF<BR>SUCH DAMAGE.<BR><BR>(19) Todd C. Miller<BR><BR>Copyright (c) 1998 Todd C. Miller &ltTodd.Miller@courtesan.com><BR>All rights reserved.<BR><BR>Redistribution and use in source and binary forms, with or without<BR>modification, are permitted provided that the following conditions<BR>are met:<BR>1. Redistributions of source code must retain the above copyright<BR>notice, this list of conditions and the following disclaimer.<BR>2. Redistributions in binary form must reproduce the above copyright<BR>notice, this list of conditions and the following disclaimer in the<BR>documentation and/or other materials provided with the distribution.<BR>3. The name of the author may not be used to endorse or promote products<BR>derived from this software without specific prior written permission.<BR><BR>THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,<BR>INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY<BR>AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL<BR>THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,<BR>EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,<BR>PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;<BR>OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,<BR>WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR<BR>OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF<BR>ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<BR><BR>(20) DJ Delorie (i386)<BR>Copyright (C) 1991 DJ Delorie<BR>All rights reserved.<BR><BR>Redistribution, modification, and use in source and binary forms is permitted<BR>provided that the above copyright notice and following paragraph are<BR>duplicated in all such forms.<BR><BR>This file is distributed WITHOUT ANY WARRANTY; without even the implied<BR>warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.<BR><BR>(21) Free Software Foundation LGPL License (*-linux* targets only)<BR><BR>Copyright (C) 1990-1999, 2000, 2001 Free Software Foundation, Inc.<BR>This file is part of the GNU C Library.<BR>Contributed by Mark Kettenis &ltkettenis@phys.uva.nl>, 1997.<BR><BR>The GNU C Library is free software; you can redistribute it and/or<BR>modify it under the terms of the GNU Lesser General Public<BR>License as published by the Free Software Foundation; either<BR>version 2.1 of the License, or (at your option) any later version.<BR><BR>The GNU C Library is distributed in the hope that it will be useful,<BR>but WITHOUT ANY WARRANTY; without even the implied warranty of<BR>MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU<BR>Lesser General Public License for more details.<BR><BR>You should have received a copy of the GNU Lesser General Public<BR>License along with the GNU C Library; if not, write to the Free<BR>Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA<BR>02110-1301 USA.<BR><BR>(22) Xavier Leroy LGPL License (i[3456]86-*-linux* targets only)<BR><BR>Copyright (C) 1996 Xavier Leroy (Xavier.Leroy@inria.fr)<BR><BR>This program is free software; you can redistribute it and/or<BR>modify it under the terms of the GNU Library General Public License<BR>as published by the Free Software Foundation; either version 2<BR>of the License, or (at your option) any later version.<BR><BR>This program is distributed in the hope that it will be useful,<BR>but WITHOUT ANY WARRANTY; without even the implied warranty of<BR>MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the<BR>GNU Library General Public License for more details.<BR><BR>(23) Intel (i960)<BR><BR>Copyright (c) 1993 Intel Corporation<BR><BR>Intel hereby grants you permission to copy, modify, and distribute this<BR>software and its documentation. Intel grants this permission provided<BR>that the above copyright notice appears in all copies and that both the<BR>copyright notice and this permission notice appear in supporting<BR>documentation. In addition, Intel grants this permission provided that<BR>you prominently mark as "not part of the original" any modifications<BR>made to this software or documentation, and that the name of Intel<BR>Corporation not be used in advertising or publicity pertaining to<BR>distribution of the software or the documentation without specific,<BR>written prior permission.<BR><BR>Intel Corporation provides this AS IS, WITHOUT ANY WARRANTY, EXPRESS OR<BR>IMPLIED, INCLUDING, WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY<BR>OR FITNESS FOR A PARTICULAR PURPOSE. Intel makes no guarantee or<BR>representations regarding the use of, or the results of the use of,<BR>the software and documentation in terms of correctness, accuracy,<BR>reliability, currentness, or otherwise; and you rely on the software,<BR>documentation and results solely at your own risk.<BR><BR>IN NO EVENT SHALL INTEL BE LIABLE FOR ANY LOSS OF USE, LOSS OF BUSINESS,<BR>LOSS OF PROFITS, INDIRECT, INCIDENTAL, SPECIAL OR CONSEQUENTIAL DAMAGES<BR>OF ANY KIND. IN NO EVENT SHALL INTEL'S TOTAL LIABILITY EXCEED THE SUM<BR>PAID TO INTEL FOR THE PRODUCT LICENSED HEREUNDER.<BR><BR>(24) Hewlett-Packard (hppa targets only)<BR><BR>(c) Copyright 1986 HEWLETT-PACKARD COMPANY<BR><BR>To anyone who acknowledges that this file is provided "AS IS"<BR>without any express or implied warranty:<BR>permission to use, copy, modify, and distribute this file<BR>for any purpose is hereby granted without fee, provided that<BR>the above copyright notice and this notice appears in all<BR>copies, and that the name of Hewlett-Packard Company not be<BR>used in advertising or publicity pertaining to distribution<BR>of the software without specific, written prior permission.<BR>Hewlett-Packard Company makes no representations about the<BR>suitability of this software for any purpose.<BR><BR>(25) Henry Spencer (only *-linux targets)<BR><BR>Copyright 1992, 1993, 1994 Henry Spencer. All rights reserved.<BR>This software is not subject to any license of the American Telephone<BR>and Telegraph Company or of the Regents of the University of California.<BR><BR>Permission is granted to anyone to use this software for any purpose on<BR>any computer system, and to alter it and redistribute it, subject<BR>to the following restrictions:<BR><BR>1. The author is not responsible for the consequences of use of this<BR>software, no matter how awful, even if they arise from flaws in it.<BR><BR>2. The origin of this software must not be misrepresented, either by<BR>explicit claim or by omission. Since few users ever read sources,<BR>credits must appear in the documentation.<BR><BR>3. Altered versions must be plainly marked as such, and must not be<BR>misrepresented as being the original software. Since few users<BR>ever read sources, credits must appear in the documentation.<BR><BR>4. This notice may not be removed or altered.<BR><BR>(26) Mike Barcroft<BR><BR>Copyright (c) 2001 Mike Barcroft &ltmike@FreeBSD.org><BR>All rights reserved.<BR><BR>Redistribution and use in source and binary forms, with or without<BR>modification, are permitted provided that the following conditions<BR>are met:<BR>1. Redistributions of source code must retain the above copyright<BR>notice, this list of conditions and the following disclaimer.<BR>2. Redistributions in binary form must reproduce the above copyright<BR>notice, this list of conditions and the following disclaimer in the<BR>documentation and/or other materials provided with the distribution.<BR><BR>THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND<BR>ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE<BR>IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE<BR>ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE<BR>FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL<BR>DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS<BR>OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)<BR>HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT<BR>LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY<BR>OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF<BR>SUCH DAMAGE.<BR><BR>(27) Konstantin Chuguev (--enable-newlib-iconv)<BR><BR>Copyright (c) 1999, 2000<BR>Konstantin Chuguev. All rights reserved.<BR><BR>Redistribution and use in source and binary forms, with or without<BR>modification, are permitted provided that the following conditions<BR>are met:<BR>1. Redistributions of source code must retain the above copyright<BR>notice, this list of conditions and the following disclaimer.<BR>2. Redistributions in binary form must reproduce the above copyright<BR>notice, this list of conditions and the following disclaimer in the<BR>documentation and/or other materials provided with the distribution.<BR><BR>THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND<BR>ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE<BR>IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE<BR>ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE<BR>FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL<BR>DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS<BR>OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)<BR>HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT<BR>LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY<BR>OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF<BR>SUCH DAMAGE.<BR><BR>iconv (Charset Conversion Library) v2.0<BR><BR>(28) Artem Bityuckiy (--enable-newlib-iconv)<BR><BR>Copyright (c) 2003, Artem B. Bityuckiy, SoftMine Corporation.<BR>Rights transferred to Franklin Electronic Publishers.<BR><BR>Redistribution and use in source and binary forms, with or without<BR>modification, are permitted provided that the following conditions<BR>are met:<BR>1. Redistributions of source code must retain the above copyright<BR>notice, this list of conditions and the following disclaimer.<BR>2. Redistributions in binary form must reproduce the above copyright<BR>notice, this list of conditions and the following disclaimer in the<BR>documentation and/or other materials provided with the distribution.<BR><BR>THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND<BR>ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE<BR>IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE<BR>ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE<BR>FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL<BR>DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS<BR>OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)<BR>HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT<BR>LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY<BR>OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF<BR>SUCH DAMAGE.<BR><BR>(29) IBM, Sony, Toshiba (only spu-* targets)<BR><BR>(C) Copyright 2001,2006,<BR>International Business Machines Corporation,<BR>Sony Computer Entertainment, Incorporated,<BR>Toshiba Corporation,<BR><BR>All rights reserved.<BR><BR>Redistribution and use in source and binary forms, with or without<BR>modification, are permitted provided that the following conditions are met:<BR><BR>* Redistributions of source code must retain the above copyright notice,<BR>this list of conditions and the following disclaimer.<BR>* Redistributions in binary form must reproduce the above copyright<BR>notice, this list of conditions and the following disclaimer in the<BR>documentation and/or other materials provided with the distribution.<BR>* Neither the names of the copyright holders nor the names of their<BR>contributors may be used to endorse or promote products derived from this<BR>software without specific prior written permission.<BR><BR>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"<BR>AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE<BR>IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE<BR>ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE<BR>LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR<BR>CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF<BR>SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS<BR>INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN<BR>CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)<BR>ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE<BR>POSSIBILITY OF SUCH DAMAGE.<BR><BR>(30) - Alex Tatmanjants (targets using libc/posix)<BR><BR>Copyright (c) 1995 Alex Tatmanjants &ltalex@elvisti.kiev.ua><BR>at Electronni Visti IA, Kiev, Ukraine.<BR>All rights reserved.<BR><BR>Redistribution and use in source and binary forms, with or without<BR>modification, are permitted provided that the following conditions<BR>are met:<BR>1. Redistributions of source code must retain the above copyright<BR>notice, this list of conditions and the following disclaimer.<BR>2. Redistributions in binary form must reproduce the above copyright<BR>notice, this list of conditions and the following disclaimer in the<BR>documentation and/or other materials provided with the distribution.<BR><BR>THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND<BR>ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE<BR>IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE<BR>ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE<BR>FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL<BR>DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS<BR>OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)<BR>HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT<BR>LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY<BR>OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF<BR>SUCH DAMAGE.<BR><BR>(31) - M. Warner Losh (targets using libc/posix)<BR><BR>Copyright (c) 1998, M. Warner Losh &ltimp@freebsd.org><BR>All rights reserved.<BR><BR>Redistribution and use in source and binary forms, with or without<BR>modification, are permitted provided that the following conditions<BR>are met:<BR>1. Redistributions of source code must retain the above copyright<BR>notice, this list of conditions and the following disclaimer.<BR>2. Redistributions in binary form must reproduce the above copyright<BR>notice, this list of conditions and the following disclaimer in the<BR>documentation and/or other materials provided with the distribution.<BR><BR>THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND<BR>ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE<BR>IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE<BR>ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE<BR>FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL<BR>DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS<BR>OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)<BR>HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT<BR>LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY<BR>OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF<BR>SUCH DAMAGE.<BR><BR>(32) - Andrey A. Chernov (targets using libc/posix)<BR><BR>Copyright (C) 1996 by Andrey A. Chernov, Moscow, Russia.<BR>All rights reserved.<BR><BR>Redistribution and use in source and binary forms, with or without<BR>modification, are permitted provided that the following conditions<BR>are met:<BR>1. Redistributions of source code must retain the above copyright<BR>notice, this list of conditions and the following disclaimer.<BR>2. Redistributions in binary form must reproduce the above copyright<BR>notice, this list of conditions and the following disclaimer in the<BR>documentation and/or other materials provided with the distribution.<BR><BR>THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND<BR>ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE<BR>IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE<BR>ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE<BR>FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL<BR>DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS<BR>OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)<BR>HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT<BR>LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY<BR>OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF<BR>SUCH DAMAGE.<BR><BR>(33) - Daniel Eischen (targets using libc/posix)<BR><BR>Copyright (c) 2001 Daniel Eischen &ltdeischen@FreeBSD.org>.<BR>All rights reserved.<BR><BR>Redistribution and use in source and binary forms, with or without<BR>modification, are permitted provided that the following conditions<BR>are met:<BR>1. Redistributions of source code must retain the above copyright<BR>notice, this list of conditions and the following disclaimer.<BR>2. Redistributions in binary form must reproduce the above copyright<BR>notice, this list of conditions and the following disclaimer in the<BR>documentation and/or other materials provided with the distribution.<BR><BR>THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND<BR>ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE<BR>IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE<BR>ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE<BR>FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL<BR>DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS<BR>OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)<BR>HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT<BR>LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY<BR>OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF<BR>SUCH DAMAGE.<BR><BR><BR>(34) - Jon Beniston (only lm32-* targets)<BR><BR>Contributed by Jon Beniston &ltjon@beniston.com><BR><BR>Redistribution and use in source and binary forms, with or without<BR>modification, are permitted provided that the following conditions<BR>are met:<BR>1. Redistributions of source code must retain the above copyright<BR>notice, this list of conditions and the following disclaimer.<BR>2. Redistributions in binary form must reproduce the above copyright<BR>notice, this list of conditions and the following disclaimer in the<BR>documentation and/or other materials provided with the distribution.<BR><BR>THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND<BR>ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE<BR>IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE<BR>ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE<BR>FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL<BR>DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS<BR>OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)<BR>HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT<BR>LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY<BR>OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF<BR>SUCH DAMAGE.<BR><BR><BR>(35) - ARM Ltd (arm and thumb variant targets only)<BR><BR>Copyright (c) 2009 ARM Ltd<BR>All rights reserved.<BR><BR>Redistribution and use in source and binary forms, with or without<BR>modification, are permitted provided that the following conditions<BR>are met:<BR>1. Redistributions of source code must retain the above copyright<BR>notice, this list of conditions and the following disclaimer.<BR>2. Redistributions in binary form must reproduce the above copyright<BR>notice, this list of conditions and the following disclaimer in the<BR>documentation and/or other materials provided with the distribution.<BR>3. The name of the company may not be used to endorse or promote<BR>products derived from this software without specific prior written<BR>permission.<BR><BR>THIS SOFTWARE IS PROVIDED BY ARM LTD ``AS IS'' AND ANY EXPRESS OR IMPLIED<BR>WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF<BR>MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.<BR>IN NO EVENT SHALL ARM LTD BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,<BR>SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED<BR>TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR<BR>PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF<BR>LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING<BR>NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<BR>SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<BR><BR>(36) - Xilinx, Inc. (microblaze-* and powerpc-* targets)<BR><BR>Copyright (c) 2004, 2009 Xilinx, Inc. All rights reserved.<BR><BR>Redistribution and use in source and binary forms, with or without<BR>modification, are permitted provided that the following conditions are<BR>met:<BR><BR>1. Redistributions source code must retain the above copyright notice,<BR>this list of conditions and the following disclaimer.<BR><BR>2. Redistributions in binary form must reproduce the above copyright<BR>notice, this list of conditions and the following disclaimer in the<BR>documentation and/or other materials provided with the distribution.<BR><BR>3. Neither the name of Xilinx nor the names of its contributors may be<BR>used to endorse or promote products derived from this software without<BR>specific prior written permission.<BR><BR>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER AND CONTRIBUTORS "AS<BR>IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED<BR>TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A<BR>PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT<BR>HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,<BR>SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED<BR>TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR<BR>PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF<BR>LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING<BR>NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<BR>SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<BR><BR><BR>(37) Texas Instruments Incorporated (tic6x-* targets)<BR><BR>Copyright (c) 1996-2010 Texas Instruments Incorporated<BR>http://www.ti.com/<BR><BR>Redistribution and use in source and binary forms, with or without<BR>modification, are permitted provided that the following conditions<BR>are met:<BR><BR>Redistributions of source code must retain the above copyright<BR>notice, this list of conditions and the following disclaimer.<BR><BR>Redistributions in binary form must reproduce the above copyright<BR>notice, this list of conditions and the following disclaimer in<BR>the documentation and/or other materials provided with the<BR>distribution.<BR><BR>Neither the name of Texas Instruments Incorporated nor the names<BR>of its contributors may be used to endorse or promote products<BR>derived from this software without specific prior written<BR>permission.<BR><BR>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS<BR>"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT<BR>LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR<BR>A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT<BR>OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,<BR>SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT<BR>LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,<BR>DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY<BR>THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<BR>(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE<BR>OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<BR><BR>(38) National Semiconductor (cr16-* and crx-* targets)<BR><BR>Copyright (c) 2004 National Semiconductor Corporation<BR><BR>The authors hereby grant permission to use, copy, modify, distribute,<BR>and license this software and its documentation for any purpose, provided<BR>that existing copyright notices are retained in all copies and that this<BR>notice is included verbatim in any distributions. No written agreement,<BR>license, or royalty fee is required for any of the authorized uses.<BR>Modifications to this software may be copyrighted by their authors<BR>and need not follow the licensing terms described here, provided that<BR>the new terms are clearly indicated on the first page of each file where<BR>they apply.<BR><BR>(39) - Adapteva, Inc. (epiphany-* targets)<BR><BR>Copyright (c) 2011, Adapteva, Inc.<BR>All rights reserved.<BR><BR>Redistribution and use in source and binary forms, with or without<BR>modification, are permitted provided that the following conditions are met:<BR>* Redistributions of source code must retain the above copyright notice, this<BR>list of conditions and the following disclaimer.<BR>* Redistributions in binary form must reproduce the above copyright notice,<BR>this list of conditions and the following disclaimer in the documentation<BR>and/or other materials provided with the distribution.<BR>* Neither the name of Adapteva nor the names of its contributors may be used<BR>to endorse or promote products derived from this software without specific<BR>prior written permission.<BR><BR>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<BR>ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<BR>WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<BR>DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE<BR>FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL<BR>DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR<BR>SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER<BR>CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,<BR>OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE<BR>OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<BR><BR>(40) - Altera Corportion (nios2-* targets)<BR><BR>Copyright (c) 2003 Altera Corporation<BR>All rights reserved.<BR><BR>Redistribution and use in source and binary forms, with or without<BR>modification, are permitted provided that the following conditions<BR>are met:<BR><BR>o Redistributions of source code must retain the above copyright<BR>notice, this list of conditions and the following disclaimer.<BR>o Redistributions in binary form must reproduce the above copyright<BR>notice, this list of conditions and the following disclaimer in the<BR>documentation and/or other materials provided with the distribution.<BR>o Neither the name of Altera Corporation nor the names of its<BR>contributors may be used to endorse or promote products derived from<BR>this software without specific prior written permission.<BR><BR>THIS SOFTWARE IS PROVIDED BY ALTERA CORPORATION, THE COPYRIGHT HOLDER,<BR>AND ITS CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,<BR>INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY<BR>AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL<BR>THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,<BR>INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,<BR>BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS<BR>OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND<BR>ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR<BR>TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE<BR>USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<BR><BR>(41) Ed Schouten - Free BSD<BR><BR>Copyright (c) 2008 Ed Schouten &lted@FreeBSD.org><BR>All rights reserved.<BR><BR>Redistribution and use in source and binary forms, with or without<BR>modification, are permitted provided that the following conditions<BR>are met:<BR>1. Redistributions of source code must retain the above copyright<BR>notice, this list of conditions and the following disclaimer.<BR>2. Redistributions in binary form must reproduce the above copyright<BR>notice, this list of conditions and the following disclaimer in the<BR>documentation and/or other materials provided with the distribution.<BR><BR>THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND<BR>ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE<BR>IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE<BR>ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE<BR>FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL<BR>DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS<BR>OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)<BR>HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT<BR>LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY<BR>OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF<BR>SUCH DAMAGE.<BR><BR><BR><BR><BR>
+</div>
+
+</body></html>
