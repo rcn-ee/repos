@@ -1,14 +1,50 @@
-mesa (12.0.3-1rcnee1~bpo1604+20160921+1) xenial; urgency=low
+mesa (13.0.0-1) experimental; urgency=medium
 
-  * Rebuild for repos.rcn-ee.com
+  * New upstream release.
+  * Make mesa-vulkan-drivers.install more generic. Should fix FTBFS on
+    some arches.
+  * rules: Remove superfluous linux check.
+  * rules: Remove vulkan_intel.h only where it get installed in tmp.
+    Should fix FTBFS on some more arches.
+  * source/local-options: Update extend-diff-ignore.
 
- -- Robert Nelson <robertcnelson@gmail.com>  Wed, 21 Sep 2016 20:57:43 -0500
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Wed, 02 Nov 2016 11:49:13 +0100
 
-mesa (12.0.3-1rcnee0~bpo1604+20160921+1) xenial; urgency=low
+mesa (13.0.0~rc2-1) experimental; urgency=medium
 
-  * Rebuild for repos.rcn-ee.com
+  * New upstream release candidate.
+  * control, rules: Use llvm/clang 3.9 (Closes: #836913).
+  * control: Bump libclc dependencies.
+  * Bump libdrm-dev build-dep to 2.4.69 per configure.ac.
+  * Remove libudev-dev and libudev1 dependencies per configure.ac.
+  * Enable OpenCL on kfreebsd-* since we don't need udev anymore.
+  * Enable radv vulkan driver.
+  * control: Remove superfluous linux- prefix.
+  * not-installed: wglext.h got dropped from the tarball.
+  * mesa-common-dev: Remove mesa_glinterop.h, upstream doesn't install
+    it anymore.
+  * Update libgles2-mesa.symbols.
+  * Update libgl1-mesa-glx.symbols.
+  * source/local-options: Update extend-diff-ignore.
+  * Update mesa-vulkan-drivers.lintian-overrides.
 
- -- Robert Nelson <robertcnelson@gmail.com>  Wed, 21 Sep 2016 20:35:14 -0500
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Tue, 25 Oct 2016 10:59:08 +0200
+
+mesa (12.0.3-3) unstable; urgency=medium
+
+  * Limit libgbm1 dependency to !hurd-any (Closes: #841774).  Thanks,
+    Samuel Thibault!
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Mon, 24 Oct 2016 10:18:09 +0200
+
+mesa (12.0.3-2) unstable; urgency=medium
+
+  * control: Add libtxc-dxtn-s2tc as an alternative in libgl1-mesa-dri's
+    Recommends (Closes: #839658).
+  * control: Add strictly versioned dependency on libgbm1 to libegl1-
+    mesa.
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Fri, 21 Oct 2016 09:49:37 +0200
 
 mesa (12.0.3-1) unstable; urgency=medium
 
