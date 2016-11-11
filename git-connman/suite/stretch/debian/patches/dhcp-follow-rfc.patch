@@ -1,0 +1,37 @@
+From c1a47d408e31060cbd64dea1e803d25af5ea20f3 Mon Sep 17 00:00:00 2001
+From: Kristian Klausen <klausenbusk@hotmail.com>
+Date: Wed, 28 Sep 2016 22:03:00 +0200
+Subject: [PATCH] dhcp: Follow the RFC regarding ordrer of "subnet" and
+ "router" option
+
+The 2132 RFC clearly state, that the "subnet" option should be before
+the "router" option.
+
+"If both the subnet mask and the router option are specified in a DHCP
+reply, the subnet mask option MUST be first."
+- https://tools.ietf.org/html/rfc2132#section-3.3
+
+Some dhcp servers (D-Link DSR-1000) doesn't responds correctly, if that
+isn't the case.
+For example the D-Link DSR-1000 which respond back with a DHCPACK
+containing two "subnet" option but no "router" option.
+---
+ src/dhcp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/dhcp.c b/src/dhcp.c
+index 57e7ac9..4d23581 100644
+--- a/src/dhcp.c
++++ b/src/dhcp.c
+@@ -576,8 +576,8 @@ static int dhcp_initialize(struct connman_dhcp *dhcp)
+ 		g_dhcp_client_set_request(dhcp_client, G_DHCP_MTU);
+ 	}
+ 
+-	g_dhcp_client_set_request(dhcp_client, G_DHCP_SUBNET);
+ 	g_dhcp_client_set_request(dhcp_client, G_DHCP_ROUTER);
++	g_dhcp_client_set_request(dhcp_client, G_DHCP_SUBNET);
+ 
+ 	g_dhcp_client_register_event(dhcp_client,
+ 			G_DHCP_CLIENT_EVENT_LEASE_AVAILABLE,
+-- 
+2.10.0
