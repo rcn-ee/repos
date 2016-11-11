@@ -2,21 +2,27 @@
 # -*- makefile -*-
 #export DH_VERBOSE=1
 
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+
 %:
-	dh $@ --parallel --with=systemd,autoreconf --builddir build
+	dh $@ --with=systemd,autoreconf \
+	      --builddir build \
+	      --as-needed
 
 override_dh_auto_configure:
 	dh_auto_configure -- \
-		--enable-threads \
+		--runstatedir='/run' \
+		--enable-l2tp \
 		--enable-openconnect \
-		--with-openconnect=/usr/sbin/openconnect \
 		--enable-openvpn \
-		--with-openvpn=/usr/sbin/openvpn \
-		--with-systemdunitdir=/lib/systemd/system \
-                --with-tmpfilesdir=/usr/lib/tmpfiles.d \
 		--enable-polkit \
 		--enable-pptp \
-		--enable-l2tp
+		--enable-threads \
+		--with-openconnect=/usr/sbin/openconnect \
+		--with-openvpn=/usr/sbin/openvpn \
+		--with-systemdunitdir=/lib/systemd/system \
+		--with-tmpfilesdir=/usr/lib/tmpfiles.d
 
 override_dh_install:
 	find $(CURDIR) -name "*.la" -print -delete
@@ -27,10 +33,8 @@ override_dh_installinit:
 	dh_installinit --restart-after-upgrade
 
 override_dh_auto_clean:
-	rm -f vpn/connman-vpn-dbus.conf
-	rm -f vpn/net.connman.vpn.policy
-	rm -f debian/connman.init
-	rm -f plugins/net.connman.policy
+	$(RM) debian/connman.init
+	$(RM) -r build
 	dh_auto_clean
 
 override_dh_clean:

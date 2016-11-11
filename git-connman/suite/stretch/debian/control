@@ -1,7 +1,6 @@
 Source: connman
 Maintainer: Alexander Sack <asac@debian.org>
-Uploaders: Alexander Sack <asac@ubuntu.com>,
-           Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>,
+Uploaders: Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>,
            Shawn Landden <shawn@churchofgit.com>,
            Alf Gaida <agaida@siduction.org>
 Section: net
@@ -19,9 +18,9 @@ Build-Depends: debhelper (>= 9),
                ppp-dev,
                dh-systemd,
                dh-autoreconf
-Standards-Version: 3.9.6
+Standards-Version: 3.9.8
 Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/connman.git
-Vcs-Git: git://anonscm.debian.org/collab-maint/connman.git
+Vcs-Git: https://anonscm.debian.org/git/collab-maint/connman.git
 Homepage: https://01.org/connman
 
 Package: connman
@@ -63,6 +62,8 @@ Depends: ${shlibs:Depends},
          ${misc:Depends}
 Recommends: connman (= ${source:Version}),
             xl2tpd
+Breaks: connman (<< 1.21-1)
+Replaces: connman (<< 1.21-1)
 Description: Intel Connection Manager daemon - VPN daemon
  The Linux Connection Manager project provides a daemon for managing
  Internet connections within embedded devices running the Linux
@@ -87,6 +88,7 @@ Description: Intel Connection Manager daemon - VPN daemon
 
 Package: connman-dev
 Architecture: any
+Multi-Arch: same
 Section: devel
 Depends: ${misc:Depends},
          libglib2.0-dev,
@@ -114,6 +116,7 @@ Description: Development files for connman
 
 Package: connman-doc
 Architecture: all
+Multi-Arch: foreign
 Section: doc
 Depends: ${misc:Depends}
 Suggests: connman-dev

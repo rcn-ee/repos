@@ -3,13 +3,13 @@ Subject: connman: Missing LSB header in init.d script
 Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=543869
 
 ---
- scripts/connman.in |   33 ++++++++++++++++++++++++++++++---
- 1 file changed, 30 insertions(+), 3 deletions(-)
-
+diff --git a/scripts/connman.in b/scripts/connman.in
+index 1692b95..1b9ca4a 100644
 --- a/scripts/connman.in
 +++ b/scripts/connman.in
-@@ -1,7 +1,17 @@
+@@ -1,8 +1,18 @@
  #!/bin/sh
+ 
 +### BEGIN INIT INFO
 +# Provides:       connman
 +# Required-Start: $remote_fs $syslog dbus
@@ -19,14 +19,15 @@ Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=543869
 +# Short-Description: Connection Manager
 +### END INIT INFO
 +
- 
++
  DAEMON=@sbindir@/connmand
  DESC="Connection Manager"
+-
 +NAME=connmand
- 
  . /lib/lsb/init-functions
  
-@@ -14,8 +24,6 @@
+ if [ -f @sysconfdir@/default/connman ] ; then
+@@ -14,8 +24,6 @@ if [ "CONNMAN_RUNSTATEDIR_RESOLVCONF" !=
      ln -sf @runstatedir@/connman/resolv.conf /etc/
  fi
  
@@ -35,13 +36,13 @@ Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=543869
  do_start() {
  	start-stop-daemon --start --oknodo --exec $DAEMON -- $DAEMON_OPTS
  }
-@@ -24,6 +32,15 @@
+@@ -24,6 +32,15 @@ do_stop() {
  	start-stop-daemon --stop --oknodo --quiet --exec $DAEMON
  }
  
 +get_pid() {
 +	[ -n "$1" ] || return 0
-+	[ -S /var/run/dbus/system_bus_socket ] || return 0
++	[ -S /run/dbus/system_bus_socket ] || return 0
 +
 +	dbus-send --system --dest=org.freedesktop.DBus --print-reply \
 +		/org/freedesktop/DBus org.freedesktop.DBus.GetConnectionUnixProcessID \
@@ -51,7 +52,7 @@ Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=543869
  case "$1" in
    start)
  	log_daemon_msg "Starting $DESC"
-@@ -42,8 +59,18 @@
+@@ -42,8 +59,18 @@ case "$1" in
  	do_start
  	log_end_msg $?
  	;;
