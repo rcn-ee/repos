@@ -15,3 +15,7 @@ debian_version="${package_version}-7~bpo8+2"
 debian_untar=""
 debian_patch=""
 
+dist="debian"
+suite="jessie"
+deb_arch="armhf"
+

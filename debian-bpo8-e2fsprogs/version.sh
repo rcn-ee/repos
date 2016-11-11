@@ -14,3 +14,7 @@ dl_path="pool/main/${reprepro_dir}/"
 debian_version="${package_version}-3~bpo8+1"
 debian_untar=""
 debian_patch=""
+
+dist="debian"
+suite="jessie"
+deb_arch="armhf"

@@ -16,9 +16,17 @@ run () {
 	fi
 }
 
-dist="debian"
-suite="jessie"
-repo="${base}${dist}/"
-deb_arch=armhf
-run
+if [ ! "x${dist}" = "x" ] ; then
+	if [ ! "x${suite}" = "x" ] ; then
+		repo="${base}${dist}/"
+		deb_arch=armhf
+		run
+	else
+		echo "no suite"
+		exit 2
+	fi
+else
+	echo "no dist"
+	exit 2
+fi
 
