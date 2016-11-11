@@ -1,51 +1,90 @@
-connman (1.32-git20160418-0rcnee3~bpo1604+20161111+1) xenial; urgency=low
+connman (1.33-1rcnee0~bpo1604+20161111+1) xenial; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Fri, 11 Nov 2016 16:28:43 -0600
+ -- Robert Nelson <robertcnelson@gmail.com>  Fri, 11 Nov 2016 16:44:18 -0600
 
-connman (1.32-git20160418-0rcnee2~bpo1604+20161111+1) xenial; urgency=low
+connman (1.33-1) unstable; urgency=medium
 
-  * Rebuild for repos.rcn-ee.com
+  [ Alexander Sack ]
+  * document forwarding-info for deb822610-add-manpage-option.patch
+  * drop asac@ubuntu.com from Uploaders
 
- -- Robert Nelson <robertcnelson@gmail.com>  Fri, 11 Nov 2016 16:15:42 -0600
+  [ Alf Gaida ]
+  * Cherry-picked upstream-version 1.33
+  * Format control with cme
+  * Use version 4 in watch file
+  * Bump compat to 10, build depend on debhelper (>=10)
+  * Build out of the tree (--builddir build)
+  * Removed outdated debian/manpages
+  * Install project manpages
+  * Added hardening flags
+  * Reduce dependencies
+  * Deleted obsolete README.debian - connman conflicts with  n-m, wicd
+    and resolvconf
+  * Removed second --enable-l2tp from config
+  * Added --enable-threads and --enable-pie
+  * Removed dependency shlibs from connman-dev
+  * Some copyright fixes
+  * Added connman.lintian-overrides
+  * Added connman-vpn.overrides
+  * Removed --parallel from rules, standard compat 10
+  * added dhcp-follow-rfc.patch (Closes: #839871)
+    thanks Kristian Klausen <klausenbusk@hotmail.com>
+  * Follow the Multiarch hinter:
+    - Marked connman-doc Multi-Arch: foreign
+    - Marked connman-dev Multi-Arch: same
 
-connman (1.32-git20160418-0rcnee1~bpo1604+20161111+1) xenial; urgency=low
+ -- Alf Gaida <agaida@siduction.org>  Thu, 14 Oct 2016 16:50:00 +0100
 
-  * Rebuild for repos.rcn-ee.com
+connman (1.32-1) unstable; urgency=medium
 
- -- Robert Nelson <robertcnelson@gmail.com>  Fri, 11 Nov 2016 15:33:43 -0600
+  * confirm NMUs 1.32-0.1, 1.21-1.1 and 1.21-1.2
+  * fix FTBmFS in sid (Closes: #835735)
+    - adding --with-tmpfilesdir=/usr/lib/tmpfiles.d to avoid systemd build-dep
+  * fix missing manpage option (Closes: #822610)
+    - debian/patches/deb822610-add-manpage-option.patch
+  * remove /var/lib/connman on purge in connman.postrm (Closes: 833294)
 
-connman (1.32-git20160418-0rcnee1~bpo80+20160418+1) jessie; urgency=low
+ -- Alexander Sack <asac@debian.org>  Tue, 06 Sep 2016 15:38:03 +0200
 
-  * Rebuild for repos.rcn-ee.com
+connman (1.32-0.1) unstable; urgency=medium
 
- -- Robert Nelson <robertcnelson@gmail.com>  Mon, 18 Apr 2016 21:00:02 -0500
+  * Non-maintainer upload.
 
-connman (1.31-6) unstable; urgency=medium
+  [ Shawn Landden ]
+  * New upstream release (1.29) (Closes: #742408)
+    - Drop 02-test-pbkdf2-sha1-maximum-salt-len-should-be-32-instead.patch
+  * Conflict with resolvconf (Closes: #763628)
+  * Conflict with wicd-daemon instead of wicd metapackage (Closes: #745874, #797638)
+  * Enable pptp and l2tp vpn plugins (Closes: #751234)
+  * debian/copyright: some files have moved, use kernel.org git url for source
+  * debian/control: new upstream url http://01.org/connman
 
-  * debian rules fixed for tempdirs.d 
+  [ Mateusz Łukasik ]
+  * Take git changes from git to version 1.29 it never was upload to Debian.
+  * New upstream release (1.31) (Closes: #813580, #813647)
+    - cherry-pick the two patches from git
+  * Refresh 01-init-script-lsb-headers.patch.
+  * debian/connman.install: update for new files.
 
- -- Alf Gaida <agaida@siduction.org>  Sat, 06 Feb 2016 16:04:09 +0100
+  [ Gianfranco Costamagna ]
+  * New upstream release (1.32)
+  * Fix build failure with recent headers:
+    - d/p/fix-ftbfs-headers.patch (Closes: #822393)
+  * debian/patches/fix-failure-kernel-4.5.patch:
+    - fix build failure with kernel 4.5.1, due to bad kernel commit
+      1ffad83dffd675cd742286ae82dca7d746cb0da8 (cfr: #822393)
 
-connman (1.31-4) unstable; urgency=medium
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Wed, 27 Apr 2016 19:40:29 +0200
 
-  * fix missed resolv.conf 
+connman (1.21-1.2) unstable; urgency=medium
 
- -- Alf Gaida <agaida@siduction.org>  Sat, 06 Feb 2016 03:26:09 +0100
+  * Non-maintainer upload.
+  * debian/control: Add Breaks+Replaces: connman (<< 1.21-1) to connman-vpn.
+    (Closes: #768116)
 
-connman (1.31-2) unstable; urgency=medium
-
-  * rebuild 
-
- -- Alf Gaida <agaida@siduction.org>  Sat, 06 Feb 2016 03:02:37 +0100
-
-connman (1.31-1) unstable; urgency=medium
-
-  * Cherry-picking upstream version 1.31. 
-  * Patch refreshed
-
- -- Alf Gaida <agaida@siduction.org>  Sun, 10 Jan 2016 03:43:30 +0100
+ -- Sebastian Ramacher <sramacher@debian.org>  Sat, 22 Nov 2014 13:23:34 +0100
 
 connman (1.21-1.1) unstable; urgency=medium
 
