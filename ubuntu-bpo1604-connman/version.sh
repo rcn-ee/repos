@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-mirror="http://ports.ubuntu.com/"
+mirror="http://ports.ubuntu.com"
 
 package_name="connman"
 debian_pkg_name="${package_name}"
