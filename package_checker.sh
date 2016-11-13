@@ -91,7 +91,7 @@ mesa () {
 	echo "llvm/mesa:"
 
 	site="${debian_pool}/main/l"
-	package_name="llvm-toolchain-3.8" ; package_version="${package_name}_3.8.1-15" ; check_http
+	package_name="llvm-toolchain-3.8" ; package_version="${package_name}_3.8.1-16" ; check_http
 	package_name="llvm-toolchain-3.9" ; package_version="${package_name}_3.9-5" ; check_http
 
 	site="${debian_pool}/main/libc"
