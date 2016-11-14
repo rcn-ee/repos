@@ -61,11 +61,6 @@ set_wlan_0_mac () {
 
 		if [ ! "x${current_mac}" = "x${wlan_0_mac}" ] ; then
 
-			if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
-				old_trigger_0=$(cat /sys/class/leds/beaglebone\:green\:usr0/trigger)
-				old_trigger_1=$(cat /sys/class/leds/beaglebone\:green\:usr1/trigger)
-			fi
-
 			cylon_leds & CYLON_PID=$!
 
 			offset0=$(echo ${wlan_0_mac} | cut -b 1-2)
@@ -90,8 +85,8 @@ set_wlan_0_mac () {
 			echo "/boot/initrd.img: update complete"
 			[ -e /proc/$CYLON_PID ]  && kill $CYLON_PID
 			if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
-				echo ${old_trigger_0} > /sys/class/leds/beaglebone\:green\:usr0/trigger
-				echo ${old_trigger_1} > /sys/class/leds/beaglebone\:green\:usr1/trigger
+				echo heartbeat > /sys/class/leds/beaglebone\:green\:usr0/trigger
+				echo mmc0 > /sys/class/leds/beaglebone\:green\:usr1/trigger
 			fi
 		fi
 	fi
