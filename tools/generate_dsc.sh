@@ -86,6 +86,18 @@ run () {
 		cd ../
 	fi
 
+	if [ ! "x${debian_dl_5}" = "x" ] ; then
+		cd ./debian/
+		wget -c ${debian_dl_5}
+		cd ../
+	fi
+
+	if [ ! "x${debian_dl_6}" = "x" ] ; then
+		cd ./debian/
+		wget -c ${debian_dl_6}
+		cd ../
+	fi
+
 	if [ -d ${DIR}/common/ ] ; then
 		mkdir -p ./debian/common/
 		cp -rv ${DIR}/common/* ./debian/common/
