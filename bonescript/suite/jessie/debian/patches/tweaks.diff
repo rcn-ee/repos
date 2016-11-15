@@ -1,18 +1,17 @@
 diff --git a/Makefile b/Makefile
-index 6e890f5..8aec41d 100644
+index 6e890f5..7e8a15a 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -10,11 +10,11 @@ node_version=$(shell $(NODEJS) --version)
+@@ -10,11 +10,8 @@ node_version=$(shell $(NODEJS) --version)
  bs_path=./build/lib/node_modules/bonescript
  
  all:
 -	mkdir -p $(bs_path)
 +	mkdir -p $(bs_path) ; mkdir -p ./build/etc/
  	echo $(ver) > $(bs_path)/bonescript.version
- 	echo $(node_version) > $(bs_path)/bonescript.node_version
- 	echo $(npm_version) > $(bs_path)/bonescript.npm_version
+-	echo $(node_version) > $(bs_path)/bonescript.node_version
+-	echo $(npm_version) > $(bs_path)/bonescript.npm_version
 -	TERM=dumb $(NPM) install -g $(npm_options) --prefix ./build
-+	tar xf debian/bonescript-0.5.0-v0.12.15-rcnee1.tar.xz -C $(bs_path)/../
  	cp -dr --preserve=mode,timestamp etc/* ./build/etc/
  
  clean:

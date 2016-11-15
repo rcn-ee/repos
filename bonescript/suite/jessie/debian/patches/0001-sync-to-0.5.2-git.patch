@@ -1,0 +1,65 @@
+From e84940c6ce99ad3c3bc30bcca9950b424de558be Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Tue, 15 Nov 2016 11:46:42 -0600
+Subject: [PATCH] sync to 0.5.2 git
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ package.json       | 2 +-
+ src/bone.js        | 2 +-
+ src/hw_mainline.js | 8 ++++++--
+ 3 files changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/package.json b/package.json
+index 5415554..ea8be07 100644
+--- a/package.json
++++ b/package.json
+@@ -15,7 +15,7 @@
+     "gpio",
+     "arduino"
+   ],
+-  "version": "0.5.1",
++  "version": "0.5.2",
+   "homepage": "http://beagleboard.org/bonescript",
+   "repository": {
+     "type": "git",
+diff --git a/src/bone.js b/src/bone.js
+index fe8f068..e15f844 100644
+--- a/src/bone.js
++++ b/src/bone.js
+@@ -1362,7 +1362,7 @@ var pinIndex = [
+         "pwm": {
+             "module": "ecap2",
+             "sysfs": 7,
+-            "index": 2,
++            "index": 0,
+             "muxmode": 4,
+             "path": "ecap.2",
+             "name": "ECAPPWM2",
+diff --git a/src/hw_mainline.js b/src/hw_mainline.js
+index 1ca303f..3597e14 100644
+--- a/src/hw_mainline.js
++++ b/src/hw_mainline.js
+@@ -86,13 +86,17 @@ exports.setPinMode = function(pin, pinData, template, resp, callback) {
+         gpioFile[pin.key] = '/sys/class/gpio/gpio' + pin.gpio + '/value';
+         fs.writeFileSync(pinmux+"/state", 'gpio');
+     } else if(template == 'bspwm') {
+-        fs.writeFileSync(pinmux+"/state", 'pwm');
++        // at least P9_28 uses pwm2
++        var state = pin.key.indexOf("P9_28") == -1 ? "pwm" : "pwm2";
++        fs.writeFileSync(pinmux+"/state", state);
+         // Buld a path like: /sys/devices/platform/ocp/48304000.epwmss/48304200.ehrpwm/pwm/pwmchip5
+         // pin.pwm.chip looks up the first address and pin.pwm.addr looks up the second
+         // file_find figures which pwmchip to use
+         // pin.pwm.index tells with half of the PWM to use (0 or 1)
++        // prefix is .ecap for P9_28 and P9_42 and .pwm or .ehrpwm for the rest
++        var prefix = pin.pwm.module.indexOf("ecap") == -1 ? ".pwm" : ".ecap";
+         var pwmPath = my.file_find('/sys/devices/platform/ocp/'+pin.pwm.chip
+-                + '.epwmss/'+pin.pwm.addr+'.pwm/pwm', 'pwmchip', 1);
++                + '.epwmss/'+pin.pwm.addr+prefix+'/pwm', 'pwmchip', 1);
+         // Some versions of kernel (4.4.15-bone11 for instance) still use
+         // .ehrpwm for address
+         if (pwmPath == null) {
+-- 
+2.10.2
+
