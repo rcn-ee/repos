@@ -12,13 +12,12 @@ npm_pkg_install () {
 		rm -rf /usr/local/lib/node_modules/${npm_project}/ || true
 	fi
 
-	echo "${package}:updating: /usr/local/lib/node_modules/${npm_project}/"
+	echo "${package}:updating:[/usr/local/lib/node_modules/${npm_project}/]"
 	tar xf /var/cache/${package}/${npm_file} -C /usr/local/lib/node_modules/
 }
 
 npm_install () {
 	node_bin="/usr/bin/nodejs"
-	npm_bin="/usr/bin/npm"
 
 	unset node_version
 	node_version=$(/usr/bin/nodejs --version || true)
@@ -26,17 +25,17 @@ npm_install () {
 
 	case "${node_version}" in
 	v0.12.*)
-		npm_project="${package}"
+		npm_project="bonescript"
 		npm_file="bonescript-0.5.2-491eff8-v0.12.17.tar.xz"
 		npm_pkg_install
 		;;
 	v4.*)
-		npm_project="${package}"
+		npm_project="bonescript"
 		npm_file="bonescript-0.5.2-491eff8-v4.6.2.tar.xz"
 		npm_pkg_install
 		;;
 	v6.*)
-		npm_project="${package}"
+		npm_project="bonescript"
 		npm_file="bonescript-0.5.2-491eff8-v6.9.1.tar.xz"
 		npm_pkg_install
 		;;
