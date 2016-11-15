@@ -42,6 +42,7 @@ cleanup_suite () {
 }
 
 run () {
+	touch /tmp/chroot-BUILDING.lock
 	out_dir="${localdir}/outgoing/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}"
 	if [ -f /var/lib/sbuild/${suite}-${deb_arch}.tar.gz ] ; then
 
@@ -54,6 +55,7 @@ run () {
 
 		cd ../
 	fi
+	rm -f /tmp/chroot-BUILDING.lock || true
 }
 
 if [ ! "x${dist}" = "x" ] ; then
