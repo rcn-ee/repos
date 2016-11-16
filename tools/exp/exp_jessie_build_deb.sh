@@ -38,6 +38,7 @@ run () {
 					cp -v *.dsc ${out_dir} || true
 					cp -v *.udeb ${out_dir} || true
 					cp -v *.diff.gz ${out_dir} || true
+					cp -v *.buildinfo ${out_dir} || true
 					cp -v *${deb_arch}.build ${out_dir} || true
 				fi
 			fi
