@@ -11,10 +11,22 @@ git_sha=""
 reprepro_dir="g/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee2"
+debian_version="${package_version}-0rcnee3"
 debian_untar=""
 debian_patch=""
-debian_dl_1="https://github.com/rcn-ee/npm-package-gcp-iot-demo/raw/a768d8dd1366726980acba4771ff7dfb3565c1c8/deploy/gcp-iot-demo-0.0.1-fb406df-v0.12.15.tar.xz"
+sbuild_chroot="nodejs-v0.12.x"
+
+dl_mirror="https://github.com/rcn-ee/npm-package-gcp-iot-demo/raw/master/deploy"
+
+v12="v0.12.17"
+ v4="v4.6.2"
+ v6="v6.9.1"
+
+node_gcp="gcp-iot-demo-0.0.1-fb406df"
+
+debian_dl_1="${dl_mirror}/${node_gcp}-${v12}.tar.xz"
+debian_dl_2="${dl_mirror}/${node_gcp}-${v4}.tar.xz"
+debian_dl_3="${dl_mirror}/${node_gcp}-${v6}.tar.xz"
 
 
-jessie_version="~bpo80+20160805+1"
+jessie_version="~bpo80+20161116+1"
