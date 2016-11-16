@@ -9,6 +9,9 @@ service="gcp-iot-demo"
 
 npm_pkg_install () {
 	echo "${package}:installing:[${npm_file}]"
+	if [ ! -d /usr/local/lib/node_modules/ ] ; then
+		mkdir -p /usr/local/lib/node_modules/ || true
+	fi
 	if [ -d /usr/local/lib/node_modules/${npm_project}/ ] ; then
 		rm -rf /usr/local/lib/node_modules/${npm_project}/ || true
 	fi
