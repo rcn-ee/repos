@@ -7,122 +7,47 @@ set -e
 package="bb-node-red-installer"
 service="node-red"
 
-# summary of how this script can be called:
-#        * <postinst> `configure' <most-recently-configured-version>
-#        * <old-postinst> `abort-upgrade' <new version>
-#        * <conflictor's-postinst> `abort-remove' `in-favour' <package>
-#          <new-version>
-#        * <postinst> `abort-remove'
-#        * <deconfigured's-postinst> `abort-deconfigure' `in-favour'
-#          <failed-install-package> <version> `removing'
-#          <conflicting-package> <version>
-# for details, see http://www.debian.org/doc/debian-policy/ or
-# the debian-policy package
-
-export NODE_PATH=/usr/local/lib/node_modules
-
-npm_options="--unsafe-perm --progress=false --loglevel=error --prefix /usr/local"
-
-npm_actually_install () {
-	echo "${package}:Installing: ${pkg}-${ver} (for ${npm_project})"
-	TERM=dumb ${node_bin} ${npm_bin} install -g ${npm_options} ${pkg}@${ver}
-	echo "${ver}" > "${NODE_PATH}/${pkg}/${pkg}.version"
-	echo "${node_version}" > "${NODE_PATH}/${pkg}/${pkg}.node_version"
-
-	if [ "x${js_patch}" = "xenable" ] ; then
-		sed -i -e "s:var server;:require(\'systemd\');\n\nvar server;:"g "${NODE_PATH}/${pkg}/red.js"
-		sed -i -e "s:settings.uiPort,settings.uiHost,f:settings.uiPort);\n        server.on(\'listening\', f:"g "${NODE_PATH}/${pkg}/red.js"
-
-		sed -i -e "s:1880,:port,:"g "${NODE_PATH}/${pkg}/settings.js"
-		sed -i -e "s:module.exports:var port = process.env.LISTEN_PID > 0 ? \'systemd\' \: 1880;\n\nmodule.exports:"g "${NODE_PATH}/${pkg}/settings.js"
-	fi
-}
-
-npm_check_n_install () {
-	if [ ! -f "${NODE_PATH}/${pkg}/${pkg}.version" ] ; then
-		npm_actually_install
-	else
-		unset old_version
-		if [ -f "${NODE_PATH}/${pkg}/${pkg}.version" ] ; then
-			old_version=$(cat "${NODE_PATH}/${pkg}/${pkg}.version" || true)
-		fi
-		if [ ! "x${old_version}" = "x${ver}" ] ; then
-			rm -rf "${NODE_PATH}/${pkg}/" || true
-			npm_actually_install
-		else
-			unset old_version
-			if [ -f "${NODE_PATH}/${pkg}/${pkg}.node_version" ] ; then
-				old_version=$(cat "${NODE_PATH}/${pkg}/${pkg}.node_version" || true)
-			fi
-			if [ ! "x${old_version}" = "x${node_version}" ] ; then
-				rm -rf "${NODE_PATH}/${pkg}/" || true
-				npm_actually_install
-			fi
-		fi
-	fi
-}
-
-npm_git_install () {
-	if [ -d /usr/local/lib/node_modules/node-red-node-beaglebone/ ] ; then
-		rm -rf /usr/local/lib/node_modules/node-red-node-beaglebone/ || true
-	fi
-
-	if [ -d /tmp/node-red-nodes/ ] ; then
-		rm -rf /tmp/node-red-nodes/ || true
-	fi
-
-	git clone -b bbgw https://github.com/rcn-ee/node-red-nodes/ /tmp/node-red-nodes --depth=1
-	if [ -d /tmp/node-red-nodes/hardware/BBB/ ] ; then
-		cd /tmp/node-red-nodes/hardware/BBB/
-		TERM=dumb ${node_bin} ${npm_bin} install -g ${npm_options}
-		cd -
-		sync
-		rm -rf /tmp/node-red-nodes/
-		touch /usr/local/lib/node_modules/node-red-node-beaglebone/.bbgw-dont-load
-	fi
-
-	if [ -d /usr/local/lib/node_modules/node-red-node-upm/ ] ; then
-		rm -rf /usr/local/lib/node_modules/node-red-node-upm/ || true
-	fi
-
-	if [ -d /usr/local/lib/node_modules/node-red-node-bb-upm/ ] ; then
-		rm -rf /usr/local/lib/node_modules/node-red-node-bb-upm/ || true
-	fi
-}
-
 npm_pkg_install () {
+	echo "${package}:installing:[${npm_file}]"
 	if [ -d /usr/local/lib/node_modules/${npm_project}/ ] ; then
 		rm -rf /usr/local/lib/node_modules/${npm_project}/ || true
 	fi
 
-	echo "${package}:updating: /usr/local/lib/node_modules/${npm_project}/"
+	echo "${package}:updating:[/usr/local/lib/node_modules/${npm_project}/]"
 	tar xf /var/cache/${package}/${npm_file} -C /usr/local/lib/node_modules/
 }
 
 npm_install () {
 	node_bin="/usr/bin/nodejs"
-	npm_bin="/usr/bin/npm"
 
 	unset node_version
 	node_version=$(/usr/bin/nodejs --version || true)
+	echo "${package}:nodejs:[${node_version}]"
 
-#npm
+	v12="v0.12.17"
+	v4="v4.6.2"
+	v6="v6.9.1"
 
-#	echo "${package}:npm: [`${node_bin} ${npm_bin} --version`]"
-#	echo "${package}:node: [`${node_bin} --version`]"
-
-#	unset js_patch
-#	npm_project="node-red"
-#	pkg="systemd" ; ver="0.2.6" ; npm_check_n_install
-#	js_patch="enable"
-#	pkg="node-red" ; ver="0.13.4" ; npm_check_n_install
-#	unset js_patch
-
-#pkg
+	node_red="node-red-0.15.2-339aaae"
+	node_red_beaglebone="node-red-node-beaglebone-0.1.8-5c1edc6"
+	node_red_upm="node-red-node-bb-upm-0.0.1-8d217ab"
+	node_red_mongodb="node-red-node-mongodb-0.0.10-5c1edc6"
 
 	npm_project="node-red"
-	npm_file="node-red-0.14.4-a457c06-v0.12.15.tar.xz"
-	npm_pkg_install
+	case "${node_version}" in
+	v0.12.*)
+		npm_file="${node_red}-${v12}.tar.xz"
+		npm_pkg_install
+		;;
+	v4.*)
+		npm_file="${node_red}-${v4}.tar.xz"
+		npm_pkg_install
+		;;
+	v6.*)
+		npm_file="${node_red}-${v6}.tar.xz"
+		npm_pkg_install
+		;;
+	esac
 
 	ln -sf /usr/local/lib/node_modules/node-red/red.js /usr/local/bin/node-red
 	ln -sf /usr/local/lib/node_modules/node-red/bin/node-red-pi /usr/local/bin/node-red-pi
@@ -140,30 +65,49 @@ npm_install () {
 		mkdir -p /root/.node-red/node_modules/ || true
 	fi
 
-	npm_project="node-red-node-beaglebone"
-	npm_file="node-red-node-beaglebone-0.1.6-acb6fe5-v0.12.15.tar.xz"
-	npm_pkg_install
-
-	npm_project="node-red-node-bb-upm"
-	npm_file="node-red-node-bb-upm-0.0.1-8d217ab-v0.12.15.tar.xz"
-	npm_pkg_install
-
-	npm_project="node-red-node-mongodb"
-	npm_file="node-red-node-mongodb-0.0.5-0b094cb-v0.12.15.tar.xz"
-	npm_pkg_install
+	case "${node_version}" in
+	v0.12.*)
+		version="${v12}"
+		npm_project="node-red-node-beaglebone"
+		npm_file="${node_red_beaglebone}-${version}.tar.xz"
+		npm_pkg_install
+		npm_project="node-red-node-bb-upm"
+		npm_file="${node_red_upm}-${version}.tar.xz"
+		npm_pkg_install
+		npm_project="node-red-node-mongodb"
+		npm_file="${node_red_mongodb}-${version}.tar.xz"
+		npm_pkg_install
+		;;
+	v4.*)
+		version="${v4}"
+		npm_project="node-red-node-beaglebone"
+		npm_file="${node_red_beaglebone}-${version}.tar.xz"
+		npm_pkg_install
+		npm_project="node-red-node-bb-upm"
+		npm_file="${node_red_upm}-${version}.tar.xz"
+		npm_pkg_install
+		npm_project="node-red-node-mongodb"
+		npm_file="${node_red_mongodb}-${version}.tar.xz"
+		npm_pkg_install
+		;;
+	v6.*)
+		version="${v6}"
+		npm_project="node-red-node-beaglebone"
+		npm_file="${node_red_beaglebone}-${version}.tar.xz"
+		npm_pkg_install
+		npm_project="node-red-node-bb-upm"
+		npm_file="${node_red_upm}-${version}.tar.xz"
+		npm_pkg_install
+		npm_project="node-red-node-mongodb"
+		npm_file="${node_red_mongodb}-${version}.tar.xz"
+		npm_pkg_install
+		;;
+	esac
 
 	if [ -d /usr/lib/node_modules/mraa ] ; then
 		ln -sf /usr/lib/node_modules/mraa /usr/local/lib/node_modules || true
 		ln -sf /usr/lib/node_modules/jsupm* /usr/local/lib/node_modules || true
 	fi
-
-#https://github.com/theoctal/octalbonescript/issues/62
-#	pkg="node-red-node-beaglebone" ; ver="0.1.6" ; npm_check_n_install
-#	pkg="node-red-node-upm" ; ver="0.3.0" ; npm_check_n_install
-
-#npm
-#	npm_git_install
-#	pkg="node-red-node-mongodb" ; ver="0.0.5" ; npm_check_n_install
 
 	if [ -d /etc/avahi/services/ ] ; then
 		#Annouce http server via DNS Sevice Discovery

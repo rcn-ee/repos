@@ -98,6 +98,42 @@ run () {
 		cd ../
 	fi
 
+	if [ ! "x${debian_dl_7}" = "x" ] ; then
+		cd ./debian/
+		wget -c ${debian_dl_7}
+		cd ../
+	fi
+
+	if [ ! "x${debian_dl_8}" = "x" ] ; then
+		cd ./debian/
+		wget -c ${debian_dl_8}
+		cd ../
+	fi
+
+	if [ ! "x${debian_dl_9}" = "x" ] ; then
+		cd ./debian/
+		wget -c ${debian_dl_9}
+		cd ../
+	fi
+
+	if [ ! "x${debian_dl_10}" = "x" ] ; then
+		cd ./debian/
+		wget -c ${debian_dl_10}
+		cd ../
+	fi
+
+	if [ ! "x${debian_dl_11}" = "x" ] ; then
+		cd ./debian/
+		wget -c ${debian_dl_11}
+		cd ../
+	fi
+
+	if [ ! "x${debian_dl_12}" = "x" ] ; then
+		cd ./debian/
+		wget -c ${debian_dl_12}
+		cd ../
+	fi
+
 	if [ -d ${DIR}/common/ ] ; then
 		mkdir -p ./debian/common/
 		cp -rv ${DIR}/common/* ./debian/common/
