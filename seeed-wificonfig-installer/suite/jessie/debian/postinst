@@ -6,80 +6,45 @@ set -e
 
 package="seeed-wificonfig-installer"
 service="wifidog-gateway"
-npm_file="wificonfig-0.1.5-2a7ba99-v0.12.15-bbgw-bone101-dir-change.tar.xz"
-
-# summary of how this script can be called:
-#        * <postinst> `configure' <most-recently-configured-version>
-#        * <old-postinst> `abort-upgrade' <new version>
-#        * <conflictor's-postinst> `abort-remove' `in-favour' <package>
-#          <new-version>
-#        * <postinst> `abort-remove'
-#        * <deconfigured's-postinst> `abort-deconfigure' `in-favour'
-#          <failed-install-package> <version> `removing'
-#          <conflicting-package> <version>
-# for details, see http://www.debian.org/doc/debian-policy/ or
-# the debian-policy package
-
-export NODE_PATH=/usr/local/lib/node_modules
-
-npm_options="--unsafe-perm=true --progress=false --loglevel=error --prefix /usr/local"
-
-npm_actually_install () {
-	echo "${package}:Installing: ${pkg}-${ver} (for ${npm_project})"
-	TERM=dumb ${node_bin} ${npm_bin} install -g ${npm_options} ${pkg}@${ver}
-	echo "${ver}" > "${pkg_path}/${pkg}.version"
-	echo "${node_version}" > "${pkg_path}/${pkg}.node_version"
-}
-
-npm_check_n_install () {
-	pkg_path="${NODE_PATH}/${pkg}"
-	if [ ! -f "${pkg_path}/${pkg}.version" ] ; then
-		npm_actually_install
-	else
-		unset old_version
-		if [ -f "${pkg_path}/${pkg}.version" ] ; then
-			old_version=$(cat "${pkg_path}/${pkg}.version" || true)
-		fi
-		if [ ! "x${old_version}" = "x${ver}" ] ; then
-			rm -rf "${pkg_path}/" || true
-			npm_actually_install
-		else
-			unset old_version
-			if [ -f "${pkg_path}/${pkg}.node_version" ] ; then
-				old_version=$(cat "${pkg_path}/${pkg}.node_version" || true)
-			fi
-			if [ ! "x${old_version}" = "x${node_version}" ] ; then
-				rm -rf "${pkg_path}/" || true
-				npm_actually_install
-			fi
-		fi
-	fi
-}
 
 npm_pkg_install () {
-	systemctl stop wificonfig.service || true
+	echo "${package}:installing:[${npm_file}]"
 	if [ -d /usr/local/lib/node_modules/${npm_project}/ ] ; then
 		rm -rf /usr/local/lib/node_modules/${npm_project}/ || true
 	fi
 
-	echo "${package}:updating: /usr/local/lib/node_modules/${npm_project}/"
+	echo "${package}:updating:[/usr/local/lib/node_modules/${npm_project}/]"
 	tar xf /var/cache/${package}/${npm_file} -C /usr/local/lib/node_modules/
 }
 
 npm_install () {
 	node_bin="/usr/bin/nodejs"
-	npm_bin="/usr/bin/npm"
 
 	unset node_version
 	node_version=$(/usr/bin/nodejs --version || true)
+	echo "${package}:nodejs:[${node_version}]"
 
-	echo "${package}:npm: [`${node_bin} ${npm_bin} --version`]"
-	echo "${package}:node: [`${node_bin} --version`]"
+	v12="v0.12.17"
+	v4="v4.6.2"
+	v6="v6.9.1"
+
+	wificonfig="wificonfig-0.1.5-c59f06b"
 
 	npm_project="wificonfig"
-	#released version..
-	#pkg="wificonfig" ; ver="0.1.0" ; npm_check_n_install
-	npm_pkg_install
+	case "${node_version}" in
+	v0.12.*)
+		npm_file="${wificonfig}-${v12}.tar.xz"
+		npm_pkg_install
+		;;
+	v4.*)
+		npm_file="${wificonfig}-${v4}.tar.xz"
+		npm_pkg_install
+		;;
+	v6.*)
+		npm_file="${wificonfig}-${v6}.tar.xz"
+		npm_pkg_install
+		;;
+	esac
 
 	if [ ! -d ${NODE_PATH}/${pkg}/log/ ] ; then
 		mkdir -p ${NODE_PATH}/${pkg}/log/ || true
@@ -146,6 +111,7 @@ npm_install () {
 
 case "$1" in
     configure)
+	systemctl stop wificonfig.service || true
 	npm_install
     ;;
 
