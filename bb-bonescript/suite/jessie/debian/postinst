@@ -23,20 +23,24 @@ npm_install () {
 	node_version=$(/usr/bin/nodejs --version || true)
 	echo "${package}:nodejs:[${node_version}]"
 
+	v12="v0.12.17"
+	v4="v4.6.2"
+	v6="v6.9.1"
+
+	bonescript="bonescript-0.5.2-491eff8"
+
+	npm_project="bonescript"
 	case "${node_version}" in
 	v0.12.*)
-		npm_project="bonescript"
-		npm_file="bonescript-0.5.2-491eff8-v0.12.17.tar.xz"
+		npm_file="${bonescript}-${v12}.tar.xz"
 		npm_pkg_install
 		;;
 	v4.*)
-		npm_project="bonescript"
-		npm_file="bonescript-0.5.2-491eff8-v4.6.2.tar.xz"
+		npm_file="${bonescript}-${v4}.tar.xz"
 		npm_pkg_install
 		;;
 	v6.*)
-		npm_project="bonescript"
-		npm_file="bonescript-0.5.2-491eff8-v6.9.1.tar.xz"
+		npm_file="${bonescript}-${v6}.tar.xz"
 		npm_pkg_install
 		;;
 	esac
