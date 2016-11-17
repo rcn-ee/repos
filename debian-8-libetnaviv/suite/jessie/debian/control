@@ -1,0 +1,60 @@
+Source: libetnaviv
+Priority: optional
+Maintainer: Robert Nelson <robertcnelson@gmail.com>
+Build-Depends:
+ debhelper,
+ dh-autoreconf,
+ pkg-config,
+ xserver-xorg-dev,
+ galcore-headers,
+Standards-Version: 3.9.6
+Section: libs
+
+Package: libetnaviv-dev
+Section: libdevel
+Architecture: any
+Depends:
+ libetnaviv (= ${binary:Version}),
+ ${misc:Depends},
+Description: Etnaviv open-source interface library -- development files
+ This library implements the userspace interface to the kernel DRM
+ services.  DRM stands for "Direct Rendering Manager", which is the
+ kernelspace portion of the "Direct Rendering Infrastructure" (DRI).
+ The DRI is currently used on Linux to provide hardware-accelerated
+ OpenGL drivers.
+ .
+ This package provides the development environment for libetnaviv.
+
+Package: libetnaviv
+Section: libs
+Priority: extra
+Architecture: linux-any
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Description: Etnaviv open-source interface library -- runtime
+ This library implements the userspace interface to the kernel DRM
+ services.  DRM stands for "Direct Rendering Manager", which is the
+ kernelspace portion of the "Direct Rendering Infrastructure" (DRI).
+ The DRI is currently used on Linux to provide hardware-accelerated
+ OpenGL drivers.
+ .
+ This package provides the runtime environment for libetnaviv.
+
+Package: libetnaviv-dbg
+Section: debug
+Priority: extra
+Architecture: linux-any
+Depends:
+ ${misc:Depends},
+Multi-Arch: same
+Description: Etnaviv open-source interface library -- debugging symbols
+ This library implements the userspace interface to the kernel DRM
+ services.  DRM stands for "Direct Rendering Manager", which is the
+ kernelspace portion of the "Direct Rendering Infrastructure" (DRI).
+ The DRI is currently used on Linux to provide hardware-accelerated
+ OpenGL drivers.
+ .
+ This package provides debugging symbols for the libetnaviv package.
