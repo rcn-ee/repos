@@ -1,38 +1,22 @@
 Source: libetnaviv
-Priority: optional
 Maintainer: Robert Nelson <robertcnelson@gmail.com>
-Build-Depends:
- debhelper,
- dh-autoreconf,
- pkg-config,
- xserver-xorg-dev,
- galcore-headers,
-Standards-Version: 3.9.6
 Section: libs
-
-Package: libetnaviv-dev
-Section: libdevel
-Architecture: any
-Depends:
- libetnaviv (= ${binary:Version}),
- ${misc:Depends},
-Description: Etnaviv open-source interface library -- development files
- This library implements the userspace interface to the kernel DRM
- services.  DRM stands for "Direct Rendering Manager", which is the
- kernelspace portion of the "Direct Rendering Infrastructure" (DRI).
- The DRI is currently used on Linux to provide hardware-accelerated
- OpenGL drivers.
- .
- This package provides the development environment for libetnaviv.
+Priority: optional
+Build-Depends: debhelper (>= 9),
+               dh-autoreconf,
+               pkg-config,
+               xserver-xorg-dev,
+               galcore-headers,
+Standards-Version: 3.9.6
+Vcs-Browser: https://github.com/etnaviv/libetnaviv
+Vcs-Git: https://github.com/etnaviv/libetnaviv
+Homepage: https://github.com/etnaviv/libetnaviv
 
 Package: libetnaviv
-Section: libs
-Priority: extra
-Architecture: linux-any
-Depends:
- ${shlibs:Depends},
- ${misc:Depends},
+Architecture: any
 Multi-Arch: same
+Depends: ${shlibs:Depends},
+         ${misc:Depends}
 Pre-Depends: ${misc:Pre-Depends}
 Description: Etnaviv open-source interface library -- runtime
  This library implements the userspace interface to the kernel DRM
@@ -43,12 +27,27 @@ Description: Etnaviv open-source interface library -- runtime
  .
  This package provides the runtime environment for libetnaviv.
 
+Package: libetnaviv-dev
+Architecture: any
+Section: libdevel
+Depends: ${misc:Depends},
+         libetnaviv (= ${binary:Version})
+Description: Etnaviv open-source interface library -- development files
+ This library implements the userspace interface to the kernel DRM
+ services.  DRM stands for "Direct Rendering Manager", which is the
+ kernelspace portion of the "Direct Rendering Infrastructure" (DRI).
+ The DRI is currently used on Linux to provide hardware-accelerated
+ OpenGL drivers.
+ .
+ This package provides the development environment for libetnaviv.
+
 Package: libetnaviv-dbg
+Architecture: any
+Multi-Arch: same
 Section: debug
 Priority: extra
-Architecture: linux-any
-Depends:
- ${misc:Depends},
+Depends: ${misc:Depends},
+         libetnaviv (= ${binary:Version})
 Multi-Arch: same
 Description: Etnaviv open-source interface library -- debugging symbols
  This library implements the userspace interface to the kernel DRM
