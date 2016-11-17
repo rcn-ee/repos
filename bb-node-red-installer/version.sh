@@ -11,7 +11,7 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee2"
+debian_version="${package_version}-0rcnee3"
 debian_untar=""
 debian_patch=""
 
@@ -21,10 +21,10 @@ v12="v0.12.17"
  v4="v4.6.2"
  v6="v6.9.1"
 
-           node_red="node-red-0.15.2-339aaae"
-node_red_beaglebone="node-red-node-beaglebone-0.1.8-5c1edc6"
+           node_red="node-red-0.15.2-74f2180"
+node_red_beaglebone="node-red-node-beaglebone-0.1.8-7a39c6f"
        node_red_upm="node-red-node-bb-upm-0.0.1-8d217ab"
-   node_red_mongodb="node-red-node-mongodb-0.0.10-5c1edc6"
+   node_red_mongodb="node-red-node-mongodb-0.0.11-7a39c6f"
 
  debian_dl_1="${dl_mirror}/${node_red}-${v12}.tar.xz"
  debian_dl_2="${dl_mirror}/${node_red}-${v4}.tar.xz"
