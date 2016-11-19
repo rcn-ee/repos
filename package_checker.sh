@@ -105,7 +105,7 @@ mesa () {
 	package_name="libvdpau" ; package_version="${package_name}_1.1.1-5" ; check_http
 
 	site="${debian_pool}/main/libv"
-	package_name="libva" ; package_version="${package_name}_1.7.2-1" ; check_http
+	package_name="libva" ; package_version="${package_name}_1.7.3-2" ; check_http
 
 	site="${debian_pool}/main/m"
 	package_name="mesa" ; package_version="${package_name}_12.0.3-1" ; check_http
