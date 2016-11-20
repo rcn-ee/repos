@@ -1,5 +1,5 @@
 diff --git a/configure.ac b/configure.ac
-index d215b63..b1de02f 100644
+index d215b63..2148576 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -68,7 +68,7 @@ OPENCL_VERSION=1
@@ -15,7 +15,7 @@ index d215b63..b1de02f 100644
  LIBDRM_NOUVEAU_REQUIRED=2.4.66
  LIBDRM_FREEDRENO_REQUIRED=2.4.68
  LIBDRM_VC4_REQUIRED=2.4.69
-+LIBDRM_ETNAVIV_REQUIRED=2.4.71
++LIBDRM_ETNAVIV_REQUIRED=2.4.73
  DRI2PROTO_REQUIRED=2.6
  DRI3PROTO_REQUIRED=1.0
  PRESENTPROTO_REQUIRED=1.0
@@ -661,10 +661,10 @@ index 0000000..e6d8b9f
 +CPP_SOURCES :=
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_asm.c b/src/gallium/drivers/etnaviv/etnaviv_asm.c
 new file mode 100644
-index 0000000..e14adff
+index 0000000..7d6270c
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_asm.c
-@@ -0,0 +1,105 @@
+@@ -0,0 +1,107 @@
 +/*
 + * Copyright (c) 2012-2015 Etnaviv Project
 + *
@@ -747,6 +747,7 @@ index 0000000..e14adff
 +            VIV_ISA_WORD_1_TEX_SWIZ(inst->tex.swiz) |
 +            COND(inst->src[0].use, VIV_ISA_WORD_1_SRC0_USE) |
 +            VIV_ISA_WORD_1_SRC0_REG(inst->src[0].reg) |
++            COND(inst->type & 0x4, VIV_ISA_WORD_1_TYPE_BIT2) |
 +            VIV_ISA_WORD_1_SRC0_SWIZ(inst->src[0].swiz) |
 +            COND(inst->src[0].neg, VIV_ISA_WORD_1_SRC0_NEG) |
 +            COND(inst->src[0].abs, VIV_ISA_WORD_1_SRC0_ABS);
@@ -757,7 +758,8 @@ index 0000000..e14adff
 +            VIV_ISA_WORD_2_SRC1_SWIZ(inst->src[1].swiz) |
 +            COND(inst->src[1].neg, VIV_ISA_WORD_2_SRC1_NEG) |
 +            COND(inst->src[1].abs, VIV_ISA_WORD_2_SRC1_ABS) |
-+            VIV_ISA_WORD_2_SRC1_AMODE(inst->src[1].amode);
++            VIV_ISA_WORD_2_SRC1_AMODE(inst->src[1].amode) |
++            VIV_ISA_WORD_2_TYPE_BIT01(inst->type & 0x3);
 +   out[3] = VIV_ISA_WORD_3_SRC1_RGROUP(inst->src[1].rgroup) |
 +            COND(inst->src[2].use, VIV_ISA_WORD_3_SRC2_USE) |
 +            VIV_ISA_WORD_3_SRC2_REG(inst->src[2].reg) |
@@ -772,10 +774,10 @@ index 0000000..e14adff
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_asm.h b/src/gallium/drivers/etnaviv/etnaviv_asm.h
 new file mode 100644
-index 0000000..4e8725a
+index 0000000..2fe23df
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_asm.h
-@@ -0,0 +1,132 @@
+@@ -0,0 +1,133 @@
 +/*
 + * Copyright (c) 2012-2015 Etnaviv Project
 + *
@@ -859,6 +861,7 @@ index 0000000..4e8725a
 +/*** instruction ***/
 +struct etna_inst {
 +   uint8_t opcode; /* INST_OPCODE_* */
++   uint8_t type; /* INST_TYPE_* */
 +   unsigned cond:5; /* INST_CONDITION_* */
 +   unsigned sat:1; /* saturate result between 0..1 */
 +   struct etna_inst_dst dst; /* destination operand */
@@ -4631,10 +4634,10 @@ index 0000000..6f241d1
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_context.c b/src/gallium/drivers/etnaviv/etnaviv_context.c
 new file mode 100644
-index 0000000..97ef635
+index 0000000..d767cd1
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_context.c
-@@ -0,0 +1,289 @@
+@@ -0,0 +1,323 @@
 +/*
 + * Copyright (c) 2012-2015 Etnaviv Project
 + *
@@ -4707,6 +4710,37 @@ index 0000000..97ef635
 +
 +   FREE(pctx);
 +}
++
++/* Update render state where needed based on draw operation */
++static void
++etna_update_state_for_draw(struct etna_context *ctx, const struct pipe_draw_info *info)
++{
++   /* Handle primitive restart:
++    * - If not an indexed draw, we don't care about the state of the primitive restart bit.
++    * - Otherwise, set the bit in INDEX_STREAM_CONTROL in the index buffer state
++    *   accordingly
++    * - If the value of the INDEX_STREAM_CONTROL register changed due to this, or
++    *   primitive restart is enabled and the restart index changed, mark the index
++    *   buffer state as dirty
++    */
++
++   if (info->indexed) {
++      uint32_t new_control = ctx->index_buffer.FE_INDEX_STREAM_CONTROL;
++
++      if (info->primitive_restart)
++         new_control |= VIVS_FE_INDEX_STREAM_CONTROL_PRIMITIVE_RESTART;
++      else
++         new_control &= ~VIVS_FE_INDEX_STREAM_CONTROL_PRIMITIVE_RESTART;
++
++      if (ctx->index_buffer.FE_INDEX_STREAM_CONTROL != new_control ||
++          (info->primitive_restart && ctx->index_buffer.FE_PRIMITIVE_RESTART_INDEX != info->restart_index)) {
++         ctx->index_buffer.FE_INDEX_STREAM_CONTROL = new_control;
++         ctx->index_buffer.FE_PRIMITIVE_RESTART_INDEX = info->restart_index;
++         ctx->dirty |= ETNA_DIRTY_INDEX_BUFFER;
++      }
++   }
++}
++
 +
 +static void
 +etna_draw_vbo(struct pipe_context *pctx, const struct pipe_draw_info *info)
@@ -4787,6 +4821,9 @@ index 0000000..97ef635
 +
 +   ctx->stats.prims_emitted += u_reduced_prims_for_vertices(info->mode, info->count);
 +   ctx->stats.draw_calls++;
++
++   /* Update state for this draw operation */
++   etna_update_state_for_draw(ctx, info);
 +
 +   /* First, sync state, then emit DRAW_PRIMITIVES or DRAW_INDEXED_PRIMITIVES */
 +   etna_emit_state(ctx);
@@ -4926,10 +4963,10 @@ index 0000000..97ef635
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_context.h b/src/gallium/drivers/etnaviv/etnaviv_context.h
 new file mode 100644
-index 0000000..31cf772
+index 0000000..74e93e1
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_context.h
-@@ -0,0 +1,193 @@
+@@ -0,0 +1,194 @@
 +/*
 + * Copyright (c) 2012-2015 Etnaviv Project
 + *
@@ -4979,6 +5016,7 @@ index 0000000..31cf772
 +   struct pipe_index_buffer ib;
 +   struct etna_reloc FE_INDEX_STREAM_BASE_ADDR;
 +   uint32_t FE_INDEX_STREAM_CONTROL;
++   uint32_t FE_PRIMITIVE_RESTART_INDEX;
 +};
 +
 +struct etna_shader_input {
@@ -5210,10 +5248,10 @@ index 0000000..cfda52b
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_disasm.c b/src/gallium/drivers/etnaviv/etnaviv_disasm.c
 new file mode 100644
-index 0000000..f60023f
+index 0000000..918d24e
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_disasm.c
-@@ -0,0 +1,567 @@
+@@ -0,0 +1,612 @@
 +/*
 + * Copyright (c) 2016 Etnaviv Project
 + *
@@ -5265,7 +5303,7 @@ index 0000000..f60023f
 +   uint32_t tex_swiz    : 8;
 +   uint32_t src0_use    : 1;
 +   uint32_t src0_reg    : 9;
-+   uint32_t unk1_21     : 1;
++   uint32_t type_bit2   : 1;
 +   uint32_t src0_swiz   : 8;
 +   uint32_t src0_neg    : 1;
 +   uint32_t src0_abs    : 1;
@@ -5280,7 +5318,7 @@ index 0000000..f60023f
 +   uint32_t src1_neg    : 1;
 +   uint32_t src1_abs    : 1;
 +   uint32_t src1_amode  : 3;
-+   uint32_t unk2_30     : 2;
++   uint32_t type_bit01  : 2;
 +
 +   /* dword3: */
 +   union {
@@ -5333,6 +5371,48 @@ index 0000000..f60023f
 +
 +   int imm;
 +};
++
++static void
++printf_type(uint8_t type)
++{
++   switch(type) {
++   case INST_TYPE_F32:
++      /* as f32 is the default print nothing */
++      break;
++
++   case INST_TYPE_S32:
++      printf(".s32");
++      break;
++
++   case INST_TYPE_S8:
++      printf(".s8");
++      break;
++
++   case INST_TYPE_U16:
++      printf(".u16");
++      break;
++
++   case INST_TYPE_F16:
++      printf(".f16");
++      break;
++
++   case INST_TYPE_S16:
++      printf(".s16");
++      break;
++
++   case INST_TYPE_U32:
++      printf(".u32");
++      break;
++
++   case INST_TYPE_U8:
++      printf(".u8");
++      break;
++
++   default:
++      abort();
++      break;
++   }
++}
 +
 +static void
 +print_condition(uint8_t condition)
@@ -5758,7 +5838,10 @@ index 0000000..f60023f
 +         .imm = imm,
 +      };
 +
++      uint8_t type = instr->type_bit01 | (instr->type_bit2 << 2);
++
 +      printf("%s", name);
++      printf_type(type);
 +      if (instr->sat)
 +         printf(".SAT");
 +      print_condition(instr->cond);
@@ -5829,10 +5912,10 @@ index 0000000..15df612
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_emit.c b/src/gallium/drivers/etnaviv/etnaviv_emit.c
 new file mode 100644
-index 0000000..5e17088a
+index 0000000..7eeeda5
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_emit.c
-@@ -0,0 +1,765 @@
+@@ -0,0 +1,770 @@
 +/*
 + * Copyright (c) 2014-2015 Etnaviv Project
 + *
@@ -6212,6 +6295,11 @@ index 0000000..5e17088a
 +   if (likely(dirty & (ETNA_DIRTY_VERTEX_BUFFERS))) {
 +      /*0064C*/ EMIT_STATE_RELOC(FE_VERTEX_STREAM_BASE_ADDR, &ctx->vertex_buffer.cvb[0].FE_VERTEX_STREAM_BASE_ADDR);
 +      /*00650*/ EMIT_STATE(FE_VERTEX_STREAM_CONTROL, ctx->vertex_buffer.cvb[0].FE_VERTEX_STREAM_CONTROL);
++   }
++   if (likely(dirty & (ETNA_DIRTY_INDEX_BUFFER))) {
++      /*00674*/ EMIT_STATE(FE_PRIMITIVE_RESTART_INDEX, ctx->index_buffer.FE_PRIMITIVE_RESTART_INDEX);
++   }
++   if (likely(dirty & (ETNA_DIRTY_VERTEX_BUFFERS))) {
 +      for (int x = 1; x < ctx->vertex_buffer.count; ++x) {
 +         /*00680*/ EMIT_STATE_RELOC(FE_VERTEX_STREAMS_BASE_ADDR(x), &ctx->vertex_buffer.cvb[x].FE_VERTEX_STREAM_BASE_ADDR);
 +      }
@@ -6869,10 +6957,10 @@ index 0000000..cd91d2e
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_format.c b/src/gallium/drivers/etnaviv/etnaviv_format.c
 new file mode 100644
-index 0000000..02e36a5
+index 0000000..0794603
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_format.c
-@@ -0,0 +1,245 @@
+@@ -0,0 +1,268 @@
 +/*
 + * Copyright (c) 2016 Etnaviv Project
 + *
@@ -6918,6 +7006,13 @@ index 0000000..02e36a5
 +};
 +
 +#define RS_FORMAT_NONE ~0
++
++#define RS_FORMAT_MASK        0xf
++#define RS_FORMAT(x)          ((x) & RS_FORMAT_MASK)
++#define RS_FORMAT_RB_SWAP     0x10
++
++#define RS_FORMAT_X8B8G8R8    (RS_FORMAT_X8R8G8B8 | RS_FORMAT_RB_SWAP)
++#define RS_FORMAT_A8B8G8R8    (RS_FORMAT_A8R8G8B8 | RS_FORMAT_RB_SWAP)
 +
 +/* vertex + texture */
 +#define VT(pipe, vtxfmt, texfmt, rsfmt)                   \
@@ -7009,13 +7104,18 @@ index 0000000..02e36a5
 +   V_(R16G16_SSCALED, SHORT,          NONE),
 +   V_(R16G16_FLOAT,   HALF_FLOAT,     NONE),
 +
-+   V_(R8G8B8A8_UNORM,   UNSIGNED_BYTE, NONE),
-+   V_(R8G8B8A8_SNORM,   BYTE,          NONE),
-+   _T(R8G8B8X8_UNORM,   X8B8G8R8,      NONE),
-+   V_(R8G8B8A8_UINT,    UNSIGNED_BYTE, NONE),
-+   V_(R8G8B8A8_SINT,    BYTE,          NONE),
-+   V_(R8G8B8A8_USCALED, UNSIGNED_BYTE, NONE),
-+   V_(R8G8B8A8_SSCALED, BYTE,          NONE),
++   V_(A8B8G8R8_UNORM,   UNSIGNED_BYTE, NONE),
++
++   V_(R8G8B8A8_UNORM,   UNSIGNED_BYTE, A8B8G8R8),
++   V_(R8G8B8A8_SNORM,   BYTE,          A8B8G8R8),
++   _T(R8G8B8X8_UNORM,   X8B8G8R8,      X8B8G8R8),
++   V_(R8G8B8A8_UINT,    UNSIGNED_BYTE, A8B8G8R8),
++   V_(R8G8B8A8_SINT,    BYTE,          A8B8G8R8),
++   V_(R8G8B8A8_USCALED, UNSIGNED_BYTE, A8B8G8R8),
++   V_(R8G8B8A8_SSCALED, BYTE,          A8B8G8R8),
++
++   _T(R8G8B8A8_UNORM, A8B8G8R8, A8B8G8R8),
++   _T(R8G8B8X8_UNORM, X8B8G8R8, X8B8G8R8),
 +
 +   _T(B8G8R8A8_UNORM, A8R8G8B8, A8R8G8B8),
 +   _T(B8G8R8X8_UNORM, X8R8G8B8, X8R8G8B8),
@@ -7106,7 +7206,18 @@ index 0000000..02e36a5
 +   if (!formats[fmt].present)
 +      return ETNA_NO_MATCH;
 +
-+   return formats[fmt].rs;
++   if (formats[fmt].rs == ETNA_NO_MATCH)
++      return ETNA_NO_MATCH;
++
++   return RS_FORMAT(formats[fmt].rs);
++}
++
++int
++translate_rs_format_rb_swap(enum pipe_format fmt)
++{
++   assert(formats[fmt].present);
++
++   return formats[fmt].rs & RS_FORMAT_RB_SWAP;
 +}
 +
 +/* Return type flags for vertex element format */
@@ -7120,10 +7231,10 @@ index 0000000..02e36a5
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_format.h b/src/gallium/drivers/etnaviv/etnaviv_format.h
 new file mode 100644
-index 0000000..3f9937b
+index 0000000..549dfda
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_format.h
-@@ -0,0 +1,44 @@
+@@ -0,0 +1,47 @@
 +/*
 + * Copyright (c) 2016 Etnaviv Project
 + *
@@ -7163,6 +7274,9 @@ index 0000000..3f9937b
 +
 +uint32_t
 +translate_rs_format(enum pipe_format fmt);
++
++int
++translate_rs_format_rb_swap(enum pipe_format fmt);
 +
 +uint32_t
 +translate_vertex_format_type(enum pipe_format fmt);
@@ -8786,10 +8900,10 @@ index 0000000..ec5b659
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_screen.c b/src/gallium/drivers/etnaviv/etnaviv_screen.c
 new file mode 100644
-index 0000000..a790974
+index 0000000..6ac75b0
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_screen.c
-@@ -0,0 +1,800 @@
+@@ -0,0 +1,802 @@
 +/*
 + * Copyright (c) 2012-2015 Etnaviv Project
 + *
@@ -8941,6 +9055,9 @@ index 0000000..a790974
 +      return true; /* VIV_FEATURE(priv->dev, chipMinorFeatures1,
 +                      NON_POWER_OF_TWO); */
 +
++   case PIPE_CAP_PRIMITIVE_RESTART:
++      return VIV_FEATURE(screen, chipMinorFeatures1, HALTI0);
++
 +   case PIPE_CAP_ENDIANNESS:
 +      return PIPE_ENDIAN_LITTLE; /* on most Viv hw this is configurable (feature
 +                                    ENDIANNESS_CONFIG) */
@@ -8950,7 +9067,6 @@ index 0000000..a790974
 +   case PIPE_CAP_TEXTURE_SWIZZLE: /* XXX supported on gc2000 */
 +   case PIPE_CAP_COMPUTE: /* XXX supported on gc2000 */
 +   case PIPE_CAP_MIXED_COLORBUFFER_FORMATS: /* only one colorbuffer supported, so mixing makes no sense */
-+   case PIPE_CAP_PRIMITIVE_RESTART: /* primitive restart index AFAIK not supported */
 +   case PIPE_CAP_CONDITIONAL_RENDER: /* no occlusion queries */
 +   case PIPE_CAP_TGSI_INSTANCEID: /* no idea, really */
 +   case PIPE_CAP_START_INSTANCE: /* instancing not supported AFAIK */
@@ -11969,10 +12085,10 @@ index 0000000..ca156a4
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_translate.h b/src/gallium/drivers/etnaviv/etnaviv_translate.h
 new file mode 100644
-index 0000000..880d2b8
+index 0000000..d0623db
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_translate.h
-@@ -0,0 +1,535 @@
+@@ -0,0 +1,516 @@
 +/*
 + * Copyright (c) 2012-2013 Etnaviv Project
 + *
@@ -12004,6 +12120,7 @@ index 0000000..880d2b8
 +#include "pipe/p_state.h"
 +
 +#include "etnaviv_debug.h"
++#include "etnaviv_format.h"
 +#include "etnaviv_tiling.h"
 +#include "etnaviv_util.h"
 +#include "hw/cmdstream.xml.h"
@@ -12228,29 +12345,9 @@ index 0000000..880d2b8
 +}
 +
 +static inline int
-+translate_rb_format_swap(enum pipe_format fmt)
-+{
-+   switch (fmt) {
-+   case PIPE_FORMAT_B4G4R4X4_UNORM:
-+   case PIPE_FORMAT_B4G4R4A4_UNORM:
-+   case PIPE_FORMAT_B5G5R5X1_UNORM:
-+   case PIPE_FORMAT_B5G5R5A1_UNORM:
-+   case PIPE_FORMAT_B5G6R5_UNORM:
-+   case PIPE_FORMAT_B8G8R8X8_UNORM:
-+   case PIPE_FORMAT_B8G8R8A8_UNORM:
-+   case PIPE_FORMAT_YUYV:
-+   default:
-+      return 0;
-+   case PIPE_FORMAT_R8G8B8X8_UNORM:
-+   case PIPE_FORMAT_R8G8B8A8_UNORM:
-+      return 1;
-+   }
-+}
-+
-+static inline int
 +translate_rb_src_dst_swap(enum pipe_format src, enum pipe_format dst)
 +{
-+   return translate_rb_format_swap(src) ^ translate_rb_format_swap(dst);
++   return translate_rs_format_rb_swap(src) ^ translate_rs_format_rb_swap(dst);
 +}
 +
 +static inline uint32_t
@@ -12986,10 +13083,10 @@ index 0000000..953a6a7
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/hw/cmdstream.xml.h b/src/gallium/drivers/etnaviv/hw/cmdstream.xml.h
 new file mode 100644
-index 0000000..050c91e
+index 0000000..b1319b0
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/hw/cmdstream.xml.h
-@@ -0,0 +1,260 @@
+@@ -0,0 +1,270 @@
 +#ifndef CMDSTREAM_XML
 +#define CMDSTREAM_XML
 +
@@ -13000,9 +13097,9 @@ index 0000000..050c91e
 +git clone git://0x04.net/rules-ng-ng
 +
 +The rules-ng-ng source files this header was generated from are:
-+- cmdstream.xml (  13632 bytes, from 2016-11-02 13:52:32)
-+- copyright.xml (   1597 bytes, from 2016-10-29 07:29:22)
-+- common.xml    (  23272 bytes, from 2016-10-29 14:18:57)
++- cmdstream.xml (  14094 bytes, from 2016-11-13 13:47:18)
++- copyright.xml (   1597 bytes, from 2016-11-13 13:46:17)
++- common.xml    (  23344 bytes, from 2016-11-13 13:47:18)
 +
 +Copyright (C) 2012-2016 by the following authors:
 +- Wladimir J. van der Laan <laanwj@gmail.com>
@@ -13042,7 +13139,7 @@ index 0000000..050c91e
 +#define FE_OPCODE_STALL						0x00000009
 +#define FE_OPCODE_CALL						0x0000000a
 +#define FE_OPCODE_RETURN					0x0000000b
-+#define FE_OPCODE_DRAW_NEW					0x0000000c
++#define FE_OPCODE_DRAW_INSTANCED				0x0000000c
 +#define FE_OPCODE_CHIP_SELECT					0x0000000d
 +#define PRIMITIVE_TYPE_POINTS					0x00000001
 +#define PRIMITIVE_TYPE_LINES					0x00000002
@@ -13231,28 +13328,38 @@ index 0000000..050c91e
 +#define VIV_FE_CHIP_SELECT_HEADER_ENABLE_CHIP1			0x00000002
 +#define VIV_FE_CHIP_SELECT_HEADER_ENABLE_CHIP0			0x00000001
 +
-+#define VIV_FE_DRAW_NEW						0x00000000
++#define VIV_FE_DRAW_INSTANCED					0x00000000
 +
-+#define VIV_FE_DRAW_NEW_HEADER					0x00000000
-+#define VIV_FE_DRAW_NEW_HEADER_OP__MASK				0xf8000000
-+#define VIV_FE_DRAW_NEW_HEADER_OP__SHIFT			27
-+#define VIV_FE_DRAW_NEW_HEADER_OP_DRAW_NEW			0x60000000
-+#define VIV_FE_DRAW_NEW_HEADER_TYPE__MASK			0x00ff0000
-+#define VIV_FE_DRAW_NEW_HEADER_TYPE__SHIFT			16
-+#define VIV_FE_DRAW_NEW_HEADER_TYPE(x)				(((x) << VIV_FE_DRAW_NEW_HEADER_TYPE__SHIFT) & VIV_FE_DRAW_NEW_HEADER_TYPE__MASK)
-+#define VIV_FE_DRAW_NEW_HEADER_UNK0				0x00000001
++#define VIV_FE_DRAW_INSTANCED_HEADER				0x00000000
++#define VIV_FE_DRAW_INSTANCED_HEADER_OP__MASK			0xf8000000
++#define VIV_FE_DRAW_INSTANCED_HEADER_OP__SHIFT			27
++#define VIV_FE_DRAW_INSTANCED_HEADER_OP_DRAW_INSTANCED		0x60000000
++#define VIV_FE_DRAW_INSTANCED_HEADER_INDEXED			0x00100000
++#define VIV_FE_DRAW_INSTANCED_HEADER_TYPE__MASK			0x000f0000
++#define VIV_FE_DRAW_INSTANCED_HEADER_TYPE__SHIFT		16
++#define VIV_FE_DRAW_INSTANCED_HEADER_TYPE(x)			(((x) << VIV_FE_DRAW_INSTANCED_HEADER_TYPE__SHIFT) & VIV_FE_DRAW_INSTANCED_HEADER_TYPE__MASK)
++#define VIV_FE_DRAW_INSTANCED_HEADER_INSTANCE_COUNT_LO__MASK	0x0000ffff
++#define VIV_FE_DRAW_INSTANCED_HEADER_INSTANCE_COUNT_LO__SHIFT	0
++#define VIV_FE_DRAW_INSTANCED_HEADER_INSTANCE_COUNT_LO(x)	(((x) << VIV_FE_DRAW_INSTANCED_HEADER_INSTANCE_COUNT_LO__SHIFT) & VIV_FE_DRAW_INSTANCED_HEADER_INSTANCE_COUNT_LO__MASK)
 +
-+#define VIV_FE_DRAW_NEW_COUNT					0x00000004
++#define VIV_FE_DRAW_INSTANCED_COUNT				0x00000004
++#define VIV_FE_DRAW_INSTANCED_COUNT_INSTANCE_COUNT_HI__MASK	0xff000000
++#define VIV_FE_DRAW_INSTANCED_COUNT_INSTANCE_COUNT_HI__SHIFT	24
++#define VIV_FE_DRAW_INSTANCED_COUNT_INSTANCE_COUNT_HI(x)	(((x) << VIV_FE_DRAW_INSTANCED_COUNT_INSTANCE_COUNT_HI__SHIFT) & VIV_FE_DRAW_INSTANCED_COUNT_INSTANCE_COUNT_HI__MASK)
++#define VIV_FE_DRAW_INSTANCED_COUNT_VERTEX_COUNT__MASK		0x00ffffff
++#define VIV_FE_DRAW_INSTANCED_COUNT_VERTEX_COUNT__SHIFT		0
++#define VIV_FE_DRAW_INSTANCED_COUNT_VERTEX_COUNT(x)		(((x) << VIV_FE_DRAW_INSTANCED_COUNT_VERTEX_COUNT__SHIFT) & VIV_FE_DRAW_INSTANCED_COUNT_VERTEX_COUNT__MASK)
 +
-+#define VIV_FE_DRAW_NEW_START					0x00000008
-+
-+#define VIV_FE_DRAW_NEW_UNKNOWN					0x0000000c
++#define VIV_FE_DRAW_INSTANCED_START				0x00000008
++#define VIV_FE_DRAW_INSTANCED_START_INDEX__MASK			0xffffffff
++#define VIV_FE_DRAW_INSTANCED_START_INDEX__SHIFT		0
++#define VIV_FE_DRAW_INSTANCED_START_INDEX(x)			(((x) << VIV_FE_DRAW_INSTANCED_START_INDEX__SHIFT) & VIV_FE_DRAW_INSTANCED_START_INDEX__MASK)
 +
 +
 +#endif /* CMDSTREAM_XML */
 diff --git a/src/gallium/drivers/etnaviv/hw/common.xml.h b/src/gallium/drivers/etnaviv/hw/common.xml.h
 new file mode 100644
-index 0000000..45cb7a5
+index 0000000..af6ecca
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/hw/common.xml.h
 @@ -0,0 +1,320 @@
@@ -13266,13 +13373,13 @@ index 0000000..45cb7a5
 +git clone git://0x04.net/rules-ng-ng
 +
 +The rules-ng-ng source files this header was generated from are:
-+- state.xml     (  19487 bytes, from 2016-11-05 06:17:49)
-+- common.xml    (  23272 bytes, from 2016-10-29 14:18:57)
-+- state_hi.xml  (  25653 bytes, from 2016-10-29 07:29:22)
-+- copyright.xml (   1597 bytes, from 2016-10-29 07:29:22)
-+- state_2d.xml  (  51552 bytes, from 2016-10-29 07:29:22)
-+- state_3d.xml  (  55854 bytes, from 2016-11-05 06:17:49)
-+- state_vg.xml  (   5975 bytes, from 2016-10-29 07:29:22)
++- state.xml     (  19701 bytes, from 2016-11-13 13:47:18)
++- common.xml    (  23344 bytes, from 2016-11-13 13:47:18)
++- state_hi.xml  (  25653 bytes, from 2016-11-13 13:46:17)
++- copyright.xml (   1597 bytes, from 2016-11-13 13:46:17)
++- state_2d.xml  (  51552 bytes, from 2016-11-13 13:46:17)
++- state_3d.xml  (  55854 bytes, from 2016-11-13 13:47:18)
++- state_vg.xml  (   5975 bytes, from 2016-11-13 13:46:17)
 +
 +Copyright (C) 2012-2016 by the following authors:
 +- Wladimir J. van der Laan <laanwj@gmail.com>
@@ -13578,10 +13685,10 @@ index 0000000..45cb7a5
 +#endif /* COMMON_XML */
 diff --git a/src/gallium/drivers/etnaviv/hw/isa.xml.h b/src/gallium/drivers/etnaviv/hw/isa.xml.h
 new file mode 100644
-index 0000000..02831ad
+index 0000000..55a0e62
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/hw/isa.xml.h
-@@ -0,0 +1,230 @@
+@@ -0,0 +1,239 @@
 +#ifndef ISA_XML
 +#define ISA_XML
 +
@@ -13592,8 +13699,8 @@ index 0000000..02831ad
 +git clone git://0x04.net/rules-ng-ng
 +
 +The rules-ng-ng source files this header was generated from are:
-+- isa.xml       (  19227 bytes, from 2016-10-29 07:29:22)
-+- copyright.xml (   1597 bytes, from 2016-10-29 07:29:22)
++- isa.xml       (  24392 bytes, from 2016-11-13 13:47:18)
++- copyright.xml (   1597 bytes, from 2016-11-13 13:46:17)
 +
 +Copyright (C) 2012-2016 by the following authors:
 +- Wladimir J. van der Laan <laanwj@gmail.com>
@@ -13667,6 +13774,7 @@ index 0000000..02831ad
 +#define INST_OPCODE_STORE					0x00000033
 +#define INST_OPCODE_IMULLO0					0x0000003c
 +#define INST_OPCODE_IMULHI0					0x00000040
++#define INST_OPCODE_IMADLO0					0x0000004c
 +#define INST_OPCODE_LEADZERO					0x00000058
 +#define INST_OPCODE_LSHIFT					0x00000059
 +#define INST_OPCODE_RSHIFT					0x0000005a
@@ -13704,6 +13812,14 @@ index 0000000..02831ad
 +#define INST_SWIZ_COMP_Y					0x00000001
 +#define INST_SWIZ_COMP_Z					0x00000002
 +#define INST_SWIZ_COMP_W					0x00000003
++#define INST_TYPE_F32						0x00000000
++#define INST_TYPE_S32						0x00000001
++#define INST_TYPE_S8						0x00000002
++#define INST_TYPE_U16						0x00000003
++#define INST_TYPE_F16						0x00000004
++#define INST_TYPE_S16						0x00000005
++#define INST_TYPE_U32						0x00000006
++#define INST_TYPE_U8						0x00000007
 +#define INST_COMPS_X						0x00000001
 +#define INST_COMPS_Y						0x00000002
 +#define INST_COMPS_Z						0x00000004
@@ -13753,7 +13869,7 @@ index 0000000..02831ad
 +#define VIV_ISA_WORD_1_SRC0_REG__MASK				0x001ff000
 +#define VIV_ISA_WORD_1_SRC0_REG__SHIFT				12
 +#define VIV_ISA_WORD_1_SRC0_REG(x)				(((x) << VIV_ISA_WORD_1_SRC0_REG__SHIFT) & VIV_ISA_WORD_1_SRC0_REG__MASK)
-+#define VIV_ISA_WORD_1_UNK1_21					0x00200000
++#define VIV_ISA_WORD_1_TYPE_BIT2				0x00200000
 +#define VIV_ISA_WORD_1_SRC0_SWIZ__MASK				0x3fc00000
 +#define VIV_ISA_WORD_1_SRC0_SWIZ__SHIFT				22
 +#define VIV_ISA_WORD_1_SRC0_SWIZ(x)				(((x) << VIV_ISA_WORD_1_SRC0_SWIZ__SHIFT) & VIV_ISA_WORD_1_SRC0_SWIZ__MASK)
@@ -13780,9 +13896,9 @@ index 0000000..02831ad
 +#define VIV_ISA_WORD_2_SRC1_AMODE__MASK				0x38000000
 +#define VIV_ISA_WORD_2_SRC1_AMODE__SHIFT			27
 +#define VIV_ISA_WORD_2_SRC1_AMODE(x)				(((x) << VIV_ISA_WORD_2_SRC1_AMODE__SHIFT) & VIV_ISA_WORD_2_SRC1_AMODE__MASK)
-+#define VIV_ISA_WORD_2_UNK2_30__MASK				0xc0000000
-+#define VIV_ISA_WORD_2_UNK2_30__SHIFT				30
-+#define VIV_ISA_WORD_2_UNK2_30(x)				(((x) << VIV_ISA_WORD_2_UNK2_30__SHIFT) & VIV_ISA_WORD_2_UNK2_30__MASK)
++#define VIV_ISA_WORD_2_TYPE_BIT01__MASK				0xc0000000
++#define VIV_ISA_WORD_2_TYPE_BIT01__SHIFT			30
++#define VIV_ISA_WORD_2_TYPE_BIT01(x)				(((x) << VIV_ISA_WORD_2_TYPE_BIT01__SHIFT) & VIV_ISA_WORD_2_TYPE_BIT01__MASK)
 +
 +#define VIV_ISA_WORD_3						0x0000000c
 +#define VIV_ISA_WORD_3_SRC1_RGROUP__MASK			0x00000007
@@ -13814,10 +13930,10 @@ index 0000000..02831ad
 +#endif /* ISA_XML */
 diff --git a/src/gallium/drivers/etnaviv/hw/state.xml.h b/src/gallium/drivers/etnaviv/hw/state.xml.h
 new file mode 100644
-index 0000000..f9a7a19
+index 0000000..67257a4
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/hw/state.xml.h
-@@ -0,0 +1,393 @@
+@@ -0,0 +1,394 @@
 +#ifndef STATE_XML
 +#define STATE_XML
 +
@@ -13828,13 +13944,13 @@ index 0000000..f9a7a19
 +git clone git://0x04.net/rules-ng-ng
 +
 +The rules-ng-ng source files this header was generated from are:
-+- state.xml     (  19487 bytes, from 2016-11-05 06:17:49)
-+- common.xml    (  23272 bytes, from 2016-10-29 14:18:57)
-+- state_hi.xml  (  25653 bytes, from 2016-10-29 07:29:22)
-+- copyright.xml (   1597 bytes, from 2016-10-29 07:29:22)
-+- state_2d.xml  (  51552 bytes, from 2016-10-29 07:29:22)
-+- state_3d.xml  (  55854 bytes, from 2016-11-05 06:17:49)
-+- state_vg.xml  (   5975 bytes, from 2016-10-29 07:29:22)
++- state.xml     (  19701 bytes, from 2016-11-13 13:47:18)
++- common.xml    (  23344 bytes, from 2016-11-13 13:47:18)
++- state_hi.xml  (  25653 bytes, from 2016-11-13 13:46:17)
++- copyright.xml (   1597 bytes, from 2016-11-13 13:46:17)
++- state_2d.xml  (  51552 bytes, from 2016-11-13 13:46:17)
++- state_3d.xml  (  55854 bytes, from 2016-11-13 13:47:18)
++- state_vg.xml  (   5975 bytes, from 2016-11-13 13:46:17)
 +
 +Copyright (C) 2012-2016 by the following authors:
 +- Wladimir J. van der Laan <laanwj@gmail.com>
@@ -13919,6 +14035,7 @@ index 0000000..f9a7a19
 +#define VIVS_FE_INDEX_STREAM_CONTROL_TYPE_UNSIGNED_CHAR		0x00000000
 +#define VIVS_FE_INDEX_STREAM_CONTROL_TYPE_UNSIGNED_SHORT	0x00000001
 +#define VIVS_FE_INDEX_STREAM_CONTROL_TYPE_UNSIGNED_INT		0x00000002
++#define VIVS_FE_INDEX_STREAM_CONTROL_PRIMITIVE_RESTART		0x00000100
 +
 +#define VIVS_FE_VERTEX_STREAM_BASE_ADDR				0x0000064c
 +
@@ -13994,7 +14111,7 @@ index 0000000..f9a7a19
 +
 +#define VIVS_FE_AUTO_FLUSH					0x00000670
 +
-+#define VIVS_FE_UNK00674					0x00000674
++#define VIVS_FE_PRIMITIVE_RESTART_INDEX				0x00000674
 +
 +#define VIVS_FE_UNK00678					0x00000678
 +
@@ -14213,7 +14330,7 @@ index 0000000..f9a7a19
 +#endif /* STATE_XML */
 diff --git a/src/gallium/drivers/etnaviv/hw/state_3d.xml.h b/src/gallium/drivers/etnaviv/hw/state_3d.xml.h
 new file mode 100644
-index 0000000..61c8997
+index 0000000..7ff0480
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/hw/state_3d.xml.h
 @@ -0,0 +1,1204 @@
@@ -14227,13 +14344,13 @@ index 0000000..61c8997
 +git clone git://0x04.net/rules-ng-ng
 +
 +The rules-ng-ng source files this header was generated from are:
-+- state.xml     (  19487 bytes, from 2016-11-05 06:17:49)
-+- common.xml    (  23272 bytes, from 2016-10-29 14:18:57)
-+- state_hi.xml  (  25653 bytes, from 2016-10-29 07:29:22)
-+- copyright.xml (   1597 bytes, from 2016-10-29 07:29:22)
-+- state_2d.xml  (  51552 bytes, from 2016-10-29 07:29:22)
-+- state_3d.xml  (  55854 bytes, from 2016-11-05 06:17:49)
-+- state_vg.xml  (   5975 bytes, from 2016-10-29 07:29:22)
++- state.xml     (  19701 bytes, from 2016-11-13 13:47:18)
++- common.xml    (  23344 bytes, from 2016-11-13 13:47:18)
++- state_hi.xml  (  25653 bytes, from 2016-11-13 13:46:17)
++- copyright.xml (   1597 bytes, from 2016-11-13 13:46:17)
++- state_2d.xml  (  51552 bytes, from 2016-11-13 13:46:17)
++- state_3d.xml  (  55854 bytes, from 2016-11-13 13:47:18)
++- state_vg.xml  (   5975 bytes, from 2016-11-13 13:46:17)
 +
 +Copyright (C) 2012-2016 by the following authors:
 +- Wladimir J. van der Laan <laanwj@gmail.com>
