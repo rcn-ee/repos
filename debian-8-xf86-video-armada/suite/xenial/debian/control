@@ -1,0 +1,71 @@
+Source: xf86-video-armada
+Maintainer: Robert Nelson <robertcnelson@gmail.com>
+Section: x11
+Priority: optional
+Build-Depends: debhelper (>= 9),
+               dh-autoreconf,
+               pkg-config,
+               xserver-xorg-dev,
+               x11proto-core-dev,
+               x11proto-fonts-dev,
+               x11proto-randr-dev,
+               x11proto-render-dev,
+               x11proto-video-dev,
+               libdrm-dev,
+               libudev-dev [linux-any],
+               dpkg-dev (>= 1.14.17),
+               automake,
+               libtool,
+               xutils-dev,
+               libetnaviv-dev,
+               libdrm-armada-dev,
+Standards-Version: 3.9.6
+Vcs-Browser: https://github.com/xobs/xserver-xorg-video-armada
+Vcs-Git: https://github.com/xobs/xserver-xorg-video-armada
+Homepage: https://github.com/xobs/xserver-xorg-video-armada
+
+Package: xserver-xorg-video-armada
+Architecture: armhf
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         ${xviddriver:Depends},
+Provides: ${xviddriver:Provides}
+Description: Xorg X server -- Armada display driver
+ This package provides the driver for the Marvell Armada LCD controllers
+ with Vivante GCxxx acceleration.
+ .
+ More information about X.Org can be found at:
+ <URL:http://www.X.org>
+ <URL:http://xorg.freedesktop.org>
+ <URL:http://lists.freedesktop.org/mailman/listinfo/xorg>
+ .
+ This package is built from the X.org xf86-video-armada driver module.
+
+Package: xserver-xorg-video-armada-etnaviv
+Architecture: armhf
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         xserver-xorg-video-armada (= ${binary:Version}),
+Description: Xorg X server -- Armada DRM Etnaviv-based GPU acceleration
+ This package provides the GPU driver for Vivante GPU acceleration using
+ the Etnaviv library.
+ .
+ More information about X.Org can be found at:
+ <URL:http://www.X.org>
+ <URL:http://xorg.freedesktop.org>
+ <URL:http://lists.freedesktop.org/mailman/listinfo/xorg>
+ .
+ This package is built from the X.org xf86-video-armada driver module.
+
+Package: xserver-xorg-video-armada-dbg
+Architecture: any
+Section: debug
+Priority: extra
+Depends: ${misc:Depends},
+Multi-Arch: same
+Description: Xorg X server -- Armada display driver
+ This package provides the driver for the Marvell Armada LCD controllers
+ with Vivante GCxxx acceleration.
+ .
+ This package provides debugging symbols for the xserver-xorg-video-armada
+ package.
