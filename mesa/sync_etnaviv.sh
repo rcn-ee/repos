@@ -18,7 +18,7 @@ git checkout origin/13.0_etnaviv -b tmp
 
 git diff 405dd26860719d800ed6134f8f985f1525f25502...HEAD >  ../../suite/jessie/debian/patches/0001-etnaviv-base.diff
 git diff 405dd26860719d800ed6134f8f985f1525f25502...HEAD > ../../suite/stretch/debian/patches/0001-etnaviv-base.diff
-git diff 405dd26860719d800ed6134f8f985f1525f25502...HEAD >  ../../suite/xenial/debian/patches/0001-etnaviv-base.diff
+#git diff 405dd26860719d800ed6134f8f985f1525f25502...HEAD >  ../../suite/xenial/debian/patches/0001-etnaviv-base.diff
 
 #sed -i -e 's:opcs:etopcs:g' ./src/gallium/drivers/etnaviv/etnaviv_disasm.c
 
