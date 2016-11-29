@@ -124,20 +124,27 @@ start_hostapd () {
 board=$(cat /proc/device-tree/model | sed "s/ /_/g")
 case "${board}" in
 TI_AM335x_BeagleBone_Green_Wireless)
-	#cpsw_0_mac is normally used by eth0, safe to use as this isn't connected on bbgw...
-	mac_address="/proc/device-tree/ocp/ethernet@4a100000/slave@4a100200/mac-address"
-	if [ -f ${mac_address} ] ; then
-		use_mac=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address} | sed 's/.$//')
+	if [ -f /etc/cpsw_0_mac ] ; then
+		use_mac=$(cat /etc/cpsw_0_mac)
 	else
-		#todo: generate random mac... (this is a development tre board in the lab...)
-		use_mac="1c:ba:8c:a2:ed:68"
+		use_mac="68:9E:19:8E:97:56"
 	fi
 	connman_disable_tether
 	;;
 TI_AM335x_BeagleBone_Black_Wireless)
+	if [ -f /etc/cpsw_3_mac ] ; then
+		use_mac=$(cat /etc/cpsw_3_mac)
+	else
+		use_mac="68:9E:19:8E:97:56"
+	fi
 	connman_disable_tether
 	;;
 TI_AM335x_BeagleBone_Blue)
+	if [ -f /etc/cpsw_3_mac ] ; then
+		use_mac=$(cat /etc/cpsw_3_mac)
+	else
+		use_mac="68:9E:19:8E:97:56"
+	fi
 	connman_disable_tether
 	;;
 *)
