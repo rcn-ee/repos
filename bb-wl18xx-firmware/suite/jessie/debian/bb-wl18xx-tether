@@ -112,6 +112,15 @@ bringup_softap0_interface () {
 	fi
 }
 
+start_hostapd () {
+	echo "interface=SoftAp0" > /tmp/hostapd-wl18xx.conf
+	echo "ssid=BeagleBone" >> /tmp/hostapd-wl18xx.conf
+	echo "hw_mode=g" >> /tmp/hostapd-wl18xx.conf
+	echo "channel=1" >> /tmp/hostapd-wl18xx.conf
+	echo "wpa_passphrase=BeagleBone" >> /tmp/hostapd-wl18xx.conf
+	/usr/sbin/hostapd -B -f /tmp/hosapd-wl18xx.log /tmp/hostapd-wl18xx.conf
+}
+
 board=$(cat /proc/device-tree/model | sed "s/ /_/g")
 case "${board}" in
 TI_AM335x_BeagleBone_Green_Wireless)
@@ -137,4 +146,5 @@ esac
 
 create_softap0_interface
 bringup_softap0_interface
+start_hostapd
 
