@@ -24,6 +24,7 @@ ap_interface="SoftAp0"
 log="log:"
 use_mac=""
 ip_prefix="192.168.8"
+ssid_prefix="BeagleBone"
 
 connman_disable_tether () {
 	if [ -d /sys/class/net/tether ] ; then
@@ -113,12 +114,22 @@ bringup_softap0_interface () {
 }
 
 start_hostapd () {
+	if [ ! "x${use_mac}" = "x" ] ; then
+		ssid_append=$(echo ${use_mac} | cut -b 13-17 | sed 's/://g' || true)
+	fi
+
 	echo "interface=SoftAp0" > /tmp/hostapd-wl18xx.conf
-	echo "ssid=BeagleBone" >> /tmp/hostapd-wl18xx.conf
+
+	if [ ! "x${use_mac}" = "x" ] ; then
+		echo "ssid=${ssid_prefix}-${ssid_append}" >> /tmp/hostapd-wl18xx.conf
+	else
+		echo "ssid=${ssid_prefix}" >> /tmp/hostapd-wl18xx.conf
+	fi
+
 	echo "hw_mode=g" >> /tmp/hostapd-wl18xx.conf
 	echo "channel=1" >> /tmp/hostapd-wl18xx.conf
 	echo "wpa_passphrase=BeagleBone" >> /tmp/hostapd-wl18xx.conf
-	/usr/sbin/hostapd -B -f /tmp/hosapd-wl18xx.log /tmp/hostapd-wl18xx.conf
+	/usr/sbin/hostapd -B -f /tmp/hostapd-wl18xx.log /tmp/hostapd-wl18xx.conf
 }
 
 board=$(cat /proc/device-tree/model | sed "s/ /_/g")
