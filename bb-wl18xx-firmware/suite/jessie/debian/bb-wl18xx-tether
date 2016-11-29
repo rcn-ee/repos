@@ -132,6 +132,15 @@ start_hostapd () {
 	/usr/sbin/hostapd -B -f /tmp/hostapd-wl18xx.log /tmp/hostapd-wl18xx.conf
 }
 
+disable_connman_dnsproxy () {
+	unset check_connman
+	check_connman=$(cat /lib/systemd/system/connman.service | grep ExecStart | grep nodnsproxy || true)
+	if [ "x${check_connman}" = "x" ] ; then
+		sed -i -e 's:connmand -n:connmand -n --nodnsproxy:g' /lib/systemd/system/connman.service || true
+		/etc/init.d/connman restart || true
+	fi
+}
+
 board=$(cat /proc/device-tree/model | sed "s/ /_/g")
 case "${board}" in
 TI_AM335x_BeagleBone_Green_Wireless)
@@ -165,4 +174,5 @@ esac
 create_softap0_interface
 bringup_softap0_interface
 start_hostapd
+disable_connman_dnsproxy
 
