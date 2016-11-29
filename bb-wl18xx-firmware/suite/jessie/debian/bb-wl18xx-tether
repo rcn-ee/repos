@@ -25,78 +25,116 @@ log="log:"
 use_mac=""
 ip_prefix="192.168.8"
 
-if [ -d /sys/class/net/tether ] ; then
-	echo "${log} Connman's tether enabled, exiting..."
-	exit 1
-fi
-
-if [ ! -d /sys/class/net/${ap_interface} ] ; then
-	number_of_wlan=$(ls /sys/class/net/ | grep wlan | wc -l)
-
-	if [ "x${number_of_wlan}" = "x1" ] ; then
-		echo "${log} iw phy phy0 interface add ${ap_interface} type managed"
-		iw phy phy0 interface add ${ap_interface} type managed
-
-		p=$?
-		if [ $p==0 ];then
-			echo "${log} phy0 created "
-		else
-			echo "${log} Err: can't creat phy0 "
+connman_disable_tether () {
+	if [ -d /sys/class/net/tether ] ; then
+		if [ -d /sys/class/net/eth0 ] ; then
+			echo "${log} Connman's tether enabled, but eth0 exists, leaving tether up and running..."
 			exit 1
-		fi
-
-		sync
-
-		if [ ! -d /sys/class/net/${ap_interface} ] ; then
-			get_wl=$(ls /sys/class/net/ | grep wlx)
-			echo "${log} ip link set dev ${get_wl} name ${ap_interface}"
-			ip link set dev ${get_wl} name ${ap_interface}
 		else
-			#We really want to use ${ap_interface}
-			sleep 2
+			echo "${log} connmanctl tether wifi off"
+			connmanctl tether wifi off
+			sleep 1
+		fi
+	fi
+}
+
+create_softap0_interface () {
+	if [ ! -d /sys/class/net/${ap_interface} ] ; then
+		number_of_wlan=$(ls /sys/class/net/ | grep wlan | wc -l)
+
+		if [ "x${number_of_wlan}" = "x1" ] ; then
+			echo "${log} iw phy phy0 interface add ${ap_interface} type managed"
+			iw phy phy0 interface add ${ap_interface} type managed
+
+			p=$?
+			if [ $p==0 ];then
+				echo "${log} phy0 created "
+			else
+				echo "${log} Err: can't creat phy0 "
+				exit 1
+			fi
+
+			sync
+
 			if [ ! -d /sys/class/net/${ap_interface} ] ; then
 				get_wl=$(ls /sys/class/net/ | grep wlx)
 				echo "${log} ip link set dev ${get_wl} name ${ap_interface}"
 				ip link set dev ${get_wl} name ${ap_interface}
+			else
+				#We really want to use ${ap_interface}
+				sleep 2
+				if [ ! -d /sys/class/net/${ap_interface} ] ; then
+					get_wl=$(ls /sys/class/net/ | grep wlx)
+					echo "${log} ip link set dev ${get_wl} name ${ap_interface}"
+					ip link set dev ${get_wl} name ${ap_interface}
+				fi
 			fi
 		fi
 	fi
-fi
+}
 
-if [ -d /sys/class/net/${ap_interface} ] ; then
-	#not all devices support mac address modifications...
-	if [ ! "x${use_mac}" = "x" ] ; then
-		echo "${log} ip link set dev ${ap_interface} down"
-		ip link set dev ${ap_interface} down
-		echo "${log} ip link set dev ${ap_interface} address ${use_mac}"
-		ip link set dev ${ap_interface} address ${use_mac} || true
-		echo "${log} ip link set dev ${ap_interface} up"
-		ip link set dev ${ap_interface} up
-	fi
+bringup_softap0_interface () {
+	if [ -d /sys/class/net/${ap_interface} ] ; then
+		#not all devices support mac address modifications...
+		if [ ! "x${use_mac}" = "x" ] ; then
+			echo "${log} ip link set dev ${ap_interface} down"
+			ip link set dev ${ap_interface} down
+			echo "${log} ip link set dev ${ap_interface} address ${use_mac}"
+			ip link set dev ${ap_interface} address ${use_mac} || true
+			echo "${log} ip link set dev ${ap_interface} up"
+			ip link set dev ${ap_interface} up
+		fi
 
-	if [ ! "x${ip_prefix}" = "x" ] ; then
-		get_ap_interface_ip=$(ip -f inet addr show ${ap_interface} | grep -Po 'inet \K[\d.]+' || true)
-		if [ ! "x${get_ap_interface_ip}" = "x" ] ; then
+		if [ ! "x${ip_prefix}" = "x" ] ; then
+			get_ap_interface_ip=$(ip -f inet addr show ${ap_interface} | grep -Po 'inet \K[\d.]+' || true)
+			if [ ! "x${get_ap_interface_ip}" = "x" ] ; then
+				if [ ! "x${get_ap_interface_ip}" = "x${ip_prefix}.1" ] ; then
+					echo "${log} ip addr flush dev ${ap_interface}"
+					ip addr flush dev ${ap_interface}
+				fi
+			fi
 			if [ ! "x${get_ap_interface_ip}" = "x${ip_prefix}.1" ] ; then
-				echo "${log} ip addr flush dev ${ap_interface}"
-				ip addr flush dev ${ap_interface}
+				echo "${log} ip addr add ${ip_prefix}.1/24 broadcast ${ip_prefix}.255 dev ${ap_interface}"
+				ip addr add ${ip_prefix}.1/24 broadcast ${ip_prefix}.255 dev ${ap_interface}
 			fi
 		fi
-		if [ ! "x${get_ap_interface_ip}" = "x${ip_prefix}.1" ] ; then
-			echo "${log} ip addr add ${ip_prefix}.1/24 broadcast ${ip_prefix}.255 dev ${ap_interface}"
-			ip addr add ${ip_prefix}.1/24 broadcast ${ip_prefix}.255 dev ${ap_interface}
+
+		ip_forward=$(cat /proc/sys/net/ipv4/ip_forward)
+		if [ "x${ip_forward}" = "x0" ] ; then
+			echo 1 > /proc/sys/net/ipv4/ip_forward
+			echo "${log} iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE"
+			iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
+			echo "${log} iptables -A FORWARD -i wlan0 -o ${ap_interface} -m state --state RELATED,ESTABLISHED -j ACCEPT"
+			iptables -A FORWARD -i wlan0 -o ${ap_interface} -m state --state RELATED,ESTABLISHED -j ACCEPT
+			echo "${log} iptables -A FORWARD -i ${ap_interface} -o wlan0 -j ACCEPT"
+			iptables -A FORWARD -i ${ap_interface} -o wlan0 -j ACCEPT
 		fi
 	fi
+}
 
-	ip_forward=$(cat /proc/sys/net/ipv4/ip_forward)
-	if [ "x${ip_forward}" = "x0" ] ; then
-		echo 1 > /proc/sys/net/ipv4/ip_forward
-		echo "${log} iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE"
-		iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
-		echo "${log} iptables -A FORWARD -i wlan0 -o ${ap_interface} -m state --state RELATED,ESTABLISHED -j ACCEPT"
-		iptables -A FORWARD -i wlan0 -o ${ap_interface} -m state --state RELATED,ESTABLISHED -j ACCEPT
-		echo "${log} iptables -A FORWARD -i ${ap_interface} -o wlan0 -j ACCEPT"
-		iptables -A FORWARD -i ${ap_interface} -o wlan0 -j ACCEPT
+board=$(cat /proc/device-tree/model | sed "s/ /_/g")
+case "${board}" in
+TI_AM335x_BeagleBone_Green_Wireless)
+	#cpsw_0_mac is normally used by eth0, safe to use as this isn't connected on bbgw...
+	mac_address="/proc/device-tree/ocp/ethernet@4a100000/slave@4a100200/mac-address"
+	if [ -f ${mac_address} ] ; then
+		use_mac=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address} | sed 's/.$//')
+	else
+		#todo: generate random mac... (this is a development tre board in the lab...)
+		use_mac="1c:ba:8c:a2:ed:68"
 	fi
-fi
+	connman_disable_tether
+	;;
+TI_AM335x_BeagleBone_Black_Wireless)
+	connman_disable_tether
+	;;
+TI_AM335x_BeagleBone_Blue)
+	connman_disable_tether
+	;;
+*)
+	;;
+esac
+
+create_softap0_interface
+bringup_softap0_interface
 
