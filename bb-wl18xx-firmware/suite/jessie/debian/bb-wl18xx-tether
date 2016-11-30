@@ -141,6 +141,33 @@ disable_connman_dnsproxy () {
 	fi
 }
 
+start_dnsmasq () {
+	if [ -f /var/run/udhcpd.pid ] ; then
+		/etc/init.d/udhcpd stop || true
+	fi
+
+
+	echo "interface=SoftAp0" > /tmp/dnsmasq-wl18xx.conf
+	echo "interface=usb0" >> /tmp/dnsmasq-wl18xx.conf
+	echo "port=53" >> /tmp/dnsmasq-wl18xx.conf
+	echo "dhcp-authoritative" >> /tmp/dnsmasq-wl18xx.conf
+	echo "domain-needed" >> /tmp/dnsmasq-wl18xx.conf
+	echo "bogus-priv" >> /tmp/dnsmasq-wl18xx.conf
+	echo "expand-hosts" >> /tmp/dnsmasq-wl18xx.conf
+	echo "cache-size=2048" >> /tmp/dnsmasq-wl18xx.conf
+	echo "dhcp-range=SoftAp0,192.168.8.50,192.168.8.150,12h" >> /tmp/dnsmasq-wl18xx.conf
+	echo "dhcp-range=usb0,192.168.7.3,192.168.7.4,12h" >> /tmp/dnsmasq-wl18xx.conf
+	echo "listen-address=127.0.0.1" >> /tmp/dnsmasq-wl18xx.conf
+	echo "listen-address=192.168.8.1" >> /tmp/dnsmasq-wl18xx.conf
+	echo "listen-address=192.168.7.2" >> /tmp/dnsmasq-wl18xx.conf
+	echo "dhcp-option-force=interface:SoftAp0,option:dns-server,192.168.8.1" >> /tmp/dnsmasq-wl18xx.conf
+	echo "dhcp-option-force=interface:SoftAp0,option:mtu,1500" >> /tmp/dnsmasq-wl18xx.conf
+	echo "dhcp-option=usb0,3" >> /tmp/dnsmasq-wl18xx.conf
+	echo "dhcp-option=usb0,6" >> /tmp/dnsmasq-wl18xx.conf
+	echo "address=/#/172.1.8.1" >> /tmp/dnsmasq-wl18xx.conf
+#--conf-file=/tmp/dnsmasq-wl18xx.conf
+}
+
 board=$(cat /proc/device-tree/model | sed "s/ /_/g")
 case "${board}" in
 TI_AM335x_BeagleBone_Green_Wireless)
@@ -175,4 +202,5 @@ create_softap0_interface
 bringup_softap0_interface
 start_hostapd
 disable_connman_dnsproxy
+start_dnsmasq
 
