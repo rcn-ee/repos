@@ -131,7 +131,10 @@ start_hostapd () {
 	echo "channel=1" >> ${wfile}
 	echo "wpa_passphrase=BeagleBone" >> ${wfile}
 
-	/usr/sbin/hostapd -B -f /tmp/hostapd-wl18xx.log /tmp/hostapd-wl18xx.conf
+	echo "logger_syslog=-1" >> ${wfile}
+	echo "logger_syslog_level=2" >> ${wfile}
+
+	/usr/sbin/hostapd -B /tmp/hostapd-wl18xx.conf
 }
 
 disable_connman_dnsproxy () {
