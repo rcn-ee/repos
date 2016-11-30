@@ -2,7 +2,7 @@
 
 package_name="bb-wl18xx-firmware"
 debian_pkg_name="${package_name}"
-package_version="1.20161114"
+package_version="1.20161130"
 package_source=""
 src_dir=""
 
@@ -15,8 +15,8 @@ debian_version="${package_version}-0rcnee1"
 debian_untar=""
 debian_patch=""
 
-jessie_version="~bpo80+20161114+1"
-stretch_version="~bpo90+20161114+1"
-xenial_version="~bpo1604+20161114+1"
-yakkety_version="~bpo1610+20161114+1"
-zesty_version="~bpo1704+20161114+1"
+jessie_version="~bpo80+20161130+1"
+stretch_version="~bpo90+20161130+1"
+xenial_version="~bpo1604+20161130+1"
+yakkety_version="~bpo1610+20161130+1"
+zesty_version="~bpo1704+20161130+1"
