@@ -65,10 +65,19 @@ connman_disable_tether () {
 		if [ -d /sys/class/net/eth0 ] ; then
 			if [ -f /etc/bb-wl18xx-tether.connman.disable.nodnsproxy ] ; then
 				enable_connman_dnsproxy
-				rm -rf /etc/bb-wl18xx-tether.connman.disable.nodnsproxy
+				rm -rf /etc/bb-wl18xx-tether.connman.disable.nodnsproxy || true
 				enable_connman_dnsproxy
 				connmanctl tether wifi on
 				sleep 1
+
+				if [ -f /etc/bb-wl18xx-tether.dnsmasq.enable ] ; then
+					systemctl stop dnsmasq || true
+					rm -rf /etc/dnsmasq.d/SoftAp0 || true
+					rm -rf /etc/bb-wl18xx-tether.dnsmasq.enable || true
+
+					#return usb0...
+					/opt/scripts/boot/autoconfigure_usb0.sh
+				fi
 			fi
 		fi
 	fi
@@ -212,6 +221,7 @@ start_dnsmasq () {
 	echo "address=/#/172.1.8.1" >> ${wfile}
 
 	systemctl restart dnsmasq || true
+	touch /etc/bb-wl18xx-tether.dnsmasq.enable
 }
 
 default () {
