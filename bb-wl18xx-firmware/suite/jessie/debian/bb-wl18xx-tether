@@ -61,7 +61,7 @@ create_softap0_interface () {
 				get_wl=$(ls /sys/class/net/ | grep wlx)
 				echo "${log} ip link set dev ${get_wl} name ${ap_interface}"
 				ip link set dev ${get_wl} name ${ap_interface}
-			else
+
 				#We really want to use ${ap_interface}
 				sleep 2
 				if [ ! -d /sys/class/net/${ap_interface} ] ; then
@@ -204,6 +204,8 @@ TI_AM335x_BeagleBone_Blue)
 	connman_disable_tether
 	;;
 *)
+	echo "${log} unsupported device, leaving things in default state..."
+	exit 1
 	;;
 esac
 
