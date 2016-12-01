@@ -138,11 +138,14 @@ start_hostapd () {
 }
 
 disable_connman_dnsproxy () {
+	#netstat -tapnd
 	unset check_connman
 	check_connman=$(cat /lib/systemd/system/connman.service | grep ExecStart | grep nodnsproxy || true)
 	if [ "x${check_connman}" = "x" ] ; then
+		systemctl stop connman.service || true
 		sed -i -e 's:connmand -n:connmand -n --nodnsproxy:g' /lib/systemd/system/connman.service || true
-		systemctl restart connman || true
+		systemctl daemon-reload || true
+		systemctl start connman.service || true
 	fi
 }
 
