@@ -26,17 +26,59 @@ use_mac=""
 ip_prefix="192.168.8"
 ssid_prefix="BeagleBone"
 
+disable_connman_dnsproxy () {
+	#netstat -tapnd
+	unset check_connman
+	check_connman=$(cat /lib/systemd/system/connman.service | grep ExecStart | grep nodnsproxy || true)
+	if [ "x${check_connman}" = "x" ] ; then
+		systemctl stop connman.service || true
+		sed -i -e 's:connmand -n:connmand -n --nodnsproxy:g' /lib/systemd/system/connman.service || true
+		systemctl daemon-reload || true
+		systemctl start connman.service || true
+		touch /etc/bb-wl18xx-tether.connman.disable.nodnsproxy
+	fi
+}
+
+enable_connman_dnsproxy () {
+	#netstat -tapnd
+	unset check_connman
+	check_connman=$(cat /lib/systemd/system/connman.service | grep ExecStart | grep nodnsproxy || true)
+	if [ ! "x${check_connman}" = "x" ] ; then
+		systemctl stop connman.service || true
+		sed -i -e 's:connmand -n --nodnsproxy:connmand -n:g' /lib/systemd/system/connman.service || true
+		systemctl daemon-reload || true
+		systemctl start connman.service || true
+	fi
+}
+
 connman_disable_tether () {
 	if [ -d /sys/class/net/tether ] ; then
 		if [ -d /sys/class/net/eth0 ] ; then
 			echo "${log} Connman's tether enabled, but eth0 exists, leaving tether up and running..."
-			exit 1
 		else
 			echo "${log} connmanctl tether wifi off"
 			connmanctl tether wifi off
 			sleep 1
 		fi
+	else
+		#Someone plugged an eth0 device..
+		if [ -d /sys/class/net/eth0 ] ; then
+			if [ -f /etc/bb-wl18xx-tether.connman.disable.nodnsproxy ] ; then
+				enable_connman_dnsproxy
+				rm -rf /etc/bb-wl18xx-tether.connman.disable.nodnsproxy
+				enable_connman_dnsproxy
+				connmanctl tether wifi on
+				sleep 1
+			fi
+		fi
 	fi
+}
+
+wait_for_mac () {
+	until [ -d /etc/cpsw_0_mac ] ; do
+		sleep 5
+		echo "${log} waiting for /etc/cpsw_*_mac"
+	done
 }
 
 wait_for_wlan () {
@@ -144,18 +186,6 @@ start_hostapd () {
 	/usr/sbin/hostapd -B /tmp/hostapd-wl18xx.conf
 }
 
-disable_connman_dnsproxy () {
-	#netstat -tapnd
-	unset check_connman
-	check_connman=$(cat /lib/systemd/system/connman.service | grep ExecStart | grep nodnsproxy || true)
-	if [ "x${check_connman}" = "x" ] ; then
-		systemctl stop connman.service || true
-		sed -i -e 's:connmand -n:connmand -n --nodnsproxy:g' /lib/systemd/system/connman.service || true
-		systemctl daemon-reload || true
-		systemctl start connman.service || true
-	fi
-}
-
 start_dnsmasq () {
 	if [ -f /var/run/udhcpd.pid ] ; then
 		/etc/init.d/udhcpd stop || true
@@ -184,48 +214,55 @@ start_dnsmasq () {
 	systemctl restart dnsmasq || true
 }
 
+default () {
+	connman_disable_tether
+	if [ ! -d /sys/class/net/tether ] ; then
+		create_softap0_interface
+		bringup_softap0_interface
+		start_hostapd
+		disable_connman_dnsproxy
+		start_dnsmasq
+	fi
+}
+
 board=$(cat /proc/device-tree/model | sed "s/ /_/g")
 case "${board}" in
 TI_AM335x_BeagleBone_Green_Wireless)
-	if [ -f /lib/systemd/system/wifidog-gateway.service ] ; then
-		echo "${log} can't be used with wifidog (yet)..."
-		exit 1
-	fi
-	wait_for_wlan
-	if [ -f /etc/cpsw_0_mac ] ; then
-		use_mac=$(cat /etc/cpsw_0_mac)
+	if [ ! -f /lib/systemd/system/wifidog-gateway.service ] ; then
+		wait_for_mac
+		wait_for_wlan
+		if [ -f /etc/cpsw_0_mac ] ; then
+			use_mac=$(cat /etc/cpsw_0_mac)
+		else
+			use_mac="68:9E:19:8E:97:56"
+		fi
+		default
 	else
-		use_mac="68:9E:19:8E:97:56"
+		echo "${log} can't be used with wifidog (yet)..."
 	fi
-	connman_disable_tether
 	;;
 TI_AM335x_BeagleBone_Black_Wireless)
+	wait_for_mac
 	wait_for_wlan
 	if [ -f /etc/cpsw_3_mac ] ; then
 		use_mac=$(cat /etc/cpsw_3_mac)
 	else
 		use_mac="68:9E:19:8E:97:56"
 	fi
-	connman_disable_tether
+	default
 	;;
 TI_AM335x_BeagleBone_Blue)
+	wait_for_mac
 	wait_for_wlan
 	if [ -f /etc/cpsw_3_mac ] ; then
 		use_mac=$(cat /etc/cpsw_3_mac)
 	else
 		use_mac="68:9E:19:8E:97:56"
 	fi
-	connman_disable_tether
+	default
 	;;
 *)
 	echo "${log} unsupported device, leaving things in default state..."
-	exit 1
 	;;
 esac
-
-create_softap0_interface
-bringup_softap0_interface
-start_hostapd
-disable_connman_dnsproxy
-start_dnsmasq
 

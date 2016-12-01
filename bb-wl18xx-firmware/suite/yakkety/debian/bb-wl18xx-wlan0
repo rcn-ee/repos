@@ -102,12 +102,16 @@ set_wlan_0_mac_from_eeprom () {
 }
 
 set_wlan_0_mac_from_cpsw_0 () {
-	mac_address="/proc/device-tree/ocp/ethernet@4a100000/slave@4a100200/mac-address"
-	if [ -f ${mac_address} ] ; then
-		cpsw_0_mac=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address} | sed 's/.$//' | awk '{print toupper($0)}')
+	if [ -f /etc/cpsw_3_mac ] ; then
+		cpsw_0_mac=$(cat /etc/cpsw_0_mac | awk '{print toupper($0)}')
 	else
-		#todo: generate random mac... (this is a development tre board in the lab...)
-		cpsw_0_mac="1C:BA:8C:A2:ED:68"
+		mac_address="/proc/device-tree/ocp/ethernet@4a100000/slave@4a100200/mac-address"
+		if [ -f ${mac_address} ] ; then
+			cpsw_0_mac=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address} | sed 's/.$//' | awk '{print toupper($0)}')
+		else
+			#todo: generate random mac... (this is a development tre board in the lab...)
+			cpsw_0_mac="1C:BA:8C:A2:ED:68"
+		fi
 	fi
 	wlan_0_mac="${cpsw_0_mac}"
 	echo "wlan_0_mac=[${wlan_0_mac}]"
