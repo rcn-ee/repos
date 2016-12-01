@@ -75,7 +75,7 @@ connman_disable_tether () {
 }
 
 wait_for_mac () {
-	until [ -d /etc/cpsw_0_mac ] ; do
+	until [ -f /etc/cpsw_0_mac ] ; do
 		sleep 5
 		echo "${log} waiting for /etc/cpsw_*_mac"
 	done
