@@ -4,8 +4,9 @@ set -e
 
 # drop the temporary mask from prerm
 if [ -d /run/systemd/system ] && [ "$1" = remove ]; then
-	systemctl unmask --runtime bb-wl18xx-bluetooth.service
-	systemctl unmask --runtime bb-wl18xx-wlan0.service
+	systemctl unmask --runtime bb-wl18xx-bluetooth.service || true
+	systemctl unmask --runtime bb-wl18xx-wlan0.service || true
+	systemctl unmask --runtime bb-wl18xx-tether.service || true
 fi
 
 #DEBHELPER#

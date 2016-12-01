@@ -21,7 +21,7 @@
 # THE SOFTWARE.
 
 ap_interface="SoftAp0"
-log="log:"
+log="wl18xx:"
 use_mac=""
 ip_prefix="192.168.8"
 ssid_prefix="BeagleBone"
@@ -37,6 +37,13 @@ connman_disable_tether () {
 			sleep 1
 		fi
 	fi
+}
+
+wait_for_wlan () {
+	until [ -d /sys/class/net/wlan0/ ] ; do
+		sleep 5
+		echo "${log} waiting for /sys/class/net/wlan0"
+	done
 }
 
 create_softap0_interface () {
@@ -61,7 +68,7 @@ create_softap0_interface () {
 				get_wl=$(ls /sys/class/net/ | grep wlx)
 				echo "${log} ip link set dev ${get_wl} name ${ap_interface}"
 				ip link set dev ${get_wl} name ${ap_interface}
-			else
+
 				#We really want to use ${ap_interface}
 				sleep 2
 				if [ ! -d /sys/class/net/${ap_interface} ] ; then
@@ -180,6 +187,11 @@ start_dnsmasq () {
 board=$(cat /proc/device-tree/model | sed "s/ /_/g")
 case "${board}" in
 TI_AM335x_BeagleBone_Green_Wireless)
+	if [ -f /lib/systemd/system/wifidog-gateway.service ] ; then
+		echo "${log} can't be used with wifidog (yet)..."
+		exit 1
+	fi
+	wait_for_wlan
 	if [ -f /etc/cpsw_0_mac ] ; then
 		use_mac=$(cat /etc/cpsw_0_mac)
 	else
@@ -188,6 +200,7 @@ TI_AM335x_BeagleBone_Green_Wireless)
 	connman_disable_tether
 	;;
 TI_AM335x_BeagleBone_Black_Wireless)
+	wait_for_wlan
 	if [ -f /etc/cpsw_3_mac ] ; then
 		use_mac=$(cat /etc/cpsw_3_mac)
 	else
@@ -196,6 +209,7 @@ TI_AM335x_BeagleBone_Black_Wireless)
 	connman_disable_tether
 	;;
 TI_AM335x_BeagleBone_Blue)
+	wait_for_wlan
 	if [ -f /etc/cpsw_3_mac ] ; then
 		use_mac=$(cat /etc/cpsw_3_mac)
 	else
@@ -204,6 +218,8 @@ TI_AM335x_BeagleBone_Blue)
 	connman_disable_tether
 	;;
 *)
+	echo "${log} unsupported device, leaving things in default state..."
+	exit 1
 	;;
 esac
 
