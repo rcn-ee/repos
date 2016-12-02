@@ -22,7 +22,7 @@ setup_update_sbuild () {
 
 	if [ -f /usr/share/lintian/data/changes-file/known-dists ] ; then
 		unset lintian_check
-		lintian_check=$(cat /usr/share/lintian/data/changes-file/known-dists | grep -v '#' | grep ${dist})
+		lintian_check=$(cat /usr/share/lintian/data/changes-file/known-dists | grep -v '#' | grep ${dist} || true)
 		if [ "x${lintian_check}" = "x" ] ; then
 			echo "${dist}" >> /usr/share/lintian/data/changes-file/known-dists
 		fi
