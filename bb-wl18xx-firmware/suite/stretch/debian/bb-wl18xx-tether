@@ -83,10 +83,20 @@ connman_disable_tether () {
 }
 
 wait_for_mac () {
-	until [ -f /etc/cpsw_0_mac ] ; do
-		sleep 5
-		echo "${log} waiting for /etc/cpsw_*_mac"
-	done
+	mac_address="/proc/device-tree/ocp/ethernet@4a100000/slave@4a100200/mac-address"
+	if [ -f ${mac_address} ] ; then
+		cpsw_0_mac=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address} | sed 's/.$//')
+	else
+		cpsw_0_mac="68:9E:19:8E:97:56"
+	fi
+
+	mac_0_prefix=$(echo ${cpsw_0_mac} | cut -c 1-14)
+
+	cpsw_0_6=$(echo ${cpsw_0_mac} | awk -F ':' '{print $6}')
+	#bc cuts off leading zero's, we need ten/ones value
+	cpsw_res=$(echo "obase=16;ibase=16;$cpsw_0_6 + 103" | bc)
+
+	cpsw_3_mac=${mac_0_prefix}:$(echo ${cpsw_res} | cut -c 2-3)
 }
 
 wait_for_wlan () {
@@ -247,12 +257,8 @@ board=$(cat /proc/device-tree/model | sed "s/ /_/g")
 case "${board}" in
 TI_AM335x_BeagleBone_Green_Wireless)
 	wait_for_mac
+	use_mac="${cpsw_0_mac}"
 	wait_for_wlan
-	if [ -f /etc/cpsw_0_mac ] ; then
-		use_mac=$(cat /etc/cpsw_0_mac)
-	else
-		use_mac="68:9E:19:8E:97:56"
-	fi
 	if [ ! -f /lib/systemd/system/wifidog-gateway.service ] ; then
 		default
 	else
@@ -262,12 +268,8 @@ TI_AM335x_BeagleBone_Green_Wireless)
 	;;
 TI_AM335x_BeagleBone_Black_Wireless)
 	wait_for_mac
+	use_mac="${cpsw_3_mac}"
 	wait_for_wlan
-	if [ -f /etc/cpsw_3_mac ] ; then
-		use_mac=$(cat /etc/cpsw_3_mac)
-	else
-		use_mac="68:9E:19:8E:97:56"
-	fi
 	if [ ! -f /lib/systemd/system/wifidog-gateway.service ] ; then
 		default
 	else
@@ -277,12 +279,8 @@ TI_AM335x_BeagleBone_Black_Wireless)
 	;;
 TI_AM335x_BeagleBone_Blue)
 	wait_for_mac
+	use_mac="${cpsw_3_mac}"
 	wait_for_wlan
-	if [ -f /etc/cpsw_3_mac ] ; then
-		use_mac=$(cat /etc/cpsw_3_mac)
-	else
-		use_mac="68:9E:19:8E:97:56"
-	fi
 	if [ ! -f /lib/systemd/system/wifidog-gateway.service ] ; then
 		default
 	else
