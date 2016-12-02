@@ -20,6 +20,14 @@ setup_update_sbuild () {
 		ln -s /usr/share/debootstrap/scripts/${deboot} /usr/share/debootstrap/scripts/${dist}
 	fi
 
+	if [ -f /usr/share/lintian/data/changes-file/known-dists ] ; then
+		unset lintian_check
+		lintian_check=$(cat /usr/share/lintian/data/changes-file/known-dists | grep -v '#' | grep ${dist})
+		if [ "x${lintian_check}" = "x" ] ; then
+			echo "${dist}" >> /usr/share/lintian/data/changes-file/known-dists
+		fi
+	fi
+
 	if [ ! -f /var/lib/sbuild/${dist}-${arch}${flavor}.tar.gz ] ; then
 		sbuild-createchroot ${options} --arch=${arch} --make-sbuild-tarball=/var/lib/sbuild/${dist}-${arch}${flavor}.tar.gz ${dist} `mktemp -d` ${mirror}
 	else
