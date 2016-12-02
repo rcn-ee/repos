@@ -53,7 +53,10 @@ npm_install () {
 		mkdir -p ${NODE_PATH}/${pkg}/log/ || true
 	fi
 
-	systemctl enable wifidog-pre-startup.service || true
+	#removed...
+	systemctl stop wifidog-pre-startup.service || true
+	systemctl disable wifidog-pre-startup.service || true
+
 	systemctl enable wifidog-gateway.service || true
 
 	systemctl disable wificonfig.socket || true
