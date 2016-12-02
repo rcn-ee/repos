@@ -234,20 +234,29 @@ default () {
 	fi
 }
 
+just_softap () {
+	connman_disable_tether
+	if [ ! -d /sys/class/net/tether ] ; then
+		create_softap0_interface
+		bringup_softap0_interface
+	fi
+}
+
 board=$(cat /proc/device-tree/model | sed "s/ /_/g")
 case "${board}" in
 TI_AM335x_BeagleBone_Green_Wireless)
+	wait_for_mac
+	wait_for_wlan
+	if [ -f /etc/cpsw_0_mac ] ; then
+		use_mac=$(cat /etc/cpsw_0_mac)
+	else
+		use_mac="68:9E:19:8E:97:56"
+	fi
 	if [ ! -f /lib/systemd/system/wifidog-gateway.service ] ; then
-		wait_for_mac
-		wait_for_wlan
-		if [ -f /etc/cpsw_0_mac ] ; then
-			use_mac=$(cat /etc/cpsw_0_mac)
-		else
-			use_mac="68:9E:19:8E:97:56"
-		fi
 		default
 	else
-		echo "${log} can't be used with wifidog (yet)..."
+		just_softap
+		touch /tmp/wifi.up
 	fi
 	;;
 TI_AM335x_BeagleBone_Black_Wireless)
