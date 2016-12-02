@@ -170,12 +170,12 @@ bringup_softap0_interface () {
 		ip_forward=$(cat /proc/sys/net/ipv4/ip_forward)
 		if [ "x${ip_forward}" = "x0" ] ; then
 			echo 1 > /proc/sys/net/ipv4/ip_forward
-			echo "${log} iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE"
-			iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
-			echo "${log} iptables -A FORWARD -i wlan0 -o ${ap_interface} -m state --state RELATED,ESTABLISHED -j ACCEPT"
-			iptables -A FORWARD -i wlan0 -o ${ap_interface} -m state --state RELATED,ESTABLISHED -j ACCEPT
-			echo "${log} iptables -A FORWARD -i ${ap_interface} -o wlan0 -j ACCEPT"
-			iptables -A FORWARD -i ${ap_interface} -o wlan0 -j ACCEPT
+			echo "${log} iptables -w -t nat -A POSTROUTING -o wlan0 -j MASQUERADE"
+			iptables -w -t nat -A POSTROUTING -o wlan0 -j MASQUERADE || true
+			echo "${log} iptables -w -A FORWARD -i wlan0 -o ${ap_interface} -m state --state RELATED,ESTABLISHED -j ACCEPT"
+			iptables -w -A FORWARD -i wlan0 -o ${ap_interface} -m state --state RELATED,ESTABLISHED -j ACCEPT || true
+			echo "${log} iptables -w -A FORWARD -i ${ap_interface} -o wlan0 -j ACCEPT"
+			iptables -w -A FORWARD -i ${ap_interface} -o wlan0 -j ACCEPT || true
 		fi
 	fi
 }
@@ -250,6 +250,21 @@ just_softap () {
 		create_softap0_interface
 		bringup_softap0_interface
 		disable_connman_dnsproxy
+		if [ -f /lib/systemd/system/wificonfig.service ] ; then
+			if [ -f /lib/systemd/system/bonescript.socket ] ; then
+				systemctl stop bonescript.socket || true
+				systemctl disable bonescript.socket || true
+			fi
+			if [ -f /lib/systemd/system/bonescript.service ] ; then
+				systemctl stop bonescript.service || true
+				systemctl disable bonescript.service || true
+			fi
+			if [ -f /lib/systemd/system/bonescript-autorun.service ] ; then
+				systemctl stop bonescript-autorun.service || true
+				systemctl disable bonescript-autorun.service || true
+			fi
+			systemctl start wificonfig.service || true
+		fi
 	fi
 }
 
