@@ -239,6 +239,7 @@ just_softap () {
 	if [ ! -d /sys/class/net/tether ] ; then
 		create_softap0_interface
 		bringup_softap0_interface
+		disable_connman_dnsproxy
 	fi
 }
 
@@ -267,7 +268,12 @@ TI_AM335x_BeagleBone_Black_Wireless)
 	else
 		use_mac="68:9E:19:8E:97:56"
 	fi
-	default
+	if [ ! -f /lib/systemd/system/wifidog-gateway.service ] ; then
+		default
+	else
+		just_softap
+		touch /tmp/wifi.up
+	fi
 	;;
 TI_AM335x_BeagleBone_Blue)
 	wait_for_mac
@@ -277,7 +283,12 @@ TI_AM335x_BeagleBone_Blue)
 	else
 		use_mac="68:9E:19:8E:97:56"
 	fi
-	default
+	if [ ! -f /lib/systemd/system/wifidog-gateway.service ] ; then
+		default
+	else
+		just_softap
+		touch /tmp/wifi.up
+	fi
 	;;
 *)
 	echo "${log} unsupported device, leaving things in default state..."
