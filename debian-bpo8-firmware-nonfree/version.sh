@@ -4,7 +4,7 @@ mirror="http://http.debian.net/debian"
 
 package_name="firmware-nonfree"
 debian_pkg_name="${package_name}"
-package_version="20160824"
+package_version="20161130"
 
 git_repo=""
 git_sha=""
