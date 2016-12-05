@@ -99,7 +99,7 @@ mesa () {
 	package_name="libclc" ; package_version="${package_name}_0.2.0+git20160907-3" ; check_http
 
 	site="${debian_pool}/main/libd"
-	package_name="libdrm" ; package_version="${package_name}_2.4.73-1" ; check_http
+	package_name="libdrm" ; package_version="${package_name}_2.4.74-1" ; check_http
 
 	site="${debian_pool}/main/libv"
 	package_name="libvdpau" ; package_version="${package_name}_1.1.1-5" ; check_http
@@ -108,7 +108,7 @@ mesa () {
 	package_name="libva" ; package_version="${package_name}_1.7.3-2" ; check_http
 
 	site="${debian_pool}/main/m"
-	package_name="mesa" ; package_version="${package_name}_13.0.1-2" ; check_http
+	package_name="mesa" ; package_version="${package_name}_13.0.2-1" ; check_http
 	package_name="mesa-demos" ; package_version="${package_name}_8.3.0-2" ; check_http
 }
 
