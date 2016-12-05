@@ -128,14 +128,17 @@ TI_AM335x_BeagleBone_Green_Wireless)
 	if [ -f /sys/class/leds/wl18xx_wl_en/brightness ] ; then
 		echo 1 > /sys/class/leds/wl18xx_wl_en/brightness || true
 	fi
+	systemctl start bb-wl18xx-tether.service || true
 	;;
 TI_AM335x_BeagleBone_Black_Wireless)
 	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
 	set_wlan_0_mac_from_cpsw_0
+	systemctl start bb-wl18xx-tether.service || true
 	;;
 TI_AM335x_BeagleBone_Blue)
 	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
 	set_wlan_0_mac_from_cpsw_0
+	systemctl start bb-wl18xx-tether.service || true
 	;;
 *)
 	;;
