@@ -15,8 +15,10 @@ if [ -d /run/systemd/system ] && [ "$1" = remove ]; then
 	systemctl stop wificonfig.service || true
 
 	#removed:
-	systemctl stop wifidog-pre-startup.service || true
-	systemctl disable wifidog-pre-startup.service || true
+	if [ -f /lib/systemd/system/wifidog-pre-startup.service ] ; then
+		systemctl stop wifidog-pre-startup.service || true
+		systemctl disable wifidog-pre-startup.service || true
+	fi
 fi
 
 package="seeed-wificonfig-installer"
