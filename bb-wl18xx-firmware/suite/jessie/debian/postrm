@@ -6,7 +6,9 @@ set -e
 if [ -d /run/systemd/system ] && [ "$1" = remove ]; then
 	systemctl unmask --runtime bb-wl18xx-bluetooth.service || true
 	systemctl unmask --runtime bb-wl18xx-wlan0.service || true
-	systemctl unmask --runtime bb-wl18xx-tether.service || true
+	if [ -f /lib/systemd/system/bb-wl18xx-tether.service ] ; then
+		systemctl unmask --runtime bb-wl18xx-tether.service || true
+	fi
 fi
 
 #DEBHELPER#

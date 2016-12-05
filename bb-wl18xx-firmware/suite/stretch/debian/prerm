@@ -8,12 +8,15 @@ set -e
 if [ -d /run/systemd/system ] && [ "$1" = remove ]; then
 	systemctl mask --runtime bb-wl18xx-bluetooth.service || true
 	systemctl mask --runtime bb-wl18xx-wlan0.service || true
-	systemctl mask --runtime bb-wl18xx-tether.service || true
 	# stop ${service}.service manually since invoke-rc.d currently doesn't
 	# deal with masked services (see Bug #717109)
 	systemctl stop bb-wl18xx-bluetooth.service || true
 	systemctl stop bb-wl18xx-wlan0.service || true
-	systemctl stop bb-wl18xx-tether.service || true
+
+	if [ -f /lib/systemd/system/bb-wl18xx-tether.service ] ; then
+		systemctl mask --runtime bb-wl18xx-tether.service || true
+		systemctl stop bb-wl18xx-tether.service || true
+	fi
 fi
 
 # summary of how this script can be called:

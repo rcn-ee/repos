@@ -26,6 +26,12 @@ use_mac=""
 ip_prefix="192.168.8"
 ssid_prefix="BeagleBone"
 
+unset are_we_flasher
+are_we_flasher=$(grep init-eMMC-flasher /proc/cmdline || true)
+if [ ! "x${are_we_flasher}" = "x" ] ; then
+	exit
+fi
+
 disable_connman_dnsproxy () {
 	#netstat -tapnd
 	unset check_connman

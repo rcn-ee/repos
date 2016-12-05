@@ -80,7 +80,7 @@ set_wlan_0_mac () {
 			echo "Writing mac address ${wlan_0_mac} to file ${firmware}"
 
 			echo "updating: /boot/initrd.img"
-			update-initramfs -u
+			update-initramfs -u || true
 			sync
 			echo "/boot/initrd.img: update complete"
 			[ -e /proc/$CYLON_PID ]  && kill $CYLON_PID
@@ -128,17 +128,17 @@ TI_AM335x_BeagleBone_Green_Wireless)
 	if [ -f /sys/class/leds/wl18xx_wl_en/brightness ] ; then
 		echo 1 > /sys/class/leds/wl18xx_wl_en/brightness || true
 	fi
-	systemctl start bb-wl18xx-tether.service || true
+	/usr/bin/bb-wl18xx-tether || true
 	;;
 TI_AM335x_BeagleBone_Black_Wireless)
 	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
 	set_wlan_0_mac_from_cpsw_0
-	systemctl start bb-wl18xx-tether.service || true
+	/usr/bin/bb-wl18xx-tether || true
 	;;
 TI_AM335x_BeagleBone_Blue)
 	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
 	set_wlan_0_mac_from_cpsw_0
-	systemctl start bb-wl18xx-tether.service || true
+	/usr/bin/bb-wl18xx-tether || true
 	;;
 *)
 	;;
