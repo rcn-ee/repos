@@ -11,9 +11,12 @@ if [ -d /run/systemd/system ] && [ "$1" = remove ]; then
 	systemctl mask --runtime wificonfig.socket || true
 	# stop ${service}.service manually since invoke-rc.d currently doesn't
 	# deal with masked services (see Bug #717109)
-	systemctl stop wifidog-pre-startup.service || true
 	systemctl stop wifidog-gateway.service || true
 	systemctl stop wificonfig.service || true
+
+	#removed:
+	systemctl stop wifidog-pre-startup.service || true
+	systemctl disable wifidog-pre-startup.service || true
 fi
 
 package="seeed-wificonfig-installer"
