@@ -180,30 +180,6 @@ bringup_softap0_interface () {
 	fi
 }
 
-start_hostapd () {
-	if [ ! "x${use_mac}" = "x" ] ; then
-		ssid_append=$(echo ${use_mac} | cut -b 13-17 | sed 's/://g' || true)
-	fi
-
-	wfile="/tmp/hostapd-wl18xx.conf"
-	echo "interface=SoftAp0" > ${wfile}
-
-	if [ ! "x${use_mac}" = "x" ] ; then
-		echo "ssid=${ssid_prefix}-${ssid_append}" >> ${wfile}
-	else
-		echo "ssid=${ssid_prefix}" >> ${wfile}
-	fi
-
-	echo "hw_mode=g" >> ${wfile}
-	echo "channel=1" >> ${wfile}
-	echo "wpa_passphrase=BeagleBone" >> ${wfile}
-
-	echo "logger_syslog=-1" >> ${wfile}
-	echo "logger_syslog_level=2" >> ${wfile}
-
-	/usr/sbin/hostapd -B /tmp/hostapd-wl18xx.conf
-}
-
 start_dnsmasq () {
 	if [ -f /var/run/udhcpd.pid ] ; then
 		/etc/init.d/udhcpd stop || true
@@ -233,14 +209,38 @@ start_dnsmasq () {
 	touch /etc/bb-wl18xx-tether.dnsmasq.enable
 }
 
+start_hostapd () {
+	if [ ! "x${use_mac}" = "x" ] ; then
+		ssid_append=$(echo ${use_mac} | cut -b 13-17 | sed 's/://g' || true)
+	fi
+
+	wfile="/tmp/hostapd-wl18xx.conf"
+	echo "interface=SoftAp0" > ${wfile}
+
+	if [ ! "x${use_mac}" = "x" ] ; then
+		echo "ssid=${ssid_prefix}-${ssid_append}" >> ${wfile}
+	else
+		echo "ssid=${ssid_prefix}" >> ${wfile}
+	fi
+
+	echo "hw_mode=g" >> ${wfile}
+	echo "channel=1" >> ${wfile}
+	echo "wpa_passphrase=BeagleBone" >> ${wfile}
+
+	echo "logger_syslog=-1" >> ${wfile}
+	echo "logger_syslog_level=2" >> ${wfile}
+
+	/usr/sbin/hostapd -B /tmp/hostapd-wl18xx.conf
+}
+
 default () {
 	connman_disable_tether
 	if [ ! -d /sys/class/net/tether ] ; then
 		create_softap0_interface
 		bringup_softap0_interface
-		start_hostapd
 		disable_connman_dnsproxy
 		start_dnsmasq
+		start_hostapd
 	fi
 }
 
@@ -250,6 +250,7 @@ just_softap () {
 		create_softap0_interface
 		bringup_softap0_interface
 		disable_connman_dnsproxy
+		start_dnsmasq
 		if [ -f /lib/systemd/system/wificonfig.service ] ; then
 			if [ -f /lib/systemd/system/bonescript.socket ] ; then
 				systemctl stop bonescript.socket || true
