@@ -12,8 +12,7 @@ core_version="3.1.3306+git20161130"
 wfile_0_12_x="c9-core_${core_version}-v0.12.17-build.tar.xz"
 
 #deb https://deb.nodesource.com/node_4.x jessie main
-   sha256sum_tgz_4_x="481a40f3e5364485b10537601f633025085ae5fafa001d47593b687b8c603be6"
-           wfile_4_x="c9-core_${core_version}-build.tar.xz"
+   wfile_4_x="c9-core_${core_version}-v4.7.0-build.tar.xz"
 
 #deb https://deb.nodesource.com/node_6.x jessie main
    sha256sum_tgz_6_x="9305d5516670318a08c230d8fd7519e1dcc7c85b6d470cf0a0e0a078f53e126a"
@@ -168,8 +167,7 @@ dl_install() {
 		pty_js_version="0.3.0"
 		;;
 	v4.*)
-		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v4.x"
-		sha256sum_tgz=${sha256sum_tgz_4_x}
+		sha256sum_tgz="local"
 		wfile=${wfile_4_x}
 		pty_js_version="0.3.0"
 		;;
@@ -355,6 +353,10 @@ cleanup () {
 
 	if [ -f /var/cache/c9-core-installer/${wfile_0_12_x} ] ; then
 		rm -f /var/cache/c9-core-installer/${wfile_0_12_x} || true
+	fi
+
+	if [ -f /var/cache/c9-core-installer/${wfile_4_x} ] ; then
+		rm -f /var/cache/c9-core-installer/${wfile_4_x} || true
 	fi
 }
 
