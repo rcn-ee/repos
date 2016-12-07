@@ -15,8 +15,7 @@ wfile_0_12_x="c9-core_${core_version}-v0.12.17-build.tar.xz"
    wfile_4_x="c9-core_${core_version}-v4.7.0-build.tar.xz"
 
 #deb https://deb.nodesource.com/node_6.x jessie main
-   sha256sum_tgz_6_x="9305d5516670318a08c230d8fd7519e1dcc7c85b6d470cf0a0e0a078f53e126a"
-           wfile_6_x="c9-core_${core_version}-build.tar.xz"
+   wfile_6_x="c9-core_${core_version}-v6.9.2-build.tar.xz"
 
 extract_dir="/opt/cloud9/build/"
 
@@ -138,25 +137,6 @@ npm_install () {
 	fi
 }
 
-dl_file() {
-	wget ${partner_url}/${wfile}
-}
-
-validdate_file() {
-	if [ ! "x${sha256sum_tgz}" = "xlocal" ] ; then
-		sha256compare=$(sha256sum ${wfile} | awk '{print $1}')
-		if [ ! "x${sha256compare}" = "x${sha256sum_tgz}" ] ; then
-			rm -rf ${wfile}
-			dl_file
-			sha256compare=$(sha256sum ${wfile} | awk '{print $1}')
-			if [ ! "x${sha256compare}" = "x${sha256sum_tgz}" ] ; then
-				echo "dl failure"
-				exit 1
-			fi
-		fi
-	fi
-}
-
 dl_install() {
 	unset node_version
 	node_version=$(/usr/bin/nodejs --version || true)
@@ -172,14 +152,12 @@ dl_install() {
 		pty_js_version="0.3.0"
 		;;
 	v6.*)
-		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v6.x"
-		sha256sum_tgz=${sha256sum_tgz_6_x}
+		sha256sum_tgz="local"
 		wfile=${wfile_6_x}
 		pty_js_version="0.3.1"
 		;;
 	*)
-		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v6.x"
-		sha256sum_tgz=${sha256sum_tgz_6_x}
+		sha256sum_tgz="local"
 		wfile=${wfile_6_x}
 		pty_js_version="0.3.1"
 		;;
@@ -191,29 +169,21 @@ dl_install() {
 
 	cd /var/cache/${package}/
 
-	if [ ! -f ${wfile} ] ; then
-		dl_file
+	systemctl stop cloud9.socket || true
+
+	if [ ! -d ${extract_dir} ] ; then
+		mkdir -p ${extract_dir} || true
 	fi
 
-	if [ -f ${wfile} ] ; then
-		validdate_file
+	echo "extracting: ${wfile}"
+	tar xf ${wfile} -C ${extract_dir}
+	chown -R 1000:1000 ${extract_dir}
 
-		systemctl stop cloud9.socket || true
-
-		if [ ! -d ${extract_dir} ] ; then
-			mkdir -p ${extract_dir} || true
-		fi
-
-		echo "extracting: ${wfile}"
-		tar xf ${wfile} -C ${extract_dir}
-		chown -R 1000:1000 ${extract_dir}
-
-		if [ ! -d /var/lib/cloud9 ] ; then
-			mkdir -p /var/lib/cloud9 || true
-		fi
-
-		systemctl --system daemon-reload || true
+	if [ ! -d /var/lib/cloud9 ] ; then
+		mkdir -p /var/lib/cloud9 || true
 	fi
+
+	systemctl --system daemon-reload || true
 }
 
 fix_npm_lib () {
@@ -357,6 +327,10 @@ cleanup () {
 
 	if [ -f /var/cache/c9-core-installer/${wfile_4_x} ] ; then
 		rm -f /var/cache/c9-core-installer/${wfile_4_x} || true
+	fi
+
+	if [ -f /var/cache/c9-core-installer/${wfile_6_x} ] ; then
+		rm -f /var/cache/c9-core-installer/${wfile_6_x} || true
 	fi
 }
 
