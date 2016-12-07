@@ -7,6 +7,14 @@ if [ -d /run/systemd/system ] && [ "$1" = remove ]; then
         systemctl unmask --runtime cloud9.service
 fi
 
+if [ -f /var/cache/c9-core-installer/virtualenv-12.0.7.tar.gz ] ; then
+	rm -f /var/cache/c9-core-installer/virtualenv-12.0.7.tar.gz || true
+fi
+
+if [ -f /var/cache/c9-core-installer/c9-core*build.tar.xz ] ; then
+	rm -rf /var/cache/c9-core-installer/c9-core*build.tar.xz || true
+fi
+
 #DEBHELPER#
 
 exit 0

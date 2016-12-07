@@ -6,11 +6,10 @@ set -e
 
 package="c9-core-installer"
 
-core_version="3.1.3168+git20161016"
+core_version="3.1.3306+git20161130"
 
 #deb https://deb.nodesource.com/node_0.12 jessie main
-sha256sum_tgz_0_12_x="0f7f36f171549795edce46d2924a48103d7b5175f2d4faf7e5057e0c2ceae8a2"
-        wfile_0_12_x="c9-core_${core_version}-build.tar.xz"
+wfile_0_12_x="c9-core_${core_version}-v0.12.17-build.tar.xz"
 
 #deb https://deb.nodesource.com/node_4.x jessie main
    sha256sum_tgz_4_x="481a40f3e5364485b10537601f633025085ae5fafa001d47593b687b8c603be6"
@@ -162,8 +161,6 @@ dl_install() {
 	node_version=$(/usr/bin/nodejs --version || true)
 	case "${node_version}" in
 	v0.12.*)
-		partner_url="https://rcn-ee.com/repos/git/archive/c9-core_v0.12.x"
-		sha256sum_tgz=${sha256sum_tgz_0_12_x}
 		wfile=${wfile_0_12_x}
 		pty_js_version="0.3.0"
 		;;
@@ -265,19 +262,6 @@ c9_directory () {
 		rm -rf "$C9_DIR"/$VIRTUALENV_VERSION
 	fi
 
-	partner_url="https://rcn-ee.com/repos/git/archive/c9-npmbox"
-
-	sha256sum_tgz="d681db1766cdc8aa1b37eb18252c264b775f971166c2bf658a9618c1f3d28741"
-	wfile="virtualenv-12.0.7.tar.gz"
-
-	cd /var/cache/${package}/
-	if [ ! -f ${wfile} ] ; then
-		dl_file
-	fi
-
-	if [ -f ${wfile} ] ; then
-		validdate_file
-	fi
 	cd "$C9_DIR"
 
 	tar xzf /var/cache/${package}/$VIRTUALENV_VERSION.tar.gz
@@ -344,7 +328,13 @@ c9_directory () {
 	  exit 100
 	fi
 
-# vfsextend collab
+	npm_project="c9-core-installer"
+	pkg="sqlite3" ; ver="3.1.4" ; npm_check_n_install
+	module="sqlite3" ; fix_npm_lib
+
+	npm_project="c9-core-installer"
+	pkg="sequelize" ; ver="2.0.0-beta.0" ; npm_check_n_install
+	module="sequelize" ; fix_npm_lib
 
 	#Cleanup:
 	${node_bin} ${npm_bin} config -g delete cache
