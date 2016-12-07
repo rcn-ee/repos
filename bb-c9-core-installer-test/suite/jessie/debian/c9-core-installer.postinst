@@ -331,13 +331,13 @@ c9_directory () {
 	  exit 100
 	fi
 
-	npm_project="c9-core-installer"
-	pkg="sqlite3" ; ver="3.1.4" ; npm_check_n_install
-	module="sqlite3" ; fix_npm_lib
+#	npm_project="c9-core-installer"
+#	pkg="sqlite3" ; ver="3.1.4" ; npm_check_n_install
+#	module="sqlite3" ; fix_npm_lib
 
-	npm_project="c9-core-installer"
-	pkg="sequelize" ; ver="2.0.0-beta.0" ; npm_check_n_install
-	module="sequelize" ; fix_npm_lib
+#	npm_project="c9-core-installer"
+#	pkg="sequelize" ; ver="2.0.0-beta.0" ; npm_check_n_install
+#	module="sequelize" ; fix_npm_lib
 
 	#Cleanup:
 	${node_bin} ${npm_bin} config -g delete cache
@@ -353,8 +353,8 @@ cleanup () {
 		rm -f /var/cache/c9-core-installer/virtualenv-12.0.7.tar.gz || true
 	fi
 
-	if [ -f /var/cache/c9-core-installer/c9-core*build.tar.xz ] ; then
-		rm -rf /var/cache/c9-core-installer/c9-core*build.tar.xz || true
+	if [ -f /var/cache/c9-core-installer/${wfile_0_12_x} ] ; then
+		rm -f /var/cache/c9-core-installer/${wfile_0_12_x} || true
 	fi
 }
 
