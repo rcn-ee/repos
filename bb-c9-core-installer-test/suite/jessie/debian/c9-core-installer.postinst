@@ -144,14 +144,16 @@ dl_file() {
 }
 
 validdate_file() {
-	sha256compare=$(sha256sum ${wfile} | awk '{print $1}')
-	if [ ! "x${sha256compare}" = "x${sha256sum_tgz}" ] ; then
-		rm -rf ${wfile}
-		dl_file
+	if [ ! "x${sha256sum_tgz}" = "xlocal" ] ; then
 		sha256compare=$(sha256sum ${wfile} | awk '{print $1}')
 		if [ ! "x${sha256compare}" = "x${sha256sum_tgz}" ] ; then
-			echo "dl failure"
-			exit 1
+			rm -rf ${wfile}
+			dl_file
+			sha256compare=$(sha256sum ${wfile} | awk '{print $1}')
+			if [ ! "x${sha256compare}" = "x${sha256sum_tgz}" ] ; then
+				echo "dl failure"
+				exit 1
+			fi
 		fi
 	fi
 }
@@ -161,6 +163,7 @@ dl_install() {
 	node_version=$(/usr/bin/nodejs --version || true)
 	case "${node_version}" in
 	v0.12.*)
+		sha256sum_tgz="local"
 		wfile=${wfile_0_12_x}
 		pty_js_version="0.3.0"
 		;;
