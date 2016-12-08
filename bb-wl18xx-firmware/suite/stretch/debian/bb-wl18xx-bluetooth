@@ -73,6 +73,11 @@ hciattach_bin=$(which hciattach)
 
 if [ -f ${hciattach_bin} ] ; then
 	if [ -f /sys/class/leds/wl18xx_bt_en/brightness ] ; then
+		# Resetting the Bluetooth enable pin
+		if [ `cat /sys/class/leds/wl18xx_bt_en/brightness` = "${bt_enable}" ]; then
+			echo 0 > /sys/class/leds/wl18xx_bt_en/brightness || true
+			sleep 1
+		fi
 		echo ${bt_enable} > /sys/class/leds/wl18xx_bt_en/brightness || true
 		${hciattach_bin} ${bt_port} ${bt_settings} || true
 	else
