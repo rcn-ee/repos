@@ -26,6 +26,8 @@ use_mac=""
 ip_prefix="192.168.8"
 ssid_prefix="BeagleBone"
 
+rfkill_bin=$(which rfkill)
+
 unset are_we_flasher
 are_we_flasher=$(grep init-eMMC-flasher /proc/cmdline || true)
 if [ ! "x${are_we_flasher}" = "x" ] ; then
@@ -106,6 +108,9 @@ wait_for_mac () {
 }
 
 wait_for_wlan () {
+	if [ -f ${rfkill_bin} ] ; then
+		${rfkill_bin} unblock all || true
+	fi
 	until [ -d /sys/class/net/wlan0/ ] ; do
 		sleep 5
 		echo "${log} waiting for /sys/class/net/wlan0"

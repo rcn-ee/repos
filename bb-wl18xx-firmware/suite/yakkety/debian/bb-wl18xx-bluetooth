@@ -69,7 +69,12 @@ esac
 #               };
 #       };
 
+rfkill_bin=$(which rfkill)
 hciattach_bin=$(which hciattach)
+
+if [ -f ${rfkill_bin} ] ; then
+	${rfkill_bin} unblock all || true
+fi
 
 if [ -f ${hciattach_bin} ] ; then
 	if [ -f /sys/class/leds/wl18xx_bt_en/brightness ] ; then
