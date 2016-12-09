@@ -116,6 +116,13 @@ connman_disable_tether () {
 	fi
 }
 
+wait_for_usb () {
+	until [ -d /sys/class/net/usb0/ ] ; do
+		sleep 5
+		echo "${log} waiting for /sys/class/net/usb0"
+	done
+}
+
 wait_for_mac () {
 	mac_address="/proc/device-tree/ocp/ethernet@4a100000/slave@4a100200/mac-address"
 	if [ -f ${mac_address} ] ; then
@@ -310,6 +317,7 @@ just_softap () {
 board=$(cat /proc/device-tree/model | sed "s/ /_/g" | tr -d '\000')
 case "${board}" in
 TI_AM335x_BeagleBone_Green_Wireless)
+	wait_for_usb
 	wait_for_mac
 	use_mac="${cpsw_0_mac}"
 	wait_for_wlan
@@ -321,6 +329,7 @@ TI_AM335x_BeagleBone_Green_Wireless)
 	fi
 	;;
 TI_AM335x_BeagleBone_Black_Wireless)
+	wait_for_usb
 	wait_for_mac
 	use_mac="${cpsw_3_mac}"
 	wait_for_wlan
@@ -332,6 +341,7 @@ TI_AM335x_BeagleBone_Black_Wireless)
 	fi
 	;;
 TI_AM335x_BeagleBone_Blue)
+	wait_for_usb
 	wait_for_mac
 	use_mac="${cpsw_3_mac}"
 	wait_for_wlan
