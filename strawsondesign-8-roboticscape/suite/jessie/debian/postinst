@@ -31,6 +31,7 @@ if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
 		echo "invalid answer to question"
 		exit 1
 	fi
+fi
 
 	# enable services
 	echo "systemctl daemon-reload"
@@ -39,6 +40,8 @@ if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
 	systemctl enable battery_monitor
 	echo "Starting battery_monitor Service"
 	systemctl start battery_monitor
+
+if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
 	echo "Enabling roboticscape Service"
 	systemctl enable roboticscape
 
