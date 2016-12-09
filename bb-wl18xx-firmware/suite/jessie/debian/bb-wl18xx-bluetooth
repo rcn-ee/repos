@@ -45,12 +45,13 @@ run_hciattach () {
 		if [ -f /sys/class/leds/wl18xx_bt_en/brightness ] ; then
 			# Resetting the Bluetooth enable pin
 			if [ `cat /sys/class/leds/wl18xx_bt_en/brightness` = "${bt_enable}" ]; then
-				echo 0 > /sys/class/leds/wl18xx_bt_en/brightness || true
+				echo ${bt_disable} > /sys/class/leds/wl18xx_bt_en/brightness || true
 				sleep 1
 			fi
 			echo ${bt_enable} > /sys/class/leds/wl18xx_bt_en/brightness || true
 			${hciattach_bin} ${bt_port} ${bt_settings} || true
 		else
+			#LEGACY: DONT USE...
 			if [ ! "x${bt_gpio_en}" = "x" ] ; then
 				if [ ! -d /sys/class/gpio/gpio${bt_gpio_en}/ ] ; then
 					echo ${bt_gpio_en} > /sys/class/gpio/export || true
@@ -68,11 +69,12 @@ run_hciattach () {
 	fi
 }
 
-board=$(cat /proc/device-tree/model | sed "s/ /_/g")
+board=$(cat /proc/device-tree/model | sed "s/ /_/g" | tr -d '\000')
 case "${board}" in
 TI_AM335x_BeagleBone_Black_wl1835mod)
 	#FIXME: confirm bt_enable
 	bt_enable="1"
+	bt_disable="0"
 	bt_gpio_en="44"
 	bt_port="/dev/ttyS4"
 	bt_settings="texas 300000"
@@ -80,6 +82,7 @@ TI_AM335x_BeagleBone_Black_wl1835mod)
 	;;
 TI_AM335x_BeagleBone_Black_Wireless)
 	bt_enable="1"
+	bt_disable="0"
 	bt_gpio_en="28"
 	bt_port="/dev/ttyS3"
 	bt_settings="texas 300000"
@@ -87,14 +90,15 @@ TI_AM335x_BeagleBone_Black_Wireless)
 	;;
 TI_AM335x_BeagleBone_Green_Wireless)
 	bt_enable="1"
+	bt_disable="0"
 	bt_gpio_en="60"
 	bt_port="/dev/ttyS3"
 	bt_settings="texas 300000"
 	run_hciattach
 	;;
 TI_AM335x_BeagleBone_Blue)
-	#FIXME: confirm bt_enable
 	bt_enable="1"
+	bt_disable="0"
 	bt_gpio_en="28"
 	bt_port="/dev/ttyS3"
 	bt_settings="texas 300000"
@@ -102,6 +106,7 @@ TI_AM335x_BeagleBone_Blue)
 	;;
 *)
 	unset bt_enable
+	unset bt_disable
 	unset bt_gpio_en
 	unset bt_port
 	unset bt_settings

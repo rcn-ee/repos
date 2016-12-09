@@ -307,7 +307,7 @@ just_softap () {
 	fi
 }
 
-board=$(cat /proc/device-tree/model | sed "s/ /_/g")
+board=$(cat /proc/device-tree/model | sed "s/ /_/g" | tr -d '\000')
 case "${board}" in
 TI_AM335x_BeagleBone_Green_Wireless)
 	wait_for_mac
