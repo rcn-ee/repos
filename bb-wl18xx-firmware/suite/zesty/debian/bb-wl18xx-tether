@@ -60,24 +60,32 @@ enable_connman_dnsproxy () {
 }
 
 connman_disable_tether () {
+	eth_interface="eth0"
+	if [ ! -d /sys/class/net/${eth_interface} ] ; then
+		get_enx=$(ls /sys/class/net/ | grep enx | tail -1 || true)
+		if [ ! "x${get_enx}" = "x" ] ; then
+			eth_interface="${get_enx}"
+		fi
+	fi
+
 	if [ -d /sys/class/net/tether ] ; then
-		if [ -d /sys/class/net/eth0 ] ; then
-			echo "${log} Connman's tether enabled, but eth0 exists, leaving tether up and running..."
+		if [ -d /sys/class/net/${eth_interface} ] ; then
+			echo "${log} Connman's tether enabled, but ${eth_interface} exists, leaving tether up and running..."
 		else
 			echo "${log} connmanctl tether wifi off"
 			connmanctl tether wifi off || true
 			sleep 1
 		fi
 	else
-		#Someone plugged an eth0 device..
-		if [ -d /sys/class/net/eth0 ] ; then
-			if [ -d /sys/class/net/SoftAp0 ] ; then
-				iw SoftAp0 del || true
+		#Someone plugged an ${eth_interface} device..
+		if [ -d /sys/class/net/${eth_interface} ] ; then
+			if [ -d /sys/class/net/${ap_interface} ] ; then
+				iw ${ap_interface} del || true
 			fi
 
 			if [ -f /etc/bb-wl18xx-tether.dnsmasq.enable ] ; then
 				systemctl stop dnsmasq || true
-				rm -rf /etc/dnsmasq.d/SoftAp0 || true
+				rm -rf /etc/dnsmasq.d/${ap_interface} || true
 				rm -rf /etc/bb-wl18xx-tether.dnsmasq.enable || true
 			fi
 
@@ -130,7 +138,7 @@ wait_for_wlan () {
 
 create_softap0_interface () {
 	if [ ! -d /sys/class/net/${ap_interface} ] ; then
-		number_of_wlan=$(ls /sys/class/net/ | grep wlan | wc -l)
+		number_of_wlan=$(ls /sys/class/net/ | grep wlan | wc -l || true)
 
 		if [ "x${number_of_wlan}" = "x1" ] ; then
 			echo "${log} iw phy phy0 interface add ${ap_interface} type managed"
@@ -147,14 +155,14 @@ create_softap0_interface () {
 			sync
 
 			if [ ! -d /sys/class/net/${ap_interface} ] ; then
-				get_wl=$(ls /sys/class/net/ | grep wlx)
+				get_wl=$(ls /sys/class/net/ | grep wlx | tail -1 || true)
 				echo "${log} ip link set dev ${get_wl} name ${ap_interface}"
 				ip link set dev ${get_wl} name ${ap_interface}
 
 				#We really want to use ${ap_interface}
 				sleep 2
 				if [ ! -d /sys/class/net/${ap_interface} ] ; then
-					get_wl=$(ls /sys/class/net/ | grep wlx)
+					get_wl=$(ls /sys/class/net/ | grep wlx | tail -1 || true)
 					echo "${log} ip link set dev ${get_wl} name ${ap_interface}"
 					ip link set dev ${get_wl} name ${ap_interface}
 				fi
@@ -207,8 +215,8 @@ start_dnsmasq () {
 		/etc/init.d/udhcpd stop || true
 	fi
 
-	wfile="/etc/dnsmasq.d/SoftAp0"
-	echo "interface=SoftAp0" > ${wfile}
+	wfile="/etc/dnsmasq.d/${ap_interface}"
+	echo "interface=${ap_interface}" > ${wfile}
 	echo "interface=usb0" >> ${wfile}
 	echo "port=53" >> ${wfile}
 	echo "dhcp-authoritative" >> ${wfile}
@@ -216,13 +224,13 @@ start_dnsmasq () {
 	echo "bogus-priv" >> ${wfile}
 	echo "expand-hosts" >> ${wfile}
 	echo "cache-size=2048" >> ${wfile}
-	echo "dhcp-range=SoftAp0,192.168.8.50,192.168.8.150,12h" >> ${wfile}
+	echo "dhcp-range=${ap_interface},192.168.8.50,192.168.8.150,12h" >> ${wfile}
 	echo "dhcp-range=usb0,192.168.7.3,192.168.7.4,12h" >> ${wfile}
 	echo "listen-address=127.0.0.1" >> ${wfile}
 	echo "listen-address=192.168.8.1" >> ${wfile}
 	echo "listen-address=192.168.7.2" >> ${wfile}
-	echo "dhcp-option-force=interface:SoftAp0,option:dns-server,192.168.8.1" >> ${wfile}
-	echo "dhcp-option-force=interface:SoftAp0,option:mtu,1500" >> ${wfile}
+	echo "dhcp-option-force=interface:${ap_interface},option:dns-server,192.168.8.1" >> ${wfile}
+	echo "dhcp-option-force=interface:${ap_interface},option:mtu,1500" >> ${wfile}
 	echo "dhcp-option=usb0,3" >> ${wfile}
 	echo "dhcp-option=usb0,6" >> ${wfile}
 	echo "address=/#/172.1.8.1" >> ${wfile}
@@ -237,7 +245,7 @@ start_hostapd () {
 	fi
 
 	wfile="/tmp/hostapd-wl18xx.conf"
-	echo "interface=SoftAp0" > ${wfile}
+	echo "interface=${ap_interface}" > ${wfile}
 
 	if [ ! "x${use_mac}" = "x" ] ; then
 		echo "ssid=${wifi_ssid}-${ssid_append}" >> ${wfile}
