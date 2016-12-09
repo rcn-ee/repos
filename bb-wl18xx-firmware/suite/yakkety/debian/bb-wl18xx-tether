@@ -27,35 +27,40 @@ ip_prefix="192.168.8"
 wifi_ssid="BeagleBone"
 wifi_password="BeagleBone"
 
-rfkill_bin=$(which rfkill)
-
 unset are_we_flasher
 are_we_flasher=$(grep init-eMMC-flasher /proc/cmdline || true)
 if [ ! "x${are_we_flasher}" = "x" ] ; then
 	exit
 fi
 
+rfkill_bin=$(which rfkill)
+connmanctl_bin=$(which connmanctl)
+
 disable_connman_dnsproxy () {
-	#netstat -tapnd
-	unset check_connman
-	check_connman=$(cat /lib/systemd/system/connman.service | grep ExecStart | grep nodnsproxy || true)
-	if [ "x${check_connman}" = "x" ] ; then
-		systemctl stop connman.service || true
-		sed -i -e 's:connmand -n:connmand -n --nodnsproxy:g' /lib/systemd/system/connman.service || true
-		systemctl daemon-reload || true
-		systemctl start connman.service || true
+	if [ -f /lib/systemd/system/connman.service ] ; then
+		#netstat -tapnd
+		unset check_connman
+		check_connman=$(cat /lib/systemd/system/connman.service | grep ExecStart | grep nodnsproxy || true)
+		if [ "x${check_connman}" = "x" ] ; then
+			systemctl stop connman.service || true
+			sed -i -e 's:connmand -n:connmand -n --nodnsproxy:g' /lib/systemd/system/connman.service || true
+			systemctl daemon-reload || true
+			systemctl start connman.service || true
+		fi
 	fi
 }
 
 enable_connman_dnsproxy () {
-	#netstat -tapnd
-	unset check_connman
-	check_connman=$(cat /lib/systemd/system/connman.service | grep ExecStart | grep nodnsproxy || true)
-	if [ ! "x${check_connman}" = "x" ] ; then
-		systemctl stop connman.service || true
-		sed -i -e 's:connmand -n --nodnsproxy:connmand -n:g' /lib/systemd/system/connman.service || true
-		systemctl daemon-reload || true
-		systemctl start connman.service || true
+	if [ -f /lib/systemd/system/connman.service ] ; then
+		#netstat -tapnd
+		unset check_connman
+		check_connman=$(cat /lib/systemd/system/connman.service | grep ExecStart | grep nodnsproxy || true)
+		if [ ! "x${check_connman}" = "x" ] ; then
+			systemctl stop connman.service || true
+			sed -i -e 's:connmand -n --nodnsproxy:connmand -n:g' /lib/systemd/system/connman.service || true
+			systemctl daemon-reload || true
+			systemctl start connman.service || true
+		fi
 	fi
 }
 
@@ -73,37 +78,39 @@ connman_disable_tether () {
 			echo "${log} Connman's tether enabled, but ${eth_interface} exists, leaving tether up and running..."
 		else
 			echo "${log} connmanctl tether wifi off"
-			connmanctl tether wifi off || true
+			${connmanctl_bin} tether wifi off || true
 			sleep 1
 		fi
 	else
-		#Someone plugged an ${eth_interface} device..
-		if [ -d /sys/class/net/${eth_interface} ] ; then
-			if [ -d /sys/class/net/${ap_interface} ] ; then
-				iw ${ap_interface} del || true
-			fi
+		if [ -f /lib/systemd/system/connman.service ] ; then
+			#Someone plugged an ${eth_interface} device..
+			if [ -d /sys/class/net/${eth_interface} ] ; then
+				if [ -d /sys/class/net/${ap_interface} ] ; then
+					iw ${ap_interface} del || true
+				fi
 
-			if [ -f /etc/bb-wl18xx-tether.dnsmasq.enable ] ; then
-				systemctl stop dnsmasq || true
-				rm -rf /etc/dnsmasq.d/${ap_interface} || true
-				rm -rf /etc/bb-wl18xx-tether.dnsmasq.enable || true
-			fi
+				if [ -f /etc/bb-wl18xx-tether.dnsmasq.enable ] ; then
+					systemctl stop dnsmasq || true
+					rm -rf /etc/dnsmasq.d/${ap_interface} || true
+					rm -rf /etc/bb-wl18xx-tether.dnsmasq.enable || true
+				fi
 
-			enable_connman_dnsproxy
-			connmanctl enable wifi || true
-			sleep 1
+				enable_connman_dnsproxy
+				${connmanctl_bin} enable wifi || true
+				sleep 1
 
-			if [ ! "x${use_mac}" = "x" ] ; then
-				ssid_append=$(echo ${use_mac} | cut -b 13-17 | sed 's/://g' || true)
-				connmanctl tether wifi on ${wifi_ssid}-${ssid_append} ${wifi_password} || true
-			else
-				connmanctl tether wifi on ${wifi_ssid} ${wifi_password} || true
-			fi
-			sleep 1
+				if [ ! "x${use_mac}" = "x" ] ; then
+					ssid_append=$(echo ${use_mac} | cut -b 13-17 | sed 's/://g' || true)
+					${connmanctl_bin} tether wifi on ${wifi_ssid}-${ssid_append} ${wifi_password} || true
+				else
+					${connmanctl_bin} tether wifi on ${wifi_ssid} ${wifi_password} || true
+				fi
+				sleep 1
 
-			if [ -f /opt/scripts/boot/autoconfigure_usb0.sh ] ; then
-				#return usb0...
-				/opt/scripts/boot/autoconfigure_usb0.sh
+				if [ -f /opt/scripts/boot/autoconfigure_usb0.sh ] ; then
+					#return usb0...
+					/opt/scripts/boot/autoconfigure_usb0.sh
+				fi
 			fi
 		fi
 	fi
