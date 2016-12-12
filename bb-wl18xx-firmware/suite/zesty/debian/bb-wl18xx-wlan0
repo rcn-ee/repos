@@ -104,7 +104,7 @@ set_wlan_0_mac_from_eeprom () {
 }
 
 set_wlan_0_mac_from_cpsw_0 () {
-	if [ -f /etc/cpsw_3_mac ] ; then
+	if [ -f /etc/cpsw_0_mac ] ; then
 		cpsw_0_mac=$(cat /etc/cpsw_0_mac | awk '{print toupper($0)}')
 	else
 		mac_address="/proc/device-tree/ocp/ethernet@4a100000/slave@4a100200/mac-address"

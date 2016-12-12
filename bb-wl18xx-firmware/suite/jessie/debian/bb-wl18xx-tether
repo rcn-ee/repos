@@ -269,7 +269,14 @@ start_hostapd () {
 
 	echo "hw_mode=g" >> ${wfile}
 	echo "channel=1" >> ${wfile}
+	echo "macaddr_acl=0" >> ${wfile}
+	echo "auth_algs=1" >> ${wfile}
+	echo "ignore_broadcast_ssid=0" >> ${wfile}
+	echo "wpa=2" >> ${wfile}
 	echo "wpa_passphrase=${wifi_password}" >> ${wfile}
+	echo "wpa_key_mgmt=WPA-PSK" >> ${wfile}
+	echo "wpa_pairwise=TKIP" >> ${wfile}
+	echo "rsn_pairwise=CCMP" >> ${wfile}
 
 	echo "logger_syslog=-1" >> ${wfile}
 	echo "logger_syslog_level=2" >> ${wfile}
