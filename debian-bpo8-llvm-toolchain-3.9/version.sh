@@ -2,9 +2,9 @@
 
 mirror="http://http.debian.net/debian"
 
-package_name="llvm-toolchain-3.9.1"
+package_name="llvm-toolchain-3.9"
 debian_pkg_name="${package_name}"
-package_version="3.9"
+package_version="3.9.1"
 
 git_repo=""
 git_sha=""
