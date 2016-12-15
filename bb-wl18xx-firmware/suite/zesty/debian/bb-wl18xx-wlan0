@@ -95,9 +95,15 @@ set_wlan_0_mac () {
 }
 
 set_wlan_0_mac_from_eeprom () {
-	wlan_0_mac=$(hexdump -e '8/1 "%c"' ${eeprom} -n 72 | tail -1 | cut -b 5-8 || true)
-	if [ ! "x${wlan_0_mac}" = "xA335" ] ; then
-		wlan_0_mac=$(hexdump -e '8/1 "%c"' ${eeprom} -n 72 | tail -1 | cut -b 5-16 | sed 's/\(..\)/\1:/g;s/:$//' | awk '{print toupper($0)}' || true)
+	if [ -f ${eeprom} ] ; then
+		wlan_0_mac=$(hexdump -e '8/1 "%c"' ${eeprom} -n 72 | tail -1 | cut -b 5-8 || true)
+		if [ ! "x${wlan_0_mac}" = "xA335" ] ; then
+			wlan_0_mac=$(hexdump -e '8/1 "%c"' ${eeprom} -n 72 | tail -1 | cut -b 5-16 | sed 's/\(..\)/\1:/g;s/:$//' | awk '{print toupper($0)}' || true)
+		else
+			wlan_0_mac="1C:BA:8C:A2:ED:68"
+		fi
+	else
+		wlan_0_mac="1C:BA:8C:A2:ED:68"
 	fi
 	echo "wlan_0_mac=[${wlan_0_mac}]"
 	set_wlan_0_mac
@@ -111,7 +117,6 @@ set_wlan_0_mac_from_cpsw_0 () {
 		if [ -f ${mac_address} ] ; then
 			cpsw_0_mac=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address} | sed 's/.$//' | awk '{print toupper($0)}')
 		else
-			#todo: generate random mac... (this is a development tre board in the lab...)
 			cpsw_0_mac="1C:BA:8C:A2:ED:68"
 		fi
 	fi
