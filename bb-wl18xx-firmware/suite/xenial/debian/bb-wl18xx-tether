@@ -72,12 +72,13 @@ connman_disable_tether () {
 			eth_interface="${get_enx}"
 		fi
 	fi
+	echo "${log} [${eth_interface}]"
 
 	if [ -d /sys/class/net/tether ] ; then
 		if [ -d /sys/class/net/${eth_interface} ] ; then
-			echo "${log} Connman's tether enabled, but ${eth_interface} exists, leaving tether up and running..."
+			echo "${log} [${eth_interface}] exists, leaving connmanctl tether enabled to create Wireless AP"
 		else
-			echo "${log} connmanctl tether wifi off"
+			echo "${log} [connmanctl tether wifi off]"
 			${connmanctl_bin} tether wifi off || true
 			sleep 1
 		fi
@@ -86,29 +87,34 @@ connman_disable_tether () {
 			#Someone plugged an ${eth_interface} device..
 			if [ -d /sys/class/net/${eth_interface} ] ; then
 				if [ -d /sys/class/net/${ap_interface} ] ; then
+					echo "${log} [iw ${ap_interface} del]"
 					iw ${ap_interface} del || true
 				fi
 
 				if [ -f /etc/bb-wl18xx-tether.dnsmasq.enable ] ; then
+					echo "${log} [systemctl stop dnsmasq]"
 					systemctl stop dnsmasq || true
 					rm -rf /etc/dnsmasq.d/${ap_interface} || true
 					rm -rf /etc/bb-wl18xx-tether.dnsmasq.enable || true
 				fi
 
 				enable_connman_dnsproxy
+				echo "${log} [connmanctl enable wifi]"
 				${connmanctl_bin} enable wifi || true
 				sleep 1
 
 				if [ ! "x${use_mac}" = "x" ] ; then
 					ssid_append=$(echo ${use_mac} | cut -b 13-17 | sed 's/://g' || true)
+					echo "${log} [tether wifi on ${wifi_ssid}-${ssid_append} ${wifi_password}]"
 					${connmanctl_bin} tether wifi on ${wifi_ssid}-${ssid_append} ${wifi_password} || true
 				else
+					echo "${log} [tether wifi on ${wifi_ssid} ${wifi_password}]"
 					${connmanctl_bin} tether wifi on ${wifi_ssid} ${wifi_password} || true
 				fi
 				sleep 1
 
 				if [ -f /opt/scripts/boot/autoconfigure_usb0.sh ] ; then
-					#return usb0...
+					echo "${log} [/opt/scripts/boot/autoconfigure_usb0.sh]"
 					/opt/scripts/boot/autoconfigure_usb0.sh
 				fi
 			fi
@@ -119,7 +125,7 @@ connman_disable_tether () {
 wait_for_usb () {
 	until [ -d /sys/class/net/usb0/ ] ; do
 		sleep 5
-		echo "${log} waiting for /sys/class/net/usb0"
+		echo "${log} [waiting for /sys/class/net/usb0]"
 	done
 }
 
@@ -146,7 +152,7 @@ wait_for_wlan () {
 	fi
 	until [ -d /sys/class/net/wlan0/ ] ; do
 		sleep 5
-		echo "${log} waiting for /sys/class/net/wlan0"
+		echo "${log} [waiting for /sys/class/net/wlan0]"
 	done
 }
 
@@ -155,14 +161,14 @@ create_softap0_interface () {
 		number_of_wlan=$(ls /sys/class/net/ | grep wlan | wc -l || true)
 
 		if [ "x${number_of_wlan}" = "x1" ] ; then
-			echo "${log} iw phy phy0 interface add ${ap_interface} type managed"
+			echo "${log} [iw phy phy0 interface add ${ap_interface} type managed]"
 			iw phy phy0 interface add ${ap_interface} type managed
 
 			p=$?
 			if [ $p==0 ];then
-				echo "${log} phy0 created "
+				echo "${log} [phy0 created]"
 			else
-				echo "${log} Err: can't creat phy0 "
+				echo "${log} [Err: can't creat phy0]"
 				exit 1
 			fi
 
@@ -170,14 +176,14 @@ create_softap0_interface () {
 
 			if [ ! -d /sys/class/net/${ap_interface} ] ; then
 				get_wl=$(ls /sys/class/net/ | grep wlx | tail -1 || true)
-				echo "${log} ip link set dev ${get_wl} name ${ap_interface}"
+				echo "${log} [ip link set dev ${get_wl} name ${ap_interface}]"
 				ip link set dev ${get_wl} name ${ap_interface}
 
 				#We really want to use ${ap_interface}
 				sleep 2
 				if [ ! -d /sys/class/net/${ap_interface} ] ; then
 					get_wl=$(ls /sys/class/net/ | grep wlx | tail -1 || true)
-					echo "${log} ip link set dev ${get_wl} name ${ap_interface}"
+					echo "${log} [ip link set dev ${get_wl} name ${ap_interface}]"
 					ip link set dev ${get_wl} name ${ap_interface}
 				fi
 			fi
@@ -189,11 +195,11 @@ bringup_softap0_interface () {
 	if [ -d /sys/class/net/${ap_interface} ] ; then
 		#not all devices support mac address modifications...
 		if [ ! "x${use_mac}" = "x" ] ; then
-			echo "${log} ip link set dev ${ap_interface} down"
+			echo "${log} [ip link set dev ${ap_interface} down]"
 			ip link set dev ${ap_interface} down
-			echo "${log} ip link set dev ${ap_interface} address ${use_mac}"
+			echo "${log} [ip link set dev ${ap_interface} address ${use_mac}]"
 			ip link set dev ${ap_interface} address ${use_mac} || true
-			echo "${log} ip link set dev ${ap_interface} up"
+			echo "${log} [ip link set dev ${ap_interface} up]"
 			ip link set dev ${ap_interface} up
 		fi
 
@@ -201,12 +207,12 @@ bringup_softap0_interface () {
 			get_ap_interface_ip=$(ip -f inet addr show ${ap_interface} | grep -Po 'inet \K[\d.]+' || true)
 			if [ ! "x${get_ap_interface_ip}" = "x" ] ; then
 				if [ ! "x${get_ap_interface_ip}" = "x${ip_prefix}.1" ] ; then
-					echo "${log} ip addr flush dev ${ap_interface}"
+					echo "${log} [ip addr flush dev ${ap_interface}]"
 					ip addr flush dev ${ap_interface}
 				fi
 			fi
 			if [ ! "x${get_ap_interface_ip}" = "x${ip_prefix}.1" ] ; then
-				echo "${log} ip addr add ${ip_prefix}.1/24 broadcast ${ip_prefix}.255 dev ${ap_interface}"
+				echo "${log} [ip addr add ${ip_prefix}.1/24 broadcast ${ip_prefix}.255 dev ${ap_interface}]"
 				ip addr add ${ip_prefix}.1/24 broadcast ${ip_prefix}.255 dev ${ap_interface}
 			fi
 		fi
@@ -214,11 +220,11 @@ bringup_softap0_interface () {
 		ip_forward=$(cat /proc/sys/net/ipv4/ip_forward)
 		if [ "x${ip_forward}" = "x0" ] ; then
 			echo 1 > /proc/sys/net/ipv4/ip_forward
-			echo "${log} iptables -w -t nat -A POSTROUTING -o wlan0 -j MASQUERADE"
+			echo "${log} [iptables -w -t nat -A POSTROUTING -o wlan0 -j MASQUERADE]"
 			iptables -w -t nat -A POSTROUTING -o wlan0 -j MASQUERADE || true
-			echo "${log} iptables -w -A FORWARD -i wlan0 -o ${ap_interface} -m state --state RELATED,ESTABLISHED -j ACCEPT"
+			echo "${log} [iptables -w -A FORWARD -i wlan0 -o ${ap_interface} -m state --state RELATED,ESTABLISHED -j ACCEPT]"
 			iptables -w -A FORWARD -i wlan0 -o ${ap_interface} -m state --state RELATED,ESTABLISHED -j ACCEPT || true
-			echo "${log} iptables -w -A FORWARD -i ${ap_interface} -o wlan0 -j ACCEPT"
+			echo "${log} [iptables -w -A FORWARD -i ${ap_interface} -o wlan0 -j ACCEPT]"
 			iptables -w -A FORWARD -i ${ap_interface} -o wlan0 -j ACCEPT || true
 		fi
 	fi
@@ -286,13 +292,13 @@ start_hostapd () {
 
 default () {
 	connman_disable_tether
-	if [ ! -d /sys/class/net/tether ] ; then
-		create_softap0_interface
-		bringup_softap0_interface
-		disable_connman_dnsproxy
-		start_dnsmasq
-		start_hostapd
-	fi
+#	if [ ! -d /sys/class/net/tether ] ; then
+#		create_softap0_interface
+#		bringup_softap0_interface
+#		disable_connman_dnsproxy
+#		start_dnsmasq
+#		start_hostapd
+#	fi
 }
 
 just_softap () {
