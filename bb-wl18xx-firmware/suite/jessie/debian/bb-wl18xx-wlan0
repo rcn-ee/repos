@@ -130,18 +130,30 @@ TI_AM335x_BeagleBone_Green_Wireless)
 	if [ -f /sys/class/leds/wl18xx_wl_en/brightness ] ; then
 		echo 1 > /sys/class/leds/wl18xx_wl_en/brightness || true
 	fi
+	if [ -f /lib/systemd/system/battery_monitor.service ] ; then
+		systemctl disable battery_monitor.service || true
+	fi
 	/usr/bin/bb-wl18xx-tether || true
 	;;
 TI_AM335x_BeagleBone_Black_Wireless)
 	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
 	set_wlan_0_mac_from_cpsw_0
+	if [ -f /lib/systemd/system/battery_monitor.service ] ; then
+		systemctl disable battery_monitor.service || true
+	fi
 	/usr/bin/bb-wl18xx-tether || true
 	;;
 TI_AM335x_BeagleBone_Blue)
 	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
 	set_wlan_0_mac_from_cpsw_0
+	if [ -f /lib/systemd/system/battery_monitor.service ] ; then
+		systemctl enable battery_monitor.service || true
+	fi
 	/usr/bin/bb-wl18xx-tether || true
 	;;
 *)
+	if [ -f /lib/systemd/system/battery_monitor.service ] ; then
+		systemctl disable battery_monitor.service || true
+	fi
 	;;
 esac

@@ -70,9 +70,9 @@ connman_disable_tether () {
 		get_enx=$(ls /sys/class/net/ | grep enx | tail -1 || true)
 		if [ ! "x${get_enx}" = "x" ] ; then
 			eth_interface="${get_enx}"
+			echo "${log} [${eth_interface}]"
 		fi
 	fi
-	echo "${log} [${eth_interface}]"
 
 	if [ -d /sys/class/net/tether ] ; then
 		if [ -d /sys/class/net/${eth_interface} ] ; then
@@ -80,7 +80,9 @@ connman_disable_tether () {
 		else
 			echo "${log} [connmanctl tether wifi off]"
 			${connmanctl_bin} tether wifi off || true
-			sleep 1
+			#need to let wlcore settle...
+			#wlcore: ERROR SW watchdog interrupt received! starting recovery.
+			sleep 5
 		fi
 	else
 		if [ -f /lib/systemd/system/connman.service ] ; then
@@ -123,9 +125,12 @@ connman_disable_tether () {
 }
 
 wait_for_usb () {
-	until [ -d /sys/class/net/usb0/ ] ; do
+	if [ ! -d /sys/class/net/usb0/ ] ; then
 		sleep 5
-		echo "${log} [waiting for /sys/class/net/usb0]"
+	fi
+	until [ -d /sys/class/net/usb0/ ] ; do
+		echo "${log} waiting for /sys/class/net/usb0"
+		sleep 5
 	done
 }
 
@@ -147,12 +152,15 @@ wait_for_mac () {
 }
 
 wait_for_wlan () {
+	if [ ! -d /sys/class/net/wlan0/ ] ; do
+		sleep 5
+	fi
 	if [ -f ${rfkill_bin} ] ; then
 		${rfkill_bin} unblock all || true
 	fi
 	until [ -d /sys/class/net/wlan0/ ] ; do
+		echo "${log} waiting for /sys/class/net/wlan0"
 		sleep 5
-		echo "${log} [waiting for /sys/class/net/wlan0]"
 	done
 }
 
@@ -292,13 +300,13 @@ start_hostapd () {
 
 default () {
 	connman_disable_tether
-#	if [ ! -d /sys/class/net/tether ] ; then
-#		create_softap0_interface
-#		bringup_softap0_interface
-#		disable_connman_dnsproxy
-#		start_dnsmasq
-#		start_hostapd
-#	fi
+	if [ ! -d /sys/class/net/tether ] ; then
+		create_softap0_interface
+		bringup_softap0_interface
+		disable_connman_dnsproxy
+		start_dnsmasq
+		start_hostapd
+	fi
 }
 
 just_softap () {
