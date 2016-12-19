@@ -6,32 +6,32 @@ set -e
 . /usr/share/debconf/confmodule
  
 
-if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
-	# Fetching configuration from debconf
-	# for answer to startup program
-	db_get roboticscape/question1
-	PROG=$RET
+#if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
+#	# Fetching configuration from debconf
+#	# for answer to startup program
+#	db_get roboticscape/question1
+#	PROG=$RET
 
-	echo "user selected $PROG"
-fi
+#	echo "user selected $PROG"
+#fi
 
 if [ ! -d "/etc/roboticscape" ]; then
   echo "making /etc/roboticscape"
   mkdir /etc/roboticscape
 fi
 
-if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
-	if [ "$PROG" = "blink" ]; then
-		ln -s -f /usr/bin/blink /etc/roboticscape/link_to_startup_program
-	elif  [ "$PROG" = "balance" ]; then
-		ln -s -f /usr/bin/balance /etc/roboticscape/link_to_startup_program
-	elif  [ "$PROG" = "none" ]; then
-		ln -s -f /usr/bin/bare_minimum /etc/roboticscape/link_to_startup_program
-	else
-		echo "invalid answer to question"
-		exit 1
-	fi
-fi
+#if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
+#	if [ "$PROG" = "blink" ]; then
+#		ln -s -f /usr/bin/blink /etc/roboticscape/link_to_startup_program
+#	elif  [ "$PROG" = "balance" ]; then
+#		ln -s -f /usr/bin/balance /etc/roboticscape/link_to_startup_program
+#	elif  [ "$PROG" = "none" ]; then
+#		ln -s -f /usr/bin/bare_minimum /etc/roboticscape/link_to_startup_program
+#	else
+#		echo "invalid answer to question"
+#		exit 1
+#	fi
+#fi
 
 	# enable services
 	echo "systemctl daemon-reload"
