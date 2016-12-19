@@ -13,10 +13,10 @@ git_sha=""
 reprepro_dir="m/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-1"
+debian_version="${package_version}-3"
 debian_untar=""
 debian_patch="${package_name}_${debian_version}.diff.gz"
 local_patch="rcnee0"
 
-jessie_version="~bpo80+20161205+1"
-stretch_version="~bpo90+20161205+1"
+jessie_version="~bpo80+20161219+1"
+stretch_version="~bpo90+20161219+1"

@@ -1,5 +1,5 @@
 diff --git a/configure.ac b/configure.ac
-index d215b63..2148576 100644
+index d215b632f3..2148576081 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -68,7 +68,7 @@ OPENCL_VERSION=1
@@ -84,7 +84,7 @@ index d215b63..2148576 100644
  		src/gallium/winsys/i915/drm/Makefile
  		src/gallium/winsys/intel/drm/Makefile
 diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
-index d9e2ad7..ed63468 100644
+index d9e2ad701b..ed634683f9 100644
 --- a/src/egl/drivers/dri2/egl_dri2.c
 +++ b/src/egl/drivers/dri2/egl_dri2.c
 @@ -516,6 +516,12 @@ dri2_open_driver(_EGLDisplay *disp)
@@ -101,7 +101,7 @@ index d9e2ad7..ed63468 100644
        if (get_extensions) {
           extensions = get_extensions();
 diff --git a/src/gallium/Automake.inc b/src/gallium/Automake.inc
-index 6fe2e22..6aadcb9 100644
+index 6fe2e22fec..6aadcb9198 100644
 --- a/src/gallium/Automake.inc
 +++ b/src/gallium/Automake.inc
 @@ -50,6 +50,11 @@ GALLIUM_COMMON_LIB_DEPS = \
@@ -117,7 +117,7 @@ index 6fe2e22..6aadcb9 100644
  	-I$(top_srcdir)/src \
  	-I$(top_srcdir)/include \
 diff --git a/src/gallium/Makefile.am b/src/gallium/Makefile.am
-index 34671ca..fb003ce 100644
+index 34671ca88d..fb003ce66d 100644
 --- a/src/gallium/Makefile.am
 +++ b/src/gallium/Makefile.am
 @@ -68,6 +68,15 @@ if NEED_RADEON_DRM_WINSYS
@@ -137,7 +137,7 @@ index 34671ca..fb003ce 100644
  if HAVE_GALLIUM_SOFTPIPE
  SUBDIRS += drivers/softpipe
 diff --git a/src/gallium/auxiliary/Makefile.am b/src/gallium/auxiliary/Makefile.am
-index 4a4a4fb..6b63cf1 100644
+index 4a4a4fb89c..6b63cf1842 100644
 --- a/src/gallium/auxiliary/Makefile.am
 +++ b/src/gallium/auxiliary/Makefile.am
 @@ -20,6 +20,16 @@ libgallium_la_SOURCES = \
@@ -158,7 +158,7 @@ index 4a4a4fb..6b63cf1 100644
  
  AM_CFLAGS += \
 diff --git a/src/gallium/auxiliary/Makefile.sources b/src/gallium/auxiliary/Makefile.sources
-index 3fda2eb..665efe1 100644
+index 3fda2eb173..665efe1b0b 100644
 --- a/src/gallium/auxiliary/Makefile.sources
 +++ b/src/gallium/auxiliary/Makefile.sources
 @@ -437,3 +437,7 @@ GALLIVM_SOURCES := \
@@ -170,7 +170,7 @@ index 3fda2eb..665efe1 100644
 +	renderonly/renderonly.c \
 +	renderonly/renderonly.h
 diff --git a/src/gallium/auxiliary/pipe-loader/pipe_loader_drm.c b/src/gallium/auxiliary/pipe-loader/pipe_loader_drm.c
-index 2b7ab27..6c89fe5 100644
+index 2b7ab2757a..6c89fe5ead 100644
 --- a/src/gallium/auxiliary/pipe-loader/pipe_loader_drm.c
 +++ b/src/gallium/auxiliary/pipe-loader/pipe_loader_drm.c
 @@ -154,6 +154,16 @@ static const struct drm_driver_descriptor driver_descriptors[] = {
@@ -192,7 +192,7 @@ index 2b7ab27..6c89fe5 100644
  
 diff --git a/src/gallium/auxiliary/renderonly/renderonly.c b/src/gallium/auxiliary/renderonly/renderonly.c
 new file mode 100644
-index 0000000..c4ea784
+index 0000000000..c4ea784f55
 --- /dev/null
 +++ b/src/gallium/auxiliary/renderonly/renderonly.c
 @@ -0,0 +1,199 @@
@@ -397,7 +397,7 @@ index 0000000..c4ea784
 +}
 diff --git a/src/gallium/auxiliary/renderonly/renderonly.h b/src/gallium/auxiliary/renderonly/renderonly.h
 new file mode 100644
-index 0000000..5a98992
+index 0000000000..5a98992f1a
 --- /dev/null
 +++ b/src/gallium/auxiliary/renderonly/renderonly.h
 @@ -0,0 +1,81 @@
@@ -483,7 +483,7 @@ index 0000000..5a98992
 +
 +#endif /* RENDERONLY_H_ */
 diff --git a/src/gallium/auxiliary/target-helpers/drm_helper.h b/src/gallium/auxiliary/target-helpers/drm_helper.h
-index 90820d3..f847b17 100644
+index 90820d3fe9..f847b17dd6 100644
 --- a/src/gallium/auxiliary/target-helpers/drm_helper.h
 +++ b/src/gallium/auxiliary/target-helpers/drm_helper.h
 @@ -266,5 +266,51 @@ pipe_vc4_create_screen(int fd)
@@ -539,7 +539,7 @@ index 90820d3..f847b17 100644
  
  #endif /* DRM_HELPER_H */
 diff --git a/src/gallium/auxiliary/target-helpers/drm_helper_public.h b/src/gallium/auxiliary/target-helpers/drm_helper_public.h
-index d1f9382..bc12b21 100644
+index d1f9382a6f..bc12b2155e 100644
 --- a/src/gallium/auxiliary/target-helpers/drm_helper_public.h
 +++ b/src/gallium/auxiliary/target-helpers/drm_helper_public.h
 @@ -34,4 +34,10 @@ pipe_virgl_create_screen(int fd);
@@ -555,14 +555,14 @@ index d1f9382..bc12b21 100644
  #endif /* _DRM_HELPER_PUBLIC_H */
 diff --git a/src/gallium/drivers/etnaviv/.gitignore b/src/gallium/drivers/etnaviv/.gitignore
 new file mode 100644
-index 0000000..5199dad
+index 0000000000..5199dad4a3
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/.gitignore
 @@ -0,0 +1 @@
 +etnaviv_compiler
 diff --git a/src/gallium/drivers/etnaviv/Automake.inc b/src/gallium/drivers/etnaviv/Automake.inc
 new file mode 100644
-index 0000000..f9b3956
+index 0000000000..f9b39567e3
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/Automake.inc
 @@ -0,0 +1,11 @@
@@ -579,7 +579,7 @@ index 0000000..f9b3956
 +endif
 diff --git a/src/gallium/drivers/etnaviv/Makefile.am b/src/gallium/drivers/etnaviv/Makefile.am
 new file mode 100644
-index 0000000..47c9115
+index 0000000000..47c9115681
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/Makefile.am
 @@ -0,0 +1,44 @@
@@ -629,7 +629,7 @@ index 0000000..47c9115
 +	$(ETNAVIV_LIBS)
 diff --git a/src/gallium/drivers/etnaviv/Makefile.sources b/src/gallium/drivers/etnaviv/Makefile.sources
 new file mode 100644
-index 0000000..e6d8b9f
+index 0000000000..e6d8b9f9b6
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/Makefile.sources
 @@ -0,0 +1,26 @@
@@ -661,7 +661,7 @@ index 0000000..e6d8b9f
 +CPP_SOURCES :=
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_asm.c b/src/gallium/drivers/etnaviv/etnaviv_asm.c
 new file mode 100644
-index 0000000..7d6270c
+index 0000000000..7d6270ca1f
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_asm.c
 @@ -0,0 +1,107 @@
@@ -774,7 +774,7 @@ index 0000000..7d6270c
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_asm.h b/src/gallium/drivers/etnaviv/etnaviv_asm.h
 new file mode 100644
-index 0000000..2fe23df
+index 0000000000..2fe23df8d4
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_asm.h
 @@ -0,0 +1,133 @@
@@ -913,7 +913,7 @@ index 0000000..2fe23df
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_blend.c b/src/gallium/drivers/etnaviv/etnaviv_blend.c
 new file mode 100644
-index 0000000..ebef75d
+index 0000000000..ebef75daa7
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_blend.c
 @@ -0,0 +1,109 @@
@@ -1028,7 +1028,7 @@ index 0000000..ebef75d
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_blend.h b/src/gallium/drivers/etnaviv/etnaviv_blend.h
 new file mode 100644
-index 0000000..54e7bab
+index 0000000000..54e7bab0f8
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_blend.h
 @@ -0,0 +1,52 @@
@@ -1086,7 +1086,7 @@ index 0000000..54e7bab
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_clear_blit.c b/src/gallium/drivers/etnaviv/etnaviv_clear_blit.c
 new file mode 100644
-index 0000000..6c61ad5
+index 0000000000..6c61ad5fae
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_clear_blit.c
 @@ -0,0 +1,640 @@
@@ -1732,7 +1732,7 @@ index 0000000..6c61ad5
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_clear_blit.h b/src/gallium/drivers/etnaviv/etnaviv_clear_blit.h
 new file mode 100644
-index 0000000..73d0704
+index 0000000000..73d07044b2
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_clear_blit.h
 @@ -0,0 +1,48 @@
@@ -1786,7 +1786,7 @@ index 0000000..73d0704
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_compiler.c b/src/gallium/drivers/etnaviv/etnaviv_compiler.c
 new file mode 100644
-index 0000000..de03c52
+index 0000000000..de03c52364
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_compiler.c
 @@ -0,0 +1,2564 @@
@@ -4356,7 +4356,7 @@ index 0000000..de03c52
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_compiler.h b/src/gallium/drivers/etnaviv/etnaviv_compiler.h
 new file mode 100644
-index 0000000..d310109
+index 0000000000..d3101096f9
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_compiler.h
 @@ -0,0 +1,120 @@
@@ -4482,7 +4482,7 @@ index 0000000..d310109
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_compiler_cmdline.c b/src/gallium/drivers/etnaviv/etnaviv_compiler_cmdline.c
 new file mode 100644
-index 0000000..6f241d1
+index 0000000000..6f241d19e5
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_compiler_cmdline.c
 @@ -0,0 +1,146 @@
@@ -4634,7 +4634,7 @@ index 0000000..6f241d1
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_context.c b/src/gallium/drivers/etnaviv/etnaviv_context.c
 new file mode 100644
-index 0000000..d767cd1
+index 0000000000..d767cd1f38
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_context.c
 @@ -0,0 +1,323 @@
@@ -4963,7 +4963,7 @@ index 0000000..d767cd1
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_context.h b/src/gallium/drivers/etnaviv/etnaviv_context.h
 new file mode 100644
-index 0000000..74e93e1
+index 0000000000..74e93e1631
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_context.h
 @@ -0,0 +1,194 @@
@@ -5163,7 +5163,7 @@ index 0000000..74e93e1
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_debug.h b/src/gallium/drivers/etnaviv/etnaviv_debug.h
 new file mode 100644
-index 0000000..cfda52b
+index 0000000000..cfda52bb32
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_debug.h
 @@ -0,0 +1,79 @@
@@ -5248,7 +5248,7 @@ index 0000000..cfda52b
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_disasm.c b/src/gallium/drivers/etnaviv/etnaviv_disasm.c
 new file mode 100644
-index 0000000..918d24e
+index 0000000000..918d24eb46
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_disasm.c
 @@ -0,0 +1,612 @@
@@ -5866,7 +5866,7 @@ index 0000000..918d24e
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_disasm.h b/src/gallium/drivers/etnaviv/etnaviv_disasm.h
 new file mode 100644
-index 0000000..15df612
+index 0000000000..15df612bb6
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_disasm.h
 @@ -0,0 +1,40 @@
@@ -5912,7 +5912,7 @@ index 0000000..15df612
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_emit.c b/src/gallium/drivers/etnaviv/etnaviv_emit.c
 new file mode 100644
-index 0000000..7eeeda5
+index 0000000000..7eeeda57b6
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_emit.c
 @@ -0,0 +1,770 @@
@@ -6688,7 +6688,7 @@ index 0000000..7eeeda5
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_emit.h b/src/gallium/drivers/etnaviv/etnaviv_emit.h
 new file mode 100644
-index 0000000..6a3c772
+index 0000000000..6a3c77286d
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_emit.h
 @@ -0,0 +1,123 @@
@@ -6817,7 +6817,7 @@ index 0000000..6a3c772
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_fence.c b/src/gallium/drivers/etnaviv/etnaviv_fence.c
 new file mode 100644
-index 0000000..7b0fd34
+index 0000000000..7b0fd346d6
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_fence.c
 @@ -0,0 +1,89 @@
@@ -6912,7 +6912,7 @@ index 0000000..7b0fd34
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_fence.h b/src/gallium/drivers/etnaviv/etnaviv_fence.h
 new file mode 100644
-index 0000000..cd91d2e
+index 0000000000..cd91d2e19e
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_fence.h
 @@ -0,0 +1,39 @@
@@ -6957,7 +6957,7 @@ index 0000000..cd91d2e
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_format.c b/src/gallium/drivers/etnaviv/etnaviv_format.c
 new file mode 100644
-index 0000000..0794603
+index 0000000000..0794603b2f
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_format.c
 @@ -0,0 +1,268 @@
@@ -7231,7 +7231,7 @@ index 0000000..0794603
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_format.h b/src/gallium/drivers/etnaviv/etnaviv_format.h
 new file mode 100644
-index 0000000..549dfda
+index 0000000000..549dfda689
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_format.h
 @@ -0,0 +1,47 @@
@@ -7284,7 +7284,7 @@ index 0000000..549dfda
 +#endif /* ETNAVIV_FORMAT_H_ */
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_internal.h b/src/gallium/drivers/etnaviv/etnaviv_internal.h
 new file mode 100644
-index 0000000..fa75c3e
+index 0000000000..fa75c3e936
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_internal.h
 @@ -0,0 +1,259 @@
@@ -7549,7 +7549,7 @@ index 0000000..fa75c3e
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_query.c b/src/gallium/drivers/etnaviv/etnaviv_query.c
 new file mode 100644
-index 0000000..b33e580
+index 0000000000..b33e580463
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_query.c
 @@ -0,0 +1,120 @@
@@ -7675,7 +7675,7 @@ index 0000000..b33e580
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_query.h b/src/gallium/drivers/etnaviv/etnaviv_query.h
 new file mode 100644
-index 0000000..9a8d579
+index 0000000000..9a8d579e18
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_query.h
 @@ -0,0 +1,64 @@
@@ -7745,7 +7745,7 @@ index 0000000..9a8d579
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_query_sw.c b/src/gallium/drivers/etnaviv/etnaviv_query_sw.c
 new file mode 100644
-index 0000000..d6420d9
+index 0000000000..d6420d9608
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_query_sw.c
 @@ -0,0 +1,123 @@
@@ -7874,7 +7874,7 @@ index 0000000..d6420d9
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_query_sw.h b/src/gallium/drivers/etnaviv/etnaviv_query_sw.h
 new file mode 100644
-index 0000000..9de2bc6
+index 0000000000..9de2bc60f9
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_query_sw.h
 @@ -0,0 +1,47 @@
@@ -7927,7 +7927,7 @@ index 0000000..9de2bc6
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_rasterizer.c b/src/gallium/drivers/etnaviv/etnaviv_rasterizer.c
 new file mode 100644
-index 0000000..4990fd1
+index 0000000000..4990fd1802
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_rasterizer.c
 @@ -0,0 +1,81 @@
@@ -8014,7 +8014,7 @@ index 0000000..4990fd1
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_rasterizer.h b/src/gallium/drivers/etnaviv/etnaviv_rasterizer.h
 new file mode 100644
-index 0000000..d715dd0
+index 0000000000..d715dd08de
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_rasterizer.h
 @@ -0,0 +1,57 @@
@@ -8077,7 +8077,7 @@ index 0000000..d715dd0
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_resource.c b/src/gallium/drivers/etnaviv/etnaviv_resource.c
 new file mode 100644
-index 0000000..aefe65b
+index 0000000000..aefe65bf0e
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_resource.c
 @@ -0,0 +1,438 @@
@@ -8521,7 +8521,7 @@ index 0000000..aefe65b
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_resource.h b/src/gallium/drivers/etnaviv/etnaviv_resource.h
 new file mode 100644
-index 0000000..a9b288e
+index 0000000000..a9b288e708
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_resource.h
 @@ -0,0 +1,148 @@
@@ -8675,7 +8675,7 @@ index 0000000..a9b288e
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_rs.c b/src/gallium/drivers/etnaviv/etnaviv_rs.c
 new file mode 100644
-index 0000000..295ca10
+index 0000000000..295ca10cf2
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_rs.c
 @@ -0,0 +1,127 @@
@@ -8808,7 +8808,7 @@ index 0000000..295ca10
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_rs.h b/src/gallium/drivers/etnaviv/etnaviv_rs.h
 new file mode 100644
-index 0000000..ec5b659
+index 0000000000..ec5b659ccd
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_rs.h
 @@ -0,0 +1,86 @@
@@ -8900,7 +8900,7 @@ index 0000000..ec5b659
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_screen.c b/src/gallium/drivers/etnaviv/etnaviv_screen.c
 new file mode 100644
-index 0000000..6ac75b0
+index 0000000000..6ac75b0a07
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_screen.c
 @@ -0,0 +1,802 @@
@@ -9708,7 +9708,7 @@ index 0000000..6ac75b0
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_screen.h b/src/gallium/drivers/etnaviv/etnaviv_screen.h
 new file mode 100644
-index 0000000..a8b643a
+index 0000000000..a8b643ac56
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_screen.h
 @@ -0,0 +1,91 @@
@@ -9805,7 +9805,7 @@ index 0000000..a8b643a
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_shader.c b/src/gallium/drivers/etnaviv/etnaviv_shader.c
 new file mode 100644
-index 0000000..8895311
+index 0000000000..88953116e6
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_shader.c
 @@ -0,0 +1,285 @@
@@ -10096,7 +10096,7 @@ index 0000000..8895311
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_shader.h b/src/gallium/drivers/etnaviv/etnaviv_shader.h
 new file mode 100644
-index 0000000..b309370
+index 0000000000..b3093705c7
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_shader.h
 @@ -0,0 +1,45 @@
@@ -10147,7 +10147,7 @@ index 0000000..b309370
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_state.c b/src/gallium/drivers/etnaviv/etnaviv_state.c
 new file mode 100644
-index 0000000..2256261
+index 0000000000..2256261c42
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_state.c
 @@ -0,0 +1,664 @@
@@ -10817,7 +10817,7 @@ index 0000000..2256261
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_state.h b/src/gallium/drivers/etnaviv/etnaviv_state.h
 new file mode 100644
-index 0000000..a1db9f7
+index 0000000000..a1db9f7896
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_state.h
 @@ -0,0 +1,52 @@
@@ -10875,7 +10875,7 @@ index 0000000..a1db9f7
 +#endif /* ETNAVIV_STATE_H_ */
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_surface.c b/src/gallium/drivers/etnaviv/etnaviv_surface.c
 new file mode 100644
-index 0000000..a0013a4
+index 0000000000..a0013a48bc
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_surface.c
 @@ -0,0 +1,152 @@
@@ -11033,7 +11033,7 @@ index 0000000..a0013a4
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_surface.h b/src/gallium/drivers/etnaviv/etnaviv_surface.h
 new file mode 100644
-index 0000000..e8cfd20
+index 0000000000..e8cfd209af
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_surface.h
 @@ -0,0 +1,55 @@
@@ -11094,7 +11094,7 @@ index 0000000..e8cfd20
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_texture.c b/src/gallium/drivers/etnaviv/etnaviv_texture.c
 new file mode 100644
-index 0000000..6b64de2
+index 0000000000..6b64de2d8e
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_texture.c
 @@ -0,0 +1,338 @@
@@ -11438,7 +11438,7 @@ index 0000000..6b64de2
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_texture.h b/src/gallium/drivers/etnaviv/etnaviv_texture.h
 new file mode 100644
-index 0000000..a7a67fc
+index 0000000000..a7a67fc246
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_texture.h
 @@ -0,0 +1,75 @@
@@ -11519,7 +11519,7 @@ index 0000000..a7a67fc
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_tiling.c b/src/gallium/drivers/etnaviv/etnaviv_tiling.c
 new file mode 100644
-index 0000000..f4f85c1
+index 0000000000..f4f85c1d6e
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_tiling.c
 @@ -0,0 +1,96 @@
@@ -11621,7 +11621,7 @@ index 0000000..f4f85c1
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_tiling.h b/src/gallium/drivers/etnaviv/etnaviv_tiling.h
 new file mode 100644
-index 0000000..3c69e22
+index 0000000000..3c69e22463
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_tiling.h
 @@ -0,0 +1,56 @@
@@ -11683,7 +11683,7 @@ index 0000000..3c69e22
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_transfer.c b/src/gallium/drivers/etnaviv/etnaviv_transfer.c
 new file mode 100644
-index 0000000..1a5aa7f
+index 0000000000..1a5aa7fc04
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_transfer.c
 @@ -0,0 +1,355 @@
@@ -12044,7 +12044,7 @@ index 0000000..1a5aa7f
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_transfer.h b/src/gallium/drivers/etnaviv/etnaviv_transfer.h
 new file mode 100644
-index 0000000..ca156a4
+index 0000000000..ca156a476f
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_transfer.h
 @@ -0,0 +1,35 @@
@@ -12085,7 +12085,7 @@ index 0000000..ca156a4
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_translate.h b/src/gallium/drivers/etnaviv/etnaviv_translate.h
 new file mode 100644
-index 0000000..d0623db
+index 0000000000..d0623db147
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_translate.h
 @@ -0,0 +1,516 @@
@@ -12607,7 +12607,7 @@ index 0000000..d0623db
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_uniforms.c b/src/gallium/drivers/etnaviv/etnaviv_uniforms.c
 new file mode 100644
-index 0000000..70e5d58
+index 0000000000..70e5d58ecb
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_uniforms.c
 @@ -0,0 +1,118 @@
@@ -12731,7 +12731,7 @@ index 0000000..70e5d58
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_uniforms.h b/src/gallium/drivers/etnaviv/etnaviv_uniforms.h
 new file mode 100644
-index 0000000..83a3a49
+index 0000000000..83a3a4983f
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_uniforms.h
 @@ -0,0 +1,45 @@
@@ -12782,7 +12782,7 @@ index 0000000..83a3a49
 +#endif /* ETNAVIV_UNIFORMS_H_ */
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_util.h b/src/gallium/drivers/etnaviv/etnaviv_util.h
 new file mode 100644
-index 0000000..62f6254
+index 0000000000..62f62548d2
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_util.h
 @@ -0,0 +1,108 @@
@@ -12896,7 +12896,7 @@ index 0000000..62f6254
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_zsa.c b/src/gallium/drivers/etnaviv/etnaviv_zsa.c
 new file mode 100644
-index 0000000..0e71567
+index 0000000000..0e7156722d
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_zsa.c
 @@ -0,0 +1,123 @@
@@ -13025,7 +13025,7 @@ index 0000000..0e71567
 +}
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_zsa.h b/src/gallium/drivers/etnaviv/etnaviv_zsa.h
 new file mode 100644
-index 0000000..953a6a7
+index 0000000000..953a6a78bf
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/etnaviv_zsa.h
 @@ -0,0 +1,52 @@
@@ -13083,7 +13083,7 @@ index 0000000..953a6a7
 +#endif
 diff --git a/src/gallium/drivers/etnaviv/hw/cmdstream.xml.h b/src/gallium/drivers/etnaviv/hw/cmdstream.xml.h
 new file mode 100644
-index 0000000..b1319b0
+index 0000000000..b1319b031c
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/hw/cmdstream.xml.h
 @@ -0,0 +1,270 @@
@@ -13359,7 +13359,7 @@ index 0000000..b1319b0
 +#endif /* CMDSTREAM_XML */
 diff --git a/src/gallium/drivers/etnaviv/hw/common.xml.h b/src/gallium/drivers/etnaviv/hw/common.xml.h
 new file mode 100644
-index 0000000..af6ecca
+index 0000000000..af6ecca278
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/hw/common.xml.h
 @@ -0,0 +1,320 @@
@@ -13685,7 +13685,7 @@ index 0000000..af6ecca
 +#endif /* COMMON_XML */
 diff --git a/src/gallium/drivers/etnaviv/hw/isa.xml.h b/src/gallium/drivers/etnaviv/hw/isa.xml.h
 new file mode 100644
-index 0000000..55a0e62
+index 0000000000..55a0e62a85
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/hw/isa.xml.h
 @@ -0,0 +1,239 @@
@@ -13930,7 +13930,7 @@ index 0000000..55a0e62
 +#endif /* ISA_XML */
 diff --git a/src/gallium/drivers/etnaviv/hw/state.xml.h b/src/gallium/drivers/etnaviv/hw/state.xml.h
 new file mode 100644
-index 0000000..67257a4
+index 0000000000..67257a4328
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/hw/state.xml.h
 @@ -0,0 +1,394 @@
@@ -14330,7 +14330,7 @@ index 0000000..67257a4
 +#endif /* STATE_XML */
 diff --git a/src/gallium/drivers/etnaviv/hw/state_3d.xml.h b/src/gallium/drivers/etnaviv/hw/state_3d.xml.h
 new file mode 100644
-index 0000000..7ff0480
+index 0000000000..7ff0480800
 --- /dev/null
 +++ b/src/gallium/drivers/etnaviv/hw/state_3d.xml.h
 @@ -0,0 +1,1204 @@
@@ -15540,7 +15540,7 @@ index 0000000..7ff0480
 +#endif /* STATE_3D_XML */
 diff --git a/src/gallium/drivers/imx/Automake.inc b/src/gallium/drivers/imx/Automake.inc
 new file mode 100644
-index 0000000..92560a2
+index 0000000000..92560a2c6b
 --- /dev/null
 +++ b/src/gallium/drivers/imx/Automake.inc
 @@ -0,0 +1,9 @@
@@ -15555,7 +15555,7 @@ index 0000000..92560a2
 +endif
 diff --git a/src/gallium/drivers/imx/Makefile.am b/src/gallium/drivers/imx/Makefile.am
 new file mode 100644
-index 0000000..059f019
+index 0000000000..059f019e40
 --- /dev/null
 +++ b/src/gallium/drivers/imx/Makefile.am
 @@ -0,0 +1,9 @@
@@ -15570,7 +15570,7 @@ index 0000000..059f019
 +libimx_la_SOURCES =
 \ No newline at end of file
 diff --git a/src/gallium/targets/dri/Makefile.am b/src/gallium/targets/dri/Makefile.am
-index 06ade45..1a9b4b4 100644
+index 06ade45fe1..1a9b4b4dd9 100644
 --- a/src/gallium/targets/dri/Makefile.am
 +++ b/src/gallium/targets/dri/Makefile.am
 @@ -91,6 +91,9 @@ include $(top_srcdir)/src/gallium/drivers/vc4/Automake.inc
@@ -15584,7 +15584,7 @@ index 06ade45..1a9b4b4 100644
  include $(top_srcdir)/src/gallium/drivers/llvmpipe/Automake.inc
  include $(top_srcdir)/src/gallium/drivers/swr/Automake.inc
 diff --git a/src/gallium/targets/dri/target.c b/src/gallium/targets/dri/target.c
-index 01532e2..441a27f 100644
+index 01532e242b..441a27ff63 100644
 --- a/src/gallium/targets/dri/target.c
 +++ b/src/gallium/targets/dri/target.c
 @@ -162,3 +162,22 @@ PUBLIC const __DRIextension **__driDriverGetExtensions_i965(void)
@@ -15612,7 +15612,7 @@ index 01532e2..441a27f 100644
 +#endif
 diff --git a/src/gallium/winsys/etnaviv/drm/Makefile.am b/src/gallium/winsys/etnaviv/drm/Makefile.am
 new file mode 100644
-index 0000000..995b709
+index 0000000000..995b709599
 --- /dev/null
 +++ b/src/gallium/winsys/etnaviv/drm/Makefile.am
 @@ -0,0 +1,32 @@
@@ -15650,7 +15650,7 @@ index 0000000..995b709
 +libetnavivdrm_la_SOURCES = etnaviv_drm_winsys.c
 diff --git a/src/gallium/winsys/etnaviv/drm/etnaviv_drm_public.h b/src/gallium/winsys/etnaviv/drm/etnaviv_drm_public.h
 new file mode 100644
-index 0000000..19e7782
+index 0000000000..19e7782240
 --- /dev/null
 +++ b/src/gallium/winsys/etnaviv/drm/etnaviv_drm_public.h
 @@ -0,0 +1,42 @@
@@ -15698,7 +15698,7 @@ index 0000000..19e7782
 +#endif
 diff --git a/src/gallium/winsys/etnaviv/drm/etnaviv_drm_winsys.c b/src/gallium/winsys/etnaviv/drm/etnaviv_drm_winsys.c
 new file mode 100644
-index 0000000..b7630ef
+index 0000000000..b7630efa34
 --- /dev/null
 +++ b/src/gallium/winsys/etnaviv/drm/etnaviv_drm_winsys.c
 @@ -0,0 +1,104 @@
@@ -15808,7 +15808,7 @@ index 0000000..b7630ef
 +}
 diff --git a/src/gallium/winsys/imx/drm/Makefile.am b/src/gallium/winsys/imx/drm/Makefile.am
 new file mode 100644
-index 0000000..ff32fde
+index 0000000000..ff32fde349
 --- /dev/null
 +++ b/src/gallium/winsys/imx/drm/Makefile.am
 @@ -0,0 +1,33 @@
@@ -15848,7 +15848,7 @@ index 0000000..ff32fde
 \ No newline at end of file
 diff --git a/src/gallium/winsys/imx/drm/Makefile.sources b/src/gallium/winsys/imx/drm/Makefile.sources
 new file mode 100644
-index 0000000..3c0d6fb
+index 0000000000..3c0d6fb438
 --- /dev/null
 +++ b/src/gallium/winsys/imx/drm/Makefile.sources
 @@ -0,0 +1,3 @@
@@ -15858,7 +15858,7 @@ index 0000000..3c0d6fb
 \ No newline at end of file
 diff --git a/src/gallium/winsys/imx/drm/imx_drm_public.h b/src/gallium/winsys/imx/drm/imx_drm_public.h
 new file mode 100644
-index 0000000..2d93da2
+index 0000000000..2d93da2bba
 --- /dev/null
 +++ b/src/gallium/winsys/imx/drm/imx_drm_public.h
 @@ -0,0 +1,31 @@
@@ -15895,7 +15895,7 @@ index 0000000..2d93da2
 +#endif /* __IMX_DRM_PUBLIC_H__ */
 diff --git a/src/gallium/winsys/imx/drm/imx_drm_winsys.c b/src/gallium/winsys/imx/drm/imx_drm_winsys.c
 new file mode 100644
-index 0000000..7469893
+index 0000000000..746989358a
 --- /dev/null
 +++ b/src/gallium/winsys/imx/drm/imx_drm_winsys.c
 @@ -0,0 +1,41 @@
@@ -15941,7 +15941,7 @@ index 0000000..7469893
 +   return renderonly_screen_create(fd, &ro_ops, NULL);
 +}
 diff --git a/src/gbm/backends/dri/gbm_dri.c b/src/gbm/backends/dri/gbm_dri.c
-index 51c4117..e9b104e 100644
+index 51c4117ba7..e9b104e13a 100644
 --- a/src/gbm/backends/dri/gbm_dri.c
 +++ b/src/gbm/backends/dri/gbm_dri.c
 @@ -366,6 +366,12 @@ dri_open_driver(struct gbm_dri_device *dri)
