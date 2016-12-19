@@ -1,5 +1,5 @@
 diff --git a/battery_monitor_service/battery_monitor/battery_monitor.c b/battery_monitor_service/battery_monitor/battery_monitor.c
-index 0788acf..3042a2e 100644
+index 0788acf..5a3c628 100644
 --- a/battery_monitor_service/battery_monitor/battery_monitor.c
 +++ b/battery_monitor_service/battery_monitor/battery_monitor.c
 @@ -27,6 +27,9 @@
@@ -20,7 +20,7 @@ index 0788acf..3042a2e 100644
  	float v_pack;	// 2S pack voltage on JST XH 2S balance connector
  	float v_jack;	// could be dc power supply or another battery
  	float cell_voltage;	// cell voltage from either 2S or external pack
-@@ -68,7 +72,40 @@ int main(int argc, char *argv[]){
+@@ -68,7 +72,41 @@ int main(int argc, char *argv[]){
  			return -1;
  			break;
  		}
@@ -32,6 +32,7 @@ index 0788acf..3042a2e 100644
 +	{
 +		printf("ERROR: can't open %s \n", MODEL_DIR);
 +		kill_existing_instance();
++		return -1;
 +	}
 +
 +	// read model
@@ -49,15 +50,15 @@ index 0788acf..3042a2e 100644
 +	} else if(strcmp(d, "TI AM335x BeagleBone Green")==0) {
 +		printf("TI AM335x BeagleBone Green (UNTESTED, exiting...)\n");
 +		kill_existing_instance();
-+		return -1;
++		return 0;
 +	} else if(strcmp(d, "TI AM335x BeagleBone Green Wireless")==0) {
 +		printf("TI AM335x BeagleBone Green Wireless (UNSUPPORTED breaks wl18xx exiting...)\n");
 +		kill_existing_instance();
-+		return -1;
++		return 0;
 +	} else {
 +		printf("Unknown UNSUPPORTED...\n");
 +		kill_existing_instance();
-+		return -1;
++		return 0;
 +	}
  
  	// we only want one instance running, so check is a pid file already exists
