@@ -1,17 +1,26 @@
 diff --git a/battery_monitor_service/battery_monitor/battery_monitor.c b/battery_monitor_service/battery_monitor/battery_monitor.c
-index 0788acf..29a3dd0 100644
+index 0788acf..848ac32 100644
 --- a/battery_monitor_service/battery_monitor/battery_monitor.c
 +++ b/battery_monitor_service/battery_monitor/battery_monitor.c
-@@ -27,6 +27,8 @@
+@@ -27,6 +27,9 @@
  #define FITLER_SAMPLES 		6		// average over 6 samples, 3 seconds
  #define STD_DEV_TOLERANCE 	0.04 	// above 0.1 definitely charging
  
 +#define MODEL_DIR "/proc/device-tree/model"
++#define BUF_SIZE 128
 +
  // functions
  void illuminate_leds(int i);
  int kill_existing_instance();
-@@ -68,7 +70,36 @@ int main(int argc, char *argv[]){
+@@ -42,6 +45,7 @@ int running;
+ // main() takes only one optional argument: -k (kill)
+ int main(int argc, char *argv[]){
+ 	FILE* fd;
++	char c[BUF_SIZE];
+ 	float v_pack;	// 2S pack voltage on JST XH 2S balance connector
+ 	float v_jack;	// could be dc power supply or another battery
+ 	float cell_voltage;	// cell voltage from either 2S or external pack
+@@ -68,7 +72,36 @@ int main(int argc, char *argv[]){
  			return -1;
  			break;
  		}
