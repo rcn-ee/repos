@@ -1,0 +1,51 @@
+diff --git a/battery_monitor_service/battery_monitor/battery_monitor.c b/battery_monitor_service/battery_monitor/battery_monitor.c
+index 0788acf..29a3dd0 100644
+--- a/battery_monitor_service/battery_monitor/battery_monitor.c
++++ b/battery_monitor_service/battery_monitor/battery_monitor.c
+@@ -27,6 +27,8 @@
+ #define FITLER_SAMPLES 		6		// average over 6 samples, 3 seconds
+ #define STD_DEV_TOLERANCE 	0.04 	// above 0.1 definitely charging
+ 
++#define MODEL_DIR "/proc/device-tree/model"
++
+ // functions
+ void illuminate_leds(int i);
+ int kill_existing_instance();
+@@ -68,7 +70,36 @@ int main(int argc, char *argv[]){
+ 			return -1;
+ 			break;
+ 		}
+-    }
++	}
++
++	// from: get_bb_model_from_device_tree (bb_model.c)
++	if ((fd = fopen(MODEL_DIR, "r")) == NULL)
++	{
++		printf("ERROR: can't open %s \n", MODEL_DIR);
++		kill_existing_instance();
++	}
++
++	// read model
++	memset(c, 0, BUF_SIZE);
++	fgets(c, BUF_SIZE, fd);
++	fclose(fd);
++
++	// now do the checks
++	if(strcmp(c, "TI AM335x BeagleBone Blue")==0) {
++		printf("TI AM335x BeagleBone Blue\n");
++	} else if(strcmp(c, "TI AM335x BeagleBone Black RoboticsCape")==0) {
++		printf("TI AM335x BeagleBone Black with RoboticsCape\n");
++	} else if(strcmp(c, "TI AM335x BeagleBone Black Wireless RoboticsCape")==0) {
++		printf("TI AM335x BeagleBone Black Wireless with RoboticsCape\n");
++	} else if(strcmp(c, "TI AM335x BeagleBone Green")==0) {
++		printf("TI AM335x BeagleBone Green (UNTESTED, exiting...)\n");
++		kill_existing_instance();
++	} else if(strcmp(c, "TI AM335x BeagleBone Green Wireless")==0) {
++		printf("TI AM335x BeagleBone Green Wireless (UNSUPPORTED breaks wl18xx exiting...)\n");
++		kill_existing_instance();
++	} else {
++		printf("Unknown...\n");
++	}
+ 
+ 	// we only want one instance running, so check is a pid file already exists
+ 	if(access(PID_FILE, F_OK ) == 0){
