@@ -16,6 +16,11 @@ set -e
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
+if [ ! -f /etc/default/bb-wl18xx ] ; then
+	echo "# Whether or not to run the /usr/bin/bb-wl18xx-tether daemon; set to no to disable." > /etc/default/bb-wl18xx
+	echo "TETHER_ENABLED=yes" >> /etc/default/bb-wl18xx
+fi
+
 case "$1" in
 	configure)
 		systemctl enable bb-wl18xx-bluetooth.service || true

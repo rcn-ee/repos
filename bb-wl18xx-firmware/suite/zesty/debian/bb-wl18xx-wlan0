@@ -135,12 +135,21 @@ set_wlan_0_mac_from_cpsw_0 () {
 	set_wlan_0_mac
 }
 
+start_tether () {
+	# Include defaults if available
+	if [ -f /etc/default/bb-wl18xx ] ; then
+		. /etc/default/bb-wl18xx
+	fi
+
+	if [ "x${TETHER_ENABLED}" = "xyes" ] ; then
+		/usr/bin/bb-wl18xx-tether || true
+	fi
+}
+
 board=$(cat /proc/device-tree/model | sed "s/ /_/g" | tr -d '\000')
 case "${board}" in
 TI_AM335x_BeagleBone_Green_Wireless)
-	if [ -f /lib/systemd/system/battery_monitor.service ] ; then
-		systemctl disable battery_monitor.service || true
-	fi
+
 	eeprom="/sys/bus/i2c/devices/0-0050/eeprom"
 	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
 	set_wlan_0_mac_from_eeprom
@@ -148,27 +157,18 @@ TI_AM335x_BeagleBone_Green_Wireless)
 	if [ -f /sys/class/leds/wl18xx_wl_en/brightness ] ; then
 		echo 1 > /sys/class/leds/wl18xx_wl_en/brightness || true
 	fi
-	/usr/bin/bb-wl18xx-tether || true
+	start_tether
 	;;
 TI_AM335x_BeagleBone_Black_Wireless)
-	if [ -f /lib/systemd/system/battery_monitor.service ] ; then
-		systemctl disable battery_monitor.service || true
-	fi
 	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
 	set_wlan_0_mac_from_cpsw_0
-	/usr/bin/bb-wl18xx-tether || true
+	start_tether
 	;;
 TI_AM335x_BeagleBone_Blue)
-	if [ -f /lib/systemd/system/battery_monitor.service ] ; then
-		systemctl enable battery_monitor.service || true
-	fi
 	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
 	set_wlan_0_mac_from_cpsw_0
-	/usr/bin/bb-wl18xx-tether || true
+	start_tether
 	;;
 *)
-	if [ -f /lib/systemd/system/battery_monitor.service ] ; then
-		systemctl disable battery_monitor.service || true
-	fi
 	;;
 esac
