@@ -19,7 +19,7 @@ generic_http () {
 generic_check () {
 	if [ ! "x${version}" = "x" ] ; then
 		if [ ! "x${package_version}" = "x${version}" ] ; then
-			echo "Change: ${package_name}: upstream:${version} local:${package_version}"
+			echo "PACKAGE UPDATE: ${package_name}: debian-repo:${version} bb.org-repo:${package_version}"
 			echo ""
 		fi
 	else
@@ -108,7 +108,7 @@ mesa () {
 	package_name="libva" ; package_version="${package_name}_1.7.3-2" ; check_http
 
 	site="${debian_pool}/main/m"
-	package_name="mesa" ; package_version="${package_name}_13.0.2-1" ; check_http
+	package_name="mesa" ; package_version="${package_name}_13.0.2-3" ; check_http
 	package_name="mesa-demos" ; package_version="${package_name}_8.3.0-2" ; check_http
 }
 
