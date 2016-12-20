@@ -64,6 +64,70 @@ enable_connman_dnsproxy () {
 	fi
 }
 
+connmanctl_tether_wifi_off () {
+	echo "${log} [connmanctl tether wifi off]"
+	${connmanctl_bin} tether wifi off || true
+	#need to let wlcore settle...
+	#wlcore: ERROR SW watchdog interrupt received! starting recovery.
+	sleep 7
+}
+
+connmanctl_tether_wifi_on () {
+	if [ -d /sys/class/net/${ap_interface} ] ; then
+		echo "${log} [iw ${ap_interface} del]"
+		iw ${ap_interface} del || true
+	fi
+
+	if [ -f /etc/bb-wl18xx-tether.dnsmasq.enable ] ; then
+		echo "${log} [systemctl stop dnsmasq]"
+		systemctl stop dnsmasq || true
+		rm -rf /etc/dnsmasq.d/${ap_interface} || true
+		rm -rf /etc/bb-wl18xx-tether.dnsmasq.enable || true
+	fi
+
+	enable_connman_dnsproxy
+	echo "${log} [connmanctl enable wifi]"
+	${connmanctl_bin} enable wifi || true
+	sleep 1
+
+	if [ ! "x${use_mac}" = "x" ] ; then
+		ssid_append=$(echo ${use_mac} | cut -b 13-17 | sed 's/://g' || true)
+		echo "${log} [tether wifi on ${wifi_ssid}-${ssid_append} ${wifi_password}]"
+		${connmanctl_bin} tether wifi on ${wifi_ssid}-${ssid_append} ${wifi_password} || true
+	else
+		echo "${log} [tether wifi on ${wifi_ssid} ${wifi_password}]"
+		${connmanctl_bin} tether wifi on ${wifi_ssid} ${wifi_password} || true
+	fi
+	sleep 1
+
+	if [ -f /opt/scripts/boot/autoconfigure_usb0.sh ] ; then
+		echo "${log} [/opt/scripts/boot/autoconfigure_usb0.sh]"
+		/opt/scripts/boot/autoconfigure_usb0.sh
+	fi
+}
+
+is_eth_bb_gadget_wifi_off () {
+	eth0_vendor=$(udevadm info /sys/class/net/eth0 | grep ID_VENDOR_ID= | cut -d '=' -f 2 | awk '{print toupper($0)}' || true)
+	eth0_model=$(udevadm info /sys/class/net/eth0 | grep ID_MODEL_ID= | cut -d '=' -f 2 | awk '{print toupper($0)}' || true)
+
+	#bb default eth0 gadget:
+	#ID 1d6b:0104 Linux Foundation Multifunction Composite Gadget
+	if [ "x${eth0_vendor}" = "x1D6B" ] && [ "x${eth0_model}" = "x0104" ] ; then
+		connmanctl_tether_wifi_off
+	fi
+}
+
+is_eth_not_bb_gadget_wifi_on () {
+	eth0_vendor=$(udevadm info /sys/class/net/eth0 | grep ID_VENDOR_ID= | cut -d '=' -f 2 | awk '{print toupper($0)}' || true)
+	eth0_model=$(udevadm info /sys/class/net/eth0 | grep ID_MODEL_ID= | cut -d '=' -f 2 | awk '{print toupper($0)}' || true)
+
+	#bb default eth0 gadget:
+	#ID 1d6b:0104 Linux Foundation Multifunction Composite Gadget
+	if [ ! "x${eth0_vendor}" = "x1D6B" ] && [ ! "x${eth0_model}" = "x0104" ] ; then
+		connmanctl_tether_wifi_on
+	fi
+}
+
 connman_disable_tether () {
 	eth_interface="eth0"
 	if [ ! -d /sys/class/net/${eth_interface} ] ; then
@@ -76,49 +140,15 @@ connman_disable_tether () {
 
 	if [ -d /sys/class/net/tether ] ; then
 		if [ -d /sys/class/net/${eth_interface} ] ; then
-			echo "${log} [${eth_interface}] exists, leaving connmanctl tether enabled to create Wireless AP"
+			is_eth_bb_gadget_wifi_off
 		else
-			echo "${log} [connmanctl tether wifi off]"
-			${connmanctl_bin} tether wifi off || true
-			#need to let wlcore settle...
-			#wlcore: ERROR SW watchdog interrupt received! starting recovery.
-			sleep 5
+			connmanctl_tether_wifi_off
 		fi
 	else
 		if [ -f /lib/systemd/system/connman.service ] ; then
 			#Someone plugged an ${eth_interface} device..
 			if [ -d /sys/class/net/${eth_interface} ] ; then
-				if [ -d /sys/class/net/${ap_interface} ] ; then
-					echo "${log} [iw ${ap_interface} del]"
-					iw ${ap_interface} del || true
-				fi
-
-				if [ -f /etc/bb-wl18xx-tether.dnsmasq.enable ] ; then
-					echo "${log} [systemctl stop dnsmasq]"
-					systemctl stop dnsmasq || true
-					rm -rf /etc/dnsmasq.d/${ap_interface} || true
-					rm -rf /etc/bb-wl18xx-tether.dnsmasq.enable || true
-				fi
-
-				enable_connman_dnsproxy
-				echo "${log} [connmanctl enable wifi]"
-				${connmanctl_bin} enable wifi || true
-				sleep 1
-
-				if [ ! "x${use_mac}" = "x" ] ; then
-					ssid_append=$(echo ${use_mac} | cut -b 13-17 | sed 's/://g' || true)
-					echo "${log} [tether wifi on ${wifi_ssid}-${ssid_append} ${wifi_password}]"
-					${connmanctl_bin} tether wifi on ${wifi_ssid}-${ssid_append} ${wifi_password} || true
-				else
-					echo "${log} [tether wifi on ${wifi_ssid} ${wifi_password}]"
-					${connmanctl_bin} tether wifi on ${wifi_ssid} ${wifi_password} || true
-				fi
-				sleep 1
-
-				if [ -f /opt/scripts/boot/autoconfigure_usb0.sh ] ; then
-					echo "${log} [/opt/scripts/boot/autoconfigure_usb0.sh]"
-					/opt/scripts/boot/autoconfigure_usb0.sh
-				fi
+				is_eth_not_bb_gadget_wifi_on
 			fi
 		fi
 	fi
@@ -191,6 +221,9 @@ create_softap0_interface () {
 					ip link set dev ${get_wl} name ${ap_interface}
 				fi
 			fi
+		else
+			#FIXME
+			echo "${log} FIXME, found multple wlan0's, SoftAp0 untested..."
 		fi
 	fi
 }
@@ -239,64 +272,80 @@ start_dnsmasq () {
 		/etc/init.d/udhcpd stop || true
 	fi
 
-	wfile="/etc/dnsmasq.d/${ap_interface}"
-	echo "interface=${ap_interface}" > ${wfile}
-	echo "interface=usb0" >> ${wfile}
-	echo "port=53" >> ${wfile}
-	echo "dhcp-authoritative" >> ${wfile}
-	echo "domain-needed" >> ${wfile}
-	echo "bogus-priv" >> ${wfile}
-	echo "expand-hosts" >> ${wfile}
-	echo "cache-size=2048" >> ${wfile}
-	echo "dhcp-range=${ap_interface},192.168.8.50,192.168.8.150,2h" >> ${wfile}
-	echo "dhcp-range=usb0,192.168.7.1,192.168.7.1,2h" >> ${wfile}
-	echo "listen-address=127.0.0.1" >> ${wfile}
-	echo "listen-address=192.168.8.1" >> ${wfile}
-	echo "listen-address=192.168.7.2" >> ${wfile}
-	echo "dhcp-option-force=interface:${ap_interface},option:dns-server,192.168.8.1" >> ${wfile}
-	echo "dhcp-option-force=interface:${ap_interface},option:mtu,1500" >> ${wfile}
-	echo "dhcp-option=usb0,3" >> ${wfile}
-	echo "dhcp-option=usb0,6" >> ${wfile}
-	echo "address=/#/172.1.8.1" >> ${wfile}
+	if [ "x${USE_GENERATED_DNSMASQ}" = "xyes" ] ; then
+		wfile="/etc/dnsmasq.d/${ap_interface}"
+		echo "interface=${ap_interface}" > ${wfile}
+		echo "interface=usb0" >> ${wfile}
+		echo "port=53" >> ${wfile}
+		echo "dhcp-authoritative" >> ${wfile}
+		echo "domain-needed" >> ${wfile}
+		echo "bogus-priv" >> ${wfile}
+		echo "expand-hosts" >> ${wfile}
+		echo "cache-size=2048" >> ${wfile}
+		echo "dhcp-range=${ap_interface},192.168.8.50,192.168.8.150,2h" >> ${wfile}
+		echo "dhcp-range=usb0,192.168.7.1,192.168.7.1,2h" >> ${wfile}
+		echo "listen-address=127.0.0.1" >> ${wfile}
+		echo "listen-address=192.168.8.1" >> ${wfile}
+		echo "listen-address=192.168.7.2" >> ${wfile}
+		echo "dhcp-option-force=interface:${ap_interface},option:dns-server,192.168.8.1" >> ${wfile}
+		echo "dhcp-option-force=interface:${ap_interface},option:mtu,1500" >> ${wfile}
+		echo "dhcp-option=usb0,3" >> ${wfile}
+		echo "dhcp-option=usb0,6" >> ${wfile}
+		echo "address=/#/172.1.8.1" >> ${wfile}
+	fi
 
 	systemctl restart dnsmasq || true
 	touch /etc/bb-wl18xx-tether.dnsmasq.enable
 }
 
 start_hostapd () {
-	if [ ! "x${use_mac}" = "x" ] ; then
-		ssid_append=$(echo ${use_mac} | cut -b 13-17 | sed 's/://g' || true)
-	fi
+	if [ "x${USE_GENERATED_HOSTAPD}" = "xyes" ] ; then
+		if [ ! "x${use_mac}" = "x" ] ; then
+			ssid_append=$(echo ${use_mac} | cut -b 13-17 | sed 's/://g' || true)
+		fi
 
-	wfile="/tmp/hostapd-wl18xx.conf"
-	echo "interface=${ap_interface}" > ${wfile}
+		wfile="/tmp/hostapd-wl18xx.conf"
+		echo "interface=${ap_interface}" > ${wfile}
 
-	if [ ! "x${use_mac}" = "x" ] ; then
-		echo "ssid=${wifi_ssid}-${ssid_append}" >> ${wfile}
+		if [ ! "x${use_mac}" = "x" ] ; then
+			echo "ssid=${wifi_ssid}-${ssid_append}" >> ${wfile}
+		else
+			echo "ssid=${wifi_ssid}" >> ${wfile}
+		fi
+
+		echo "hw_mode=g" >> ${wfile}
+		echo "channel=1" >> ${wfile}
+		echo "macaddr_acl=0" >> ${wfile}
+		echo "auth_algs=1" >> ${wfile}
+		echo "ignore_broadcast_ssid=0" >> ${wfile}
+		echo "wpa=2" >> ${wfile}
+		echo "wpa_passphrase=${wifi_password}" >> ${wfile}
+		echo "wpa_key_mgmt=WPA-PSK" >> ${wfile}
+		echo "wpa_pairwise=TKIP" >> ${wfile}
+		echo "rsn_pairwise=CCMP" >> ${wfile}
+
+		echo "logger_syslog=-1" >> ${wfile}
+		echo "logger_syslog_level=2" >> ${wfile}
+
+		/usr/sbin/hostapd -B /tmp/hostapd-wl18xx.conf
 	else
-		echo "ssid=${wifi_ssid}" >> ${wfile}
+		if [ -f /etc/hostapd.conf ] ; then
+			/usr/sbin/hostapd -B /etc/hostapd.conf
+		else
+			echo "${log} error, no /etc/hostapd.conf"
+		fi
 	fi
-
-	echo "hw_mode=g" >> ${wfile}
-	echo "channel=1" >> ${wfile}
-	echo "macaddr_acl=0" >> ${wfile}
-	echo "auth_algs=1" >> ${wfile}
-	echo "ignore_broadcast_ssid=0" >> ${wfile}
-	echo "wpa=2" >> ${wfile}
-	echo "wpa_passphrase=${wifi_password}" >> ${wfile}
-	echo "wpa_key_mgmt=WPA-PSK" >> ${wfile}
-	echo "wpa_pairwise=TKIP" >> ${wfile}
-	echo "rsn_pairwise=CCMP" >> ${wfile}
-
-	echo "logger_syslog=-1" >> ${wfile}
-	echo "logger_syslog_level=2" >> ${wfile}
-
-	/usr/sbin/hostapd -B /tmp/hostapd-wl18xx.conf
 }
 
 default () {
 	connman_disable_tether
 	if [ ! -d /sys/class/net/tether ] ; then
+
+		# Include defaults if available
+		if [ -f /etc/default/bb-wl18xx ] ; then
+			. /etc/default/bb-wl18xx
+		fi
+
 		create_softap0_interface
 		bringup_softap0_interface
 		disable_connman_dnsproxy
