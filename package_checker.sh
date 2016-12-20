@@ -345,7 +345,7 @@ ros () {
 	package_name="ros-genmsg"; package_version="${package_name}_0.5.8-1"; check_http
 	package_name="ros-genpy"; package_version="${package_name}_0.6.3-1"; check_http
 	package_name="ros-gencpp"; package_version="${package_name}_0.5.5-2"; check_http
-	package_name="ros-genlisp"; package_version="${package_name}_0.4.15-4"; check_http
+	package_name="ros-genlisp"; package_version="${package_name}_0.4.16-1"; check_http
 	package_name="ros-roscpp-core"; package_version="${package_name}_0.5.6-2"; check_http
 	package_name="ros-std-msgs"; package_version="${package_name}_0.5.9-2"; check_http
 	package_name="ros-common-msgs"; package_version="${package_name}_1.12.4-1"; check_http
