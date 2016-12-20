@@ -337,7 +337,7 @@ ros () {
 	#https://wiki.debian.org/DebianScience/Robotics/ROS/Packages
 	echo "ros: (jessie)"
 	site="${debian_pool}/main/r"
-	package_name="ros-catkin-pkg"; package_version="${package_name}_0.2.10-2"; check_http
+	package_name="ros-catkin-pkg"; package_version="${package_name}_0.2.10-3"; check_http
 	package_name="ros-catkin"; package_version="${package_name}_0.6.16-4"; check_http
 	package_name="ros-cmake-modules"; package_version="${package_name}_0.4.0-2"; check_http
 	package_name="ros-message-generation"; package_version="${package_name}_0.3.0-3"; check_http
@@ -417,7 +417,7 @@ ros () {
 	package_name="ros-rosdep"; package_version="${package_name}_0.11.4-2"; check_http
 }
 
-#ros
+ros
 
 #really slow...
 exit
