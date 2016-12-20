@@ -1,112 +1,15 @@
-chromium-browser (53.0.2785.143-0ubuntu1.1307~bpo80+20161016+1) jessie; urgency=low
+chromium-browser (55.0.2883.87-0ubuntu2.1328~bpo80+20161220+1) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Sun, 16 Oct 2016 20:28:42 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Tue, 20 Dec 2016 14:23:12 -0600
 
-chromium-browser (53.0.2785.143-0ubuntu1.1307) yakkety; urgency=medium
- 
-  * Upstream release 53.0.2785.143:
-    - CVE-2016-5177: Use after free in V8.
-    - CVE-2016-5178: Various fixes from internal audits, fuzzing and other
-      initiatives.
-  * Upstream release 53.0.2785.113:
-    - CVE-2016-5170: Use after free in Blink.
-    - CVE-2016-5171: Use after free in Blink.
-    - CVE-2016-5172: Arbitrary Memory Read in v8.
-    - CVE-2016-5173: Extension resource access.
-    - CVE-2016-5174: Popup not correctly suppressed.
-    - CVE-2016-5175: Various fixes from internal audits, fuzzing and other
-      initiatives.
-  * Upstream release 53.0.2785.89:
-    - CVE-2016-5147: Universal XSS in Blink.
-    - CVE-2016-5148: Universal XSS in Blink.
-    - CVE-2016-5149: Script injection in extensions.
-    - CVE-2016-5150: Use after free in Blink.
-    - CVE-2016-5151: Use after free in PDFium.
-    - CVE-2016-5152: Heap overflow in PDFium.
-    - CVE-2016-5153: Use after destruction in Blink.
-    - CVE-2016-5154: Heap overflow in PDFium.
-    - CVE-2016-5155: Address bar spoofing.
-    - CVE-2016-5156: Use after free in event bindings.
-    - CVE-2016-5157: Heap overflow in PDFium.
-    - CVE-2016-5158: Heap overflow in PDFium.
-    - CVE-2016-5159: Heap overflow in PDFium.
-    - CVE-2016-5161: Type confusion in Blink.
-    - CVE-2016-5162: Extensions web accessible resources bypass.
-    - CVE-2016-5163: Address bar spoofing.
-    - CVE-2016-5164: Universal XSS using DevTools.
-    - CVE-2016-5165: Script injection in DevTools.
-    - CVE-2016-5166: SMB Relay Attack via Save Page As.
-    - CVE-2016-5160: Extensions web accessible resources bypass.
-    - CVE-2016-5167: Various fixes from internal audits, fuzzing and other
-      initiatives.
-  * debian/patches/cups-include-deprecated-ppd, debian/rules: include cups
-    functions.
-  * debian/rules, debian/control: Force using gcc-5 compiler.
-  * Use system libraries for expat, speex, zlib, opus, png, jpeg.
-  * Also build for arm64 architecture.
-  * Don't compile in cups support by default on all architectures.
-  * Upstream release 52.0.2743.116:
-    - CVE-2016-5141 Address bar spoofing.
-    - CVE-2016-5142 Use-after-free in Blink.
-    - CVE-2016-5139 Heap overflow in pdfium.
-    - CVE-2016-5140 Heap overflow in pdfium.
-    - CVE-2016-5145 Same origin bypass for images in Blink.
-    - CVE-2016-5143 Parameter sanitization failure in DevTools.
-    - CVE-2016-5144 Parameter sanitization failure in DevTools.
-    - CVE-2016-5146: Various fixes from internal audits, fuzzing and other
-      initiatives.
-  * Exclude harfbuzz and libxslt from system-library use.
-  * Upstream release 52.0.2743.82:
-    - CVE-2016-1706: Sandbox escape in PPAPI.
-    - CVE-2016-1707: URL spoofing on iOS.
-    - CVE-2016-1708: Use-after-free in Extensions.
-    - CVE-2016-1709: Heap-buffer-overflow in sfntly.
-    - CVE-2016-1710: Same-origin bypass in Blink.
-    - CVE-2016-1711: Same-origin bypass in Blink.
-    - CVE-2016-5127: Use-after-free in Blink.
-    - CVE-2016-5128: Same-origin bypass in V8.
-    - CVE-2016-5129: Memory corruption in V8.
-    - CVE-2016-5130: URL spoofing.
-    - CVE-2016-5131: Use-after-free in libxml.
-    - CVE-2016-5132: Limited same-origin bypass in Service Workers.
-    - CVE-2016-5133: Origin confusion in proxy authentication.
-    - CVE-2016-5134: URL leakage via PAC script.
-    - CVE-2016-5135: Content-Security-Policy bypass.
-    - CVE-2016-5136: Use after free in extensions.
-    - CVE-2016-5137: History sniffing with HSTS and CSP.
-    - CVE-2016-1705: Various fixes from internal audits, fuzzing and other
-      initiatives
-  * Upstream release 51.0.2704.106
-  * Upstream release 51.0.2704.103:
-    - CVE-2016-1704: Various fixes from internal audits, fuzzing and other
-      initiatives.
-  * debian/control: remvove build-dep on clang.
-  * debian/rules: Disable Google Now. Creepy. Might mean downloads of opaque
-    programs too.
-  * debian/rules: Disable Wallet service.
-  * debian/rules: Remove precise-specific conditions. More simple.
-  * debian/rules: In install-validation, don't use mktemp. Hard-code
-    destination.
-  * debian/patches/gsettings-display-scaling: Disable because code moved and
-    needs refactoring.
-  * debian/patches/display-scaling-default-value: Disable because probbly not
-    needed any more.
-  * debian/rules: widevine cdm is not really available in this source. No
-    longer lie about that.
-  * Set new GOOG keys to bisect service overuse problem.
-  * debian/patches/linux45-madvfree: If MADV_FREE is not defined, do not allow
-    it in sandbox filter. Also, undefine it so we don't use MADV_FREE and
-    thereby depend on it at runtime.
-  * debian/rules: Use gold ld to link.
-  * debian/rules: Kill delete-null-pointer-checks. In the javascript engine,
-    we can not assume a memory access to address zero always results in a
-    trap.
-  * debian/patches/gsettings-display-scaling,
-    debian/patches/display-scaling-default-value, reenable DPI scaling taken
-    from dconf.
-  * debian/rules: explicitly set target arch for arm64.
-  * debian/patches/series, debian/rules: Re-enable widevine component.
+chromium-browser (55.0.2883.87-0ubuntu2.1328) zesty; urgency=medium
 
- -- Chad MILLER <chad.miller@canonical.com>  Thu, 29 Sep 2016 16:54:11 -0400
+  * debian/rules: Build extra codecs as part of main chromium program,
+    and libre/crippled/h.264less on its own. Seems to make h.264 work 
+    again. Weird.
+  * debian/chromium-browser.links: Make link to ./ instead of / to fix
+    path problems that codec-using other apps might see.
+
+ -- Chad MILLER <chad.miller@canonical.com>  Sat, 17 Dec 2016 12:05:53 -0500

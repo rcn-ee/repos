@@ -1,0 +1,25 @@
+--- a/build/config/linux/gconf/BUILD.gn
++++ b/build/config/linux/gconf/BUILD.gn
+@@ -11,7 +11,7 @@ assert(!is_chromeos && use_gconf)
+ # These packages should _only_ be expected when building for a target.
+ # If these extra checks are not run, gconf is required when building host
+ # tools for a CrOS build.
+-assert(current_toolchain == default_toolchain)
++#assert(current_toolchain == default_toolchain)
+ 
+ pkg_config("gconf") {
+   packages = [ "gconf-2.0" ]
+--- a/build/toolchain/gcc_toolchain.gni
++++ b/build/toolchain/gcc_toolchain.gni
+@@ -482,9 +482,8 @@ template("clang_toolchain") {
+   }
+ 
+   gcc_toolchain(target_name) {
+-    prefix = rebase_path("$clang_base_path/bin", root_build_dir)
+-    cc = "$prefix/clang"
+-    cxx = "$prefix/clang++"
++    cc = "clang"
++    cxx = "clang++"
+     ld = cxx
+ 
+     readelf = "${toolprefix}readelf"

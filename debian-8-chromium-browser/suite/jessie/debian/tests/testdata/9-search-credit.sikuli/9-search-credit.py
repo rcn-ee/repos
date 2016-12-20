@@ -17,7 +17,6 @@ try:
     # first assertion: default search is Google
     wait("google-text.png", 10)
     #wait("query-start.png", 10)
-    
 
     # second assertion: search url contains our token
     just_below_refresh_button.type("l", KeyModifier.CTRL)

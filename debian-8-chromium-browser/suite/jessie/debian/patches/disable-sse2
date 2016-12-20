@@ -2,28 +2,6 @@ description: don't set sse2 compiler flags on i386
 author: Michael Gilbert <mgilbert@debian.org>
 debian-bug: http://bugs.debian.org/750361
 
---- a/build/common.gypi
-+++ b/build/common.gypi
-@@ -3831,8 +3831,6 @@
-                 # http://crbug.com/313032 for an example where this has "bit"
-                 # us in the past.
-                 'cflags': [
--                  '-msse2',
--                  '-mfpmath=sse',
-                   '-mmmx',  # Allows mmintrin.h for MMX intrinsics.
-                   '-m32',
-                 ],
---- a/cc/cc.gyp
-+++ b/cc/cc.gyp
-@@ -601,7 +601,7 @@
-         '../build/android/increase_size_for_speed.gypi',
-       ],
-       'conditions': [
--        ['target_arch == "ia32" or target_arch == "x64"', {
-+        ['target_arch == "x64"', {
-           'sources': [
-             'raster/texture_compressor_etc1_sse.cc',
-             'raster/texture_compressor_etc1_sse.h',
 --- a/cc/raster/texture_compressor.cc
 +++ b/cc/raster/texture_compressor.cc
 @@ -8,7 +8,7 @@
@@ -209,17 +187,6 @@ debian-bug: http://bugs.debian.org/750361
 +#endif  // defined(__x86_64__)
  
  }  // namespace media
---- a/media/media.gyp
-+++ b/media/media.gyp
-@@ -1016,7 +1016,7 @@
-             'filters/ffmpeg_h265_to_annex_b_bitstream_converter.h',
-           ],
-         }],
--        ['target_arch=="ia32" or target_arch=="x64"', {
-+        ['target_arch=="x64"', {
-           'dependencies': [
-             'media_asm',
-           ],
 --- a/skia/ext/convolver.h
 +++ b/skia/ext/convolver.h
 @@ -17,7 +17,6 @@
@@ -230,31 +197,9 @@ debian-bug: http://bugs.debian.org/750361
  #define SIMD_PADDING 8  // 8 * int16_t
  #endif
  
---- a/skia/skia_chrome.gypi
-+++ b/skia/skia_chrome.gypi
-@@ -75,7 +75,7 @@
-     [ 'OS != "ios" and target_arch != "arm" and target_arch != "mipsel" and \
-        target_arch != "arm64" and target_arch != "mips64el"', {
-       'sources': [
--        'ext/convolver_SSE2.cc',
-+        'ext/convolver.cc',
-       ],
-     }],
-     [ 'target_arch == "mipsel" and mips_dsp_rev >= 2',{
---- a/skia/skia_library_opts.gyp
-+++ b/skia/skia_library_opts.gyp
-@@ -51,7 +51,7 @@
-           # be in the regular skia target. But we need skia_opts for arm
-           # anyway, so putting sse2_sources here is simpler than making this
-           # conditionally a type none target on x86.
--          'sources': [ '<@(sse2_sources)' ],
-+          'sources': [ '<@(none_sources)' ],
-           'dependencies': [
-             'skia_opts_ssse3',
-             'skia_opts_sse41',
 --- a/third_party/WebKit/Source/modules/webaudio/AudioParamTimeline.cpp
 +++ b/third_party/WebKit/Source/modules/webaudio/AudioParamTimeline.cpp
-@@ -32,7 +32,7 @@
+@@ -31,7 +31,7 @@
  #include "wtf/MathExtras.h"
  #include <algorithm>
  
@@ -263,33 +208,33 @@ debian-bug: http://bugs.debian.org/750361
  #include <emmintrin.h>
  #endif
  
-@@ -575,7 +575,7 @@ float AudioParamTimeline::valuesForFrame
-         // First handle linear and exponential ramps which require looking ahead to the next event.
-         if (nextEventType == ParamEvent::LinearRampToValue) {
-             const float valueDelta = value2 - value1;
+@@ -637,7 +637,7 @@ float AudioParamTimeline::valuesForFrame
+     // the next event.
+     if (nextEventType == ParamEvent::LinearRampToValue) {
+       const float valueDelta = value2 - value1;
 -#if CPU(X86) || CPU(X86_64)
 +#if CPU(X86_64)
-             // Minimize in-loop operations. Calculate starting value and increment. Next step: value += inc.
-             //  value = value1 + (currentFrame/sampleRate - time1) * k * (value2 - value1);
-             //  inc = 4 / sampleRate * k * (value2 - value1);
-@@ -738,7 +738,7 @@ float AudioParamTimeline::valuesForFrame
-                         for (; writeIndex < fillToFrame; ++writeIndex)
-                             values[writeIndex] = target;
-                     } else {
+       // Minimize in-loop operations. Calculate starting value and increment.
+       // Next step: value += inc.
+       //  value = value1 +
+@@ -813,7 +813,7 @@ float AudioParamTimeline::valuesForFrame
+             for (; writeIndex < fillToFrame; ++writeIndex)
+               values[writeIndex] = target;
+           } else {
 -#if CPU(X86) || CPU(X86_64)
 +#if CPU(X86_64)
-                         // Resolve recursion by expanding constants to achieve a 4-step loop unrolling.
-                         // v1 = v0 + (t - v0) * c
-                         // v2 = v1 + (t - v1) * c
-@@ -843,7 +843,7 @@ float AudioParamTimeline::valuesForFrame
-                     // Render the stretched curve data using linear interpolation.  Oversampled
-                     // curve data can be provided if sharp discontinuities are desired.
-                     unsigned k = 0;
+             // Resolve recursion by expanding constants to achieve a 4-step loop
+             // unrolling.
+             // v1 = v0 + (t - v0) * c
+@@ -926,7 +926,7 @@ float AudioParamTimeline::valuesForFrame
+           // Oversampled curve data can be provided if sharp discontinuities are
+           // desired.
+           unsigned k = 0;
 -#if CPU(X86) || CPU(X86_64)
 +#if CPU(X86_64)
-                     const __m128 vCurveVirtualIndex = _mm_set_ps1(curveVirtualIndex);
-                     const __m128 vCurvePointsPerFrame = _mm_set_ps1(curvePointsPerFrame);
-                     const __m128 vNumberOfCurvePointsM1 = _mm_set_ps1(numberOfCurvePoints - 1);
+           const __m128 vCurveVirtualIndex = _mm_set_ps1(curveVirtualIndex);
+           const __m128 vCurvePointsPerFrame = _mm_set_ps1(curvePointsPerFrame);
+           const __m128 vNumberOfCurvePointsM1 =
 --- a/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp
 +++ b/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp
 @@ -35,7 +35,7 @@
@@ -301,24 +246,24 @@ debian-bug: http://bugs.debian.org/750361
  #include <emmintrin.h>
  #endif
  
-@@ -82,7 +82,7 @@ void DirectConvolver::process(AudioFloat
- #endif // CPU(X86)
+@@ -83,7 +83,7 @@ void DirectConvolver::process(AudioFloat
+ #endif  // CPU(X86)
  #else
-     size_t i = 0;
+   size_t i = 0;
 -#if CPU(X86) || CPU(X86_64)
 +#if CPU(X86_64)
-     // Convolution using SSE2. Currently only do this if both |kernelSize| and |framesToProcess|
-     // are multiples of 4. If not, use the straightforward loop below.
- 
-@@ -392,7 +392,7 @@ void DirectConvolver::process(AudioFloat
-         }
-         destP[i++] = sum;
+   // Convolution using SSE2. Currently only do this if both |kernelSize| and
+   // |framesToProcess| are multiples of 4. If not, use the straightforward loop
+   // below.
+@@ -397,7 +397,7 @@ void DirectConvolver::process(AudioFloat
+       }
+       destP[i++] = sum;
      }
 -#if CPU(X86) || CPU(X86_64)
 +#if CPU(X86_64)
-     }
+   }
  #endif
- #endif // OS(MACOSX)
+ #endif  // OS(MACOSX)
 --- a/third_party/WebKit/Source/platform/audio/SincResampler.cpp
 +++ b/third_party/WebKit/Source/platform/audio/SincResampler.cpp
 @@ -31,7 +31,7 @@
@@ -330,18 +275,18 @@ debian-bug: http://bugs.debian.org/750361
  #include <emmintrin.h>
  #endif
  
-@@ -256,7 +256,7 @@ void SincResampler::process(AudioSourceP
-             {
-                 float input;
+@@ -269,7 +269,7 @@ void SincResampler::process(AudioSourceP
+       {
+         float input;
  
 -#if CPU(X86) || CPU(X86_64)
 +#if CPU(X86_64)
-                 // If the sourceP address is not 16-byte aligned, the first several frames (at most three) should be processed seperately.
-                 while ((reinterpret_cast<uintptr_t>(inputP) & 0x0F) && n) {
-                     CONVOLVE_ONE_SAMPLE
+         // If the sourceP address is not 16-byte aligned, the first several
+         // frames (at most three) should be processed seperately.
+         while ((reinterpret_cast<uintptr_t>(inputP) & 0x0F) && n) {
 --- a/third_party/WebKit/Source/platform/audio/VectorMath.cpp
 +++ b/third_party/WebKit/Source/platform/audio/VectorMath.cpp
-@@ -32,7 +32,7 @@
+@@ -33,7 +33,7 @@
  #include <Accelerate/Accelerate.h>
  #endif
  
@@ -350,87 +295,87 @@ debian-bug: http://bugs.debian.org/750361
  #include <emmintrin.h>
  #endif
  
-@@ -122,7 +122,7 @@ void vsma(const float* sourceP, int sour
- {
-     int n = framesToProcess;
+@@ -169,7 +169,7 @@ void vsma(const float* sourceP,
+           size_t framesToProcess) {
+   int n = framesToProcess;
  
 -#if CPU(X86) || CPU(X86_64)
 +#if CPU(X86_64)
-     if ((sourceStride == 1) && (destStride == 1)) {
-         float k = *scale;
+   if ((sourceStride == 1) && (destStride == 1)) {
+     float k = *scale;
  
-@@ -195,7 +195,7 @@ void vsmul(const float* sourceP, int sou
- {
-     int n = framesToProcess;
+@@ -246,7 +246,7 @@ void vsmul(const float* sourceP,
+            size_t framesToProcess) {
+   int n = framesToProcess;
  
 -#if CPU(X86) || CPU(X86_64)
 +#if CPU(X86_64)
-     if ((sourceStride == 1) && (destStride == 1)) {
-         float k = *scale;
+   if ((sourceStride == 1) && (destStride == 1)) {
+     float k = *scale;
  
-@@ -266,7 +266,7 @@ void vsmul(const float* sourceP, int sou
-         sourceP += sourceStride;
-         destP += destStride;
+@@ -317,7 +317,7 @@ void vsmul(const float* sourceP,
+       sourceP += sourceStride;
+       destP += destStride;
      }
 -#if CPU(X86) || CPU(X86_64)
 +#if CPU(X86_64)
-     }
+   }
  #endif
  }
-@@ -275,7 +275,7 @@ void vadd(const float* source1P, int sou
- {
-     int n = framesToProcess;
+@@ -331,7 +331,7 @@ void vadd(const float* source1P,
+           size_t framesToProcess) {
+   int n = framesToProcess;
  
 -#if CPU(X86) || CPU(X86_64)
 +#if CPU(X86_64)
-     if ((sourceStride1 ==1) && (sourceStride2 == 1) && (destStride == 1)) {
-         // If the sourceP address is not 16-byte aligned, the first several frames (at most three) should be processed separately.
-         while ((reinterpret_cast<size_t>(source1P) & 0x0F) && n) {
-@@ -378,7 +378,7 @@ void vadd(const float* source1P, int sou
-         source2P += sourceStride2;
-         destP += destStride;
+   if ((sourceStride1 == 1) && (sourceStride2 == 1) && (destStride == 1)) {
+     // If the sourceP address is not 16-byte aligned, the first several frames
+     // (at most three) should be processed separately.
+@@ -438,7 +438,7 @@ void vadd(const float* source1P,
+       source2P += sourceStride2;
+       destP += destStride;
      }
 -#if CPU(X86) || CPU(X86_64)
 +#if CPU(X86_64)
-     }
+   }
  #endif
  }
-@@ -388,7 +388,7 @@ void vmul(const float* source1P, int sou
- 
-     int n = framesToProcess;
- 
--#if CPU(X86) || CPU(X86_64)
-+#if CPU(X86_64)
-     if ((sourceStride1 == 1) && (sourceStride2 == 1) && (destStride == 1)) {
-         // If the source1P address is not 16-byte aligned, the first several frames (at most three) should be processed separately.
-         while ((reinterpret_cast<uintptr_t>(source1P) & 0x0F) && n) {
-@@ -461,7 +461,7 @@ void vmul(const float* source1P, int sou
- void zvmul(const float* real1P, const float* imag1P, const float* real2P, const float* imag2P, float* realDestP, float* imagDestP, size_t framesToProcess)
- {
-     unsigned i = 0;
--#if CPU(X86) || CPU(X86_64)
-+#if CPU(X86_64)
-     // Only use the SSE optimization in the very common case that all addresses are 16-byte aligned.
-     // Otherwise, fall through to the scalar code below.
-     if (!(reinterpret_cast<uintptr_t>(real1P) & 0x0F)
-@@ -519,7 +519,7 @@ void vsvesq(const float* sourceP, int so
-     int n = framesToProcess;
-     float sum = 0;
+@@ -452,7 +452,7 @@ void vmul(const float* source1P,
+           size_t framesToProcess) {
+   int n = framesToProcess;
  
 -#if CPU(X86) || CPU(X86_64)
 +#if CPU(X86_64)
-     if (sourceStride == 1) {
-         // If the sourceP address is not 16-byte aligned, the first several frames (at most three) should be processed separately.
-         while ((reinterpret_cast<uintptr_t>(sourceP) & 0x0F) && n) {
-@@ -584,7 +584,7 @@ void vmaxmgv(const float* sourceP, int s
-     int n = framesToProcess;
-     float max = 0;
+   if ((sourceStride1 == 1) && (sourceStride2 == 1) && (destStride == 1)) {
+     // If the source1P address is not 16-byte aligned, the first several frames
+     // (at most three) should be processed separately.
+@@ -532,7 +532,7 @@ void zvmul(const float* real1P,
+            float* imagDestP,
+            size_t framesToProcess) {
+   unsigned i = 0;
+-#if CPU(X86) || CPU(X86_64)
++#if CPU(X86_64)
+   // Only use the SSE optimization in the very common case that all addresses
+   // are 16-byte aligned.  Otherwise, fall through to the scalar code below.
+   if (!(reinterpret_cast<uintptr_t>(real1P) & 0x0F) &&
+@@ -591,7 +591,7 @@ void vsvesq(const float* sourceP,
+   int n = framesToProcess;
+   float sum = 0;
  
 -#if CPU(X86) || CPU(X86_64)
 +#if CPU(X86_64)
-     if (sourceStride == 1) {
-         // If the sourceP address is not 16-byte aligned, the first several frames (at most three) should be processed separately.
-         while ((reinterpret_cast<uintptr_t>(sourceP) & 0x0F) && n) {
+   if (sourceStride == 1) {
+     // If the sourceP address is not 16-byte aligned, the first several frames
+     // (at most three) should be processed separately.
+@@ -660,7 +660,7 @@ void vmaxmgv(const float* sourceP,
+   int n = framesToProcess;
+   float max = 0;
+ 
+-#if CPU(X86) || CPU(X86_64)
++#if CPU(X86_64)
+   if (sourceStride == 1) {
+     // If the sourceP address is not 16-byte aligned, the first several frames
+     // (at most three) should be processed separately.
 --- a/third_party/WebKit/Source/platform/graphics/cpu/x86/WebGLImageConversionSSE.h
 +++ b/third_party/WebKit/Source/platform/graphics/cpu/x86/WebGLImageConversionSSE.h
 @@ -5,7 +5,7 @@
@@ -444,100 +389,57 @@ debian-bug: http://bugs.debian.org/750361
  
 --- a/third_party/WebKit/Source/platform/graphics/gpu/WebGLImageConversion.cpp
 +++ b/third_party/WebKit/Source/platform/graphics/gpu/WebGLImageConversion.cpp
-@@ -423,7 +423,7 @@ template<> void unpack<WebGLImageConvers
-     const uint32_t* source32 = reinterpret_cast_ptr<const uint32_t*>(source);
-     uint32_t* destination32 = reinterpret_cast_ptr<uint32_t*>(destination);
+@@ -441,7 +441,7 @@ void unpack<WebGLImageConversion::DataFo
+   const uint32_t* source32 = reinterpret_cast_ptr<const uint32_t*>(source);
+   uint32_t* destination32 = reinterpret_cast_ptr<uint32_t*>(destination);
  
 -#if CPU(X86) || CPU(X86_64)
 +#if CPU(X86_64)
-     SIMD::unpackOneRowOfBGRA8LittleToRGBA8(source32, destination32, pixelsPerRow);
+   SIMD::unpackOneRowOfBGRA8LittleToRGBA8(source32, destination32, pixelsPerRow);
  #endif
-     for (unsigned i = 0; i < pixelsPerRow; ++i) {
-@@ -442,7 +442,7 @@ template<> void unpack<WebGLImageConvers
- 
- template<> void unpack<WebGLImageConversion::DataFormatRGBA5551, uint16_t, uint8_t>(const uint16_t* source, uint8_t* destination, unsigned pixelsPerRow)
- {
+ #if HAVE(MIPS_MSA_INTRINSICS)
+@@ -467,7 +467,7 @@ void unpack<WebGLImageConversion::DataFo
+     const uint16_t* source,
+     uint8_t* destination,
+     unsigned pixelsPerRow) {
 -#if CPU(X86) || CPU(X86_64)
 +#if CPU(X86_64)
-     SIMD::unpackOneRowOfRGBA5551LittleToRGBA8(source, destination, pixelsPerRow);
+   SIMD::unpackOneRowOfRGBA5551LittleToRGBA8(source, destination, pixelsPerRow);
  #endif
  #if HAVE(ARM_NEON_INTRINSICS)
-@@ -464,7 +464,7 @@ template<> void unpack<WebGLImageConvers
- 
- template<> void unpack<WebGLImageConversion::DataFormatRGBA4444, uint16_t, uint8_t>(const uint16_t* source, uint8_t* destination, unsigned pixelsPerRow)
- {
+@@ -496,7 +496,7 @@ void unpack<WebGLImageConversion::DataFo
+     const uint16_t* source,
+     uint8_t* destination,
+     unsigned pixelsPerRow) {
 -#if CPU(X86) || CPU(X86_64)
 +#if CPU(X86_64)
-     SIMD::unpackOneRowOfRGBA4444LittleToRGBA8(source, destination, pixelsPerRow);
+   SIMD::unpackOneRowOfRGBA4444LittleToRGBA8(source, destination, pixelsPerRow);
  #endif
  #if HAVE(ARM_NEON_INTRINSICS)
-@@ -630,7 +630,7 @@ template<> void pack<WebGLImageConversio
- // FIXME: this routine is lossy and must be removed.
- template<> void pack<WebGLImageConversion::DataFormatR8, WebGLImageConversion::AlphaDoUnmultiply, uint8_t, uint8_t>(const uint8_t* source, uint8_t* destination, unsigned pixelsPerRow)
- {
+@@ -711,7 +711,7 @@ void pack<WebGLImageConversion::DataForm
+           uint8_t>(const uint8_t* source,
+                    uint8_t* destination,
+                    unsigned pixelsPerRow) {
 -#if CPU(X86) || CPU(X86_64)
 +#if CPU(X86_64)
-     SIMD::packOneRowOfRGBA8LittleToR8(source, destination, pixelsPerRow);
+   SIMD::packOneRowOfRGBA8LittleToR8(source, destination, pixelsPerRow);
  #endif
-     for (unsigned i = 0; i < pixelsPerRow; ++i) {
-@@ -667,7 +667,7 @@ template<> void pack<WebGLImageConversio
- // FIXME: this routine is lossy and must be removed.
- template<> void pack<WebGLImageConversion::DataFormatRA8, WebGLImageConversion::AlphaDoUnmultiply, uint8_t, uint8_t>(const uint8_t* source, uint8_t* destination, unsigned pixelsPerRow)
- {
+ #if HAVE(MIPS_MSA_INTRINSICS)
+@@ -768,7 +768,7 @@ void pack<WebGLImageConversion::DataForm
+           uint8_t>(const uint8_t* source,
+                    uint8_t* destination,
+                    unsigned pixelsPerRow) {
 -#if CPU(X86) || CPU(X86_64)
 +#if CPU(X86_64)
-     SIMD::packOneRowOfRGBA8LittleToRA8(source, destination, pixelsPerRow);
+   SIMD::packOneRowOfRGBA8LittleToRA8(source, destination, pixelsPerRow);
  #endif
-     for (unsigned i = 0; i < pixelsPerRow; ++i) {
-@@ -741,7 +741,7 @@ template<> void pack<WebGLImageConversio
- // FIXME: this routine is lossy and must be removed.
- template<> void pack<WebGLImageConversion::DataFormatRGBA8, WebGLImageConversion::AlphaDoUnmultiply, uint8_t, uint8_t>(const uint8_t* source, uint8_t* destination, unsigned pixelsPerRow)
- {
+ #if HAVE(MIPS_MSA_INTRINSICS)
+@@ -880,7 +880,7 @@ void pack<WebGLImageConversion::DataForm
+           uint8_t>(const uint8_t* source,
+                    uint8_t* destination,
+                    unsigned pixelsPerRow) {
 -#if CPU(X86) || CPU(X86_64)
 +#if CPU(X86_64)
-     SIMD::packOneRowOfRGBA8LittleToRGBA8(source, destination, pixelsPerRow);
- #else
-     for (unsigned i = 0; i < pixelsPerRow; ++i) {
---- a/third_party/pdfium/skia/skia_library_opts.gyp
-+++ b/third_party/pdfium/skia/skia_library_opts.gyp
-@@ -46,7 +46,7 @@
-           # be in the regular skia target. But we need skia_opts for arm
-           # anyway, so putting sse2_sources here is simpler than making this
-           # conditionally a type none target on x86.
--          'sources': [ '<@(sse2_sources)' ],
-+          'sources': [ '<@(none_sources)' ],
-           'dependencies': [
-             'skia_opts_ssse3',
-             'skia_opts_sse41',
---- a/third_party/qcms/qcms.gyp
-+++ b/third_party/qcms/qcms.gyp
-@@ -50,7 +50,7 @@
-             'src/transform_util.h',
-           ],
-           'conditions': [
--            ['target_arch=="ia32" or target_arch=="x64"', {
-+            ['target_arch=="x64"', {
-               'defines': [
-                 'SSE2_ENABLE',
-               ],
-@@ -110,4 +110,4 @@
- # tab-width:2
- # indent-tabs-mode:nil
- # End:
--# vim: set expandtab tabstop=2 shiftwidth=2:
-\ No newline at end of file
-+# vim: set expandtab tabstop=2 shiftwidth=2:
---- a/third_party/skia/gyp/opts.gyp
-+++ b/third_party/skia/gyp/opts.gyp
-@@ -33,9 +33,9 @@
-       ],
-       'conditions': [
-         [ '"x86" in skia_arch_type and skia_os != "ios"', {
--          'cflags': [ '-msse2' ],
-+          'cflags': [ ],
-           'dependencies': [ 'opts_ssse3', 'opts_sse41', 'opts_sse42', 'opts_avx', 'opts_avx2' ],
--          'sources': [ '<@(sse2_sources)' ],
-+          'sources': [ '<@(none_sources)' ],
-         }],
- 
-         [ 'skia_arch_type == "mips"', {
+   SIMD::packOneRowOfRGBA8LittleToRGBA8(source, destination, pixelsPerRow);
+ #endif
+ #if HAVE(MIPS_MSA_INTRINSICS)

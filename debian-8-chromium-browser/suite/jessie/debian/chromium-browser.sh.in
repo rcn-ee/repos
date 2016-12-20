@@ -74,9 +74,6 @@ usage () {
   echo " See 'man chromium-browser' for more details"
 }
 
-# Work around crbug.com/415681
-lsmod |grep ^i915\  >/dev/null && export LIBGL_DRI3_DISABLE=1
-
 if [ -f /etc/$APPNAME/default ] ; then
   . /etc/$APPNAME/default
 fi
@@ -100,6 +97,13 @@ if test "$FLASH_GOOD_PACKAGE"; then
 	CHROMIUM_FLAGS="$CANDIDATE"
 fi
 
+if test -x /usr/bin/python3 -a -f "/usr/lib/adobe-flashplugin/manifest.json"; then
+	if echo "$CHROMIUM_FLAGS" |grep -E -- "--ppapi-flash-version=( |\$)"; then
+		ver=$(python -c 'import json,sys; print(json.load(open("/usr/lib/adobe-flashplugin/manifest.json"))["version"]);')
+		CHROMIUM_FLAGS=${CHROMIUM_FLAGS/--ppapi-flash-version=/--ppapi-flash-version="${ver}" }
+	fi
+fi
+
 # Prefer user defined CHROMIUM_USER_FLAGS (fron env) over system
 # default CHROMIUM_FLAGS (from /etc/$APPNAME/default)
 if test -n "$CHROMIUM_USER_FLAGS"; then
@@ -112,9 +116,9 @@ fi
 
 # FFmpeg needs to know where its libs are located
 if [ "Z$LD_LIBRARY_PATH" != Z ] ; then
-  LD_LIBRARY_PATH=$LIBDIR:$LIBDIR/libs:$LD_LIBRARY_PATH
+  LD_LIBRARY_PATH=$LIBDIR:$LD_LIBRARY_PATH
 else
-  LD_LIBRARY_PATH=$LIBDIR:$LIBDIR/libs
+  LD_LIBRARY_PATH=$LIBDIR
 fi
 
 export LD_LIBRARY_PATH

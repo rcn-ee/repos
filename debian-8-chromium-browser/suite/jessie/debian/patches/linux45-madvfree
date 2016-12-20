@@ -1,6 +1,6 @@
 --- a/sandbox/linux/seccomp-bpf-helpers/baseline_policy.cc
 +++ b/sandbox/linux/seccomp-bpf-helpers/baseline_policy.cc
-@@ -172,7 +172,12 @@ ResultExpr EvaluateSyscallImpl(int fs_de
+@@ -176,7 +176,12 @@ ResultExpr EvaluateSyscallImpl(int fs_de
    if (sysno == __NR_madvise) {
      // Only allow MADV_DONTNEED (aka MADV_FREE).
      const Arg<int> advice(2);

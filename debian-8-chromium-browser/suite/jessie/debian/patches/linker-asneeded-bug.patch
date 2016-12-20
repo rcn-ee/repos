@@ -2,26 +2,3 @@ Description: Avoid a linker bug where symbols are not found.
  > /usr/bin/ld.bfd.real: out/Release/obj.target/net/libnet.so: undefined reference to symbol 'SSL_ForceHandshake'
  > out/Release/obj.target/net/third_party/nss/libcrssl.so: error adding symbols: DSO missing from command line
 
---- a/build/common.gypi
-+++ b/build/common.gypi
-@@ -3681,7 +3681,7 @@
-                   '-fomit-frame-pointer',
-                 ],
-               }],
--              ['OS=="linux" and target_arch=="ia32"', {
-+              ['OS=="linux"', {
-                 'ldflags': [
-                   '-Wl,--no-as-needed',
-                 ],
-@@ -3783,6 +3783,11 @@
-                 'cflags': ['-fno-unwind-tables', '-fno-asynchronous-unwind-tables'],
-                 'defines': ['NO_UNWIND_TABLES'],
-               }],
-+              ['OS=="linux"', {
-+                'ldflags': [
-+                  '-Wl,--no-as-needed',
-+                ],
-+              }],
-             ],
-           },
-         },

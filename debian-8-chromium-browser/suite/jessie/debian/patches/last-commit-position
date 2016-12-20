@@ -1,0 +1,26 @@
+--- a/tools/gn/BUILD.gn
++++ b/tools/gn/BUILD.gn
+@@ -267,7 +267,6 @@ executable("gn") {
+ 
+   deps = [
+     ":gn_lib",
+-    ":last_commit_position",
+     "//base",
+     "//build/config/sanitizers:deps",
+     "//build/win:default_exe_manifest",
+--- a/tools/gn/gn_main.cc
++++ b/tools/gn/gn_main.cc
+@@ -12,13 +12,7 @@
+ #include "tools/gn/standard_out.h"
+ #include "tools/gn/switches.h"
+ 
+-// Only the GN-generated build makes this header for now.
+-// TODO(brettw) consider adding this if we need it in GYP.
+-#if defined(GN_BUILD)
+-#include "tools/gn/last_commit_position.h"
+-#else
+ #define LAST_COMMIT_POSITION "UNKNOWN"
+-#endif
+ 
+ namespace {
+ 
