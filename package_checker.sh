@@ -351,7 +351,7 @@ ros () {
 	package_name="ros-common-msgs"; package_version="${package_name}_1.12.5-2"; check_http
 	package_name="ros-ros-comm-msgs"; package_version="${package_name}_1.11.2-5"; check_http
 	package_name="ros-rospack"; package_version="${package_name}_2.3.1-1"; check_http
-	package_name="ros-ros"; package_version="${package_name}_1.12.5-4"; check_http
+	package_name="ros-ros"; package_version="${package_name}_1.13.4-1"; check_http
 
 	site="${debian_pool}/main/l"
 	package_name="log4cxx"; package_version="${package_name}_0.10.0-10"; check_http
