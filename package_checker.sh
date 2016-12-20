@@ -317,12 +317,12 @@ ubuntu () {
 	site="http://ports.ubuntu.com/pool/universe/c"
 	package_name="chromium-browser" ; package_version="${package_name}_53.0.2785.143-0ubuntu1.1307" ; check_http
 
-	site="http://ports.ubuntu.com/pool/main/w"
-	package_name="wpa" ; package_version="${package_name}_2.4-0ubuntu6" ; check_http
+#	site="http://ports.ubuntu.com/pool/main/w"
+#	package_name="wpa" ; package_version="${package_name}_2.4-0ubuntu6" ; check_http
 }
 
 important
-builds
+#builds
 mesa
 #qt5_kde
 #qt5_apps
@@ -340,7 +340,7 @@ ros () {
 	package_name="ros-catkin-pkg"; package_version="${package_name}_0.2.10-3"; check_http
 	package_name="ros-catkin"; package_version="${package_name}_0.7.4-2"; check_http
 	package_name="ros-cmake-modules"; package_version="${package_name}_0.4.0-2"; check_http
-	package_name="ros-message-generation"; package_version="${package_name}_0.3.0-3"; check_http
+	package_name="ros-message-generation"; package_version="${package_name}_0.4.0-1"; check_http
 	package_name="ros-message-runtime"; package_version="${package_name}_0.4.12-3"; check_http
 	package_name="ros-genmsg"; package_version="${package_name}_0.5.6-5"; check_http
 	package_name="ros-genpy"; package_version="${package_name}_0.5.7-6"; check_http
