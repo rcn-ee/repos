@@ -373,7 +373,7 @@ ros () {
 	package_name="ros-bond-core"; package_version="${package_name}_1.7.18-2"; check_http
 	package_name="ros-class-loader"; package_version="${package_name}_0.3.6-1"; check_http
 	package_name="ros-eigen-stl-containers"; package_version="${package_name}_0.1.6-3"; check_http
-	package_name="ros-resource-retriever"; package_version="${package_name}_1.11.6-2"; check_http
+	package_name="ros-resource-retriever"; package_version="${package_name}_1.12.2-1"; check_http
 	package_name="ros-random-numbers"; package_version="${package_name}_0.3.0-2"; check_http
 	package_name="ros-geometric-shapes"; package_version="${package_name}_0.4.3-2"; check_http
 	package_name="ros-pluginlib"; package_version="${package_name}_1.10.1-3"; check_http
