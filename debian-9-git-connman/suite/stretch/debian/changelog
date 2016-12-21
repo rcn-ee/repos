@@ -1,14 +1,26 @@
-connman (1.33-1rcnee1~bpo90+20161115+1) stretch; urgency=low
+connman (1.33-2rcnee1~bpo90+20161221+1) stretch; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Tue, 15 Nov 2016 09:56:25 -0600
+ -- Robert Nelson <robertcnelson@gmail.com>  Wed, 21 Dec 2016 11:49:32 -0600
 
-connman (1.33-1rcnee0~bpo90+20161111+1) stretch; urgency=low
+connman (1.33-2) unstable; urgency=medium
 
-  * Rebuild for repos.rcn-ee.com
+  [ Alf Gaida ]
+  * Restrict Architecture to linux-any, connman will never work on non 
+    linux systems - unless systemd will be ported for them
+  * debian/README.debian is always removed (Closes: #833297)
+  * Make connman postinst and postrm more complete
+    - Added exit 0
+    - Delete left over /etc/resolv.conf (Closes: #843535)
 
- -- Robert Nelson <robertcnelson@gmail.com>  Fri, 11 Nov 2016 16:44:18 -0600
+  [ Gianfranco Costamagna ]
+  * Enforce minimum autoconf version, to ease backporting.
+
+  [ Arturo Borrero Gonzalez ]
+  * Fix dependency to iptables/libxtables (Closes: #845383)
+
+ -- Alf Gaida <agaida@siduction.org>  Mon, 24 Oct 2016 21:13:23 +0200
 
 connman (1.33-1) unstable; urgency=medium
 

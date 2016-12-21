@@ -5,14 +5,15 @@ Uploaders: Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>,
            Alf Gaida <agaida@siduction.org>
 Section: net
 Priority: optional
-Build-Depends: debhelper (>= 9),
+Build-Depends: debhelper (>= 10),
+               autoconf (>= 2.69-9~),
                libudev-dev,
                libglib2.0-dev,
                libdbus-1-dev,
                gtk-doc-tools,
                libgnutls28-dev,
                libreadline-dev,
-               iptables-dev,
+               libxtables-dev,
                wpasupplicant,
                libbluetooth-dev,
                ppp-dev,
@@ -24,17 +25,17 @@ Vcs-Git: https://anonscm.debian.org/git/collab-maint/connman.git
 Homepage: https://01.org/connman
 
 Package: connman
-Architecture: any
+Architecture: linux-any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          dbus,
-         lsb-base
+         lsb-base,
+	 iptables
 Recommends: bluez,
             wpasupplicant,
             ofono
 Suggests: indicator-network
 Conflicts: network-manager,
-           wicd,
            wicd-daemon,
            resolvconf
 Description: Intel Connection Manager daemon
@@ -58,7 +59,7 @@ Description: Intel Connection Manager daemon
  This package contains the connman daemon and its plugins.
 
 Package: connman-vpn
-Architecture: any
+Architecture: linux-any
 Depends: ${shlibs:Depends},
          ${misc:Depends}
 Recommends: connman (= ${source:Version}),
@@ -88,7 +89,7 @@ Description: Intel Connection Manager daemon - VPN daemon
  applications. The VPN daemon can also be run standalone without connmand.
 
 Package: connman-dev
-Architecture: any
+Architecture: linux-any
 Multi-Arch: same
 Section: devel
 Depends: ${misc:Depends},
