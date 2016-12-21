@@ -365,7 +365,7 @@ ros () {
 	package_name="ros-rosconsole-bridge"; package_version="${package_name}_0.4.4-1"; check_http
 
 	site="${debian_pool}/main/o"
-	package_name="orocos-kdl"; package_version="${package_name}_1.3.0+dfsg-1"; check_http
+	package_name="orocos-kdl"; package_version="${package_name}_1.3.1+dfsg-1"; check_http
 
 	site="${debian_pool}/main/r"
 	package_name="ros-geometry-experimental"; package_version="${package_name}_0.5.12-2"; check_http
