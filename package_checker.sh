@@ -368,7 +368,7 @@ ros () {
 	package_name="orocos-kdl"; package_version="${package_name}_1.3.1+dfsg-1"; check_http
 
 	site="${debian_pool}/main/r"
-	package_name="ros-geometry-experimental"; package_version="${package_name}_0.5.12-2"; check_http
+	package_name="ros-geometry-experimental"; package_version="${package_name}_0.5.13-5"; check_http
 	package_name="ros-geometry"; package_version="${package_name}_1.11.7-3"; check_http
 	package_name="ros-bond-core"; package_version="${package_name}_1.7.16-3"; check_http
 	package_name="ros-class-loader"; package_version="${package_name}_0.3.2-1"; check_http
