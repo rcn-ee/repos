@@ -1,0 +1,33 @@
+#!/bin/sh
+
+set -e
+
+DEFAULT_DISPLAY_MANAGER_FILE=/etc/X11/default-display-manager
+
+if [ "$1" = "abort-install" ] || [ "$1" = "abort-upgrade" ]; then
+  if [ -e "$DEFAULT_DISPLAY_MANAGER_FILE.dpkg-tmp" ]; then
+    mv "$DEFAULT_DISPLAY_MANAGER_FILE.dpkg-tmp" "$DEFAULT_DISPLAY_MANAGER_FILE"
+  fi
+fi
+
+if [ "$1" = "purge" ] ; then
+        update-rc.d lightdm remove >/dev/null
+        if [ -d /var/lib/lightdm ]; then
+                rm -r /var/lib/lightdm
+        fi
+        if [ -d /var/log/lightdm ]; then
+                rm -r /var/log/lightdm
+        fi
+        if getent passwd lightdm >/dev/null; then
+                if [ -x /usr/sbin/deluser ]; then
+                        deluser --system lightdm ||echo " Could not remove lightdm user, please make sure lightdm is not running before attempting to purge lightdm" 
+                fi
+        fi
+        if getent group lightdm >/dev/null; then
+                if [ -x /usr/sbin/delgroup ]; then
+                        delgroup --system lightdm || echo "Could not remove lightdm group, please make sure lightdm is not running before attempting to purge lightdm"
+                fi
+        fi
+fi
+#DEBHELPER#
+exit 0

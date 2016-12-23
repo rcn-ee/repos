@@ -83,6 +83,7 @@ connmanctl_tether_wifi_on () {
 		systemctl stop dnsmasq || true
 		rm -rf /etc/dnsmasq.d/${ap_interface} || true
 		rm -rf /etc/bb-wl18xx-tether.dnsmasq.enable || true
+		systemctl disable dnsmasq || true
 	fi
 
 	enable_connman_dnsproxy

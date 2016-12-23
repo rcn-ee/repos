@@ -1,0 +1,86 @@
+Source: lightdm
+Section: x11
+Priority: optional
+Maintainer: Debian Xfce Maintainers <pkg-xfce-devel@lists.alioth.debian.org>
+Uploaders: Evgeni Golov <evgeni@debian.org>, 
+ Yves-Alexis Perez <corsac@debian.org>, Emanuele Rocca <ema@debian.org>, 
+ Simon Huggins <huggie@earth.li>          
+Build-Depends: debhelper (>= 9), intltool, pkg-config, libglib2.0-dev, 
+ libdbus-glib-1-dev, libxcb1-dev, libxdmcp-dev, libpam-dev, libxklavier-dev, 
+ libgtk-3-dev, libck-connector-dev, gnome-doc-utils, libqt4-dev,
+ valac, gobject-introspection, dpkg-dev (>= 1.16.1),
+ gtk-doc-tools, itstool, libgcrypt11-dev, libgirepository1.0-dev,
+ dh-systemd (>= 1.14)
+Standards-Version: 3.9.6
+Homepage: https://launchpad.net/lightdm
+Vcs-Svn: svn://anonscm.debian.org/pkg-xfce/goodies/trunk/lightdm
+Vcs-Browser: http://anonscm.debian.org/viewvc/pkg-xfce/goodies/trunk/lightdm
+
+Package: lightdm
+Section: x11
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, 
+ lightdm-gtk-greeter | lightdm-greeter, dbus, libpam-systemd [linux-any] |consolekit, adduser
+Recommends: xserver-xorg
+Suggests: accountsservice, upower
+Provides: x-display-manager
+Description: simple display manager
+ An X display manager that:
+  * Has a lightweight codebase
+  * Is standards compliant (PAM, ConsoleKit, etc)
+  * Has a well defined interface between the server and user interface
+  * Fully themeable
+  * Cross-desktop (greeters can be written in any toolkit)
+
+Package: lightdm-vala
+Section: x11
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: simple display manager (Vala files)
+ This package contains the Vala files for the lightdm display manager
+
+Package: liblightdm-gobject-1-0
+Section: libdevel
+Architecture: any
+Pre-depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: simple display manager (gobject library)
+ This package contains the gobject library for lightdm, used by the GTK+
+ greeter.
+
+Package: liblightdm-qt-3-0
+Section: libdevel
+Architecture: any
+Pre-depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: simple display manager (Qt library)
+ This package contains the Qt library for lightdm.
+
+Package: liblightdm-gobject-dev
+Section: libdevel
+Architecture: any
+Depends: liblightdm-gobject-1-0 (= ${binary:Version}), ${shlibs:Depends},
+ ${misc:Depends}, libdbus-glib-1-dev, libxklavier-dev
+Description: simple display manager (gobject development files)
+ This package contains the development files for lightdm.
+ They can be used to build new greeters applications GTK+ based.
+
+Package: liblightdm-qt-dev
+Section: libdevel
+Architecture: any
+Depends: liblightdm-qt-3-0 (= ${binary:Version}), ${shlibs:Depends}, 
+ ${misc:Depends}
+Description: simple display manager (Qt development files)
+ This package contains the development files for lightdm.
+ They can be used to build new greeters applications Qt based.
+
+Package: gir1.2-lightdm-1
+Section: libs
+Architecture: any
+Depends: ${misc:Depends},
+         liblightdm-gobject-1-0 (= ${binary:Version})
+Description: Typelib file for liblightdm-1
+ liblightdm provides a library for building LightDM greeters and applications.
+ .
+ This package can be used by other packages using the GIRepository format to
+ generate dynamic bindings for liblightdm.
