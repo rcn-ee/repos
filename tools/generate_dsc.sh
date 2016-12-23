@@ -139,7 +139,7 @@ run () {
 		cp -rv ${DIR}/common/* ./debian/common/
 	fi
 
-	debuild -us -uc -S
+	debuild -us -uc -S -d
 
 	cd ${DIR}/
 }
