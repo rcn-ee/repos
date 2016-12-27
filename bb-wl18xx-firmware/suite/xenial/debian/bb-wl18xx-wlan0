@@ -81,10 +81,15 @@ set_wlan_0_mac () {
 
 			echo "Writing mac address ${wlan_0_mac} to file ${firmware}"
 
-			echo "updating: /boot/initrd.img"
-			update-initramfs -u || true
+			if [ -f /boot/initrd.img-`uname -r` ] ; then
+				echo "updating: /boot/initrd.img-`uname -r`"
+				update-initramfs -u -k `uname -r` || true
+			else
+				echo "creating: /boot/initrd.img-`uname -r`"
+				update-initramfs -c -k `uname -r` || true
+			fi
 			sync
-			echo "/boot/initrd.img: update complete"
+			echo "/boot/initrd.img-`uname -r`: write complete"
 			[ -e /proc/$CYLON_PID ]  && kill $CYLON_PID
 			if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
 				echo heartbeat > /sys/class/leds/beaglebone\:green\:usr0/trigger
