@@ -16,6 +16,6 @@ dl_path=""
 debian_version="${package_version}-0"
 debian_patch=""
 debian_diff=""
-local_patch="rcnee1"
+local_patch="rcnee2"
 
 stretch_version="~bpo90+20161227+1"
