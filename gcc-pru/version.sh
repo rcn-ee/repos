@@ -2,8 +2,8 @@
 
 package_name="gcc-pru"
 debian_pkg_name="${package_name}"
-gnupru_release="2016.07-beta-rc1.1"
-package_version="7.0.0.20160801"
+gnupru_release="2016.12-beta-rc2"
+package_version="7.0.0.20161219"
 package_source=""
 src_dir=""
 
@@ -16,4 +16,4 @@ debian_version="${package_version}-0rcnee0"
 debian_untar=""
 debian_patch=""
 
-jessie_version="~bpo80+20160803+1"
+jessie_version="~bpo80+20161231+1"
