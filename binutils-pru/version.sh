@@ -2,8 +2,8 @@
 
 package_name="binutils-pru"
 debian_pkg_name="${package_name}"
-gnupru_release="2016.12-beta-rc2"
-package_version="2.28.51.20161231"
+gnupru_release="2016.12-beta-rc2.1"
+package_version="2.28.51.20170102"
 package_source=""
 src_dir=""
 
