@@ -5,10 +5,24 @@
 
 set -e
 
+
+# only remove state dir if purge
+# only remove the link if it points to /run/connman/resolv.conf
 case "$1" in
-    purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+    purge)
         [ -d /var/lib/connman ] && rm -rf /var/lib/connman
-        [ -L /etc/resolv.conf ] && rm -f /etc/resolv.conf
+        if [ "$(readlink /etc/resolv.conf | grep connman)" ]; then
+            rm -f /etc/resolv.conf
+        fi
+    ;;
+
+    remove)
+        if [ "$(readlink /etc/resolv.conf | grep connman)" ]; then
+            rm -f /etc/resolv.conf
+        fi
+    ;;
+
+    upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
     ;;
 
     *)
