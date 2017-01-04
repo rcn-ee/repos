@@ -154,7 +154,6 @@ start_tether () {
 board=$(cat /proc/device-tree/model | sed "s/ /_/g" | tr -d '\000')
 case "${board}" in
 TI_AM335x_BeagleBone_Green_Wireless)
-
 	eeprom="/sys/bus/i2c/devices/0-0050/eeprom"
 	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
 	set_wlan_0_mac_from_eeprom
@@ -165,6 +164,11 @@ TI_AM335x_BeagleBone_Green_Wireless)
 	start_tether
 	;;
 TI_AM335x_BeagleBone_Black_Wireless)
+	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
+	set_wlan_0_mac_from_cpsw_0
+	start_tether
+	;;
+TI_AM335x_BeagleBone_Black_Wireless_RoboticsCape)
 	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
 	set_wlan_0_mac_from_cpsw_0
 	start_tether

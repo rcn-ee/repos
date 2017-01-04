@@ -407,6 +407,18 @@ TI_AM335x_BeagleBone_Black_Wireless)
 		touch /tmp/wifi.up
 	fi
 	;;
+TI_AM335x_BeagleBone_Black_Wireless_RoboticsCape)
+	wait_for_ssh
+	wait_for_mac
+	use_mac="${cpsw_3_mac}"
+	wait_for_wlan
+	if [ ! -f /lib/systemd/system/wifidog-gateway.service ] ; then
+		default
+	else
+		just_softap
+		touch /tmp/wifi.up
+	fi
+	;;
 TI_AM335x_BeagleBone_Blue)
 	wait_for_ssh
 	wait_for_mac
