@@ -18,5 +18,4 @@ debian_patch=""
 debian_diff=""
 
 jessie_version="~bpo80+20170104+1"
-stretch_version="~bpo90+20170104+1"
 xenial_version="~bpo1604+20170104+1"
