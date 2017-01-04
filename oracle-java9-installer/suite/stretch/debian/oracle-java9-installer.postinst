@@ -16,10 +16,10 @@ VER='0.6alpha'
 
 case $(dpkg --print-architecture) in
 'i386'|'i586'|'i686') arch=i386; dld=x86;
-  SHA256SUM_TGZ="7d6ae2a70e76b5776aef19c8a4da7788c4de53501c19fc01a8d1e20bc7e8695d" #must be modified for each release
+  SHA256SUM_TGZ="17eb751640c2538fb205155a67f52e73502bb6d492727e0fa61dde7b45873c50" #must be modified for each release
   ;; 
 'amd64'  ) arch=amd64; dld=x64;
-  SHA256SUM_TGZ="7576900ee10a6f71cd8a8d2315e7263f73886911762b56d96dea7a581084aa9f" #must be modified for each release 
+  SHA256SUM_TGZ="2e2da90e32f6f5ee8511f32dd231d1533ea722175a6fbca9ec92da6010991f84" #must be modified for each release 
   ;; 
  arm*      )
   arch=arm
@@ -35,12 +35,12 @@ case $(dpkg --print-architecture) in
 			else
 				# Hardfloat
 				dld='arm32-vfp-hflt'
-				SHA256SUM_TGZ="9df9f6bb74f85e1d32019ca7dfa4257b3a110ae41f67a6433293f995bb0f1f60" #must be modified for each release
+				SHA256SUM_TGZ="363d0ece2d6883d2d814012ed8cc6782ccd02cc42b5422c30dbd7eebf2d848cb" #must be modified for each release
 			fi
 		fi
 	elif [ `uname -m` = "armv8l" ] || [ `uname -m` = "arm64" ] || [ `uname -m` = "aarch64" ]; then
 				dld='arm64-vfp-hflt'
-				SHA256SUM_TGZ="7dd85b16ba1768baabb1bc1a5a8fdde3506e6a58f15d2ce6058c1b515b8a206c" #must be modified for each release
+				SHA256SUM_TGZ="e9f1e2c64bee84bc197a4ed9108556e2f71951f0635f6765f56876582865b67c" #must be modified for each release
   else
 		echo "Oracle JDK9 only supports ARM v6/v7 hardfloat and ARM64."
 		arch=''
@@ -56,24 +56,24 @@ esac
 
 if [ ! $arch = "arm" ]; then
 	JAVA_VERSION_MAJOR=9 #
-	JAVA_VERSION_MINOR=112 #must be modified for each release
+	JAVA_VERSION_MINOR=149 #must be modified for each release
 	JAVA_VERSION_DATE="04_nov_2015" #no longer needed with b95
 	J_DIR=jdk-9 #must be modified for each release
 	FILENAME=jdk-${JAVA_VERSION_MAJOR}-ea+${JAVA_VERSION_MINOR}_linux-${dld}_bin.tar.gz # dk-9-ea+109_linux-x86_bin.tar.gz
 	PARTNER_URL=http://www.java.net/download/java/jdk${JAVA_VERSION_MAJOR}/archive/${JAVA_VERSION_MINOR}/binaries/$FILENAME
 else
 	JAVA_VERSION_MAJOR=9 #
-	JAVA_VERSION_MINOR=112 #must be modified for each release
+	JAVA_VERSION_MINOR=149 #must be modified for each release
 	JAVA_VERSION_DATE="04_nov_2015" #no longer needed with b95
 	J_DIR=jdk-9 #must be modified for each release
 	FILENAME=jdk-${JAVA_VERSION_MAJOR}-ea+${JAVA_VERSION_MINOR}_linux-${dld}_bin.tar.gz # jdk-9-ea+109_linux-arm64-vfp-hflt_bin.tar.gz
 	PARTNER_URL=http://www.java.net/download/java/jdk${JAVA_VERSION_MAJOR}/archive/${JAVA_VERSION_MINOR}/binaries/$FILENAME
 fi
 
-for JAVA_VERSION_OLD1 in `seq 48 111`; do #must be modified for each release
+for JAVA_VERSION_OLD1 in `seq 48 148`; do #must be modified for each release
 	  FILENAMES_OLD1="jdk-${JAVA_VERSION_MAJOR}-ea-bin-b${JAVA_VERSION_OLD1}-linux*.tar.gz $FILENAMES_OLD1"
 done
-for JAVA_VERSION_OLD2 in `seq 48 111`; do #must be modified for each release
+for JAVA_VERSION_OLD2 in `seq 48 148`; do #must be modified for each release
 	  FILENAMES_OLD2="jdk-${JAVA_VERSION_MAJOR}-ea+${JAVA_VERSION_OLD2}_linux*.tar.gz $FILENAMES_OLD2"
 done
 
@@ -239,6 +239,7 @@ ls $J_INSTALL_DIR/man/man1/*.1 >/dev/null 2>&1 && \
 
 LATEST=1
 LATEST=$((`LANG=C update-alternatives --display java | grep ^/ | sed -e 's/.* //g' | sort -n | tail -1`+1))
+PRIORITY=1091
 
 #create .java-9-oracle.jinfo file header:
 if [ -e /usr/lib/jvm/.java-9-oracle.jinfo ]; then
@@ -246,7 +247,7 @@ if [ -e /usr/lib/jvm/.java-9-oracle.jinfo ]; then
 fi
 echo "name=java-9-oracle
 alias=java-9-oracle
-priority=$LATEST
+priority=$PRIORITY
 section=non-free
 " > /usr/lib/jvm/.java-9-oracle.jinfo
 
@@ -257,16 +258,16 @@ for f in $J_INSTALL_DIR/bin/*; do
     if [ ! -f "/usr/bin/$name" -o -L "/usr/bin/$name" ]; then  #some files, like jvisualvm might not be links
         if [ -f "$J_INSTALL_DIR/man/man1/$name.1.gz" ]; then
 					if [ ! $arch = "arm" ]; then
-            update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/bin/$name $LATEST --slave /usr/share/man/man1/$name.1.gz $name.1.gz $J_INSTALL_DIR/man/man1/$name.1.gz
+            update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/bin/$name $PRIORITY --slave /usr/share/man/man1/$name.1.gz $name.1.gz $J_INSTALL_DIR/man/man1/$name.1.gz
             echo "jdk $name $J_INSTALL_DIR/bin/$name" >> /usr/lib/jvm/.java-9-oracle.jinfo
 					else
 						# There's no javaws, jvisualvm or jmc on arm
-						[ ! $name = "javaws" ] && [ ! $name = "jvisualvm" ] && [ ! $name = "jmc" ] && update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/bin/$name $LATEST --slave /usr/share/man/man1/$name.1.gz $name.1.gz $J_INSTALL_DIR/man/man1/$name.1.gz
+						[ ! $name = "javaws" ] && [ ! $name = "jvisualvm" ] && [ ! $name = "jmc" ] && update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/bin/$name $PRIORITY --slave /usr/share/man/man1/$name.1.gz $name.1.gz $J_INSTALL_DIR/man/man1/$name.1.gz
 						[ ! $name = "javaws" ] && [ ! $name = "jvisualvm" ] && [ ! $name = "jmc" ] && echo "jdk $name $J_INSTALL_DIR/bin/$name" >> /usr/lib/jvm/.java-9-oracle.jinfo
 					fi
          else #no man pages available
             # [ ! $name = "javaws.real" ] = skip javaws.real     
-            [ ! $name = "javaws.real" ] && update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/bin/$name $LATEST
+            [ ! $name = "javaws.real" ] && update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/bin/$name $PRIORITY
             [ ! $name = "javaws.real" ] && echo "jdk $name $J_INSTALL_DIR/bin/$name" >> /usr/lib/jvm/.java-9-oracle.jinfo
          fi
     fi
@@ -274,7 +275,7 @@ done
 
 
 #link JDK not in /bin
-[ -f $J_INSTALL_DIR/lib/jexec ]    && update-alternatives --install /usr/bin/jexec    jexec    $J_INSTALL_DIR/lib/jexec    $LATEST --slave /usr/share/binfmts/jar jexec-binfmt $J_INSTALL_DIR/lib/jar.binfmt && echo "jdk jexec $J_INSTALL_DIR/lib/jexec" >> /usr/lib/jvm/.java-9-oracle.jinfo
+[ -f $J_INSTALL_DIR/lib/jexec ]    && update-alternatives --install /usr/bin/jexec    jexec    $J_INSTALL_DIR/lib/jexec    $PRIORITY --slave /usr/share/binfmts/jar jexec-binfmt $J_INSTALL_DIR/lib/jar.binfmt && echo "jdk jexec $J_INSTALL_DIR/lib/jexec" >> /usr/lib/jvm/.java-9-oracle.jinfo
 
 #This will issue ignorable warnings for alternatives that are not part of a group
 #Link JDK files with/without man pages
@@ -288,11 +289,11 @@ if [ -d "$J_INSTALL_DIR/man/man1" ];then
             fi
           		if [ ! -e $J_INSTALL_DIR/jre/bin/$name ]; then #don't link already linked JRE files
 								if [ ! $arch = "arm" ]; then
-              		update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/bin/$name $LATEST --slave /usr/share/man/man1/$name.1.gz $name.1.gz $J_INSTALL_DIR/man/man1/$name.1.gz
+              		update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/bin/$name $PRIORITY --slave /usr/share/man/man1/$name.1.gz $name.1.gz $J_INSTALL_DIR/man/man1/$name.1.gz
               		echo "jdk $name $J_INSTALL_DIR/bin/$name" >> /usr/lib/jvm/.java-9-oracle.jinfo
 								else
 									# There's no javaws, jvisualvm or jmc on arm
-									[ ! $name = "javaws" ] && [ ! $name = "jvisualvm" ] && [ ! $name = "jmc" ] && update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/bin/$name $LATEST --slave /usr/share/man/man1/$name.1.gz $name.1.gz $J_INSTALL_DIR/man/man1/$name.1.gz
+									[ ! $name = "javaws" ] && [ ! $name = "jvisualvm" ] && [ ! $name = "jmc" ] && update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/bin/$name $PRIORITY --slave /usr/share/man/man1/$name.1.gz $name.1.gz $J_INSTALL_DIR/man/man1/$name.1.gz
 									[ ! $name = "javaws" ] && [ ! $name = "jvisualvm" ] && [ ! $name = "jmc" ] && echo "jdk $name $J_INSTALL_DIR/bin/$name" >> /usr/lib/jvm/.java-9-oracle.jinfo
 								fi
           		fi
@@ -304,7 +305,7 @@ else  #no man pages available
         name=`basename $f`;
         if [ ! -f "/usr/bin/$name" -o -L "/usr/bin/$name" ]; then  #some files, like jvisualvm might not be links
             if [ ! -e $J_INSTALL_DIR/jre/bin/$name ]; then #don't link already linked JRE files
-                update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/bin/$name $LATEST
+                update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/bin/$name $PRIORITY
                 echo "jdk $name $J_INSTALL_DIR/bin/$name" >> /usr/lib/jvm/.java-9-oracle.jinfo
             fi
         fi
@@ -318,11 +319,64 @@ echo "NoDisplay=true" >> /usr/share/applications/JB-jvisualvm-jdk9.desktop
 fi
 
 # Use cacerts form ca-certificates-java if it's installed:
-if [ -e /etc/ssl/certs/java/cacerts ]; then
+if [ -e /etc/ssl/certs/java/cacerts ] && [ -e /usr/lib/jvm/java-9-oracle/lib/security/cacerts ]; then
   cd /usr/lib/jvm/java-9-oracle/lib/security
   mv cacerts cacerts.original
   ln -s /etc/ssl/certs/java/cacerts .
 fi
+
+# Place all config files in /etc so they are not overwritten on upgrade
+mkdir -p /etc/java-9-oracle/conf/security
+mkdir -p /etc/java-9-oracle/conf/management
+
+# A. Default /usr/lib/jvm/java-9-oracle/conf folder
+for configfile in logging.properties net.properties sound.properties
+do
+	if [ ! -e /etc/java-9-oracle/conf/"$configfile" ] && [ -e /usr/lib/jvm/java-9-oracle/conf/"$configfile" ]; then
+		mv /usr/lib/jvm/java-9-oracle/conf/"$configfile" /etc/java-9-oracle/conf/
+	else
+		rm -f /usr/lib/jvm/java-9-oracle/conf/"$configfile"
+	fi
+done
+for configfile in logging.properties net.properties sound.properties
+do
+	if [ ! -e /usr/lib/jvm/java-9-oracle/conf/"$configfile" ] && [ -e /etc/java-9-oracle/conf/"$configfile" ]; then
+		ln -s /etc/java-9-oracle/conf/"$configfile" /usr/lib/jvm/java-9-oracle/conf/
+	fi
+done
+
+# B. /usr/lib/jvm/java-9-oracle/conf/management folder (use snmp.acl and jmxremote.password instead of the .template
+# files, since those are just placeholders)
+for configfile in jmxremote.access jmxremote.password management.properties snmp.acl
+do
+	if [ ! -e /etc/java-9-oracle/conf/management/"$configfile" ] && [ -e /usr/lib/jvm/java-9-oracle/conf/management/"$configfile" ]; then
+		mv /usr/lib/jvm/java-9-oracle/conf/management/"$configfile" /etc/java-9-oracle/conf/management/
+	else
+		rm -f /usr/lib/jvm/java-9-oracle/conf/management/"$configfile"
+	fi
+done
+for configfile in jmxremote.access jmxremote.password management.properties snmp.acl
+do
+	if [ ! -e /usr/lib/jvm/java-9-oracle/conf/management/"$configfile" ] && [ -e /etc/java-9-oracle/conf/management/"$configfile" ]; then
+		ln -s /etc/java-9-oracle/conf/management/"$configfile" /usr/lib/jvm/java-9-oracle/conf/management/
+	fi
+done
+
+# B. /usr/lib/jvm/java-9-oracle/conf/security folder
+for configfile in java.policy java.security javaws.policy
+do
+	if [ ! -e /etc/java-9-oracle/conf/security/"$configfile" ] && [ -e /usr/lib/jvm/java-9-oracle/conf/security/"$configfile" ]; then
+		mv /usr/lib/jvm/java-9-oracle/conf/security/"$configfile" /etc/java-9-oracle/conf/security/
+	else
+		rm -f /usr/lib/jvm/java-9-oracle/conf/security/"$configfile"
+	fi
+done
+for configfile in java.policy java.security javaws.policy
+do
+	if [ ! -e /usr/lib/jvm/java-9-oracle/conf/security/"$configfile" ] && [ -e /etc/java-9-oracle/conf/security/"$configfile" ]; then
+		ln -s /etc/java-9-oracle/conf/security/"$configfile" /usr/lib/jvm/java-9-oracle/conf/security/
+	fi
+done
 
 # register binfmt; ignore errors, the alternative may already be
 # registered by another JRE.
@@ -330,14 +384,18 @@ if which update-binfmts >/dev/null && [ -r /usr/share/binfmts/jar ]; then
     update-binfmts --package oracle-java9 --import jar || true
 fi
 
-echo "Oracle JDK 9 installed"
-
 # Install Firefox (and compatible) plugin. $arch will be empty for unknown platform
 # No plugin for arm architecture yet
 [ -f $J_INSTALL_DIR/lib/$arch/libnpjp2.so ] && \
-	update-alternatives --install /usr/lib/mozilla/plugins/libjavaplugin.so mozilla-javaplugin.so $J_INSTALL_DIR/lib/$arch/libnpjp2.so $LATEST && \
+	update-alternatives --install /usr/lib/mozilla/plugins/libjavaplugin.so mozilla-javaplugin.so $J_INSTALL_DIR/lib/$arch/libnpjp2.so $PRIORITY && \
 	echo "plugin mozilla-javaplugin.so $J_INSTALL_DIR/lib/$arch/libnpjp2.so" >> /usr/lib/jvm/.java-9-oracle.jinfo && \
 echo "Oracle Java 9 browser plugin installed"
+
+echo "Oracle JDK 9 installed"
+echo ""
+echo "#####Important########"
+echo "To set Oracle JDK9 as default, install the \"oracle-java9-set-default\" package."
+echo "E.g.: sudo apt install oracle-java9-set-default."
 
 #DEBHELPER#
 

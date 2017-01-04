@@ -3,11 +3,18 @@
 set -e
 
 case "$1" in
-  purge|remove|abort-install)
+  remove|abort-install)
     rm -rf "/usr/lib/jvm/java-9-oracle"
     rm -rf "/var/cache/oracle-jdk9-installer"
     rm -rf "/usr/lib/oracle-jdk9-installer-unpackdir"
     rm -rf "/usr/lib/jvm/.java-9-oracle.jinfo"
+    ;;
+	purge)
+    rm -rf "/usr/lib/jvm/java-9-oracle"
+    rm -rf "/var/cache/oracle-jdk9-installer"
+    rm -rf "/usr/lib/oracle-jdk9-installer-unpackdir"
+    rm -rf "/usr/lib/jvm/.java-9-oracle.jinfo"
+		rm -rf "/etc/java-9-oracle"
     ;;
 esac
 
