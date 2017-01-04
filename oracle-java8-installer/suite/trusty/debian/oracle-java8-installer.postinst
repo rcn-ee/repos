@@ -16,10 +16,10 @@ VER='0.6alpha'
 
 case $(dpkg --print-architecture) in
 'i386'|'i586'|'i686') arch=i386; dld=i586;
-  SHA256SUM_TGZ="f2889b778538fe3d20b2d37d0de3c3204de86126aadb75c1bb38d11255b41e92" #must be modified for each release
+  SHA256SUM_TGZ="9a8e8fcf7b6fbe53d6312195be87ce00f3beaab9dfbaa020b96e305174f39e1f" #must be modified for each release
   ;; 
 'amd64'  ) arch=amd64; dld=x64;
-  SHA256SUM_TGZ="a47dc0962a57b27a0cc00b9f11a53dc3add40c98633ba49a2419b845e4dedf43" #must be modified for each release 
+  SHA256SUM_TGZ="187eda2235f812ddb35c352b5f9aa6c5b184d611c2c9d0393afb8031d8198974" #must be modified for each release 
   ;; 
 arm*      )
   arch=arm
@@ -34,12 +34,12 @@ arm*      )
 			else
 				# Hardfloat
 				dld='arm32-vfp-hflt'
-				SHA256SUM_TGZ="c3af7a080cd74f7350680a020749b8161f78f66d1f16cda91bf758c3e58b524b" #must be modified for each release
+				SHA256SUM_TGZ="add3f9685161337fd31e433ea9b19231d6b40561dc40826057930fa2d76d7925" #must be modified for each release
 			fi
 		fi
 	elif [ `uname -m` = "armv8l" ] || [ `uname -m` = "arm64" ] || [ `uname -m` = "aarch64" ]; then
 		dld='arm64-vfp-hflt'
-		SHA256SUM_TGZ="d194595d0c6d2f0b6fad36da489e26a65e3825af85c051ce3c84d5a1f5a96b31" #must be modified for each release
+		SHA256SUM_TGZ="8fd6be278b1d312c53897de66e9bd2e6eb5ce0d5b62da8bbd9b1333dc190ed15" #must be modified for each release
 	else
 		echo "Oracle JDK 8 only supports ARM v6/v7/v8 hardfloat."
 		arch=''
@@ -54,19 +54,19 @@ esac
 ########Variables
 
 if [ ! $arch = "arm" ]; then
-	JAVA_VERSION=8u77 #must be modified for each release jdk-8u5-linux-x64.tar.gz
-	J_DIR=jdk1.8.0_77 #must be modified for each release
+	JAVA_VERSION=8u111 #must be modified for each release jdk-8u5-linux-x64.tar.gz
+	J_DIR=jdk1.8.0_111 #must be modified for each release
 	FILENAME=jdk-${JAVA_VERSION}-linux-${dld}.tar.gz
-	PARTNER_URL=http://download.oracle.com/otn-pub/java/jdk/8u77-b03/$FILENAME #must be modified for each release
-	for JAVA_VERSION_OLD2 in `seq 1 76`; do #must be modified for each release
+	PARTNER_URL=http://download.oracle.com/otn-pub/java/jdk/8u111-b14/$FILENAME #must be modified for each release
+	for JAVA_VERSION_OLD2 in `seq 1 110`; do #must be modified for each release
 	   FILENAMES_OLD2="jdk-8u${JAVA_VERSION_OLD2}-linux-${dld}*.tar.gz $FILENAMES_OLD2"
 	done
 else
-	JAVA_VERSION=8u77 #must be modified for each release jdk-8-linux-arm-vfp-hflt.tar.gz
-	J_DIR=jdk1.8.0_77 #must be modified for each release
+	JAVA_VERSION=8u111 #must be modified for each release jdk-8-linux-arm-vfp-hflt.tar.gz
+	J_DIR=jdk1.8.0_111 #must be modified for each release
 	FILENAME=jdk-${JAVA_VERSION}-linux-${dld}.tar.gz
-	PARTNER_URL=http://download.oracle.com/otn-pub/java/jdk/8u77-b03/$FILENAME #must be modified for each release
-	for JAVA_VERSION_OLD1 in `seq 1 76`; do #must be modified for each release
+	PARTNER_URL=http://download.oracle.com/otn-pub/java/jdk/8u111-b14/$FILENAME #must be modified for each release
+	for JAVA_VERSION_OLD1 in `seq 1 110`; do #must be modified for each release
 		FILENAMES_OLD1="jdk-8u${JAVA_VERSION_OLD1}-linux-${dld}*.tar.gz $FILENAMES_OLD1 jdk-8-*.tar.gz"
 	done
 fi
@@ -239,6 +239,7 @@ ls $J_INSTALL_DIR/man/man1/*.1 >/dev/null 2>&1 && \
 
 LATEST=1
 LATEST=$((`LANG=C update-alternatives --display java | grep ^/ | sed -e 's/.* //g' | sort -n | tail -1`+1))
+PRIORITY=1081
 
 #create .java-8-oracle.jinfo file header:
 if [ -e /usr/lib/jvm/.java-8-oracle.jinfo ]; then
@@ -246,7 +247,7 @@ if [ -e /usr/lib/jvm/.java-8-oracle.jinfo ]; then
 fi
 echo "name=java-8-oracle
 alias=java-8-oracle
-priority=$LATEST
+priority=$PRIORITY
 section=non-free
 " > /usr/lib/jvm/.java-8-oracle.jinfo
 
@@ -257,16 +258,16 @@ for f in $J_INSTALL_DIR/jre/bin/*; do
     if [ ! -f "/usr/bin/$name" -o -L "/usr/bin/$name" ]; then  #some files, like jvisualvm might not be links
         if [ -f "$J_INSTALL_DIR/man/man1/$name.1.gz" ]; then
 					if [ ! $arch = "arm" ]; then
-            update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/jre/bin/$name $LATEST --slave /usr/share/man/man1/$name.1.gz $name.1.gz $J_INSTALL_DIR/man/man1/$name.1.gz
+            update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/jre/bin/$name $PRIORITY --slave /usr/share/man/man1/$name.1.gz $name.1.gz $J_INSTALL_DIR/man/man1/$name.1.gz
             echo "jre $name $J_INSTALL_DIR/jre/bin/$name" >> /usr/lib/jvm/.java-8-oracle.jinfo
 					else
 						# There's no javaws, jvisualvm or jmc on arm
-						[ ! $name = "javaws" ] && [ ! $name = "jvisualvm" ] && [ ! $name = "jmc" ] && update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/jre/bin/$name $LATEST --slave /usr/share/man/man1/$name.1.gz $name.1.gz $J_INSTALL_DIR/man/man1/$name.1.gz
+						[ ! $name = "javaws" ] && [ ! $name = "jvisualvm" ] && [ ! $name = "jmc" ] && update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/jre/bin/$name $PRIORITY --slave /usr/share/man/man1/$name.1.gz $name.1.gz $J_INSTALL_DIR/man/man1/$name.1.gz
 						[ ! $name = "javaws" ] && [ ! $name = "jvisualvm" ] && [ ! $name = "jmc" ] && echo "jre $name $J_INSTALL_DIR/jre/bin/$name" >> /usr/lib/jvm/.java-8-oracle.jinfo
 					fi
          else #no man pages available
             # [ ! $name = "javaws.real" ] = skip javaws.real     
-            [ ! $name = "javaws.real" ] && update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/jre/bin/$name $LATEST
+            [ ! $name = "javaws.real" ] && update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/jre/bin/$name $PRIORITY
             [ ! $name = "javaws.real" ] && echo "jre $name $J_INSTALL_DIR/jre/bin/$name" >> /usr/lib/jvm/.java-8-oracle.jinfo
          fi
     fi
@@ -274,7 +275,7 @@ done
 
 
 #link JRE not in jre/bin
-[ -f $J_INSTALL_DIR/jre/lib/jexec ]    && update-alternatives --install /usr/bin/jexec    jexec    $J_INSTALL_DIR/jre/lib/jexec    $LATEST --slave /usr/share/binfmts/jar jexec-binfmt $J_INSTALL_DIR/jre/lib/jar.binfmt && echo "jre jexec $J_INSTALL_DIR/jre/lib/jexec" >> /usr/lib/jvm/.java-8-oracle.jinfo
+[ -f $J_INSTALL_DIR/jre/lib/jexec ]    && update-alternatives --install /usr/bin/jexec    jexec    $J_INSTALL_DIR/jre/lib/jexec    $PRIORITY --slave /usr/share/binfmts/jar jexec-binfmt $J_INSTALL_DIR/jre/lib/jar.binfmt && echo "jre jexec $J_INSTALL_DIR/jre/lib/jexec" >> /usr/lib/jvm/.java-8-oracle.jinfo
 
 #This will issue ignorable warnings for alternatives that are not part of a group
 #Link JDK files with/without man pages
@@ -288,11 +289,11 @@ if [ -d "$J_INSTALL_DIR/man/man1" ];then
             fi
           		if [ ! -e $J_INSTALL_DIR/jre/bin/$name ]; then #don't link already linked JRE files
 								if [ ! $arch = "arm" ]; then
-              		update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/bin/$name $LATEST --slave /usr/share/man/man1/$name.1.gz $name.1.gz $J_INSTALL_DIR/man/man1/$name.1.gz
+              		update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/bin/$name $PRIORITY --slave /usr/share/man/man1/$name.1.gz $name.1.gz $J_INSTALL_DIR/man/man1/$name.1.gz
               		echo "jdk $name $J_INSTALL_DIR/bin/$name" >> /usr/lib/jvm/.java-8-oracle.jinfo
 								else
 									# There's no javaws, jvisualvm or jmc on arm
-									[ ! $name = "javaws" ] && [ ! $name = "jvisualvm" ] && [ ! $name = "jmc" ] && update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/bin/$name $LATEST --slave /usr/share/man/man1/$name.1.gz $name.1.gz $J_INSTALL_DIR/man/man1/$name.1.gz
+									[ ! $name = "javaws" ] && [ ! $name = "jvisualvm" ] && [ ! $name = "jmc" ] && update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/bin/$name $PRIORITY --slave /usr/share/man/man1/$name.1.gz $name.1.gz $J_INSTALL_DIR/man/man1/$name.1.gz
 									[ ! $name = "javaws" ] && [ ! $name = "jvisualvm" ] && [ ! $name = "jmc" ] && echo "jdk $name $J_INSTALL_DIR/bin/$name" >> /usr/lib/jvm/.java-8-oracle.jinfo
 								fi
           		fi
@@ -304,7 +305,7 @@ else  #no man pages available
         name=`basename $f`;
         if [ ! -f "/usr/bin/$name" -o -L "/usr/bin/$name" ]; then  #some files, like jvisualvm might not be links
             if [ ! -e $J_INSTALL_DIR/jre/bin/$name ]; then #don't link already linked JRE files
-                update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/bin/$name $LATEST
+                update-alternatives --install /usr/bin/$name $name $J_INSTALL_DIR/bin/$name $PRIORITY
                 echo "jdk $name $J_INSTALL_DIR/bin/$name" >> /usr/lib/jvm/.java-8-oracle.jinfo
             fi
         fi
@@ -324,20 +325,41 @@ if [ -e /etc/ssl/certs/java/cacerts ]; then
   ln -s /etc/ssl/certs/java/cacerts .
 fi
 
+# Place security config files in /etc so they are not overwritten on upgrade
+mkdir -p /etc/java-8-oracle/security
+for configfile in blacklist blacklisted.certs java.policy java.security javaws.policy trusted.libraries
+do
+	if [ ! -e /etc/java-8-oracle/security/"$configfile" ] && [ -e /usr/lib/jvm/java-8-oracle/jre/lib/security/"$configfile" ]; then
+		mv /usr/lib/jvm/java-8-oracle/jre/lib/security/"$configfile" /etc/java-8-oracle/security/
+	else
+		rm -f /usr/lib/jvm/java-8-oracle/jre/lib/security/"$configfile"
+	fi
+done
+for configfile in blacklist blacklisted.certs java.policy java.security javaws.policy trusted.libraries
+do
+	if [ ! -e /usr/lib/jvm/java-8-oracle/jre/lib/security/"$configfile" ] && [ -e /etc/java-8-oracle/security/"$configfile" ]; then
+		ln -s /etc/java-8-oracle/security/"$configfile" /usr/lib/jvm/java-8-oracle/jre/lib/security/
+	fi
+done
+
 # register binfmt; ignore errors, the alternative may already be
 # registered by another JRE.
 if which update-binfmts >/dev/null && [ -r /usr/share/binfmts/jar ]; then
     update-binfmts --package oracle-java8 --import jar || true
 fi
 
-echo "Oracle JDK 8 installed"
-
 # Install Firefox (and compatible) plugin. $arch will be empty for unknown platform
 # No plugin for arm architecture yet
 [ -f $J_INSTALL_DIR/jre/lib/$arch/libnpjp2.so ] && \
-	update-alternatives --install /usr/lib/mozilla/plugins/libjavaplugin.so mozilla-javaplugin.so $J_INSTALL_DIR/jre/lib/$arch/libnpjp2.so $LATEST && \
+	update-alternatives --install /usr/lib/mozilla/plugins/libjavaplugin.so mozilla-javaplugin.so $J_INSTALL_DIR/jre/lib/$arch/libnpjp2.so $PRIORITY && \
 	echo "plugin mozilla-javaplugin.so $J_INSTALL_DIR/jre/lib/$arch/libnpjp2.so" >> /usr/lib/jvm/.java-8-oracle.jinfo && \
 echo "Oracle JRE 8 browser plugin installed"
+
+echo "Oracle JDK 8 installed"
+echo ""
+echo "#####Important########"
+echo "To set Oracle JDK8 as default, install the \"oracle-java8-set-default\" package."
+echo "E.g.: sudo apt install oracle-java8-set-default."
 
 #DEBHELPER#
 

@@ -3,7 +3,7 @@ Section: non-free/java
 Priority: optional
 Maintainer: Alin Andrei <webupd8@gmail.com>
 Build-Depends: debhelper, lsb-release
-Standards-Version: 3.9.5
+Standards-Version: 3.9.7
 Homepage: http://jdk8.java.net/download.html
 
 Package: oracle-java8-installer
@@ -12,7 +12,7 @@ Architecture: all
 Pre-Depends: wget, binutils, debconf (>= 0.5) | debconf-2.0
 Depends: java-common (>= 0.24), locales, ${misc:Depends}
 Conflicts: j2se-common
-Recommends: gsfonts-x11
+Recommends: gsfonts-x11, oracle-java8-set-default
 Suggests: binfmt-support, visualvm,
           ttf-baekmuk | ttf-unfonts | ttf-unfonts-core, ttf-kochi-gothic | ttf-sazanami-gothic, ttf-kochi-mincho | ttf-sazanami-mincho, ttf-arphic-uming,
           firefox | firefox-2 | iceweasel | mozilla-firefox | iceape-browser | mozilla-browser | epiphany-gecko | epiphany-webkit | epiphany-browser | galeon | midbrowser | moblin-web-browser | xulrunner | xulrunner-1.9 | konqueror | chromium-browser | midori | google-chrome
@@ -48,8 +48,8 @@ Package: oracle-java8-set-default
 Section: non-free/java
 Architecture: all
 Depends: ${misc:Depends}, oracle-java8-installer
-Conflicts: oracle-java6-set-default, oracle-java7-set-default
-Replaces: oracle-java6-set-default, oracle-java7-set-default
+Conflicts: oracle-java6-set-default, oracle-java7-set-default, oracle-java9-set-default
+Replaces: oracle-java6-set-default, oracle-java7-set-default, oracle-java9-set-default
 Description: Set Oracle JDK 8 as default Java
  This package sets Java 8 as default (JAVA_HOME, PATH, etc.)
 
