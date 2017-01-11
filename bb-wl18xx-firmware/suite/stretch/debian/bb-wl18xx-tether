@@ -23,7 +23,6 @@
 ap_interface="SoftAp0"
 log="wl18xx:"
 use_mac=""
-ip_prefix="192.168.8"
 wifi_ssid="BeagleBone"
 wifi_password="BeagleBone"
 
@@ -241,17 +240,17 @@ bringup_softap0_interface () {
 			ip link set dev ${ap_interface} up
 		fi
 
-		if [ ! "x${ip_prefix}" = "x" ] ; then
+		if [ ! "x${USE_WL18XX_IP_PREFIX}" = "x" ] ; then
 			get_ap_interface_ip=$(ip -f inet addr show ${ap_interface} | grep -Po 'inet \K[\d.]+' || true)
 			if [ ! "x${get_ap_interface_ip}" = "x" ] ; then
-				if [ ! "x${get_ap_interface_ip}" = "x${ip_prefix}.1" ] ; then
+				if [ ! "x${get_ap_interface_ip}" = "x${USE_WL18XX_IP_PREFIX}.1" ] ; then
 					echo "${log} [ip addr flush dev ${ap_interface}]"
 					ip addr flush dev ${ap_interface}
 				fi
 			fi
-			if [ ! "x${get_ap_interface_ip}" = "x${ip_prefix}.1" ] ; then
-				echo "${log} [ip addr add ${ip_prefix}.1/24 broadcast ${ip_prefix}.255 dev ${ap_interface}]"
-				ip addr add ${ip_prefix}.1/24 broadcast ${ip_prefix}.255 dev ${ap_interface}
+			if [ ! "x${get_ap_interface_ip}" = "x${USE_WL18XX_IP_PREFIX}.1" ] ; then
+				echo "${log} [ip addr add ${USE_WL18XX_IP_PREFIX}.1/24 broadcast ${USE_WL18XX_IP_PREFIX}.255 dev ${ap_interface}]"
+				ip addr add ${USE_WL18XX_IP_PREFIX}.1/24 broadcast ${USE_WL18XX_IP_PREFIX}.255 dev ${ap_interface}
 			fi
 		fi
 
@@ -283,12 +282,12 @@ start_dnsmasq () {
 		echo "bogus-priv" >> ${wfile}
 		echo "expand-hosts" >> ${wfile}
 		echo "cache-size=2048" >> ${wfile}
-		echo "dhcp-range=${ap_interface},192.168.8.50,192.168.8.150,2h" >> ${wfile}
+		echo "dhcp-range=${ap_interface},${USE_WL18XX_IP_PREFIX}.50,${USE_WL18XX_IP_PREFIX}.150,2h" >> ${wfile}
 		echo "dhcp-range=usb0,192.168.7.1,192.168.7.1,2h" >> ${wfile}
 		echo "listen-address=127.0.0.1" >> ${wfile}
-		echo "listen-address=192.168.8.1" >> ${wfile}
+		echo "listen-address=${USE_WL18XX_IP_PREFIX}.1" >> ${wfile}
 		echo "listen-address=192.168.7.2" >> ${wfile}
-		echo "dhcp-option-force=interface:${ap_interface},option:dns-server,192.168.8.1" >> ${wfile}
+		echo "dhcp-option-force=interface:${ap_interface},option:dns-server,${USE_WL18XX_IP_PREFIX}.1" >> ${wfile}
 		echo "dhcp-option-force=interface:${ap_interface},option:mtu,1500" >> ${wfile}
 		echo "dhcp-option=usb0,3" >> ${wfile}
 		echo "dhcp-option=usb0,6" >> ${wfile}
@@ -347,6 +346,10 @@ default () {
 			. /etc/default/bb-wl18xx
 		fi
 
+		if [ "x${USE_WL18XX_IP_PREFIX}" = "x" ] ; then
+			USE_WL18XX_IP_PREFIX="192.168.8"
+		fi
+
 		create_softap0_interface
 		bringup_softap0_interface
 		disable_connman_dnsproxy
@@ -358,6 +361,16 @@ default () {
 just_softap () {
 	connman_disable_tether
 	if [ ! -d /sys/class/net/tether ] ; then
+
+		# Include defaults if available
+		if [ -f /etc/default/bb-wl18xx ] ; then
+			. /etc/default/bb-wl18xx
+		fi
+
+		if [ "x${USE_WL18XX_IP_PREFIX}" = "x" ] ; then
+			USE_WL18XX_IP_PREFIX="192.168.8"
+		fi
+
 		create_softap0_interface
 		bringup_softap0_interface
 		disable_connman_dnsproxy
