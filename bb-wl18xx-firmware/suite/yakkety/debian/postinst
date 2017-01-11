@@ -65,7 +65,7 @@ else
 	fi
 
 	unset test_new_option
-	test_new_option=$(cat /etc/default/bb-wl18xx | grep USE_HOSTAPD_SSID || true)
+	test_new_option=$(cat /etc/default/bb-wl18xx | grep USE_PERSONAL_SSID || true)
 	if [ "x${test_new_option}" = "x" ] ; then
 		echo "" >> /etc/default/bb-wl18xx
 		echo "# USE_PERSONAL_SSID: set custom ssid (overides BeagleBone/BeagleBone-WXYZ)" >> /etc/default/bb-wl18xx
