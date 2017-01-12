@@ -39,9 +39,7 @@ cleanup_suite () {
 }
 
 run () {
-	if [ "x${builder}" = "xb6-rk3288-firefly-4gb" ] ; then
-		touch /tmp/chroot-BUILDING.lock
-	fi
+	touch /tmp/sbuild-BUILDING.lock
 	out_dir="${localdir}/outgoing/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}/"
 	if [ -f /var/lib/sbuild/${suite}-${deb_arch}.tar.gz ] ; then
 
@@ -65,9 +63,7 @@ run () {
 			cd ../
 		fi
 	fi
-	if [ "x${builder}" = "xb6-rk3288-firefly-4gb" ] ; then
-		rm -f /tmp/chroot-BUILDING.lock || true
-	fi
+	rm -f /tmp/sbuild-BUILDING.lock || true
 }
 
 runner () {
