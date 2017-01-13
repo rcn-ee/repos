@@ -29,8 +29,11 @@ echo_default () {
 	echo "# USE_GENERATED_HOSTAPD: use generated version of /etc/hostapd.conf; set to no so user can modify /etc/hostapd.conf" >> /etc/default/bb-wl18xx
 	echo "USE_GENERATED_HOSTAPD=yes" >> /etc/default/bb-wl18xx
 	echo "" >> /etc/default/bb-wl18xx
-	echo "# USE_PERSONAL_SSID: set custom ssid (overides BeagleBone/BeagleBone-WXYZ)" >> /etc/default/bb-wl18xx
+	echo "# USE_PERSONAL_SSID: set custom ssid (overides BeagleBone)" >> /etc/default/bb-wl18xx
 	echo "#USE_PERSONAL_SSID=" >> /etc/default/bb-wl18xx
+	echo "" >> /etc/default/bb-wl18xx
+	echo "# USE_APPENDED_SSID: appendes mac address after SSID (aka -WXYZ, BeagleBone-WXYZ)" >> /etc/default/bb-wl18xx
+	echo "USE_APPENDED_SSID=yes" >> /etc/default/bb-wl18xx
 	echo "" >> /etc/default/bb-wl18xx
 }
 
@@ -68,8 +71,16 @@ else
 	test_new_option=$(cat /etc/default/bb-wl18xx | grep USE_PERSONAL_SSID || true)
 	if [ "x${test_new_option}" = "x" ] ; then
 		echo "" >> /etc/default/bb-wl18xx
-		echo "# USE_PERSONAL_SSID: set custom ssid (overides BeagleBone/BeagleBone-WXYZ)" >> /etc/default/bb-wl18xx
+		echo "# USE_PERSONAL_SSID: set custom ssid (overides BeagleBone)" >> /etc/default/bb-wl18xx
 		echo "#USE_PERSONAL_SSID=" >> /etc/default/bb-wl18xx
+		echo "" >> /etc/default/bb-wl18xx
+	fi
+
+	unset test_new_option
+	test_new_option=$(cat /etc/default/bb-wl18xx | grep USE_APPENDED_SSID || true)
+	if [ "x${test_new_option}" = "x" ] ; then
+		echo "# USE_APPENDED_SSID: appendes mac address after SSID (aka -WXYZ, BeagleBone-WXYZ)" >> /etc/default/bb-wl18xx
+		echo "USE_APPENDED_SSID=yes" >> /etc/default/bb-wl18xx
 		echo "" >> /etc/default/bb-wl18xx
 	fi
 fi
