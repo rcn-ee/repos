@@ -4,7 +4,7 @@ mirror="http://http.debian.net/debian"
 
 package_name="can-utils"
 debian_pkg_name="${package_name}"
-package_version="0.0+git20160831"
+package_version="0.0+git20161220"
 
 git_repo=""
 git_sha=""
