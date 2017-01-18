@@ -40,6 +40,16 @@ if [ -f /etc/default/bb-wl18xx ] ; then
 	. /etc/default/bb-wl18xx
 fi
 
+#use be set via: rcnee-access-point
+if [ ! -f /etc/connman/main.conf ] ; then
+	echo "[General]" > /etc/connman/main.conf
+	echo "PreferredTechnologies=ethernet,wifi" >> /etc/connman/main.conf
+	echo "SingleConnectedTechnology=false" >> /etc/connman/main.conf
+	echo "AllowHostnameUpdates=false" >> /etc/connman/main.conf
+	echo "PersistentTetheringMode=true" >> /etc/connman/main.conf
+	echo "NetworkInterfaceBlacklist=SoftAp0,usb0" >> /etc/connman/main.conf
+fi
+
 disable_connman_dnsproxy () {
 	if [ -f /lib/systemd/system/connman.service ] ; then
 		#netstat -tapnd
