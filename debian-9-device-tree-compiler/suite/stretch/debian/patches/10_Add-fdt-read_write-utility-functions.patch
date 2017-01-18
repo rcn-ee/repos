@@ -1,0 +1,502 @@
+From: Simon Glass <sjg@chromium.org>
+Date: Thu, 22 Sep 2011 17:11:02 +0000 (-0700)
+Subject: Add fdt read/write utility functions
+X-Git-Url: http://git.jdl.com/gitweb/?p=dtc.git;a=commitdiff_plain;h=36204fdf742cabc074617648a5b2cf62409dc40b
+
+Add fdt read/write utility functions
+
+This adds higher-level libfdt operations for reading/writing an fdt
+blob from/to a file, as well as a function to decode a data type string
+as will be used by fdtget, fdtput.
+
+This also adds a few tests for the simple type argument supported by
+utilfdt_decode_type.
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+Acked-by: David Gibson <david@gibson.dropbear.id.au>
+---
+
+diff --git a/Makefile b/Makefile
+index 380a705..b32409b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -15,7 +15,7 @@ EXTRAVERSION =
+ LOCAL_VERSION =
+ CONFIG_LOCALVERSION =
+ 
+-CPPFLAGS = -I libfdt
++CPPFLAGS = -I libfdt -I .
+ WARNINGS = -Werror -Wall -Wpointer-arith -Wcast-qual -Wnested-externs \
+ 	-Wstrict-prototypes -Wmissing-prototypes -Wredundant-decls
+ CFLAGS = -g -Os -fPIC -Werror $(WARNINGS)
+diff --git a/tests/Makefile.tests b/tests/Makefile.tests
+index e718b63..41695df 100644
+--- a/tests/Makefile.tests
++++ b/tests/Makefile.tests
+@@ -16,7 +16,8 @@ LIB_TESTS_L = get_mem_rsv \
+ 	extra-terminating-null \
+ 	dtbs_equal_ordered \
+ 	dtb_reverse dtbs_equal_unordered \
+-	add_subnode_with_nops path_offset_aliases
++	add_subnode_with_nops path_offset_aliases \
++	utilfdt_test
+ LIB_TESTS = $(LIB_TESTS_L:%=$(TESTS_PREFIX)%)
+ 
+ LIBTREE_TESTS_L = truncated_property
+@@ -42,7 +43,7 @@ TESTS_CLEANFILES = $(TESTS) $(TESTS_CLEANFILES_L:%=$(TESTS_PREFIX)%)
+ .PHONY: tests
+ tests:	$(TESTS) $(TESTS_TREES)
+ 
+-$(LIB_TESTS): %: $(TESTS_PREFIX)testutils.o $(LIBFDT_archive)
++$(LIB_TESTS): %: $(TESTS_PREFIX)testutils.o util.o $(LIBFDT_archive)
+ 
+ $(DL_LIB_TESTS): %: %.o $(TESTS_PREFIX)testutils.o $(LIBFDT_archive)
+ 	@$(VECHO) LD [libdl] $@
+diff --git a/tests/run_tests.sh b/tests/run_tests.sh
+index 1246df1..e2c3046 100755
+--- a/tests/run_tests.sh
++++ b/tests/run_tests.sh
+@@ -391,6 +391,10 @@ dtbs_equal_tests () {
+     cmp_tests test_tree1.dtb $WRONG_TREE1
+ }
+ 
++utilfdt_tests () {
++    run_test utilfdt_test
++}
++
+ while getopts "vt:m" ARG ; do
+     case $ARG in
+ 	"v")
+@@ -406,7 +410,7 @@ while getopts "vt:m" ARG ; do
+ done
+ 
+ if [ -z "$TESTSETS" ]; then
+-    TESTSETS="libfdt dtc dtbs_equal"
++    TESTSETS="libfdt utilfdt dtc dtbs_equal"
+ fi
+ 
+ # Make sure we don't have stale blobs lying around
+@@ -417,6 +421,9 @@ for set in $TESTSETS; do
+ 	"libfdt")
+ 	    libfdt_tests
+ 	    ;;
++	"utilfdt")
++	    utilfdt_tests
++	    ;;
+ 	"dtc")
+ 	    dtc_tests
+ 	    ;;
+diff --git a/tests/tests.h b/tests/tests.h
+index fcb2b2a..a51556d 100644
+--- a/tests/tests.h
++++ b/tests/tests.h
+@@ -93,22 +93,6 @@ void cleanup(void);
+ 		exit(RC_BUG);				\
+ 	} while (0)
+ 
+-static inline void *xmalloc(size_t size)
+-{
+-	void *p = malloc(size);
+-	if (! p)
+-		FAIL("malloc() failure");
+-	return p;
+-}
+-
+-static inline void *xrealloc(void *p, size_t size)
+-{
+-	p = realloc(p, size);
+-	if (! p)
+-		FAIL("realloc() failure");
+-	return p;
+-}
+-
+ void check_mem_rsv(void *fdt, int n, uint64_t addr, uint64_t size);
+ 
+ void check_property(void *fdt, int nodeoffset, const char *name,
+@@ -135,4 +119,6 @@ void *load_blob_arg(int argc, char *argv[]);
+ void save_blob(const char *filename, void *blob);
+ void *open_blob_rw(void *blob);
+ 
++#include "util.h"
++
+ #endif /* _TESTS_H */
+diff --git a/tests/utilfdt_test.c b/tests/utilfdt_test.c
+new file mode 100644
+index 0000000..36b4aa5
+--- /dev/null
++++ b/tests/utilfdt_test.c
+@@ -0,0 +1,128 @@
++/*
++ * Copyright 2011 The Chromium Authors, All Rights Reserved.
++ *
++ * utilfdt_test - Tests for utilfdt library
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public License
++ * as published by the Free Software Foundation; either version 2.1 of
++ * the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++#include <assert.h>
++#include <stdlib.h>
++#include <stdio.h>
++#include <string.h>
++#include <stdint.h>
++#include <stdarg.h>
++
++#include <fdt.h>
++#include <libfdt.h>
++#include <util.h>
++
++#include "tests.h"
++#include "testdata.h"
++
++static void check(const char *fmt, int expect_type, int expect_size)
++{
++	int type;
++	int size;
++
++	if (utilfdt_decode_type(fmt, &type, &size))
++		FAIL("format '%s': valid format string returned failure", fmt);
++	if (expect_type != type)
++		FAIL("format '%s': expected type='%c', got type='%c'", fmt,
++		     expect_type, type);
++	if (expect_size != size)
++		FAIL("format '%s': expected size=%d, got size=%d", fmt,
++		     expect_size, size);
++}
++
++static void checkfail(const char *fmt)
++{
++	int type;
++	int size;
++
++	if (!utilfdt_decode_type(fmt, &type, &size))
++		FAIL("format '%s': invalid format string returned success",
++		     fmt);
++}
++
++/**
++ * Add the given modifier to each of the valid sizes, and check that we get
++ * correct values.
++ *
++ * \param modifier	Modifer string to use as a prefix
++ * \param expected_size	The size (in bytes) that we expect (ignored for
++ *			strings)
++ */
++static void check_sizes(char *modifier, int expected_size)
++{
++	char fmt[10], *ptr;
++
++	/* set up a string with a hole in it for the format character */
++	if (strlen(modifier) + 2 >= sizeof(fmt))
++		FAIL("modifier string '%s' too long", modifier);
++	strcpy(fmt, modifier);
++	ptr = fmt + strlen(fmt);
++	ptr[1] = '\0';
++
++	/* now try each format character in turn */
++	*ptr = 'i';
++	check(fmt, 'i', expected_size);
++
++	*ptr = 'u';
++	check(fmt, 'u', expected_size);
++
++	*ptr = 'x';
++	check(fmt, 'x', expected_size);
++
++	*ptr = 's';
++	check(fmt, 's', -1);
++}
++
++static void test_utilfdt_decode_type(void)
++{
++	char fmt[10];
++	int ch;
++
++	/* check all the valid modifiers and sizes */
++	check_sizes("", -1);
++	check_sizes("b", 1);
++	check_sizes("hh", 1);
++	check_sizes("h", 2);
++	check_sizes("l", 4);
++
++	/* try every other character */
++	checkfail("");
++	for (ch = ' '; ch < 127; ch++) {
++		if (!strchr("iuxs", ch)) {
++			*fmt = ch;
++			fmt[1] = '\0';
++			checkfail(fmt);
++		}
++	}
++
++	/* try a few modifiers at the end */
++	checkfail("sx");
++	checkfail("ihh");
++	checkfail("xb");
++
++	/* and one for the doomsday archives */
++	checkfail("He has all the virtues I dislike and none of the vices "
++			"I admire.");
++}
++
++int main(int argc, char *argv[])
++{
++	test_utilfdt_decode_type();
++	PASS();
++}
+diff --git a/util.c b/util.c
+index 6d07292..d82d41f 100644
+--- a/util.c
++++ b/util.c
+@@ -1,4 +1,5 @@
+ /*
++ * Copyright 2011 The Chromium Authors, All Rights Reserved.
+  * Copyright 2008 Jon Loeliger, Freescale Semiconductor, Inc.
+  *
+  * util_is_printable_string contributed by
+@@ -27,6 +28,11 @@
+ #include <string.h>
+ #include <assert.h>
+ 
++#include <errno.h>
++#include <fcntl.h>
++#include <unistd.h>
++
++#include "libfdt.h"
+ #include "util.h"
+ 
+ char *xstrdup(const char *s)
+@@ -184,3 +190,139 @@ char get_escape_char(const char *s, int *i)
+ 	(*i) = j;
+ 	return val;
+ }
++
++int utilfdt_read_err(const char *filename, char **buffp)
++{
++	int fd = 0;	/* assume stdin */
++	char *buf = NULL;
++	off_t bufsize = 1024, offset = 0;
++	int ret = 0;
++
++	*buffp = NULL;
++	if (strcmp(filename, "-") != 0) {
++		fd = open(filename, O_RDONLY);
++		if (fd < 0)
++			return errno;
++	}
++
++	/* Loop until we have read everything */
++	buf = malloc(bufsize);
++	do {
++		/* Expand the buffer to hold the next chunk */
++		if (offset == bufsize) {
++			bufsize *= 2;
++			buf = realloc(buf, bufsize);
++			if (!buf) {
++				ret = ENOMEM;
++				break;
++			}
++		}
++
++		ret = read(fd, &buf[offset], bufsize - offset);
++		if (ret < 0) {
++			ret = errno;
++			break;
++		}
++		offset += ret;
++	} while (ret != 0);
++
++	/* Clean up, including closing stdin; return errno on error */
++	close(fd);
++	if (ret)
++		free(buf);
++	else
++		*buffp = buf;
++	return ret;
++}
++
++char *utilfdt_read(const char *filename)
++{
++	char *buff;
++	int ret = utilfdt_read_err(filename, &buff);
++
++	if (ret) {
++		fprintf(stderr, "Couldn't open blob from '%s': %s\n", filename,
++			strerror(ret));
++		return NULL;
++	}
++	/* Successful read */
++	return buff;
++}
++
++int utilfdt_write_err(const char *filename, const void *blob)
++{
++	int fd = 1;	/* assume stdout */
++	int totalsize;
++	int offset;
++	int ret = 0;
++	const char *ptr = blob;
++
++	if (strcmp(filename, "-") != 0) {
++		fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
++		if (fd < 0)
++			return errno;
++	}
++
++	totalsize = fdt_totalsize(blob);
++	offset = 0;
++
++	while (offset < totalsize) {
++		ret = write(fd, ptr + offset, totalsize - offset);
++		if (ret < 0) {
++			ret = -errno;
++			break;
++		}
++		offset += ret;
++	}
++	/* Close the file/stdin; return errno on error */
++	if (fd != 1)
++		close(fd);
++	return ret < 0 ? -ret : 0;
++}
++
++
++int utilfdt_write(const char *filename, const void *blob)
++{
++	int ret = utilfdt_write_err(filename, blob);
++
++	if (ret) {
++		fprintf(stderr, "Couldn't write blob to '%s': %s\n", filename,
++			strerror(ret));
++	}
++	return ret ? -1 : 0;
++}
++
++int utilfdt_decode_type(const char *fmt, int *type, int *size)
++{
++	int qualifier = 0;
++
++	/* get the conversion qualifier */
++	*size = -1;
++	if (strchr("hlLb", *fmt)) {
++		qualifier = *fmt++;
++		if (qualifier == *fmt) {
++			switch (*fmt++) {
++/* TODO:		case 'l': qualifier = 'L'; break;*/
++			case 'h':
++				qualifier = 'b';
++				break;
++			}
++		}
++	}
++
++	/* we should now have a type */
++	if (!strchr("iuxs", *fmt))
++		return -1;
++
++	/* convert qualifier (bhL) to byte size */
++	if (*fmt != 's')
++		*size = qualifier == 'b' ? 1 :
++				qualifier == 'h' ? 2 :
++				qualifier == 'l' ? 4 : -1;
++	*type = *fmt++;
++
++	/* that should be it! */
++	if (*fmt)
++		return -1;
++	return 0;
++}
+diff --git a/util.h b/util.h
+index f251480..730918e 100644
+--- a/util.h
++++ b/util.h
+@@ -4,6 +4,7 @@
+ #include <stdarg.h>
+ 
+ /*
++ * Copyright 2011 The Chromium Authors, All Rights Reserved.
+  * Copyright 2008 Jon Loeliger, Freescale Semiconductor, Inc.
+  *
+  * This program is free software; you can redistribute it and/or
+@@ -72,4 +73,71 @@ int util_is_printable_string(const void *data, int len);
+  */
+ char get_escape_char(const char *s, int *i);
+ 
++/**
++ * Read a device tree file into a buffer. This will report any errors on
++ * stderr.
++ *
++ * @param filename	The filename to read, or - for stdin
++ * @return Pointer to allocated buffer containing fdt, or NULL on error
++ */
++char *utilfdt_read(const char *filename);
++
++/**
++ * Read a device tree file into a buffer. Does not report errors, but only
++ * returns them. The value returned can be passed to strerror() to obtain
++ * an error message for the user.
++ *
++ * @param filename	The filename to read, or - for stdin
++ * @param buffp		Returns pointer to buffer containing fdt
++ * @return 0 if ok, else an errno value representing the error
++ */
++int utilfdt_read_err(const char *filename, char **buffp);
++
++
++/**
++ * Write a device tree buffer to a file. This will report any errors on
++ * stderr.
++ *
++ * @param filename	The filename to write, or - for stdout
++ * @param blob		Poiner to buffer containing fdt
++ * @return 0 if ok, -1 on error
++ */
++int utilfdt_write(const char *filename, const void *blob);
++
++/**
++ * Write a device tree buffer to a file. Does not report errors, but only
++ * returns them. The value returned can be passed to strerror() to obtain
++ * an error message for the user.
++ *
++ * @param filename	The filename to write, or - for stdout
++ * @param blob		Poiner to buffer containing fdt
++ * @return 0 if ok, else an errno value representing the error
++ */
++int utilfdt_write_err(const char *filename, const void *blob);
++
++/**
++ * Decode a data type string. The purpose of this string
++ *
++ * The string consists of an optional character followed by the type:
++ *	Modifier characters:
++ *		hh or b	1 byte
++ *		h	2 byte
++ *		l	4 byte, default
++ *
++ *	Type character:
++ *		s	string
++ *		i	signed integer
++ *		u	unsigned integer
++ *		x	hex
++ *
++ * TODO: Implement ll modifier (8 bytes)
++ * TODO: Implement o type (octal)
++ *
++ * @param fmt		Format string to process
++ * @param type		Returns type found(s/d/u/x), or 0 if none
++ * @param size		Returns size found(1,2,4,8) or 4 if none
++ * @return 0 if ok, -1 on error (no type given, or other invalid format)
++ */
++int utilfdt_decode_type(const char *fmt, int *type, int *size);
++
+ #endif /* _UTIL_H */
