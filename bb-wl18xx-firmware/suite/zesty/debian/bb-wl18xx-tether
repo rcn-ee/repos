@@ -42,12 +42,17 @@ fi
 
 #use be set via: rcnee-access-point
 if [ ! -f /etc/connman/main.conf ] ; then
+	systemctl stop connman.service || true
+
 	echo "[General]" > /etc/connman/main.conf
 	echo "PreferredTechnologies=ethernet,wifi" >> /etc/connman/main.conf
 	echo "SingleConnectedTechnology=false" >> /etc/connman/main.conf
 	echo "AllowHostnameUpdates=false" >> /etc/connman/main.conf
 	echo "PersistentTetheringMode=true" >> /etc/connman/main.conf
 	echo "NetworkInterfaceBlacklist=SoftAp0,usb0" >> /etc/connman/main.conf
+
+	systemctl daemon-reload || true
+	systemctl start connman.service || true
 fi
 
 disable_connman_dnsproxy () {
@@ -94,10 +99,10 @@ connmanctl_tether_wifi_on () {
 
 	if [ -f /etc/bb-wl18xx-tether.dnsmasq.enable ] ; then
 		echo "${log} [systemctl stop dnsmasq]"
-		systemctl stop dnsmasq || true
+		systemctl stop dnsmasq.service || true
 		rm -rf /etc/dnsmasq.d/${ap_interface} || true
 		rm -rf /etc/bb-wl18xx-tether.dnsmasq.enable || true
-		systemctl disable dnsmasq || true
+		systemctl disable dnsmasq.service || true
 	fi
 
 	enable_connman_dnsproxy
