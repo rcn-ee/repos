@@ -11,7 +11,7 @@ git_sha=""
 reprepro_dir="s/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee16"
+debian_version="${package_version}-0rcnee17"
 debian_untar=""
 debian_patch=""
 
@@ -27,4 +27,4 @@ debian_dl_1="${dl_mirror}/${wificonfig}-${v12}.tar.xz"
 debian_dl_2="${dl_mirror}/${wificonfig}-${v4}.tar.xz"
 debian_dl_3="${dl_mirror}/${wificonfig}-${v6}.tar.xz"
 
-jessie_version="~bpo80+20161205+1"
+jessie_version="~bpo80+20170118+1"
