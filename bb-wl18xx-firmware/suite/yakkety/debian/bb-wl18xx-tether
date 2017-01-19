@@ -32,27 +32,11 @@ if [ ! "x${are_we_flasher}" = "x" ] ; then
 	exit
 fi
 
-rfkill_bin=$(which rfkill)
 connmanctl_bin=$(which connmanctl)
 
 # Include defaults if available
 if [ -f /etc/default/bb-wl18xx ] ; then
 	. /etc/default/bb-wl18xx
-fi
-
-#use be set via: rcnee-access-point
-if [ ! -f /etc/connman/main.conf ] ; then
-	systemctl stop connman.service || true
-
-	echo "[General]" > /etc/connman/main.conf
-	echo "PreferredTechnologies=ethernet,wifi" >> /etc/connman/main.conf
-	echo "SingleConnectedTechnology=false" >> /etc/connman/main.conf
-	echo "AllowHostnameUpdates=false" >> /etc/connman/main.conf
-	echo "PersistentTetheringMode=true" >> /etc/connman/main.conf
-	echo "NetworkInterfaceBlacklist=SoftAp0,usb0" >> /etc/connman/main.conf
-
-	systemctl daemon-reload || true
-	systemctl start connman.service || true
 fi
 
 disable_connman_dnsproxy () {
@@ -206,11 +190,6 @@ wait_for_wlan () {
 	if [ ! -d /sys/class/net/wlan0/ ] ; then
 		sleep 5
 	fi
-	if [ -d /sys/class/rfkill/ ] ; then
-		if [ -f ${rfkill_bin} ] ; then
-			${rfkill_bin} unblock all || true
-		fi
-	fi
 	until [ -d /sys/class/net/wlan0/ ] ; do
 		echo "${log} waiting for /sys/class/net/wlan0"
 		sleep 5
@@ -339,12 +318,6 @@ deb_usb_gateway=$(sed -nr "${deb_iface_range_regex} p" /etc/network/interfaces |
 }
 
 start_hostapd () {
-	if [ -d /sys/class/rfkill/ ] ; then
-		if [ -f ${rfkill_bin} ] ; then
-			${rfkill_bin} unblock all || true
-		fi
-	fi
-
 	if [ "x${USE_GENERATED_HOSTAPD}" = "xyes" ] ; then
 		if [ ! "x${use_mac}" = "x" ] ; then
 			ssid_append=$(echo ${use_mac} | cut -b 13-17 | sed 's/://g' || true)

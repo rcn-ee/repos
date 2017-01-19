@@ -85,6 +85,47 @@ else
 	fi
 fi
 
+if [ ! -f /etc/connman/main.conf ] ; then
+	if [ ! -d /etc/connman/ ] ; then
+		mkdir -p /etc/connman/ || true
+	fi
+	echo "[General]" > /etc/connman/main.conf
+	echo "PreferredTechnologies=ethernet,wifi" >> /etc/connman/main.conf
+	echo "SingleConnectedTechnology=false" >> /etc/connman/main.conf
+	echo "AllowHostnameUpdates=false" >> /etc/connman/main.conf
+	echo "PersistentTetheringMode=true" >> /etc/connman/main.conf
+	echo "NetworkInterfaceBlacklist=SoftAp0,usb0" >> /etc/connman/main.conf
+fi
+
+if [ ! -f /var/lib/connman/settings ] ; then
+	if [ ! -d /var/lib/connman/ ] ; then
+		mkdir -p /var/lib/connman/ || true
+	fi
+
+	echo "[global]" > /var/lib/connman/settings
+	echo "OfflineMode=false" >> /var/lib/connman/settings
+	echo "" >> /var/lib/connman/settings
+	echo "[Wired]" >> /var/lib/connman/settings
+	echo "Enable=true" >> /var/lib/connman/settings
+	echo "Tethering=false" >> /var/lib/connman/settings
+	echo "" >> /var/lib/connman/settings
+	echo "[WiFi]" >> /var/lib/connman/settings
+	echo "Enable=true" >> /var/lib/connman/settings
+	echo "Tethering=false" >> /var/lib/connman/settings
+	echo "" >> /var/lib/connman/settings
+	echo "[Gadget]" >> /var/lib/connman/settings
+	echo "Enable=false" >> /var/lib/connman/settings
+	echo "Tethering=false" >> /var/lib/connman/settings
+	echo "" >> /var/lib/connman/settings
+	echo "[P2P]" >> /var/lib/connman/settings
+	echo "Enable=false" >> /var/lib/connman/settings
+	echo "Tethering=false" >> /var/lib/connman/settings
+	echo "" >> /var/lib/connman/settings
+	echo "[Bluetooth]" >> /var/lib/connman/settings
+	echo "Enable=true" >> /var/lib/connman/settings
+	echo "Tethering=false" >> /var/lib/connman/settings
+fi
+
 case "$1" in
 	configure)
 		systemctl enable bb-wl18xx-bluetooth.service || true
