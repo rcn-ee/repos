@@ -1,8 +1,40 @@
-mesa (13.0.2-3rcnee0~bpo80+20161219+1) jessie; urgency=low
+mesa (17.0.0~rc1-1rcnee0~bpo80+20170124+1) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Mon, 19 Dec 2016 16:13:09 -0600
+ -- Robert Nelson <robertcnelson@gmail.com>  Tue, 24 Jan 2017 12:08:32 -0600
+
+mesa (17.0.0~rc1-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+  * Bump libdrm-dev build-dep to 2.4.74 per configure.ac.
+  * Bump libwayland-dev build-dep to 1.11.0 per configure.ac.
+  * Remove libgcrypt20-dev build-dep per configure.ac.
+  * Update watch url.
+  * Drop vl-zscan-fix-Fix-trivial-sign-compare-warnings.diff and r600-
+    sb-Fix-loop-optimization-related-hangs-on-eg.diff, upstream.
+  * Drop workaround-binutils-mips-844357.diff, binutils regression has
+    been fixed.
+  * Rename EGL_DISPLAYS to EGL_PLATFORMS.
+  * Update extend-diff-ignore.
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Thu, 19 Jan 2017 18:39:06 +0100
+
+mesa (13.0.3-1) unstable; urgency=medium
+
+  [ Timo Aaltonen ]
+  * New upstream release.
+
+  [ Andreas Boll ]
+  * Add vl-zscan-fix-Fix-trivial-sign-compare-warnings.diff: Fixes mpeg2
+    decoding on radeon GPUs without native mpeg2 support (Closes:
+    #846297).  Thanks to Jörg-Volker Peetz for reporting and tracking
+    down this regression!
+  * Add r600-sb-Fix-loop-optimization-related-hangs-on-eg.diff: Fixes
+    GPU hangs on r600g (Evergreen and Northern Islands GPUs) in many
+    games.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 10 Jan 2017 17:38:23 +0200
 
 mesa (13.0.2-3) unstable; urgency=medium
 
