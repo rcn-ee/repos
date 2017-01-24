@@ -4,7 +4,7 @@ mirror="http://http.debian.net/debian"
 
 package_name="libvdpau"
 debian_pkg_name="${package_name}"
-package_version="1.1.1-5"
+package_version="1.1.1-6"
 
 git_repo=""
 git_sha=""
