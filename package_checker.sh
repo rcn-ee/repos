@@ -107,6 +107,9 @@ mesa () {
 	site="${debian_pool}/main/libv"
 	package_name="libva" ; package_version="${package_name}_1.7.3-2" ; check_http
 
+	site="${debian_pool}/main/w"
+	package_name="wayland" ; package_version="${package_name}_1.12.0-1" ; check_http
+
 	site="${debian_pool}/main/m"
 	package_name="mesa" ; package_version="${package_name}_13.0.2-3" ; check_http
 	package_name="mesa-demos" ; package_version="${package_name}_8.3.0-2" ; check_http
