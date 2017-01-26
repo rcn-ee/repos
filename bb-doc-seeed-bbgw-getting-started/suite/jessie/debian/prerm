@@ -19,27 +19,23 @@ package="doc-seeed-bbgw-getting-started"
 
 remove_file () {
 	if [ -f /var/cache/${package}/${wfile} ] ; then
-		rm -f /var/cache/${package}/${wfile}
+		rm -f /var/cache/${package}/${wfile} || true
 	fi
 }
 
 remove_dir () {
 	if [ -d ${wdir} ] ; then
-		rm -rf ${wdir}
+		rm -rf ${wdir} || true
 	fi
 }
 
 remove_all() {
-	wfile="beaglebone-getting-started-2016-05-07.img.xz" ; remove_file
-	wfile="beaglebone-getting-started-2016-05-07.img" ; remove_file
-	wfile="beaglebone-getting-started-2016-05-10.img.xz" ; remove_file
-	wfile="beaglebone-getting-started-2016-05-10.img" ; remove_file
 	wfile="beaglebone-getting-started-2016-05-11.img.xz" ; remove_file
-#	wfile="beaglebone-getting-started-2016-05-11.img" ; remove_file
-
+	wfile="beaglebone-getting-started-2016-05-11.img" ; remove_file
+	wfile="beaglebone-getting-started-2017-01-26.img.xz" ; remove_file
 
 	#Always keep the current one for quick reinstalls...
-	#wfile="beaglebone-getting-started-2016-05-11.img" ; remove_file
+	#wfile="beaglebone-getting-started-2017-01-26.img" ; remove_file
 }
 
 case "$1" in

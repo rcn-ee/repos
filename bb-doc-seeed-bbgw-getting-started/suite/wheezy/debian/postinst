@@ -6,13 +6,10 @@ set -e
 
 package="doc-seeed-bbgw-getting-started"
 core_version="2016-05-11"
-
-sha256sum_img_xz="fc58caaf94f61c0a48c401b071dbe75d2c98f3c99cb3f0ce81318af854f1b708"
-    wfile_img_xz="beaglebone-getting-started-${core_version}.img.xz"
-       wfile_img="beaglebone-getting-started-${core_version}.img"
-
-partner_url="https://rcn-ee.com/repos/git/archive/seeed-bbgw-getting-started"
-extract_dir="/var/cache/${package}/"
+file_type="img"
+#file_type="iso"
+wfile="beaglebone-getting-started-${core_version}.${file_type}"
+wfile_xz="beaglebone-getting-started-${core_version}.${file_type}.xz"
 
 # summary of how this script can be called:
 #        * <postinst> `configure' <most-recently-configured-version>
@@ -26,47 +23,43 @@ extract_dir="/var/cache/${package}/"
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
-
-dl_img_xz() {
-	wget --no-check-certificate ${partner_url}/${wfile_img_xz}
-	unset sha256compare
-	sha256compare=$(sha256sum ${wfile_img_xz} | awk '{print $1}')
-	if [ ! "x${sha256compare}" = "x${sha256sum_img_xz}" ] ; then
-		rm -rf ${wfile_img_xz}
-		wget --no-check-certificate ${partner_url}/${wfile_img_xz}
-		unset sha256compare
-		sha256compare=$(sha256sum ${wfile_img_xz} | awk '{print $1}')
-		if [ ! "x${sha256compare}" = "x${sha256sum_img_xz}" ] ; then
-			echo "dl failure"
-			exit 1
-		fi
-	fi
-	unxz ${wfile_img_xz}
-}
-
-dl_install() {
-	if [ ! -d /var/cache/${package} ] ; then
-		mkdir -p /var/cache/${package}
-	fi
-
+just_install () {
 	cd /var/cache/${package}/
 
-	if [ ! -f ${wfile_img} ] ; then
-		if [ ! -f ${wfile_img_xz} ] ; then
-			dl_img_xz
-		else
-			unxz ${wfile_img_xz}
-		fi
+	if [ ! -f ${wfile} ] ; then
+		unxz ${wfile_xz}
 	fi
 
-	if [ -f ${wfile_img} ] ; then
-		ln -sf /var/cache/${package}/beaglebone-getting-started-${core_version}.img /var/local/bbgw_usb_mass_storage.img
+	if [ -f ${wfile} ] ; then
+		ln -sf /var/cache/${package}/beaglebone-getting-started-${core_version}.${file_type} /var/local/bb_usb_mass_storage.${file_type}
 	fi
+}
+
+remove_file () {
+	if [ -f /var/cache/${package}/${wfile} ] ; then
+		rm -f /var/cache/${package}/${wfile} || true
+	fi
+}
+
+remove_dir () {
+	if [ -d ${wdir} ] ; then
+		rm -rf ${wdir} || true
+	fi
+}
+
+remove_all() {
+	wfile="beaglebone-getting-started-2016-05-11.img.xz" ; remove_file
+	wfile="beaglebone-getting-started-2016-05-11.img" ; remove_file
+	wfile="beaglebone-getting-started-2017-01-26.img.xz" ; remove_file
+
+	#Always keep the current one for quick reinstalls...
+	#wfile="beaglebone-getting-started-2017-01-26.img" ; remove_file
 }
 
 case "$1" in
     configure)
-	dl_install
+	just_install
+	remove_all
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
