@@ -2,7 +2,7 @@
 
 package_name="rcn-ee-archive-keyring"
 debian_pkg_name="${package_name}"
-package_version="2017.01.26"
+package_version="2017.01.27"
 package_source=""
 src_dir=""
 
