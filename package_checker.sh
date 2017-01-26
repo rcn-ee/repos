@@ -410,16 +410,6 @@ ros () {
 
 	#needs: ros-vision-opencv, which needs boost1.58...
 	package_name="ros-rviz"; package_version="${package_name}_1.11.10+dfsg-1"; check_http
-
-#helpers..
-	site="${debian_pool}/main/r"
-	package_name="ros-rosdistro"; package_version="${package_name}_0.4.4-1"; check_http
-	package_name="ros-rosinstall"; package_version="${package_name}_0.7.7-1"; check_http
-	package_name="ros-rosinstall-generator"; package_version="${package_name}_0.1.11-1"; check_http
-	package_name="ros-vcstools"; package_version="${package_name}_0.1.38-1"; check_http
-	package_name="ros-wstool"; package_version="${package_name}_0.1.12-1"; check_http
-	package_name="ros-bloom"; package_version="${package_name}_0.5.20-1"; check_http
-	package_name="ros-rosdep"; package_version="${package_name}_0.11.4-2"; check_http
 }
 
 #ros
