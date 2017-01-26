@@ -33,6 +33,7 @@ confflags_DRI3 = --disable-dri3
 # hurd doesn't do direct rendering
 ifeq ($(DEB_HOST_ARCH_OS), hurd)
 	confflags_DIRECT_RENDERING = --disable-driglx-direct
+	confflags_GBM = --disable-gbm
 	DRI_DRIVERS = swrast
 else
   ifeq ($(DEB_HOST_ARCH_OS), linux)
@@ -103,6 +104,7 @@ else
   endif
 
 	confflags_DIRECT_RENDERING = --enable-driglx-direct
+	confflags_GBM = --enable-gbm
 	confflags_GALLIUM += --enable-vdpau
 	confflags_GALLIUM += --enable-va
 	confflags_GALLIUM += --enable-gallium-extra-hud
@@ -132,6 +134,7 @@ confflags += \
 	--disable-xvmc \
 	--disable-omx \
 	$(confflags_DIRECT_RENDERING) \
+	$(confflags_GBM) \
 	$(confflags_DRI3) \
 	$(confflags_EGL) \
 	$(confflags_GALLIUM) \
@@ -222,6 +225,7 @@ override_dh_makeshlibs:
 
 %:
 	dh $@ --with quilt,autoreconf \
+		--parallel \
 		--builddirectory=build/
 
 # For maintainer use only, generate a tarball:
