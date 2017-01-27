@@ -140,6 +140,34 @@ set_wlan_0_mac_from_cpsw_0 () {
 	set_wlan_0_mac
 }
 
+set_wlan_0_mac_from_cpsw_4 () {
+	if [ -f /etc/cpsw_0_mac ] ; then
+		cpsw_0_mac=$(cat /etc/cpsw_0_mac | awk '{print toupper($0)}')
+	else
+		mac_address="/proc/device-tree/ocp/ethernet@4a100000/slave@4a100200/mac-address"
+		if [ -f ${mac_address} ] ; then
+			cpsw_0_mac=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address} | sed 's/.$//' | awk '{print toupper($0)}')
+		else
+			cpsw_0_mac="1C:BA:8C:A2:ED:68"
+		fi
+	fi
+
+	if [ -f /usr/bin/bc ] ; then
+		mac_0_prefix=$(echo ${cpsw_0_mac} | cut -c 1-14)
+
+		cpsw_0_6=$(echo ${cpsw_0_mac} | awk -F ':' '{print $6}')
+		#bc cuts off leading zero's, we need ten/ones value
+		cpsw_res=$(echo "obase=16;ibase=16;$cpsw_0_6 + 104" | bc)
+
+		cpsw_4_mac=${mac_0_prefix}:$(echo ${cpsw_res} | cut -c 2-3)
+	else
+		cpsw_4_mac="1C:BA:8C:A2:ED:72"
+	fi
+	wlan_0_mac="${cpsw_4_mac}"
+	echo "wlan_0_mac=[${wlan_0_mac}]"
+	set_wlan_0_mac
+}
+
 start_tether () {
 	# Include defaults if available
 	if [ -f /etc/default/bb-wl18xx ] ; then
@@ -176,6 +204,11 @@ TI_AM335x_BeagleBone_Black_Wireless_RoboticsCape)
 TI_AM335x_BeagleBone_Blue)
 	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
 	set_wlan_0_mac_from_cpsw_0
+	start_tether
+	;;
+TI_AM335x_BeagleBone_Black_Gateway_Cape)
+	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
+	set_wlan_0_mac_from_cpsw_4
 	start_tether
 	;;
 *)

@@ -477,6 +477,22 @@ TI_AM335x_BeagleBone_Blue)
 		touch /tmp/wifi.up
 	fi
 	;;
+TI_AM335x_BeagleBone_Black_Gateway_Cape)
+	wait_for_ssh
+	wait_for_mac
+	if [ "x${USE_APPENDED_SSID}" = "xyes" ] ; then
+		use_mac="${cpsw_3_mac}"
+	else
+		unset use_mac
+	fi
+	wait_for_wlan
+	if [ ! -f /lib/systemd/system/wifidog-gateway.service ] ; then
+		default
+	else
+		just_softap
+		touch /tmp/wifi.up
+	fi
+	;;
 *)
 	echo "${log} unsupported device, leaving things in default state..."
 	;;
