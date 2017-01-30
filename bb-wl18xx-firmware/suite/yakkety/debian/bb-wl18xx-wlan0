@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2016 Robert Nelson <robertcnelson@gmail.com>
+# Copyright (c) 2016-2017 Robert Nelson <robertcnelson@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -19,6 +19,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+# Include defaults if available
+if [ -f /etc/default/bb-wl18xx ] ; then
+	. /etc/default/bb-wl18xx
+fi
 
 cylon_leds () {
 	if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
@@ -168,12 +173,13 @@ set_wlan_0_mac_from_cpsw_4 () {
 	set_wlan_0_mac
 }
 
-start_tether () {
-	# Include defaults if available
-	if [ -f /etc/default/bb-wl18xx ] ; then
-		. /etc/default/bb-wl18xx
-	fi
+set_wlan_0_mac_from_bb_wl18xx () {
+	wlan_0_mac=$(echo ${USE_WL18XX_MAC_ADDRESS} | awk '{print toupper($0)}')
+	echo "wlan_0_mac=[${wlan_0_mac}]"
+	set_wlan_0_mac
+}
 
+start_tether () {
 	if [ "x${TETHER_ENABLED}" = "xyes" ] ; then
 		/usr/bin/bb-wl18xx-tether || true
 	fi
@@ -184,7 +190,11 @@ case "${board}" in
 TI_AM335x_BeagleBone_Green_Wireless)
 	eeprom="/sys/bus/i2c/devices/0-0050/eeprom"
 	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
-	set_wlan_0_mac_from_eeprom
+	if [ "x${USE_WL18XX_MAC_ADDRESS}" = "x" ] ; then
+		set_wlan_0_mac_from_eeprom
+	else
+		set_wlan_0_mac_from_bb_wl18xx
+	fi
 	#make sure wl18xx_wl_en is on...
 	if [ -f /sys/class/leds/wl18xx_wl_en/brightness ] ; then
 		echo 1 > /sys/class/leds/wl18xx_wl_en/brightness || true
@@ -193,22 +203,38 @@ TI_AM335x_BeagleBone_Green_Wireless)
 	;;
 TI_AM335x_BeagleBone_Black_Wireless)
 	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
-	set_wlan_0_mac_from_cpsw_0
+	if [ "x${USE_WL18XX_MAC_ADDRESS}" = "x" ] ; then
+		set_wlan_0_mac_from_cpsw_0
+	else
+		set_wlan_0_mac_from_bb_wl18xx
+	fi
 	start_tether
 	;;
 TI_AM335x_BeagleBone_Black_Wireless_RoboticsCape)
 	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
-	set_wlan_0_mac_from_cpsw_0
+	if [ "x${USE_WL18XX_MAC_ADDRESS}" = "x" ] ; then
+		set_wlan_0_mac_from_cpsw_0
+	else
+		set_wlan_0_mac_from_bb_wl18xx
+	fi
 	start_tether
 	;;
 TI_AM335x_BeagleBone_Blue)
 	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
-	set_wlan_0_mac_from_cpsw_0
+	if [ "x${USE_WL18XX_MAC_ADDRESS}" = "x" ] ; then
+		set_wlan_0_mac_from_cpsw_0
+	else
+		set_wlan_0_mac_from_bb_wl18xx
+	fi
 	start_tether
 	;;
 TI_AM335x_BeagleBone_Black_Gateway_Cape)
 	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
-	set_wlan_0_mac_from_cpsw_4
+	if [ "x${USE_WL18XX_MAC_ADDRESS}" = "x" ] ; then
+		set_wlan_0_mac_from_cpsw_4
+	else
+		set_wlan_0_mac_from_bb_wl18xx
+	fi
 	start_tether
 	;;
 *)

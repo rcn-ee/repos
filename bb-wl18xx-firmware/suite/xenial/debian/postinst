@@ -23,6 +23,9 @@ echo_default () {
 	echo "# USE_WL18XX_IP_PREFIX: default IP block of SoftAP0 interface" >> /etc/default/bb-wl18xx
 	echo "USE_WL18XX_IP_PREFIX=\"192.168.8\"" >> /etc/default/bb-wl18xx
 	echo "" >> /etc/default/bb-wl18xx
+	echo "# USE_WL18XX_MAC_ADDRESS: use custom mac address, for when work wifi starts sending deauthentication packet spam." >> /etc/default/bb-wl18xx
+	echo "#USE_WL18XX_MAC_ADDRESS=EC:11:27:B:14:97" >> /etc/default/bb-wl18xx
+	echo "" >> /etc/default/bb-wl18xx
 	echo "# USE_GENERATED_DNSMASQ: use generated version of /etc/dnsmasq.d/SoftAp0; set to no so user can modify /etc/dnsmasq.d/SoftAp0" >> /etc/default/bb-wl18xx
 	echo "USE_GENERATED_DNSMASQ=yes" >> /etc/default/bb-wl18xx
 	echo "" >> /etc/default/bb-wl18xx
@@ -81,6 +84,14 @@ else
 	if [ "x${test_new_option}" = "x" ] ; then
 		echo "# USE_APPENDED_SSID: appendes mac address after SSID (aka -WXYZ, BeagleBone-WXYZ)" >> /etc/default/bb-wl18xx
 		echo "USE_APPENDED_SSID=yes" >> /etc/default/bb-wl18xx
+		echo "" >> /etc/default/bb-wl18xx
+	fi
+
+	unset test_new_option
+	test_new_option=$(cat /etc/default/bb-wl18xx | grep USE_WL18XX_MAC_ADDRESS || true)
+	if [ "x${test_new_option}" = "x" ] ; then
+		echo "# USE_WL18XX_MAC_ADDRESS: use custom mac address, for when work wifi starts sending deauthentication packet spam.." >> /etc/default/bb-wl18xx
+		echo "#USE_WL18XX_MAC_ADDRESS=EC:11:27:B:14:97" >> /etc/default/bb-wl18xx
 		echo "" >> /etc/default/bb-wl18xx
 	fi
 fi
