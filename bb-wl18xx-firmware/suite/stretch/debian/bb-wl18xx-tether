@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# Copyright (c) 2016 Robert Nelson <robertcnelson@gmail.com>
+# Copyright (c) 2016-2017 Robert Nelson <robertcnelson@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +23,6 @@
 ap_interface="SoftAp0"
 log="wl18xx:"
 use_mac=""
-wifi_ssid="BeagleBone"
-wifi_password="BeagleBone"
 
 unset are_we_flasher
 are_we_flasher=$(grep init-eMMC-flasher /proc/cmdline || true)
@@ -37,6 +35,18 @@ connmanctl_bin=$(which connmanctl)
 # Include defaults if available
 if [ -f /etc/default/bb-wl18xx ] ; then
 	. /etc/default/bb-wl18xx
+fi
+
+if [ "x${USE_PERSONAL_SSID}" = "x" ] ; then
+	wifi_ssid="BeagleBone"
+else
+	wifi_ssid="${USE_PERSONAL_SSID}"
+fi
+
+if [ "x${USE_PERSONAL_SSID_PASSWORD}" = "x" ] ; then
+	wifi_password="BeagleBone"
+else
+	wifi_password="${USE_PERSONAL_SSID_PASSWORD}"
 fi
 
 disable_connman_dnsproxy () {
@@ -94,18 +104,13 @@ connmanctl_tether_wifi_on () {
 	${connmanctl_bin} enable wifi || true
 	sleep 1
 
-	if [ ! "x${USE_PERSONAL_SSID}" = "x" ] ; then
-			echo "${log} [tether wifi on ${USE_PERSONAL_SSID} ${wifi_password}]"
-			${connmanctl_bin} tether wifi on ${USE_PERSONAL_SSID} ${wifi_password} || true
+	if [ ! "x${use_mac}" = "x" ] ; then
+		ssid_append=$(echo ${use_mac} | cut -b 13-17 | sed 's/://g' || true)
+		echo "${log} [tether wifi on ${wifi_ssid}-${ssid_append} ${wifi_password}]"
+		${connmanctl_bin} tether wifi on ${wifi_ssid}-${ssid_append} ${wifi_password} || true
 	else
-		if [ ! "x${use_mac}" = "x" ] ; then
-			ssid_append=$(echo ${use_mac} | cut -b 13-17 | sed 's/://g' || true)
-			echo "${log} [tether wifi on ${wifi_ssid}-${ssid_append} ${wifi_password}]"
-			${connmanctl_bin} tether wifi on ${wifi_ssid}-${ssid_append} ${wifi_password} || true
-		else
-			echo "${log} [tether wifi on ${wifi_ssid} ${wifi_password}]"
-			${connmanctl_bin} tether wifi on ${wifi_ssid} ${wifi_password} || true
-		fi
+		echo "${log} [tether wifi on ${wifi_ssid} ${wifi_password}]"
+		${connmanctl_bin} tether wifi on ${wifi_ssid} ${wifi_password} || true
 	fi
 	sleep 1
 
@@ -326,18 +331,10 @@ start_hostapd () {
 		wfile="/tmp/hostapd-wl18xx.conf"
 		echo "interface=${ap_interface}" > ${wfile}
 
-		if [ ! "x${USE_PERSONAL_SSID}" = "x" ] ; then
-			if [ ! "x${use_mac}" = "x" ] ; then
-				echo "ssid=${USE_PERSONAL_SSID}-${ssid_append}" >> ${wfile}
-			else
-				echo "ssid=${USE_PERSONAL_SSID}" >> ${wfile}
-			fi
+		if [ ! "x${use_mac}" = "x" ] ; then
+			echo "ssid=${wifi_ssid}-${ssid_append}" >> ${wfile}
 		else
-			if [ ! "x${use_mac}" = "x" ] ; then
-				echo "ssid=${wifi_ssid}-${ssid_append}" >> ${wfile}
-			else
-				echo "ssid=${wifi_ssid}" >> ${wfile}
-			fi
+			echo "ssid=${wifi_ssid}" >> ${wfile}
 		fi
 
 		echo "hw_mode=g" >> ${wfile}
