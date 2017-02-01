@@ -4,7 +4,7 @@ mirror="http://http.debian.net/debian"
 
 package_name="mesa-demos"
 debian_pkg_name="${package_name}"
-package_version="8.3.0-2"
+package_version="8.3.0-3"
 
 git_repo=""
 git_sha=""

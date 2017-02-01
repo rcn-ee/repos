@@ -112,7 +112,7 @@ mesa () {
 
 	site="${debian_pool}/main/m"
 	package_name="mesa" ; package_version="${package_name}_17.0.0~rc2-1" ; check_http
-	package_name="mesa-demos" ; package_version="${package_name}_8.3.0-2" ; check_http
+	package_name="mesa-demos" ; package_version="${package_name}_8.3.0-3" ; check_http
 }
 
 qt5_kde () {
