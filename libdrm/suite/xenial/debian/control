@@ -3,8 +3,7 @@ Priority: optional
 Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
 Uploaders: Andreas Boll <andreas.boll.dev@gmail.com>
 Build-Depends:
- debhelper (>= 9),
- dh-autoreconf,
+ debhelper (>= 10),
  quilt,
  xsltproc,
  docbook-xsl,
@@ -33,9 +32,9 @@ Depends:
  libdrm-amdgpu1 (= ${binary:Version}),
  libdrm-omap1 (= ${binary:Version}) [any-arm],
  libdrm-freedreno1 (= ${binary:Version}) [any-arm arm64],
- libdrm-etnaviv1 (= ${binary:Version}) [any-arm],
  libdrm-exynos1 (= ${binary:Version}) [any-arm],
  libdrm-tegra0 (= ${binary:Version}) [any-arm arm64],
+ libdrm-etnaviv1 (= ${binary:Version}) [armhf],
  libkms1 (= ${binary:Version}) [linux-any],
  ${misc:Depends},
 Multi-Arch: same
@@ -244,39 +243,6 @@ Description: Userspace interface to msm/kgsl kernel DRM services -- debugging sy
  .
  This package provides the debugging symbols for the libdrm-freedreno1 package.
 
-Package: libdrm-etnaviv1
-Architecture: any-arm
-Depends:
- ${shlibs:Depends},
- ${misc:Depends},
-Pre-Depends: ${misc:Pre-Depends}
-Replaces: libdrm-etnaviv0
-Multi-Arch: same
-Description: Userspace interface to msm/kgsl kernel DRM services -- runtime
- This library implements the userspace interface to the kernel DRM
- services.  DRM stands for "Direct Rendering Manager", which is the
- kernelspace portion of the "Direct Rendering Infrastructure" (DRI).
- The DRI is currently used on Linux to provide hardware-accelerated
- OpenGL drivers.
-
-Package: libdrm-etnaviv1-dbg
-Section: debug
-Priority: extra
-Architecture: any-arm
-Depends:
- libdrm-etnaviv1 (= ${binary:Version}),
- ${misc:Depends},
-Replaces: libdrm-etnaviv0-dbg
-Multi-Arch: same
-Description: Userspace interface to msm/kgsl kernel DRM services -- debugging symbols
- This library implements the userspace interface to the kernel DRM
- services.  DRM stands for "Direct Rendering Manager", which is the
- kernelspace portion of the "Direct Rendering Infrastructure" (DRI).
- The DRI is currently used on Linux to provide hardware-accelerated
- OpenGL drivers.
- .
- This package provides the debugging symbols for the libdrm-freedreno1 package.
-
 Package: libdrm-exynos1
 Architecture: any-arm
 Depends:
@@ -369,6 +335,39 @@ Description: Userspace interface to amdgpu-specific kernel DRM services -- debug
  OpenGL drivers.
  .
  This package provides the debugging symbols for the libdrm-amdgpu1 package.
+
+Package: libdrm-etnaviv1
+Architecture: armhf
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+Pre-Depends: ${misc:Pre-Depends}
+Replaces: libdrm-etnaviv0
+Multi-Arch: same
+Description: Userspace interface to etnaviv-specific kernel DRM services -- runtime
+ This library implements the userspace interface to the kernel DRM
+ services.  DRM stands for "Direct Rendering Manager", which is the
+ kernelspace portion of the "Direct Rendering Infrastructure" (DRI).
+ The DRI is currently used on Linux to provide hardware-accelerated
+ OpenGL drivers.
+
+Package: libdrm-etnaviv1-dbg
+Section: debug
+Priority: extra
+Architecture: any-arm
+Depends:
+ libdrm-etnaviv1 (= ${binary:Version}),
+ ${misc:Depends},
+Replaces: libdrm-etnaviv0-dbg
+Multi-Arch: same
+Description: Userspace interface to etnaviv-specific kernel DRM services -- debugging symbols
+ This library implements the userspace interface to the kernel DRM
+ services.  DRM stands for "Direct Rendering Manager", which is the
+ kernelspace portion of the "Direct Rendering Infrastructure" (DRI).
+ The DRI is currently used on Linux to provide hardware-accelerated
+ OpenGL drivers.
+ .
+ This package provides the debugging symbols for the libdrm-freedreno1 package.
 
 Package: libkms1
 Section: libs
