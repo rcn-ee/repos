@@ -1,0 +1,9 @@
+#!/usr/bin/make -f
+#export DH_VERBOSE=1
+
+%:
+	dh ${@} --sourcedirectory=mjpg-streamer-experimental \
+		--buildsystem cmake
+
+override_dh_strip:
+	dh_strip --dbg-package=mjpg-streamer-dbg
