@@ -12,12 +12,14 @@ set -e
 #	PROG=$RET
 #fi
 
+echo "***********************************************"
 echo "Robotics Cape package, to setup: rc_blink"
 echo "sudo ln -s -f /usr/bin/rc_blink /etc/roboticscape/link_to_startup_program"
 echo "Robotics Cape package, to setup: rc_balance"
 echo "sudo ln -s -f /usr/bin/rc_balance /etc/roboticscape/link_to_startup_program"
 echo "Robotics Cape package, to setup: none"
 echo "sudo ln -s -f /usr/bin/rc_bare_minimum /etc/roboticscape/link_to_startup_program"
+echo "***********************************************"
 
 PROG=none
 echo "user selected $PROG"
@@ -39,12 +41,14 @@ if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
 		#exit 1
 		ln -s -f /usr/bin/rc_bare_minimum /etc/roboticscape/link_to_startup_program
 	fi
+# in noninteractive mode still make a link for blink to start so something
+# happens when the user enables the roboticscape service for the first time
+else
+	ln -s -f /usr/bin/rc_bare_minimum /etc/roboticscape/link_to_startup_program
+fi
 
-	# enable roboticscape service
 	echo "systemctl daemon-reload"
 	systemctl daemon-reload
-	echo "Enabling roboticscape Service"
-	systemctl enable roboticscape
 
 	# enable rc_battery_monitor
 	echo "Enabling rc_battery_monitor Service"
@@ -52,22 +56,19 @@ if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
 	echo "Starting rc_battery_monitor Service"
 	systemctl start rc_battery_monitor
 
+if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
+	# enable roboticscape service
+	echo "Enabling roboticscape Service"
+	systemctl enable roboticscape
+
+	echo "***********************************************"
 	echo "Robotics Cape package, To Configure Device Tree"
 	echo "sudo configure_robotics_dt.sh"
 
-
-
-	echo " "
-	echo " "
 	echo " "
 	echo "Robotics Cape package installation complete."
 	echo "Please reboot now."
 	echo " "
-	
-# in noninteractive mode still make a link for blink to start so something
-# happens when the user enables the roboticscape service for the first time
-else
-	ln -s -f /usr/bin/rc_blink /etc/roboticscape/link_to_startup_program
 fi
 
 exit 0
