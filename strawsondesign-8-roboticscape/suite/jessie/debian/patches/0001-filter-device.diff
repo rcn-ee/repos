@@ -1,65 +1,17 @@
-diff --git a/battery_monitor_service/battery_monitor/battery_monitor.c b/battery_monitor_service/battery_monitor/battery_monitor.c
-index 0788acf..5a3c628 100644
---- a/battery_monitor_service/battery_monitor/battery_monitor.c
-+++ b/battery_monitor_service/battery_monitor/battery_monitor.c
-@@ -27,6 +27,9 @@
- #define FITLER_SAMPLES 		6		// average over 6 samples, 3 seconds
- #define STD_DEV_TOLERANCE 	0.04 	// above 0.1 definitely charging
- 
-+#define MODEL_DIR "/proc/device-tree/model"
-+#define BUF_SIZE 128
-+
- // functions
- void illuminate_leds(int i);
- int kill_existing_instance();
-@@ -42,6 +45,7 @@ int running;
- // main() takes only one optional argument: -k (kill)
- int main(int argc, char *argv[]){
- 	FILE* fd;
-+	char d[BUF_SIZE];
- 	float v_pack;	// 2S pack voltage on JST XH 2S balance connector
- 	float v_jack;	// could be dc power supply or another battery
- 	float cell_voltage;	// cell voltage from either 2S or external pack
-@@ -68,7 +72,41 @@ int main(int argc, char *argv[]){
- 			return -1;
- 			break;
+diff --git a/battery_monitor_service/rc_battery_monitor/rc_battery_monitor.c b/battery_monitor_service/rc_battery_monitor/rc_battery_monitor.c
+index 736bf94..d5d40d5 100644
+--- a/battery_monitor_service/rc_battery_monitor/rc_battery_monitor.c
++++ b/battery_monitor_service/rc_battery_monitor/rc_battery_monitor.c
+@@ -80,9 +80,10 @@ int main(int argc, char *argv[]){
+     // whitelist blue, black, and black wireless only when RC device tree is in use
+     model = rc_get_bb_model();
+     if(model!=BB_BLACK_RC && model!=BB_BLACK_W_RC && model!=BB_BLUE){
+-    	if(system("grep -q roboticscape /boot/uEnv.txt")!=0){
++    	if(system("grep -q roboticscape /boot/uEnv.txt | grep -v '#'")!=0){
+ 			fprintf(stderr,"rc_battery_monitor can only run on BB Blue, Black, and Black wireless when the roboticscape device tree is in use.\n");
+-			return -1;
++			kill_existing_instance();
++			return 0;
  		}
--    }
-+	}
-+
-+	// from: get_bb_model_from_device_tree (bb_model.c)
-+	if ((fd = fopen(MODEL_DIR, "r")) == NULL)
-+	{
-+		printf("ERROR: can't open %s \n", MODEL_DIR);
-+		kill_existing_instance();
-+		return -1;
-+	}
-+
-+	// read model
-+	memset(d, 0, BUF_SIZE);
-+	fgets(d, BUF_SIZE, fd);
-+	fclose(fd);
-+
-+	// now do the checks
-+	if(strcmp(d, "TI AM335x BeagleBone Blue")==0) {
-+		printf("TI AM335x BeagleBone Blue\n");
-+	} else if(strcmp(d, "TI AM335x BeagleBone Black RoboticsCape")==0) {
-+		printf("TI AM335x BeagleBone Black with RoboticsCape\n");
-+	} else if(strcmp(d, "TI AM335x BeagleBone Black Wireless RoboticsCape")==0) {
-+		printf("TI AM335x BeagleBone Black Wireless with RoboticsCape\n");
-+	} else if(strcmp(d, "TI AM335x BeagleBone Green")==0) {
-+		printf("TI AM335x BeagleBone Green (UNTESTED, exiting...)\n");
-+		kill_existing_instance();
-+		return 0;
-+	} else if(strcmp(d, "TI AM335x BeagleBone Green Wireless")==0) {
-+		printf("TI AM335x BeagleBone Green Wireless (UNSUPPORTED breaks wl18xx exiting...)\n");
-+		kill_existing_instance();
-+		return 0;
-+	} else {
-+		printf("Unknown UNSUPPORTED...\n");
-+		kill_existing_instance();
-+		return 0;
-+	}
+     }
  
- 	// we only want one instance running, so check is a pid file already exists
- 	if(access(PID_FILE, F_OK ) == 0){
