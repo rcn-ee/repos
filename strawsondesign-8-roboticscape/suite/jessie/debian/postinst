@@ -5,58 +5,61 @@
 set -e
 . /usr/share/debconf/confmodule
  
+if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
+	# Fetching configuration from debconf
+	# for answer to startup program
+	db_get roboticscape/question1
+	PROG=$RET
+fi
 
-#if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
-#	# Fetching configuration from debconf
-#	# for answer to startup program
-#	db_get roboticscape/question1
-#	PROG=$RET
-
-#	echo "user selected $PROG"
-#fi
+echo "user selected $PROG"
 
 if [ ! -d "/etc/roboticscape" ]; then
   echo "making /etc/roboticscape"
   mkdir /etc/roboticscape
 fi
 
-#if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
-#	if [ "$PROG" = "blink" ]; then
-#		ln -s -f /usr/bin/blink /etc/roboticscape/link_to_startup_program
-#	elif  [ "$PROG" = "balance" ]; then
-#		ln -s -f /usr/bin/balance /etc/roboticscape/link_to_startup_program
-#	elif  [ "$PROG" = "none" ]; then
-#		ln -s -f /usr/bin/bare_minimum /etc/roboticscape/link_to_startup_program
-#	else
-#		echo "invalid answer to question"
-#		exit 1
-#	fi
-#fi
+if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
+	if [ "$PROG" = "rc_blink" ]; then
+		ln -s -f /usr/bin/rc_blink /etc/roboticscape/link_to_startup_program
+	elif  [ "$PROG" = "rc_balance" ]; then
+		ln -s -f /usr/bin/rc_balance /etc/roboticscape/link_to_startup_program
+	elif  [ "$PROG" = "none" ]; then
+		ln -s -f /usr/bin/rc_bare_minimum /etc/roboticscape/link_to_startup_program
+	else
+		echo "invalid answer to question"
+		exit 1
+	fi
 
-	# enable services
+	# enable roboticscape service
 	echo "systemctl daemon-reload"
 	systemctl daemon-reload
-	echo "Enabling battery_monitor Service"
-	systemctl enable battery_monitor
-	echo "Starting battery_monitor Service"
-	systemctl start battery_monitor
-
-if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
 	echo "Enabling roboticscape Service"
-#	systemctl enable roboticscape
+	systemctl enable roboticscape
 
-#	echo "Configuring Device Tree"
-#	configure_robotics_dt.sh
-#	echo "Done Configuring Device Tree"
+	# enable rc_battery_monitor
+	echo "Enabling rc_battery_monitor Service"
+	systemctl enable rc_battery_monitor
+	echo "Starting rc_battery_monitor Service"
+	systemctl start rc_battery_monitor
 
-	echo "to configure:"
+	echo "Configuring Device Tree"
+	configure_robotics_dt.sh
+	echo "Done Configuring Device Tree"
+
+
+
 	echo " "
-	echo "systemctl enable roboticscape"
-	echo "sudo /usr/bin/configure_robotics_dt.sh"
+	echo " "
 	echo " "
 	echo "Robotics Cape package installation complete."
 	echo "Please reboot now."
 	echo " "
+	
+# in noninteractive mode still make a link for blink to start so something
+# happens when the user enables the roboticscape service for the first time
+else
+	ln -s -f /usr/bin/rc_blink /etc/roboticscape/link_to_startup_program
 fi
 
 exit 0

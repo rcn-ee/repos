@@ -4,7 +4,7 @@
 
 package_name="roboticscape"
 debian_pkg_name="${package_name}"
-package_version="0.3.1"
+package_version="0.3.1-git20170205"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
@@ -13,8 +13,8 @@ git_sha="8790d7b4de18a343cb22de85b8764ca4ae12082e"
 reprepro_dir="r/${package_name}"
 dl_path=""
 
-debian_version="${package_version}"
+debian_version="${package_version}-0rcnee0"
 debian_patch=""
 debian_diff=""
 
-jessie_version="~bpo80+20161219+1"
+jessie_version="~bpo80+20170206+1"
