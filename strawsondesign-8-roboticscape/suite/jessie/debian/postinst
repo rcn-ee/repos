@@ -5,13 +5,21 @@
 set -e
 . /usr/share/debconf/confmodule
  
-if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
-	# Fetching configuration from debconf
-	# for answer to startup program
-	db_get roboticscape/question1
-	PROG=$RET
-fi
+#if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
+#	# Fetching configuration from debconf
+#	# for answer to startup program
+#	db_get roboticscape/question1
+#	PROG=$RET
+#fi
 
+echo "Robotics Cape package, to setup: rc_blink"
+echo "sudo ln -s -f /usr/bin/rc_blink /etc/roboticscape/link_to_startup_program"
+echo "Robotics Cape package, to setup: rc_balance"
+echo "sudo ln -s -f /usr/bin/rc_balance /etc/roboticscape/link_to_startup_program"
+echo "Robotics Cape package, to setup: none"
+echo "sudo ln -s -f /usr/bin/rc_bare_minimum /etc/roboticscape/link_to_startup_program"
+
+PROG=none
 echo "user selected $PROG"
 
 if [ ! -d "/etc/roboticscape" ]; then
@@ -27,8 +35,9 @@ if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
 	elif  [ "$PROG" = "none" ]; then
 		ln -s -f /usr/bin/rc_bare_minimum /etc/roboticscape/link_to_startup_program
 	else
-		echo "invalid answer to question"
-		exit 1
+		#echo "invalid answer to question"
+		#exit 1
+		ln -s -f /usr/bin/rc_bare_minimum /etc/roboticscape/link_to_startup_program
 	fi
 
 	# enable roboticscape service
@@ -43,9 +52,8 @@ if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
 	echo "Starting rc_battery_monitor Service"
 	systemctl start rc_battery_monitor
 
-	echo "Configuring Device Tree"
-	configure_robotics_dt.sh
-	echo "Done Configuring Device Tree"
+	echo "Robotics Cape package, To Configure Device Tree"
+	echo "sudo configure_robotics_dt.sh"
 
 
 
