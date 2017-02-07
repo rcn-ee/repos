@@ -51,9 +51,9 @@ else
 		GALLIUM_DRIVERS += vc4
 	endif
 
-	ifneq (,$(filter $(DEB_HOST_ARCH),armhf))
-		GALLIUM_DRIVERS += etnaviv
-		GALLIUM_DRIVERS += imx
+	# etnaviv kernel support is currently only available on armhf
+	ifneq (,$(filter $(DEB_HOST_ARCH), armhf))
+		GALLIUM_DRIVERS += etnaviv imx
 	endif
 
 	# svga needs xa state tracker
@@ -95,6 +95,7 @@ else
 	GALLIUM_DRIVERS += swrast
   else
 	DRI_DRIVERS += swrast
+	confflags_GALLIUM += --disable-gallium-llvm
   endif
 
   # radv needs LLVM and the Vulkan loader, so only build on the subset of
@@ -191,11 +192,8 @@ override_dh_install:
 
   # Remove vulkan headers only where they get installed in tmp
   # We ship those headers via src:vulkan / libvulkan-dev
-  ifneq (,$(filter $(DEB_HOST_ARCH),amd64 i386 arm64 armhf ppc64el x32))
-	set -e; for file in vk_platform.h vulkan.h; do rm debian/tmp/usr/include/vulkan/$$file; done
-    ifneq (,$(filter $(DEB_HOST_ARCH),amd64 i386 x32))
+  ifneq (,$(filter $(DEB_HOST_ARCH),amd64 i386 x32))
 	rm debian/tmp/usr/include/vulkan/vulkan_intel.h
-    endif
 	rmdir debian/tmp/usr/include/vulkan
   endif
 
