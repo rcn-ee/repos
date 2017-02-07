@@ -47,24 +47,34 @@ else
 	ln -s -f /usr/bin/rc_bare_minimum /etc/roboticscape/link_to_startup_program
 fi
 
+	# enable services
 	echo "systemctl daemon-reload"
 	systemctl daemon-reload
-
-	# enable rc_battery_monitor
-	echo "Enabling rc_battery_monitor Service"
-	systemctl enable rc_battery_monitor
-	echo "Starting rc_battery_monitor Service"
-	systemctl start rc_battery_monitor
-
-if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
-	# enable roboticscape service
+	
 	echo "***********************************************"
 	echo "Enabling roboticscape Service"
 	echo "sudo systemctl enable roboticscape"
+	echo "***********************************************"
+	
+	echo "Enabling rc_battery_monitor Service"
+	systemctl enable rc_battery_monitor
+	
+	# try to start battery monitor, but ignore errors as this may not work
+	echo "Starting rc_battery_monitor Service"
+	set +e
+	systemctl start rc_battery_monitor
+
+if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
+	# leave error checking off when setting up device tree too
+	echo "***********************************************"
 	echo "Robotics Cape package, To Configure Device Tree"
 	echo "sudo configure_robotics_dt.sh"
 	echo "***********************************************"
 
+
+
+	echo " "
+	echo " "
 	echo " "
 	echo "Robotics Cape package installation complete."
 	echo "Please reboot now."
