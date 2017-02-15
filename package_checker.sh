@@ -336,19 +336,6 @@ mesa
 #bbgw
 ubuntu
 
-ros () {
-	#https://wiki.debian.org/DebianScience/Robotics/ROS/Packages
-	echo "ros: (jessie)"
-	site="${debian_pool}/main/r"
-	package_name="ros-catkin-pkg"; package_version="${package_name}_0.2.10-3"; check_http
-	package_name="ros-catkin"; package_version="${package_name}_0.7.4-2"; check_http
-	package_name="ros-cmake-modules"; package_version="${package_name}_0.4.0-2"; check_http
-	package_name="ros-message-generation"; package_version="${package_name}_0.4.0-1"; check_http
-	package_name="ros-message-runtime"; package_version="${package_name}_0.4.12-3"; check_http
-}
-
-ros
-
 #really slow...
 exit
 
