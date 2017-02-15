@@ -358,26 +358,9 @@ ros () {
 
 	site="${debian_pool}/main/l"
 	package_name="log4cxx"; package_version="${package_name}_0.10.0-12"; check_http
-
-	site="${debian_pool}/main/r"
-	package_name="ros-ros-comm"; package_version="${package_name}_1.12.6-2"; check_http
-	package_name="ros-roslisp"; package_version="${package_name}_1.9.20-1"; check_http
-	package_name="ros-actionlib"; package_version="${package_name}_1.11.7-1"; check_http
-	package_name="ros-dynamic-reconfigure"; package_version="${package_name}_1.5.46-1"; check_http
-
-	site="${debian_pool}/main/o"
-	package_name="orocos-kdl"; package_version="${package_name}_1.3.1+dfsg-1"; check_http
-
-
-	site="${debian_pool}/main/c"
-	package_name="collada-dom"; package_version="${package_name}_2.4.4+ds1-1"; check_http
-
-	site="${debian_pool}/main/a"
-	filter="3.2"
-	package_name="assimp"; package_version="${package_name}_3.2~dfsg-3~bpo8+1"; check_http
 }
 
-#ros
+ros
 
 #really slow...
 exit
