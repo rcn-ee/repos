@@ -15,8 +15,8 @@ sudo dpkg-reconfigure dash
 ```
 
 ```
-mkdir -p ti-sdk-03.01.00.06 ; \
-cd ./ti-sdk-03.01.00.06 ; \
+mkdir -p ti-sdk-03.02.00.05 ; \
+cd ./ti-sdk-03.02.00.05 ; \
 wget https://releases.linaro.org/components/toolchain/binaries/5.3-2016.02/arm-linux-gnueabihf/gcc-linaro-5.3-2016.02-x86_64_arm-linux-gnueabihf.tar.xz ;\
 tar xf gcc-linaro-5.3-2016.02-x86_64_arm-linux-gnueabihf.tar.xz
 ```
@@ -27,8 +27,11 @@ export PATH=`pwd`/gcc-linaro-5.3-2016.02-x86_64_arm-linux-gnueabihf/bin:$PATH
 
 ```
 git clone git://arago-project.org/git/projects/oe-layersetup.git tisdk ; \
-cd tisdk  ; \
-./oe-layertool-setup.sh -f configs/processor-sdk/processor-sdk-03.01.00.06-config.txt
+cd tisdk ; \
+./oe-layertool-setup.sh -f configs/processor-sdk/processor-sdk-03.02.00.05-config.txt ; \
+mkdir downloads ; \
+cp -v ../../dl/CCS6.1.3.00034_linux.tar.gz downloads/ ; \
+touch downloads/CCS6.1.3.00034_linux.tar.gz.done
 ```
 
 ```
