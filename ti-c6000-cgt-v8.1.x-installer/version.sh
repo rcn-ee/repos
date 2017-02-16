@@ -4,7 +4,7 @@
 
 package_name="ti-c6000-cgt-v8.1.x-installer"
 debian_pkg_name="${package_name}"
-package_version="8.1.2"
+package_version="8.1.3"
 package_source=""
 src_dir=""
 
@@ -18,7 +18,7 @@ debian_untar=""
 debian_patch=""
 local_patch="rcnee0"
 
-jessie_version="~bpo80+20161026+1"
-stretch_version="~bpo90+20161026+1"
-xenial_version="~bpo1604+20161026+1"
-zesty_version="~bpo1704+20161026+1"
+jessie_version="~bpo80+20170216+1"
+stretch_version="~bpo90+20170216+1"
+xenial_version="~bpo1604+20170216+1"
+zesty_version="~bpo1704+20170216+1"
