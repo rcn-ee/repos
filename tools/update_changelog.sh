@@ -53,7 +53,7 @@ suite="wheezy"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${wheezy_version}"
 	cat ${DIR}/version.sh | grep -v wheezy_version > ${DIR}/new-version.sh
-	echo "wheezy_version=\"~bpo70+${simple_date}+1\"" >> ${DIR}/new-version.sh
+	echo "wheezy_version=\"~bpo70+${simple_date}\"" >> ${DIR}/new-version.sh
 	mv ${DIR}/new-version.sh ${DIR}/version.sh
 	run
 fi
@@ -62,7 +62,7 @@ suite="jessie"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${jessie_version}"
 	cat ${DIR}/version.sh | grep -v jessie_version > ${DIR}/new-version.sh
-	echo "jessie_version=\"~bpo80+${simple_date}+1\"" >> ${DIR}/new-version.sh
+	echo "jessie_version=\"~bpo80+${simple_date}\"" >> ${DIR}/new-version.sh
 	mv ${DIR}/new-version.sh ${DIR}/version.sh
 	run
 fi
@@ -71,7 +71,7 @@ suite="stretch"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${stretch_version}"
 	cat ${DIR}/version.sh | grep -v stretch_version > ${DIR}/new-version.sh
-	echo "stretch_version=\"~bpo90+${simple_date}+1\"" >> ${DIR}/new-version.sh
+	echo "stretch_version=\"~bpo90+${simple_date}\"" >> ${DIR}/new-version.sh
 	mv ${DIR}/new-version.sh ${DIR}/version.sh
 	run
 fi
@@ -81,7 +81,7 @@ suite="trusty"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${trusty_version}"
 	cat ${DIR}/version.sh | grep -v trusty_version > ${DIR}/new-version.sh
-	echo "trusty_version=\"~bpo1404+${simple_date}+1\"" >> ${DIR}/new-version.sh
+	echo "trusty_version=\"~bpo1404+${simple_date}\"" >> ${DIR}/new-version.sh
 	mv ${DIR}/new-version.sh ${DIR}/version.sh
 	run
 fi
@@ -90,7 +90,7 @@ suite="xenial"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${xenial_version}"
 	cat ${DIR}/version.sh | grep -v xenial_version > ${DIR}/new-version.sh
-	echo "xenial_version=\"~bpo1604+${simple_date}+1\"" >> ${DIR}/new-version.sh
+	echo "xenial_version=\"~bpo1604+${simple_date}\"" >> ${DIR}/new-version.sh
 	mv ${DIR}/new-version.sh ${DIR}/version.sh
 	run
 fi
@@ -99,7 +99,7 @@ suite="yakkety"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${yakkety_version}"
 	cat ${DIR}/version.sh | grep -v yakkety_version > ${DIR}/new-version.sh
-	echo "yakkety_version=\"~bpo1610+${simple_date}+1\"" >> ${DIR}/new-version.sh
+	echo "yakkety_version=\"~bpo1610+${simple_date}\"" >> ${DIR}/new-version.sh
 	mv ${DIR}/new-version.sh ${DIR}/version.sh
 	run
 fi
@@ -108,7 +108,7 @@ suite="zesty"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${zesty_version}"
 	cat ${DIR}/version.sh | grep -v zesty_version > ${DIR}/new-version.sh
-	echo "zesty_version=\"~bpo1704+${simple_date}+1\"" >> ${DIR}/new-version.sh
+	echo "zesty_version=\"~bpo1704+${simple_date}\"" >> ${DIR}/new-version.sh
 	mv ${DIR}/new-version.sh ${DIR}/version.sh
 	run
 fi
