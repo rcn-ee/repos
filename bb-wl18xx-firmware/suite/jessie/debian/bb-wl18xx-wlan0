@@ -180,8 +180,11 @@ set_wlan_0_mac_from_bb_wl18xx () {
 }
 
 start_tether () {
+	connmanctl_bin=$(which connmanctl)
 	if [ "x${TETHER_ENABLED}" = "xyes" ] ; then
-		/usr/bin/bb-wl18xx-tether || true
+		if [ -f ${connmanctl_bin} ] ; then
+			/usr/bin/bb-wl18xx-tether || true
+		fi
 	fi
 }
 
