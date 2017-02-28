@@ -1,53 +1,41 @@
 #!/bin/sh
 
 # don't put anything before here or it will break debconf!
-# Source debconf library.
-set -e
-. /usr/share/debconf/confmodule
+
+set -e	# exit on error
+. /usr/share/debconf/confmodule # Source debconf library.
  
-#if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
-#	# Fetching configuration from debconf
-#	# for answer to startup program
-#	db_get roboticscape/question1
-#	PROG=$RET
-#fi
-
-echo "***********************************************"
-echo "Robotics Cape package, to setup: rc_blink"
-echo "sudo ln -s -f /usr/bin/rc_blink /etc/roboticscape/link_to_startup_program"
-echo "Robotics Cape package, to setup: rc_balance"
-echo "sudo ln -s -f /usr/bin/rc_balance /etc/roboticscape/link_to_startup_program"
-echo "Robotics Cape package, to setup: none"
-echo "sudo ln -s -f /usr/bin/rc_bare_minimum /etc/roboticscape/link_to_startup_program"
-echo "***********************************************"
-
-PROG=none
-echo "user selected $PROG"
-
-if [ ! -d "/etc/roboticscape" ]; then
-  echo "making /etc/roboticscape"
-  mkdir /etc/roboticscape
-fi
-
 if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
-	if [ "$PROG" = "rc_blink" ]; then
-		ln -s -f /usr/bin/rc_blink /etc/roboticscape/link_to_startup_program
-	elif  [ "$PROG" = "rc_balance" ]; then
-		ln -s -f /usr/bin/rc_balance /etc/roboticscape/link_to_startup_program
-	elif  [ "$PROG" = "none" ]; then
-		ln -s -f /usr/bin/rc_bare_minimum /etc/roboticscape/link_to_startup_program
-	else
-		#echo "invalid answer to question"
-		#exit 1
-		ln -s -f /usr/bin/rc_bare_minimum /etc/roboticscape/link_to_startup_program
+
+	# Fetching configuration from debconf
+	db_get roboticscape/q_enable_dt
+	ENABLE_DT=$RET
+	db_get roboticscape/q_runonboot
+	PROG=$RET
+
+	# set something or nothing to run on boot. Default was 'none' which removes
+	# any existing link. If 'existing' was selected then link is left alone
+	echo "**********************************************"
+	 # make sure /etc/roboticscape exists
+	if [ ! -d "/etc/roboticscape" ]; then
+		echo "making /etc/roboticscape"
+		mkdir /etc/roboticscape
 	fi
-# in noninteractive mode still make a link for blink to start so something
-# happens when the user enables the roboticscape service for the first time
-else
-	ln -s -f /usr/bin/rc_bare_minimum /etc/roboticscape/link_to_startup_program
-fi
+	if [ "$PROG" = "rc_blink" ]; then
+		echo "setting rc_blink to run on boot"
+		ln -s -f /usr/bin/rc_blink /etc/roboticscape/link_to_startup_program
+	elif [ "$PROG" = "rc_balance" ]; then
+		ln -s -f /usr/bin/rc_balance /etc/roboticscape/link_to_startup_program
+		echo "setting rc_balance to run on boot"
+	elif [ "$PROG" = "none" ]; then
+		echo "setting nothing to run on boot"
+		rm -f /etc/roboticscape/link_to_startup_program
+	else
+		echo "leaving current roboticscape startup program alone"
+	fi
 
 	# enable services
+	echo "**********************************************"
 	echo "systemctl daemon-reload"
 	systemctl daemon-reload
 	
@@ -58,27 +46,25 @@ fi
 	
 	echo "Enabling rc_battery_monitor Service"
 	systemctl enable rc_battery_monitor
-	
 	# try to start battery monitor, but ignore errors as this may not work
 	echo "Starting rc_battery_monitor Service"
 	set +e
 	systemctl start rc_battery_monitor
 
-if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
 	# leave error checking off when setting up device tree too
-	echo "***********************************************"
-	echo "Robotics Cape package, To Configure Device Tree"
-	echo "sudo configure_robotics_dt.sh"
-	echo "***********************************************"
+	if [ "$ENABLE_DT" = "true" ]; then
+		echo "**********************************************"
+		echo "Configuring Device Tree"
+		configure_robotics_dt.sh
+	fi
 
-
-
-	echo " "
-	echo " "
+	echo "**********************************************"
 	echo " "
 	echo "Robotics Cape package installation complete."
-	echo "Please reboot now."
+	if [ "$ENABLE_DT" = "true" ]; then echo "Please reboot now." ; fi
 	echo " "
+	echo "**********************************************"
+
 fi
 
 exit 0

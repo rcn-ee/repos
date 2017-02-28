@@ -38,8 +38,12 @@ if [ ! "$DEBIAN_FRONTEND" = "noninteractive" ] ; then
 	echo "**********************************************"
 	echo "systemctl daemon-reload"
 	systemctl daemon-reload
+	
+	echo "***********************************************"
 	echo "Enabling roboticscape Service"
-	systemctl enable roboticscape
+	echo "sudo systemctl enable roboticscape"
+	echo "***********************************************"
+	
 	echo "Enabling rc_battery_monitor Service"
 	systemctl enable rc_battery_monitor
 	# try to start battery monitor, but ignore errors as this may not work
