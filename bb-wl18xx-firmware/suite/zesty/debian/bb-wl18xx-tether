@@ -372,7 +372,7 @@ start_hostapd () {
 
 default () {
 	connman_disable_tether
-	if [ ! -d /sys/class/net/tether ] ; then
+	if [ "x${USE_CONNMAN_TETHER}" != "xyes" ] ; then
 
 		if [ "x${USE_WL18XX_IP_PREFIX}" = "x" ] ; then
 			USE_WL18XX_IP_PREFIX="192.168.8"
@@ -388,7 +388,7 @@ default () {
 
 just_softap () {
 	connman_disable_tether
-	if [ ! -d /sys/class/net/tether ] ; then
+	if [ "x${USE_CONNMAN_TETHER}" != "xyes" ] ; then
 
 		if [ "x${USE_WL18XX_IP_PREFIX}" = "x" ] ; then
 			USE_WL18XX_IP_PREFIX="192.168.8"
