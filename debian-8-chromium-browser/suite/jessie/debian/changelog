@@ -1,15 +1,39 @@
-chromium-browser (55.0.2883.87-0ubuntu2.1328~bpo80+20161220+1) jessie; urgency=low
+chromium-browser (56.0.2924.76-0ubuntu0.16.10.1335~bpo80+20170306) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Tue, 20 Dec 2016 14:23:12 -0600
+ -- Robert Nelson <robertcnelson@gmail.com>  Mon, 06 Mar 2017 09:46:26 -0600
 
-chromium-browser (55.0.2883.87-0ubuntu2.1328) zesty; urgency=medium
+chromium-browser (56.0.2924.76-0ubuntu0.16.10.1335) yakkety-security; urgency=medium
 
-  * debian/rules: Build extra codecs as part of main chromium program,
-    and libre/crippled/h.264less on its own. Seems to make h.264 work 
-    again. Weird.
-  * debian/chromium-browser.links: Make link to ./ instead of / to fix
-    path problems that codec-using other apps might see.
+  * Upstream release: 56.0.2924.76
+    - CVE-2017-5007: Universal XSS in Blink.
+    - CVE-2017-5006: Universal XSS in Blink.
+    - CVE-2017-5008: Universal XSS in Blink.
+    - CVE-2017-5010: Universal XSS in Blink.
+    - CVE-2017-5011: Unauthorised file access in Devtools.
+    - CVE-2017-5009: Out of bounds memory access in WebRTC.
+    - CVE-2017-5012: Heap overflow in V8.
+    - CVE-2017-5013: Address spoofing in Omnibox.
+    - CVE-2017-5014: Heap overflow in Skia.
+    - CVE-2017-5015: Address spoofing in Omnibox.
+    - CVE-2017-5019: Use after free in Renderer.
+    - CVE-2017-5016: UI spoofing in Blink.
+    - CVE-2017-5017: Uninitialised memory access in webm video.
+    - CVE-2017-5018: Universal XSS in chrome://apps.
+    - CVE-2017-5020: Universal XSS in chrome://downloads.
+    - CVE-2017-5021: Use after free in Extensions.
+    - CVE-2017-5022: Bypass of Content Security Policy in Blink.
+    - CVE-2017-5023: Type confusion in metrics.
+    - CVE-2017-5024: Heap overflow in FFmpeg.
+    - CVE-2017-5025: Heap overflow in FFmpeg.
+    - CVE-2017-5026: UI spoofing.
+  * debian/patches/screen_capturer: allow compilation on gcc4
+  * debian/patches/arm64-support: reenable arm64
+  * debian/patches/memory-free-assertion-failure: discover memory management
+    assertion failures.
+  * debian/rules: Avoid field trial experiments to get stable code.
+    (closes: LP#1667125)
+  * debian/patches/enable-chromecast-by-default: (closes: LP#1621753)
 
- -- Chad MILLER <chad.miller@canonical.com>  Sat, 17 Dec 2016 12:05:53 -0500
+ -- Chad MILLER <chad.miller@canonical.com>  Wed, 22 Feb 2017 17:20:28 -0500

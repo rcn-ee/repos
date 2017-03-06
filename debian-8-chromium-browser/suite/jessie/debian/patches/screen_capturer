@@ -1,0 +1,11 @@
+--- a/third_party/webrtc/modules/desktop_capture/screen_capturer_x11.cc
++++ b/third_party/webrtc/modules/desktop_capture/screen_capturer_x11.cc
+@@ -412,7 +412,7 @@ std::unique_ptr<DesktopCapturer> Desktop
+     return nullptr;
+   }
+ 
+-  return capturer;
++  return std::move(capturer);
+ }
+ 
+ }  // namespace webrtc

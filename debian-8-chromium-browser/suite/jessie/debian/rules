@@ -63,7 +63,6 @@ export CPP := $(shell which g++-4 g+++5 g++ c++ |head -1)
 
 # disabled features
 common_defines+=\
-	enable_clipboard_aurax11=true \
 	enable_google_now=false \
 	enable_hangout_services_extension=true \
 	enable_hotwording=false \
@@ -72,6 +71,7 @@ common_defines+=\
 	enable_wayland_server=false \
 	enable_webrtc=true \
 	enable_widevine=true \
+	fieldtrial_testing_like_official_build=true \
 	is_component_build=true \
 	is_component_ffmpeg=true \
 	is_debug=false \
@@ -130,7 +130,7 @@ common_defines += target_cpu="arm"
 #common_defines += arm_optionally_use_neon=false   # implies Android in 2016-10
 common_defines += arm_use_neon=false
 common_defined += arm_float_abi="hard" arm_use_thumb=true
-else ifeq (aarch64,$(DEB_HOST_ARCH))
+else ifeq (arm64,$(DEB_HOST_ARCH))
 common_defines += target_cpu="arm64"
 else ifeq (i386,$(DEB_HOST_ARCH))
 common_defines += target_cpu="x86"
@@ -146,7 +146,7 @@ endif
 
 ifeq (armel,$(DEB_BUILD_ARCH))
 else ifeq (armhf,$(DEB_BUILD_ARCH))
-else ifeq (aarch64,$(DEB_BUILD_ARCH))
+else ifeq (arm64,$(DEB_BUILD_ARCH))
 else ifeq (i386,$(DEB_BUILD_ARCH))
 else ifeq (amd64,$(DEB_BUILD_ARCH))
 else ifeq (mipsel,$(DEB_BUILD_ARCH))
@@ -391,6 +391,7 @@ override_dh_clean:
 	echo Compare to https://commondatastorage.googleapis.com/chromium-browser-official/chromium-$(DEBIAN_UPSTREAM_VERSION).tar.xz.hashes
 	echo
 
+	-find native_client build/linux third_party/binutils -type f -executable -exec chmod -x {} \;
 
 debian/chromium-browser.sh: debian/chromium-browser.sh.in
 	### configure

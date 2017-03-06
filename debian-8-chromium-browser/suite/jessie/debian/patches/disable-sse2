@@ -33,7 +33,7 @@ debian-bug: http://bugs.debian.org/750361
  #include <xmmintrin.h>
  #define CONVOLVE_FUNC Convolve_SSE
  #elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
-@@ -343,7 +343,7 @@ float SincResampler::Convolve_C(const fl
+@@ -328,7 +328,7 @@ float SincResampler::Convolve_C(const fl
        kernel_interpolation_factor * sum2);
  }
  
@@ -208,33 +208,33 @@ debian-bug: http://bugs.debian.org/750361
  #include <emmintrin.h>
  #endif
  
-@@ -637,7 +637,7 @@ float AudioParamTimeline::valuesForFrame
+@@ -662,7 +662,7 @@ float AudioParamTimeline::valuesForFrame
      // the next event.
      if (nextEventType == ParamEvent::LinearRampToValue) {
        const float valueDelta = value2 - value1;
 -#if CPU(X86) || CPU(X86_64)
 +#if CPU(X86_64)
-       // Minimize in-loop operations. Calculate starting value and increment.
-       // Next step: value += inc.
-       //  value = value1 +
-@@ -813,7 +813,7 @@ float AudioParamTimeline::valuesForFrame
+       if (fillToFrame > writeIndex) {
+         // Minimize in-loop operations. Calculate starting value and increment.
+         // Next step: value += inc.
+@@ -841,7 +841,7 @@ float AudioParamTimeline::valuesForFrame
              for (; writeIndex < fillToFrame; ++writeIndex)
                values[writeIndex] = target;
            } else {
 -#if CPU(X86) || CPU(X86_64)
 +#if CPU(X86_64)
-             // Resolve recursion by expanding constants to achieve a 4-step loop
-             // unrolling.
-             // v1 = v0 + (t - v0) * c
-@@ -926,7 +926,7 @@ float AudioParamTimeline::valuesForFrame
+             if (fillToFrame > writeIndex) {
+               // Resolve recursion by expanding constants to achieve a 4-step
+               // loop unrolling.
+@@ -959,7 +959,7 @@ float AudioParamTimeline::valuesForFrame
            // Oversampled curve data can be provided if sharp discontinuities are
            // desired.
            unsigned k = 0;
 -#if CPU(X86) || CPU(X86_64)
 +#if CPU(X86_64)
-           const __m128 vCurveVirtualIndex = _mm_set_ps1(curveVirtualIndex);
-           const __m128 vCurvePointsPerFrame = _mm_set_ps1(curvePointsPerFrame);
-           const __m128 vNumberOfCurvePointsM1 =
+           if (fillToFrame > writeIndex) {
+             const __m128 vCurveVirtualIndex = _mm_set_ps1(curveVirtualIndex);
+             const __m128 vCurvePointsPerFrame =
 --- a/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp
 +++ b/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp
 @@ -35,7 +35,7 @@
@@ -295,7 +295,7 @@ debian-bug: http://bugs.debian.org/750361
  #include <emmintrin.h>
  #endif
  
-@@ -169,7 +169,7 @@ void vsma(const float* sourceP,
+@@ -173,7 +173,7 @@ void vsma(const float* sourceP,
            size_t framesToProcess) {
    int n = framesToProcess;
  
@@ -304,7 +304,7 @@ debian-bug: http://bugs.debian.org/750361
    if ((sourceStride == 1) && (destStride == 1)) {
      float k = *scale;
  
-@@ -246,7 +246,7 @@ void vsmul(const float* sourceP,
+@@ -271,7 +271,7 @@ void vsmul(const float* sourceP,
             size_t framesToProcess) {
    int n = framesToProcess;
  
@@ -313,7 +313,7 @@ debian-bug: http://bugs.debian.org/750361
    if ((sourceStride == 1) && (destStride == 1)) {
      float k = *scale;
  
-@@ -317,7 +317,7 @@ void vsmul(const float* sourceP,
+@@ -360,7 +360,7 @@ void vsmul(const float* sourceP,
        sourceP += sourceStride;
        destP += destStride;
      }
@@ -322,7 +322,7 @@ debian-bug: http://bugs.debian.org/750361
    }
  #endif
  }
-@@ -331,7 +331,7 @@ void vadd(const float* source1P,
+@@ -374,7 +374,7 @@ void vadd(const float* source1P,
            size_t framesToProcess) {
    int n = framesToProcess;
  
@@ -331,7 +331,7 @@ debian-bug: http://bugs.debian.org/750361
    if ((sourceStride1 == 1) && (sourceStride2 == 1) && (destStride == 1)) {
      // If the sourceP address is not 16-byte aligned, the first several frames
      // (at most three) should be processed separately.
-@@ -438,7 +438,7 @@ void vadd(const float* source1P,
+@@ -501,7 +501,7 @@ void vadd(const float* source1P,
        source2P += sourceStride2;
        destP += destStride;
      }
@@ -340,7 +340,7 @@ debian-bug: http://bugs.debian.org/750361
    }
  #endif
  }
-@@ -452,7 +452,7 @@ void vmul(const float* source1P,
+@@ -515,7 +515,7 @@ void vmul(const float* source1P,
            size_t framesToProcess) {
    int n = framesToProcess;
  
@@ -349,7 +349,7 @@ debian-bug: http://bugs.debian.org/750361
    if ((sourceStride1 == 1) && (sourceStride2 == 1) && (destStride == 1)) {
      // If the source1P address is not 16-byte aligned, the first several frames
      // (at most three) should be processed separately.
-@@ -532,7 +532,7 @@ void zvmul(const float* real1P,
+@@ -615,7 +615,7 @@ void zvmul(const float* real1P,
             float* imagDestP,
             size_t framesToProcess) {
    unsigned i = 0;
@@ -358,7 +358,7 @@ debian-bug: http://bugs.debian.org/750361
    // Only use the SSE optimization in the very common case that all addresses
    // are 16-byte aligned.  Otherwise, fall through to the scalar code below.
    if (!(reinterpret_cast<uintptr_t>(real1P) & 0x0F) &&
-@@ -591,7 +591,7 @@ void vsvesq(const float* sourceP,
+@@ -674,7 +674,7 @@ void vsvesq(const float* sourceP,
    int n = framesToProcess;
    float sum = 0;
  
@@ -367,7 +367,7 @@ debian-bug: http://bugs.debian.org/750361
    if (sourceStride == 1) {
      // If the sourceP address is not 16-byte aligned, the first several frames
      // (at most three) should be processed separately.
-@@ -660,7 +660,7 @@ void vmaxmgv(const float* sourceP,
+@@ -743,7 +743,7 @@ void vmaxmgv(const float* sourceP,
    int n = framesToProcess;
    float max = 0;
  
