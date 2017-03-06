@@ -143,7 +143,7 @@ fi
 unset test_new_option
 test_new_option=$(cat /etc/connman/main.conf | grep usb1 || true)
 if [ "x${test_new_option}" = "x" ] ; then
-	sed -i -e 's:SoftAp0,usb0:SoftAp0,usb0,usb1' /etc/connman/main.conf
+	sed -i -e 's:SoftAp0,usb0:SoftAp0,usb0,usb1:g' /etc/connman/main.conf
 fi
 
 if [ ! -f /var/lib/connman/settings ] ; then
