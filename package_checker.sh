@@ -318,7 +318,8 @@ bbgw () {
 
 ubuntu () {
 	site="http://ports.ubuntu.com/pool/universe/c"
-	package_name="chromium-browser" ; package_version="${package_name}_56.0.2924.76-0ubuntu0.16.10.1335" ; check_http
+	filter="16.04"
+	package_name="chromium-browser" ; package_version="${package_name}_56.0.2924.76-0ubuntu0.16.04.1268" ; check_http
 
 #	site="http://ports.ubuntu.com/pool/main/w"
 #	package_name="wpa" ; package_version="${package_name}_2.4-0ubuntu6" ; check_http

@@ -345,6 +345,8 @@ override_dh_install-indep: SPACE := $(eval) $(eval)
 override_dh_install-indep: T := verify-install-integrity-indep
 override_dh_install-indep:
 
+	mkdir -p "$(T)"
+
 	### Step 1: install into tmp
 	mkdir -p debian/tmp/$(LIB_DIR)
 	(cd out/Release && tar --remove-files -cf - $$(find *locales -type f -name \*.pak \! -name en-US.pak) --dereference;) | (cd debian/tmp/$(LIB_DIR) && tar xvf -;)
