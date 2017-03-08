@@ -20,7 +20,7 @@ Build-Depends:
  libxext-dev,
  libva-dev (>= 1.6.0) [linux-any kfreebsd-any],
  libvdpau-dev (>= 1.1.1) [linux-any kfreebsd-any],
- libvulkan-dev [amd64 i386 arm64 armhf ppc64el x32],
+ libvulkan-dev [amd64 arm64 armel armhf i386 mips mips64el mipsel powerpc ppc64 ppc64el x32],
  autoconf,
  automake,
  libtool,
@@ -48,7 +48,7 @@ Build-Depends:
  libclc-dev (>= 0.2.0+git20160907) [amd64 i386 kfreebsd-amd64 kfreebsd-i386 arm64 armhf],
 Vcs-Git: https://anonscm.debian.org/git/pkg-xorg/lib/mesa.git
 Vcs-Browser: https://anonscm.debian.org/cgit/pkg-xorg/lib/mesa.git
-Homepage: http://mesa3d.org/
+Homepage: https://mesa3d.org/
 
 Package: libxatracker2
 Section: libs
@@ -181,8 +181,7 @@ Depends:
  libegl1-mesa (= ${binary:Version})
 Provides: libwayland-egl1
 Conflicts: libwayland-egl1
-Replaces: libwayland-egl1, libegl1-mesa-drivers  (<< 10.1.0-2)
-Breaks: libegl1-mesa-drivers (<< 10.1.0-2)
+Replaces: libwayland-egl1
 Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
 Description: implementation of the Wayland EGL platform -- runtime
@@ -293,7 +292,6 @@ Conflicts: libgl1
 Replaces: libgl1
 Provides: libgl1
 Breaks:
- glx-diversions (<< 0.4),
  libopengl-perl (<< 0.6704+dfsg-2),
 Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
@@ -320,8 +318,6 @@ Depends:
  ${shlibs:Depends},
  ${misc:Depends}
 Recommends: libtxc-dxtn-s2tc | libtxc-dxtn-s2tc0 | libtxc-dxtn0
-Breaks:
- xserver-xorg-core (<< 2:1.14.3-5),
 Multi-Arch: same
 Description: free implementation of the OpenGL API -- DRI modules
  This version of Mesa provides GLX and DRI capabilities: it is capable of
@@ -462,19 +458,20 @@ Description: Mesa VDPAU video acceleration drivers
 
 Package: mesa-vulkan-drivers
 Section: libs
-Architecture: amd64 i386 arm64 armhf ppc64el x32
+Architecture: amd64 arm64 armel armhf i386 mips mips64el mipsel powerpc ppc64 ppc64el x32
 Pre-Depends: ${misc:Pre-Depends}
 Depends:
  libvulkan1,
  ${shlibs:Depends},
  ${misc:Depends}
+Multi-Arch: same
 Description: Mesa Vulkan graphics drivers
  Vulkan is a low-overhead 3D graphics and compute API. This package
  includes Vulkan drivers provided by the Mesa project.
 
 Package: mesa-opencl-icd
 Section: libs
-Architecture: amd64 i386 kfreebsd-amd64 kfreebsd-i386 arm64 armhf
+Architecture: amd64 arm64 armel armhf i386 kfreebsd-amd64 kfreebsd-i386 mips mips64el mipsel powerpc ppc64 ppc64el
 Pre-Depends: ${misc:Pre-Depends}
 Depends:
  libclc-r600 (>= 0.2.0+git20160907),
