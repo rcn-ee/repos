@@ -17,9 +17,10 @@ build () {
 	echo "-----------------"
 	echo "sbuild ${options} ${mirror}/${dl_path}${package_name}_${debian_version}.dsc"
 	echo "-----------------"
-	sbuild ${options} ${mirror}/${dl_path}${package_name}_${debian_version}.dsc
+	sudo sbuild ${options} ${mirror}/${dl_path}${package_name}_${debian_version}.dsc
 
 	if [ -f *.changes ] ; then
+		sudo chown -R 1000:1000 ./*
 		if [ -d ${out_dir} ] ; then
 			rm -rf ${out_dir}
 		fi
@@ -39,7 +40,7 @@ build () {
 
 cleanup_suite () {
 	if [ -d ./${suite} ] ; then
-		rm -rf ./${suite}/
+		sudo rm -rf ./${suite}/
 	fi
 }
 
