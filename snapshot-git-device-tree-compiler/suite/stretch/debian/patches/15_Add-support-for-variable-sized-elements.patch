@@ -1,0 +1,400 @@
+From: Anton Staaf <robotboy@chromium.org>
+Date: Tue, 11 Oct 2011 17:22:29 +0000 (-0700)
+Subject: dtc: Add support for variable sized elements
+X-Git-Url: http://git.jdl.com/gitweb/?p=dtc.git;a=commitdiff_plain;h=033089f29099bdfd5c2d6986cdb9fd07b16cfde0
+
+dtc: Add support for variable sized elements
+
+Elements of size 8, 16, 32, and 64 bits are supported.  The new
+/bits/ syntax was selected so as to not pollute the reserved
+keyword space with uint8/uint16/... type names.
+
+With this patch the following property assignment:
+
+    property = /bits/ 16 <0x1234 0x5678 0x0 0xffff>;
+
+is equivalent to:
+
+    property = <0x12345678 0x0000ffff>;
+
+It is now also possible to directly specify a 64 bit literal in a
+cell list, also known as an array using:
+
+    property = /bits/ 64 <0xdeadbeef00000000>;
+
+It is an error to attempt to store a literal into an element that is
+too small to hold the literal, and the compiler will generate an
+error when it detects this.  For instance:
+
+    property = /bits/ 8 <256>;
+
+Will fail to compile.  It is also an error to attempt to place a
+reference in a non 32-bit element.
+
+The documentation has been changed to reflect that the cell list
+is now an array of elements that can be of sizes other than the
+default 32-bit cell size.
+
+The sized_cells test tests the creation and access of 8, 16, 32,
+and 64-bit sized elements.  It also tests that the creation of two
+properties, one with 16 bit elements and one with 32 bit elements
+result in the same property contents.
+
+Signed-off-by: Anton Staaf <robotboy@chromium.org>
+Acked-by: David Gibson <david@gibson.dropbear.id.au>
+---
+
+diff --git a/Documentation/dts-format.txt b/Documentation/dts-format.txt
+index eae8b76..41741df 100644
+--- a/Documentation/dts-format.txt
++++ b/Documentation/dts-format.txt
+@@ -29,18 +29,28 @@ except for properties with empty (zero length) value which have the
+ form:
+ 	[label:] property-name;
+ 
+-Property values may be defined as an array of 32-bit integer cells, as
+-NUL-terminated strings, as bytestrings or a combination of these.
++Property values may be defined as an array of 8, 16, 32, or 64-bit integer
++elements, as NUL-terminated strings, as bytestrings or a combination of these.
+ 
+-* Arrays of cells are represented by angle brackets surrounding a
+-  space separated list of C-style integers or character literals.
++* Arrays are represented by angle brackets surrounding a space separated list
++  of C-style integers or character literals.  Array elements default to 32-bits
++  in size.  An array of 32-bit elements is also known as a cell list or a list
++  of cells.  A cell being an unsigned 32-bit integer.
+ 
+ 	e.g. interrupts = <17 0xc>;
+ 
+-* A 64-bit value is represented with two 32-bit cells.
++* A 64-bit value can be represented with two 32-bit elements.
+ 
+ 	e.g. clock-frequency = <0x00000001 0x00000000>;
+ 
++* The storage size of an element can be changed using the /bits/ prefix.  The
++  /bits/ prefix allows for the creation of 8, 16, 32, and 64-bit elements.
++  The resulting array will not be padded to a multiple of the default 32-bit
++  element size.
++
++	e.g. interrupts = /bits/ 8 <17 0xc>;
++	e.g. clock-frequency = /bits/ 64 <0x0000000100000000>;
++
+ * A NUL-terminated string value is represented using double quotes
+   (the property value is considered to include the terminating NUL
+   character).
+@@ -59,19 +69,20 @@ NUL-terminated strings, as bytestrings or a combination of these.
+ 	e.g. compatible = "ns16550", "ns8250";
+ 	     example = <0xf00f0000 19>, "a strange property format";
+ 
+-* In a cell array a reference to another node will be expanded to that
+-  node's phandle.  References may by '&' followed by a node's label:
++* In an array a reference to another node will be expanded to that node's
++  phandle.  References may by '&' followed by a node's label:
+ 	e.g. interrupt-parent = < &mpic >;
+   or they may be '&' followed by a node's full path in braces:
+ 	e.g. interrupt-parent = < &{/soc/interrupt-controller@40000} >;
++  References are only permitted in arrays that have an element size of
++  32-bits.
+ 
+-* Outside a cell array, a reference to another node will be expanded
+-  to that node's full path.
++* Outside an array, a reference to another node will be expanded to that
++  node's full path.
+ 	e.g. ethernet0 = &EMAC0;
+ 
+ * Labels may also appear before or after any component of a property
+-  value, or between cells of a cell array, or between bytes of a
+-  bytestring.
++  value, or between elements of an array, or between bytes of a bytestring.
+ 	e.g. reg = reglabel: <0 sizelabel: 0x1000000>;
+ 	e.g. prop = [ab cd ef byte4: 00 ff fe];
+ 	e.g. str = start: "string value" end: ;
+@@ -108,3 +119,4 @@ Version 1 DTS files have the overall layout:
+ 
+ 	-- David Gibson <david@gibson.dropbear.id.au>
+ 	-- Yoder Stuart <stuart.yoder@freescale.com>
++	-- Anton Staaf <robotboy@chromium.org>
+diff --git a/dtc-lexer.l b/dtc-lexer.l
+index 494e342..73d190c 100644
+--- a/dtc-lexer.l
++++ b/dtc-lexer.l
+@@ -97,6 +97,12 @@ static int pop_input_file(void);
+ 			return DT_MEMRESERVE;
+ 		}
+ 
++<*>"/bits/"	{
++			DPRINT("Keyword: /bits/\n");
++			BEGIN_DEFAULT();
++			return DT_BITS;
++		}
++
+ <*>{LABEL}:	{
+ 			DPRINT("Label: %s\n", yytext);
+ 			yylval.labelref = xstrdup(yytext);
+diff --git a/dtc-parser.y b/dtc-parser.y
+index 554f11a..348616b 100644
+--- a/dtc-parser.y
++++ b/dtc-parser.y
+@@ -45,8 +45,12 @@ static unsigned char eval_char_literal(const char *s);
+ 	uint8_t byte;
+ 	struct data data;
+ 
++	struct {
++		struct data	data;
++		int		bits;
++	} array;
++
+ 	uint64_t addr;
+-	cell_t cell;
+ 	struct property *prop;
+ 	struct property *proplist;
+ 	struct node *node;
+@@ -56,6 +60,7 @@ static unsigned char eval_char_literal(const char *s);
+ 
+ %token DT_V1
+ %token DT_MEMRESERVE
++%token DT_BITS
+ %token <propnodename> DT_PROPNODENAME
+ %token <literal> DT_LITERAL
+ %token <literal> DT_CHAR_LITERAL
+@@ -71,8 +76,7 @@ static unsigned char eval_char_literal(const char *s);
+ %type <re> memreserve
+ %type <re> memreserves
+ %type <addr> addr
+-%type <data> celllist
+-%type <cell> cellval
++%type <array> arrayprefix
+ %type <data> bytestring
+ %type <prop> propdef
+ %type <proplist> proplist
+@@ -182,9 +186,9 @@ propdata:
+ 		{
+ 			$$ = data_merge($1, $2);
+ 		}
+-	| propdataprefix '<' celllist '>'
++	| propdataprefix arrayprefix '>'
+ 		{
+-			$$ = data_merge($1, $3);
++			$$ = data_merge($1, $2.data);
+ 		}
+ 	| propdataprefix '[' bytestring ']'
+ 		{
+@@ -242,34 +246,56 @@ propdataprefix:
+ 		}
+ 	;
+ 
+-celllist:
+-	  /* empty */
++arrayprefix:
++	DT_BITS DT_LITERAL '<'
+ 		{
+-			$$ = empty_data;
++			$$.data = empty_data;
++			$$.bits = eval_literal($2, 0, 7);
++
++			if (($$.bits !=  8) &&
++			    ($$.bits != 16) &&
++			    ($$.bits != 32) &&
++			    ($$.bits != 64))
++			{
++				print_error("Only 8, 16, 32 and 64-bit elements"
++					    " are currently supported");
++				$$.bits = 32;
++			}
+ 		}
+-	| celllist cellval
++	| '<'
+ 		{
+-			$$ = data_append_cell($1, $2);
++			$$.data = empty_data;
++			$$.bits = 32;
+ 		}
+-	| celllist DT_REF
++	| arrayprefix DT_LITERAL
+ 		{
+-			$$ = data_append_cell(data_add_marker($1, REF_PHANDLE,
+-							      $2), -1);
++			uint64_t val = eval_literal($2, 0, $1.bits);
++
++			$$.data = data_append_integer($1.data, val, $1.bits);
+ 		}
+-	| celllist DT_LABEL
++	| arrayprefix DT_CHAR_LITERAL
+ 		{
+-			$$ = data_add_marker($1, LABEL, $2);
+-		}
+-	;
++			uint64_t val = eval_char_literal($2);
+ 
+-cellval:
+-	  DT_LITERAL
++			$$.data = data_append_integer($1.data, val, $1.bits);
++		}
++	| arrayprefix DT_REF
+ 		{
+-			$$ = eval_literal($1, 0, 32);
++			uint64_t val = ~0ULL >> (64 - $1.bits);
++
++			if ($1.bits == 32)
++				$1.data = data_add_marker($1.data,
++							  REF_PHANDLE,
++							  $2);
++			else
++				print_error("References are only allowed in "
++					    "arrays with 32-bit elements.");
++
++			$$.data = data_append_integer($1.data, val, $1.bits);
+ 		}
+-	| DT_CHAR_LITERAL
++	| arrayprefix DT_LABEL
+ 		{
+-			$$ = eval_char_literal($1);
++			$$.data = data_add_marker($1.data, LABEL, $2);
+ 		}
+ 	;
+ 
+diff --git a/tests/.gitignore b/tests/.gitignore
+index a3e9bd1..9e062c3 100644
+--- a/tests/.gitignore
++++ b/tests/.gitignore
+@@ -40,6 +40,7 @@
+ /set_name
+ /setprop
+ /setprop_inplace
++/sized_cells
+ /string_escapes
+ /subnode_offset
+ /supernode_atdepth_offset
+diff --git a/tests/Makefile.tests b/tests/Makefile.tests
+index cae8390..215a8c5 100644
+--- a/tests/Makefile.tests
++++ b/tests/Makefile.tests
+@@ -6,6 +6,7 @@ LIB_TESTS_L = get_mem_rsv \
+ 	node_check_compatible node_offset_by_compatible \
+ 	get_alias \
+ 	char_literal \
++	sized_cells \
+ 	notfound \
+ 	setprop_inplace nop_property nop_node \
+ 	sw_tree1 \
+diff --git a/tests/run_tests.sh b/tests/run_tests.sh
+index e2c3046..da6f970 100755
+--- a/tests/run_tests.sh
++++ b/tests/run_tests.sh
+@@ -209,6 +209,9 @@ dtc_tests () {
+     run_dtc_test -I dts -O dtb -o dtc_char_literal.test.dtb char_literal.dts
+     run_test char_literal dtc_char_literal.test.dtb
+ 
++    run_dtc_test -I dts -O dtb -o dtc_sized_cells.test.dtb sized_cells.dts
++    run_test sized_cells dtc_sized_cells.test.dtb
++
+     run_dtc_test -I dts -O dtb -o dtc_extra-terminating-null.test.dtb extra-terminating-null.dts
+     run_test extra-terminating-null dtc_extra-terminating-null.test.dtb
+ 
+diff --git a/tests/sized_cells.c b/tests/sized_cells.c
+new file mode 100644
+index 0000000..847ec96
+--- /dev/null
++++ b/tests/sized_cells.c
+@@ -0,0 +1,84 @@
++/*
++ * libfdt - Flat Device Tree manipulation
++ *	Testcase for variable sized cells in dtc
++ * Copyright (C) 2006 David Gibson, IBM Corporation.
++ * Copyright (C) 2011 The Chromium Authors. All rights reserved.
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public License
++ * as published by the Free Software Foundation; either version 2.1 of
++ * the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++#include <stdlib.h>
++#include <stdio.h>
++#include <string.h>
++#include <stdint.h>
++
++#include <fdt.h>
++#include <libfdt.h>
++
++#include "tests.h"
++#include "testdata.h"
++
++static void check_compare_properties(void *fdt,
++				     char const *name_one,
++				     char const *name_two)
++{
++	const void *propval;
++	int proplen;
++
++	propval = fdt_getprop(fdt, 0, name_one, &proplen);
++
++	if (!propval)
++		FAIL("fdt_getprop(\"%s\"): %s",
++		     name_one,
++		     fdt_strerror(proplen));
++
++	check_getprop(fdt, 0, name_two, proplen, propval);
++}
++
++int main(int argc, char *argv[])
++{
++	void *fdt;
++	uint8_t expected_8[6] = {TEST_CHAR1,
++				 TEST_CHAR2,
++				 TEST_CHAR3,
++				 TEST_CHAR4,
++				 TEST_CHAR5,
++				 TEST_VALUE_1 >> 24};
++	uint16_t expected_16[6];
++	uint32_t expected_32[6];
++	uint64_t expected_64[6];
++	int i;
++
++	for (i = 0; i < 5; ++i) {
++		expected_16[i] = cpu_to_fdt16(expected_8[i]);
++		expected_32[i] = cpu_to_fdt32(expected_8[i]);
++		expected_64[i] = cpu_to_fdt64(expected_8[i]);
++	}
++
++	expected_16[5] = cpu_to_fdt16(TEST_VALUE_1 >> 16);
++	expected_32[5] = cpu_to_fdt32(TEST_VALUE_1);
++	expected_64[5] = cpu_to_fdt64(TEST_ADDR_1);
++
++	test_init(argc, argv);
++	fdt = load_blob_arg(argc, argv);
++
++	check_getprop(fdt, 0, "cells-8b", sizeof(expected_8), expected_8);
++	check_getprop(fdt, 0, "cells-16b", sizeof(expected_16), expected_16);
++	check_getprop(fdt, 0, "cells-32b", sizeof(expected_32), expected_32);
++	check_getprop(fdt, 0, "cells-64b", sizeof(expected_64), expected_64);
++
++	check_compare_properties(fdt, "cells-one-16b", "cells-one-32b");
++
++	PASS();
++}
+diff --git a/tests/sized_cells.dts b/tests/sized_cells.dts
+new file mode 100644
+index 0000000..efea9f5
+--- /dev/null
++++ b/tests/sized_cells.dts
+@@ -0,0 +1,11 @@
++/dts-v1/;
++
++/ {
++	cells-8b = /bits/ 8 <'\r' 'b' '\0' '\'' '\xff' 0xde>;
++	cells-16b = /bits/ 16 <'\r' 'b' '\0' '\'' '\xff' 0xdead>;
++	cells-32b = /bits/ 32 <'\r' 'b' '\0' '\'' '\xff' 0xdeadbeef>;
++	cells-64b = /bits/ 64 <'\r' 'b' '\0' '\'' '\xff' 0xdeadbeef00000000>;
++
++	cells-one-16b = /bits/ 16 <0x1234 0x5678 0x0 0xffff>;
++	cells-one-32b = <0x12345678 0x0000ffff>;
++};
