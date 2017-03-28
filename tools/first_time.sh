@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-sudo apt-get update
-sudo apt-get install sbuild quilt gobject-introspection scons xserver-xorg-dev dos2unix sphinx-common cdbs \
+sudo apt update
+sudo apt install sbuild quilt gobject-introspection scons xserver-xorg-dev dos2unix sphinx-common cdbs \
 gnome-pkg-tools pkg-kde-tools \
 dh-autoreconf dh-golang dh-systemd

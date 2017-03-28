@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
-sudo apt-get update
-sudo apt-get install devscripts
+sudo apt update
+sudo apt install devscripts
