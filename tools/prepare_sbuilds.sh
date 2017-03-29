@@ -8,7 +8,7 @@ fi
 #proxy=""
 proxy="apt-proxy:3142/"
 
-debian_server="ftp.us.debian.org/debian"
+debian_server="deb.debian.org/debian"
 ubuntu_server="ports.ubuntu.com"
 
 builder=`cat /etc/hostname`
