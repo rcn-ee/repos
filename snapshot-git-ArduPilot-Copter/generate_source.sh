@@ -4,13 +4,20 @@
 
 incoming_mirror="http://incoming.debian.org/debian-buildd"
 
-git clone ${git_repo} ignore
+if [ -d ./ignore ] ; then
+	rm -rf ./ignore || true
+fi
 
-if [ -f ./ignore/.git/config ] ; then
-	cd ./ignore/
+mkdir -p ./ignore
+
+git clone ${git_repo} ignore/${package_name}_${package_version}/
+
+if [ -f ./ignore/${package_name}_${package_version}/.git/config ] ; then
+	cd ./ignore/${package_name}_${package_version}/
 	git checkout Copter-3.5
 	git submodule update --init --recursive
-	tar cvfJ ../${package_name}_${package_version}.orig.tar.xz ./*
+	cd ../
+	tar cfJ ../${package_name}_${package_version}.orig.tar.xz ./*
 	cd ../
 	rm -rf ./ignore/
 fi
