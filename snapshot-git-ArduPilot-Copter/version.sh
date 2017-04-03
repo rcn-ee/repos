@@ -2,7 +2,7 @@
 
 #https://github.com/ArduPilot/ardupilot
 
-package_name="ArduPilot-Copter-test"
+package_name="ardupilot-copter-test"
 debian_pkg_name="${package_name}"
 package_version="3.5.0-git20170324"
 package_source="${package_name}_${package_version}.orig.tar.xz"
