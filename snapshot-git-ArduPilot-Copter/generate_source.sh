@@ -16,7 +16,6 @@ if [ -f ./ignore/${package_name}_${package_version}/.git/config ] ; then
 	cd ./ignore/${package_name}_${package_version}/
 	git checkout Copter-3.5
 	git submodule update --init --recursive
-	find . | grep .git | xargs rm -rf
 	rm -rf modules/PX4NuttX/misc/buildroot/toolchain/gcc/3.3.6/900-sx12-20101109.patch || true
 	cd ../
 	tar cf ../${package_name}_${package_version}.orig.tar ./*
