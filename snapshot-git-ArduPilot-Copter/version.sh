@@ -10,7 +10,7 @@ src_dir="${package_name}_${package_version}"
 
 git_repo="https://github.com/diydrones/ardupilot.git"
 git_sha="f240ab109c3232e1da7df612ec404f4e00af739d"
-reprepro_dir="d/${package_name}"
+reprepro_dir="a/${package_name}"
 dl_path=""
 
 debian_version="${package_version}-0rcnee5"
