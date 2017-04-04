@@ -17,7 +17,8 @@ if [ -f ./ignore/${package_name}_${package_version}/.git/config ] ; then
 	git checkout Copter-3.5
 	git submodule update --init --recursive
 	cd ../
-	tar cfJ ../${package_name}_${package_version}.orig.tar.xz ./*
+	tar cf ../${package_name}_${package_version}.orig.tar ./*
 	cd ../
+	xz -T0 -z -v ${package_name}_${package_version}.orig.tar
 	rm -rf ./ignore/
 fi
