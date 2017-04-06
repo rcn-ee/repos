@@ -1,0 +1,33 @@
+diff --git a/battery_monitor_service/rc_battery_monitor/rc_battery_monitor.c b/battery_monitor_service/rc_battery_monitor/rc_battery_monitor.c
+index ec3d771..faa99ec 100644
+--- a/battery_monitor_service/rc_battery_monitor/rc_battery_monitor.c
++++ b/battery_monitor_service/rc_battery_monitor/rc_battery_monitor.c
+@@ -86,9 +86,10 @@ int main(int argc, char *argv[]){
+ 	// whitelist blue, black, and black wireless only when RC device tree is in use
+ 	model = rc_get_bb_model();
+ 	if(model!=BB_BLACK_RC && model!=BB_BLACK_W_RC && model!=BB_BLUE){
+-		if(system("grep -q roboticscape /boot/uEnv.txt")!=0){
++		if(system("grep -q roboticscape /boot/uEnv.txt | grep -v '#'")!=0){
+ 			fprintf(stderr,"rc_battery_monitor can only run on BB Blue, Black, and Black wireless when the roboticscape device tree is in use.\n");
+-			return -1;
++			kill_existing_instance();
++			return 0;
+ 		}
+ 	}
+ 
+diff --git a/roboticscape_service/rc_startup_routine/rc_startup_routine.c b/roboticscape_service/rc_startup_routine/rc_startup_routine.c
+index c606c82..1741332 100644
+--- a/roboticscape_service/rc_startup_routine/rc_startup_routine.c
++++ b/roboticscape_service/rc_startup_routine/rc_startup_routine.c
+@@ -54,9 +54,9 @@ int main(){
+ 	// whitelist blue, black, and black wireless only when RC device tree is in use
+ 	model = rc_get_bb_model();
+ 	if(model!=BB_BLACK_RC && model!=BB_BLACK_W_RC && model!=BB_BLUE){
+-		if(system("grep -q roboticscape /boot/uEnv.txt")!=0){
++		if(system("grep -q roboticscape /boot/uEnv.txt | grep -v '#'")!=0){
+ 			fprintf(stderr,"roboticscape service can only run on BB Blue, Black, and Black wireless when the roboticscape device tree is in use.\n");
+-			return -1;
++			return 0;
+ 		}
+ 	}
+ 
