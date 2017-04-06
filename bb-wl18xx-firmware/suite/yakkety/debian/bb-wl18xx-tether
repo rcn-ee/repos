@@ -172,13 +172,6 @@ connman_disable_tether () {
 				fi
 			fi
 		fi
-	else
-		if [ -f /lib/systemd/system/connman.service ] ; then
-			#Someone plugged an ${eth_interface} device..
-			if [ -d /sys/class/net/${eth_interface} ] ; then
-				is_eth_not_bb_gadget_wifi_on
-			fi
-		fi
 	fi
 }
 
