@@ -1,0 +1,19 @@
+#!/bin/sh
+
+set -e
+
+case "$1" in
+  configure)
+        update-alternatives --quiet --install /usr/bin/node node \
+            /usr/bin/nodejs 50 \
+            --slave /usr/share/man/man1/node.1.gz node.1.gz \
+            /usr/share/man/man1/nodejs.1.gz
+
+        ;;
+  *)
+esac
+
+#DEBHELPER#
+
+exit 0
+
