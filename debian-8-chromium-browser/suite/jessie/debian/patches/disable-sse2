@@ -199,8 +199,8 @@ debian-bug: http://bugs.debian.org/750361
  
 --- a/third_party/WebKit/Source/modules/webaudio/AudioParamTimeline.cpp
 +++ b/third_party/WebKit/Source/modules/webaudio/AudioParamTimeline.cpp
-@@ -31,7 +31,7 @@
- #include "wtf/MathExtras.h"
+@@ -32,7 +32,7 @@
+ #include "wtf/PtrUtil.h"
  #include <algorithm>
  
 -#if CPU(X86) || CPU(X86_64)
@@ -208,7 +208,7 @@ debian-bug: http://bugs.debian.org/750361
  #include <emmintrin.h>
  #endif
  
-@@ -662,7 +662,7 @@ float AudioParamTimeline::valuesForFrame
+@@ -1112,7 +1112,7 @@ float AudioParamTimeline::valuesForFrame
      // the next event.
      if (nextEventType == ParamEvent::LinearRampToValue) {
        const float valueDelta = value2 - value1;
@@ -217,7 +217,7 @@ debian-bug: http://bugs.debian.org/750361
        if (fillToFrame > writeIndex) {
          // Minimize in-loop operations. Calculate starting value and increment.
          // Next step: value += inc.
-@@ -841,7 +841,7 @@ float AudioParamTimeline::valuesForFrame
+@@ -1322,7 +1322,7 @@ float AudioParamTimeline::valuesForFrame
              for (; writeIndex < fillToFrame; ++writeIndex)
                values[writeIndex] = target;
            } else {
@@ -226,7 +226,7 @@ debian-bug: http://bugs.debian.org/750361
              if (fillToFrame > writeIndex) {
                // Resolve recursion by expanding constants to achieve a 4-step
                // loop unrolling.
-@@ -959,7 +959,7 @@ float AudioParamTimeline::valuesForFrame
+@@ -1442,7 +1442,7 @@ float AudioParamTimeline::valuesForFrame
            // Oversampled curve data can be provided if sharp discontinuities are
            // desired.
            unsigned k = 0;

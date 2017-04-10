@@ -51,17 +51,6 @@ DEB_DH_SCOUR_ARGS += -Xsvg
 DEB_DH_SHLIBDEPS_ARGS_chromium-codecs-ffmpeg := -ldebian/chromium-codecs-ffmpeg/$(LIB_DIR)
 DEB_DH_SHLIBDEPS_ARGS_chromium-codecs-ffmpeg-extra := -ldebian/chromium-codecs-ffmpeg-extra/$(LIB_DIR)
 
-### linker flags to avoid memory allocation issues on 32-bit
-export LDFLAGS+=-Wl,--no-keep-memory -Wl,--stats
-
-# See https://bugs.chromium.org/p/v8/issues/detail?id=3782
-#export CFLAGS+=-fno-delete-null-pointer-checks
-
-export CC := $(shell which gcc-4 gcc-5 gcc cc |head -1)
-export CXX := $(shell which g++-4 g+++5 g++ c++ |head -1)
-export CPP := $(shell which g++-4 g+++5 g++ c++ |head -1)
-
-# disabled features
 common_defines+=\
 	enable_google_now=false \
 	enable_hangout_services_extension=true \
@@ -84,7 +73,6 @@ common_defines+=\
 	use_aura=true \
 	use_cups=true \
 	use_dbus=true \
-	use_gconf=true \
 	use_gio=true \
 	use_glib=true \
 	use_gold=false \
@@ -122,14 +110,13 @@ $(warning gn touch ui)
 
 ifeq (armel,$(DEB_HOST_ARCH))
 common_defines += target_cpu="arm"
-common_defines += arm_neon=false
+common_defines += arm_use_neon=false
 common_defines += v8_use_arm_eabi_hardfloat=false
 common_defines += arm_float_abi="soft" arm_use_thumb=false
 else ifeq (armhf,$(DEB_HOST_ARCH))
 common_defines += target_cpu="arm"
-#common_defines += arm_optionally_use_neon=false   # implies Android in 2016-10
 common_defines += arm_use_neon=false
-common_defined += arm_float_abi="hard" arm_use_thumb=true
+common_defines += arm_float_abi="hard" arm_use_thumb=true
 else ifeq (arm64,$(DEB_HOST_ARCH))
 common_defines += target_cpu="arm64"
 else ifeq (i386,$(DEB_HOST_ARCH))
@@ -488,8 +475,3 @@ patch-translations:
 
 # needed for easy job control, e.g, kill %1
 SHELL := /bin/bash
-
-# This changes state for ALL rules in the makefile.
-.ONESHELL:
-
-.DEFAULT: build-stamp build-stamp-ffmpeg-extra

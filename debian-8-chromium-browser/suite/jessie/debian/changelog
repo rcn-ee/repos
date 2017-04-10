@@ -1,39 +1,38 @@
-chromium-browser (56.0.2924.76-0ubuntu0.16.04.1268rcnee1~bpo80+20170308) jessie; urgency=low
+chromium-browser (57.0.2987.98-0ubuntu0.16.04.1276rcnee0~bpo80+20170410) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Wed, 08 Mar 2017 11:41:04 -0600
+ -- Robert Nelson <robertcnelson@gmail.com>  Mon, 10 Apr 2017 11:15:46 -0500
 
-chromium-browser (56.0.2924.76-0ubuntu0.16.04.1268) xenial-security; urgency=medium
+chromium-browser (57.0.2987.98-0ubuntu0.16.04.1276) xenial-security; urgency=medium
 
-  * Upstream release: 56.0.2924.76
-    - CVE-2017-5007: Universal XSS in Blink.
-    - CVE-2017-5006: Universal XSS in Blink.
-    - CVE-2017-5008: Universal XSS in Blink.
-    - CVE-2017-5010: Universal XSS in Blink.
-    - CVE-2017-5011: Unauthorised file access in Devtools.
-    - CVE-2017-5009: Out of bounds memory access in WebRTC.
-    - CVE-2017-5012: Heap overflow in V8.
-    - CVE-2017-5013: Address spoofing in Omnibox.
-    - CVE-2017-5014: Heap overflow in Skia.
-    - CVE-2017-5015: Address spoofing in Omnibox.
-    - CVE-2017-5019: Use after free in Renderer.
-    - CVE-2017-5016: UI spoofing in Blink.
-    - CVE-2017-5017: Uninitialised memory access in webm video.
-    - CVE-2017-5018: Universal XSS in chrome://apps.
-    - CVE-2017-5020: Universal XSS in chrome://downloads.
-    - CVE-2017-5021: Use after free in Extensions.
-    - CVE-2017-5022: Bypass of Content Security Policy in Blink.
-    - CVE-2017-5023: Type confusion in metrics.
-    - CVE-2017-5024: Heap overflow in FFmpeg.
-    - CVE-2017-5025: Heap overflow in FFmpeg.
-    - CVE-2017-5026: UI spoofing.
-  * debian/patches/screen_capturer: allow compilation on gcc4
-  * debian/patches/arm64-support: reenable arm64
-  * debian/patches/memory-free-assertion-failure: discover memory management
-    assertion failures.
-  * debian/rules: Avoid field trial experiments to get stable code.
-    (closes: LP#1667125)
-  * debian/patches/enable-chromecast-by-default: (closes: LP#1621753)
+  * Upstream release: 57.0.2987.98.
+    - CVE-2017-5030: Memory corruption in V8.
+    - CVE-2017-5031: Use after free in ANGLE.
+    - CVE-2017-5032: Out of bounds write in PDFium.
+    - CVE-2017-5029: Integer overflow in libxslt.
+    - CVE-2017-5034: Use after free in PDFium.
+    - CVE-2017-5035: Incorrect security UI in Omnibox.
+    - CVE-2017-5036: Use after free in PDFium.
+    - CVE-2017-5037: Multiple out of bounds writes in ChunkDemuxer.
+    - CVE-2017-5039: Use after free in PDFium.
+    - CVE-2017-5040: Information disclosure in V8.
+    - CVE-2017-5041: Address spoofing in Omnibox.
+    - CVE-2017-5033: Bypass of Content Security Policy in Blink.
+    - CVE-2017-5042: Incorrect handling of cookies in Cast.
+    - CVE-2017-5038: Use after free in GuestView.
+    - CVE-2017-5043: Use after free in GuestView.
+    - CVE-2017-5044: Heap overflow in Skia.
+    - CVE-2017-5045: Information disclosure in XSS Auditor.
+    - CVE-2017-5046: Information disclosure in Blink.
+  * debian/patches/arm64-support no longer needed
+  * debian/patches/stdatomic: Support gcc48.
+  * debian/patches/snapshot-library-link: Add missing libsnapshot link
+  * debian/patches/gtk-ui-stdmove: fix && pointer return with std::move
+  * debian/control: Drop binary arch "any" and explicitly list four.
+  * debian/patches/arm64-vpx-alignment: Avoid ARM64 alignment bug on some
+    compilers.
+  * debian/rules: Fix armhf float ABI and remove unnecessary envvars.
+    (LP: #1673276)
 
- -- Chad MILLER <chad.miller@canonical.com>  Wed, 22 Feb 2017 17:20:28 -0500
+ -- Chad MILLER <chad.miller@canonical.com>  Wed, 15 Mar 2017 21:12:35 -0400

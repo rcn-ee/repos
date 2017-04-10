@@ -4,30 +4,6 @@ Author: Chad Miller <chad.miller@canonical.com>
 Bug-Chromium: 154107
 Bug-Ubuntu: 1084852
 
---- a/third_party/opus/BUILD.gn
-+++ b/third_party/opus/BUILD.gn
-@@ -371,12 +371,9 @@ static_library("opus") {
-         "src/celt/arm/arm_celt_map.c",
-         "src/celt/arm/armcpu.c",
-         "src/celt/arm/armcpu.h",
--        "src/celt/arm/celt_neon_intr.c",
-         "src/celt/arm/fft_arm.h",
-         "src/celt/arm/mdct_arm.h",
-         "src/celt/arm/pitch_arm.h",
--        "src/silk/arm/NSQ_neon.c",
--        "src/silk/arm/NSQ_neon.h",
-         "src/silk/arm/arm_silk_map.c",
-       ]
- 
-@@ -385,8 +382,6 @@ static_library("opus") {
-       defines += [
-         "OPUS_ARM_MAY_HAVE_EDSP",
-         "OPUS_ARM_MAY_HAVE_MEDIA",
--        "OPUS_ARM_MAY_HAVE_NEON",
--        "OPUS_ARM_MAY_HAVE_NEON_INTR",
-         "OPUS_HAVE_RTCD",
-       ]
- 
 --- a/third_party/webrtc/system_wrappers/source/cpu_features.cc
 +++ b/third_party/webrtc/system_wrappers/source/cpu_features.cc
 @@ -18,6 +18,47 @@
