@@ -17,7 +17,7 @@ debian_version="${package_version}-0rcnee0"
 debian_untar=""
 debian_patch=""
 
-dl_mirror="https://github.com/rcn-ee/bb.org-cloud9-core/raw/master/deploy/stretch"
+dl_mirror="https://rcn-ee.net/repos/git/bb.org-cloud9-core/deploy/stretch"
 
 v6="v6.10.2"
 
