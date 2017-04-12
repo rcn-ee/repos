@@ -17,10 +17,10 @@ debian_version="${package_version}-0rcnee0"
 debian_untar=""
 debian_patch=""
 
-dl_mirror="https://github.com/rcn-ee/bb.org-cloud9-core/raw/master/deploy/stretch/"
+dl_mirror="https://github.com/rcn-ee/bb.org-cloud9-core/raw/master/deploy/stretch"
 
 v6="v6.10.2"
 
-debian_dl_1="${dl_mirror}/${package_version}-${v6}-build.tar.xz"
+debian_dl_1="${dl_mirror}/c9-core_${package_version}-${v6}-build.tar.xz"
 
 stretch_version="~bpo90+20170412"
