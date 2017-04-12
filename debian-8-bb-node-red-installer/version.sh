@@ -40,5 +40,3 @@ debian_dl_11="${dl_mirror}/${node_red_mongodb}-${v4}.tar.xz"
 debian_dl_12="${dl_mirror}/${node_red_mongodb}-${v6}.tar.xz"
 
 jessie_version="~bpo80+20161116+1"
-stretch_version="~bpo90+20161116+1"
-xenial_version="~bpo1604+20161116+1"
