@@ -98,6 +98,7 @@ dl_install() {
 
 	cd /var/cache/${package}/
 
+	systemctl daemon-reload || true
 	echo "${package}:Stopping:cloud9.service"
 	systemctl stop cloud9.service || true
 	echo "${package}:Stopping:cloud9.socket"
