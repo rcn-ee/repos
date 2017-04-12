@@ -24,5 +24,3 @@ debian_dl_3="https://rcn-ee.net/repos/git/archive/c9-core_v4.x/c9-core_${package
 debian_dl_4="https://rcn-ee.net/repos/git/archive/c9-core_v6.x/c9-core_${package_version}-v6.9.2-build.tar.xz"
 
 jessie_version="~bpo80+20161207+1"
-stretch_version="~bpo90+20161207+1"
-xenial_version="~bpo1604+20161207+1"
