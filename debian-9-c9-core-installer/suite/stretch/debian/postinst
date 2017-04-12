@@ -98,13 +98,16 @@ dl_install() {
 
 	cd /var/cache/${package}/
 
+	echo "${package}:Stopping:cloud9.service"
+	systemctl stop cloud9.service || true
+	echo "${package}:Stopping:cloud9.socket"
 	systemctl stop cloud9.socket || true
 
 	if [ ! -d ${extract_dir} ] ; then
 		mkdir -p ${extract_dir} || true
 	fi
 
-	echo "extracting: ${wfile}"
+	echo "${package}:extracting:${wfile}"
 	tar xf ${wfile} -C ${extract_dir}
 	chown -R 1000:1000 ${extract_dir}
 
@@ -112,7 +115,7 @@ dl_install() {
 		mkdir -p /var/lib/cloud9 || true
 	fi
 
-	systemctl --system daemon-reload || true
+	systemctl daemon-reload || true
 }
 
 c9_directory () {
