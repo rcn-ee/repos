@@ -4,7 +4,7 @@ set -e
 
 # drop the temporary mask from prerm
 if [ -d /run/systemd/system ] && [ "$1" = remove ]; then
-        systemctl unmask --runtime cloud9.service
+	systemctl unmask --runtime cloud9.service || true
 fi
 
 #DEBHELPER#

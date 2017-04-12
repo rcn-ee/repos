@@ -13,14 +13,16 @@ git_sha=""
 reprepro_dir="c/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0"
+debian_version="${package_version}-0rcnee0"
 debian_untar=""
 debian_patch=""
-local_patch="rcnee0"
 
-debian_dl_1="https://rcn-ee.com/repos/git/archive/c9-npmbox/virtualenv-12.0.7.tar.gz"
-debian_dl_2="https://rcn-ee.net/repos/git/archive/c9-core_v0.12.x/c9-core_${package_version}-v0.12.17-build.tar.xz"
-debian_dl_3="https://rcn-ee.net/repos/git/archive/c9-core_v4.x/c9-core_${package_version}-v4.7.0-build.tar.xz"
-debian_dl_4="https://rcn-ee.net/repos/git/archive/c9-core_v6.x/c9-core_${package_version}-v6.9.2-build.tar.xz"
+dl_mirror="https://rcn-ee.net/repos/git/bb.org-cloud9-core/deploy/jessie"
 
-jessie_version="~bpo80+20161207+1"
+v6="v6.10.2"
+v4="v4.8.2
+
+debian_dl_1="${dl_mirror}/c9-core_${package_version}-${v6}-build.tar.xz"
+debian_dl_2="${dl_mirror}/c9-core_${package_version}-${v4}-build.tar.xz"
+
+jessie_version="~bpo80+20161207"
