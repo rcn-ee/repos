@@ -28,18 +28,23 @@ npm_install () {
 	echo "${package}:nodejs:[${node_version}]"
 
 	v12="v0.12.17"
-	v4="v4.6.2"
-	v6="v6.9.1"
+	v4="v4.8.2"
+	v6="v6.10.2"
 
-	node_red="node-red-0.15.2-74f2180"
-	node_red_beaglebone="node-red-node-beaglebone-0.1.8-7a39c6f"
+	node_red_eol="node-red-0.15.2-74f2180"
+	node_red_beaglebone_eol="node-red-node-beaglebone-0.1.8-7a39c6f"
+	node_red_upm_eol="node-red-node-bb-upm-0.0.1-8d217ab"
+	node_red_mongodb_eol="node-red-node-mongodb-0.0.11-7a39c6f"
+
+	node_red="node-red-0.16.2-d1c4226"
+	node_red_beaglebone="node-red-node-beaglebone-0.1.9-ec96d36"
 	node_red_upm="node-red-node-bb-upm-0.0.1-8d217ab"
-	node_red_mongodb="node-red-node-mongodb-0.0.11-7a39c6f"
+	node_red_mongodb="node-red-node-mongodb-0.0.11-ec96d36"
 
 	npm_project="node-red"
 	case "${node_version}" in
 	v0.12.*)
-		npm_file="${node_red}-${v12}.tar.xz"
+		npm_file="${node_red_eol}-${v12}.tar.xz"
 		npm_pkg_install
 		;;
 	v4.*)
@@ -72,13 +77,13 @@ npm_install () {
 	v0.12.*)
 		version="${v12}"
 		npm_project="node-red-node-beaglebone"
-		npm_file="${node_red_beaglebone}-${version}.tar.xz"
+		npm_file="${node_red_beaglebone_eol}-${version}.tar.xz"
 		npm_pkg_install
 		npm_project="node-red-node-bb-upm"
-		npm_file="${node_red_upm}-${version}.tar.xz"
+		npm_file="${node_red_upm_eol}-${version}.tar.xz"
 		npm_pkg_install
 		npm_project="node-red-node-mongodb"
-		npm_file="${node_red_mongodb}-${version}.tar.xz"
+		npm_file="${node_red_mongodb_eol}-${version}.tar.xz"
 		npm_pkg_install
 		;;
 	v4.*)

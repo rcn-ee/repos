@@ -29,5 +29,4 @@ node_red_beaglebone="node-red-node-beaglebone-0.1.9-ec96d36"
  debian_dl_3="${dl_mirror}/${node_red_upm}-${v6}.tar.xz"
  debian_dl_4="${dl_mirror}/${node_red_mongodb}-${v6}.tar.xz"
 
-jessie_version="~bpo80+20161116+1"
 stretch_version="~bpo90+20170412"
