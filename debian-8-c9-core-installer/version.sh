@@ -20,9 +20,9 @@ debian_patch=""
 dl_mirror="https://rcn-ee.net/repos/git/bb.org-cloud9-core/deploy/jessie"
 
 v6="v6.10.2"
-v4="v4.8.2
+v4="v4.8.2"
 
 debian_dl_1="${dl_mirror}/c9-core_${package_version}-${v6}-build.tar.xz"
 debian_dl_2="${dl_mirror}/c9-core_${package_version}-${v4}-build.tar.xz"
 
-jessie_version="~bpo80+20161207"
+jessie_version="~bpo80+20170412"
