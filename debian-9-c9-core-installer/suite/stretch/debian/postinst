@@ -85,6 +85,17 @@ npm_install () {
 }
 
 dl_install() {
+	unset node_version
+	node_version=$(/usr/bin/nodejs --version || true)
+	case "${node_version}" in
+	v6.*)
+		wfile=${wfile_6_x}
+		;;
+	*)
+		wfile=${wfile_6_x}
+		;;
+	esac
+
 	cd /var/cache/${package}/
 
 	systemctl stop cloud9.socket || true
