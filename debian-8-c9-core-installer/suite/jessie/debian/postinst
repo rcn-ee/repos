@@ -171,7 +171,7 @@ c9_directory () {
 	fi
 	ln -sf /usr/bin/node /opt/cloud9/.c9/node/bin/node
 
-	addgroup cloud9ide || true
+	groupadd --system cloud9ide || true
 	chown -R :cloud9ide /opt/cloud9/.c9/ || true
 	chmod -R g+w /opt/cloud9/.c9/ || true
 
