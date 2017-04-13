@@ -125,6 +125,17 @@ c9_directory () {
 	fi
 	ln -sf /usr/bin/node /opt/cloud9/.c9/node/bin/node
 
+	unset cloud9ide_group
+	cloud9ide_group=$(cat /etc/group | grep cloud9ide || true)
+	if [ ! "x${cloud9ide_group}" = "x" ] ; then
+		if [ -d /var/lib/cloud9/ ] ; then
+			chown -R :cloud9ide /var/lib/cloud9/ || true
+			chmod -R g+w /var/lib/cloud9/ || true
+		fi
+		chown -R :cloud9ide /opt/cloud9/.c9/ || true
+		chmod -R g+w /opt/cloud9/.c9/ || true
+	fi
+
 	systemctl enable cloud9.socket || true
 	systemctl restart cloud9.socket || true
 	echo "${package}:Installed"

@@ -13,7 +13,7 @@ git_sha=""
 reprepro_dir="c/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee3"
+debian_version="${package_version}-0rcnee4"
 debian_untar=""
 debian_patch=""
 
@@ -23,4 +23,4 @@ v6="v6.10.2"
 
 debian_dl_1="${dl_mirror}/c9-core_${package_version}-${v6}-build.tar.xz"
 
-stretch_version="~bpo90+20170412"
+stretch_version="~bpo90+20170413"
