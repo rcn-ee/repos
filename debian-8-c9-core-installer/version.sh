@@ -13,7 +13,7 @@ git_sha=""
 reprepro_dir="c/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee1"
+debian_version="${package_version}-0rcnee2"
 debian_untar=""
 debian_patch=""
 
@@ -27,4 +27,4 @@ debian_dl_1="${dl_mirror}/c9-core_${package_version}-${v6}-build.tar.xz"
 debian_dl_2="${dl_mirror}/c9-core_${package_version}-${v4}-build.tar.xz"
 debian_dl_3="${dl_mirror}/c9-core_${package_version}-${v12}-build.tar.xz"
 
-jessie_version="~bpo80+20170412"
+jessie_version="~bpo80+20170413"
