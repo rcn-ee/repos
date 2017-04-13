@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index 9fc8e0d..92ed8bb 100644
+index 9fc8e0d..495ccd9 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -15,10 +15,6 @@ else
@@ -13,15 +13,20 @@ index 9fc8e0d..92ed8bb 100644
  else
  	@echo npm not found
  endif
-@@ -37,6 +33,7 @@ endif
+@@ -37,16 +33,15 @@ endif
  install: ./bone101
  	install -m 0755 -d $(DESTDIR)$(PREFIX)/share/bone101
  	cp -dr --preserve=mode,timestamp ./bone101/* $(DESTDIR)$(PREFIX)/share/bone101/
+-	install -m 0755 -d $(DESTDIR)$(CLOUD9_DIR)
+-	install -m 0755 -d $(DESTDIR)$(CLOUD9_DIR)/.c9
 +	rm -rf $(DESTDIR)$(PREFIX)/share/bone101/debian/
- 	install -m 0755 -d $(DESTDIR)$(CLOUD9_DIR)
- 	install -m 0755 -d $(DESTDIR)$(CLOUD9_DIR)/.c9
++	install -m 0775 -d $(DESTDIR)$(CLOUD9_DIR)
++	install -m 0775 -d $(DESTDIR)$(CLOUD9_DIR)/.c9
  	cp -dr --preserve=mode,timestamp ./.c9/* $(DESTDIR)$(CLOUD9_DIR)/.c9
-@@ -46,7 +43,5 @@ install: ./bone101
+-	install -m 0755 -d $(DESTDIR)$(CLOUD9_DIR)/examples
++	install -m 0775 -d $(DESTDIR)$(CLOUD9_DIR)/examples
+ 	cp -dr --preserve=mode,timestamp ./examples/* $(DESTDIR)$(CLOUD9_DIR)/examples
+ 	cp -dr --preserve=mode,timestamp ./LICENSE $(DESTDIR)$(CLOUD9_DIR)
  	cp -dr --preserve=mode,timestamp ./README.md $(DESTDIR)$(CLOUD9_DIR)
  	install -m 0755 -d $(DESTDIR)$(PREFIX)/share/applications
  	cp --preserve=mode,timestamp bone101.desktop $(DESTDIR)$(PREFIX)/share/applications/
