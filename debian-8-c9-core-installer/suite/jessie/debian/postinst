@@ -167,13 +167,17 @@ dl_install() {
 
 c9_directory () {
 	if [ ! -d /opt/cloud9/.c9/node/bin/ ] ; then
-		mkdir -p /opt/cloud9/.c9/node/bin/ ;
+		mkdir -p /opt/cloud9/.c9/node/bin/ || true
 	fi
 	ln -sf /usr/bin/node /opt/cloud9/.c9/node/bin/node
 
 	groupadd --system cloud9ide || true
-	chown -R :cloud9ide /opt/cloud9/.c9/ || true
+	chown -R root:cloud9ide /opt/cloud9/.c9/ || true
 	chmod -R g+w /opt/cloud9/.c9/ || true
+
+	mkdir -p /opt/cloud9/.cache/ || true
+	chown -R root:cloud9ide  /opt/cloud9/.cache/ || true
+	chmod -R g+w  /opt/cloud9/.cache/ || true
 
 	systemctl enable cloud9.socket || true
 	systemctl restart cloud9.socket || true
