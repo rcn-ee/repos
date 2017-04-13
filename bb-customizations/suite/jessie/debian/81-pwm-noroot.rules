@@ -1,0 +1,10 @@
+# /etc/udev/rules.d/81-pwm-noroot.rules
+#
+# From: https://forum.pine64.org/showthread.php?tid=2233
+#
+# Corrects sys PWM permissions on the BBB so non-root users in the pwm group can manipulate bits
+#
+# Change group to pwm
+SUBSYSTEM=="pwm", PROGRAM="/bin/sh -c '/bin/chown -R root:pwm /sys/devices/platform/ocp/*.epwmss/*/pwm/pwmchip*/'"
+# Change user permissions to ensure user and group have read/write permissions
+SUBSYSTEM=="pwm", PROGRAM="/bin/sh -c '/bin/chmod -R ug+rw /sys/devices/platform/ocp/*.epwmss/*/pwm/pwmchip*/'"
