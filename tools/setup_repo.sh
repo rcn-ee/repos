@@ -112,11 +112,6 @@ suite="jessie"
 archs="arm64 armhf source"
 setup_repo
 
-dist="debian-nodejs"
-suite="jessie"
-archs="armhf source"
-setup_repo
-
 dist="ubuntu"
 suite="trusty"
 archs="armhf source"
