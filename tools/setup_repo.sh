@@ -94,11 +94,6 @@ suite="sid"
 archs="arm64 armhf source"
 setup_repo
 
-dist="debian-etnaviv"
-suite="jessie"
-archs="armhf source"
-setup_repo
-
 dist="debian-exp"
 suite="jessie"
 archs="armhf source"
