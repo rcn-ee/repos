@@ -16,5 +16,5 @@ debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 
 dist="debian"
-suite="jessie"
+suite="stretch"
 deb_arch="armhf"
