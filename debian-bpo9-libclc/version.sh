@@ -4,7 +4,7 @@ mirror="http://http.debian.net/debian"
 
 package_name="libclc"
 debian_pkg_name="${package_name}"
-package_version="0.2.0+git20170213"
+package_version="0.2.0+git20170330"
 
 git_repo=""
 git_sha=""
@@ -16,5 +16,5 @@ debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 
 dist="debian"
-suite="jessie"
+suite="stretch"
 deb_arch="armhf"
