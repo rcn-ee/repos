@@ -53,8 +53,10 @@ chmod -R 775 /var/lib/cloud9/ || true
 if [ -d /var/lib/cloud9/examples/ ] ; then
 	cd /var/lib/cloud9/examples/
 	git init .
+	git config user.email "beagle@beagleboard.org"
+	git config user.name "BeagleBoard"
 	git add . -f
-	git commit -a -m 'inital repo' --author="root <beagle@beagleboard.org>" --quiet
+	git commit -a -m 'inital repo' --author="BeagleBoard <beagle@beagleboard.org>" --quiet
 fi
 
 # dh_installdeb will replace this with shell code automatically
