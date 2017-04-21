@@ -143,4 +143,8 @@ setup_repo
 suite="zesty"
 archs="armhf source"
 setup_repo
+
+suite="artful"
+archs="armhf source"
+setup_repo
 #
