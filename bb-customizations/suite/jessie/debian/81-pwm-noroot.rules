@@ -2,7 +2,13 @@
 #
 # Corrects sys PWM permissions on the BB so non-root users in the gpio group can manipulate bits
 #
-# Change group to pwm
-SUBSYSTEM=="pwm", PROGRAM="/bin/sh -c '/bin/chown -R root:pwm /sys/devices/platform/ocp/*.epwmss/*/pwm/pwmchip*/'"
-# Change user permissions to ensure user and group have read/write permissions
-SUBSYSTEM=="pwm", PROGRAM="/bin/sh -c '/bin/chmod -R ug+rw /sys/devices/platform/ocp/*.epwmss/*/pwm/pwmchip*/'"
+
+SUBSYSTEM=="pwm", ACTION=="add", PROGRAM="/bin/sh -c '/bin/chown -R root:pwm /sys/class/pwm/"
+SUBSYSTEM=="pwm", ACTION=="add", PROGRAM="/bin/sh -c    '/bin/chmod -R ug+rw /sys/class/pwm/"
+
+SUBSYSTEM=="pwm", ACTION=="add", PROGRAM="/bin/sh -c '/bin/chown -R root:pwm /sys/devices/platform/ocp/*.epwmss/*.*/pwm/pwmchip*/'"
+SUBSYSTEM=="pwm", ACTION=="add", PROGRAM="/bin/sh -c    '/bin/chmod -R ug+rw /sys/devices/platform/ocp/*.epwmss/*.*/pwm/pwmchip*/'"
+
+#not working yet...
+SUBSYSTEM=="pwm", ACTION=="add", PROGRAM="/bin/sh -c '/bin/chown -R root:pwm /sys/devices/platform/ocp/*.epwmss/*.*/pwm/pwmchip*/pwm*/'"
+SUBSYSTEM=="pwm", ACTION=="add", PROGRAM="/bin/sh -c    '/bin/chmod -R ug+rw /sys/devices/platform/ocp/*.epwmss/*.*/pwm/pwmchip*/pwm*/'"
