@@ -87,7 +87,7 @@ else
 	GALLIUM_DRIVERS += radeonsi
 	confflags_GALLIUM += --enable-gallium-llvm
 	confflags_GALLIUM += --enable-opencl --enable-opencl-icd
-	confflags_GALLIUM += ac_cv_path_LLVM_CONFIG=llvm-config-3.9
+	confflags_GALLIUM += ac_cv_path_LLVM_CONFIG=llvm-config-4.0
 	GALLIUM_DRIVERS += swrast
   else
 	DRI_DRIVERS += swrast
@@ -115,7 +115,7 @@ ifneq (,$(filter $(DEB_HOST_ARCH), x32))
 endif
 
 confflags_EGL = --with-egl-platforms="$(EGL_PLATFORMS)"
-confflags_GLES = --enable-gles1 --enable-gles2
+confflags_GLES = --disable-gles1 --enable-gles2
 confflags_GALLIUM += --with-gallium-drivers="$(GALLIUM_DRIVERS)"
 
 confflags += \

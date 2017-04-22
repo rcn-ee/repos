@@ -9,7 +9,7 @@ Build-Depends:
  dh-autoreconf,
  quilt (>= 0.40),
  pkg-config,
- libdrm-dev (>= 2.4.74) [!hurd-any],
+ libdrm-dev (>= 2.4.74-2~) [!hurd-any],
  libx11-dev,
  x11proto-gl-dev (>= 1.4.14),
  libxxf86vm-dev,
@@ -41,11 +41,11 @@ Build-Depends:
  python-mako,
  flex,
  bison,
- llvm-3.9-dev (>= 1:3.9.1) [amd64 i386 kfreebsd-amd64 kfreebsd-i386 arm64 armhf ppc64el],
+ llvm-4.0-dev (>= 1:4.0~) [amd64 arm64 armel armhf i386 kfreebsd-amd64 kfreebsd-i386 mips mips64el mipsel powerpc ppc64 sparc64 ppc64el],
  libelf-dev [amd64 arm64 armel armhf i386 kfreebsd-amd64 kfreebsd-i386 mips mips64el mipsel powerpc ppc64 sparc64 ppc64el],
  libwayland-dev (>= 1.11.0) [linux-any],
- libclang-3.9-dev (>= 1:3.9.1) [amd64 i386 kfreebsd-amd64 kfreebsd-i386 arm64 armhf],
- libclc-dev (>= 0.2.0+git20160907) [amd64 i386 kfreebsd-amd64 kfreebsd-i386 arm64 armhf],
+ libclang-4.0-dev (>= 1:4.0~) [amd64 arm64 armel armhf i386 kfreebsd-amd64 kfreebsd-i386 mips mips64el mipsel powerpc ppc64 sparc64 ppc64el],
+ libclc-dev (>= 0.2.0+git20170213) [amd64 arm64 armel armhf i386 kfreebsd-amd64 kfreebsd-i386 mips mips64el mipsel powerpc ppc64 sparc64 ppc64el],
 Vcs-Git: https://anonscm.debian.org/git/pkg-xorg/lib/mesa.git
 Vcs-Browser: https://anonscm.debian.org/cgit/pkg-xorg/lib/mesa.git
 Homepage: https://mesa3d.org/
@@ -163,15 +163,6 @@ Description: free implementation of the EGL API -- development files
  This package provides the development environment for compiling programs
  against the EGL library.
 
-Package: libegl1-mesa-drivers
-Section: libs
-Architecture: linux-any kfreebsd-any
-Depends:
- ${misc:Depends},
-Multi-Arch: same
-Description: transitional dummy package
- This is a transitional dummy package, it can be safely removed.
-
 Package: libwayland-egl1-mesa
 Section: libs
 Architecture: linux-any
@@ -186,45 +177,6 @@ Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
 Description: implementation of the Wayland EGL platform -- runtime
  This package contains the mesa implementation of the Wayland EGL platform
-
-Package: libgles1-mesa
-Section: libs
-Architecture: any
-Depends:
- libglapi-mesa (= ${binary:Version}),
- ${shlibs:Depends},
- ${misc:Depends},
-Provides: libgles1
-Conflicts: libgles1
-Replaces: libgles1
-Pre-Depends: ${misc:Pre-Depends}
-Multi-Arch: same
-Description: free implementation of the OpenGL|ES 1.x API -- runtime
- OpenGL|ES is a cross-platform API for full-function 2D and 3D graphics on
- embedded systems - including consoles, phones, appliances and vehicles.
- It contains a subset of OpenGL plus a number of extensions for the
- special needs of embedded systems.
- .
- OpenGL|ES 1.x provides an API for fixed-function hardware.
-
-Package: libgles1-mesa-dev
-Section: libdevel
-Architecture: any
-Depends:
- libgles1-mesa (= ${binary:Version}),
- libegl1-mesa-dev,
- ${misc:Depends},
-Multi-Arch: same
-Description: free implementation of the OpenGL|ES 1.x API -- development files
- OpenGL|ES is a cross-platform API for full-function 2D and 3D graphics on
- embedded systems - including consoles, phones, appliances and vehicles.
- It contains a subset of OpenGL plus a number of extensions for the
- special needs of embedded systems.
- .
- OpenGL|ES 1.x provides an API for fixed-function hardware.
- .
- This package provides a development environment for building programs using
- the OpenGL|ES 1.x APIs.
 
 Package: libgles2-mesa
 Section: libs
@@ -474,15 +426,11 @@ Section: libs
 Architecture: amd64 arm64 armel armhf i386 kfreebsd-amd64 kfreebsd-i386 mips mips64el mipsel powerpc ppc64 sparc64 ppc64el
 Pre-Depends: ${misc:Pre-Depends}
 Depends:
- libclc-r600 (>= 0.2.0+git20160907),
- libclc-amdgcn (>= 0.2.0+git20160907),
+ libclc-r600 (>= 0.2.0+git20170213),
+ libclc-amdgcn (>= 0.2.0+git20170213),
  ocl-icd-libopencl1 | libopencl1,
  ${shlibs:Depends},
  ${misc:Depends},
-Replaces:
- libgl1-mesa-dri (<< 10.3.0-1),
-Breaks:
- libgl1-mesa-dri (<< 10.3.0-1),
 Provides: opencl-icd
 Multi-Arch: same
 Description: free implementation of the OpenCL API -- ICD runtime
