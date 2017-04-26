@@ -5,6 +5,7 @@ ConditionPathExists=|/var/lib/cloud9
 [Service]
 WorkingDirectory=/opt/cloud9/build/standalonebuild
 EnvironmentFile=/etc/default/cloud9
+ExecStartPre=ln -sf /opt/cloud9/.c9/ /home/`getent passwd 1000 | awk -F: '{ print $1 }'`/
 ExecStart=/usr/bin/nodejs server.js --packed -w /var/lib/cloud9
 SyslogIdentifier=cloud9ide
-User=debian
+User=1000
