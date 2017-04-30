@@ -146,47 +146,6 @@ debian-bug: http://bugs.debian.org/750361
      {
        SCOPED_TRACE("EWMAAndMaxPower_SSE");
        const std::pair<float, float>& result = vector_math::EWMAAndMaxPower_SSE(
---- a/media/base/yuv_convert.cc
-+++ b/media/base/yuv_convert.cc
-@@ -32,7 +32,7 @@
- #include "media/base/simd/convert_yuv_to_rgb.h"
- #include "media/base/simd/filter_yuv.h"
- 
--#if defined(ARCH_CPU_X86_FAMILY)
-+#if defined(__x86_64__)
- #if defined(COMPILER_MSVC)
- #include <intrin.h>
- #else
-@@ -245,7 +245,7 @@ void InitializeCPUSpecificYUVConversions
-   g_empty_register_state_proc_ = EmptyRegisterStateStub;
- 
-   // Assembly code confuses MemorySanitizer. Also not available in iOS builds.
--#if defined(ARCH_CPU_X86_FAMILY) && !defined(MEMORY_SANITIZER) && \
-+#if defined(ARCH_CPU_X86_64) && !defined(MEMORY_SANITIZER) && \
-     !defined(OS_IOS)
-   g_convert_yuva_to_argb_proc_ = ConvertYUVAToARGB_MMX;
- 
---- a/media/base/yuv_convert.h
-+++ b/media/base/yuv_convert.h
-@@ -16,7 +16,7 @@
- // hide the versions implemented with heavy use of MMX intrinsics.
- // TODO(wolenetz): Use MMX intrinsics when compiling win64 with Visual
- // Studio 2012? http://crbug.com/173450
--#if defined(ARCH_CPU_X86_FAMILY) && \
-+#if defined(__x86_64__) && \
-     !(defined(ARCH_CPU_X86_64) && defined(COMPILER_MSVC))
- #define MEDIA_MMX_INTRINSICS_AVAILABLE
- #endif
---- a/media/base/yuv_convert_unittest.cc
-+++ b/media/base/yuv_convert_unittest.cc
-@@ -871,6 +871,6 @@ TEST(YUVConvertTest, LinearScaleYUVToRGB
- 
- #endif  // defined(ARCH_CPU_X86_64)
- 
--#endif  // defined(ARCH_CPU_X86_FAMILY)
-+#endif  // defined(__x86_64__)
- 
- }  // namespace media
 --- a/skia/ext/convolver.h
 +++ b/skia/ext/convolver.h
 @@ -17,7 +17,6 @@
@@ -197,44 +156,6 @@ debian-bug: http://bugs.debian.org/750361
  #define SIMD_PADDING 8  // 8 * int16_t
  #endif
  
---- a/third_party/WebKit/Source/modules/webaudio/AudioParamTimeline.cpp
-+++ b/third_party/WebKit/Source/modules/webaudio/AudioParamTimeline.cpp
-@@ -32,7 +32,7 @@
- #include "wtf/PtrUtil.h"
- #include <algorithm>
- 
--#if CPU(X86) || CPU(X86_64)
-+#if CPU(X86_64)
- #include <emmintrin.h>
- #endif
- 
-@@ -1112,7 +1112,7 @@ float AudioParamTimeline::valuesForFrame
-     // the next event.
-     if (nextEventType == ParamEvent::LinearRampToValue) {
-       const float valueDelta = value2 - value1;
--#if CPU(X86) || CPU(X86_64)
-+#if CPU(X86_64)
-       if (fillToFrame > writeIndex) {
-         // Minimize in-loop operations. Calculate starting value and increment.
-         // Next step: value += inc.
-@@ -1322,7 +1322,7 @@ float AudioParamTimeline::valuesForFrame
-             for (; writeIndex < fillToFrame; ++writeIndex)
-               values[writeIndex] = target;
-           } else {
--#if CPU(X86) || CPU(X86_64)
-+#if CPU(X86_64)
-             if (fillToFrame > writeIndex) {
-               // Resolve recursion by expanding constants to achieve a 4-step
-               // loop unrolling.
-@@ -1442,7 +1442,7 @@ float AudioParamTimeline::valuesForFrame
-           // Oversampled curve data can be provided if sharp discontinuities are
-           // desired.
-           unsigned k = 0;
--#if CPU(X86) || CPU(X86_64)
-+#if CPU(X86_64)
-           if (fillToFrame > writeIndex) {
-             const __m128 vCurveVirtualIndex = _mm_set_ps1(curveVirtualIndex);
-             const __m128 vCurvePointsPerFrame =
 --- a/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp
 +++ b/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp
 @@ -35,7 +35,7 @@
@@ -443,3 +364,59 @@ debian-bug: http://bugs.debian.org/750361
    SIMD::packOneRowOfRGBA8LittleToRGBA8(source, destination, pixelsPerRow);
  #endif
  #if HAVE(MIPS_MSA_INTRINSICS)
+--- a/third_party/WebKit/Source/modules/webaudio/AudioParamTimeline.cpp
++++ b/third_party/WebKit/Source/modules/webaudio/AudioParamTimeline.cpp
+@@ -32,7 +32,7 @@
+ #include "wtf/PtrUtil.h"
+ #include <algorithm>
+ 
+-#if CPU(X86) || CPU(X86_64)
++#if CPU(X86_64)
+ #include <emmintrin.h>
+ #endif
+ 
+@@ -1269,7 +1269,7 @@ std::tuple<size_t, float, unsigned> Audi
+     size_t currentFrame,
+     float value,
+     unsigned writeIndex) {
+-#if CPU(X86) || CPU(X86_64)
++#if CPU(X86_64)
+   auto numberOfValues = currentState.numberOfValues;
+ #endif
+   auto fillToFrame = currentState.fillToFrame;
+@@ -1282,7 +1282,7 @@ std::tuple<size_t, float, unsigned> Audi
+   double deltaTime = time2 - time1;
+   float k = deltaTime > 0 ? 1 / deltaTime : 0;
+   const float valueDelta = value2 - value1;
+-#if CPU(X86) || CPU(X86_64)
++#if CPU(X86_64)
+   if (fillToFrame > writeIndex) {
+     // Minimize in-loop operations. Calculate starting value and increment.
+     // Next step: value += inc.
+@@ -1409,7 +1409,7 @@ std::tuple<size_t, float, unsigned> Audi
+     size_t currentFrame,
+     float value,
+     unsigned writeIndex) {
+-#if CPU(X86) || CPU(X86_64)
++#if CPU(X86_64)
+   auto numberOfValues = currentState.numberOfValues;
+ #endif
+   auto fillToFrame = currentState.fillToFrame;
+@@ -1459,7 +1459,7 @@ std::tuple<size_t, float, unsigned> Audi
+     for (; writeIndex < fillToFrame; ++writeIndex)
+       values[writeIndex] = target;
+   } else {
+-#if CPU(X86) || CPU(X86_64)
++#if CPU(X86_64)
+     if (fillToFrame > writeIndex) {
+       // Resolve recursion by expanding constants to achieve a 4-step
+       // loop unrolling.
+@@ -1591,7 +1591,7 @@ std::tuple<size_t, float, unsigned> Audi
+   // Oversampled curve data can be provided if sharp discontinuities are
+   // desired.
+   unsigned k = 0;
+-#if CPU(X86) || CPU(X86_64)
++#if CPU(X86_64)
+   if (fillToFrame > writeIndex) {
+     const __m128 vCurveVirtualIndex = _mm_set_ps1(curveVirtualIndex);
+     const __m128 vCurvePointsPerFrame = _mm_set_ps1(curvePointsPerFrame);
