@@ -1,0 +1,32 @@
+From: Anton Staaf <robotboy@chromium.org>
+Date: Tue, 11 Oct 2011 17:22:27 +0000 (-0700)
+Subject: libfdt: Add fdt16_to_cpu utility function
+X-Git-Url: http://git.jdl.com/gitweb/?p=dtc.git;a=commitdiff_plain;h=2cd4c8d27d6b5ea83723754da4eba5d51aa71b95
+
+libfdt: Add fdt16_to_cpu utility function
+
+This utility routine will be used in the variable size cell literal
+append code.  It is a straightforward adaptation of the fdt32_to_cpu
+function.
+
+Signed-off-by: Anton Staaf <robotboy@chromium.org>
+Acked-by: David Gibson <david@gibson.dropbear.id.au>
+---
+
+diff --git a/libfdt/libfdt_env.h b/libfdt/libfdt_env.h
+index 449bf60..da952e7 100644
+--- a/libfdt/libfdt_env.h
++++ b/libfdt/libfdt_env.h
+@@ -6,6 +6,12 @@
+ #include <string.h>
+ 
+ #define _B(n)	((unsigned long long)((uint8_t *)&x)[n])
++static inline uint16_t fdt16_to_cpu(uint16_t x)
++{
++	return (_B(0) << 8) | _B(1);
++}
++#define cpu_to_fdt16(x) fdt16_to_cpu(x)
++
+ static inline uint32_t fdt32_to_cpu(uint32_t x)
+ {
+ 	return (_B(0) << 24) | (_B(1) << 16) | (_B(2) << 8) | _B(3);

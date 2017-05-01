@@ -1,0 +1,103 @@
+.TH DTC 1 "30 January 2012" "Linux"
+.SH NAME
+\fBdtc\fP \- Device Tree Compiler
+.SH SYNOPSIS
+\fB/usr/bin/dtc\fP [options] <input file>
+.SH DESCRIPTION
+Device Tree Compiler, dtc, takes as input a device-tree in
+a given format and outputs a device-tree in another format
+for booting kernels on embedded systems.
+Typically, the input format is "dts", a human readable source
+format, and creates a "dtb", or binary format as output.
+.SH OPTIONS
+.TP
+\fB\-h\fR
+Display help text.
+.TP
+\fB\-q\fR
+Quiet:
+.IP
+\fB-q\fR \- Suppress warnings.
+.br
+\fB-qq\fR \- Suppress errors.
+.br
+\fB-qqq\fR \- Suppress all.
+.TP
+\fB\-I\fR <input format>
+.IP
+Input formats are:
+.IP
+\fBdts\fR \- device tree source text
+.br
+\fBdtb\fR \- device tree blob
+.br
+\fBfs\fR \- /proc/device\-tree style directory
+.TP
+\fB\-o\fR <output file>
+.IP
+Dump the result into a file, instead of stdout.
+.TP
+\fB\-O\fR <output format>
+.IP
+Output formats are:
+.IP
+\fBdts\fR \- device tree source text
+.br
+\fBdtb\fR \- device tree blob
+.br
+\fBasm\fR \- assembler source
+.TP
+\fB\-V\fR <output version>
+.IP
+Blob version to produce. The default is 17 (only relevant for dtb
+and asm output).
+.TP
+\fB\-d\fR <output dependency file>
+.TP
+\fB\-R\fR <number>
+.IP
+Make space for <number> reserve map entries (only relevant for dtb
+and asm output).
+.TP
+\fB\-S\fR <bytes>
+.IP
+Make the blob at least <bytes> long (extra space).
+.TP
+\fB\-p\fR <bytes>
+.IP
+Add padding to the blob of <bytes> long (extra space)
+.HP
+\fB\-b\fR <number>
+.IP
+Set the physical boot CPU.
+.TP
+\fB\-f\fR
+.IP
+Force \- try to produce output even if the input tree has errors.
+.TP
+\fB\-s\fR
+.IP
+Sort nodes and properties before outputting (only useful for comparing trees)
+.TP
+\fB\-v\fR
+Print DTC version and exit.
+.TP
+\fB\-H\fR <phandle format>
+.IP
+phandle formats are:
+.IP
+\fBlegacy\fR \- "linux,phandle" properties only
+.br
+\fBepapr\fR \- "phandle" properties only
+.br
+\fBboth\fR \- Both "linux,phandle" and "phandle" properties
+.SH AUTHOR
+\fBdtc\fP was written by David Gibson
+<david@gibson.dropbear.id.au>. Since April 1, 2006, Jon Loeliger
+<jdl@jdl.com> assumes maintainership.
+.PP
+This manual page was originally written by Aur\['e]lien G\['E]R\[^O]ME
+<ag@roxor.cx>, for the Debian project (but may be used by others).
+.PP
+This manual page is currently maintained and update it by H\['e]ctor Or\['o]n
+<zumbi@debian.org>, for the Debian project.

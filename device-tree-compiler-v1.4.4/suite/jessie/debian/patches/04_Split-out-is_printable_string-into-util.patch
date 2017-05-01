@@ -1,0 +1,157 @@
+From: Simon Glass <sjg@chromium.org>
+Date: Tue, 5 Jul 2011 19:02:49 +0000 (-0700)
+Subject: Split out is_printable_string() into util.c
+X-Git-Url: http://git.jdl.com/gitweb/?p=dtc.git;a=commitdiff_plain;h=492f9d5de7db74aeb3a905246c4efd7cb29227a8
+
+Split out is_printable_string() into util.c
+
+This useful function is split out so it will be available to programs
+other than ftdump.
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+Acked-by: David Gibson <david@gibson.dropbear.id.au>
+---
+
+diff --git a/Makefile.ftdump b/Makefile.ftdump
+index b70905a..2744a18 100644
+--- a/Makefile.ftdump
++++ b/Makefile.ftdump
+@@ -5,7 +5,8 @@
+ #
+ 
+ FTDUMP_SRCS = \
+-	ftdump.c
++	ftdump.c \
++	util.c
+ 
+ FTDUMP_GEN_SRCS =
+ 
+diff --git a/ftdump.c b/ftdump.c
+index bce6535..db932e3 100644
+--- a/ftdump.c
++++ b/ftdump.c
+@@ -11,36 +11,14 @@
+ #include <fdt.h>
+ #include <libfdt_env.h>
+ 
++#include "util.h"
++
+ #define FTDUMP_BUF_SIZE	65536
+ 
+ #define ALIGN(x, a)	(((x) + ((a) - 1)) & ~((a) - 1))
+ #define PALIGN(p, a)	((void *)(ALIGN((unsigned long)(p), (a))))
+ #define GET_CELL(p)	(p += 4, *((const uint32_t *)(p-4)))
+ 
+-static int is_printable_string(const void *data, int len)
+-{
+-	const char *s = data;
+-	const char *ss;
+-
+-	/* zero length is not */
+-	if (len == 0)
+-		return 0;
+-
+-	/* must terminate with zero */
+-	if (s[len - 1] != '\0')
+-		return 0;
+-
+-	ss = s;
+-	while (*s && isprint(*s))
+-		s++;
+-
+-	/* not zero, or not done yet */
+-	if (*s != '\0' || (s + 1 - ss) < len)
+-		return 0;
+-
+-	return 1;
+-}
+-
+ static void print_data(const char *data, int len)
+ {
+ 	int i;
+@@ -50,7 +28,7 @@ static void print_data(const char *data, int len)
+ 	if (len == 0)
+ 		return;
+ 
+-	if (is_printable_string(data, len)) {
++	if (util_is_printable_string(data, len)) {
+ 		printf(" = \"%s\"", (const char *)data);
+ 	} else if ((len % 4) == 0) {
+ 		printf(" = <");
+diff --git a/util.c b/util.c
+index d7ac27d..994436f 100644
+--- a/util.c
++++ b/util.c
+@@ -1,6 +1,9 @@
+ /*
+  * Copyright 2008 Jon Loeliger, Freescale Semiconductor, Inc.
+  *
++ * util_is_printable_string contributed by
++ *	Pantelis Antoniou <pantelis.antoniou AT gmail.com>
++ *
+  * This program is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU General Public License as
+  * published by the Free Software Foundation; either version 2 of the
+@@ -17,6 +20,7 @@
+  *                                                                   USA
+  */
+ 
++#include <ctype.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <stdarg.h>
+@@ -57,3 +61,27 @@ char *join_path(const char *path, const char *name)
+ 	memcpy(str+lenp, name, lenn+1);
+ 	return str;
+ }
++
++int util_is_printable_string(const void *data, int len)
++{
++	const char *s = data;
++	const char *ss;
++
++	/* zero length is not */
++	if (len == 0)
++		return 0;
++
++	/* must terminate with zero */
++	if (s[len - 1] != '\0')
++		return 0;
++
++	ss = s;
++	while (*s && isprint(*s))
++		s++;
++
++	/* not zero, or not done yet */
++	if (*s != '\0' || (s + 1 - ss) < len)
++		return 0;
++
++	return 1;
++}
+diff --git a/util.h b/util.h
+index 9cead84..cc68933 100644
+--- a/util.h
++++ b/util.h
+@@ -1,6 +1,8 @@
+ #ifndef _UTIL_H
+ #define _UTIL_H
+ 
++#include <stdarg.h>
++
+ /*
+  * Copyright 2008 Jon Loeliger, Freescale Semiconductor, Inc.
+  *
+@@ -53,4 +55,13 @@ static inline void *xrealloc(void *p, size_t len)
+ extern char *xstrdup(const char *s);
+ extern char *join_path(const char *path, const char *name);
+ 
++/**
++ * Check a string of a given length to see if it is all printable and
++ * has a valid terminator.
++ *
++ * @param data	The string to check
++ * @param len	The string length including terminator
++ * @return 1 if a valid printable string, 0 if not */
++int util_is_printable_string(const void *data, int len);
++
+ #endif /* _UTIL_H */
