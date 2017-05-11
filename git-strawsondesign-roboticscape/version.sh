@@ -13,9 +13,9 @@ git_sha="5da76969737bb892ff31ed0294fc52c88b061d7d"
 reprepro_dir="r/${package_name}"
 dl_path=""
 
-debian_version="${package_version}-0rcnee0"
+debian_version="${package_version}-0rcnee1"
 debian_patch=""
 debian_diff=""
 
-jessie_version="~bpo80+20170406"
-stretch_version="~bpo90+20170406"
+jessie_version="~jessie+20170511"
+stretch_version="~stretch+20170511"

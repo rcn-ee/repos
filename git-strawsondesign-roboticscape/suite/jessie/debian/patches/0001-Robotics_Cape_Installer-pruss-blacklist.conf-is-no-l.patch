@@ -1,0 +1,41 @@
+From 1f6a251fadab64f944cec08ed805aa229d2b9280 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Thu, 11 May 2017 13:22:40 -0500
+Subject: [PATCH] Robotics_Cape_Installer: pruss-blacklist.conf is no longer
+ needed
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ pru_firmware/Makefile             | 2 --
+ pru_firmware/pruss-blacklist.conf | 1 -
+ 2 files changed, 3 deletions(-)
+ delete mode 100644 pru_firmware/pruss-blacklist.conf
+
+diff --git a/pru_firmware/Makefile b/pru_firmware/Makefile
+index 3a59fbe..02fe1ae 100644
+--- a/pru_firmware/Makefile
++++ b/pru_firmware/Makefile
+@@ -92,7 +92,6 @@ install:
+ 	@$(INSTALLDIR) $(DESTDIR)/etc/modprobe.d
+ 	@$(INSTALLNONEXEC) $(PRU0_FW) $(DESTDIR)/lib/firmware/am335x-pru0-fw
+ 	@$(INSTALLNONEXEC) $(PRU1_FW) $(DESTDIR)/lib/firmware/am335x-pru1-fw
+-	@$(INSTALLNONEXEC) pruss-blacklist.conf $(DESTDIR)/etc/modprobe.d/
+ 	@echo 'PRU Firmware Install Complete'
+ 
+ 
+@@ -104,5 +103,4 @@ clean:
+ uninstall:
+ 	@$(RM) /lib/firmware/am335x-pru0-fw
+ 	@$(RM) /lib/firmware/am335x-pru1-fw
+-	@$(RM) /etc/modprobe.d/pruss-blacklist.conf
+ 	@echo "PRU Firmware Uninstall Complete"
+diff --git a/pru_firmware/pruss-blacklist.conf b/pru_firmware/pruss-blacklist.conf
+deleted file mode 100644
+index 9a22995..0000000
+--- a/pru_firmware/pruss-blacklist.conf
++++ /dev/null
+@@ -1 +0,0 @@
+-blacklist uio_pruss
+-- 
+2.11.0
+
