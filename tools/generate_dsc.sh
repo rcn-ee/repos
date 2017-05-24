@@ -162,6 +162,7 @@ start_run () {
 	suite="xenial" ; runner
 	suite="yakkety" ; runner
 	suite="zesty" ; runner
+	suite="artful" ; runner
 }
 
 start_run
