@@ -4,12 +4,12 @@
 
 package_name="connman"
 debian_pkg_name="${package_name}"
-package_version="1.33-git20170404"
+package_version="1.34-git20170517"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
 git_repo="git://git.kernel.org/pub/scm/network/connman/connman.git"
-git_sha="5afdf69554c12d240d55fe02f9b9107edd0bbea8"
+git_sha="c602e27c19d7ef63cd7ba4d67ed41adee97d30bd"
 reprepro_dir="c/${package_name}"
 dl_path=""
 
@@ -18,5 +18,4 @@ debian_patch=""
 debian_diff=""
 #local_patch="rcnee0"
 
-stretch_version="~bpo90+20170406"
-xenial_version="~bpo1604+20170406"
+stretch_version="~stretch+20170605"
