@@ -3,7 +3,7 @@
 #https://github.com/ArduPilot/ardupilot
 #https://github.com/ArduPilot/ardupilot/tree/Copter-3.5
 
-package_name="ardupilot-copter-bbbmini"
+package_name="ardupilot-copter-blue"
 debian_pkg_name="${package_name}"
 package_version="3.5.0-git20170524"
 package_source="${package_name}_${package_version}.orig.tar.xz"
