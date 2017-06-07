@@ -71,7 +71,7 @@ important () {
 	package_name="pastebinit" ; package_version="${package_name}_1.5-1" ; check_http
 
 	site="${debian_pool}/non-free/f"
-	package_name="firmware-nonfree" ; package_version="${package_name}_20161130-2" ; check_http
+	package_name="firmware-nonfree" ; package_version="${package_name}_20161130-3" ; check_http
 }
 
 builds () {
