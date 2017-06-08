@@ -11,10 +11,13 @@ git_sha=""
 reprepro_dir="i/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-r0"
+debian_version="${package_version}-r2rcnee0"
 debian_untar=""
 debian_patch=""
 
-jessie_version="~bpo80+20170216+1"
-stretch_version="~bpo90+20170216+1"
-xenial_version="~bpo1604+20170216+1"
+debian_dl_1="https://github.com/rcn-ee/sdk-firmware/raw/master/ipumm-fw/3.00.12.00-r2/files/dra7-ipu2-fw.xem4"
+debian_dl_2="https://github.com/rcn-ee/sdk-firmware/raw/master/ipumm-fw/3.00.12.00-r2/files/dra7-ipu2-fw.xem4.map"
+
+jessie_version="~jessie+20170608"
+stretch_version="~stretch+20170608"
+xenial_version="~xenial+20170608"
