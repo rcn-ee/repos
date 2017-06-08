@@ -2,7 +2,7 @@
 
 package_name="firmware-am57xx-opencl-monitor"
 debian_pkg_name="${package_name}"
-package_version="1.1.10.3-r0.0"
+package_version="1.1.12.0"
 package_source=""
 src_dir=""
 
@@ -11,10 +11,16 @@ git_sha=""
 reprepro_dir="f/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee2"
+debian_version="${package_version}-r0.0rcnee0"
 debian_untar=""
 debian_patch=""
 
-jessie_version="~bpo80+20161027+1"
-stretch_version="~bpo90+20161027+1"
-xenial_version="~bpo1604+20161027+1"
+debian_dl_1="https://github.com/rcn-ee/sdk-firmware/raw/master/opencl-monitor/1.1.12.0-r0.0/files/dra7-dsp1-fw.xe66"
+debian_dl_2="https://github.com/rcn-ee/sdk-firmware/raw/master/opencl-monitor/1.1.12.0-r0.0/files/dra7-dsp2-fw.xe66"
+debian_dl_3="https://github.com/rcn-ee/sdk-firmware/raw/master/opencl-monitor/1.1.12.0-r0.0/files/dsp.out"
+debian_dl_4="https://github.com/rcn-ee/sdk-firmware/raw/master/opencl-monitor/1.1.12.0-r0.0/files/dsp.syms"
+debian_dl_5="https://github.com/rcn-ee/sdk-firmware/raw/master/opencl-monitor/1.1.12.0-r0.0/files/dsp_syms.obj"
+
+jessie_version="~jessie+20170608"
+stretch_version="~stretch+20170608"
+xenial_version="~xenial+20170608"
