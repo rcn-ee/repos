@@ -2,7 +2,7 @@
 
 package_name="bone101"
 debian_pkg_name="${package_name}"
-package_version="1.1.6"
+package_version="1.1.7"
 package_source="${package_name}_${package_version}.orig.tar.gz"
 src_dir="${package_name}-${package_version}"
 
@@ -11,7 +11,7 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee31"
+debian_version="${package_version}-0rcnee0"
 debian_untar=""
 debian_patch=""
 sbuild_chroot="nodejs-v0.12.x"
@@ -32,4 +32,4 @@ debian_dl_4="${dl_mirror}/${node_sensortag}-${v12}.tar.xz"
 debian_dl_5="${dl_mirror}/${node_sensortag}-${v4}.tar.xz"
 debian_dl_6="${dl_mirror}/${node_sensortag}-${v6}.tar.xz"
 
-jessie_version="~jessie+20170421"
+jessie_version="~jessie+20170608"
