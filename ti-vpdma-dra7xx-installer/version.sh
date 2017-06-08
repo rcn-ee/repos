@@ -11,7 +11,7 @@ git_sha=""
 reprepro_dir="v/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-r2rcnee0"
+debian_version="${package_version}-r1rcnee0"
 debian_untar=""
 debian_patch=""
 
