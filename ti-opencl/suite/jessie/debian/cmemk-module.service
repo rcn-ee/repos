@@ -1,0 +1,12 @@
+[Unit]
+Description=cmemk kernel modules
+After=systemd-modules-load.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/sbin/modprobe cmemk
+
+[Install]
+WantedBy=basic.target
+
