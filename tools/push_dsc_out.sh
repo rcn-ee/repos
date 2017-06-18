@@ -30,6 +30,7 @@ start_run () {
 	suite="wheezy" ; runner
 	suite="jessie" ; runner
 	suite="stretch" ; runner
+	suite="buster" ; runner
 
 	dist="ubuntu"
 	suite="trusty" ; runner

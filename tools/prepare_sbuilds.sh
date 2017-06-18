@@ -89,6 +89,14 @@ if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	setup_update_sbuild
 fi
 
+if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
+	dist="buster"
+	unset flavor
+	arch="armhf"
+	options="--exclude=debfoster"
+	setup_update_sbuild
+fi
+
 mirror="http://${proxy}${ubuntu_server}"
 deboot="gutsy"
 

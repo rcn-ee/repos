@@ -83,15 +83,19 @@ archs="armhf source"
 setup_repo
 
 suite="jessie"
-archs="arm64 armhf source"
+archs="armhf source"
 setup_repo
 
 suite="stretch"
-archs="arm64 armhf source"
+archs="armhf source"
+setup_repo
+
+suite="buster"
+archs="armhf source"
 setup_repo
 
 suite="sid"
-archs="arm64 armhf source"
+archs="armhf source"
 setup_repo
 
 dist="debian-exp"
@@ -99,17 +103,14 @@ suite="jessie"
 archs="armhf source"
 setup_repo
 
+dist="debian-exp"
 suite="stretch"
-archs="arm64 armhf source"
+archs="armhf source"
 setup_repo
 
 dist="debian-machinekit"
 suite="wheezy"
 archs="armhf source"
-setup_repo
-
-suite="jessie"
-archs="arm64 armhf source"
 setup_repo
 
 dist="ubuntu"
@@ -133,7 +134,7 @@ archs="armhf source"
 setup_repo
 
 suite="xenial"
-archs="arm64 armhf source"
+archs="armhf source"
 setup_repo
 
 suite="yakkety"
