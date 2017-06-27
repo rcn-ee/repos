@@ -111,7 +111,7 @@ mesa () {
 	package_name="libvdpau" ; package_version="${package_name}_1.1.1-6" ; check_http
 
 	site="${debian_pool}/main/libv"
-	package_name="libva" ; package_version="${package_name}_1.8.1-1" ; check_http
+	package_name="libva" ; package_version="${package_name}_1.8.2-2" ; check_http
 
 	site="${debian_pool}/main/w"
 	package_name="wayland" ; package_version="${package_name}_1.12.0-1" ; check_http
