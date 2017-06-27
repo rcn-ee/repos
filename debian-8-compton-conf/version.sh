@@ -19,4 +19,3 @@ debian_version="${package_version}-8"
 debian_patch=""
 
 jessie_version="~bpo80+20150708+1"
-stretch_version="~bpo90+20150708+1"
