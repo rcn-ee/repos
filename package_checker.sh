@@ -102,7 +102,7 @@ mesa () {
 
 	site="${debian_pool}/main/libc"
 	filter="0.2"
-	package_name="libclc" ; package_version="${package_name}_0.2.0+git20170330-1" ; check_http
+	package_name="libclc" ; package_version="${package_name}_0.2.0+git20170330-2" ; check_http
 
 	site="${debian_pool}/main/libd"
 	package_name="libdrm" ; package_version="${package_name}_2.4.81-1" ; check_http
