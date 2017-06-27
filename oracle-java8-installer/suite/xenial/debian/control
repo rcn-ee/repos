@@ -3,8 +3,8 @@ Section: non-free/java
 Priority: optional
 Maintainer: Alin Andrei <webupd8@gmail.com>
 Build-Depends: debhelper, lsb-release
-Standards-Version: 3.9.7
-Homepage: http://jdk8.java.net/download.html
+Standards-Version: 3.9.8
+Homepage: http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
 Package: oracle-java8-installer
 Section: non-free/java
@@ -23,7 +23,7 @@ Provides: java-virtual-machine, java-compiler, default-jre, default-jre-headless
           java-sdk, java2-sdk, java5-sdk, java6-sdk, java7-sdk,
           openjdk-6-jre, openjdk-6-jre-headless, icedtea-6-plugin,
           openjdk-7-jre, openjdk-7-jre-headless, openjdk-7-jdk, icedtea-7-plugin,
-          oracle-java7-bin, oracle-java7-jre, oracle-java7-jdk, oracle-java7-fonts, oracle-java7-plugin, oracle-java8-bin, oracle-java8-jre, oracle-java8-jdk, oracle-java8-fonts, oracle-java8-plugin, java8-jdk, java8-sdk
+          oracle-java7-bin, oracle-java7-jre, oracle-java7-jdk, oracle-java7-fonts, oracle-java7-plugin, oracle-java8-bin, oracle-java8-jre, oracle-java8-jdk, oracle-java8-fonts, oracle-java8-plugin, java8-jdk, java8-sdk, openjdk-8-jdk, openjdk-8-jre, openjdk-8-jre-headless, openjdk-8-jdk-headless, icedtea-8-plugin
 Replaces: openjdk-6-jre, openjdk-6-jre-headless, icedtea-6-plugin,
           openjdk-7-jre, openjdk-7-jre-headless, openjdk-7-jdk, icedtea-7-plugin,
           oracle-java7-bin, oracle-java7-jre, oracle-java7-jdk, oracle-java7-fonts, oracle-java7-plugin,
@@ -47,7 +47,8 @@ Description: Oracle Java(TM) Development Kit (JDK) 8
 Package: oracle-java8-set-default
 Section: non-free/java
 Architecture: all
-Depends: ${misc:Depends}, oracle-java8-installer
+Pre-Depends: oracle-java8-installer
+Depends: ${misc:Depends}
 Conflicts: oracle-java6-set-default, oracle-java7-set-default, oracle-java9-set-default
 Replaces: oracle-java6-set-default, oracle-java7-set-default, oracle-java9-set-default
 Description: Set Oracle JDK 8 as default Java
