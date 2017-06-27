@@ -6,7 +6,7 @@
 
 package_name="oracle-java8-installer"
 debian_pkg_name="${package_name}"
-package_version="8u131"
+package_version="8u131-1"
 package_source=""
 src_dir=""
 
@@ -15,7 +15,7 @@ git_sha=""
 reprepro_dir="o/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee1"
+debian_version="${package_version}-0rcnee0"
 debian_untar=""
 debian_patch=""
 
