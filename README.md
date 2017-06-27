@@ -1,9 +1,3 @@
-Debian 7: (wheezy): http://repos.rcn-ee.com/debian/
-```
-deb [arch=armhf] http://repos.rcn-ee.com/debian/ wheezy main
-#deb-src [arch=armhf] http://repos.rcn-ee.com/debian/ wheezy main
-```
-
 Debian 8: (jessie): http://repos.rcn-ee.com/debian/
 ```
 deb [arch=armhf] http://repos.rcn-ee.com/debian/ jessie main
@@ -14,12 +8,6 @@ Debian 9: (stretch): http://repos.rcn-ee.com/debian/
 ```
 deb [arch=armhf] http://repos.rcn-ee.com/debian/ stretch main
 #deb-src [arch=armhf] http://repos.rcn-ee.com/debian/ stretch main
-```
-
-Ubuntu 14.04 lts: (trusty): http://repos.rcn-ee.com/ubuntu/
-```
-deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ trusty main
-#deb-src [arch=armhf] http://repos.rcn-ee.com/ubuntu/ trusty main
 ```
 
 Ubuntu 16.04 lts: (xenial): http://repos.rcn-ee.com/ubuntu/
