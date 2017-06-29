@@ -13,6 +13,7 @@ override_dh_auto_clean:
 # If doing an opencl build/install on an ARM platform the monitor files
 # must be copied over.
 override_dh_auto_build:
+	mkdir -p ./monitor/monitor_am57x/
 	cp -v /usr/share/ti/opencl/dsp.out ./monitor/monitor_am57x/dsp0.out
 	cp -v /usr/share/ti/opencl/dsp.syms ./monitor/monitor_am57x/dsp0.syms
 	cp -v /usr/share/ti/opencl/dsp_syms.obj ./monitor/monitor_am57x/dsp0.syms.obj
