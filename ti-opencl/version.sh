@@ -4,16 +4,16 @@
 
 package_name="ti-opencl"
 debian_pkg_name="${package_name}"
-package_version="01.01.12.00"
+package_version="01.01.13.00"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
 git_repo="git://git.ti.com/opencl/ti-opencl.git"
-git_sha="8c0ec9c270cafaef0a56c376fc28c1b7714cb09c"
+git_sha="c2493c7190c7e5b4135f64d2aacc2de3ff57e0bb"
 reprepro_dir="c/${package_name}"
 dl_path=""
 
-debian_version="${package_version}-0rcnee4"
+debian_version="${package_version}-r0.0rcnee0"
 debian_patch=""
 debian_diff=""
 
