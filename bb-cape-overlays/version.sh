@@ -4,12 +4,12 @@
 
 package_name="bb-cape-overlays"
 debian_pkg_name="${package_name}"
-package_version="4.4.20170630.0"
+package_version="4.4.20170630.1"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
 git_repo="https://github.com/beagleboard/bb.org-overlays"
-git_sha="63c3ee6b2d52a56a1461f5c27b65156ceb6fd2f9"
+git_sha="2031766cce359bef75f1db5fdf740ff6add5b076"
 reprepro_dir="b/${package_name}"
 dl_path=""
 
