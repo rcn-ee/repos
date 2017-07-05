@@ -292,7 +292,7 @@ libsigrok () {
 
 	site="${debian_pool}/main/libr"
 	#https://packages.debian.org/source/sid/librevisa
-	package_name="librevisa"; package_version="${package_name}_0.0.20130812+git20140327-0"; check_http
+#	package_name="librevisa"; package_version="${package_name}_0.0.20130812+git20140327-0"; check_http
 
 	site="${debian_pool}/main/libs"
 	#https://packages.debian.org/source/sid/libserialport
