@@ -4,7 +4,7 @@ mirror="http://http.debian.net/debian"
 
 package_name="libva"
 debian_pkg_name="${package_name}"
-package_version="1.8.2-2"
+package_version="1.8.3-1"
 
 git_repo=""
 git_sha=""
