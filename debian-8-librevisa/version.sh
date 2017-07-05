@@ -15,6 +15,7 @@ dl_path=""
 
 debian_version="${package_version}-0ppa2~wily"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
+local_patch="rcnee0"
 
-jessie_version="~bpo80+20160205+1"
-stretch_version="~bpo90+20160205+1"
+jessie_version="~jessie+20170705"
+stretch_version="~stretch+20170705"

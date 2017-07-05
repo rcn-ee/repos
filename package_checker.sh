@@ -339,7 +339,7 @@ mesa
 #qt5_lxqt
 #machinekit
 #nodejs
-#libsigrok
+libsigrok
 #bbgw
 ubuntu
 
