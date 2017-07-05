@@ -3,17 +3,18 @@ Author: Chad Miller <chad.miller@canonical.com>
 
 --- a/components/search_engines/prepopulated_engines.json
 +++ b/components/search_engines/prepopulated_engines.json
-@@ -80,6 +80,7 @@
+@@ -79,7 +79,7 @@
+       "name": "\u767e\u5ea6",
        "keyword": "baidu.com",
-       "favicon_url": "http://www.baidu.com/favicon.ico",
-       "search_url": "http://www.baidu.com/#ie={inputEncoding}&wd={searchTerms}",
-+      "search_url": "http://www.baidu.com/#ie={inputEncoding}&tn=ubuntuu_cb&wd={searchTerms}",
+       "favicon_url": "https://www.baidu.com/favicon.ico",
+-      "search_url": "https://www.baidu.com/#ie={inputEncoding}&wd={searchTerms}",
++      "search_url": "https://www.baidu.com/#ie={inputEncoding}&tn=ubuntuu_cb&wd={searchTerms}",
        "suggest_url": "http://suggestion.baidu.com/su?wd={searchTerms}&action=opensearch&ie={inputEncoding}",
        "type": "SEARCH_ENGINE_BAIDU",
        "id": 21
 --- a/components/search_engines/template_url.cc
 +++ b/components/search_engines/template_url.cc
-@@ -865,6 +865,9 @@ std::string TemplateURLRef::HandleReplac
+@@ -867,6 +867,9 @@ std::string TemplateURLRef::HandleReplac
  
    std::string url = parsed_url_;
  
@@ -23,7 +24,7 @@ Author: Chad Miller <chad.miller@canonical.com>
    // replacements_ is ordered in ascending order, as such we need to iterate
    // from the back.
    for (Replacements::reverse_iterator i = replacements_.rbegin();
-@@ -894,6 +897,7 @@ std::string TemplateURLRef::HandleReplac
+@@ -896,6 +899,7 @@ std::string TemplateURLRef::HandleReplac
  
        case GOOGLE_BASE_URL:
          DCHECK(!i->is_post_param);
@@ -31,7 +32,7 @@ Author: Chad Miller <chad.miller@canonical.com>
          HandleReplacement(
              std::string(), search_terms_data.GoogleBaseURLValue(), *i, &url);
          break;
-@@ -1024,7 +1028,8 @@ std::string TemplateURLRef::HandleReplac
+@@ -1026,7 +1030,8 @@ std::string TemplateURLRef::HandleReplac
  
        case GOOGLE_SEARCH_CLIENT: {
          DCHECK(!i->is_post_param);
@@ -41,7 +42,7 @@ Author: Chad Miller <chad.miller@canonical.com>
          if (!client.empty())
            HandleReplacement("client", client, *i, &url);
          break;
-@@ -1128,6 +1133,13 @@ std::string TemplateURLRef::HandleReplac
+@@ -1130,6 +1135,13 @@ std::string TemplateURLRef::HandleReplac
      }
    }
  

@@ -4,19 +4,7 @@ Forwarded: yes
 
 --- a/ui/events/devices/x11/touch_factory_x11.cc
 +++ b/ui/events/devices/x11/touch_factory_x11.cc
-@@ -108,7 +108,10 @@ void TouchFactory::UpdateDeviceList(XDis
-           if (tci->mode == XIDirectTouch) {
-             touch_device_lookup_[devinfo.deviceid] = true;
-             touch_device_list_[devinfo.deviceid] = true;
--          }
-+            VLOG(1) << "addding master device " << devinfo.deviceid << ", it has mode " << tci->mode;
-+          } else {
-+            VLOG(1) << "ignoring master device " << devinfo.deviceid << " because it has mode " << tci->mode;
-+	  }
-         }
-       }
-       pointer_device_lookup_[devinfo.deviceid] = true;
-@@ -329,8 +332,12 @@ void TouchFactory::CacheTouchscreenIds(i
+@@ -327,8 +327,12 @@ void TouchFactory::CacheTouchscreenIds(i
                       return touchscreen.id == device_id;
                     });
    // Internal displays will have a vid and pid of 0. Ignore them.

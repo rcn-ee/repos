@@ -1,0 +1,14 @@
+Description: Revert upstream change to use llvm-ar (https://chromium.googlesource.com/chromium/src/+/8968cd5170f4a22b1c508ffa3bc240b346c44b1b)
+Author: Olivier Tilloy <olivier.tilloy@canonical.com>
+
+--- a/build/toolchain/gcc_toolchain.gni
++++ b/build/toolchain/gcc_toolchain.gni
+@@ -553,7 +553,7 @@ template("clang_toolchain") {
+     cxx = "$prefix/clang++"
+     ld = cxx
+     readelf = "${toolprefix}readelf"
+-    ar = "${prefix}/llvm-ar"
++    ar = "${toolprefix}ar"
+     nm = "${toolprefix}nm"
+ 
+     forward_variables_from(invoker,

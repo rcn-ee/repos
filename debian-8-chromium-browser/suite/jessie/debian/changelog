@@ -1,8 +1,81 @@
-chromium-browser (58.0.3029.110-0ubuntu0.16.04.1281rcnee0~jessie+20170522) jessie; urgency=low
+chromium-browser (59.0.3071.109-0ubuntu0.16.04.1289rcnee0~jessie+20170705) jessie; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Mon, 22 May 2017 11:20:47 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Wed, 05 Jul 2017 09:37:23 -0500
+
+chromium-browser (59.0.3071.109-0ubuntu0.16.04.1289) xenial; urgency=medium
+
+  * Upstream release: 59.0.3071.109
+
+ -- Olivier Tilloy <olivier.tilloy@canonical.com>  Wed, 21 Jun 2017 06:47:10 +0200
+
+chromium-browser (59.0.3071.104-0ubuntu0.16.04.1287) xenial; urgency=medium
+
+  * Upstream release: 59.0.3071.104
+    - CVE-2017-5087: Sandbox Escape in IndexedDB.
+    - CVE-2017-5088: Out of bounds read in V8.
+    - CVE-2017-5089: Domain spoofing in Omnibox.
+
+ -- Olivier Tilloy <olivier.tilloy@canonical.com>  Fri, 16 Jun 2017 06:51:06 +0200
+
+chromium-browser (59.0.3071.86-0ubuntu0.16.04.1285) xenial; urgency=medium
+
+  * debian/control: build-depend on gcc 5 (LP: #1697496)
+  * debian/patches/use-gcc-versioned: removed, no longer needed
+  * debian/patches/no-fPIC.patch: removed, no longer needed
+
+ -- Olivier Tilloy <olivier.tilloy@canonical.com>  Tue, 13 Jun 2017 10:36:34 +0200
+
+chromium-browser (59.0.3071.86-0ubuntu0.16.04.1283) xenial; urgency=medium
+
+  * Upstream release: 59.0.3071.86
+    - CVE-2017-5070: Type confusion in V8.
+    - CVE-2017-5071: Out of bounds read in V8.
+    - CVE-2017-5072: Address spoofing in Omnibox.
+    - CVE-2017-5073: Use after free in print preview.
+    - CVE-2017-5074: Use after free in Apps Bluetooth.
+    - CVE-2017-5075: Information leak in CSP reporting.
+    - CVE-2017-5086: Address spoofing in Omnibox.
+    - CVE-2017-5076: Address spoofing in Omnibox.
+    - CVE-2017-5077: Heap buffer overflow in Skia.
+    - CVE-2017-5078: Possible command injection in mailto handling.
+    - CVE-2017-5079: UI spoofing in Blink.
+    - CVE-2017-5080: Use after free in credit card autofill.
+    - CVE-2017-5081: Extension verification bypass.
+    - CVE-2017-5082: Insufficient hardening in credit card editor.
+    - CVE-2017-5083: UI spoofing in Blink.
+    - CVE-2017-5085: Inappropriate javascript execution on WebUI pages.
+  * debian/patches/additional-search-engines.patch: refreshed
+  * debian/patches/chromium_useragent.patch: refreshed
+  * debian/patches/disable-sse2: refreshed
+  * debian/patches/enable-chromecast-by-default.patch: renamed, and really
+    enable chromecast (LP: #1621753)
+  * debian/patches/fix_building_widevinecdm_with_chromium.patch: refreshed
+  * debian/patches/last-commit-position: refreshed
+  * debian/patches/search-credit.patch: refreshed
+  * debian/patches/series: refreshed
+  * debian/patches/snapshot-library-link: refreshed
+  * debian/patches/stdatomic: refreshed
+  * debian/patches/touch-v35: refreshed
+  * debian/patches/use-gcc-versioned: refreshed
+  * debian/patches/fix-gn-bootstrap.patch: removed, no longer needed
+  * debian/patches/revert-llvm-ar.patch: added
+  * debian/patches/linux-dma-buf.patch: added
+  * debian/patches/no-fPIC.patch: added
+  * debian/control:
+    - bump Standards-Version to 3.9.8
+    - remove build dependency on libgtk2.0-dev
+    - remove build dependency on libgconf2-dev
+  * debian/rules:
+    - build with GTK3 by default to match upstream
+      (https://bugs.chromium.org/p/chromium/issues/detail?id=79722)
+    - do not build with GConf support (LP: #1669100)
+  * debian/apport/chromium-browser.py:
+    - fetch info about libgtk-3-0
+    - do not fetch GConf key values
+
+ -- Olivier Tilloy <olivier.tilloy@canonical.com>  Tue, 06 Jun 2017 06:39:12 +0200
 
 chromium-browser (58.0.3029.110-0ubuntu0.16.04.1281) xenial; urgency=medium
 

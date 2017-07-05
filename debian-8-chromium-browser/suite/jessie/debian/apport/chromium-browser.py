@@ -31,7 +31,7 @@ RELATED_PACKAGES = [
     'chromium-codecs-ffmpeg',
     'chromium-codecs-ffmpeg-extra',
     'libvpx0',
-    'libgtk2.0-0',
+    'libgtk-3-0',
     'nspluginwrapper',
     # various plugins
     'adobe-flash-player',
@@ -58,19 +58,6 @@ def installed_version(report, pkgs):
     for pkg in pkgs:
         script = subprocess.Popen(['apt-cache', 'policy', pkg], stdout=subprocess.PIPE)
         report['RelatedPackagesPolicy'] += str(script.communicate()[0]) + "\n"
-
-def gconf_values(report, keys):
-    report['gconf-keys'] = ''
-    for key in keys:
-        try:
-            script = subprocess.Popen(['gconftool-2', '--get', key], stdout=subprocess.PIPE)
-        except OSError:
-            report['gconf-keys'] = "gconftool-2 not found"
-            return
-        out = str(script.communicate()[0])
-        if out == "":
-            out = "**unset**\n"
-        report['gconf-keys'] += key + " = " + out
 
 def loadavg_processes_running_percent():
     with open("/proc/loadavg") as loadavg:
@@ -189,7 +176,6 @@ def add_info(report, hookui, userdir=None):
     apport.hookutils.attach_file_if_exists(report, os.path.join(customizations_dir, 'default'), key='etcconfigdefault')
     apport.hookutils.attach_file_if_exists(report, os.path.join(HOME, '.local/share/applications', PACKAGE + 'desktop'))
 
-    gconf_values(report, ['/desktop/gnome/applications/browser/exec', '/desktop/gnome/url-handlers/https/command', '/desktop/gnome/url-handlers/https/enabled', '/desktop/gnome/url-handlers/http/command', '/desktop/gnome/url-handlers/http/enabled', '/desktop/gnome/session/required_components/windowmanager', '/apps/metacity/general/compositing_manager', '/desktop/gnome/interface/icon_theme', '/desktop/gnome/interface/gtk_theme'])
     if userdir:
         user_dir = userdir
     else:
