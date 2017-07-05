@@ -15,11 +15,8 @@ fi
 mkdir -p ${package_name}_${package_version}.orig
 tar xf ${package_name}-${package_version}.tar.gz -C ${package_name}_${package_version}.orig
 cd ${package_name}_${package_version}.orig
-mv libserialport-0.1.1/* ./
-rm -rf libserialport-0.1.1/
-tar cvfJ ../${package_name}_${package_version}.orig.tar.xz ./*
+mv ${package_name}-${package_version}/* ./
+rm -rf ${package_name}-${package_version}/
+tar cfJ ../${package_name}_${package_version}.orig.tar.xz ./*
 cd ../
 
-#if [ ! -f ${package_name}_${package_version}.orig.tar.gz ] ; then
-#	cp ${package_name}-${package_version}.tar.gz ${package_name}_${package_version}.orig.tar.gz
-#fi

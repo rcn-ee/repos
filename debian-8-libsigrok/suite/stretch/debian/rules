@@ -1,21 +1,30 @@
 #!/usr/bin/make -f
 
-# export DH_VERBOSE=1
+export DH_VERBOSE=1
+DEB_BUILD_OPTIONS="parallel=1"
 
 # Reduce the number of unneeded dependencies with --as-needed.
 export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
 %:
-	dh $@ --parallel
-
-override_dh_auto_configure:
-	dh_auto_configure -- PYTHON=python3
+	dh $@ --with autoreconf --parallel --with python2
 
 override_dh_auto_install:
-	cp contrib/z60_libsigrok.rules debian/libsigrok2.udev
+	cp contrib/z60_libsigrok.rules debian/libsigrok3.udev
 	dh_auto_install
+
+override_dh_python2:
+	dh_numpy
+	dh_python2
 
 override_dh_auto_clean:
 	dh_auto_clean
-	rm -f debian/libsigrok2.udev
+	rm -f debian/libsigrok3.udev
+	rm -rf bindings/python/libsigrok.egg-info
+	rm -f bindings/python/sigrok/core/classes.py
+	rm -f bindings/python/sigrok/core/classes_wrap.cpp
+	rm -f bindings/python/sigrok/core/doc_end.i
+	rm -f bindings/python/sigrok/core/doc_start.i
+	rm -f bindings/python/sigrok/__init__.pyc
+
 
