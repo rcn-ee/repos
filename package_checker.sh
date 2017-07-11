@@ -1,6 +1,7 @@
 #!/bin/bash
 
 debian_pool="http://ftp.de.debian.org/debian/pool"
+sigrok_dl="http://sigrok.org/download/source"
 
 generic_http () {
 	echo "Checking: ${package_name}"
@@ -16,6 +17,21 @@ generic_http () {
 	sed -i -e 's/"><\/a>//g' /tmp/index.html
 }
 
+generic_http_tar () {
+	echo "Checking: ${package_name}"
+	if [ -f /tmp/index.html ] ; then
+		rm -f /tmp/index.html
+	fi
+	wget --no-verbose --directory-prefix=/tmp/ ${site}/${package_name}/ &> /dev/null
+	cat /tmp/index.html | grep "<a href=" > /tmp/temp.html
+	sed -i -e "s/<a href/\\n<a href/g" /tmp/temp.html
+	sed -i -e 's/\"/\"><\/a>\n/2' /tmp/temp.html
+	cat /tmp/temp.html | grep tar | grep tar > /tmp/index.html
+	sed -i -e 's/<a href="//g' /tmp/index.html
+	sed -i -e 's/"><\/a>//g' /tmp/index.html
+	sed -i -e 's/>//g' /tmp/index.html
+}
+
 generic_check () {
 	if [ ! "x${version}" = "x" ] ; then
 		if [ ! "x${package_version}" = "x${version}" ] ; then
@@ -26,6 +42,12 @@ generic_check () {
 		echo "Fail: [${site}/${package_name}/]"
 		echo ""
 	fi
+}
+
+check_http_tar () {
+	generic_http_tar
+	version=$(cat /tmp/index.html | grep tar | tail -n 1 | awk -F ".tar.gz" '{print $1}')
+	generic_check
 }
 
 check_http_exp () {
@@ -294,12 +316,12 @@ libsigrok () {
 	#https://packages.debian.org/source/sid/librevisa
 #	package_name="librevisa"; package_version="${package_name}_0.0.20130812+git20140327-0"; check_http
 
-	site="${debian_pool}/main/libs"
+	site="${sigrok_dl}"
 	#https://packages.debian.org/source/sid/libserialport
-	package_name="libserialport"; package_version="${package_name}_0.1.1-1"; check_http
+	package_name="libserialport"; package_version="${package_name}-0.1.1"; check_http_tar
 
 	#https://packages.debian.org/source/sid/libsigrok
-	package_name="libsigrok"; package_version="${package_name}_0.4.0-0"; check_http
+	package_name="libsigrok"; package_version="${package_name}-0.4.0"; check_http_tar
 
 	#https://packages.debian.org/source/sid/libsigrokdecode
 	package_name="libsigrokdecode"; package_version="${package_name}_0.4.0-0"; check_http
@@ -332,6 +354,9 @@ chromium () {
 	site="${debian_pool}/main/c"
 	package_name="chromium-browser" ; package_version="${package_name}_59.0.3071.104-1" ; check_http
 }
+
+libsigrok
+exit 2
 
 important
 #builds

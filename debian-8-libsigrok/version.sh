@@ -13,7 +13,7 @@ git_sha=""
 reprepro_dir="libs/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-1rcnee4"
+debian_version="${package_version}-1rcnee5"
 #debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 #local_patch="rcnee3"
 
