@@ -327,10 +327,10 @@ libsigrok () {
 	package_name="libsigrokdecode"; package_version="${package_name}-0.5.0"; check_http
 
 	#http://sigrok.org/download/source/sigrok-cli/
-	package_name="sigrok-cli"; package_version="${package_name}_0.7.0-0"; check_http
+	package_name="sigrok-cli"; package_version="${package_name}-0.7.0"; check_http
 
 	#http://sigrok.org/download/source/pulseview/
-	package_name="pulseview"; package_version="${package_name}_0.3.0-0"; check_http
+	package_name="pulseview"; package_version="${package_name}-0.4.0"; check_http
 
 	#https://packages.debian.org/source/sid/sigrok-firmware-fx2lafw
 	package_name="sigrok-firmware-fx2lafw"; package_version="${package_name}_0.1.3-0"; check_http

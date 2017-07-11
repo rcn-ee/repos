@@ -1,0 +1,75 @@
+Description: <short summary of the patch>
+ TODO: Put a short summary on the line above and replace this paragraph
+ with a longer explanation of this change. Complete the meta-information
+ with other relevant fields (see below for details). To make it easier, the
+ information below has been extracted from the changelog. Adjust it or drop
+ it.
+ .
+ pulseview (0.3.0-1) unstable; urgency=medium
+ .
+   * New upstream release
+   * New maintainer (Closes: #852833)
+   * Standards-Version: 3.9.8 (no changes required)
+   * Update sigrok dependencies' version
+Author: Zoltan Gyarmati <mr.zoltan.gyarmati@gmail.com>
+Bug-Debian: https://bugs.debian.org/852833
+
+---
+The information above should follow the Patch Tagging Guidelines, please
+checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
+are templates for supplementary fields that you might want to add:
+
+Origin: <vendor|upstream|other>, <url of original patch>
+Bug: <url in upstream bugtracker>
+Bug-Debian: https://bugs.debian.org/<bugnumber>
+Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
+Forwarded: <no|not-needed|url proving that it has been forwarded>
+Reviewed-By: <name and email of someone who approved the patch>
+Last-Update: 2017-03-06
+
+--- pulseview-0.3.0.orig/pv/view/ruler.hpp
++++ pulseview-0.3.0/pv/view/ruler.hpp
+@@ -30,9 +30,9 @@
+ #include <pv/util.hpp>
+ 
+ namespace RulerTest {
+-class tick_position_test_0;
+-class tick_position_test_1;
+-class tick_position_test_2;
++struct tick_position_test_0;
++struct tick_position_test_1;
++struct tick_position_test_2;
+ }
+ 
+ namespace pv {
+@@ -45,9 +45,9 @@ class Ruler : public MarginWidget
+ {
+ 	Q_OBJECT
+ 
+-	friend class RulerTest::tick_position_test_0;
+-	friend class RulerTest::tick_position_test_1;
+-	friend class RulerTest::tick_position_test_2;
++	friend struct RulerTest::tick_position_test_0;
++	friend struct RulerTest::tick_position_test_1;
++	friend struct RulerTest::tick_position_test_2;
+ 
+ private:
+ 
+--- pulseview-0.3.0.orig/test/util.cpp
++++ pulseview-0.3.0/test/util.cpp
+@@ -32,13 +32,13 @@ namespace {
+ 	pv::util::SIPrefix unspecified = pv::util::SIPrefix::unspecified;
+ 	pv::util::SIPrefix yocto       = pv::util::SIPrefix::yocto;
+ 	pv::util::SIPrefix nano        = pv::util::SIPrefix::nano;
+-	pv::util::SIPrefix micro       = pv::util::SIPrefix::micro;
++/*	pv::util::SIPrefix micro       = pv::util::SIPrefix::micro; // Not currently used */
+ 	pv::util::SIPrefix milli       = pv::util::SIPrefix::milli;
+ 	pv::util::SIPrefix none        = pv::util::SIPrefix::none;
+ 	pv::util::SIPrefix kilo        = pv::util::SIPrefix::kilo;
+ 	pv::util::SIPrefix yotta       = pv::util::SIPrefix::yotta;
+ 
+-	pv::util::TimeUnit Time = pv::util::TimeUnit::Time;
++/*	pv::util::TimeUnit Time = pv::util::TimeUnit::Time; // Not currently used */
+ }
+ 
+ BOOST_AUTO_TEST_SUITE(UtilTest)
