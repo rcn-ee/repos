@@ -327,7 +327,7 @@ libsigrok () {
 	package_name="libsigrokdecode"; package_version="${package_name}-0.5.0"; check_http
 
 	#http://sigrok.org/download/source/sigrok-cli/
-	package_name="sigrok-cli"; package_version="${package_name}_0.6.0-0"; check_http
+	package_name="sigrok-cli"; package_version="${package_name}_0.7.0-0"; check_http
 
 	#http://sigrok.org/download/source/pulseview/
 	package_name="pulseview"; package_version="${package_name}_0.3.0-0"; check_http
