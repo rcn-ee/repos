@@ -15,7 +15,6 @@ dl_path="pool/main/${reprepro_dir}/"
 
 debian_version="${package_version}-1rcnee5"
 #debian_untar="${package_name}_${debian_version}.debian.tar.xz"
-#local_patch="rcnee3"
 
 jessie_version="~jessie+20170711"
 stretch_version="~stretch+20170711"

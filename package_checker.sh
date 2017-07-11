@@ -317,25 +317,22 @@ libsigrok () {
 #	package_name="librevisa"; package_version="${package_name}_0.0.20130812+git20140327-0"; check_http
 
 	site="${sigrok_dl}"
-	#https://packages.debian.org/source/sid/libserialport
+	#http://sigrok.org/download/source/libserialport/
 	package_name="libserialport"; package_version="${package_name}-0.1.1"; check_http_tar
 
-	#https://packages.debian.org/source/sid/libsigrok
-	package_name="libsigrok"; package_version="${package_name}-0.4.0"; check_http_tar
+	#http://sigrok.org/download/source/libsigrok/
+	package_name="libsigrok"; package_version="${package_name}-0.5.0"; check_http_tar
 
-	#https://packages.debian.org/source/sid/libsigrokdecode
-	package_name="libsigrokdecode"; package_version="${package_name}_0.4.0-0"; check_http
+	#http://sigrok.org/download/source/libsigrokdecode/
+	package_name="libsigrokdecode"; package_version="${package_name}-0.5.0"; check_http
 
-	#https://packages.debian.org/source/sid/sigrok-cli
-	site="${debian_pool}/main/s"
+	#http://sigrok.org/download/source/sigrok-cli/
 	package_name="sigrok-cli"; package_version="${package_name}_0.6.0-0"; check_http
 
-	#https://packages.debian.org/source/sid/pulseview
-	site="${debian_pool}/main/p"
+	#http://sigrok.org/download/source/pulseview/
 	package_name="pulseview"; package_version="${package_name}_0.3.0-0"; check_http
 
 	#https://packages.debian.org/source/sid/sigrok-firmware-fx2lafw
-	site="${debian_pool}/main/s"
 	package_name="sigrok-firmware-fx2lafw"; package_version="${package_name}_0.1.3-0"; check_http
 }
 

@@ -1,19 +1,21 @@
 Source: libsigrokdecode
 Priority: extra
-Maintainer: Uwe Hermann <uwe@debian.org>
-Build-Depends: debhelper (>= 9), dh-autoreconf, pkg-config (>= 0.22), libglib2.0-dev (>= 2.24.0), python3-dev (>= 3.2)
-Standards-Version: 3.9.5
+Maintainer: Zoltan Gyarmati <mr.zoltan.gyarmati@gmail.com>
+Build-Depends: debhelper (>= 10), dh-autoreconf, pkg-config (>= 0.22), libglib2.0-dev (>= 2.24.0), python3-dev (>= 3.2)
+Standards-Version: 3.9.8
 Section: libs
 X-Python3-Version: >= 3.2
 Homepage: http://sigrok.org/wiki/Libsigrokdecode
+Vcs-Browser: https://git.zgyarmati.de/debian-packaging/libsigrokdecode-debian
+Vcs-Git: https://git.zgyarmati.de/git/debian-packaging/libsigrokdecode-debian.git
 
 Package: libsigrokdecode-dev
 Section: libdevel
-Conflicts: libsigrokdecode-dev (<< 0.3.0-1), libsigrokdecode0-dev (<< 0.3.0-1)
+Conflicts: libsigrokdecode-dev (<< 0.3.0-2)
 Replaces: libsigrokdecode0-dev
 Architecture: any
 Multi-Arch: same
-Depends: libsigrokdecode2 (= ${binary:Version}), ${misc:Depends}, libglib2.0-dev (>= 2.24.0), python3-dev (>= 3.2)
+Depends: libsigrokdecode3 (= ${binary:Version}), ${misc:Depends}, libglib2.0-dev (>= 2.24.0), python3-dev (>= 3.2)
 Description: sigrok protocol decoding library - development files
  libsigrokdecode is a shared library which provides (streaming) protocol
  decoding functionality.
@@ -22,10 +24,10 @@ Description: sigrok protocol decoding library - development files
  .
  This package contains the header files and other development files.
 
-Package: libsigrokdecode2
+Package: libsigrokdecode3
 Section: libs
-Conflicts: libsigrokdecode0 (<< 0.3.0-1)
-Replaces: libsigrokdecode0 (<< 0.3.0-1)
+Conflicts: libsigrokdecode2 (<< 0.4.1-1)
+Replaces: libsigrokdecode2 (<< 0.4.1-1)
 Architecture: any
 Multi-Arch: same
 Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}
@@ -37,11 +39,10 @@ Description: sigrok protocol decoding library - shared library
  .
  This package contains the shared library and the protocol decoders.
 
-Package: libsigrokdecode0-dev
+Package: libsigrokdecode2
 Section: oldlibs
 Architecture: all
-Depends: libsigrokdecode-dev (>= 0.3.0-1), ${misc:Depends}
-Description: sigrok protocol decoding library (transitional dummy package)
+Depends: libsigrokdecode3, ${misc:Depends}
+Description: sigrok protocol decoding library - shared library
  This is a dummy transitional package that can be safely removed if no
  packages depend on it.
-
