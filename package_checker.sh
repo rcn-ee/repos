@@ -352,9 +352,6 @@ chromium () {
 	package_name="chromium-browser" ; package_version="${package_name}_59.0.3071.104-1" ; check_http
 }
 
-libsigrok
-exit 2
-
 important
 #builds
 mesa
