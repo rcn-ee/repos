@@ -43,14 +43,6 @@ echo "\$distribution = 'stretch';" >> ~/.sbuildrc
 mirror="http://${proxy}${debian_server}"
 deboot="sid"
 
-if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
-	dist="wheezy"
-	unset flavor
-	arch="armhf"
-	options=""
-	setup_update_sbuild
-fi
-
 dist="jessie"
 unset flavor
 arch="armhf"
@@ -99,14 +91,6 @@ fi
 
 mirror="http://${proxy}${ubuntu_server}"
 deboot="gutsy"
-
-if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
-	dist="trusty"
-	unset flavor
-	arch="armhf"
-	options="--exclude=debfoster"
-	setup_update_sbuild
-fi
 
 if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	dist="xenial"
