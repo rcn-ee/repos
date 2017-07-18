@@ -72,6 +72,18 @@ apt-key adv --keyserver keyserver.ubuntu.com --recv-key D284E608A4C46402 ; \
 apt update ; apt-get --yes --allow-unauthenticated install apt-transport-https rcn-ee-archive-keyring ; \
 apt update ; apt-get clean ; exit
 
+#ubuntu artful
+sudo sbuild-shell source:artful-armhf-sbuild
+
+echo "deb http://apt-proxy:3142/ports.ubuntu.com artful main universe" > /etc/apt/sources.list ; \
+echo "deb-src http://apt-proxy:3142/ports.ubuntu.com artful main universe" >> /etc/apt/sources.list ; \
+echo "deb http://apt-proxy:3142/repos.rcn-ee.net/ubuntu artful main" >> /etc/apt/sources.list ; \
+echo "deb-src http://apt-proxy:3142/repos.rcn-ee.net/ubuntu artful main" >> /etc/apt/sources.list ; \
+apt update ; apt install --yes gnupg2 ; \
+apt-key adv --keyserver keyserver.ubuntu.com --recv-key D284E608A4C46402 ; \
+apt update ; apt-get --yes --allow-unauthenticated install apt-transport-https rcn-ee-archive-keyring ; \
+apt update ; apt-get clean ; exit
+
 #debian jessie/nodejs:
 sudo sbuild-shell source:jessie-armhf-nodejs-v0.12.x-sbuild
 
