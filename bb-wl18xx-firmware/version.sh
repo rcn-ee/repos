@@ -17,6 +17,7 @@ debian_patch=""
 
 jessie_version="~jessie+20170718"
 stretch_version="~stretch+20170718"
+buster_version="~buster+20170718"
 xenial_version="~xenial+20170718"
 yakkety_version="~yakkety+20170718"
 zesty_version="~zesty+20170718"
