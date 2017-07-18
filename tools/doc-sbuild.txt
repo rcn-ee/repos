@@ -1,11 +1,3 @@
-#debian wheezy:
-sudo sbuild-shell source:wheezy-armhf-sbuild
-
-echo "deb http://apt-proxy:3142/repos.rcn-ee.net/debian wheezy main" >> /etc/apt/sources.list ; \
-echo "deb-src http://apt-proxy:3142/repos.rcn-ee.net/debian wheezy main" >> /etc/apt/sources.list ; \
-apt-get update ; apt-get --yes --allow-unauthenticated install apt-transport-https rcn-ee-archive-keyring ; \
-apt-get update ; apt-get clean ; exit
-
 #debian jessie:
 sudo sbuild-shell source:jessie-armhf-sbuild
 
@@ -32,13 +24,15 @@ echo "deb-src http://apt-proxy:3142/repos.rcn-ee.net/debian stretch main" >> /et
 apt-get update ; apt-get --yes --allow-unauthenticated install apt-transport-https rcn-ee-archive-keyring ; \
 apt-get update ; apt-get clean ; exit
 
-#ubuntu trusty:
-sudo sbuild-shell source:trusty-armhf-sbuild
+#debian buster:
+sudo sbuild-shell source:buster-armhf-sbuild
 
-echo "deb http://apt-proxy:3142/repos.rcn-ee.net/ubuntu trusty main" >> /etc/apt/sources.list ; \
-echo "deb-src http://apt-proxy:3142/repos.rcn-ee.net/ubuntu trusty main" >> /etc/apt/sources.list ; \
-apt-get update ; apt-get --yes --allow-unauthenticated install apt-transport-https rcn-ee-archive-keyring ; \
-apt-get update ; apt-get clean ; exit
+echo "deb http://apt-proxy:3142/repos.rcn-ee.net/debian buster main" >> /etc/apt/sources.list ; \
+echo "deb-src http://apt-proxy:3142/repos.rcn-ee.net/debian buster main" >> /etc/apt/sources.list ; \
+apt update ; apt install --yes gnupg2 ; \
+apt-key adv --keyserver keyserver.ubuntu.com --recv-key D284E608A4C46402 ; \
+apt update ; apt-get --yes --allow-unauthenticated install apt-transport-https rcn-ee-archive-keyring ; \
+apt update ; apt-get clean ; exit
 
 #ubuntu xenial
 sudo sbuild-shell source:xenial-armhf-sbuild
