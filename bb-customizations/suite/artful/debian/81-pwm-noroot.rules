@@ -1,0 +1,10 @@
+# /etc/udev/rules.d/81-pwm-noroot.rules
+#
+# Corrects sys PWM permissions on the BB so non-root users in the gpio group can manipulate bits
+#
+
+SUBSYSTEM=="pwm", ACTION=="add", PROGRAM="/bin/sh -c '/bin/chown -R root:pwm /sys/class/pwm/"
+SUBSYSTEM=="pwm", ACTION=="add", PROGRAM="/bin/sh -c    '/bin/chmod -R ug+rw /sys/class/pwm/"
+
+SUBSYSTEM=="pwm", ACTION=="add", PROGRAM="/bin/sh -c '/bin/chown -R root:pwm /sys/class/pwm/pwmchip*/'"
+SUBSYSTEM=="pwm", ACTION=="add", PROGRAM="/bin/sh -c    '/bin/chmod -R ug+rw /sys/class/pwm/pwmchip*/'"
