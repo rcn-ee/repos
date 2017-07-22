@@ -137,6 +137,7 @@ suite="xenial"
 archs="armhf source"
 setup_repo
 
+#eol: July 20 2017
 suite="yakkety"
 archs="armhf source"
 setup_repo

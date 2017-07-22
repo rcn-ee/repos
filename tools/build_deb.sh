@@ -75,25 +75,19 @@ runner () {
 
 start_run () {
 	deb_arch="armhf"
-	suite="wheezy" ; runner
 	suite="jessie" ; runner
 	suite="stretch" ; runner
 	suite="buster" ; runner
-	suite="trusty" ; runner
 	suite="xenial" ; runner
-	suite="yakkety" ; runner
 	suite="zesty" ; runner
 	suite="artful" ; runner
 }
 
 cleanup () {
-	suite="wheezy" ; cleanup_suite
 	suite="jessie" ; cleanup_suite
 	suite="stretch" ; cleanup_suite
 	suite="buster" ; cleanup_suite
-	suite="trusty" ; cleanup_suite
 	suite="xenial" ; cleanup_suite
-	suite="yakkety" ; cleanup_suite
 	suite="zesty" ; cleanup_suite
 	suite="artful" ; cleanup_suite
 }
