@@ -4,7 +4,7 @@ mirror="http://http.debian.net/debian"
 
 package_name="chromium-browser"
 debian_pkg_name="${package_name}"
-package_version="59.0.3071.104"
+package_version="60.0.3112.78"
 package_source="${debian_pkg_name}_${package_version}.orig.tar.xz"
 src_dir="chromium-${package_version}"
 
@@ -18,4 +18,4 @@ debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 local_patch="rcnee0"
 
-stretch_version="~stretch+20170707"
+stretch_version="~stretch+20170806"
