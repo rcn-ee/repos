@@ -1,0 +1,29 @@
+Source: wayland-protocols
+Section: x11
+Priority: optional
+Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
+Uploaders: Héctor Orón Martínez <zumbi@debian.org>,
+           Emilio Pozuelo Monfort <pochu@debian.org>
+Build-Depends:
+ debhelper (>=10),
+ dh-autoreconf,
+ libwayland-dev,
+ pkg-config
+Standards-Version: 4.0.0
+Homepage: http://wayland.freedesktop.org/
+Vcs-Git: git://anonscm.debian.org/pkg-xorg/wayland/wayland-protocols.git
+Vcs-Browser: https://anonscm.debian.org/cgit/pkg-xorg/wayland/wayland-protocols.git
+
+Package: wayland-protocols
+Section: libdevel
+Architecture: all
+Priority: extra
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends}
+Multi-Arch: foreign
+Description: wayland compositor protocols
+ Wayland protocols that add functionality not available in the Wayland core
+ protocol. Such protocols either add completely new functionality, or extend
+ the functionality of some other protocol either in Wayland core, or some other
+ protocol in wayland-protocols.
