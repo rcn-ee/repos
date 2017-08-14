@@ -8,7 +8,7 @@ package_version="0.2.999+git20170802"
 
 git_repo=""
 git_sha=""
-reprepro_dir="libc/${package_name}"
+reprepro_dir="libg/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
 debian_version="${package_version}-2"
