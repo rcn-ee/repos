@@ -18,4 +18,5 @@ debian_untar=""
 debian_patch="${package_name}_${debian_version}.diff.gz"
 local_patch="rcnee0"
 
+jessie_version="~jessie+20170726"
 stretch_version="~stretch+20170726"
