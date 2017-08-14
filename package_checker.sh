@@ -59,9 +59,9 @@ check_http_exp () {
 check_http () {
 	generic_http
 	if [ "x${filter}" = "x" ] ; then
-		version=$(cat /tmp/index.html | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+		version=$(cat /tmp/index.html | grep -v '~deb' | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
 	else
-		version=$(cat /tmp/index.html | grep ${filter} | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+		version=$(cat /tmp/index.html | grep ${filter} | grep -v '~deb' | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
 		unset filter
 	fi
 	generic_check
@@ -349,7 +349,7 @@ chromium () {
 
 	echo "chromium-browser: (stretch)"
 	site="${debian_pool}/main/c"
-	package_name="chromium-browser" ; package_version="${package_name}_59.0.3071.104-1" ; check_http
+	package_name="chromium-browser" ; package_version="${package_name}_60.0.3112.78-1" ; check_http
 }
 
 important
