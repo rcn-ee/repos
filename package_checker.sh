@@ -345,7 +345,7 @@ chromium () {
 	echo "chromium-browser: (jessie)"
 	site="http://ports.ubuntu.com/pool/universe/c"
 	filter="16.04"
-	package_name="chromium-browser" ; package_version="${package_name}_59.0.3071.109-0ubuntu0.16.04.1289" ; check_http
+	package_name="chromium-browser" ; package_version="${package_name}_60.0.3112.78-0ubuntu0.16.04.1293" ; check_http
 
 	echo "chromium-browser: (stretch)"
 	site="${debian_pool}/main/c"

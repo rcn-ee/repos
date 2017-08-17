@@ -366,7 +366,7 @@ debian-bug: http://bugs.debian.org/750361
  #if HAVE(MIPS_MSA_INTRINSICS)
 --- a/third_party/WebKit/Source/modules/webaudio/AudioParamTimeline.cpp
 +++ b/third_party/WebKit/Source/modules/webaudio/AudioParamTimeline.cpp
-@@ -32,7 +32,7 @@
+@@ -33,7 +33,7 @@
  #include "platform/wtf/MathExtras.h"
  #include "platform/wtf/PtrUtil.h"
  
@@ -375,7 +375,7 @@ debian-bug: http://bugs.debian.org/750361
  #include <emmintrin.h>
  #endif
  
-@@ -1289,7 +1289,7 @@ std::tuple<size_t, float, unsigned> Audi
+@@ -1290,7 +1290,7 @@ std::tuple<size_t, float, unsigned> Audi
      size_t current_frame,
      float value,
      unsigned write_index) {
@@ -384,7 +384,7 @@ debian-bug: http://bugs.debian.org/750361
    auto number_of_values = current_state.number_of_values;
  #endif
    auto fill_to_frame = current_state.fill_to_frame;
-@@ -1302,7 +1302,7 @@ std::tuple<size_t, float, unsigned> Audi
+@@ -1303,7 +1303,7 @@ std::tuple<size_t, float, unsigned> Audi
    double delta_time = time2 - time1;
    float k = delta_time > 0 ? 1 / delta_time : 0;
    const float value_delta = value2 - value1;
@@ -393,7 +393,7 @@ debian-bug: http://bugs.debian.org/750361
    if (fill_to_frame > write_index) {
      // Minimize in-loop operations. Calculate starting value and increment.
      // Next step: value += inc.
-@@ -1430,7 +1430,7 @@ std::tuple<size_t, float, unsigned> Audi
+@@ -1431,7 +1431,7 @@ std::tuple<size_t, float, unsigned> Audi
      size_t current_frame,
      float value,
      unsigned write_index) {
@@ -402,7 +402,7 @@ debian-bug: http://bugs.debian.org/750361
    auto number_of_values = current_state.number_of_values;
  #endif
    auto fill_to_frame = current_state.fill_to_frame;
-@@ -1481,7 +1481,7 @@ std::tuple<size_t, float, unsigned> Audi
+@@ -1482,7 +1482,7 @@ std::tuple<size_t, float, unsigned> Audi
      for (; write_index < fill_to_frame; ++write_index)
        values[write_index] = target;
    } else {
@@ -411,7 +411,7 @@ debian-bug: http://bugs.debian.org/750361
      if (fill_to_frame > write_index) {
        // Resolve recursion by expanding constants to achieve a 4-step
        // loop unrolling.
-@@ -1615,7 +1615,7 @@ std::tuple<size_t, float, unsigned> Audi
+@@ -1616,7 +1616,7 @@ std::tuple<size_t, float, unsigned> Audi
    // Oversampled curve data can be provided if sharp discontinuities are
    // desired.
    unsigned k = 0;

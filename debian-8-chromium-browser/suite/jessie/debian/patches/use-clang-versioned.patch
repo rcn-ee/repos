@@ -1,0 +1,16 @@
+Description: Version paths to clang executables on xenial, where the default is 3.8
+Author: Olivier Tilloy <olivier.tilloy@canonical.com>
+
+--- a/build/toolchain/gcc_toolchain.gni
++++ b/build/toolchain/gcc_toolchain.gni
+@@ -569,8 +569,8 @@ template("clang_toolchain") {
+ 
+   gcc_toolchain(target_name) {
+     prefix = rebase_path("$clang_base_path/bin", root_build_dir)
+-    cc = "$prefix/clang"
+-    cxx = "$prefix/clang++"
++    cc = "$prefix/clang-4.0"
++    cxx = "$prefix/clang++-4.0"
+     ld = cxx
+     readelf = "${toolprefix}readelf"
+     ar = "${toolprefix}ar"
