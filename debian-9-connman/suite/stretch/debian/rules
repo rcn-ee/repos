@@ -1,0 +1,43 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+#export DH_VERBOSE=1
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+
+%:
+	dh $@ --with=systemd,autoreconf \
+	      --builddir build \
+	      --as-needed
+
+override_dh_auto_configure:
+	dh_auto_configure -- \
+		--runstatedir='/run' \
+		--enable-debug \
+		--enable-l2tp \
+		--enable-openconnect \
+		--enable-openvpn \
+		--enable-pie \
+		--enable-polkit \
+		--enable-pptp \
+		--enable-threads \
+		--with-openconnect=/usr/sbin/openconnect \
+		--with-openvpn=/usr/sbin/openvpn \
+		--with-systemdunitdir=/lib/systemd/system \
+		--with-tmpfilesdir=/usr/lib/tmpfiles.d
+
+override_dh_install:
+	find $(CURDIR) -name "*.la" -print -delete
+	dh_install --fail-missing
+
+override_dh_installinit:
+	cp -a build/scripts/connman debian/connman.init
+	dh_installinit --restart-after-upgrade
+
+override_dh_auto_clean:
+	$(RM) debian/connman.init
+	$(RM) -r build
+	dh_auto_clean
+
+override_dh_clean:
+	dh_clean aclocal.m4 config.h.in configure ltmain.sh

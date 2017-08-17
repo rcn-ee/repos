@@ -1,0 +1,25 @@
+#!/bin/sh
+
+set -e
+
+if [ -f /lib/systemd/system/connman.service ] ; then
+        #We disable nodnsproxy by default now...
+        if [ -f /etc/connman/service.set.nodnsproxy ] ; then
+                unset check_connman
+                check_connman=$(cat /lib/systemd/system/connman.service | grep ExecStart | grep nodnsproxy || true)
+                if [ "x${check_connman}" = "x" ] ; then
+                        sed -i -e 's:connmand -n:connmand -n --nodnsproxy:g' /lib/systemd/system/connman.service || true
+                        rm -rf /etc/connman/service.set.nodnsproxy || true
+                fi
+        fi
+fi
+
+case "$1" in
+    configure)
+        [ -x /usr/share/update-notifier/notify-reboot-required ] && /usr/share/update-notifier/notify-reboot-required
+        ;;
+esac
+
+#DEBHELPER#
+
+exit 0

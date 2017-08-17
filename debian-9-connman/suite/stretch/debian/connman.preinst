@@ -1,0 +1,20 @@
+#!/bin/sh
+
+set -e
+
+if [ ! -d /etc/connman/ ] ; then
+        mkdir -p /etc/connman/ || true
+fi
+
+if [ -f /lib/systemd/system/connman.service ] ; then
+        #We disable nodnsproxy by default now...
+        unset check_connman
+        check_connman=$(cat /lib/systemd/system/connman.service | grep ExecStart | grep nodnsproxy || true)
+        if [ ! "x${check_connman}" = "x" ] ; then
+                touch /etc/connman/service.set.nodnsproxy || true
+        fi
+fi
+
+#DEBHELPER#
+
+exit 0

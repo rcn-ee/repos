@@ -1,0 +1,127 @@
+Source: connman
+Maintainer: Alexander Sack <asac@debian.org>
+Uploaders: Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>,
+           Shawn Landden <shawn@churchofgit.com>,
+           Alf Gaida <agaida@siduction.org>
+Section: net
+Priority: optional
+Build-Depends: debhelper (>= 10),
+               libudev-dev,
+               libglib2.0-dev,
+               libdbus-1-dev,
+               gtk-doc-tools,
+               libgnutls28-dev,
+               libreadline-dev,
+               libxtables-dev,
+               wpasupplicant,
+               libbluetooth-dev,
+               ppp-dev,
+               dh-systemd
+Standards-Version: 4.0.0
+Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/connman.git
+Vcs-Git: https://anonscm.debian.org/git/collab-maint/connman.git
+Homepage: https://01.org/connman
+
+Package: connman
+Architecture: linux-any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         dbus,
+         lsb-base,
+	 iptables
+Recommends: bluez,
+            wpasupplicant,
+            ofono
+Suggests: connman-vpn
+Description: Intel Connection Manager daemon
+ The Linux Connection Manager project provides a daemon for managing
+ Internet connections within embedded devices running the Linux
+ operating system. The Connection Manager is designed to be slim and to
+ use as few resources as possible. It is fully modular system that
+ can be extended through plug-ins. The plug-in approach allows for
+ easy adaption and modification for various use cases.
+ .
+ ConnMan provies IPv4 and IPv6 connectivity via:
+  * ethernet
+  * WiFi, using wpasupplicant
+  * Cellular, using oFono
+  * Bluetooth, using bluez
+ .
+ ConnMan implements DNS resolving and caching, DHCP clients for both IPv4 and
+ IPv6, link-local IPv4 address handling and tethering (IP connection sharing)
+ to clients via USB, ethernet, WiFi, cellular and Bluetooth.
+ .
+ This package contains the connman daemon and its plugins.
+
+Package: connman-vpn
+Architecture: linux-any
+Depends: ${shlibs:Depends},
+         ${misc:Depends}
+Recommends: connman (= ${source:Version}),
+            xl2tpd
+Breaks: connman (<< 1.21-1)
+Replaces: connman (<< 1.21-1)
+Description: Intel Connection Manager daemon - VPN daemon
+ The Linux Connection Manager project provides a daemon for managing
+ Internet connections within embedded devices running the Linux
+ operating system. The Connection Manager is designed to be slim and to
+ use as few resources as possible. It is fully modular system that
+ can be extended through plug-ins. The plug-in approach allows for
+ easy adaption and modification for various use cases.
+ .
+ ConnMan provies IPv4 and IPv6 connectivity via:
+  * ethernet
+  * WiFi, using wpasupplicant
+  * Cellular, using oFono
+  * Bluetooth, using bluez
+ .
+ ConnMan implements DNS resolving and caching, DHCP clients for both IPv4 and
+ IPv6, link-local IPv4 address handling and tethering (IP connection sharing)
+ to clients via USB, ethernet, WiFi, cellular and Bluetooth.
+ .
+ This package contains the connman VPN daemon. ConnMan VPN daemon manages
+ VPNs on behalf of connmand and start and stops various VPN client
+ applications. The VPN daemon can also be run standalone without connmand.
+
+Package: connman-dev
+Architecture: linux-any
+Multi-Arch: same
+Section: devel
+Depends: ${misc:Depends},
+         libglib2.0-dev,
+         libdbus-1-dev
+Description: Development files for connman
+ The Linux Connection Manager project provides a daemon for managing
+ Internet connections within embedded devices running the Linux
+ operating system. The Connection Manager is designed to be slim and to
+ use as few resources as possible. It is fully modular system that
+ can be extended through plug-ins. The plug-in approach allows for
+ easy adaption and modification for various use cases.
+ .
+ ConnMan provies IPv4 and IPv6 connectivity via:
+  * ethernet
+  * WiFi, using wpasupplicant
+  * Cellular, using oFono
+  * Bluetooth, using bluez
+ .
+ ConnMan implements DNS resolving and caching, DHCP clients for both IPv4 and
+ IPv6, link-local IPv4 address handling and tethering (IP connection sharing)
+ to clients via USB, ethernet, WiFi, cellular and Bluetooth.
+ .
+ This package contains headers, pkg-config support mainly useful for
+ developing connman plugins.
+
+Package: connman-doc
+Architecture: all
+Multi-Arch: foreign
+Section: doc
+Depends: ${misc:Depends}
+Suggests: connman-dev
+Description: ConnMan documentation
+ The Linux Connection Manager project provides a daemon for managing
+ Internet connections within embedded devices running the Linux
+ operating system.
+ .
+ This package contains the connman API documentation.
+ .
+ See the connman description for more information regarding connman.
