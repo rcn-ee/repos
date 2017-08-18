@@ -1,0 +1,15 @@
+diff --git a/third_party/angle/src/vulkan_support/BUILD.gn b/third_party/angle/src/vulkan_support/BUILD.gn
+index 51c8c10..b4c5ece 100644
+--- a/third_party/angle/src/vulkan_support/BUILD.gn
++++ b/third_party/angle/src/vulkan_support/BUILD.gn
+@@ -174,10 +174,6 @@ config("vulkan_internal_config") {
+   defines = [ "VULKAN_NON_CMAKE_BUILD" ]
+   if (is_clang || !is_win) {
+     cflags = [ "-Wno-unused-function" ]
+-
+-    # See https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers/issues/1649
+-    # TODO(jmadill): Lift this once github issue is fixed.
+-    cflags += [ "-Wno-ignored-attributes" ]
+   }
+   if (is_linux) {
+     defines += [

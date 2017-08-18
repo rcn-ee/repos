@@ -17,6 +17,6 @@ dl_path="pool/universe/${reprepro_dir}/"
 debian_version="${package_version}-0ubuntu0.16.04.1293"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
-local_patch="rcnee0"
+local_patch="rcnee1"
 
-jessie_version="~jessie+20170817"
+jessie_version="~jessie+20170818"
