@@ -13,9 +13,10 @@ git_sha="5fba4cc6158130f7bb34bfcbc0f735255cad945f"
 reprepro_dir="m/${package_name}"
 dl_path=""
 
-debian_version="${package_version}-0rcnee1"
+debian_version="${package_version}-0rcnee2"
 debian_patch=""
 debian_diff=""
 
-jessie_version="~jessie+20170627"
-stretch_version="~stretch+20170627"
+jessie_version="~jessie+20170818"
+stretch_version="~stretch+20170818"
+buster_version="~buster+20170818"
