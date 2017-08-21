@@ -143,12 +143,14 @@ if [ ! -f ${connman_main_dir}/main.conf ] ; then
 	echo "AllowHostnameUpdates=false" >> ${connman_main_dir}/main.conf
 	echo "PersistentTetheringMode=true" >> ${connman_main_dir}/main.conf
 	echo "NetworkInterfaceBlacklist=SoftAp0,usb0,usb1" >> ${connman_main_dir}/main.conf
-fi
-
-unset test_new_option
-test_new_option=$(cat ${connman_main_dir}/main.conf | grep usb1 || true)
-if [ "x${test_new_option}" = "x" ] ; then
-	sed -i -e 's:SoftAp0,usb0:SoftAp0,usb0,usb1:g' ${connman_main_dir}/main.conf
+else
+	cp -v ${connman_main_dir}/main.conf ${connman_main_dir}/main.conf.bak
+	echo "[General]" > ${connman_main_dir}/main.conf
+	echo "PreferredTechnologies=ethernet,wifi" >> ${connman_main_dir}/main.conf
+	echo "SingleConnectedTechnology=false" >> ${connman_main_dir}/main.conf
+	echo "AllowHostnameUpdates=false" >> ${connman_main_dir}/main.conf
+	echo "PersistentTetheringMode=true" >> ${connman_main_dir}/main.conf
+	echo "NetworkInterfaceBlacklist=SoftAp0,usb0,usb1" >> ${connman_main_dir}/main.conf
 fi
 
 if [ ! -f /var/lib/connman/settings ] ; then
