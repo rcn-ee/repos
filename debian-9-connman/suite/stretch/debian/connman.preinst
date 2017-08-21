@@ -15,6 +15,12 @@ if [ -f /lib/systemd/system/connman.service ] ; then
         fi
 fi
 
+if [ -f /etc/connman/main.conf ] ; then
+        mv /etc/connman/main.conf /etc/connman/main.conf.bak
+        mkdir -p /etc/connman/main.conf
+        mv /etc/connman/main.conf.bak /etc/connman/main.conf/main.conf
+fi
+
 #DEBHELPER#
 
 exit 0
