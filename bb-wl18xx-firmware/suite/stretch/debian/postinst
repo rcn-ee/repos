@@ -128,22 +128,27 @@ else
 	fi
 fi
 
-if [ ! -f /etc/connman/main.conf ] ; then
-	if [ ! -d /etc/connman/ ] ; then
-		mkdir -p /etc/connman/ || true
+connman_main_dir="/etc/connman"
+if [ -d ${connman_main_dir}/main.conf/ ] ; then
+	connman_main_dir="/etc/connman/main.conf"
+fi
+
+if [ ! -f ${connman_main_dir}/main.conf ] ; then
+	if [ ! -d ${connman_main_dir}/ ] ; then
+		mkdir -p ${connman_main_dir}/ || true
 	fi
-	echo "[General]" > /etc/connman/main.conf
-	echo "PreferredTechnologies=ethernet,wifi" >> /etc/connman/main.conf
-	echo "SingleConnectedTechnology=false" >> /etc/connman/main.conf
-	echo "AllowHostnameUpdates=false" >> /etc/connman/main.conf
-	echo "PersistentTetheringMode=true" >> /etc/connman/main.conf
-	echo "NetworkInterfaceBlacklist=SoftAp0,usb0,usb1" >> /etc/connman/main.conf
+	echo "[General]" > ${connman_main_dir}/main.conf
+	echo "PreferredTechnologies=ethernet,wifi" >> ${connman_main_dir}/main.conf
+	echo "SingleConnectedTechnology=false" >> ${connman_main_dir}/main.conf
+	echo "AllowHostnameUpdates=false" >> ${connman_main_dir}/main.conf
+	echo "PersistentTetheringMode=true" >> ${connman_main_dir}/main.conf
+	echo "NetworkInterfaceBlacklist=SoftAp0,usb0,usb1" >> ${connman_main_dir}/main.conf
 fi
 
 unset test_new_option
-test_new_option=$(cat /etc/connman/main.conf | grep usb1 || true)
+test_new_option=$(cat ${connman_main_dir}/main.conf | grep usb1 || true)
 if [ "x${test_new_option}" = "x" ] ; then
-	sed -i -e 's:SoftAp0,usb0:SoftAp0,usb0,usb1:g' /etc/connman/main.conf
+	sed -i -e 's:SoftAp0,usb0:SoftAp0,usb0,usb1:g' ${connman_main_dir}/main.conf
 fi
 
 if [ ! -f /var/lib/connman/settings ] ; then
