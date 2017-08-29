@@ -129,28 +129,28 @@ else
 fi
 
 connman_main_dir="/etc/connman"
-if [ -d ${connman_main_dir}/main.conf/ ] ; then
-	connman_main_dir="/etc/connman/main.conf"
+if [ -d /etc/connman/main.conf/ ] ; then
+	rm -rf /etc/connman/main.conf/ || true
 fi
 
-if [ ! -f ${connman_main_dir}/main.conf ] ; then
-	if [ ! -d ${connman_main_dir}/ ] ; then
-		mkdir -p ${connman_main_dir}/ || true
+if [ ! -f /etc/connman/main.conf ] ; then
+	if [ ! -d /etc/connman/ ] ; then
+		mkdir -p /etc/connman/ || true
 	fi
-	echo "[General]" > ${connman_main_dir}/main.conf
-	echo "PreferredTechnologies=ethernet,wifi" >> ${connman_main_dir}/main.conf
-	echo "SingleConnectedTechnology=false" >> ${connman_main_dir}/main.conf
-	echo "AllowHostnameUpdates=false" >> ${connman_main_dir}/main.conf
-	echo "PersistentTetheringMode=true" >> ${connman_main_dir}/main.conf
-	echo "NetworkInterfaceBlacklist=SoftAp0,usb0,usb1" >> ${connman_main_dir}/main.conf
+	echo "[General]" > /etc/connman/main.conf
+	echo "PreferredTechnologies=ethernet,wifi" >> /etc/connman/main.conf
+	echo "SingleConnectedTechnology=false" >> /etc/connman/main.conf
+	echo "AllowHostnameUpdates=false" >> /etc/connman/main.conf
+	echo "PersistentTetheringMode=true" >> /etc/connman/main.conf
+	echo "NetworkInterfaceBlacklist=SoftAp0,usb0,usb1" >> /etc/connman/main.conf
 else
-	cp -v ${connman_main_dir}/main.conf ${connman_main_dir}/main.conf.bak
-	echo "[General]" > ${connman_main_dir}/main.conf
-	echo "PreferredTechnologies=ethernet,wifi" >> ${connman_main_dir}/main.conf
-	echo "SingleConnectedTechnology=false" >> ${connman_main_dir}/main.conf
-	echo "AllowHostnameUpdates=false" >> ${connman_main_dir}/main.conf
-	echo "PersistentTetheringMode=true" >> ${connman_main_dir}/main.conf
-	echo "NetworkInterfaceBlacklist=SoftAp0,usb0,usb1" >> ${connman_main_dir}/main.conf
+	cp -v /etc/connman/main.conf /etc/connman/main.conf.bak
+	echo "[General]" > /etc/connman/main.conf
+	echo "PreferredTechnologies=ethernet,wifi" >> /etc/connman/main.conf
+	echo "SingleConnectedTechnology=false" >> /etc/connman/main.conf
+	echo "AllowHostnameUpdates=false" >> /etc/connman/main.conf
+	echo "PersistentTetheringMode=true" >> /etc/connman/main.conf
+	echo "NetworkInterfaceBlacklist=SoftAp0,usb0,usb1" >> /etc/connman/main.conf
 fi
 
 if [ ! -f /var/lib/connman/settings ] ; then
