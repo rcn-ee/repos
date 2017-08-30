@@ -59,9 +59,19 @@ check_http_exp () {
 check_http () {
 	generic_http
 	if [ "x${filter}" = "x" ] ; then
-		version=$(cat /tmp/index.html | grep -v '~deb' | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+		if [ "x${ignore}" = "x" ] ; then
+			version=$(cat /tmp/index.html | grep -v '~deb' | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+		else
+			version=$(cat /tmp/index.html | grep -v ${ignore} | grep -v '~deb' | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+			unset ignore
+		fi
 	else
-		version=$(cat /tmp/index.html | grep ${filter} | grep -v '~deb' | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+		if [ "x${ignore}" = "x" ] ; then
+			version=$(cat /tmp/index.html | grep ${filter} | grep -v '~deb' | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+		else
+			version=$(cat /tmp/index.html | grep -v ${ignore} | grep ${filter} | grep -v '~deb' | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+			unset ignore
+		fi
 		unset filter
 	fi
 	generic_check
@@ -114,13 +124,17 @@ mesa () {
 
 	site="${debian_pool}/main/l"
 	#https://packages.debian.org/source/stretch/llvm-toolchain-3.7
-	package_name="llvm-toolchain-3.7" ; package_version="${package_name}_3.7.1-5" ; check_http
+#	package_name="llvm-toolchain-3.7" ; package_version="${package_name}_3.7.1-5" ; check_http
 	#https://packages.debian.org/source/stretch/llvm-toolchain-3.8
-	package_name="llvm-toolchain-3.8" ; package_version="${package_name}_3.8.1-24" ; check_http
+#	package_name="llvm-toolchain-3.8" ; package_version="${package_name}_3.8.1-24" ; check_http
 	#https://packages.debian.org/source/stretch/llvm-toolchain-3.9
-	package_name="llvm-toolchain-3.9" ; package_version="${package_name}_3.9.1-10" ; check_http
+#	package_name="llvm-toolchain-3.9" ; package_version="${package_name}_3.9.1-10" ; check_http
 	#https://packages.debian.org/source/sid/llvm-toolchain-4.0
-	package_name="llvm-toolchain-4.0" ; package_version="${package_name}_4.0.1-1" ; check_http
+	ignore="rc"
+	package_name="llvm-toolchain-4.0" ; package_version="${package_name}_4.0.1-2" ; check_http
+	#https://packages.debian.org/source/sid/llvm-toolchain-5.0
+	ignore="rc"
+	package_name="llvm-toolchain-5.0" ; package_version="${package_name}_4.0.1-1" ; check_http
 
 	site="${debian_pool}/main/libc"
 	filter="0.2"
