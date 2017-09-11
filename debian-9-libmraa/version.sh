@@ -1,6 +1,7 @@
 #!/bin/bash -e
 
 #https://github.com/intel-iot-devkit/mraa
+#https://launchpad.net/~mraa/+archive/ubuntu/mraa
 
 package_name="mraa"
 debian_pkg_name="${package_name}"
