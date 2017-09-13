@@ -7,8 +7,7 @@ export NO_PNG_PKG_MANGLE
 config.status:
 	dh_testdir
 	dh_quilt_patch
-	./configure --prefix=/usr --with-intl=small-icu \
-	--with-icu-source=$(CURDIR)/debian/icu
+	./configure --prefix=/usr --with-intl=system-icu
 	touch $@
 
 build: build-stamp
