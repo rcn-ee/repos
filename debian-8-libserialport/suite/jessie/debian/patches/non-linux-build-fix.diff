@@ -1,0 +1,24 @@
+Subject: Fix compilation under kfreebsd
+ _DEFAULT_SOURCE definition should be based on whether we're using GLIBC
+ or not, rather than whether the OS being compiled for is Linux.
+Origin: other
+Bug-Debian: https://bugs.debian.org/816334
+Author: Steven Chamberlain <steven@pyro.eu.org>
+Last-Update: 2017-08-14
+diff --git a/libserialport_internal.h b/libserialport_internal.h
+index 669152b..340f660 100644
+--- a/libserialport_internal.h
++++ b/libserialport_internal.h
+@@ -22,11 +22,10 @@
+ #define LIBSERIALPORT_LIBSERIALPORT_INTERNAL_H
+ 
+ 
+-#ifdef __linux__
++/* Upstream guard this with #ifdef __linux__, but Debian always wants it */
+ /* For timeradd, timersub, timercmp. */
+ #define _BSD_SOURCE 1 /* for glibc < 2.19 */
+ #define _DEFAULT_SOURCE 1 /* for glibc >= 2.20 */
+-#endif
+ 
+ #include <string.h>
+ #include <sys/types.h>
