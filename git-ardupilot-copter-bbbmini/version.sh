@@ -15,9 +15,9 @@ git_branch="Copter-3.5"
 reprepro_dir="a/${package_name}"
 dl_path=""
 
-debian_version="${package_version}-0rcnee0"
+debian_version="${package_version}-0rcnee1"
 debian_patch=""
 debian_diff=""
 
-jessie_version="~jessie+20170914"
-stretch_version="~stretch+20170914"
+jessie_version="~jessie+20170915"
+stretch_version="~stretch+20170915"
