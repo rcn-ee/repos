@@ -2,8 +2,8 @@
 
 package_name="gcc-pru"
 debian_pkg_name="${package_name}"
-gnupru_release="2016.12-beta-rc2"
-package_version="7.0.0.20161219"
+gnupru_release="2017.09-beta-rc2.2"
+package_version="8.0.0.20170530"
 package_source=""
 src_dir=""
 
