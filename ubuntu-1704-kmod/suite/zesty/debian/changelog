@@ -1,0 +1,450 @@
+kmod (22-1.1ubuntu1rcnee1~zesty+20171005) zesty; urgency=low
+
+  * Rebuild for repos.rcn-ee.com
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Thu, 05 Oct 2017 13:11:39 -0500
+
+kmod (22-1.1ubuntu1) yakkety; urgency=low
+
+  * Merge with Debian unstable (LP: #1578667).  Remaining changes:
+    - Install ubuntu-specific depmod.d and modprobe.d contents.
+    - Install /etc/modprobe.d/mlx4.conf in libkmod2-udeb for d-i.
+    - Install upstart job and exit the init script under upstart.
+    - Mark transitional module-init-tools as Multi-Arch: foreign.
+    - Drop the alsa-base Breaks, our version is quite different.
+    - On upgrade, remove obsolete rtc module from /etc/modules.
+    - Update libtool macros and rerun autoconf for new arches.
+  * d/p/depmod-ignore-powerpc64-abiv2-toc-symbol.patch: ignore the
+    .TOC. symbol on ppc64el it does not need to be relocated and can be
+    ignored by depmod.
+  * drop debian/modprobe.d/blacklist-watchdog.conf as now supplied by
+    the primary kernel automatically.
+
+ -- Andy Whitcroft <apw@ubuntu.com>  Wed, 15 Jun 2016 11:52:42 +0300
+
+kmod (22-1.1) unstable; urgency=medium
+
+  [ Ben Hutchings ]
+  * Non-maintainer upload.
+
+  [ Helmut Grohne ]
+  * Fix FTBFS (Closes: #819089)
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Mon, 04 Apr 2016 18:14:56 +0100
+
+kmod (22-1ubuntu4) xenial; urgency=low
+
+  * fix brown paper bag error in reinstated package name:
+    modules-init-tools -> module-init-tools.
+
+ -- Andy Whitcroft <apw@ubuntu.com>  Sun, 13 Mar 2016 13:25:20 +0000
+
+kmod (22-1ubuntu3) xenial; urgency=low
+
+  * reinstate module-init-tools transitional package.  (LP: #1550741)
+   - as we have versioned dependancies from the kernel to this in 14.04
+     removing this package throws the apt in trusty for a loop preventing
+     upgrades.
+   - note that this reverts the P/C/R combo from the previous upload.
+
+ -- Andy Whitcroft <apw@canonical.com>  Wed, 09 Mar 2016 10:31:51 +0000
+
+kmod (22-1ubuntu2) xenial; urgency=low
+
+  * Provides/Conflicts/Replaces: module-init-tools to fix upgrades from
+    15.10 which has a strict versioned Depends: on kmod.  (LP: #1550741)
+
+ -- Andy Whitcroft <apw@ubuntu.com>  Tue, 08 Mar 2016 18:20:05 +0000
+
+kmod (22-1ubuntu1) xenial; urgency=low
+
+  * Merge with Debian unstable (LP: #1541917).  Remaining changes:
+    - Install ubuntu-specific depmod.d and modprobe.d contents.
+    - Install /etc/modprobe.d/mlx4.conf in libkmod2-udeb for d-i.
+    - Install upstart job and exit the init script under upstart.
+    - Mark transitional module-init-tools as Multi-Arch: foreign.
+    - Drop the alsa-base Breaks, our version is quite different.
+    - On upgrade, remove obsolete rtc module from /etc/modules.
+    - Update libtool macros and rerun autoconf for new arches.
+
+ -- Andy Whitcroft <apw@ubuntu.com>  Thu, 04 Feb 2016 16:20:12 +0000
+
+kmod (22-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Set $SOURCE_DATE_EPOCH in debian/rules for reproducibility.
+    (Closes: #783152)
+  * Remove the module-init-tools transitional package.
+
+ -- Marco d'Itri <md@linux.it>  Sun, 20 Dec 2015 17:04:10 +0100
+
+kmod (21-1ubuntu1) wily; urgency=medium
+
+  * Merge with Debian unstable (LP: #1487040).  Remaining changes:
+    - Install ubuntu-specific depmod.d and modprobe.d contents.
+    - Install /etc/modprobe.d/mlx4.conf in libkmod2-udeb for d-i.
+    - Install upstart job and exit the init script under upstart.
+    - Mark transitional module-init-tools as Multi-Arch: foreign.
+    - Drop the alsa-base Breaks, our version is quite different.
+    - On upgrade, remove obsolete rtc module from /etc/modules.
+    - Update libtool macros and rerun autoconf for new arches.
+
+ -- Andy Whitcroft <apw@ubuntu.com>  Thu, 20 Aug 2015 12:43:22 +0100
+
+kmod (21-1) unstable; urgency=medium
+
+  * New upstream release. Fixes:
+    + spurious spaces in lsmod output. (Closes: #782692)
+    + a missing comman in rmmod(8). (Closes: #787548)
+  * kmod.init: support the modules-load.d directories in /usr.
+    (Closes: #673747)
+  * Build the developers' documentation with gtk-doc. (Closes: #789462)
+
+ -- Marco d'Itri <md@linux.it>  Sun, 05 Jul 2015 21:18:24 +0200
+
+kmod (20-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Marco d'Itri <md@linux.it>  Sun, 08 Mar 2015 19:10:08 +0100
+
+kmod (18-3ubuntu1) vivid; urgency=medium
+
+  * Merge with Debian testing, bringing in /etc/modules migration code
+    so that systemd doesn't fail on old modules files with parameters.
+
+ -- Adam Conrad <adconrad@ubuntu.com>  Mon, 06 Apr 2015 14:12:36 -0600
+
+kmod (18-3.0.1) unstable; urgency=low
+
+  * enable compression
+
+ -- Tomas Janousek <tomi@nomi.cz>  Sun, 14 Dec 2014 23:55:24 +0100
+
+kmod (18-3) unstable; urgency=high
+
+  * postinst: do not use autodie. (Closes: #762974)
+  * postinst: do not create an empty etc-modules-parameters.conf.
+
+ -- Marco d'Itri <md@linux.it>  Sat, 27 Sep 2014 08:01:49 +0200
+
+kmod (18-2) unstable; urgency=medium
+
+  * postinst: move any modules parameters from /etc/modules to a new
+    /etc/modprobe.d/etc-modules-parameters.conf file. (Closes: #627949)
+  * initramfs-hook: do not fail if /lib/modprobe.d/ is empty.
+  * Add the man page for kmod(8). (Closes: #665873)
+  * Document depmod --show in depmod(8). (Closes: #687435)
+
+ -- Marco d'Itri <md@linux.it>  Wed, 17 Sep 2014 03:50:34 +0200
+
+kmod (18-1ubuntu2) utopic; urgency=medium
+
+  * blacklist-framebuffer.conf: blacklist bochs-drm (LP: #1378648)
+
+ -- Adam Conrad <adconrad@ubuntu.com>  Tue, 14 Oct 2014 05:04:57 -0600
+
+kmod (18-1ubuntu1) utopic; urgency=medium
+
+  * Merge with Debian unstable, remaining changes:
+    - Install ubuntu-specific depmod.d and modprobe.d contents.
+    - Install /etc/modprobe.d/mlx4.conf in libkmod2-udeb for d-i.
+    - Install upstart job and exit the init script under upstart.
+    - Mark transitional module-init-tools as Multi-Arch: foreign.
+    - Test-guard /lib/modprobe.d/* copying in our initramfs hook.
+    - Drop the alsa-base Breaks, our version is quite different.
+    - On upgrade, remove obsolete rtc module from /etc/modules.
+
+ -- Adam Conrad <adconrad@ubuntu.com>  Mon, 23 Jun 2014 22:47:02 -0600
+
+kmod (18-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Marco d'Itri <md@linux.it>  Sat, 21 Jun 2014 04:27:39 +0200
+
+kmod (17-2) unstable; urgency=medium
+
+  * Build-Depend on gtk-doc-tools. (Closes: #747005)
+
+ -- Marco d'Itri <md@linux.it>  Sun, 04 May 2014 20:38:42 +0200
+
+kmod (17-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Declared that kmod Breaks oss-compat 4. (Closes: #736748)
+  * Merged the few useful directives from the alsa-base package and added
+    a versioned Breaks to force it to be unistalled.
+
+ -- Marco d'Itri <md@linux.it>  Thu, 01 May 2014 21:10:36 +0200
+
+kmod (16-2ubuntu4) utopic; urgency=medium
+
+  * On upgrade to this version, remove rtc module from /etc/modules. rtc
+    is obsolete and doesn't exist anymore.  This is a clean up after,
+    older versions of installers that unconditionally added it to modules.
+    LP: #1317077
+
+ -- Dimitri John Ledkov <xnox@ubuntu.com>  Wed, 07 May 2014 15:19:40 +0100
+
+kmod (16-2ubuntu3) utopic; urgency=medium
+
+  * Revert the previous change and replace with test-guarded copy.
+
+ -- Adam Conrad <adconrad@ubuntu.com>  Sun, 27 Apr 2014 22:38:31 -0600
+
+kmod (16-2ubuntu2) utopic; urgency=high
+
+  * Resurrect dropped post-merge change:
+    - Don't copy /lib/modprobe.d/* in our version of the kmod
+      initramfs hook; we currently don't ship anything there.
+  
+ -- Dimitri John Ledkov <xnox@ubuntu.com>  Sun, 27 Apr 2014 00:48:29 +0100
+
+kmod (16-2ubuntu1) utopic; urgency=medium
+
+  * Merge with Debian unstable, remaining changes:
+    - Install ubuntu-specific depmod.d and modprobe.d contents.
+    - Install /etc/modprobe.d/mlx4.conf in libkmod2-udeb for d-i.
+    - Install upstart job and exit the init script under upstart.
+    - Update libtool macros and rerun autoconf for new arches.
+    - Mark module-init-tools as Multi-Arch: foreign.
+
+ -- Adam Conrad <adconrad@ubuntu.com>  Mon, 21 Apr 2014 22:35:26 -0600
+
+kmod (16-2) unstable; urgency=medium
+
+  * Always Build-Depend on xsltproc. (Closes: #733760)
+
+ -- Marco d'Itri <md@linux.it>  Thu, 02 Jan 2014 04:04:26 +0100
+
+kmod (16-1) unstable; urgency=low
+
+  * New upstream release. (Closes: #716739)
+    + Improves error messages. (Closes: #676387)
+    + Fixes modprobe -f. (Closes: #720599)
+  * Added an example to modules(5), patch by Regid Ichira. (Closes: #711468)
+
+ -- Marco d'Itri <md@linux.it>  Tue, 31 Dec 2013 03:56:44 +0100
+
+kmod (15-0ubuntu6) trusty; urgency=medium
+
+  * debian/rules: Install mlx4.conf in the udeb as well (LP: #1305874)
+  * debian/kmod.upstart: Process all the modules-load.d (LP: #1302767)
+
+ -- Adam Conrad <adconrad@ubuntu.com>  Tue, 08 Apr 2014 13:40:16 -0600
+
+kmod (15-0ubuntu5) trusty; urgency=low
+
+  * Build-depend on gtk-doc-tools too.
+
+ -- Matthias Klose <doko@ubuntu.com>  Wed, 04 Dec 2013 20:53:33 +0100
+
+kmod (15-0ubuntu4) trusty; urgency=low
+
+  * Use dh-autoreconf.
+
+ -- Matthias Klose <doko@ubuntu.com>  Wed, 04 Dec 2013 20:32:14 +0100
+
+kmod (15-0ubuntu3) trusty; urgency=low
+
+  * Update libtool.m4.
+
+ -- Matthias Klose <doko@ubuntu.com>  Wed, 04 Dec 2013 20:08:56 +0100
+
+kmod (15-0ubuntu2) trusty; urgency=low
+
+  * Add missing build-dep on xsltproc to resolve FTBFS on all arches.
+  * Restore dropped check_builtin_kver to keep delta with Debian low.
+
+ -- Adam Conrad <adconrad@ubuntu.com>  Wed, 23 Oct 2013 23:00:46 -0600
+
+kmod (15-0ubuntu1) trusty; urgency=low
+
+  * New upstream release. (See Debian #716739)
+  * Drop patches included upstream: dot_kcmdline, bad_alias_assertion,
+    blacklist_aliased.
+  * Drop check_builtin_kver, this would only apply to lucid and is otherwise
+    unnecessary.
+  * Drop --disable-shared/--enable-static, this got dropped in this version
+    and isn't necessary any more. /bin/kmod does not dynamically link to
+    libkmod by default now.
+
+ -- Martin Pitt <martin.pitt@ubuntu.com>  Thu, 24 Oct 2013 06:16:30 +0200
+
+kmod (9-3ubuntu1) raring; urgency=low
+
+  * Merge with Debian unstable, bringing in a backport of upstream's
+    comprehensive fix for the bad alias assertion bug (LP: #1073062)
+
+ -- Adam Conrad <adconrad@ubuntu.com>  Thu, 18 Apr 2013 13:16:44 -0600
+
+kmod (9-3) unstable; urgency=low
+
+  * Added backported patch dot_kcmdline: correctly parse kcmdline parameters 
+    containing a dot. (Closes: #689872)
+  * Added backported patch bad_alias_assertion: stop modprobe from aborting 
+    from an assertion because of some invalid but common configuration
+    directives. (Closes: #674110)
+  * Removed the nfs4 alias from aliases.conf as requested by the kernel 
+    team. (Closes: #683972)
+  * Removed the unnecessary build-dependency on perl. (Closes: #697750)
+
+ -- Marco d'Itri <md@linux.it>  Sun, 07 Apr 2013 18:19:01 +0200
+
+kmod (9-2ubuntu8) raring; urgency=low
+
+  * Add debian/patches/do_not_raise_on_null_alias to avoid
+    raising errors when dealing with modules whose aliases
+    are set to either "null" or "off" (LP: #1073062).
+
+ -- Alberto Milone <alberto.milone@canonical.com>  Wed, 13 Mar 2013 18:02:53 +0100
+
+kmod (9-2ubuntu7) raring; urgency=low
+
+  * Add /etc/modprobe.d/mlx4.conf for loading mlx4_en when mlx4_core
+    gets loaded (LP: #1115710).
+
+ -- Scott Moser <smoser@ubuntu.com>  Tue, 05 Feb 2013 15:36:49 -0500
+
+kmod (9-2ubuntu6) raring; urgency=low
+
+  * Remove /etc/init/module-init-tools.conf on upgrade (LP: #1082006)
+
+ -- Adam Conrad <adconrad@ubuntu.com>  Thu, 24 Jan 2013 00:11:39 -0700
+
+kmod (9-2ubuntu5) raring; urgency=low
+
+  * Fix permissions on /etc/depmod.d, /etc/modprobe.d.  (LP: #1082598)
+
+ -- Anders Kaseorg <andersk@mit.edu>  Tue, 22 Jan 2013 15:06:45 +0100
+
+kmod (9-2ubuntu4) raring; urgency=low
+
+  * Drop unused build-dependency on perl, to simplify cross-building.
+
+ -- Colin Watson <cjwatson@ubuntu.com>  Wed, 09 Jan 2013 10:41:07 +0000
+
+kmod (9-2ubuntu3) raring; urgency=low
+
+  * Add debian/patches/allow_dots_in_params to fix parsing of
+    commandline arguments with dots in them (closes: #689872)
+
+ -- Adam Conrad <adconrad@ubuntu.com>  Tue, 30 Oct 2012 21:20:10 +0000
+
+kmod (9-2ubuntu2) raring; urgency=low
+
+  * Don't copy /lib/modprobe.d/* in our version of the kmod
+    initramfs hook; we currently don't ship anything there.
+
+ -- Adam Conrad <adconrad@ubuntu.com>  Mon, 29 Oct 2012 13:27:18 +0000
+
+kmod (9-2ubuntu1) raring; urgency=low
+
+  * Sync with Debian unstable; remaining Ubuntu changes:
+    - Ubuntu-specific depmod.d and modprobe.d contents.
+    - Mark module-init-tools Multi-Arch: foreign.
+    - Don't install Debian's extra/aliases.conf file.
+    - Install upstart job instead of the sysvinit script.
+
+ -- Adam Conrad <adconrad@ubuntu.com>  Fri, 21 Sep 2012 16:05:32 -0600
+
+kmod (9-2) unstable; urgency=low
+
+  * Backported upstream fixes to make modprobe work like in module-init-tools
+    and not load a blacklisted module even if modprobe is invoked with one of
+    its aliases.
+  * Report an error when some .bin files do not exist. (Closes: #684901)
+  * Really build the udeb with -Os -fomit-frame-pointer.
+
+ -- Marco d'Itri <md@linux.it>  Mon, 27 Aug 2012 00:40:18 +0200
+
+kmod (9-1ubuntu1) quantal; urgency=low
+
+  * Initial sync with debian 9-1, remaining (module-init-tools) changes:
+    - Ubuntu specific depmod.d and modprobe.d contents.
+
+ -- Andy Whitcroft <apw@ubuntu.com>  Wed, 04 Jul 2012 19:18:01 +0100
+
+kmod (9-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Marco d'Itri <md@linux.it>  Mon, 25 Jun 2012 02:48:38 +0200
+
+kmod (8-2) unstable; urgency=medium
+
+  * Implemented systemd-compatible processing of modules-load.d directories,
+    courtesy of Josh Triplett. (Closes: #672960)
+  * Properly fix kmod on ia64 with backported patch commit-d30319e.
+
+ -- Marco d'Itri <md@linux.it>  Sun, 20 May 2012 23:19:47 +0200
+
+kmod (8-1) unstable; urgency=medium
+
+  * New upstream release. Fixes:
+    + An unclear error message. (Closes: #668216)
+  * Moved libkmod.pc to the multiarch directory. (Closes: #670005)
+  * Do not warn about a missing modules.builtin file for kernel versions
+    < 2.6.33. (Closes: #670965)
+  * Removed patch work_around_linking_issues, which is properly fixed by
+    upstream patch commit-9625375.
+  * Made the init script exit without processing /etc/modules if the
+    /etc/modules-load.d/modules.conf symlink exists.
+
+ -- Marco d'Itri <md@linux.it>  Mon, 14 May 2012 02:45:06 +0200
+
+kmod (6-2) unstable; urgency=low
+
+  * Applied a few upstream changesets to fix:
+    + depmod correctly processing a kernel versions different from the
+      running one. (Closes: #662891)
+    + modprobe -q still too much verbose. (Closes: #662822)
+    + modprobe -r removing only the first argument. (Closes: #662984)
+  * Restored the code from the old module-init-tools package which deletes
+    obsolete conffiles. Abort upgrading from releases older than lenny.
+    (Closes: #663159)
+
+ -- Marco d'Itri <md@linux.it>  Fri, 16 Mar 2012 02:21:00 +0100
+
+kmod (6-1.1) unstable; urgency=low
+
+  * Non-maintainer upload with maintainer approval.
+  * Work around FTBFS on ia64 (probable toolchain bug) due to undefined
+    references to kmod_log when linking tools/kmod: Add libkmod-private.la
+    to kmod's LDADD variable to ensure that linking happens properly.
+    + Patch: work_around_linking_issues; tested on merulo.
+
+ -- Cyril Brulebois <kibi@debian.org>  Wed, 07 Mar 2012 01:40:37 +0000
+
+kmod (6-1) unstable; urgency=low
+
+  * New upstream release. Fixes:
+    + Documented the modprobe.blacklist parameter. (Closes: #630338)
+
+ -- Marco d'Itri <md@linux.it>  Sat, 03 Mar 2012 16:53:33 +0100
+
+kmod (5-2) experimental; urgency=high
+
+  * Added patch check_if_exists to fix loops caused by install directives.
+    (Closes: #659838)
+
+ -- Marco d'Itri <md@linux.it>  Sun, 19 Feb 2012 13:07:21 +0100
+
+kmod (5-1) experimental; urgency=low
+
+  * New upstream release. (Closes: #659195)
+
+ -- Marco d'Itri <md@linux.it>  Sun, 12 Feb 2012 04:48:24 +0100
+
+kmod (3-1) experimental; urgency=low
+
+  * Initial release. (Closes: #652284)
+  * When replacing module-init-tools:
+    - /etc/modules is preserved
+    - /etc/modprobe.d/aliases.conf is deleted if unmodified, otherwise it
+      is renamed to aliases-m-i-t.conf and will be used by kmod
+    - /etc/init.d/module-init-tools is deleted if unmodified, otherwise it
+      is renamed to /etc/init.d/module-init-tools.dpkg-bak
+
+ -- Marco d'Itri <md@linux.it>  Sun, 08 Jan 2012 20:47:12 +0100

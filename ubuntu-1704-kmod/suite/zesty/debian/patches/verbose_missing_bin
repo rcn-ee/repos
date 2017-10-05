@@ -1,0 +1,25 @@
+Description: Report an error when some .bin files do not exist
+Author: Marco d'Itri <md@linux.it>
+Bug-Debian: http://bugs.debian.org/684901
+---
+
+--- a/libkmod/libkmod.c
++++ b/libkmod/libkmod.c
+@@ -503,7 +503,7 @@ static char *lookup_builtin_file(struct
+ 
+ 		idx = index_file_open(fn);
+ 		if (idx == NULL) {
+-			DBG(ctx, "could not open builtin file '%s'\n", fn);
++			ERR(ctx, "could not open builtin file '%s'\n", fn);
+ 			return NULL;
+ 		}
+ 
+@@ -575,7 +575,7 @@ char *kmod_search_moddep(struct kmod_ctx
+ 
+ 	idx = index_file_open(fn);
+ 	if (idx == NULL) {
+-		DBG(ctx, "could not open moddep file '%s'\n", fn);
++		ERR(ctx, "could not open moddep file '%s'\n", fn);
+ 		return NULL;
+ 	}
+ 
