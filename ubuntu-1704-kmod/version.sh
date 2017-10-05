@@ -18,6 +18,4 @@ debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 local_patch="rcnee1"
 
-stretch_version="~stretch+20171005"
-xenial_version="~xenial+20171005"
 zesty_version="~zesty+20171005"

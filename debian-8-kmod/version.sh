@@ -18,5 +18,4 @@ debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 local_patch="rcnee1"
 
-stretch_version="~stretch+20171005"
 jessie_version="~jessie+20171005"
