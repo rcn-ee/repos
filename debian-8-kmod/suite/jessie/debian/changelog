@@ -1,0 +1,170 @@
+kmod (18-3rcnee1~jessie+20171005) jessie; urgency=low
+
+  * Rebuild for repos.rcn-ee.com
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Thu, 05 Oct 2017 12:52:47 -0500
+
+kmod (18-3.0.1) unstable; urgency=low
+
+  * enable compression
+
+ -- Tomas Janousek <tomi@nomi.cz>  Sun, 14 Dec 2014 23:55:24 +0100
+
+kmod (18-3) unstable; urgency=high
+
+  * postinst: do not use autodie. (Closes: #762974)
+  * postinst: do not create an empty etc-modules-parameters.conf.
+
+ -- Marco d'Itri <md@linux.it>  Sat, 27 Sep 2014 08:01:49 +0200
+
+kmod (18-2) unstable; urgency=medium
+
+  * postinst: move any modules parameters from /etc/modules to a new
+    /etc/modprobe.d/etc-modules-parameters.conf file. (Closes: #627949)
+  * initramfs-hook: do not fail if /lib/modprobe.d/ is empty.
+  * Add the man page for kmod(8). (Closes: #665873)
+  * Document depmod --show in depmod(8). (Closes: #687435)
+
+ -- Marco d'Itri <md@linux.it>  Wed, 17 Sep 2014 03:50:34 +0200
+
+kmod (18-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Marco d'Itri <md@linux.it>  Sat, 21 Jun 2014 04:27:39 +0200
+
+kmod (17-2) unstable; urgency=medium
+
+  * Build-Depend on gtk-doc-tools. (Closes: #747005)
+
+ -- Marco d'Itri <md@linux.it>  Sun, 04 May 2014 20:38:42 +0200
+
+kmod (17-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Declared that kmod Breaks oss-compat 4. (Closes: #736748)
+  * Merged the few useful directives from the alsa-base package and added
+    a versioned Breaks to force it to be unistalled.
+
+ -- Marco d'Itri <md@linux.it>  Thu, 01 May 2014 21:10:36 +0200
+
+kmod (16-2) unstable; urgency=medium
+
+  * Always Build-Depend on xsltproc. (Closes: #733760)
+
+ -- Marco d'Itri <md@linux.it>  Thu, 02 Jan 2014 04:04:26 +0100
+
+kmod (16-1) unstable; urgency=low
+
+  * New upstream release. (Closes: #716739)
+    + Improves error messages. (Closes: #676387)
+    + Fixes modprobe -f. (Closes: #720599)
+  * Added an example to modules(5), patch by Regid Ichira. (Closes: #711468)
+
+ -- Marco d'Itri <md@linux.it>  Tue, 31 Dec 2013 03:56:44 +0100
+
+kmod (9-3) unstable; urgency=low
+
+  * Added backported patch dot_kcmdline: correctly parse kcmdline parameters 
+    containing a dot. (Closes: #689872)
+  * Added backported patch bad_alias_assertion: stop modprobe from aborting 
+    from an assertion because of some invalid but common configuration
+    directives. (Closes: #674110)
+  * Removed the nfs4 alias from aliases.conf as requested by the kernel 
+    team. (Closes: #683972)
+  * Removed the unnecessary build-dependency on perl. (Closes: #697750)
+
+ -- Marco d'Itri <md@linux.it>  Sun, 07 Apr 2013 18:19:01 +0200
+
+kmod (9-2) unstable; urgency=low
+
+  * Backported upstream fixes to make modprobe work like in module-init-tools
+    and not load a blacklisted module even if modprobe is invoked with one of
+    its aliases.
+  * Report an error when some .bin files do not exist. (Closes: #684901)
+  * Really build the udeb with -Os -fomit-frame-pointer.
+
+ -- Marco d'Itri <md@linux.it>  Mon, 27 Aug 2012 00:40:18 +0200
+
+kmod (9-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Marco d'Itri <md@linux.it>  Mon, 25 Jun 2012 02:48:38 +0200
+
+kmod (8-2) unstable; urgency=medium
+
+  * Implemented systemd-compatible processing of modules-load.d directories,
+    courtesy of Josh Triplett. (Closes: #672960)
+  * Properly fix kmod on ia64 with backported patch commit-d30319e.
+
+ -- Marco d'Itri <md@linux.it>  Sun, 20 May 2012 23:19:47 +0200
+
+kmod (8-1) unstable; urgency=medium
+
+  * New upstream release. Fixes:
+    + An unclear error message. (Closes: #668216)
+  * Moved libkmod.pc to the multiarch directory. (Closes: #670005)
+  * Do not warn about a missing modules.builtin file for kernel versions
+    < 2.6.33. (Closes: #670965)
+  * Removed patch work_around_linking_issues, which is properly fixed by
+    upstream patch commit-9625375.
+  * Made the init script exit without processing /etc/modules if the
+    /etc/modules-load.d/modules.conf symlink exists.
+
+ -- Marco d'Itri <md@linux.it>  Mon, 14 May 2012 02:45:06 +0200
+
+kmod (6-2) unstable; urgency=low
+
+  * Applied a few upstream changesets to fix:
+    + depmod correctly processing a kernel versions different from the
+      running one. (Closes: #662891)
+    + modprobe -q still too much verbose. (Closes: #662822)
+    + modprobe -r removing only the first argument. (Closes: #662984)
+  * Restored the code from the old module-init-tools package which deletes
+    obsolete conffiles. Abort upgrading from releases older than lenny.
+    (Closes: #663159)
+
+ -- Marco d'Itri <md@linux.it>  Fri, 16 Mar 2012 02:21:00 +0100
+
+kmod (6-1.1) unstable; urgency=low
+
+  * Non-maintainer upload with maintainer approval.
+  * Work around FTBFS on ia64 (probable toolchain bug) due to undefined
+    references to kmod_log when linking tools/kmod: Add libkmod-private.la
+    to kmod's LDADD variable to ensure that linking happens properly.
+    + Patch: work_around_linking_issues; tested on merulo.
+
+ -- Cyril Brulebois <kibi@debian.org>  Wed, 07 Mar 2012 01:40:37 +0000
+
+kmod (6-1) unstable; urgency=low
+
+  * New upstream release. Fixes:
+    + Documented the modprobe.blacklist parameter. (Closes: #630338)
+
+ -- Marco d'Itri <md@linux.it>  Sat, 03 Mar 2012 16:53:33 +0100
+
+kmod (5-2) experimental; urgency=high
+
+  * Added patch check_if_exists to fix loops caused by install directives.
+    (Closes: #659838)
+
+ -- Marco d'Itri <md@linux.it>  Sun, 19 Feb 2012 13:07:21 +0100
+
+kmod (5-1) experimental; urgency=low
+
+  * New upstream release. (Closes: #659195)
+
+ -- Marco d'Itri <md@linux.it>  Sun, 12 Feb 2012 04:48:24 +0100
+
+kmod (3-1) experimental; urgency=low
+
+  * Initial release. (Closes: #652284)
+  * When replacing module-init-tools:
+    - /etc/modules is preserved
+    - /etc/modprobe.d/aliases.conf is deleted if unmodified, otherwise it
+      is renamed to aliases-m-i-t.conf and will be used by kmod
+    - /etc/init.d/module-init-tools is deleted if unmodified, otherwise it
+      is renamed to /etc/init.d/module-init-tools.dpkg-bak
+
+ -- Marco d'Itri <md@linux.it>  Sun, 08 Jan 2012 20:47:12 +0100
