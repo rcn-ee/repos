@@ -1,0 +1,62 @@
+Source: kmod
+Section: admin
+Priority: important
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+XSBC-Original-Maintainer: Marco d'Itri <md@linux.it>
+Build-Depends: debhelper (>> 9), xsltproc,
+  liblzma-dev, zlib1g-dev,
+  autoconf, automake, libtool, gtk-doc-tools
+Standards-Version: 3.9.8
+Vcs-Git: https://anonscm.debian.org/git/users/md/kmod.git
+Vcs-Browser: https://anonscm.debian.org/cgit/users/md/kmod.git
+
+Package: kmod
+Architecture: linux-any
+Multi-Arch: foreign
+Depends: ${shlibs:Depends}, ${misc:Depends}, lsb-base
+Breaks: oss-compat (= 4)
+Description: tools for managing Linux kernel modules
+ This package contains a set of programs for loading, inserting, and 
+ removing kernel modules for Linux.
+ It replaces module-init-tools.
+
+Package: libkmod2
+Section: libs
+Architecture: linux-any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: libkmod shared library
+ This library provides an API for insertion, removal, configuration and
+ listing of kernel modules.
+
+Package: libkmod-dev
+Section: libdevel
+Priority: optional
+Architecture: linux-any
+Multi-Arch: same
+Depends: ${shlibs:Depends}, ${misc:Depends}, libkmod2 (= ${binary:Version})
+Description: libkmod development files
+ This package contains the files needed for developing applications that
+ use libkmod.
+
+Package: libkmod2-udeb
+Package-Type: udeb
+Section: debian-installer
+Architecture: linux-any
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: libkmod shared library
+ This is a minimal version of libkmod2, only for use in the installation system.
+
+# Make sure we remove this before 18.04.  The only consumer of it now
+# is linux-goldfish and that should die in fire.
+Package: module-init-tools
+Architecture: all
+Section: oldlibs
+Priority: optional
+Depends: kmod
+Multi-Arch: foreign
+Description: transitional dummy package (module-init-tools to kmod)
+ This dummy package is provided to support the transition from
+ module-init-tools to kmod and should be removed afterwards.
