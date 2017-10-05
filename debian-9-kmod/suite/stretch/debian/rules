@@ -1,0 +1,148 @@
+#!/usr/bin/make -f
+SHELL+= -e
+
+KMOD_RECONFIGURE := 1
+BUILD_UDEB := 1
+
+
+
+D   := $(CURDIR)/debian/kmod
+DK  := $(CURDIR)/debian/libkmod2
+DD  := $(CURDIR)/debian/libkmod-dev
+DKU := $(CURDIR)/debian/libkmod2-udeb
+
+CONFFLAGS = --sysconfdir=/etc --bindir=/bin
+CONFFLAGS_deb  = $(CONFFLAGS) \
+  $(shell DEB_BUILD_MAINT_OPTIONS="hardening=+bindnow" \
+    dpkg-buildflags --export=configure || true) \
+  --enable-gtk-doc \
+  --libdir=/usr/lib/$(DEB_HOST_MULTIARCH) \
+  --with-rootlibdir=/lib/$(DEB_HOST_MULTIARCH) \
+  --enable-debug --with-xz --with-zlib
+CONFFLAGS_udeb = $(CONFFLAGS) \
+  $(subst -O2,-Os -fomit-frame-pointer,$(shell DEB_BUILD_MAINT_OPTIONS="hardening=-all" \
+    dpkg-buildflags --export=configure || true)) \
+  --libdir=/lib --with-rootlibdir=/lib
+
+##############################################################################
+SOURCE_DATE_EPOCH ?= $(shell dpkg-parsechangelog --show-field=Date | date --file=- +%s)
+export SOURCE_DATE_EPOCH
+
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
+DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+ifeq ($(DEB_BUILD_GNU_TYPE),$(DEB_HOST_GNU_TYPE))
+  CONFFLAGS += --build $(DEB_HOST_GNU_TYPE)
+else
+  CONFFLAGS += --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
+endif
+
+ifdef BUILD_UDEB
+  BUILD_UDEB_TARGET := .stamp-build-udeb
+else
+  NO_PACKAGE := --no-package=libkmod2-udeb
+endif
+
+##############################################################################
+clean:
+	rm -rf .stamp-* build-*deb
+ifdef KMOD_RECONFIGURE
+	rm -f aclocal.m4 autom4te.cache/* config.h.in config.h.in~ configure \
+		$$(find . -name Makefile.in) \
+		$$(find m4/ build-aux/ libkmod/ -type l)
+endif
+	dh_clean
+
+# if enabled, must build-depend on: autoconf, automake, libtool, gtk-doc-tools
+ifdef KMOD_RECONFIGURE
+configure: configure.ac
+	gtkdocize --docdir libkmod/docs
+	autoreconf --force --install --symlink
+endif
+
+build-deb/config.status: configure
+	[ -d build-deb ] || mkdir build-deb
+	cd build-deb/ && \
+	../configure $(CONFFLAGS_deb)
+
+build-udeb/config.status: configure
+	[ -d build-udeb ] || mkdir build-udeb
+	cd build-udeb/ && \
+	../configure $(CONFFLAGS_udeb)
+
+build: build-arch build-indep
+build-arch: .stamp-build $(BUILD_UDEB_TARGET)
+build-indep: .stamp-build $(BUILD_UDEB_TARGET)
+.stamp-build: build-deb/config.status
+	dh_testdir
+	cd build-deb/ && \
+	$(MAKE) all V=1
+	touch $@
+
+build-udeb: .stamp-build-udeb
+.stamp-build-udeb: build-udeb/config.status
+	dh_testdir
+	cd build-udeb/ && \
+	$(MAKE) all V=1
+	touch $@
+
+binary-all: .stamp-binary
+.stamp-binary: build checkroot
+	dh_testdir
+	dh_prep
+
+	cd build-deb/ && \
+	$(MAKE) install DESTDIR=$D
+	rm $D/usr/lib/*/*.la
+
+	dh_movefiles --sourcedir=debian/kmod
+	rmdir --parents --ignore-fail-on-non-empty $$(find $D -type d -empty)
+
+	dh_installdirs
+	cp extra/aliases.conf $D/lib/modprobe.d/
+	install --mode=755 debian/kmod.initramfs-hook \
+		$D/usr/share/initramfs-tools/hooks/kmod
+
+ifdef BUILD_UDEB
+	cd build-udeb/ && \
+	$(MAKE) install-exec DESTDIR=$(DKU)
+	rm -r $(DKU)/lib/
+
+	egrep -i '^[a-z]' extra/aliases.conf > $(DKU)/etc/modprobe.d/aliases.conf
+endif
+
+	dh_installdocs -pkmod -plibkmod-dev --link-doc=libkmod2
+	dh_installdocs -pkmod --link-doc=libkmod2 README TODO
+	dh_installdocs -plibkmod2
+	cp libkmod/README $(DD)/usr/share/doc/libkmod2/README.libkmod
+	dh_installchangelogs NEWS
+	dh_installman extra/*.5
+	dh_installinit --no-start
+	dh_link
+	dh_strip
+	dh_compress
+	dh_fixperms
+	dh_makeshlibs --add-udeb=libkmod2-udeb -- -c4
+	dh_shlibdeps -- --warnings=7
+	dh_installdeb
+	dh_gencontrol $(NO_PACKAGE)
+	dh_md5sums
+	touch $@
+
+binary-arch: .stamp-binary
+	dh_builddeb -a $(NO_PACKAGE)
+
+binary-indep: .stamp-binary
+	dh_builddeb -i
+
+binary:	binary-arch binary-indep
+
+checkroot:
+	test root = "`whoami`"
+
+get-orig-source:
+	cd $(dir $(firstword $(MAKEFILE_LIST)))../ && \
+	uscan --rename --force-download --watchfile debian/watch --destdir $(CURDIR)
+
+.PHONY: clean build build-arch build-indep binary binary-arch binary-indep checkroot
