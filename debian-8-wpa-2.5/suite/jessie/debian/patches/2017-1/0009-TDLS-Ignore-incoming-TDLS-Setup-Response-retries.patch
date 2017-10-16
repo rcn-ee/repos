@@ -1,0 +1,37 @@
+From d37d4e67b4a280e7d54edb27f2f55e5efe7bf2d4 Mon Sep 17 00:00:00 2001
+From: Arik Nemtsov <arik@wizery.com>
+Date: Thu, 10 Dec 2015 12:56:07 +0200
+Subject: [PATCH 9/9] TDLS: Ignore incoming TDLS Setup Response retries
+
+The Setup Response timer is relatively fast (500 ms) and there are
+instances where it fires on the responder side after the initiator has
+already sent out the TDLS Setup Confirm frame. Prevent the processing of
+this stale TDLS Setup Response frame on the initiator side.
+
+Signed-off-by: Arik Nemtsov <arikx.nemtsov@intel.com>
+---
+ src/rsn_supp/tdls.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/src/rsn_supp/tdls.c b/src/rsn_supp/tdls.c
+index a689ca46e..cce59d7df 100644
+--- a/src/rsn_supp/tdls.c
++++ b/src/rsn_supp/tdls.c
+@@ -2204,6 +2204,14 @@ static int wpa_tdls_process_tpk_m2(struct wpa_sm *sm, const u8 *src_addr,
+ 			   "ignore TPK M2 from " MACSTR, MAC2STR(src_addr));
+ 		return -1;
+ 	}
++
++	if (peer->tpk_success) {
++		wpa_printf(MSG_INFO, "TDLS: Ignore incoming TPK M2 retry, from "
++			   MACSTR " as TPK M3 was already sent",
++			   MAC2STR(src_addr));
++		return 0;
++	}
++
+ 	wpa_tdls_tpk_retry_timeout_cancel(sm, peer, WLAN_TDLS_SETUP_REQUEST);
+ 
+ 	if (len < 3 + 2 + 1) {
+-- 
+2.14.2
+

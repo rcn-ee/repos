@@ -1,4 +1,4 @@
-From 97b53dc27f9a1926f1a9e6ab952cc4cbf0e387eb Mon Sep 17 00:00:00 2001
+From ce5a27c319bf7ec551f3fc9d1e2a0c6b18357420 Mon Sep 17 00:00:00 2001
 From: Jouni Malinen <j@w1.fi>
 Date: Sun, 1 Nov 2015 19:35:44 +0200
 Subject: [PATCH] EAP-pwd peer: Fix error path for unexpected Confirm message
@@ -16,7 +16,7 @@ Signed-off-by: Jouni Malinen <j@w1.fi>
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/src/eap_peer/eap_pwd.c b/src/eap_peer/eap_pwd.c
-index 75ceef1..892b590 100644
+index 75ceef1b0..892b5909e 100644
 --- a/src/eap_peer/eap_pwd.c
 +++ b/src/eap_peer/eap_pwd.c
 @@ -774,7 +774,8 @@ eap_pwd_perform_confirm_exchange(struct eap_sm *sm, struct eap_pwd_data *data,
@@ -30,5 +30,5 @@ index 75ceef1..892b590 100644
  	BN_clear_free(y);
  	if (data->outbuf == NULL) {
 -- 
-2.8.0.rc3
+2.14.2
 

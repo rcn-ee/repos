@@ -1,0 +1,85 @@
+From 4455b4679f789cb7e1ff410e7e4461e67afa20bd Mon Sep 17 00:00:00 2001
+From: Jouni Malinen <j@w1.fi>
+Date: Sun, 25 Oct 2015 23:02:14 +0200
+Subject: [PATCH 6/9] WNM: Ignore WNM-Sleep Mode Response if WNM-Sleep Mode has
+ not been used
+
+The AP is not expected to send out a WNM-Sleep Mode Response frame
+without the STA trying to use WNM-Sleep Mode. Drop such unexpected
+responses to reduce unnecessary processing of the frame.
+
+Signed-off-by: Jouni Malinen <j@w1.fi>
+---
+ wpa_supplicant/ctrl_iface.c       | 2 ++
+ wpa_supplicant/events.c           | 2 ++
+ wpa_supplicant/wnm_sta.c          | 8 ++++++++
+ wpa_supplicant/wpa_supplicant_i.h | 1 +
+ 4 files changed, 13 insertions(+)
+
+diff --git a/wpa_supplicant/ctrl_iface.c b/wpa_supplicant/ctrl_iface.c
+index 3b97806d8..de2987d60 100644
+--- a/wpa_supplicant/ctrl_iface.c
++++ b/wpa_supplicant/ctrl_iface.c
+@@ -6876,6 +6876,8 @@ static void wpa_supplicant_ctrl_iface_flush(struct wpa_supplicant *wpa_s)
+ 	wpa_s->test_failure = WPAS_TEST_FAILURE_NONE;
+ #endif /* CONFIG_TESTING_OPTIONS */
+ 
++	wpa_s->wnmsleep_used = 0;
++
+ 	wpa_s->disconnected = 0;
+ 	os_free(wpa_s->next_scan_freqs);
+ 	wpa_s->next_scan_freqs = NULL;
+diff --git a/wpa_supplicant/events.c b/wpa_supplicant/events.c
+index 3af1c7d89..c0cc29e69 100644
+--- a/wpa_supplicant/events.c
++++ b/wpa_supplicant/events.c
+@@ -302,6 +302,8 @@ void wpa_supplicant_mark_disassoc(struct wpa_supplicant *wpa_s)
+ 	eapol_sm_notify_config(wpa_s->eapol, NULL, NULL);
+ 	wpa_s->key_mgmt = 0;
+ 
++	wpa_s->wnmsleep_used = 0;
++
+ 	wpas_rrm_reset(wpa_s);
+ }
+ 
+diff --git a/wpa_supplicant/wnm_sta.c b/wpa_supplicant/wnm_sta.c
+index 7d79499a9..e2d94f47d 100644
+--- a/wpa_supplicant/wnm_sta.c
++++ b/wpa_supplicant/wnm_sta.c
+@@ -137,6 +137,8 @@ int ieee802_11_send_wnmsleep_req(struct wpa_supplicant *wpa_s,
+ 	if (res < 0)
+ 		wpa_printf(MSG_DEBUG, "Failed to send WNM-Sleep Request "
+ 			   "(action=%d, intval=%d)", action, intval);
++	else
++		wpa_s->wnmsleep_used = 1;
+ 
+ 	os_free(wnmsleep_ie);
+ 	os_free(wnmtfs_ie);
+@@ -253,6 +255,12 @@ static void ieee802_11_rx_wnmsleep_resp(struct wpa_supplicant *wpa_s,
+ 	u8 *tfsresp_ie_end = NULL;
+ 	size_t left;
+ 
++	if (!wpa_s->wnmsleep_used) {
++		wpa_printf(MSG_DEBUG,
++			   "WNM: Ignore WNM-Sleep Mode Response frame since WNM-Sleep Mode has not been used in this association");
++		return;
++	}
++
+ 	if (len < 3)
+ 		return;
+ 	key_len_total = WPA_GET_LE16(frm + 1);
+diff --git a/wpa_supplicant/wpa_supplicant_i.h b/wpa_supplicant/wpa_supplicant_i.h
+index 58df48c54..08aa51a56 100644
+--- a/wpa_supplicant/wpa_supplicant_i.h
++++ b/wpa_supplicant/wpa_supplicant_i.h
+@@ -657,6 +657,7 @@ struct wpa_supplicant {
+ 	unsigned int eap_expected_failure:1;
+ 	unsigned int reattach:1; /* reassociation to the same BSS requested */
+ 	unsigned int mac_addr_changed:1;
++	unsigned int wnmsleep_used:1;
+ 	unsigned int added_vif:1;
+ 
+ 	struct os_reltime last_mac_addr_change;
+-- 
+2.14.2
+
