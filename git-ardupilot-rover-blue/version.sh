@@ -17,5 +17,5 @@ debian_version="${package_version}-0rcnee0"
 debian_patch=""
 debian_diff=""
 
-jessie_version="~bpo80+20170406"
-stretch_version="~bpo90+20170406"
+jessie_version="~jessie+20171016"
+stretch_version="~stretch+20171016"
