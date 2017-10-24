@@ -131,7 +131,7 @@ mesa () {
 	package_name="llvm-toolchain-3.9" ; package_version="${package_name}_3.9.1-18" ; check_http
 	#https://packages.debian.org/source/sid/llvm-toolchain-4.0
 	ignore="rc"
-	package_name="llvm-toolchain-4.0" ; package_version="${package_name}_4.0.1-7" ; check_http
+	package_name="llvm-toolchain-4.0" ; package_version="${package_name}_4.0.1-8" ; check_http
 	#https://packages.debian.org/source/sid/llvm-toolchain-5.0
 	ignore="rc"
 	package_name="llvm-toolchain-5.0" ; package_version="${package_name}_5.0-4" ; check_http
