@@ -47,7 +47,7 @@ mirror="http://${proxy}${ubuntu_server}"
 deboot="gutsy"
 
 if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
-	dist="artful"
+	dist="bionic"
 	unset flavor
 	arch="armhf"
 	options="--exclude=debfoster"

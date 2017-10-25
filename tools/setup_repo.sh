@@ -149,4 +149,8 @@ setup_repo
 suite="artful"
 archs="armhf source"
 setup_repo
+
+suite="bionic"
+archs="armhf source"
+setup_repo
 #

@@ -34,6 +34,7 @@ start_run () {
 	suite="xenial" ; runner
 	suite="zesty" ; runner
 	suite="artful" ; runner
+	suite="bionic" ; runner
 }
 
 start_run
