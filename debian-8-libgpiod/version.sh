@@ -19,3 +19,5 @@ debian_diff=""
 
 jessie_version="~jessie+20171103"
 stretch_version="~stretch+20171103"
+buster_version="~buster+20171103"
+xenial_version="~xenial+20171103"
