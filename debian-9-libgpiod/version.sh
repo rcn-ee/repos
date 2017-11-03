@@ -13,7 +13,7 @@ git_sha="a029549af5d2792762286536db09b2cf564dc7a7"
 reprepro_dir="libg/${package_name}"
 dl_path=""
 
-debian_version="${package_version}-0rcnee3"
+debian_version="${package_version}-0rcnee4"
 debian_patch=""
 debian_diff=""
 
