@@ -1,0 +1,39 @@
+diff --git a/battery_monitor_service/rc_battery_monitor/Makefile b/battery_monitor_service/rc_battery_monitor/Makefile
+index b42ac2f..ee21e9e 100644
+--- a/battery_monitor_service/rc_battery_monitor/Makefile
++++ b/battery_monitor_service/rc_battery_monitor/Makefile
+@@ -5,7 +5,7 @@ TARGET = rc_battery_monitor
+ CC	:= gcc
+ LINKER   := gcc -o
+ CFLAGS	:= -c -Wall -g
+-LFLAGS	:= -L ../../libraries -lm -lrt -lpthread -lroboticscape
++LFLAGS	:= -L ../../libraries -lm -lrt -lpthread -lroboticscape -lm -lpthread
+ 
+ SOURCES  := $(wildcard *.c)
+ INCLUDES := $(wildcard *.h)
+diff --git a/examples/robotics.mk b/examples/robotics.mk
+index e0f4fa3..4e68441 100644
+--- a/examples/robotics.mk
++++ b/examples/robotics.mk
+@@ -3,7 +3,7 @@
+ CC		:= gcc
+ LINKER		:= gcc -o
+ CFLAGS		:= -c -Wall -O2
+-LFLAGS		:= -L ../../libraries -lm -lrt -lpthread -lroboticscape
++LFLAGS		:= -L ../../libraries -lm -lrt -lpthread -lroboticscape -lm -lpthread
+ 
+ SOURCES		:= $(wildcard *.c)
+ INCLUDES	:= $(wildcard *.h)
+diff --git a/roboticscape_service/rc_startup_routine/Makefile b/roboticscape_service/rc_startup_routine/Makefile
+index 4b8602c..056a094 100644
+--- a/roboticscape_service/rc_startup_routine/Makefile
++++ b/roboticscape_service/rc_startup_routine/Makefile
+@@ -3,7 +3,7 @@ TARGET = rc_startup_routine
+ CC			:= gcc
+ LINKER		:= gcc -o
+ CFLAGS		:= -c -Wall -g
+-LFLAGS		:= -L ../../libraries -lm -lrt -lpthread -lroboticscape
++LFLAGS		:= -L ../../libraries -lm -lrt -lpthread -lroboticscape -lm -lpthread
+ 
+ SOURCES		:= $(wildcard *.c)
+ INCLUDES	:= $(wildcard *.h)
