@@ -1,0 +1,15 @@
+#!/bin/sh
+
+set -e
+
+case "$1" in
+    remove|deconfigure)
+        update-alternatives --quiet --remove node /usr/bin/nodejs
+        update-alternatives --quiet --remove node.1.gz /usr/share/man/man1/nodejs.1.gz
+        ;;
+    *)
+esac
+
+#DEBHELPER#
+
+exit 0

@@ -1,0 +1,96 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+NO_PNG_PKG_MANGLE="true"
+export NO_PNG_PKG_MANGLE
+
+config.status:
+	dh_testdir
+	dh_quilt_patch
+	./configure --prefix=/usr --with-intl=system-icu
+	touch $@
+
+build: build-stamp
+
+build-stamp: config.status
+	dh_testdir
+#	$(MAKE) -j32
+	$(MAKE)
+
+clean:
+	rm -f node
+	#rm -f node_g
+	rm -f doc/nodejs.1
+	rm -f .lock-wscript
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp
+	$(MAKE) clean || true
+	# first make fails, and creates *.pyc files
+	find . -name "*.pyc" -delete
+	rm -rf build
+	rm -f config.status
+	dh_quilt_unpatch
+	dh_clean 
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_prep  
+	dh_installdirs
+	# Rename man page to NODEJS
+	# rename binaries to nodejs, nodejs-waf
+	# escape single quotes at the start of lines, and false macros starting with a dot
+	sed \
+		-e 's/"NODE"/"NODEJS"/g' \
+		-e "s/^'/\\\'/g" \
+		-e "s/^\.\.\./ \\\.\\\.\\\./g" \
+		-e "s/^\.\./ \\\.\\\./g" \
+		-e "s/^\.node/\\\.node/g" \
+		-e "s/\\\'node\\\'/\\\'nodejs\\\'/g" \
+		-e 's/node\\-waf/nodejs\\-waf/g' \
+		-e 's/> node/> nodejs/g' \
+		-e 's/node \\- evented/nodejs \\- evented/g' \
+		doc/node.1 > doc/nodejs.1
+	
+	# Add here commands to install the package
+	DESTDIR=$(CURDIR)/debian/nodejs $(MAKE) install
+	# rename and install binaries in nodejs, nodejs-dbg
+	mv $(CURDIR)/debian/nodejs/usr/bin/node $(CURDIR)/debian/nodejs/usr/bin/nodejs
+	#mv $(CURDIR)/debian/nodejs/usr/bin/node_g $(CURDIR)/debian/nodejs-dbg/usr/lib/debug/usr/bin/nodejs
+	# headers for nodejs-dev
+#	mv $(CURDIR)/debian/nodejs/usr/include/node/* $(CURDIR)/debian/nodejs/usr/include/nodejs/
+#	rm -rf $(CURDIR)/debian/nodejs/usr/include
+	# waf for nodejs-dev
+	#mv $(CURDIR)/debian/nodejs/usr/bin/node-waf $(CURDIR)/debian/nodejs-dev/usr/bin/nodejs-waf
+	#mv $(CURDIR)/debian/nodejs/usr/lib/node/wafadmin $(CURDIR)/debian/nodejs-dev/usr/share/nodejs/
+	rm -rf $(CURDIR)/debian/nodejs/usr/lib/node
+	/bin/cp -a $(CURDIR)/lib/* $(CURDIR)/debian/nodejs/usr/lib/nodejs/
+
+#	/bin/mv $(CURDIR)/debian/nodejs/usr/lib/node_modules $(CURDIR)/debian/nodejs/usr/lib/nodejs/
+#	rm -rf $(CURDIR)/debian/nodejs/usr/bin/npm
+#	ln -s ../lib/nodejs/node_modules/npm/bin/npm-cli.js $(CURDIR)/debian/nodejs/usr/bin/npm	
+
+	mkdir -p $(CURDIR)/debian/nodejs/etc/profile.d
+	cp $(CURDIR)/debian/nodejs.sh $(CURDIR)/debian/nodejs/etc/profile.d
+
+# Build architecture-dependent files here.
+binary-arch: install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs 
+	dh_installdocs
+	dh_installexamples
+	dh_installman
+	dh_link
+	dh_strip --dbg-package=nodejs-dbg
+	dh_compress -X.json -X.markdown -X.js -X.html -X.md
+	dh_fixperms -Xnpm-cli.js
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install 
