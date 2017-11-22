@@ -1,0 +1,232 @@
+tslib (1.14-1rcnee0~buster+20171122) buster; urgency=low
+
+  * Rebuild for repos.rcn-ee.com
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Wed, 22 Nov 2017 15:14:49 -0600
+
+tslib (1.14-1) unstable; urgency=low
+
+  * Update to tslib version 1.14
+
+ -- Martin Kepplinger <martink@posteo.de>  Sun, 12 Nov 2017 01:11:42 +0100
+
+tslib (1.13-1) unstable; urgency=low
+
+  * Update to tslib version 1.13
+  * Remove patches as they are upstream
+  * Add symbols files for hurd-i386, kfreebsd-amd64 and kfreebsd-i386
+  * Add new library symbols to symbols files
+  * Add new library manpages
+
+ -- Martin Kepplinger <martink@posteo.de>  Thu, 14 Sep 2017 09:23:12 +0100
+
+tslib (1.12-5) unstable; urgency=low
+
+  * Add an upstream patch to fix the build for GNU/kFreeBSD
+
+ -- Martin Kepplinger <martink@posteo.de>  Fri, 01 Sep 2017 07:30:34 +0100
+
+tslib (1.12-4) unstable; urgency=low
+
+  * Verified that 1.12-3 fixes the build (Closes:#873693)
+  * Updated copyright information
+  * Add desktop files for ts_calibrate and ts_test_mt
+  * Add support for hurd and kfreebsd operating systems
+
+ -- Martin Kepplinger <martink@posteo.de>  Thu, 31 Aug 2017 15:08:50 +0100
+
+tslib (1.12-3) unstable; urgency=low
+
+  * Add patch (from upstream) to fix the build
+
+ -- Martin Kepplinger <martink@posteo.de>  Thu, 31 Aug 2017 07:11:24 +0100
+
+tslib (1.12-2) unstable; urgency=low
+
+  * add a configure script fix
+  * bump policy standard version to 4.1.0
+
+ -- Martin Kepplinger <martink@posteo.de>  Wed, 30 Aug 2017 11:06:55 +0100
+
+tslib (1.12-1) unstable; urgency=low
+
+  * bump to upstream version 1.12
+
+ -- Martin Kepplinger <martink@posteo.de>  Tue, 29 Aug 2017 19:04:23 +0100
+
+tslib (1.11-1) unstable; urgency=low
+
+  * bump to upstream version 1.11 and add the new manpages
+
+ -- Martin Kepplinger <martink@posteo.de>  Tue, 06 Jun 2017 14:51:03 +0100
+
+tslib (1.10-1) unstable; urgency=low
+
+  * bump to upstream version 1.10 and update new manpages and symbols
+
+ -- Martin Kepplinger <martink@posteo.de>  Fri, 12 May 2017 10:18:39 +0100
+
+tslib (1.9-1) unstable; urgency=low
+
+  * bump to upstream version 1.9
+  * add iir filter symbols, introduced in 1.9
+  * add ts_verify's manpage introduced in 1.9
+  * remove dh-autoreconf build dependency
+
+ -- Martin Kepplinger <martink@posteo.de>  Fri, 21 Apr 2017 08:28:31 +0100
+
+tslib (1.8-3) unstable; urgency=low
+
+  * libts0 Breaks and Replaces the old tsconf package conffile (Closes: #860100)
+
+ -- Martin Kepplinger <martink@posteo.de>  Wed, 12 Apr 2017 08:01:31 +0100
+
+tslib (1.8-2) unstable; urgency=low
+
+  * switch to debhelper 10
+  * remove manual debug package creation
+  * add missing ts_setup manpage
+  * install missing libts.so to libts-dev package
+
+ -- Martin Kepplinger <martink@posteo.de>  Tue, 11 Apr 2017 12:09:19 +0100
+
+tslib (1.8-1) unstable; urgency=low
+
+  * Initial re-packaging of tslib. (Closes: #845181)
+  * remove man pages. they are part of the project now.
+  * remove all patches. they are dealt with upstream.
+  * use dh and autoreconf in rules.
+  * remove tsconf package and include ts.conf in libts.
+  * add hardening config.
+
+ -- Martin Kepplinger <martink@posteo.de>  Thu, 23 Mar 2017 11:46:23 +0100
+
+tslib (1.0-11) unstable; urgency=low
+
+  * Upload multi-arch support to unstable. (Closes: #664817)
+
+ -- Neil Williams <codehelp@debian.org>  Sat, 24 Mar 2012 09:39:56 +0000
+
+tslib (1.0-10) experimental; urgency=low
+
+  [ Hector Oron ]
+  * Set Architecture to linux-any, instead of any.
+
+  [ Neil Williams ]
+  * Convert to MultiArch paths
+  * Upload to experimental for plugin testing.
+
+ -- Neil Williams <codehelp@debian.org>  Tue, 07 Feb 2012 12:01:28 +0000
+
+tslib (1.0-9) unstable; urgency=low
+
+  [ Timo Juhani Lindfors ]
+  * Add patch allow_EV_VERSION_0 to continue supporting Linux 2.6.36 and
+    older. Previously kernel support depended on the kernel headers that
+    tslib was built against. (Closes: #623095)
+  
+  * Do not refuse to work with old kernels. We can safely work with
+    kernels that use EV_VERSION 0x010000 API since we use no features from
+    0x010001 yet. (Closes: #623095)
+
+  [ Hector Oron ]
+  * Add myself to Uploaders field. 
+
+  [ Neil Williams ]
+  * Clean m4/internal and adjust for the new symbols generated
+    (lintian). Update standards version.
+
+ -- Neil Williams <codehelp@debian.org>  Tue, 05 Jul 2011 19:45:03 +0100
+
+tslib (1.0-8) unstable; urgency=low
+
+  * Drop .la file as per Policy 10.2 (Closes: #620658)
+  * Migrate to source format 3.0 quilt from dpatch
+
+ -- Neil Williams <codehelp@debian.org>  Tue, 05 Apr 2011 19:41:48 +0100
+
+tslib (1.0-7) unstable; urgency=low
+
+  * Migrate conffile and manpage into tsconf data package and
+    migrate TSLIB_PLUGINDIR to /usr/lib/ts0/ so that plugin filenames
+    remain unique. (Closes: #519872)
+
+ -- Neil Williams <codehelp@debian.org>  Wed, 25 Mar 2009 11:04:45 +0000
+
+tslib (1.0-6) unstable; urgency=low
+
+  * Improve manpages to document change of Xorg driver to hal.
+  * Migrate into unstable
+
+ -- Neil Williams <codehelp@debian.org>  Fri, 06 Mar 2009 09:58:27 +0000
+
+tslib (1.0-5) experimental; urgency=low
+
+  * Add enviroment variables, including TSLIB_TSDEVICE, to manual page
+    for ts_calibrate and reference as 'see also' in other pages.
+    (Closes: #497516)
+  * Add patch for 32bit big endian support - being tested upstream -
+    to provide event interface on powerpc (Closes: #499446)
+  * Patch AC_INIT to use 0.1.0 in tslib-0.0.pc (Closes: #496759)
+  * Add 050-glibc2.8-ubuntu from 1.0-4ubuntu1, thanks to Michael
+    Casadevall <sonicmctails@gmail.com> - Failure to build resolved due
+    to glibc-2.8, resolved by modifying code to confirm to the new
+    open()/O_CREAT API by adding a mode setting
+  * Incorporate cross-building improvements from Emdebian
+  * Add a general manpage for /etc/ts.conf in libts-0.0-0
+
+ -- Neil Williams <codehelp@debian.org>  Sun, 14 Dec 2008 11:08:54 +0000
+
+tslib (1.0-4) unstable; urgency=low
+
+  * Failure to install libts-dev because duplicated .so files (Closes:
+    #463822)
+
+ -- Neil Williams <codehelp@debian.org>  Sun, 03 Feb 2008 17:14:24 +0000
+
+tslib (1.0-3) unstable; urgency=low
+
+  * rules: Add cross build support
+  * rules: Add -dbg package support
+  * control: Add Debian GPE team to uploaders.
+  * control: Add -dbg package.
+  * Migrate to libts-0.0-0.install
+  * Remove debian version number from symbols file
+  * Migrate symbols file to new package name
+  * Expand debian/copyright to machine-interpretable format
+  * Add very simple man pages - the binaries themselves have no options
+  * control: highlight use of libts-bin in developing touch screen apps,
+    rather than users
+  * control: Use embedded section and provide libts0
+  * fix the watch file so that the real tarball is downloaded, not a
+    webpage
+  * debian/README: add instructions on building from collab-maint SVN
+    (not a packaged file at this stage).
+  * Revert manual change to source files and implement as dpatches; add
+    dpatch support
+  * rules: Support a cache-file when cross compiling to find malloc
+  * changelog: Remove unnecessary ITP message.
+  * control: Rename -dbg package in line with new lib name. Rename -dev
+    package without SONAME.
+  * Remove Joey from Maintainer on his request. Remove Vcs-Svn as no
+    longer in collab-maint
+
+ -- Neil Williams <codehelp@debian.org>  Sun, 27 Jan 2008 21:13:47 +0000
+
+tslib (1.0-2) unstable; urgency=low
+
+  * Applied a patch from the tslib mailing list to link modules
+    that use tslib functions with libts. This is needed for them to work
+    with DirectFB.
+  * Uncomment the linux input module in ts.conf, since this is the one
+    most people will probably use.
+  * Add a symbols file.
+  * Misc packaging fixes.
+
+ -- Joey Hess <joeyh@debian.org>  Mon, 10 Dec 2007 18:09:38 -0500
+
+tslib (1.0-1) unstable; urgency=low
+
+  * Initial packaging.
+
+ -- Joey Hess <joeyh@debian.org>  Wed, 20 Dec 2006 11:24:41 -0500

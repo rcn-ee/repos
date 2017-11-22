@@ -1,0 +1,46 @@
+Source: tslib
+Section: embedded
+Priority: optional
+Maintainer: Martin Kepplinger <martink@posteo.de>
+Build-Depends: debhelper (>= 10), automake | automaken, autoconf, libtool
+Standards-Version: 4.1.0
+Homepage: http://tslib.org
+Vcs-Git: https://github.com/merge/tslib-debian
+Vcs-Browser: https://github.com/merge/tslib-debian
+
+Package: libts0
+Architecture: any
+Section: libs
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Breaks: tsconf
+Replaces: tsconf
+Multi-Arch: same
+Description: touch screen library
+ Tslib is an abstraction layer for touchscreen panel events, as well as a
+ filter stack for the manipulation of those events. Examples of implemented
+ filters include debounce, median, iir, dejitter and the calibration
+ transform.
+
+Package: libts-dev
+Architecture: any
+Section: libdevel
+Depends: libts0 (=${binary:Version}), ${misc:Depends}
+Multi-Arch: same
+Description: touch screen library, development files
+ Tslib is an abstraction layer for touchscreen panel events, as well as a
+ filter stack for the manipulation of those events.
+ .
+ This package contains the static library and header files used in
+ development.
+
+Package: libts-bin
+Architecture: any
+Depends: libts0 (=${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: foreign
+Description: touch screen library utilities
+ Tslib is an abstraction layer for touchscreen panel events, as well as a
+ filter stack for the manipulation of those events.
+ .
+ This package contains programs like ts_calibrate or ts_uinput that can
+ be useful when developing, testing or deploying applications using tslib.

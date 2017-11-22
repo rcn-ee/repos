@@ -1,0 +1,39 @@
+#!/usr/bin/make -f
+
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+DEB_HOST_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+DEB_HOST_ARCH_OS ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
+
+ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
+CROSS= --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE) ac_cv_func_malloc_0_nonnull=yes
+else
+CROSS= --build $(DEB_BUILD_GNU_TYPE)
+endif
+
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+export DEB_CFLAGS_MAINT_APPEND = -O2 -Wall -W -fPIC
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+#DH_VERBOSE = 1
+#export DH_OPTIONS=-v
+
+
+ifeq ($(DEB_HOST_ARCH_OS), hurd)
+	ARCH_CONF = --disable-input --disable-galax --disable-waveshare
+endif
+
+# when a recent FreeBSD (with evdev) is used, remove --disable-input here
+ifeq ($(DEB_HOST_ARCH_OS), kfreebsd)
+	ARCH_CONF = --disable-input --disable-galax --disable-waveshare
+endif
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	dh_auto_configure -- --prefix=/usr \
+		--disable-dependency-tracking \
+		--with-plugindir=/usr/lib/$(DEB_HOST_MULTIARCH)/ts0 \
+		--libdir=\$${prefix}/lib/$(DEB_HOST_MULTIARCH) \
+		--sysconfdir=/etc $(CROSS) $(ARCH_CONF)
