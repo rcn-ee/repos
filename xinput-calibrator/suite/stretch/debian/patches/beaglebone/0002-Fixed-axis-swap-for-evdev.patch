@@ -1,0 +1,45 @@
+From ae2418bcf3258d0ababe9a7dac21a36635485f62 Mon Sep 17 00:00:00 2001
+From: root <root@beaglebone.(none)>
+Date: Thu, 30 Jan 2014 21:07:28 +0000
+Subject: [PATCH 2/2] Fixed axis swap for evdev
+
+---
+ src/calibrator.cpp       |    5 +++++
+ src/calibrator/Evdev.cpp |    5 +++++
+ 2 files changed, 10 insertions(+)
+
+diff --git a/src/calibrator.cpp b/src/calibrator.cpp
+index bc6b380..483d4ad 100644
+--- a/src/calibrator.cpp
++++ b/src/calibrator.cpp
+@@ -188,6 +188,11 @@ bool Calibrator::finish(int width, int height)
+     y_min = scaleAxis(y_min, old_axys.y.max, old_axys.y.min, height, 0);
+     y_max = scaleAxis(y_max, old_axys.y.max, old_axys.y.min, height, 0);
+ 
++    if (new_axis.swap_xy != old_axys.swap_xy) {
++	// After the values are trasnformed, swap them
++	std::swap(x_min, y_min);
++	std::swap(x_max, y_max);
++    }
+ 
+     // round and put in new_axis struct
+     new_axis.x.min = round(x_min); new_axis.x.max = round(x_max);
+diff --git a/src/calibrator/Evdev.cpp b/src/calibrator/Evdev.cpp
+index 347d8fc..3d4af62 100644
+--- a/src/calibrator/Evdev.cpp
++++ b/src/calibrator/Evdev.cpp
+@@ -253,6 +253,11 @@ bool CalibratorEvdev::finish(int width, int height)
+     y_min = scaleAxis(y_min, old_axys.y.max, old_axys.y.min, height, 0);
+     y_max = scaleAxis(y_max, old_axys.y.max, old_axys.y.min, height, 0);
+ 
++    if (new_axis.swap_xy != old_axys.swap_xy) {
++	// After the values are transformed, swap them
++	std::swap(x_min, y_min);
++	std::swap(x_max, y_max);
++    }
+ 
+     // round and put in new_axis struct
+     new_axis.x.min = round(x_min); new_axis.x.max = round(x_max);
+-- 
+1.7.10.4
+
