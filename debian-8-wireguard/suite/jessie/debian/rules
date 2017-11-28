@@ -1,0 +1,15 @@
+#!/usr/bin/make -f
+
+include /usr/share/dpkg/default.mk
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+%:
+	dh $@
+
+override_dh_auto_install-arch:
+	$(MAKE) -C src/tools DESTDIR=$(CURDIR)/debian/wireguard-tools WITH_SYSTEMDUNITS=yes WITH_WGQUICK=yes WITH_BASHCOMPLETION=yes install
+
+override_dh_auto_build-arch:
+	$(MAKE) -C src/tools
+
