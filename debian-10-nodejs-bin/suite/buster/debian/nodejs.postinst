@@ -13,6 +13,13 @@ case "$1" in
   *)
 esac
 
+chmod +x /usr/lib/node_modules/npm/bin/npx-cli.js || true
+chmod +x /usr/lib/node_modules/npm/binbin/npm-cli.js || true
+
+if [ -f /etc/profile.d/nodejs.sh ] ; then
+	rm -rf /etc/profile.d/nodejs.sh || true
+fi
+
 #DEBHELPER#
 
 exit 0

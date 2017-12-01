@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#arch="armv7l"
-arch="x64"
+arch="armv7l"
+#arch="x64"
 
 . version.sh
 
