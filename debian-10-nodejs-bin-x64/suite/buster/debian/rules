@@ -1,0 +1,50 @@
+#!/usr/bin/make -f
+#strip -v -x -s -g -S -d --strip-debug --remove-section=.comment built/bin/node
+
+%:
+	find built/ -name "AUTHORS.md" -delete
+	find built/ -name "README.md" -delete
+	find built/ -name "readme.md" -delete
+	find built/ -name "Readme.md" -delete
+	find built/ -name "ReadMe.md" -delete
+	find built/ -name "CHANGES.md" -delete
+	find built/ -name "changelog.md" -delete
+	find built/ -name "Changelog.md" -delete
+	find built/ -name "CHANGELOG.md" -delete
+	find built/ -name "CONTRIBUTING.md" -delete
+	find built/ -name "license.md" -delete
+	find built/ -name "LICENSE" -delete
+	find built/ -name "LICENSE.md" -delete
+	find built/ -name "LICENSE.txt" -delete
+	find built/ -name "LICENSE.html" -delete
+	find built/ -name "History.md" -delete
+	find built/ -name "HISTORY.md" -delete
+	find built/ -name "LICENSE.APACHE2" -delete
+	find built/ -name "LICENSE.BSD" -delete
+	find built/ -name "LICENSE.MIT" -delete
+	find built/ -name "LICENSE-MIT.txt" -delete
+	find built/ -name "LICENSE-jsbn" -delete
+	find built/ -name "TROUBLESHOOTING.md" -delete
+	find built/ -name "http_signing.md" -delete
+	find built/ -name "GOVERNANCE.md" -delete
+	find built/ -name "PULL_REQUEST_TEMPLATE.md" -delete
+	find built/ -name "collaborators.md" -delete
+	find built/ -name "basic-usage.md" -delete
+	find built/ -name "advanced-usage.md" -delete
+	find built/ -name "issue_template.md" -delete
+	find built/ -name "fetch-package-metadata.md" -delete
+	find built/ -name "index.md" -delete
+	find built/ -name "2015-01-30.md" -delete
+	rm -rf built/lib/node_modules/npm/changelogs/
+	rm -rf built/lib/node_modules/npm/doc/
+	rm -rf built/lib/node_modules/npm/node_modules/columnify/node_modules/wcwidth/docs/
+	rm -rf built/lib/node_modules/npm/node_modules/readable-stream/doc/
+	dh $@
+
+override_dh_strip:
+	dh_strip --no-automatic-dbgsym
+
+override_dh_compress:
+	dh_compress -X.md
+
+
