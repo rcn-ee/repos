@@ -17,8 +17,8 @@ mkdir nodejs_${package_version}/built/
 mkdir nodejs_${package_version}/src/
 
 tar xf node-v${package_version}-linux-${arch}.tar.xz -C ./nodejs_${package_version}/built/
-mv nodejs_${package_version}/built/node-v${package_version}-linux-x64/* nodejs_${package_version}/built/
-rm -rf nodejs_${package_version}/built/node-v${package_version}-linux-x64/ || true
+mv nodejs_${package_version}/built/node-v${package_version}-linux-${arch}/* nodejs_${package_version}/built/
+rm -rf nodejs_${package_version}/built/node-v${package_version}-linux-${arch}/ || true
 
 tar xf node-v${package_version}.tar.gz -C ./nodejs_${package_version}/src/
 mv nodejs_${package_version}/src/node-v${package_version}/* nodejs_${package_version}/src/
