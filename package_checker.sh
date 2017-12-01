@@ -363,7 +363,7 @@ chromium () {
 
 	echo "chromium-browser: (stretch)"
 	site="${debian_pool}/main/c"
-	package_name="chromium-browser" ; package_version="${package_name}_61.0.3163.100-2" ; check_http
+	package_name="chromium-browser" ; package_version="${package_name}_63.0.3239.30-1" ; check_http
 }
 
 important
