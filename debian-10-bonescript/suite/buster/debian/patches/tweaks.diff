@@ -1,0 +1,46 @@
+diff --git a/Makefile b/Makefile
+index 6e890f5..7e8a15a 100644
+--- a/Makefile
++++ b/Makefile
+@@ -10,11 +10,8 @@ node_version=$(shell $(NODEJS) --version)
+ bs_path=./build/lib/node_modules/bonescript
+ 
+ all:
+-	mkdir -p $(bs_path)
++	mkdir -p $(bs_path) ; mkdir -p ./build/etc/
+ 	echo $(ver) > $(bs_path)/bonescript.version
+-	echo $(node_version) > $(bs_path)/bonescript.node_version
+-	echo $(npm_version) > $(bs_path)/bonescript.npm_version
+-	TERM=dumb $(NPM) install -g $(npm_options) --prefix ./build
+ 	cp -dr --preserve=mode,timestamp etc/* ./build/etc/
+ 
+ clean:
+diff --git a/systemd/bonescript-autorun.service b/systemd/bonescript-autorun.service
+index 74591b2..7d7ae9f 100644
+--- a/systemd/bonescript-autorun.service
++++ b/systemd/bonescript-autorun.service
+@@ -3,9 +3,9 @@ Description=Bonescript autorun
+ ConditionPathExists=|/var/lib/cloud9
+ 
+ [Service]
+-WorkingDirectory=/usr/lib/node_modules/bonescript
++WorkingDirectory=/usr/local/lib/node_modules/bonescript
+ EnvironmentFile=/etc/default/node
+-ExecStart=/usr/bin/node autorun.js
++ExecStart=/usr/bin/nodejs autorun.js
+ SyslogIdentifier=bonescript-autorun
+ 
+ [Install]
+diff --git a/systemd/bonescript.service b/systemd/bonescript.service
+index a616c06..b86d892 100644
+--- a/systemd/bonescript.service
++++ b/systemd/bonescript.service
+@@ -5,7 +5,7 @@ ConditionPathExists=|/usr/share/bone101
+ [Service]
+ WorkingDirectory=/usr/share/bone101
+ EnvironmentFile=/etc/default/node
+-ExecStart=npm start -g bonescript
++ExecStart=/usr/bin/nodejs /usr/local/lib/node_modules/bonescript/server.js
+ SyslogIdentifier=bonescript
+ 
+ [Install]
