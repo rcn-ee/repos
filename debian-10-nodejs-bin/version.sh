@@ -13,7 +13,7 @@ git_sha=""
 reprepro_dir="n/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee2"
+debian_version="${package_version}-0rcnee3"
 debian_patch=""
 
-buster_version="~buster+20171201"
+buster_version="~buster+20171204"
