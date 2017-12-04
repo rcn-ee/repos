@@ -1,0 +1,15 @@
+#!/bin/sh -e
+
+set -e
+
+if [ -d /var/lib/cloud9/examples_old/ ] ; then
+	rm -rf /var/lib/cloud9/examples_old/ || true
+fi
+
+if [ -d /var/lib/cloud9/examples/ ] ; then
+	mv /var/lib/cloud9/examples/ /var/lib/cloud9/examples_old/
+fi
+
+#DEBHELPER#
+
+exit 0

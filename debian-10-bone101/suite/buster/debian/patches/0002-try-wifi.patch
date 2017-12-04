@@ -1,0 +1,35 @@
+From 44819463bac93c701d5c36aabff106c9db6b3521 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Wed, 16 Nov 2016 12:36:15 -0600
+Subject: [PATCH 2/2] try wifi
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ Support/script/beagle-ui.js | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/Support/script/beagle-ui.js b/Support/script/beagle-ui.js
+index 608bd3b..26888ec 100644
+--- a/Support/script/beagle-ui.js
++++ b/Support/script/beagle-ui.js
+@@ -101,6 +101,7 @@ $(document).ready(function(){
+ 
+             setTimeout(tryWindowHost, 5);
+             setTimeout(try192, 5);
++            setTimeout(trywifi, 5);
+             setTimeout(tryLocal, 5);
+ 
+             function tryWindowHost() {
+@@ -109,6 +110,9 @@ $(document).ready(function(){
+             function try192() {
+                 connectTarget('192.168.7.2', handlers);
+             }
++            function trywifi() {
++                connectTarget('192.168.8.1', handlers);
++            }
+             function tryLocal() {
+                 connectTarget('beaglebone.local', handlers);
+             }
+-- 
+2.10.2
+
