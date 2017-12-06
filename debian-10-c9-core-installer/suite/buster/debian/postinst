@@ -15,59 +15,7 @@ extract_dir="/opt/cloud9/build/"
 
 export NODE_PATH=/usr/local/lib/node_modules
 
-npm_options="--prefix /usr/local"
-
-npm_actually_install () {
-	echo "${package}:Installing: ${pkg}-${ver} (for ${npm_project})"
-	TERM=dumb ${node_bin} ${npm_bin} install -g ${npm_options} ${pkg}@${ver}
-	echo "${ver}" > "${NODE_PATH}/${pkg}/${pkg}.version"
-	echo "${node_version}" > "${NODE_PATH}/${pkg}/${pkg}.node_version"
-}
-
-npm_check_n_install () {
-	if [ ! -f "${NODE_PATH}/${pkg}/${pkg}.version" ] ; then
-		npm_actually_install
-	else
-		unset old_version
-		if [ -f "${NODE_PATH}/${pkg}/${pkg}.version" ] ; then
-			old_version=$(cat "${NODE_PATH}/${pkg}/${pkg}.version" || true)
-		fi
-		if [ ! "x${old_version}" = "x${ver}" ] ; then
-			rm -rf "${NODE_PATH}/${pkg}/" || true
-			npm_actually_install
-		else
-			unset old_version
-			if [ -f "${NODE_PATH}/${pkg}/${pkg}.node_version" ] ; then
-				old_version=$(cat "${NODE_PATH}/${pkg}/${pkg}.node_version" || true)
-			fi
-			if [ ! "x${old_version}" = "x${node_version}" ] ; then
-				rm -rf "${NODE_PATH}/${pkg}/" || true
-				npm_actually_install
-			fi
-		fi
-	fi
-}
-
 npm_install () {
-	node_bin="/usr/bin/nodejs"
-	if [ -f /usr/local/bin/npm4 ] ; then
-		npm_bin="/usr/local/bin/npm4"
-	else
-		npm_bin="/usr/bin/npm"
-	fi
-
-	unset node_version
-	node_version=$(/usr/bin/nodejs --version || true)
-
-	echo "${package}:npm: [`${node_bin} ${npm_bin} --version`]"
-	echo "${package}:node: [`${node_bin} --version`]"
-
-	${node_bin} ${npm_bin} config set -g prefix /usr/local/
-
-	##FIXME, shouldn't this be in bonescript???
-	npm_project="c9-core-installer"
-	pkg="winston" ; ver="2.1.1" ; npm_check_n_install
-
 	if [ -d /etc/avahi/ ] ; then
 		#Annouce http server via DNS Sevice Discovery
 		wfile="/etc/avahi/services/cloud9.service"
