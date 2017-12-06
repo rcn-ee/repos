@@ -23,6 +23,6 @@ bonescript="bonescript-0.6.2-beta2-1ea979f"
    winston="winston-2.1.1"
 
 debian_dl_1="${dl_mirror}/${bonescript}-${v8}.tar.xz"
-debian_dl_1="${dl_mirror}/${winston}-${v8}.tar.xz"
+debian_dl_2="${dl_mirror}/${winston}-${v8}.tar.xz"
 
 buster_version="~buster+20171206"
