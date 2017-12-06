@@ -15,7 +15,7 @@ debian_version="${package_version}-0rcnee0"
 debian_untar=""
 debian_patch=""
 
-dl_mirror="https://github.com/rcn-ee/npm-package-node-red/raw/master/deploy/stretch"
+dl_mirror="https://github.com/rcn-ee/npm-package-node-red/raw/master/deploy/buster"
 
  v8="v8.9.1"
 
