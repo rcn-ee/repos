@@ -34,6 +34,12 @@ deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ artful main
 #deb-src [arch=armhf] http://repos.rcn-ee.com/ubuntu/ artful main
 ```
 
+Ubuntu 18.04 lts: (bionic): http://repos.rcn-ee.com/ubuntu/
+```
+deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ bionic main
+#deb-src [arch=armhf] http://repos.rcn-ee.com/ubuntu/ bionic main
+```
+
 keyring:
 ```
 sudo apt-get install rcn-ee-archive-keyring
