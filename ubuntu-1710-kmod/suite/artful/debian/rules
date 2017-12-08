@@ -155,3 +155,6 @@ get-orig-source:
 	uscan --rename --force-download --watchfile debian/watch --destdir $(CURDIR)
 
 .PHONY: clean build build-arch build-indep binary binary-arch binary-indep checkroot
+
+override_dh_strip:
+	dh_strip --no-automatic-dbgsym
