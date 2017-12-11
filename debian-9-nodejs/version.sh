@@ -4,7 +4,7 @@
 
 package_name="nodejs"
 debian_pkg_name="${package_name}"
-package_version="6.12.1"
+package_version="6.12.2"
 package_source="${debian_pkg_name}_${package_version}.orig.tar.gz"
 src_dir="node-v${package_version}"
 
@@ -18,4 +18,4 @@ debian_version="${package_version}-0rcnee1"
 #debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 
-stretch_version="~stretch+20171208"
+stretch_version="~stretch+20171211"
