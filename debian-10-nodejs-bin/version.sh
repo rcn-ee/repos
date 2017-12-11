@@ -4,7 +4,7 @@
 
 package_name="nodejs"
 debian_pkg_name="${package_name}"
-package_version="8.9.2"
+package_version="8.9.3"
 package_source="${debian_pkg_name}_${package_version}.orig.tar.xz"
 src_dir=""
 
@@ -16,4 +16,4 @@ dl_path="pool/main/${reprepro_dir}/"
 debian_version="${package_version}-0rcnee1"
 debian_patch=""
 
-buster_version="~buster+20171208"
+buster_version="~buster+20171211"
