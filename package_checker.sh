@@ -157,141 +157,6 @@ mesa () {
 	package_name="mesa-demos" ; package_version="${package_name}_8.3.0-3" ; check_http
 }
 
-qt5_kde () {
-	echo "qt5: kde:"
-
-	site="${debian_pool}/main/s"
-	package_name="solid" ; package_version="${package_name}_5.19.0-2" ; check_http
-
-	site="${debian_pool}/main/k"
-	package_name="kcoreaddons" ; package_version="${package_name}_5.19.0-1" ; check_http
-	package_name="kguiaddons" ; package_version="${package_name}_5.19.0-1" ; check_http
-	package_name="kwindowsystem" ; package_version="${package_name}_5.19.0-1" ; check_http
-}
-
-qt5_apps () {
-	echo "qt5: apps:"
-
-	site="${debian_pool}/main/q"
-	package_name="qupzilla" ; package_version="${package_name}_1.8.9~dfsg1-3" ; check_http
-	package_name="qtermwidget" ; package_version="${package_name}_0.6.0-10" ; check_http
-	package_name="qterminal" ; package_version="${package_name}_0.6.0-10" ; check_http
-	package_name="qlipper" ; package_version="${package_name}_5.0.0+20151111-1" ; check_http
-	package_name="qps" ; package_version="${package_name}_1.10.16+20151210-1" ; check_http
-
-	echo "connman/cmst:"
-	site="http://packages.siduction.org/extra/pool/main/c"
-	filter="1.3"
-	package_name="connman" ; package_version="${package_name}_1.31-6" ; check_http
-	site="${debian_pool}/main/c"
-	package_name="cmst" ; package_version="${package_name}_2016.01.28-2" ; check_http
-}
-
-qt5_lxqt () {
-	echo "lxqt: debian"
-
-	site="${debian_pool}/main/libd"
-	package_name="libdbusmenu-qt" ; package_version="${package_name}_0.9.3+15.10.20150604-1" ; check_http
-
-	site="${debian_pool}/main/p"
-	package_name="policykit-1" ; package_version="${package_name}_0.113-2" ; check_http
-
-	site="${debian_pool}/main/p"
-	package_name="polkit-qt-1" ; package_version="${package_name}_0.112.0-4" ; check_http
-
-	site="${debian_pool}/main/o"
-	package_name="obconf-qt" ; package_version="${package_name}_0.1.2-8" ; check_http
-
-	#https://github.com/lxde/compton-conf
-	#resync version with stretch and drop...
-	site="${debian_pool}/main/c"
-	package_name="compton-conf" ; package_version="${package_name}_0.1.2-8" ; check_http
-
-	#https://tracker.debian.org/pkg/libqtxdg
-	site="${debian_pool}/main/libq"
-	package_name="libqtxdg" ; package_version="${package_name}_1.3.0-3" ; check_http
-
-	#https://tracker.debian.org/pkg/libsysstat
-	site="${debian_pool}/main/libs"
-	package_name="libsysstat" ; package_version="${package_name}_0.3.1-2" ; check_http
-
-	#https://tracker.debian.org/pkg/screengrab
-	site="${debian_pool}/main/s"
-	package_name="screengrab" ; package_version="${package_name}_1.95+20160128-1" ; check_http
-
-	#https://tracker.debian.org/pkg/liblxqt
-	site="${debian_pool}/main/libl"
-	package_name="liblxqt" ; package_version="${package_name}_0.10.0-4" ; check_http
-
-	#https://tracker.debian.org/pkg/lxqt-about
-	site="${debian_pool}/main/l"
-	package_name="lxqt-about" ; package_version="${package_name}_0.10.0-3" ; check_http
-
-	#https://tracker.debian.org/pkg/lxqt-admin
-	site="${debian_pool}/main/l"
-	package_name="lxqt-admin" ; package_version="${package_name}_0.10.0-3" ; check_http
-
-	#https://tracker.debian.org/pkg/lxqt-common
-	site="${debian_pool}/main/l"
-	package_name="lxqt-common" ; package_version="${package_name}_0.10.0-2" ; check_http
-
-	#https://tracker.debian.org/pkg/lxqt-globalkeys
-	site="${debian_pool}/main/l"
-	package_name="lxqt-globalkeys" ; package_version="${package_name}_0.10.0-5" ; check_http
-
-	#https://tracker.debian.org/pkg/lxqt-openssh-askpass
-	site="${debian_pool}/main/l"
-	package_name="lxqt-openssh-askpass" ; package_version="${package_name}_0.10.0-3" ; check_http
-
-	#https://tracker.debian.org/pkg/lxqt-notificationd
-	site="${debian_pool}/main/l"
-	package_name="lxqt-notificationd" ; package_version="${package_name}_0.10.0-2" ; check_http
-
-	#https://tracker.debian.org/pkg/lxqt-powermanagement
-	site="${debian_pool}/main/l"
-	package_name="lxqt-powermanagement" ; package_version="${package_name}_0.10.0-3" ; check_http
-
-	#https://tracker.debian.org/pkg/lxqt-policykit
-	site="${debian_pool}/main/l"
-	package_name="lxqt-policykit" ; package_version="${package_name}_0.10.0-3" ; check_http
-
-	#https://tracker.debian.org/pkg/lxqt-qtplugin
-	site="${debian_pool}/main/l"
-	package_name="lxqt-qtplugin" ; package_version="${package_name}_0.10.0-3" ; check_http
-
-	#https://tracker.debian.org/pkg/lxqt-session
-	site="${debian_pool}/main/l"
-	package_name="lxqt-session" ; package_version="${package_name}_0.10.0-3" ; check_http
-
-	#https://tracker.debian.org/pkg/lxqt-sudo
-	site="${debian_pool}/main/l"
-	package_name="lxqt-sudo" ; package_version="${package_name}_0.10.0-3" ; check_http
-
-	#https://tracker.debian.org/pkg/libfm-qt
-	site="${debian_pool}/main/libf"
-	package_name="libfm-qt" ; package_version="${package_name}_0.10.0+20151214-2" ; check_http
-
-	#https://tracker.debian.org/pkg/pcmanfm-qt
-	site="${debian_pool}/main/p"
-	package_name="pcmanfm-qt" ; package_version="${package_name}_0.10.1-1" ; check_http
-
-	#https://tracker.debian.org/pkg/lxqt-runner
-	site="${debian_pool}/main/l"
-	package_name="lxqt-runner" ; package_version="${package_name}_0.10.0-3" ; check_http
-
-	#https://tracker.debian.org/pkg/lxqt-config
-	site="${debian_pool}/main/l"
-	package_name="lxqt-config" ; package_version="${package_name}_0.10.0-3" ; check_http
-
-	#https://tracker.debian.org/pkg/lxqt-panel
-	site="${debian_pool}/main/l"
-	package_name="lxqt-panel" ; package_version="${package_name}_0.10.0-7" ; check_http
-
-	#https://tracker.debian.org/pkg/lximage-qt
-	site="${debian_pool}/main/l"
-	package_name="lximage-qt" ; package_version="${package_name}_0.4.0+20160108-1" ; check_http
-}
-
 machinekit () {
 	echo "machinekit:"
 
@@ -363,15 +228,12 @@ chromium () {
 
 	echo "chromium-browser: (stretch)"
 	site="${debian_pool}/main/c"
-	package_name="chromium-browser" ; package_version="${package_name}_63.0.3239.40-1" ; check_http
+	package_name="chromium-browser" ; package_version="${package_name}_63.0.3239.84-1" ; check_http
 }
 
 important
 #builds
 mesa
-#qt5_kde
-#qt5_apps
-#qt5_lxqt
 #machinekit
 #nodejs
 libsigrok
