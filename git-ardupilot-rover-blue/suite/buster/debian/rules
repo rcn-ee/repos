@@ -1,0 +1,21 @@
+#!/usr/bin/make -f
+#export DH_VERBOSE=1
+
+###boards:
+#board=bbbmini
+board=blue
+
+###targets:
+#target=copter
+#target=plane
+target=rover
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	./waf configure --board=$(board) --no-submodule-update
+
+override_dh_auto_build:
+	./waf $(target)
+	mv ./build/$(board)/bin/ardu$(target) ./build/$(board)/bin/$(board)-ardu$(target)
