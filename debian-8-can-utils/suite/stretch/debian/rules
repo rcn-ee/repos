@@ -1,0 +1,10 @@
+#!/usr/bin/make -f
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+%:
+	dh $@ --with autoreconf
+
+override_dh-clean:
+	rm -rf config.log
+	dh-clean $@
