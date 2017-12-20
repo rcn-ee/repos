@@ -1,0 +1,31 @@
+From: Martin Pitt <martin.pitt@ubuntu.com>
+Date: Wed, 17 Dec 2014 09:32:01 +0100
+Subject: Make sd_login_monitor_new() work for logind without systemd
+
+Fix sd_login_monitor_new() to not fail if there is no
+/sys/fs/cgroup/systemd/machine; that only exists when running with systemd as
+PID 1.
+
+Bug-Ubuntu: https://launchpad.net/bugs/1400203
+---
+ src/libsystemd/sd-login/sd-login.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/libsystemd/sd-login/sd-login.c b/src/libsystemd/sd-login/sd-login.c
+index e8adaa6..b15c693 100644
+--- a/src/libsystemd/sd-login/sd-login.c
++++ b/src/libsystemd/sd-login/sd-login.c
+@@ -1031,10 +1031,13 @@ _public_ int sd_login_monitor_new(const char *category, sd_login_monitor **m) {
+ 
+         if (!category || streq(category, "machine")) {
+                 k = inotify_add_watch(fd, "/run/systemd/machines/", IN_MOVED_TO|IN_DELETE);
++                /* when running logind without pid 1, this will fail */
++                /*
+                 if (k < 0) {
+                         safe_close(fd);
+                         return -errno;
+                 }
++                */
+ 
+                 good = true;
+         }

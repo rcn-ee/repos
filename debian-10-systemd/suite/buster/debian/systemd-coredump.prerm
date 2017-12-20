@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = remove ]; then
+    # disable systemd-coredump on removal
+    if [ -w /proc/sys/kernel/core_pattern ] && grep -q '^|.*systemd-coredump' /proc/sys/kernel/core_pattern; then
+        echo core > /proc/sys/kernel/core_pattern
+    fi
+    if [ -d /run/systemd/system ]; then
+        systemctl stop systemd-coredump.socket || true
+    fi
+fi
+
+#DEBHELPER#

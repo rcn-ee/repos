@@ -1,0 +1,65 @@
+#!/bin/sh
+# test 20 successful reboots in a row
+# Author: Martin Pitt <martin.pitt@ubuntu.com>
+# For bisecting/testing you can replace individual binaries in /lib/systemd
+# with --copy /host/path/systemd-foo:/tmp/systemd-replace/systemd-foo
+set -e
+
+. `dirname $0`/assert.sh
+
+if [ -z "$ADT_REBOOT_MARK" ]; then
+    # enable persistent journal
+    mkdir -p /var/log/journal
+    # allow X to start even on headless machines
+    mkdir -p /etc/X11/xorg.conf.d/
+    cat << EOF > /etc/X11/xorg.conf.d/dummy.conf
+Section "Device"
+    Identifier "test"
+    Driver "dummy"
+EndSection
+EOF
+
+
+    ADT_REBOOT_MARK=0
+    if [ -d /tmp/systemd-replace/ ]; then
+        for f in /tmp/systemd-replace/*; do
+            echo "Installing $f..."
+            rm -f /lib/systemd/$(basename $f)
+            cp $f /lib/systemd/
+        done
+    fi
+else
+    echo "checking for failed unmounts for user systemd"
+    if journalctl | grep -E "systemd\[([2-9]|[1-9][0-9]+)\].*Failed unmounting"; then
+        exit 1
+    fi
+    echo "checking for connection timeouts"
+    if journalctl | grep "Connection timed out"; then
+        exit 1
+    fi
+
+    echo "checking that polkitd runs"
+    pidof polkitd
+
+    echo "checking that there are no running jobs"
+    TIMEOUT=10
+    while [ $TIMEOUT -ge 0 ]; do
+        running="$(systemctl --no-pager --no-legend list-jobs || true)"
+        [ -n "$running" ] || break
+        TIMEOUT=$((TIMEOUT - 1))
+    done
+    if [ -n "$running" ]; then
+        echo "running jobs after remaining timeout $TIMEOUT: $running"
+        journalctl --sync
+        journalctl -ab > $ADT_ARTIFACTS/journal.txt
+        udevadm info --export-db > $ADT_ARTIFACTS/udevdb.txt
+        exit 1
+    fi
+fi
+
+if [ "$ADT_REBOOT_MARK" -ge 5 ]; then
+    exit 0
+fi
+
+echo "reboot #$ADT_REBOOT_MARK"
+/tmp/autopkgtest-reboot $(($ADT_REBOOT_MARK + 1))

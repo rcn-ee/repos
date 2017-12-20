@@ -1,0 +1,43 @@
+From: Martin Pitt <martin.pitt@ubuntu.com>
+Date: Sat, 27 Feb 2016 12:27:06 +0100
+Subject: Revert "core: set RLIMIT_CORE to unlimited by default"
+
+Partially revert commit 15a900327ab as this completely breaks core dumps
+without systemd-coredump. It's also contradicting core(8), and it's not
+systemd's place to redefine the kernel definitions of core files.
+
+Commit bdfd7b2c now honours the process' RLIMIT_CORE for systemd-coredump. This
+isn't what RLIMIT_CORE is supposed to do (it limits the size of the core
+*file*, but the kernel deliberately ignores it for piping), so set a static
+2^63 core size limit for systemd-coredump to go back to the previous behaviour
+(otherwise the change above would break systemd-coredump).
+
+Bug-Debian: https://bugs.debian.org/815020
+---
+ src/core/main.c              | 2 --
+ sysctl.d/50-coredump.conf.in | 2 +-
+ 2 files changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/src/core/main.c b/src/core/main.c
+index 2ad5073..d4a95d7 100644
+--- a/src/core/main.c
++++ b/src/core/main.c
+@@ -2185,8 +2185,6 @@ int main(int argc, char *argv[]) {
+                 kernel_timestamp = DUAL_TIMESTAMP_NULL;
+         }
+ 
+-        initialize_coredump(skip_setup);
+-
+         if (arg_system) {
+                 if (fixup_environment() < 0) {
+                         error_message = "Failed to fix up PID1 environment";
+diff --git a/sysctl.d/50-coredump.conf.in b/sysctl.d/50-coredump.conf.in
+index 5a25de4..1e54fed 100644
+--- a/sysctl.d/50-coredump.conf.in
++++ b/sysctl.d/50-coredump.conf.in
+@@ -9,4 +9,4 @@
+ # and systemd-coredump(8) and core(5) for the explanation of the
+ # setting below.
+ 
+-kernel.core_pattern=|@rootlibexecdir@/systemd-coredump %P %u %g %s %t %c %e
++kernel.core_pattern=|@rootlibexecdir@/systemd-coredump %P %u %g %s %t 9223372036854775808 %e

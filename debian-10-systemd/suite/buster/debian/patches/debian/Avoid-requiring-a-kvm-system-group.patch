@@ -1,0 +1,31 @@
+From: Michael Biebl <biebl@debian.org>
+Date: Thu, 13 Jul 2017 17:31:56 +0200
+Subject: Avoid requiring a "kvm" system group
+
+This group is not universally available and as a result generates a
+warning during boot:
+
+ systemd-udevd: Specified group 'kvm' unknown
+
+As kvm is only really useful if the qemu package is installed and this
+package already takes care of setting up the proper permissions for
+/dev/kvm, drop this rule from 50-udev-default.rules.
+
+See https://github.com/systemd/systemd/issues/6360
+---
+ rules/50-udev-default.rules.in | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/rules/50-udev-default.rules.in b/rules/50-udev-default.rules.in
+index 71e7169..69723e9 100644
+--- a/rules/50-udev-default.rules.in
++++ b/rules/50-udev-default.rules.in
+@@ -78,8 +78,6 @@ KERNEL=="tun", MODE="0666", OPTIONS+="static_node=net/tun"
+ 
+ KERNEL=="fuse", MODE="0666", OPTIONS+="static_node=fuse"
+ 
+-KERNEL=="kvm", GROUP="kvm", MODE="@DEV_KVM_MODE@"
+-
+ SUBSYSTEM=="ptp", ATTR{clock_name}=="KVM virtual PTP", SYMLINK += "ptp_kvm"
+ 
+ LABEL="default_end"

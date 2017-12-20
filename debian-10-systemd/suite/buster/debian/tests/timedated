@@ -1,0 +1,136 @@
+#!/bin/sh
+set -e
+
+. `dirname $0`/assert.sh
+
+ORIG_TZ=`grep -v '^#' /etc/timezone`
+echo "original tz: $ORIG_TZ"
+
+echo 'timedatectl works'
+assert_in "Local time:" "`timedatectl --no-pager`"
+
+echo 'change timezone'
+assert_eq "`timedatectl --no-pager set-timezone Europe/Moscow 2>&1`" ""
+assert_eq "`readlink /etc/localtime | sed 's#^.*zoneinfo/##'`" "Europe/Moscow"
+[ -n "$TEST_UPSTREAM" ] || assert_eq "`cat /etc/timezone`" "Europe/Moscow"
+assert_in "Time.*zone: Europe/Moscow (MSK, +" "`timedatectl --no-pager`"
+
+echo 'reset timezone to original'
+assert_eq "`timedatectl  --no-pager set-timezone $ORIG_TZ 2>&1`" ""
+assert_eq "`readlink /etc/localtime | sed 's#^.*zoneinfo/##'`" "$ORIG_TZ"
+[ -n "$TEST_UPSTREAM" ] || assert_eq "`cat /etc/timezone`" "$ORIG_TZ"
+
+# test setting UTC vs. LOCAL in /etc/adjtime
+if [ -e /etc/adjtime ]; then
+    ORIG_ADJTIME=`cat /etc/adjtime`
+    trap "echo '$ORIG_ADJTIME' > /etc/adjtime" EXIT INT QUIT PIPE
+else
+    trap "rm -f /etc/adjtime" EXIT INT QUIT PIPE
+fi
+
+echo 'no adjtime file'
+rm -f /etc/adjtime
+timedatectl set-local-rtc 0
+assert_true '[ ! -e /etc/adjtime ]'
+timedatectl set-local-rtc 1
+assert_eq "`cat /etc/adjtime`" "0.0 0 0
+0
+LOCAL"
+timedatectl set-local-rtc 0
+assert_true '[ ! -e /etc/adjtime ]'
+
+echo 'UTC set in adjtime file'
+printf '0.0 0 0\n0\nUTC\n' > /etc/adjtime
+timedatectl set-local-rtc 0
+assert_eq "`cat /etc/adjtime`" "0.0 0 0
+0
+UTC"
+timedatectl set-local-rtc 1
+assert_eq "`cat /etc/adjtime`" "0.0 0 0
+0
+LOCAL"
+
+echo 'non-zero values in adjtime file'
+printf '0.1 123 0\n0\nLOCAL\n' > /etc/adjtime
+timedatectl set-local-rtc 0
+assert_eq "`cat /etc/adjtime`" "0.1 123 0
+0
+UTC"
+timedatectl set-local-rtc 1
+assert_eq "`cat /etc/adjtime`" "0.1 123 0
+0
+LOCAL"
+
+echo 'fourth line adjtime file'
+printf '0.0 0 0\n0\nLOCAL\nsomethingelse\n' > /etc/adjtime
+timedatectl set-local-rtc 0
+assert_eq "`cat /etc/adjtime`" "0.0 0 0
+0
+UTC
+somethingelse"
+timedatectl set-local-rtc 1
+assert_eq "`cat /etc/adjtime`" "0.0 0 0
+0
+LOCAL
+somethingelse"
+
+echo 'no final newline in adjtime file'
+printf '0.0 0 0\n0\nUTC' > /etc/adjtime
+timedatectl set-local-rtc 0
+assert_true '[ ! -e /etc/adjtime ]'
+printf '0.0 0 0\n0\nUTC' > /etc/adjtime
+timedatectl set-local-rtc 1
+assert_eq "`cat /etc/adjtime`" "0.0 0 0
+0
+LOCAL"
+
+echo 'only one line in adjtime file'
+printf '0.0 0 0\n' > /etc/adjtime
+timedatectl set-local-rtc 0
+assert_true '[ ! -e /etc/adjtime ]'
+printf '0.0 0 0\n' > /etc/adjtime
+timedatectl set-local-rtc 1
+assert_eq "`cat /etc/adjtime`" "0.0 0 0
+0
+LOCAL"
+
+echo 'only one line in adjtime file, no final newline'
+printf '0.0 0 0' > /etc/adjtime
+timedatectl set-local-rtc 0
+assert_true '[ ! -e /etc/adjtime ]'
+printf '0.0 0 0' > /etc/adjtime
+timedatectl set-local-rtc 1
+assert_eq "`cat /etc/adjtime`" "0.0 0 0
+0
+LOCAL"
+
+echo 'only two lines in adjtime file'
+printf '0.0 0 0\n0\n' > /etc/adjtime
+timedatectl set-local-rtc 0
+assert_true '[ ! -e /etc/adjtime ]'
+printf '0.0 0 0\n0\n' > /etc/adjtime
+timedatectl set-local-rtc 1
+assert_eq "`cat /etc/adjtime`" "0.0 0 0
+0
+LOCAL"
+
+
+echo 'only two lines in adjtime file, no final newline'
+printf '0.0 0 0\n0' > /etc/adjtime
+timedatectl set-local-rtc 0
+assert_true '[ ! -e /etc/adjtime ]'
+printf '0.0 0 0\n0' > /etc/adjtime
+timedatectl set-local-rtc 1
+assert_eq "`cat /etc/adjtime`" "0.0 0 0
+0
+LOCAL"
+
+echo 'unknown value in 3rd line of adjtime file'
+printf '0.0 0 0\n0\nFOO\n' > /etc/adjtime
+timedatectl set-local-rtc 0
+assert_true '[ ! -e /etc/adjtime ]'
+printf '0.0 0 0\n0\nFOO\n' > /etc/adjtime
+timedatectl set-local-rtc 1
+assert_eq "`cat /etc/adjtime`" "0.0 0 0
+0
+LOCAL"

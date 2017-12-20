@@ -1,0 +1,41 @@
+From: Michal Sekletar <msekleta@redhat.com>
+Date: Fri, 19 Sep 2014 17:14:10 +0200
+Subject: cgroup: don't trim cgroup trees created by someone else
+
+In cases when there is a cgroup tree in a controller hierarchy which was
+not created by us, but it looks like it was (i.e. cgroup path is the
+same as the one in systemd's named hierarchy) we shouldn't delete it.
+
+Origin: http://lists.freedesktop.org/archives/systemd-devel/2014-September/023276.html
+Bug-Debian: https://bugs.debian.org/777601
+---
+ src/basic/cgroup-util.c | 2 --
+ src/core/cgroup.c       | 2 +-
+ 2 files changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/src/basic/cgroup-util.c b/src/basic/cgroup-util.c
+index f599d0f..01438ac 100644
+--- a/src/basic/cgroup-util.c
++++ b/src/basic/cgroup-util.c
+@@ -2105,8 +2105,6 @@ int cg_create_everywhere(CGroupMask supported, CGroupMask mask, const char *path
+ 
+                 if (mask & bit)
+                         (void) cg_create(n, path);
+-                else if (supported & bit)
+-                        (void) cg_trim(n, path, true);
+         }
+ 
+         return 0;
+diff --git a/src/core/cgroup.c b/src/core/cgroup.c
+index 78ef885..b7c51a9 100644
+--- a/src/core/cgroup.c
++++ b/src/core/cgroup.c
+@@ -1717,7 +1717,7 @@ void unit_prune_cgroup(Unit *u) {
+ 
+         is_root_slice = unit_has_name(u, SPECIAL_ROOT_SLICE);
+ 
+-        r = cg_trim_everywhere(u->manager->cgroup_supported, u->cgroup_path, !is_root_slice);
++        r = cg_trim_everywhere(u->cgroup_realized_mask, u->cgroup_path, !is_root_slice);
+         if (r < 0) {
+                 log_unit_debug_errno(u, r, "Failed to destroy cgroup %s, ignoring: %m", u->cgroup_path);
+                 return;

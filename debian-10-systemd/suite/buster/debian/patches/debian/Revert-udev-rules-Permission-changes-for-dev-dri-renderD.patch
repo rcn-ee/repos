@@ -1,0 +1,82 @@
+From: Michael Biebl <biebl@debian.org>
+Date: Sun, 17 Dec 2017 00:31:20 +0100
+Subject: Revert "udev-rules: Permission changes for /dev/dri/renderD*"
+
+This would introduce a new system group "render". As the name is rather
+generic, this needs further discussion first, so revert this change for
+now.
+
+This reverts commit 4e15a7343cb389e97f3eb4f49699161862d8b8b2.
+---
+ meson.build                    | 2 --
+ meson_options.txt              | 2 --
+ rules/50-udev-default.rules.in | 5 +----
+ src/login/70-uaccess.rules     | 2 +-
+ 4 files changed, 2 insertions(+), 9 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index b79b441..c8fcc40 100644
+--- a/meson.build
++++ b/meson.build
+@@ -712,7 +712,6 @@ if get_option('wheel-group')
+ endif
+ 
+ substs.set('DEV_KVM_MODE', get_option('dev-kvm-mode'))
+-substs.set('GROUP_RENDER_MODE', get_option('group-render-mode'))
+ 
+ kill_user_processes = get_option('default-kill-user-processes')
+ conf.set10('KILL_USER_PROCESSES', kill_user_processes)
+@@ -2595,7 +2594,6 @@ status = [
+         'minimum container UID base:        @0@'.format(container_uid_base_min),
+         'maximum container UID base:        @0@'.format(container_uid_base_max),
+         '/dev/kvm access mode:              @0@'.format(get_option('dev-kvm-mode')),
+-        'render group access mode:          @0@'.format(get_option('group-render-mode')),
+         'certificate root directory:        @0@'.format(get_option('certificate-root')),
+         'support URL:                       @0@'.format(support_url),
+         'nobody user name:                  @0@'.format(nobody_user),
+diff --git a/meson_options.txt b/meson_options.txt
+index f0c0506..fc6a90a 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -176,8 +176,6 @@ option('nobody-group', type : 'string',
+        value : 'nobody')
+ option('dev-kvm-mode', type : 'string', value : '0666',
+        description : '/dev/kvm access mode')
+-option('group-render-mode', type : 'string', value : '0666',
+-       description : 'Access mode for devices owned by render group (e.g. /dev/dri/renderD*, /dev/kfd).')
+ option('default-kill-user-processes', type : 'boolean',
+        description : 'the default value for KillUserProcesses= setting')
+ option('gshadow', type : 'boolean',
+diff --git a/rules/50-udev-default.rules.in b/rules/50-udev-default.rules.in
+index 69723e9..47c75e2 100644
+--- a/rules/50-udev-default.rules.in
++++ b/rules/50-udev-default.rules.in
+@@ -31,14 +31,11 @@ SUBSYSTEM=="input", KERNEL=="js[0-9]*", MODE="0664"
+ 
+ SUBSYSTEM=="video4linux", GROUP="video"
+ SUBSYSTEM=="graphics", GROUP="video"
+-SUBSYSTEM=="drm", KERNEL!="renderD*", GROUP="video"
++SUBSYSTEM=="drm", GROUP="video"
+ SUBSYSTEM=="dvb", GROUP="video"
+ SUBSYSTEM=="media", GROUP="video"
+ SUBSYSTEM=="cec", GROUP="video"
+ 
+-SUBSYSTEM=="drm", KERNEL=="renderD*", GROUP="render", MODE="@GROUP_RENDER_MODE@"
+-SUBSYSTEM=="kfd", GROUP="render", MODE="@GROUP_RENDER_MODE@"
+-
+ SUBSYSTEM=="sound", GROUP="audio", \
+   OPTIONS+="static_node=snd/seq", OPTIONS+="static_node=snd/timer"
+ 
+diff --git a/src/login/70-uaccess.rules b/src/login/70-uaccess.rules
+index f2c838f..f3a2e66 100644
+--- a/src/login/70-uaccess.rules
++++ b/src/login/70-uaccess.rules
+@@ -45,7 +45,7 @@ SUBSYSTEM=="firewire", ATTR{units}=="*0x00a02d:0x010001*", TAG+="uaccess"
+ SUBSYSTEM=="firewire", ATTR{units}=="*0x00a02d:0x014001*", TAG+="uaccess"
+ 
+ # DRI video devices
+-SUBSYSTEM=="drm", KERNEL=="card*", TAG+="uaccess"
++SUBSYSTEM=="drm", KERNEL=="card*|renderD*", TAG+="uaccess"
+ 
+ # smart-card readers
+ ENV{ID_SMARTCARD_READER}=="?*", TAG+="uaccess"

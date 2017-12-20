@@ -1,0 +1,12 @@
+#!/bin/sh -e
+
+case "$1" in
+  purge)
+  rm -f /etc/udev/rules.d/70-persistent-*.rules
+  rmdir --ignore-fail-on-non-empty /etc/udev/rules.d/ 2> /dev/null || true
+  rm -f /lib/udev/hwdb.bin
+  rm -f /var/log/udev
+  ;;
+esac
+
+#DEBHELPER#

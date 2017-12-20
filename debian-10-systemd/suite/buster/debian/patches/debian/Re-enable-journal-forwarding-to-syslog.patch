@@ -1,0 +1,56 @@
+From: Martin Pitt <martin.pitt@ubuntu.com>
+Date: Fri, 28 Nov 2014 14:43:25 +0100
+Subject: Re-enable journal forwarding to syslog
+
+Revert upstream commit 46b131574fdd7d77 for now, until Debian's sysloggers
+can/do all read from the journal directly. See
+
+  http://lists.freedesktop.org/archives/systemd-devel/2014-November/025550.html
+
+for details. Once we grow a journal.conf.d/ directory, sysloggers can be moved
+to pulling from the journal one by one and disable forwarding again in such a
+conf.d snippet.
+---
+ man/journald.conf.xml         | 2 +-
+ src/journal/journald-server.c | 1 +
+ src/journal/journald.conf     | 2 +-
+ 3 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/man/journald.conf.xml b/man/journald.conf.xml
+index 844228e..ec6e24b 100644
+--- a/man/journald.conf.xml
++++ b/man/journald.conf.xml
+@@ -308,7 +308,7 @@
+         the system console, or sent as wall messages to all logged-in users.  These
+         options take boolean arguments. If forwarding to syslog is enabled but nothing
+         reads messages from the socket, forwarding to syslog has no effect. By default,
+-        only forwarding to wall is enabled. These settings may be overridden at boot time
++        only forwarding to syslog and wall is enabled. These settings may be overridden at boot time
+         with the kernel command line options
+         <literal>systemd.journald.forward_to_syslog</literal>,
+         <literal>systemd.journald.forward_to_kmsg</literal>,
+diff --git a/src/journal/journald-server.c b/src/journal/journald-server.c
+index 48375f9..6addb14 100644
+--- a/src/journal/journald-server.c
++++ b/src/journal/journald-server.c
+@@ -1698,6 +1698,7 @@ int server_init(Server *s) {
+         s->rate_limit_interval = DEFAULT_RATE_LIMIT_INTERVAL;
+         s->rate_limit_burst = DEFAULT_RATE_LIMIT_BURST;
+ 
++        s->forward_to_syslog = true;
+         s->forward_to_wall = true;
+ 
+         s->max_file_usec = DEFAULT_MAX_FILE_USEC;
+diff --git a/src/journal/journald.conf b/src/journal/journald.conf
+index 03fce40..12d79b3 100644
+--- a/src/journal/journald.conf
++++ b/src/journal/journald.conf
+@@ -29,7 +29,7 @@
+ #RuntimeMaxFiles=100
+ #MaxRetentionSec=
+ #MaxFileSec=1month
+-#ForwardToSyslog=no
++#ForwardToSyslog=yes
+ #ForwardToKMsg=no
+ #ForwardToConsole=no
+ #ForwardToWall=yes

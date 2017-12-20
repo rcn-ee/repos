@@ -1,0 +1,391 @@
+From: Michael Biebl <biebl@debian.org>
+Date: Thu, 18 Jul 2013 20:11:02 +0200
+Subject: Use Debian specific config files
+
+Use /etc/default/locale instead of /etc/locale.conf for locale settings.
+
+Use /etc/default/keyboard instead of /etc/X11/xorg.conf.d/00-keyboard.conf for
+keyboard configuration.
+
+Read/write /etc/timezone if /etc/localtime does not exist.
+---
+ src/basic/time-util.c    |  21 ++++-
+ src/core/locale-setup.c  |  22 +++++
+ src/locale/keymap-util.c | 203 +++++++++++++++++++++++++----------------------
+ src/timedate/timedated.c |  10 +++
+ 4 files changed, 159 insertions(+), 97 deletions(-)
+
+diff --git a/src/basic/time-util.c b/src/basic/time-util.c
+index d56576d..c260806 100644
+--- a/src/basic/time-util.c
++++ b/src/basic/time-util.c
+@@ -1396,8 +1396,25 @@ int get_timezone(char **tz) {
+         int r;
+ 
+         r = readlink_malloc("/etc/localtime", &t);
+-        if (r < 0)
+-                return r; /* returns EINVAL if not a symlink */
++        if (r < 0) {
++                if (r != -EINVAL)
++                        return r; /* returns EINVAL if not a symlink */
++
++                r = read_one_line_file("/etc/timezone", &t);
++                if (r < 0) {
++                        if (r != -ENOENT)
++                                log_warning("Failed to read /etc/timezone: %s", strerror(-r));
++                        return -EINVAL;
++                }
++
++                if (!timezone_is_valid(t))
++                        return -EINVAL;
++                z = strdup(t);
++                if (!z)
++                        return -ENOMEM;
++                *tz = z;
++                return 0;
++        }
+ 
+         e = path_startswith(t, "/usr/share/zoneinfo/");
+         if (!e)
+diff --git a/src/core/locale-setup.c b/src/core/locale-setup.c
+index 6240a83..265a0bf 100644
+--- a/src/core/locale-setup.c
++++ b/src/core/locale-setup.c
+@@ -81,6 +81,28 @@ int locale_setup(char ***environment) {
+                         log_warning_errno(r, "Failed to read /etc/locale.conf: %m");
+         }
+ 
++        if (r <= 0) {
++                r = parse_env_file("/etc/default/locale", NEWLINE,
++                                   "LANG",              &variables[VARIABLE_LANG],
++                                   "LANGUAGE",          &variables[VARIABLE_LANGUAGE],
++                                   "LC_CTYPE",          &variables[VARIABLE_LC_CTYPE],
++                                   "LC_NUMERIC",        &variables[VARIABLE_LC_NUMERIC],
++                                   "LC_TIME",           &variables[VARIABLE_LC_TIME],
++                                   "LC_COLLATE",        &variables[VARIABLE_LC_COLLATE],
++                                   "LC_MONETARY",       &variables[VARIABLE_LC_MONETARY],
++                                   "LC_MESSAGES",       &variables[VARIABLE_LC_MESSAGES],
++                                   "LC_PAPER",          &variables[VARIABLE_LC_PAPER],
++                                   "LC_NAME",           &variables[VARIABLE_LC_NAME],
++                                   "LC_ADDRESS",        &variables[VARIABLE_LC_ADDRESS],
++                                   "LC_TELEPHONE",      &variables[VARIABLE_LC_TELEPHONE],
++                                   "LC_MEASUREMENT",    &variables[VARIABLE_LC_MEASUREMENT],
++                                   "LC_IDENTIFICATION", &variables[VARIABLE_LC_IDENTIFICATION],
++                                   NULL);
++
++                if (r < 0 && r != -ENOENT)
++                        log_warning("Failed to read /etc/default/locale: %s", strerror(-r));
++        }
++
+         add = NULL;
+         for (i = 0; i < _VARIABLE_LC_MAX; i++) {
+                 char *s;
+diff --git a/src/locale/keymap-util.c b/src/locale/keymap-util.c
+index 2d78810..d0bfca6 100644
+--- a/src/locale/keymap-util.c
++++ b/src/locale/keymap-util.c
+@@ -123,6 +123,24 @@ static int locale_read_data(Context *c) {
+                            "LC_IDENTIFICATION", &c->locale[VARIABLE_LC_IDENTIFICATION],
+                            NULL);
+ 
++        if (r == -ENOENT)
++                r = parse_env_file("/etc/default/locale", NEWLINE,
++                                   "LANG",              &c->locale[VARIABLE_LANG],
++                                   "LANGUAGE",          &c->locale[VARIABLE_LANGUAGE],
++                                   "LC_CTYPE",          &c->locale[VARIABLE_LC_CTYPE],
++                                   "LC_NUMERIC",        &c->locale[VARIABLE_LC_NUMERIC],
++                                   "LC_TIME",           &c->locale[VARIABLE_LC_TIME],
++                                   "LC_COLLATE",        &c->locale[VARIABLE_LC_COLLATE],
++                                   "LC_MONETARY",       &c->locale[VARIABLE_LC_MONETARY],
++                                   "LC_MESSAGES",       &c->locale[VARIABLE_LC_MESSAGES],
++                                   "LC_PAPER",          &c->locale[VARIABLE_LC_PAPER],
++                                   "LC_NAME",           &c->locale[VARIABLE_LC_NAME],
++                                   "LC_ADDRESS",        &c->locale[VARIABLE_LC_ADDRESS],
++                                   "LC_TELEPHONE",      &c->locale[VARIABLE_LC_TELEPHONE],
++                                   "LC_MEASUREMENT",    &c->locale[VARIABLE_LC_MEASUREMENT],
++                                   "LC_IDENTIFICATION", &c->locale[VARIABLE_LC_IDENTIFICATION],
++                                   NULL);
++
+         if (r == -ENOENT) {
+                 int p;
+ 
+@@ -162,63 +180,19 @@ static int vconsole_read_data(Context *c) {
+ }
+ 
+ static int x11_read_data(Context *c) {
+-        _cleanup_fclose_ FILE *f;
+-        char line[LINE_MAX];
+-        bool in_section = false;
+         int r;
+ 
+         context_free_x11(c);
+ 
+-        f = fopen("/etc/X11/xorg.conf.d/00-keyboard.conf", "re");
+-        if (!f)
+-                return errno == ENOENT ? 0 : -errno;
+-
+-        while (fgets(line, sizeof(line), f)) {
+-                char *l;
+-
+-                char_array_0(line);
+-                l = strstrip(line);
+-
+-                if (IN_SET(l[0], 0, '#'))
+-                        continue;
+-
+-                if (in_section && first_word(l, "Option")) {
+-                        _cleanup_strv_free_ char **a = NULL;
+-
+-                        r = strv_split_extract(&a, l, WHITESPACE, EXTRACT_QUOTES);
+-                        if (r < 0)
+-                                return r;
+-
+-                        if (strv_length(a) == 3) {
+-                                char **p = NULL;
+-
+-                                if (streq(a[1], "XkbLayout"))
+-                                        p = &c->x11_layout;
+-                                else if (streq(a[1], "XkbModel"))
+-                                        p = &c->x11_model;
+-                                else if (streq(a[1], "XkbVariant"))
+-                                        p = &c->x11_variant;
+-                                else if (streq(a[1], "XkbOptions"))
+-                                        p = &c->x11_options;
+-
+-                                if (p) {
+-                                        free_and_replace(*p, a[2]);
+-                                }
+-                        }
+-
+-                } else if (!in_section && first_word(l, "Section")) {
+-                        _cleanup_strv_free_ char **a = NULL;
+-
+-                        r = strv_split_extract(&a, l, WHITESPACE, EXTRACT_QUOTES);
+-                        if (r < 0)
+-                                return -ENOMEM;
+-
+-                        if (strv_length(a) == 2 && streq(a[1], "InputClass"))
+-                                in_section = true;
++        r = parse_env_file("/etc/default/keyboard", NEWLINE,
++                           "XKBMODEL",          &c->x11_model,
++                           "XKBLAYOUT",         &c->x11_layout,
++                           "XKBVARIANT",        &c->x11_variant,
++                           "XKBOPTIONS",        &c->x11_options,
++                           NULL);
+ 
+-                } else if (in_section && first_word(l, "EndSection"))
+-                        in_section = false;
+-        }
++        if (r < 0 && r != -ENOENT)
++                return r;
+ 
+         return 0;
+ }
+@@ -236,10 +210,15 @@ int context_read_data(Context *c) {
+ int locale_write_data(Context *c, char ***settings) {
+         int r, p;
+         _cleanup_strv_free_ char **l = NULL;
++        const char *path = "/etc/locale.conf";
+ 
+         /* Set values will be returned as strv in *settings on success. */
+ 
+-        r = load_env_file(NULL, "/etc/locale.conf", NULL, &l);
++        r = load_env_file(NULL, path, NULL, &l);
++        if (r < 0 && r == -ENOENT) {
++                path = "/etc/default/locale";
++                r = load_env_file(NULL, path, NULL, &l);
++        }
+         if (r < 0 && r != -ENOENT)
+                 return r;
+ 
+@@ -268,13 +247,13 @@ int locale_write_data(Context *c, char ***settings) {
+         }
+ 
+         if (strv_isempty(l)) {
+-                if (unlink("/etc/locale.conf") < 0)
++                if (unlink(path) < 0)
+                         return errno == ENOENT ? 0 : -errno;
+ 
+                 return 0;
+         }
+ 
+-        r = write_env_file_label("/etc/locale.conf", l);
++        r = write_env_file_label(path, l);
+         if (r < 0)
+                 return r;
+ 
+@@ -338,65 +317,99 @@ int vconsole_write_data(Context *c) {
+ }
+ 
+ int x11_write_data(Context *c) {
+-        _cleanup_fclose_ FILE *f = NULL;
+-        _cleanup_free_ char *temp_path = NULL;
+         int r;
++        char *t, **u, **l = NULL;
++
++        r = load_env_file(NULL, "/etc/default/keyboard", NULL, &l);
++        if (r < 0 && r != -ENOENT)
++                return r;
+ 
+-        if (isempty(c->x11_layout) &&
+-            isempty(c->x11_model) &&
+-            isempty(c->x11_variant) &&
+-            isempty(c->x11_options)) {
++        /* This could perhaps be done more elegantly using an array
++         * like we do for the locale, instead of struct
++         */
++        if (isempty(c->x11_layout)) {
++                l = strv_env_unset(l, "XKBLAYOUT");
++        } else {
++                if (asprintf(&t, "XKBLAYOUT=%s", c->x11_layout) < 0) {
++                        strv_free(l);
++                        return -ENOMEM;
++                }
+ 
+-                if (unlink("/etc/X11/xorg.conf.d/00-keyboard.conf") < 0)
+-                        return errno == ENOENT ? 0 : -errno;
++                u = strv_env_set(l, t);
++                free(t);
++                strv_free(l);
+ 
+-                return 0;
++                if (!u)
++                        return -ENOMEM;
++
++                l = u;
+         }
+ 
+-        mkdir_p_label("/etc/X11/xorg.conf.d", 0755);
++        if (isempty(c->x11_model)) {
++                l = strv_env_unset(l, "XKBMODEL");
++        } else {
++                if (asprintf(&t, "XKBMODEL=%s", c->x11_model) < 0) {
++                        strv_free(l);
++                        return -ENOMEM;
++                }
+ 
+-        r = fopen_temporary("/etc/X11/xorg.conf.d/00-keyboard.conf", &f, &temp_path);
+-        if (r < 0)
+-                return r;
++                u = strv_env_set(l, t);
++                free(t);
++                strv_free(l);
+ 
+-        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
+-        (void) fchmod(fileno(f), 0644);
++                if (!u)
++                        return -ENOMEM;
+ 
+-        fputs("# Written by systemd-localed(8), read by systemd-localed and Xorg. It's\n"
+-              "# probably wise not to edit this file manually. Use localectl(1) to\n"
+-              "# instruct systemd-localed to update it.\n"
+-              "Section \"InputClass\"\n"
+-              "        Identifier \"system-keyboard\"\n"
+-              "        MatchIsKeyboard \"on\"\n", f);
++                l = u;
++        }
+ 
+-        if (!isempty(c->x11_layout))
+-                fprintf(f, "        Option \"XkbLayout\" \"%s\"\n", c->x11_layout);
++        if (isempty(c->x11_variant)) {
++                l = strv_env_unset(l, "XKBVARIANT");
++        } else {
++                if (asprintf(&t, "XKBVARIANT=%s", c->x11_variant) < 0) {
++                        strv_free(l);
++                        return -ENOMEM;
++                }
+ 
+-        if (!isempty(c->x11_model))
+-                fprintf(f, "        Option \"XkbModel\" \"%s\"\n", c->x11_model);
++                u = strv_env_set(l, t);
++                free(t);
++                strv_free(l);
+ 
+-        if (!isempty(c->x11_variant))
+-                fprintf(f, "        Option \"XkbVariant\" \"%s\"\n", c->x11_variant);
++                if (!u)
++                        return -ENOMEM;
+ 
+-        if (!isempty(c->x11_options))
+-                fprintf(f, "        Option \"XkbOptions\" \"%s\"\n", c->x11_options);
++                l = u;
++        }
++
++        if (isempty(c->x11_options)) {
++                l = strv_env_unset(l, "XKBOPTIONS");
++        } else {
++                if (asprintf(&t, "XKBOPTIONS=%s", c->x11_options) < 0) {
++                        strv_free(l);
++                        return -ENOMEM;
++                }
+ 
+-        fputs("EndSection\n", f);
++                u = strv_env_set(l, t);
++                free(t);
++                strv_free(l);
+ 
+-        r = fflush_sync_and_check(f);
+-        if (r < 0)
+-                goto fail;
++                if (!u)
++                        return -ENOMEM;
+ 
+-        if (rename(temp_path, "/etc/X11/xorg.conf.d/00-keyboard.conf") < 0) {
+-                r = -errno;
+-                goto fail;
++                l = u;
+         }
+ 
+-        return 0;
++        if (strv_isempty(l)) {
++                strv_free(l);
++
++                if (unlink("/etc/default/keyboard") < 0)
++                        return errno == ENOENT ? 0 : -errno;
++
++                return 0;
++        }
+ 
+-fail:
+-        if (temp_path)
+-                (void) unlink(temp_path);
++        r = write_env_file("/etc/default/keyboard", l);
++        strv_free(l);
+ 
+         return r;
+ }
+diff --git a/src/timedate/timedated.c b/src/timedate/timedated.c
+index a55a929..c365a79 100644
+--- a/src/timedate/timedated.c
++++ b/src/timedate/timedated.c
+@@ -85,6 +85,7 @@ static int context_read_data(Context *c) {
+ static int context_write_data_timezone(Context *c) {
+         _cleanup_free_ char *p = NULL;
+         int r = 0;
++        struct stat st;
+ 
+         assert(c);
+ 
+@@ -92,6 +93,9 @@ static int context_write_data_timezone(Context *c) {
+                 if (unlink("/etc/localtime") < 0 && errno != ENOENT)
+                         r = -errno;
+ 
++                if (unlink("/etc/timezone") < 0 && errno != ENOENT)
++                        r = -errno;
++
+                 return r;
+         }
+ 
+@@ -103,6 +107,12 @@ static int context_write_data_timezone(Context *c) {
+         if (r < 0)
+                 return r;
+ 
++        if (stat("/etc/timezone", &st) == 0 && S_ISREG(st.st_mode)) {
++                r = write_string_file("/etc/timezone", c->zone, WRITE_STRING_FILE_CREATE|WRITE_STRING_FILE_ATOMIC);
++                if (r < 0)
++                        return r;
++        }
++
+         return 0;
+ }
+ 

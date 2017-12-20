@@ -1,0 +1,34 @@
+From: Michael Stapelberg <stapelberg@debian.org>
+Date: Sat, 21 Dec 2013 18:49:10 +0100
+Subject: =?utf-8?q?don=E2=80=99t_try_to_start_autovt_units_when_not_running?=
+ =?utf-8?q?_with_systemd_as_pid_1?=
+
+Closes: #726466
+---
+ src/login/logind-core.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/login/logind-core.c b/src/login/logind-core.c
+index adeba74..959060d 100644
+--- a/src/login/logind-core.c
++++ b/src/login/logind-core.c
+@@ -35,6 +35,7 @@
+ #include "terminal-util.h"
+ #include "udev-util.h"
+ #include "user-util.h"
++#include "sd-daemon.h"
+ 
+ int manager_add_device(Manager *m, const char *sysfs, bool master, Device **_device) {
+         Device *d;
+@@ -458,6 +459,11 @@ int manager_spawn_autovt(Manager *m, unsigned int vtnr) {
+             vtnr != m->reserve_vt)
+                 return 0;
+ 
++        /* It only makes sense to send a StartUnit call to systemd if this
++         * machine is actually booted with systemd. */
++        if (!sd_booted())
++                return 0;
++
+         if (vtnr != m->reserve_vt) {
+                 /* If this is the reserved TTY, we'll start the getty
+                  * on it in any case, but otherwise only if it is not

@@ -1,0 +1,44 @@
+From: Michael Biebl <biebl@debian.org>
+Date: Tue, 24 Jun 2014 12:35:25 +0200
+Subject: Add /run/initctl support to SysV compat tools
+
+sysvinit in Debian uses /run/initctl as FIFO to communicate with PID 1.
+Make the SysV compat tools in systemd-sysv try both /run/initctl and the
+traditional /dev/initctl. This makes them usable when running sysvinit
+as PID 1.
+---
+ src/systemctl/systemctl.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/src/systemctl/systemctl.c b/src/systemctl/systemctl.c
+index 18c6424..2d358d5 100644
+--- a/src/systemctl/systemctl.c
++++ b/src/systemctl/systemctl.c
+@@ -8380,17 +8380,22 @@ static int talk_initctl(void) {
+ 
+         request.runlevel = rl;
+ 
+-        fd = open(INIT_FIFO, O_WRONLY|O_NDELAY|O_CLOEXEC|O_NOCTTY);
++        /* Try /run/initctl first since that is what sysvinit in Debian uses */
++        fd = open("/run/initctl", O_WRONLY|O_NDELAY|O_CLOEXEC|O_NOCTTY);
+         if (fd < 0) {
+-                if (errno == ENOENT)
+-                        return 0;
++                /* Fall back to /dev/initctl */
++                fd = open(INIT_FIFO, O_WRONLY|O_NDELAY|O_CLOEXEC|O_NOCTTY);
++                if (fd < 0) {
++                        if (errno == ENOENT)
++                                return 0;
+ 
+-                return log_error_errno(errno, "Failed to open "INIT_FIFO": %m");
++                        return log_error_errno(errno, "Failed to open "INIT_FIFO": %m");
++                }
+         }
+ 
+         r = loop_write(fd, &request, sizeof(request), false);
+         if (r < 0)
+-                return log_error_errno(r, "Failed to write to "INIT_FIFO": %m");
++                return log_error_errno(r, "Failed to write to initctl FIFO: %m");
+ 
+         return 1;
+ #else

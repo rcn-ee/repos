@@ -1,0 +1,40 @@
+#!/bin/sh
+# run upstream system integration tests
+# Author: Martin Pitt <martin.pitt@ubuntu.com>
+set -e
+
+# even after installing policycoreutils this fails with
+# "Failed to install /usr/libexec/selinux/hll/pp"
+BLACKLIST="TEST-06-SELINUX"
+
+# quiesce Makefile.guess; not really relevant as systemd/nspawn run from
+# installed packages
+export BUILD_DIR=.
+
+# modify the image build scripts to install systemd from the debs instead of
+# from a "make/ninja install" as we don't have a built tree here. Also call
+# systemd-nspawn from the system.
+sed -i '/DESTDIR.* install/ s%^.*$%    for p in `grep ^Package: '`pwd`'/debian/control | cut -f2 -d\\  |grep -Ev -- "-(udeb|dev)"`; do (cd /tmp; apt-get download $p \&\& dpkg-deb --fsys-tarfile ${p}[._]*deb | tar -C $initdir --dereference -x); done%; s_[^" ]*/systemd-nspawn_systemd-nspawn_g; s/\(_ninja_bin=\).*/\1dummy-ninja/' test/test-functions
+
+# FIXME: avoid building the entire tree when running tests (fixed in master, but not yet 234)
+sed -i '/@make.*all/ d' test/TEST*/Makefile
+
+# adjust path
+sed -i 's_/usr/libexec/selinux/hll/pp_/usr/lib/selinux/hll/pp_' test/TEST-06-SELINUX/test.sh
+
+for t in test/TEST*; do
+    echo "$BLACKLIST" | grep -q "$(basename $t)" && continue
+    echo "========== `basename $t` =========="
+    rm -rf /var/tmp/systemd-test.*
+    if ! make -C $t clean setup run; then
+        for j in /var/tmp/systemd-test.*/journal/*; do
+            [ -e "$j" ] || continue
+            # keep the entire journal in artifacts, in case one needs the debug messages
+            cp "$j" "$AUTOPKGTEST_ARTIFACTS/$(basename $t)-$(basename $j)"
+            echo "---- $j ----"
+            journalctl --priority=warning --directory=$j
+        done
+        exit 1
+    fi
+    echo
+done

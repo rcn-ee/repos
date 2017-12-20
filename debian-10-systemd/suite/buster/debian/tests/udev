@@ -1,0 +1,13 @@
+#!/bin/sh
+# autopkgtest check: Run upstream udev test script
+# (C) 2016 Canonical Ltd.
+# Author: Martin Pitt <martin.pitt@ubuntu.com>
+set -euC
+
+TEST_DIR=${ADTTMP:=$(mktemp -d)}
+mkdir -p $TEST_DIR/test
+test/sys-script.py $TEST_DIR/test
+cp test/udev-test.pl $TEST_DIR
+cp /usr/lib/systemd/tests/manual/test-udev $TEST_DIR
+cd $TEST_DIR
+./udev-test.pl
