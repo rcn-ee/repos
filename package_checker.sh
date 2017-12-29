@@ -128,10 +128,10 @@ mesa () {
 	#https://packages.debian.org/source/stretch/llvm-toolchain-3.8
 #	package_name="llvm-toolchain-3.8" ; package_version="${package_name}_3.8.1-24" ; check_http
 	#https://packages.debian.org/source/stretch/llvm-toolchain-3.9
-	package_name="llvm-toolchain-3.9" ; package_version="${package_name}_3.9.1-18" ; check_http
+#	package_name="llvm-toolchain-3.9" ; package_version="${package_name}_3.9.1-18" ; check_http
 	#https://packages.debian.org/source/sid/llvm-toolchain-4.0
-	ignore="rc"
-	package_name="llvm-toolchain-4.0" ; package_version="${package_name}_4.0.1-8" ; check_http
+#	ignore="rc"
+#	package_name="llvm-toolchain-4.0" ; package_version="${package_name}_4.0.1-8" ; check_http
 	#https://packages.debian.org/source/sid/llvm-toolchain-5.0
 	ignore="rc"
 	package_name="llvm-toolchain-5.0" ; package_version="${package_name}_5.0.1-2" ; check_http
@@ -156,8 +156,8 @@ mesa () {
 	package_name="wayland" ; package_version="${package_name}_1.12.0-1" ; check_http
 
 	site="${debian_pool}/main/m"
-	package_name="mesa" ; package_version="${package_name}_17.1.5-1" ; check_http
-	package_name="mesa-demos" ; package_version="${package_name}_8.3.0-3" ; check_http
+	package_name="mesa" ; package_version="${package_name}_17.3.1-1" ; check_http
+	package_name="mesa-demos" ; package_version="${package_name}_8.3.0-5" ; check_http
 }
 
 machinekit () {
