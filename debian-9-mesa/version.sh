@@ -16,6 +16,6 @@ dl_path="pool/main/${reprepro_dir}/"
 debian_version="${package_version}-1"
 debian_untar=""
 debian_patch="${package_name}_${debian_version}.diff.gz"
-local_patch="rcnee1"
+local_patch="rcnee2"
 
-stretch_version="~stretch+20171228"
+stretch_version="~stretch+20180103"
