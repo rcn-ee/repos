@@ -1,0 +1,126 @@
+#!/bin/sh -e
+#
+# Copyright (c) 2016 Robert Nelson <robertcnelson@gmail.com>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+run_hciattach () {
+	#FIXME: Switch to led class, wl18xx_bt_en
+	#       leds {
+	#               pinctrl-names = "default";
+	#               pinctrl-0 = <&bt_pins>;
+	#               compatible = "gpio-leds";
+	#
+	#               wl18xx_bt_en {
+	#                       label = "wl18xx_bt_en";
+	#                       gpios = <&gpio1 28 GPIO_ACTIVE_HIGH>;
+	#                       default-state = "off";
+	#               };
+	#       };
+
+	hciattach_bin=$(which hciattach)
+
+	if [ -f ${hciattach_bin} ] ; then
+		if [ -f /sys/class/leds/wl18xx_bt_en/brightness ] ; then
+			# Resetting the Bluetooth enable pin
+			if [ `cat /sys/class/leds/wl18xx_bt_en/brightness` = "${bt_enable}" ]; then
+				echo ${bt_disable} > /sys/class/leds/wl18xx_bt_en/brightness || true
+				sleep 1
+			fi
+			echo ${bt_enable} > /sys/class/leds/wl18xx_bt_en/brightness || true
+			${hciattach_bin} ${bt_port} ${bt_settings} || true
+		else
+			#LEGACY: DONT USE...
+			if [ ! "x${bt_gpio_en}" = "x" ] ; then
+				if [ ! -d /sys/class/gpio/gpio${bt_gpio_en}/ ] ; then
+					echo ${bt_gpio_en} > /sys/class/gpio/export || true
+					sleep 1
+				fi
+				if [ -d /sys/class/gpio/gpio${bt_gpio_en}/ ] ; then
+					echo out > /sys/class/gpio/gpio${bt_gpio_en}/direction || true
+					sleep 1
+					echo 1 > /sys/class/gpio/gpio${bt_gpio_en}/value || true
+					sleep 1
+					${hciattach_bin} ${bt_port} ${bt_settings} || true
+				fi
+			fi
+		fi
+	fi
+}
+
+board=$(cat /proc/device-tree/model | sed "s/ /_/g" | tr -d '\000')
+case "${board}" in
+TI_AM335x_BeagleBone_Black_wl1835mod)
+	#FIXME: confirm bt_enable
+	bt_enable="1"
+	bt_disable="0"
+	bt_gpio_en="44"
+	bt_port="/dev/ttyS4"
+	bt_settings="texas 300000"
+	run_hciattach
+	;;
+TI_AM335x_BeagleBone_Black_Wireless)
+	bt_enable="1"
+	bt_disable="0"
+	bt_gpio_en="28"
+	bt_port="/dev/ttyS3"
+	bt_settings="texas 300000"
+	run_hciattach
+	;;
+TI_AM335x_BeagleBone_Black_Wireless_RoboticsCape)
+	bt_enable="1"
+	bt_disable="0"
+	bt_gpio_en="28"
+	bt_port="/dev/ttyS3"
+	bt_settings="texas 300000"
+	run_hciattach
+	;;
+TI_AM335x_BeagleBone_Green_Wireless)
+	bt_enable="1"
+	bt_disable="0"
+	bt_gpio_en="60"
+	bt_port="/dev/ttyS3"
+	bt_settings="texas 300000"
+	run_hciattach
+	;;
+TI_AM335x_BeagleBone_Blue)
+	bt_enable="1"
+	bt_disable="0"
+	bt_gpio_en="28"
+	bt_port="/dev/ttyS3"
+	bt_settings="texas 300000"
+	run_hciattach
+	;;
+TI_AM335x_BeagleBone_Black_Gateway_Cape)
+	bt_enable="1"
+	bt_disable="0"
+	bt_gpio_en="3"
+	bt_port="/dev/ttyS1"
+	bt_settings="texas 300000"
+	run_hciattach
+	;;
+*)
+	unset bt_enable
+	unset bt_disable
+	unset bt_gpio_en
+	unset bt_port
+	unset bt_settings
+	;;
+esac
+
