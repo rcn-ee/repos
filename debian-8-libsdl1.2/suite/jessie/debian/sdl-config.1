@@ -1,0 +1,62 @@
+.TH sdl-config 1 "2013-07-27" "SDL 1.2"
+.SH NAME
+sdl-config \- script to get information about the installed version of SDL
+.SH SYNOPSIS
+.B sdl-config
+[--prefix=[\fIDIR\fR]] [--exec-prefix=[\fIDIR\fR]] [--version] [--cflags] [--libs] [--static-libs]
+.SH DESCRIPTION
+.B sdl-config
+is a tool that is used to configure and determine the compiler and linker
+flags that should be used to compile and link programs, libraries, and
+plugins that use SDL.  It is also used internally by the m4 macros that are
+included with SDL.
+.SH OPTIONS
+.TP
+.B --cflags
+Print the compiler flags that are necessary to compile a program or library
+that uses SDL.
+.TP
+.BI --exec-prefix\fR[=\fIDIR\fR]
+If \fIDIR\fR is not specified, print the exec prefix of the current SDL
+installation.
+.IP
+If \fIDIR\fR is specified, use it instead of the installation exec prefix that
+SDL was built with when computing the output for the --cflags, --libs and
+--static-libs options.  This option must be specified before any of the options
+--cflags, --libs and --static-libs.
+.TP
+.B --libs
+Print the linker flags that are necessary to link a program that uses SDL.
+.TP
+.B --static-libs
+Print the linker flags that are necessary to statically link a program that uses SDL.
+.TP
+.BI --prefix\fR[=\fIDIR\fR]
+If \fIDIR\fR is not specified, print the prefix of the current SDL installation.
+.IP
+If \fIDIR\fR is specified, use it instead of the installation prefix that SDL
+was built with when computing the output for the --cflags, --libs and
+--static-libs options.  This option is also used for the exec prefix if
+--exec-prefix was not specified.  This option must be specified before any of
+the options --cflags, --libs and --static-libs.
+.TP
+.B --version
+Prints the currently installed version of SDL on standard output.
+.SH EXAMPLES
+.TP
+gcc -o main.o $(sdl-config --cflags) main.c
+is how you might use
+.B sdl-config
+to compile a C source file for an executable program.
+.TP
+gcc -o my_app $(sdl-config --libs) main.o util.o
+is how you might use
+.B sdl-config
+to link compiled objects into an executable program.
+.SH AUTHOR
+The Simple DirectMedia Layer (SDL) library was written by Sam Lantinga.
+.PP
+This manual page was written by Branden Robinson, originally for Progeny
+Linux Systems, Inc., and the Debian Project.
+.br
+Updated in 2013 by Manuel A. Fernandez Montecelo <mafm@debian.org>.

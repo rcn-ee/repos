@@ -1,0 +1,38 @@
+Description: Do not propagate -lpthread to sdl-config --libs
+ Introduced in 1.2.11-1 (Thu, 20 Jul 2006 14:17:18 +0200).
+ .
+ Upstream will not apply it at the moment:
+   Sam Lantinga 2012-01-22 10:54:21 PST
+ .
+   At some point it was required that multi-threaded programs using pthreads on
+   Linux link directly to the pthread library.  I don't remember all the details,
+   but it had something to do with initializing C runtime variables correctly.
+ .
+   I'm sure it's not an issue anymore, but I'd rather not apply this patch in 1.2.
+   I'll go ahead and make this change in 1.3 though.
+Author: Sam Hocevar <sam+deb@zoy.org>
+Last-Update: 2012-01-22
+Bug-Debian: http://bugs.debian.org/375822
+Forwarded: http://bugzilla.libsdl.org/show_bug.cgi?id=1392
+
+--- a/sdl.pc.in
++++ b/sdl.pc.in
+@@ -10,6 +10,6 @@
+ Version: @SDL_VERSION@
+ Requires:
+ Conflicts:
+-Libs: -L${libdir} @SDL_RLD_FLAGS@ @SDL_LIBS@
++Libs: -L${libdir} @SDL_RLD_FLAGS@ -lSDL
+ Libs.private: @SDL_STATIC_LIBS@
+ Cflags: -I${includedir}/SDL @SDL_CFLAGS@
+--- a/sdl-config.in
++++ b/sdl-config.in
+@@ -45,7 +45,7 @@
+       echo -I@includedir@/SDL @SDL_CFLAGS@
+       ;;
+ @ENABLE_SHARED_TRUE@    --libs)
+-@ENABLE_SHARED_TRUE@      echo -L@libdir@ @SDL_RLD_FLAGS@ @SDL_LIBS@
++@ENABLE_SHARED_TRUE@      echo -L@libdir@ @SDL_RLD_FLAGS@ -lSDL
+ @ENABLE_SHARED_TRUE@      ;;
+ @ENABLE_STATIC_TRUE@@ENABLE_SHARED_TRUE@    --static-libs)
+ @ENABLE_STATIC_TRUE@@ENABLE_SHARED_FALSE@    --libs|--static-libs)
