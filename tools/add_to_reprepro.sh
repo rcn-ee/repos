@@ -32,7 +32,6 @@ start_run () {
 
 	dist="ubuntu"
 	suite="xenial" ; runner
-	suite="zesty" ; runner
 	suite="artful" ; runner
 	suite="bionic" ; runner
 }

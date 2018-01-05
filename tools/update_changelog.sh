@@ -64,15 +64,6 @@ if [ -d ${DIR}/suite/${suite}/ ] ; then
 	run
 fi
 
-suite="zesty"
-if [ -d ${DIR}/suite/${suite}/ ] ; then
-	rcn_ee_version="${zesty_version}"
-	cat ${DIR}/version.sh | grep -v zesty_version > ${DIR}/new-version.sh
-	echo "${suite}_version=\"~${suite}+${simple_date}\"" >> ${DIR}/new-version.sh
-	mv ${DIR}/new-version.sh ${DIR}/version.sh
-	run
-fi
-
 suite="artful"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${artful_version}"

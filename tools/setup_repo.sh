@@ -142,6 +142,7 @@ suite="yakkety"
 archs="armhf source"
 setup_repo
 
+#eol: January 2018
 suite="zesty"
 archs="armhf source"
 setup_repo
