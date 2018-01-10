@@ -27,12 +27,10 @@ npm_install () {
 	node_version=$(/usr/bin/nodejs --version || true)
 	echo "${package}:nodejs:[${node_version}]"
 
-	v8="v8.9.1"
+	v8="v8.9.4"
 
-	node_red="node-red-0.17.5-5e128f8"
-	node_red_beaglebone="node-red-node-beaglebone-0.1.9-f1c0057"
-	node_red_upm="node-red-node-bb-upm-0.0.1-8d217ab"
-	node_red_mongodb="node-red-node-mongodb-0.0.13-f1c0057"
+	node_red="node-red-0.17.5-915d73e"
+	node_red_mongodb="node-red-node-mongodb-0.0.13-9f290f6"
 
 	npm_project="node-red"
 	case "${node_version}" in
@@ -61,9 +59,9 @@ npm_install () {
 	case "${node_version}" in
 	v8.*)
 		version="${v8}"
-		npm_project="node-red-node-beaglebone"
-		npm_file="${node_red_beaglebone}-${version}.tar.xz"
-		npm_pkg_install
+#		npm_project="node-red-node-beaglebone"
+#		npm_file="${node_red_beaglebone}-${version}.tar.xz"
+#		npm_pkg_install
 #		npm_project="node-red-node-bb-upm"
 #		npm_file="${node_red_upm}-${version}.tar.xz"
 #		npm_pkg_install
