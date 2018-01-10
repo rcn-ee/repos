@@ -31,6 +31,9 @@ npm_install () {
 
 	node_red="node-red-0.17.5-915d73e"
 	node_red_mongodb="node-red-node-mongodb-0.0.13-9f290f6"
+	node_red_bbio="beaglebone-io-2.3.0"
+	node_red_five="johnny-five-0.13.0"
+	node_red_gpio="node-red-contrib-gpio-0.10.0"
 
 	npm_project="node-red"
 	case "${node_version}" in
@@ -58,15 +61,14 @@ npm_install () {
 
 	case "${node_version}" in
 	v8.*)
-		version="${v8}"
-#		npm_project="node-red-node-beaglebone"
-#		npm_file="${node_red_beaglebone}-${version}.tar.xz"
-#		npm_pkg_install
-#		npm_project="node-red-node-bb-upm"
-#		npm_file="${node_red_upm}-${version}.tar.xz"
-#		npm_pkg_install
 		npm_project="node-red-node-mongodb"
-		npm_file="${node_red_mongodb}-${version}.tar.xz"
+		npm_file="${node_red_mongodb}-${v8}.tar.xz"
+		npm_project="beaglebone-io"
+		npm_file="${node_red_bbio}-${v8}.tar.xz"
+		npm_project="johnny-five"
+		npm_file="${node_red_five}-${v8}.tar.xz"
+		npm_project="node-red-contrib-gpio"
+		npm_file="${node_red_gpio}-${v8}.tar.xz"
 		npm_pkg_install
 		;;
 	esac
@@ -74,6 +76,10 @@ npm_install () {
 	if [ -d /usr/lib/node_modules/mraa ] ; then
 		ln -sf /usr/lib/node_modules/mraa /usr/local/lib/node_modules || true
 		ln -sf /usr/lib/node_modules/jsupm* /usr/local/lib/node_modules || true
+	fi
+
+	if [ -d /usr/local/lib/node_modules/node-red-node-beaglebone/ ] ; then
+		rm -rf /usr/local/lib/node_modules/node-red-node-beaglebone/ || true
 	fi
 
 	if [ -d /etc/avahi/services/ ] ; then
