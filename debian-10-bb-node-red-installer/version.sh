@@ -11,7 +11,7 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee4"
+debian_version="${package_version}-0rcnee5"
 debian_untar=""
 debian_patch=""
 
@@ -21,7 +21,7 @@ v8="v8.9.4"
 
 node_red="node-red-0.17.5-915d73e"
 node_red_mongodb="node-red-node-mongodb-0.0.13-9f290f6"
-node_red_bbio="beaglebone-io-2.3.0"
+node_red_bbio="beaglebone-io-2.3.0-7d20557"
 node_red_five="johnny-five-0.13.0"
 node_red_gpio="node-red-contrib-gpio-0.10.0"
 
