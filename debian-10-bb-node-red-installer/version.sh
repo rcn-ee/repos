@@ -11,7 +11,7 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee5"
+debian_version="${package_version}-0rcnee6"
 debian_untar=""
 debian_patch=""
 
@@ -27,4 +27,4 @@ debian_dl_1="${dl_mirror}/${node_red}-${v8}.tar.xz"
 debian_dl_2="${dl_mirror}/${node_red_mongodb}-${v8}.tar.xz"
 debian_dl_3="${dl_mirror}/${node_red_gpio}-${v8}.tar.xz"
 
-buster_version="~buster+20180110"
+buster_version="~buster+20180111"
