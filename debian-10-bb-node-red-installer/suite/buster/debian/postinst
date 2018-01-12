@@ -32,6 +32,8 @@ npm_install () {
 	node_red="node-red-0.17.5-915d73e"
 	node_red_mongodb="node-red-node-mongodb-0.0.13-9f290f6"
 	node_red_gpio="node-red-contrib-gpio-0.10.0"
+	node_red_serial="node-red-node-serialport-0.6.2"
+	node_red_can="node-red-contrib-can-1.0.6"
 
 	npm_project="node-red"
 	case "${node_version}" in
@@ -66,6 +68,15 @@ npm_install () {
 		npm_project="node-red-contrib-gpio"
 		npm_file="${node_red_gpio}-${v8}.tar.xz"
 		npm_pkg_install
+
+		npm_project="node-red-node-serialport"
+		npm_file="${node_red_serial}-${v8}.tar.xz"
+		npm_pkg_install
+
+		npm_project="node-red-contrib-can"
+		npm_file="${node_red_can}-${v8}.tar.xz"
+		npm_pkg_install
+
 		;;
 	esac
 
