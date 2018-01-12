@@ -27,17 +27,21 @@ npm_install () {
 	node_version=$(/usr/bin/nodejs --version || true)
 	echo "${package}:nodejs:[${node_version}]"
 
-	v6="v6.11.2"
+	v6="v6.12.3"
+	v8="v8.9.4"
 
-	node_red="node-red-0.17.5-e09efba"
-	node_red_beaglebone="node-red-node-beaglebone-0.1.9-363bb55"
-	node_red_upm="node-red-node-bb-upm-0.0.1-8d217ab"
-	node_red_mongodb="node-red-node-mongodb-0.0.13-363bb55"
+	node_red="node-red-0.17.5-915d73e"
+	node_red_mongodb="node-red-node-mongodb-0.0.13-9f290f6"
+	node_red_gpio="node-red-contrib-gpio-0.10.0"
 
 	npm_project="node-red"
 	case "${node_version}" in
 	v6.*)
 		npm_file="${node_red}-${v6}.tar.xz"
+		npm_pkg_install
+		;;
+	v8.*)
+		npm_file="${node_red}-${v8}.tar.xz"
 		npm_pkg_install
 		;;
 	esac
@@ -60,15 +64,21 @@ npm_install () {
 
 	case "${node_version}" in
 	v6.*)
-		version="${v6}"
-		npm_project="node-red-node-beaglebone"
-		npm_file="${node_red_beaglebone}-${version}.tar.xz"
-		npm_pkg_install
-#		npm_project="node-red-node-bb-upm"
-#		npm_file="${node_red_upm}-${version}.tar.xz"
-#		npm_pkg_install
 		npm_project="node-red-node-mongodb"
-		npm_file="${node_red_mongodb}-${version}.tar.xz"
+		npm_file="${node_red_mongodb}-${v8}.tar.xz"
+		npm_pkg_install
+
+		npm_project="node-red-contrib-gpio"
+		npm_file="${node_red_gpio}-${v8}.tar.xz"
+		npm_pkg_install
+		;;
+	v8.*)
+		npm_project="node-red-node-mongodb"
+		npm_file="${node_red_mongodb}-${v8}.tar.xz"
+		npm_pkg_install
+
+		npm_project="node-red-contrib-gpio"
+		npm_file="${node_red_gpio}-${v8}.tar.xz"
 		npm_pkg_install
 		;;
 	esac
