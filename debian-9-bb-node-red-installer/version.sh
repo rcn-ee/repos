@@ -20,7 +20,7 @@ dl_mirror="https://github.com/rcn-ee/npm-package-node-red/raw/master/deploy/stre
 v6="v6.12.3"
 v8="v8.9.4"
 
-node_red="node-red-0.17.5-915d73e"
+node_red="node-red-0.17.5-a3640bd"
 node_red_mongodb="node-red-node-mongodb-0.0.13-9f290f6"
 node_red_gpio="node-red-contrib-gpio-0.10.0"
 
