@@ -2,7 +2,7 @@
 
 package_name="bonescript"
 debian_pkg_name="${package_name}"
-package_version="0.6.2-beta5"
+package_version="0.6.2-beta6"
 package_source="${package_name}_${package_version}.orig.tar.gz"
 src_dir="${package_name}-${package_version}"
 
@@ -17,12 +17,13 @@ debian_patch=""
 
 dl_mirror="https://github.com/rcn-ee/npm-package-bonescript/raw/master/deploy/buster/"
 
+v6="v6.12.3"
 v8="v8.9.4"
 
-bonescript="bonescript-0.6.2-beta5-6579786"
+bonescript="bonescript-0.6.2-beta6-bcc9d4d"
    winston="winston-2.1.1"
 
 debian_dl_1="${dl_mirror}/${bonescript}-${v8}.tar.xz"
 debian_dl_2="${dl_mirror}/${winston}-${v8}.tar.xz"
 
-buster_version="~buster+20180110"
+buster_version="~buster+20180112"
