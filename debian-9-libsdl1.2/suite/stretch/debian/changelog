@@ -1,0 +1,1516 @@
+libsdl1.2 (1.2.15+dfsg1-4rcnee0~stretch+20180116) stretch; urgency=low
+
+  * Rebuild for repos.rcn-ee.com
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Tue, 16 Jan 2018 15:35:06 -0600
+
+libsdl1.2 (1.2.15+dfsg1-4) unstable; urgency=high
+
+  * Urgency "high" to fix problems with migration of -dbg package.  Thanks
+    Yann Dirson.
+  * Ensure proper migration from -dbg package using "dh_strip
+    --dbgsym-migration"
+  * Bump debhelper dependency for --dbgsym-migration
+  * Fix for reproducible builds:
+    - sort files by name when creating "examples.tar.gz"
+
+ -- Manuel A. Fernandez Montecelo <mafm@debian.org>  Thu, 17 Mar 2016 12:15:31 +0000
+
+libsdl1.2 (1.2.15+dfsg1-3) unstable; urgency=medium
+
+  * Disable suppot for DirectFB (Closes: #816125)
+  * d/control: Update Vcs-* URLs, use https
+  * Fixes for reproducible builds:
+    - timestamps_in_tarball, use --clamp-mtime with changelog as date
+    - timestamps_in_gzip_headers, export GZIP="-9n"
+  * Drop -dbg package
+
+ -- Manuel A. Fernandez Montecelo <mafm@debian.org>  Sat, 12 Mar 2016 00:36:47 +0000
+
+libsdl1.2 (1.2.15+dfsg1-2) unstable; urgency=medium
+
+  * d/control: remove "Multi-Arch: no" from -dev package, despite what
+    lintian says there's an error processing the field (#768353) and the
+    package got rejected
+
+ -- Manuel A. Fernandez Montecelo <mafm@debian.org>  Sun, 21 Feb 2016 17:46:19 +0000
+
+libsdl1.2 (1.2.15+dfsg1-1) unstable; urgency=medium
+
+  * New upstream release
+    - Repack without SDL_qsort.c due to licence problem
+  * Use newer relicenced version for SDL_qsort.c (Closes: #814445)
+    Thanks the anonymous reporter, Ben Hutchings for looking into it and
+    get in contact with the original author, the original author Gareth
+    McCaughan for prompt relicencing.
+    - d/patches/replace-relicenced-SDL_qsort.patch
+  * Bump Policy Standards-Version to 3.9.7 (no changes needed)
+  * Set -dev package as "Multi-Arch: no" (quells lintian error:
+    old-style-config-script-multiarch-path)
+  * d/watch: Add dfsg and pgpsig mangling
+  * d/upstream/signing-key.asc: Import upstream gpg key for uscan to
+    verify the orig tarball
+
+ -- Manuel A. Fernandez Montecelo <mafm@debian.org>  Sun, 21 Feb 2016 16:00:03 +0000
+
+libsdl1.2 (1.2.15-12) unstable; urgency=medium
+
+  * Change to improve build reproducibility: tar file permission modes.
+    Thanks Reiner Herrmann. (Closes: #803579)
+  * Remove Barry deFreese from uploaders
+
+ -- Manuel A. Fernandez Montecelo <mafm@debian.org>  Sun, 01 Nov 2015 00:07:00 +0000
+
+libsdl1.2 (1.2.15-11) unstable; urgency=medium
+
+  * Bump Policy Standards-Version to 3.9.6 (no changes needed)
+  * Change for reproducible builds: use "--owner=0 --group=0" when
+    creating the "examples" tar file (Closes: #778572).  Thanks Chris Lamb
+    and rest of the Reproducible Builds team for the analysis and patch
+    suggested.
+
+ -- Manuel A. Fernandez Montecelo <mafm@debian.org>  Mon, 27 Apr 2015 22:35:22 +0100
+
+libsdl1.2 (1.2.15-10) unstable; urgency=medium
+
+  [ Hector Oron ]
+  * d/control: remove libts-dev dependency. (Closes: #751765)
+
+  [ Felix Geyer ]
+  * Enable X11 backingstore only when SDL_VIDEO_X11_BACKINGSTORE is set to
+    prevent tearing. (Closes: #747168)
+    - Add sdl-check-for-SDL_VIDEO_X11_BACKINGSTORE.patch
+
+ -- Felix Geyer <fgeyer@debian.org>  Mon, 30 Jun 2014 21:18:45 +0200
+
+libsdl1.2 (1.2.15-9) unstable; urgency=medium
+
+  * Bump Policy Standards-Version to 3.9.5 (no changes needed)
+  * Use dh_autoreconf in debian/rules without calling ./autogen.sh and
+    perform other tricks to actually support new architectures (arm64,
+    powerpc64le, ...) (Closes: #735253)
+  * Do not build-depend on autotools-dev, dh-autoreconf is supposed to
+    supersede it
+
+ -- Manuel A. Fernandez Montecelo <mafm@debian.org>  Sun, 09 Mar 2014 01:37:39 +0000
+
+libsdl1.2 (1.2.15-8) unstable; urgency=low
+
+  * Remove permanently patch check_SDL_NOKBD_environment_variable.diff, it
+    was rejected explicitly by upstream and could not be applied cleanly,
+    was already disabled fore more than a year
+  * Document fix_joystick_misc_axes.diff with the latest development,
+    submitted upstream again for re-evaluation
+  * Build-depend on autotools-dev to update config.{sub,guess} and modify
+    debian/rules to add support for new ports (needed for arm64)
+  * Use "dh_autoreconf --as-needed" in debian/rules
+
+ -- Manuel A. Fernandez Montecelo <mafm@debian.org>  Mon, 28 Oct 2013 12:55:48 +0000
+
+libsdl1.2 (1.2.15-7) unstable; urgency=low
+
+  * Drop the udeb package as it doesn't have any reverse dependencies anymore.
+    (Closes: #723165)
+
+ -- Felix Geyer <fgeyer@debian.org>  Tue, 17 Sep 2013 18:26:42 +0200
+
+libsdl1.2 (1.2.15-6) unstable; urgency=low
+
+  [ Simon McVittie ]
+  * Clean debian/tmp-udeb so the package can build twice in a row.
+    (Closes: #708756)
+
+  [ Felix Geyer ]
+  * Drop obsolete DM-Upload-Allowed flag.
+  * Bump Standards-Version to 3.9.4, no changes needed.
+  * Add lintian override for dev-pkg-without-shlib-symlink.
+  * Switch to my @debian.org email address.
+
+  [ Manuel A. Fernandez Montecelo ]
+  * Switch to @debian.org address
+  * Bring the man page of sdl-config up to date (Closes: #695836)
+
+ -- Manuel A. Fernandez Montecelo <mafm@debian.org>  Sat, 27 Jul 2013 19:28:59 +0100
+
+libsdl1.2 (1.2.15-5) unstable; urgency=low
+
+  * Restrict libts (touch screen) input method to linux-any architectures, not
+    available elsewhere
+
+ -- Manuel A. Fernandez Montecelo <manuel.montezelo@gmail.com>  Thu, 21 Jun 2012 14:20:55 +0100
+
+libsdl1.2 (1.2.15-4) unstable; urgency=low
+
+  [ Manuel A. Fernandez Montecelo ]
+  * debian/sdl-config1
+    - Fix typo, progam->program
+  * Enable support for touch screen library (Closes: #674799)
+
+  [ Felix Geyer ]
+  * Re-add dependencies to libsdl1.2-dev that are required for static linking.
+    (Closes: #670122)
+  * Bump Standards-Version to 3.9.3, no further changes necessary.
+
+  [ Sam Hocevar ]
+  * debian/patches/fix_joystick_misc_axes.diff: fix a joystick remapping
+    bug causing some axes to malfunction (Closes: #673324).
+
+ -- Manuel A. Fernandez Montecelo <manuel.montezelo@gmail.com>  Mon, 11 Jun 2012 16:04:53 +0100
+
+libsdl1.2 (1.2.15-3) unstable; urgency=low
+
+  [ Felix Geyer ]
+  * Drop all -dev package dependencies of libsdl1.2-dev except libx11-dev and
+    libglu1-mesa-dev.
+  * Add libglu-dev as an alternative to libglu1-mesa-dev.
+
+  [ Manuel A. Fernandez Montecelo ]
+  * Fix for bug "Window corner re-size events ignored by SDL" (Closes: #665779),
+    thanks Andrew Caudwell <acaudwell@gmail.com> for the report and the
+    suggested fix.
+
+ -- Manuel A. Fernandez Montecelo <manuel.montezelo@gmail.com>  Tue, 10 Apr 2012 21:18:20 +0100
+
+libsdl1.2 (1.2.15-2) unstable; urgency=low
+
+  * Add fix_build_joystick_freebsd.diff by Robert Millan to fix build
+    on kfreebsd. (Closes: #659615)
+  * Bump shlibs version to 1.2.11.
+  * Bump debhelper build-dependency to >= 9.
+
+ -- Felix Geyer <debfx-pkg@fobos.de>  Mon, 20 Feb 2012 12:20:47 +0100
+
+libsdl1.2 (1.2.15-1) unstable; urgency=low
+
+  * New upstream release
+  * Seting DM-Upload-Allowed:yes and added myself to Uploaders
+  * Removed patches:
+    - sdlblit_memcpy_fix.diff: it was backported from upstream
+    - joystick_crash.diff: it was backported from upstream (changeset 3590
+      493f252a455c)
+    - x11_add_support_NET_WM_PID.diff: applied upstream (changeset 6169
+      6f3e5ccfd585)
+    - disable_ipod.diff: it wasn't documented nor appeared anywhere in the
+      changelog, and it only disabled its support in the configure script (and
+      the option to add ipod support is off by default, at least in the current
+      version)
+    - disappearingcursor.diff: applied upstream (changeset 4557 4aa31b9207f2)
+    - fixmouseclicks.diff: it was part of a fix applied upstream (same as for
+      the patch disappearingcursor.diff)
+    - no_yasm.diff: applied upstream, picked from Debian (changeset 4538
+      74b5387da0c4)
+    - nasm_include.diff: applied upstream, picked from Debian (changeset 4539
+      d2517c0de52b)
+    - kfreebsd_gnu.diff: applied upstream, picked from Debian (changeset 4537
+      cd344ebc14e9)
+    - relibtoolize.diff: substituted with dh_autoreconf
+  * Disable patch check_SDL_NOKBD_environment_variable.diff at least
+    temporarily, it was rejected explicitly by upstream and it doesn't apply
+    cleanly, so it will need some work/thought
+  * Document remaining patches, refresh them
+  * debian/rules:
+    - dh_install ... -XlibSDLmain.la: to avoid installing this new .la file
+
+ -- Manuel A. Fernandez Montecelo <manuel.montezelo@gmail.com>  Thu, 26 Jan 2012 20:31:21 +0000
+
+libsdl1.2 (1.2.14-7) unstable; urgency=low
+
+  [ Felix Geyer ]
+  * Remove all patches that were disabled.
+  * Switch to source format 3.0 (quilt).
+  * Simplify debian/rules by using dh(1).
+  * Drop ancient Conflicts/Replaces.
+  * Disable the PlayStation 3 Cell driver on ppc64. (Closes: #644908)
+  * Update Vcs control fields to the new git repository. (Closes: #615902)
+  * Drop sequence numbers from the patch filenames.
+  * Fix: SDL_BlitCopyOverlap() copies data between overlapping bitmaps.
+    (Closes: #626048)
+    - Add sdlblit_memcpy_fix.diff, cherry-picked from upstream.
+  * Set _NET_WM_PID property in X11 windows which is used by GNOME Shell and the
+    Unity desktop.
+    - Add x11_add_support_NET_WM_PID.diff from Ubuntu / Marco Trevisan.
+  * Bump Standards-Version to 3.9.2, no further changes necessary.
+  * Override package-name-doesnt-match-sonames lintian warning.
+  * Add a debug package. (Closes: #600292)
+  * Add myself as uploader.
+  * Switch to debhelper compat level v9.
+    - Convert to multiarch. (Closes: #636605)
+    - Exports hardening build flags.
+  * Remove the .la file.
+
+  [ Dominique Dumont ]
+  * control: replaced XC-Package-Type with Package-Type tag
+  * added missing lintian overrides.
+
+ -- Felix Geyer <debfx-pkg@fobos.de>  Sun, 08 Jan 2012 18:33:39 +0100
+
+libsdl1.2 (1.2.14-6.4) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Build improvements from Guillem Jover that should really have gone 
+    with the previous upload. Closes: #614332.
+    + Line-wrap build-depends.
+    + Use -any syntax for architecture-specific stuff.
+    + Fix cross-compilation by using DEB_HOST_* variables.
+    + Update or remove non-existing configure flags.
+    + Forbid dlopening for X11.
+  * Use --enable-debug with the debug keyword, not the noopt one.
+  * Refactor configure options.
+  * Disable NAS. We have PulseAudio now.
+  * Pass --disable-loadso, just to be sure.
+
+ -- Josselin Mouette <joss@debian.org>  Tue, 24 May 2011 22:51:57 +0200
+
+libsdl1.2 (1.2.14-6.3) unstable; urgency=low
+
+  * Non-maintainer upload with maintainer’s approval.
+  * Merge all builds into a single one, there is no more a reason to 
+    keep all these packages.
+  * Remove support for libaa (there’s libcaca), libsvga (directfb 
+    supports more architectures) and libesd (pulseaudio does much more).
+  * Remove obsolete sys-build.mk from source directory.
+
+ -- Josselin Mouette <joss@debian.org>  Sat, 16 Apr 2011 18:25:59 +0200
+
+libsdl1.2 (1.2.14-6.2) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Remove arts as build dependency as is being removed from the archive
+    (Closes: #620982, #581231).
+    - Remove libsdl1.2debian-arts.
+    - Remove references to arts in other packages that this source provides.
+    - Pass --disable-arts to the configure script.
+  
+  [ Ana Beatriz Guerrero Lopez ]
+
+  * Update uploaders, remove aurel32, joss and sho.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <perezmeyer@gmail.com>  Fri, 08 Apr 2011 23:35:29 +0200
+
+libsdl1.2 (1.2.14-6.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Disable altivec on powerpc.  Debian's powerpc port supports systems
+    without it, and libsdl's build system only pretends to do runtime
+    detection (closes: #572420).
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 10 Oct 2010 17:12:11 +0200
+
+libsdl1.2 (1.2.14-6) unstable; urgency=low
+
+  * Add 320_disappearingcursor.diff to fix problems with the mouse cursor
+    disappearing in OpenTTD using 1.2.14-5.  Partially reverts the fix for
+    upstream bug #716 (r4872); taken together with 310_fixmouseclicks,
+    the upstream fix is entirely reverted.  (Closes: #578389)
+    - Thanks to Adam D. Barratt!
+  * Add source format 1.0 for now.
+  * Bump Standards Version to 3.8.4. (No changes needed).
+
+ -- Barry deFreese <bdefreese@debian.org>  Fri, 30 Apr 2010 09:11:40 -0400
+
+libsdl1.2 (1.2.14-5) unstable; urgency=low
+
+  * Add 310_fixmouseclicks.diff to fix problems with left-mouse clicks
+      not working in Wesnoth in windowed mode.  Partially reverts the fix
+      for upstream bug #716 (r4872).  (Closes: #565788).
+      Thanks to Adam D. Barratt for the fix.
+
+ -- Barry deFreese <bdefreese@debian.org>  Fri, 16 Apr 2010 09:26:29 -0400
+
+libsdl1.2 (1.2.14-4) unstable; urgency=low
+
+  * Move -dev Recommends back to Depends, as other packages may want to 
+    statically link with libsdl.a. (Closes: #565579).
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sun, 31 Jan 2010 11:57:35 +0100
+
+libsdl1.2 (1.2.14-3) unstable; urgency=low
+
+  [ Barry deFreese ]
+  * Add build-dep on libglu1-mesa-dev to enable OpenGL support. (LP: #328932)
+  * Disable Playstation 3 Cell driver on PPC. (Closes: #564846).
+    + Thanks to Scott Kitterman at Ubuntu for finding fix from Gentoo.
+  * 222_joystick_crash.diff - Fix crash with dpad joystick. (Closes: #564831).
+    + Thanks to Tarek Soliman for catching the fix from upstream.
+
+ -- Barry deFreese <bdefreese@debian.org>  Tue, 12 Jan 2010 12:25:04 -0500
+
+libsdl1.2 (1.2.14-2) unstable; urgency=low
+
+  [ Barry deFreese ]
+  * Upload to unstable.
+  * Update 215_kfreebsd_gnu.diff patch to fix FTBFS on kFreeBSD.
+    + Thanks to Christoph Egger for the fix!
+  * Add ${misc:Depends} for binary packages for Debhelper package.
+
+ -- Barry deFreese <bdefreese@debian.org>  Mon, 11 Jan 2010 10:34:12 -0500
+
+libsdl1.2 (1.2.14-1) experimental; urgency=low
+
+  [ Barry deFreese ]
+  * New upstream release. (Closes: #557711).
+    + Remove patches that are applied upstream or code changed.
+    + Refresh remaining patches.
+
+ -- Barry deFreese <bdefreese@debian.org>  Fri, 27 Nov 2009 14:52:55 -0500
+
+libsdl1.2 (1.2.13-5) unstable; urgency=low
+
+  [ Barry deFreese ]
+  * Add myself to uploaders.
+  * Add watch file.
+  * Add Homepage: field to source stanza.
+  * Fix Vcs-Browser path.
+  * 310_segfault_noGLX.diff - Don't segfault when no GLX. (Closes: 541365).
+    + Thanks to Gonéri Le Bouder for the fix.
+  * 050_altivec_detection.diff - Detect Altivec machines. (Closes: #502993).
+    + Update 100_libtoolize.diff.
+  * 320_activate_xrandr_on_default.diff - Enable xrandr. (Closes: #450689).
+    + Thanks to Kai Wasserbäch for the patch.
+  * 221_check_SDL_NOKBD_environment_variable.diff. (Closes: #438915).
+    + Thanks to Bernhard Kauer for the patch.
+  * Remove manpage from libsdl1.2-dev.install, installed by dh_installman.
+  * Remove duplicate sections from binary packages.
+  * Bump debhelper build-dep version and compat to 5.
+  * Bump Standards Version to 3.8.3
+ 
+  [ Aurelien Jarno ]
+  * 100_config_update.diff: update config.guess/sub. (Closes: #549240).
+
+ -- Barry deFreese <bdefreese@debian.org>  Thu, 01 Oct 2009 16:45:49 -0400
+
+libsdl1.2 (1.2.13-4) unstable; urgency=low
+
+  * debian/control:
+    + Re-add libcaca-dev build-dependency that was inadvertently removed
+      (Closes: #501831).
+    + Drop Recommends: libcucul-dev now that it was merged into libcaca-dev.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Sun, 28 Sep 2008 10:44:48 +0000
+
+libsdl1.2 (1.2.13-3) unstable; urgency=low
+
+  * Remove patch 1.2.13 to 1.2.12 downgrade from the diff.gz (Closes: 
+    #472094, #467225).
+  * debian/patches/211_mprotect.diff
+    + Update.
+  * debian/patches/230_manpages.Diff
+    + New patch to fix syntax of the manpages.
+  * debian/patches/*.diff
+    + Refresh.
+  * debian/control:
+    + Set policy to 3.8.0.
+    + Switch build-dependency to libgl1-mesa-dev from xlibmesa-gl-dev.
+    + Switch dependency of libsdl1.2-dev to libglu1-mesa-dev from 
+      libglu1-xorg-dev.
+    + Increase the number of flavour to seven from four in the description
+      of libsdl1.2debian (Closes: #469378).
+  * debian/README.soucrce:
+    + New file.
+  * debian/libsdl1.2-dev.doc-base:
+    + Change the section from Apps/Programming to Programming.
+  * debian/rules:
+    + Add an udeb: line in shlibs files.
+    + Remove .pc/ in the clean target.
+  * debian/copyright:
+    + Fixes.
+  * debian/shlibs.local:
+    + Drop (Closes: #459262).
+  * debian/patches/219_pulseaudio_crackles.diff
+    + New patch to fix crackles with pulseaudio (Closes: #487900).
+
+ -- Aurelien Jarno <aurel32@debian.org>  Mon, 08 Sep 2008 08:35:19 +0200
+
+libsdl1.2 (1.2.13-2) unstable; urgency=low
+
+  * debian/patches/220_std_cld.diff
+    + Clear the direction flag at the end of inline assembly code when
+      it has been modified (Closes: #462794).
+
+ -- Aurelien Jarno <aurel32@debian.org>  Thu, 31 Jan 2008 02:41:54 +0100
+
+libsdl1.2 (1.2.13-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/patches/100_relibtoolize.diff
+    + Update.
+  * debian/patches/*.diff
+    + Refresh.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Wed, 02 Jan 2008 03:47:13 +0100
+
+libsdl1.2 (1.2.12-3) unstable; urgency=low
+
+  * debian/rules:
+    + Add --enable-pulseaudio-shared=no to the configure args.
+  * debian/patches/030_pulseaudio_enable.diff:
+    + Fix pulseaudio argument parsing (Closes: #446537).
+  * debian/patches/100_relibtoolize.diff
+    + Update.
+  * debian/control
+    + libsdl1.2debian-pulseaudio: don't self-replaces/conflicts.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Tue, 18 Dec 2007 00:12:23 +0100
+
+libsdl1.2 (1.2.12-2) unstable; urgency=low
+
+  * debian/control:
+    + Build-depend on x11proto-core-dev instead of x-dev.
+    + Cleaned up uploaders field.
+    + Fixed Vcs fields.
+    + Build-depend on libdirectfb-dev (>= 1.0) to depend on the newer
+      libdirectfb package (Closes: #455490).
+    + Set policy to 3.7.3.
+
+  * debian/patches/218_joystick_memmove.diff:
+    + Use memmove() instead of memcpy() in overlapping places.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Fri, 14 Dec 2007 15:31:15 +0000
+
+libsdl1.2 (1.2.12-1) unstable; urgency=low
+
+  * New upstream release (Closes: #438463).
+  * debian/patches/010_nas_detection_fix.diff
+    + Remove as it is now useless.
+  * debian/patches/013_builddir_support.diff
+    + Remove as it has been merged upstream.
+  * debian/patches/020_libcaca_new_api.diff
+    + Update and rediff.
+  * debian/patches/100_relibtoolize.diff
+    + Update.
+  * debian/patches/216_page_size.diff
+    + Update.
+  * debian/patches/218_double_free.diff
+    + Remove as it has been merged upstream.
+  * debian/control:
+    + Add libsdl1.2debian-pulseaudio package.
+    + Add libpulse-dev to Build-Depends.
+  * debian/rules:
+    + Pass --disable-pulseaudio for the udeb package.
+    + Add a pulseaudio flavour.
+    + Add support for DEB_BUILD_OPTIONS="parallel=n"
+
+ -- Aurelien Jarno <aurel32@debian.org>  Mon, 24 Sep 2007 15:09:43 +0200
+
+libsdl1.2 (1.2.11-9) unstable; urgency=low
+
+  [ Aurelien Jarno ]
+  * debian/control:
+    + Make the package binNMU safe.
+    + Use architectures in the depends line instead of variables.
+    + Add armel support (Closes: #425173).
+  * debian/rules:
+    + Remove the variables in the dh_gencontrol call.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Wed, 30 May 2007 16:20:42 +0200
+
+libsdl1.2 (1.2.11-8) unstable; urgency=high
+
+  * debian/control:
+    + Do not build-depend on nonexistent libdirectfb-dev on hurd-i386, thanks
+      to Samuel Thibault (Closes: #407870).
+    + Added XS-Vcs-Svn field.
+
+  * debian/patches/218_double_free.diff:
+    + Fix an invalid free() call, courtesy of Jiri Palecek (Closes: #380508,
+      Closes: #401950).
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Fri,  9 Feb 2007 16:09:04 +0100
+
+libsdl1.2 (1.2.11-7) unstable; urgency=high
+
+  * debian/control:
+    + Make libsdl1.2-dev depend on libx11-dev and libglu*-dev because SDL
+      headers need them (Closes: #396459).
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Wed,  1 Nov 2006 10:29:14 +0100
+
+libsdl1.2 (1.2.11-6) unstable; urgency=high
+
+  * debian/rules:
+    + Empty libSDL.la's dependency_libs (Closes: #396063).
+  * debian/control:
+    + Only recommend -dev packages, because they are not required for
+      dynamic linking.
+    + Add libcaca-dev and libcucul-dev to the -dev package's Recommends.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Mon, 30 Oct 2006 08:05:00 +0100
+
+libsdl1.2 (1.2.11-5) unstable; urgency=low
+
+  * debian/rules:
+    + Install manpages in the correct location (Closes: #386558).
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Tue, 24 Oct 2006 11:39:12 +0200
+
+libsdl1.2 (1.2.11-4) unstable; urgency=low
+
+  * debian/rules:
+    + Activate libcaca video driver.
+    + Do not remove manpages from -dev package (Closes: #386558). Not sure
+      why they were disabled.
+
+  * 020_libcaca_new_api.diff:
+    + Patch courtesy of Hanno Böck <mail@hboeck.de> to use SDL with newer
+      libcaca versions.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Fri, 29 Sep 2006 09:05:30 +0200
+
+libsdl1.2 (1.2.11-3) unstable; urgency=low
+
+  * debian/rules:
+    + Factored the udeb rules.
+
+  * debian/patches/017_x11_keytounicode.diff:
+    + New patch. Export X11_KeyToUnicode() to legacy applications, but warn
+      about such usage to stderr (Closes: #376560).
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Sun, 13 Aug 2006 19:03:51 +0200
+
+libsdl1.2 (1.2.11-2) unstable; urgency=low
+
+  * debian/control:
+    + Build-depend on libdirectfb-dev (>= 0.9.25.1) to make sure our binaries
+      no longer depend on libdirectfb-0.9-24.
+
+  * debian/patches/016_page_size.diff:
+    + New patch courtesy of Margarita Manterola. Fix an FTBFS on powerpc due
+      to PAGE_SIZE being dropped (Closes: #381248).
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Fri,  4 Aug 2006 12:15:55 +0200
+
+libsdl1.2 (1.2.11-1) unstable; urgency=low
+
+  * New upstream release.
+  * Upstream now uses pkgconfig, we ship the .pc files.
+  * Upstream fixed SDL_SetGamma() (Closes: #373756).
+  * Upstream fixed dynamic DRI support loading (Closes: #377287).
+
+  * debian/patches/000_no_yasm.diff:
+    + Do not try to detect yasm, it will fail to build. We want nasm.
+
+  * debian/patches/000_unlibfoolise.diff:
+    + Removed ugly stuff from acinclude.m4.
+
+  * debian/patches/000_builddir_support.diff:
+    + Fix alternate build directory support.
+
+  * debian/patches/100_dont_propagate_lpthread.diff:
+    + Do not propagate -lpthread to sdl-config --libs (Closes: #375822).
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Thu, 20 Jul 2006 14:17:18 +0200
+
+libsdl1.2 (1.2.10-4) unstable; urgency=low
+
+  * debian/rules:
+    + Fix a conditional syntax that broke magically.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Sun, 11 Jun 2006 16:02:14 +0200
+
+libsdl1.2 (1.2.10-3) unstable; urgency=low
+
+  * debian/rules, debian/control:
+    - Enable libsvga1 support on amd64.
+    - Explicitely disable libsvga support on other architectures to make 
+      sure that the resulting library will not be linked with libsvga1 if
+      libsvga1-dev is installed on the system.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sat,  3 Jun 2006 15:57:40 +0200
+
+libsdl1.2 (1.2.10-2) unstable; urgency=low
+
+  * Reduce the shlibs dependency from (>> 1.2.10-1) to (>= 1.2.10-1)
+    (Closes: #369999).
+
+ -- Aurelien Jarno <aurel32@debian.org>  Fri,  2 Jun 2006 20:44:26 +0200
+
+libsdl1.2 (1.2.10-1) unstable; urgency=low
+
+  * New upstream release (Closes: #368374).
+    + Transparent support with XGL (Closes: #368799).
+    + If the X libraries are UTF-8 aware, fix the Unicode result instead of
+      relying on XLookupString() (Closes: #361802).
+
+  [ Aurelien Jarno ]
+  * debian/control, debian/rules:
+    + Make libsdl1.2-dev depends on libushid-dev on GNU/kFreeBSD.
+  * debian/rules: move the list of libsdl1.2-dev doc files to libsdl1.2-dev,
+    and only call dh_installdocs once (Closes: #363113).
+  * debian/patches/015_kfreebsd_gnu.diff:
+    + Fixed and refreshed patches.
+
+  [ Sam Hocevar (Debian packages) ]
+  * Dropped DBS and tarball-in-tarball build method.
+  * Use quilt for patch management.
+  * debian/control:
+    + Build-depend on quilt instead of dbs.
+    + Set policy to 3.7.2.
+  * debian/rules:
+    + New symbols have been added to the library. Set SHLIBVER = (>> 1.2.10-1).
+
+  * debian/patches/005_x11_keysym_fix.diff:
+    + Disabled this patch because it breaks numerous programs that assume,
+      quite correctly, that a keysym actually represents the physical key
+      being pressed (Closes: #347709, #358870, #358976, #360872).
+
+  * debian/patches/007_directfb_924_fix.diff:
+  * debian/patches/010_bad_blit_test.diff:
+  * debian/patches/003_ppc_vidmode_fix.diff:
+  * debian/patches/006_gcc4_build.diff:
+  * debian/patches/004_gcc2_hack.diff:
+  * debian/patches/008_aalib_keys.diff:
+  * debian/patches/012_gnu_stack.diff:
+    + Removed patches that have been merged upstream.
+
+  * debian/patches/002_static_libs.diff:
+    + Removed deprecated patch. Upstream now builds both static and shared
+      libraries.
+
+  * debian/patches/000_nasm_include.diff:
+    + Feed -I$(srcdir)/src/hermes/ instead of -I$(srcdir)/ to nasm due to
+      upstream's new build system.
+
+  * debian/patches/000_autogen_autotools_fix.diff:
+  * debian/patches/000_relibtoolize.diff:
+  * debian/patches/011_mprotect.diff:
+    + Refreshed patches.
+
+  * debian/patches/013_hermes_pic_support.diff:
+    + Refreshed patch. Unfortunately upstream tried to solve the PIC problem
+      in a different way, which makes this patch useless for now. It needs
+      to be updated.
+    + Renamed common.asm to common.inc, because of upstream's build system
+      trying to build it as a standalone source file.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Wed, 31 May 2006 14:57:38 +0200
+
+libsdl1.2 (1.2.9-5) unstable; urgency=low
+
+  [ Sam Hocevar (Debian packages) ]
+  * debian/control:
+    + Added a directfb udeb that can be used by the Debian installer. Thanks
+      to Sven Luther for preparing the patch.
+  * debian/rules:
+    + Added build rules for the directfb udeb.
+
+  [ Aurelien Jarno ]
+  * debian/control:
+    + Changed linux-any into an explicit list of architectures.
+  * debian/patches/015_kfreebsd_gnu.diff:
+    + Link with libusbhid on GNU/kFreeBSD.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Tue, 21 Mar 2006 16:14:14 +0100
+
+libsdl1.2 (1.2.9-4) unstable; urgency=low
+
+  [ Sam Hocevar (Debian packages) ]
+  * debian/control:
+    + Build-depend on NASM.
+  * debian/rules:
+    + Build optimised blitting routines using NASM.
+    + Do not use --with-pic, this flag should only be used if we want the
+      static library to be PIC, too.
+
+  * debian/patches/000_nasm_include.diff:
+    + New patch: add -I$(srcdir)/ to the NASM flags so that we can include
+      common files.
+
+  * debian/patches/000_autogen_autotools_fix.diff:
+    + Do not run libtoolize in the test directory.
+
+  * debian/patches/000_relibtoolize.diff:
+    + Rebootstrapped directory.
+
+  * debian/patches/004_propagate_pic_to_nasm.diff:
+    + Do not strip -DPIC from the NASM compilation flags. They *are* useful.
+
+  * debian/patches/008_aalib_keys.diff:
+    + Arrow keys and the numeric keypad conflict in the aalib driver, make the
+      former take precedence (Closes: #170548).
+    + Fix a crash when aa_getevent returns a scancode value bigger than 400.
+
+  * debian/patches/009_alsa_priority.diff:
+    + When both are available, try the ALSA output driver before the OSS one.
+
+  * debian/patches/010_bad_blit_test.diff:
+    + New patch: "dst_w == last.src_w" should be "dst_w == last.dst_w" in
+      src/video/SDL_stretch.c.
+
+  * debian/patches/011_mprotect.diff:
+    + SDL_stretch.c: use mprotect() on the pages storing dynamically generated
+      code so that we still work on systems that enforce W^X.
+
+  * debian/patches/012_gnu_stack.diff:
+    + Add ".note.GNU-stack" sections to all NASM files so that gcc does not
+      think these files need an executable stack.
+
+  * debian/patches/013_hermes_pic_support.diff:
+    + Add PIC support to the Hermes assembly files, one step closer to a fully
+      PIC compliant libSDL.
+
+  * debian/patches/014_missing_mmx_blit.diff:
+    + New patch: ConvertMMXpII32_24RGB888 was not used anywhere, yet it is
+      fully functional. This patch activates it.
+
+  [ Aurelien Jarno ]
+  * debian/control:
+    + Build-depends on NASM for all i386 platforms
+    + Build-depends on libusbhid-dev on all kfreebsd platforms for joystick
+      support.
+    + Use legacy arches instead of arch aliases.
+
+  * debian/rules:
+    + Use NASM on all i386 platforms.
+    + Build SVGA support on linux i386 only.
+
+  * debian/patches/015_kfreebsd_gnu.diff:
+    + New patch: Fixes for joystick support on GNU/kFreeBSD.
+    
+ -- Aurelien Jarno <aurel32@debian.org>  Fri,  3 Mar 2006 20:14:19 +0100
+
+libsdl1.2 (1.2.9-3) unstable; urgency=low
+
+  * debian/rules:
+    + Fixed a bad make syntax that caused the alsa package to be empty.
+    + Got rid of the now useless MAKEFILE_INS variable.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Mon, 27 Feb 2006 23:32:03 +0100
+
+libsdl1.2 (1.2.9-2) unstable; urgency=low
+
+  * debian/rules:
+    + Support for the noopt DEB_BUILD_OPTIONS.
+    + General cleanup.
+    + Do not run autogen.sh because of the clean relibtoolize patch.
+  * debian/control:
+    + Removed the build dependency on automake1.7.
+    + Make the -dev package depend on libdirectfb-dev (>= 0.9.22).
+
+  * debian/patches/005_x11_keysym_fix.diff:
+    + Fixed this patch to cope with X11_SetKeyboardState() calling
+      X11_TranslateKey() with a NULL key event (Closes: #354524).
+
+  * debian/patches/000_autogen_autotools_fix.diff:
+    + Improved cleaning up in autogen.sh and activated AM_MAINTAINER_MODE.
+
+  * debian/patches/000_relibtoolize.diff:
+    + New diff for the re-autoconfiscated package.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Mon, 27 Feb 2006 10:58:16 +0100
+
+libsdl1.2 (1.2.9-1) unstable; urgency=low
+
+  * Maintainer upload.
+  * Friendly hijack of the SDL packages by a larger team. Acknowledging
+    previous NMUs (Closes: #291268, #291331, #315561, #317578, #318238,
+    Closes: #337668, #346957, #288988, #290221, #246447, #273018, #304998,
+    Closes: #308590, #314866, #171617, #319261, #335689, #349155). Thanks
+    to Steinar H. Gunderson for the latest NMU.
+
+  * debian/control:
+    + Removed |xlibs-dev from the -dev package's dependencies.
+    + Make the ALSA package the default alternative instead of OSS
+      (Closes: #349336, #331141).
+    + Build-depend on libdirectfb-dev.
+    + Got rid of debian/control.in and the type-handling build-dependency in
+      favour of dpkg-dev's new [linux-any] features.
+    + Set policy to 3.6.2.
+
+  * debian/rules:
+    + Activated DirectFB support (Closes: #150267, #152400).
+    + Use dh_installman instead of the deprecated dh_installmanpages.
+    + Add the ${libasound2-dev} substitution variable.
+
+  * debian/patches/005_x11_keysym_fix.diff:
+    + Patch courtesy of Jochen Voss to fix lookup of keys using eg. the
+      AltGr modifier (Closes: #299864).
+  * debian/patches/005_lock_keys.diff:
+    + Patch courtesy of Bas Wijnen to generate release events for lock keys
+      (Caps Lock and Num Lock) just like normal keys (Closes: #317010).
+  * debian/patches/007_directfb_924_fix.diff:
+    + Patch courtesy of Tony Houghton to fix DirectFB support (Closes: 152400).
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Sun, 26 Feb 2006 11:45:44 +0100
+
+libsdl1.2 (1.2.9-0.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Replace build-dependency on xlibs-dev with an explicit build-dependency
+    on each required package. (Closes: #346957)
+
+ -- Steinar H. Gunderson <sesse@debian.org>  Sat, 21 Jan 2006 12:56:27 +0100
+
+libsdl1.2 (1.2.9-0.0) unstable; urgency=low
+
+  * Non-maintainer upload. Once you get used to them...
+  * New upstream release (Closes: #319261). No API nor visible ABI changes.
+
+  * 002_rpath_disable.diff:
+    + Removed this patch. We now use the new --disable-rpath configure
+      option.
+  * 002_static_libs.diff:
+    + New patch that adds libaa’s required static libraries to sdl-config’s
+      --static-libs output (Closes: #273018, #246477).
+  * 004_amd64_asm_fix.diff:
+    + Removed this patch. It was applied upstream.
+  * 004_gcc2_hack.diff:
+    + New patch that reverts inline assembly in SDL_yuv_mmx.c to the syntax
+      used in version 1.2.7.
+  * 005_mounted_cdrom_fix.diff:
+    + Removed this patch. It was applied upstream.
+
+  * debian/control.in:
+    + Fixed xlibmesa-dev build-depend to xlibmesa-gl-dev (Closes: #337668).
+    + Add armeb support (Closes: #335689).
+    + Build-depend on debhelper version 4.
+  * debian/changelog:
+    + Fixed this file’s syntax by adding a fake date for an old entry.
+  * debian/copyright:
+    + Fixed the FSF address.
+  * debian/libsdl1.2-dev.doc-base:
+    + Register developer documentation in doc-base, patch courtesy of Bill
+      Allombert (Closes: #171617).
+  * debian/rules:
+    + Removed DH_COMPAT in favour of debian/compat, and set it to 4 becase
+      previous values are deprecated.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Sun, 13 Nov 2005 00:07:20 +0100
+
+libsdl1.2 (1.2.7+1.2.8cvs20041007-5.3) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * The "I hate debian/control.in" upload.
+  * debian/control.in:
+    + Make libsdl1.2-dev depend on libglu1-xorg-dev | libglu-dev to make the
+      Xorg transition smoother (Really fixes #318586).
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Sat, 16 Jul 2005 13:59:23 +0300
+
+libsdl1.2 (1.2.7+1.2.8cvs20041007-5.2) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * debian/control:
+    + Make libsdl1.2-dev depend on libglu1-xorg-dev | libglu-dev to make the
+      Xorg transition smoother (Closes: #318586).
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Sat, 16 Jul 2005 13:59:23 +0300
+
+libsdl1.2 (1.2.7+1.2.8cvs20041007-5.1) unstable; urgency=low
+
+  * Non-maintainer upload (libslang2 transition, Xorg transition).
+  * debian/control:
+    + Build-depend on libaa1-dev instead of aalib1-dev (Closes: #315561,
+      Closes: #317578).
+    + No longer build-depend on slang1-dev because aalib1-dev now depends on
+      libslang2-dev. As a result, the package builds fine with the UTF-8
+      version of slang (Closes: #304998).
+    + Build-depend on dpkg (>= 1.13.2) because debian/rules's use of
+      DEB_BUILD_ARCH_OS.
+    + Make libsdl1.2-dev depend on libglu1-xorg-dev.
+  * debian/patches/debian/patches/006_gcc4_build.diff:
+    + Patch courtesy of Sebastien Bacher to fix gcc-4 build (Closes: #308590).
+  * debian/rules:
+    + Cause the build rule to fail when a compilation error occurs.
+    + Use DEB_BUILD_ARCH_OS instead of DEB_BUILD_GNU_SYSTEM so that the ALSA
+      version is built on Linux (Closes: #314866).
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Wed, 13 Jul 2005 19:33:46 +0200
+
+libsdl1.2 (1.2.7+1.2.8cvs20041007-5) unstable; urgency=high
+
+  * Hopefully makes Sarge, as it includes a bug fix
+    (mounted cdrom fix) that should be in the Sarge release
+  * Fix (patch 005_mounted_cdrom_fix.diff) for cdrom support
+    sdl_syscdrom.c: SDL_CDOpen() fails on Linux if data track on
+    disc is mounted in the filesystem. Removing O_EXCL from open()
+    call fixes this.
+  * gcc4 compilation (patch 006_gcc4_compilation_fix.diff) (Closes: 294475)
+  * add ppc64 arch to libasound2-dev build depends (add ppc64 to 
+    debian/control and control.in) (Closes: 304527)
+
+ -- Lawrence Williams <lawrence_cecil_williams@hotmail.com>  Mon, 30 May 2005 17:15:10 -0330
+
+libsdl1.2 (1.2.7+1.2.8cvs20041007-4.1) unstable; urgency=high
+
+  * NMU for RC bug fix.
+  * Make libsdl1.2-dev depend on libartsc0-dev and libesd0-dev
+    (closes: #291268, #291331).
+  * Make it depend on libxt-dev instead of libx11-dev (closes: #288988).
+  * 004_amd64_asm_fix.diff: use the correct patch, not a patch-generating
+    patch (closes: #290221).
+
+ -- Josselin Mouette <joss@debian.org>  Sat, 22 Jan 2005 01:35:33 +0100
+
+libsdl1.2 (1.2.7+1.2.8cvs20041007-4) unstable; urgency=high
+
+  * High-urgency upload for sarge-targetted RC bugfix.
+  * Add --enable-alsa-shared=no to the configure args: "shared" here means
+    "opened with libdl", not just "shared library", so the default
+    option gets us a needless duplicate reference to libasound -- and
+    sometimes to the *wrong* libasound.  Closes: #285074; thanks to
+    Brenda J. Butler for her help in tracking this down.
+  * Added --enable-arts-shared=no and --enable-esd-shared=no for the
+    same reason as above ( library opened with libdl ). This makes the
+    dependencies correct, so do it.
+  * Removed hardcoded versioning for libasound2-dev in debian/rules and
+    Build-Depends. It is not needed at all. SDL works fine with all versions
+    libasound2 in Debian.
+  * Fixed generation of asm on amd64. Closes: #290221; thanks to
+    Daniel Schepler for the patch.
+
+ -- Lawrence Williams <lawrence_cecil_williams@hotmail.com>  Fri, 14 Jan 2005 17:29:08 -0330
+
+libsdl1.2 (1.2.7+1.2.8cvs20041007-3) unstable; urgency=medium
+
+  * Fixed ALSA bug by increasing depends to 1.0.7-3 (Closes: 285074).
+  * Disabled RPATH (Closes: 285499).
+  * Fixed PPC fullscreen vidmode problem (Closes: 285729).
+  * Added myself to Uploaders.
+  * Sponsored by Matthew Danish.
+
+ -- Lawrence Williams <lawrence_cecil_williams@hotmail.com>  Wed, 15 Dec 2004 11:04:10 -0330
+
+libsdl1.2 (1.2.7+1.2.8cvs20041007-2) unstable; urgency=medium
+
+  * Thanks go to Lawrence Williams ( lawrence_cecil_williams@hotmail.com )
+    for this release.
+  * Fixed libsdl.la invalid libdir bug (Closes: 284172)
+
+ -- Matthew Danish <mrd@debian.org>  Wed, 08 Dec 2004 23:27:25 -0500
+
+libsdl1.2 (1.2.7+1.2.8cvs20041007-1) unstable; urgency=medium
+
+  * Thanks go to Lawrence Williams ( lawrence_cecil_williams@hotmail.com )
+    for this release.
+  * Updated to 07/10/2004 CVS.
+  * Added --static-libs to sdl-config manpage.
+  * Added NAS support.
+  * Provide debian patches for autogen.sh ( needs automake 1.7 ) and 
+    configure.in ( fix for NAS support ).
+  * Added libaudio-dev, automake1.7 to Build-Depends.
+  * Added ./autogen.sh call in debian/rules ( makes package more portable 
+    and easier to maintain in the future ).
+  * (Closes: 273895, 217516, 220407, 252897, 159110, 170548, 203843)
+    (Closes: 238981, 264436, 159410, 137751, 213624)
+
+ -- Matthew Danish <mrd@debian.org>  Mon, 15 Nov 2004 02:14:10 -0500
+
+libsdl1.2 (1.2.7-10) unstable; urgency=low
+
+  * Fix bashism in vars.build, patch from Andreas Metzler.  (Closes: #269855) 
+
+ -- Matthew Danish <mrd@debian.org>  Sat,  4 Sep 2004 15:44:18 -0400
+
+libsdl1.2 (1.2.7-9) unstable; urgency=medium
+
+  * Patch from Andreas Metzler to fix libtool wackiness.  (Closes: #269581)
+
+ -- Matthew Danish <mrd@debian.org>  Sat,  4 Sep 2004 14:11:55 -0400
+
+libsdl1.2 (1.2.7-8) unstable; urgency=low
+
+  * Two patches from Robert Millan: (Closes: #263543) 
+    - ALSA dependency fix for certain platforms.
+    - Updated libtool.
+  * Removed gcc-3.4 patch, causing display bugs.  (Closes: #257257)
+
+ -- Matthew Danish <mrd@debian.org>  Wed,  1 Sep 2004 14:16:55 -0400
+
+libsdl1.2 (1.2.7-7) unstable; urgency=low
+
+  * Updates from CVS:
+    - joystick ioctl error checking, and "logical joystick" enhancement.
+    - Don't crash if SoftStretch used on hardware surface.
+    - Fix DirectFB crash on exit.
+    - Free X11 mouse cursor pixmaps properly in FreeWMCursor.
+    - Fix for gcc-3.4.0 / PIC; and cpuinfo detects more extensions now.
+    - Don't allow video modes larger than maximum size.
+    - Properly set error when OpenGL init fails.
+  * De-multilined Build-Depends and Uploaders field.
+  * Converted changelog to UTF-8.
+
+ -- Matthew Danish <mrd@debian.org>  Fri, 11 Jun 2004 22:30:47 -0400
+
+libsdl1.2 (1.2.7-6) unstable; urgency=low
+
+  * Fix from CVS for joystick FPE bug under kernel 2.6+udev. (Closes: #243279)
+
+ -- Matthew Danish <mrd@debian.org>  Mon, 19 Apr 2004 21:13:27 -0400
+
+libsdl1.2 (1.2.7-5) unstable; urgency=low
+
+  * Make libsdl1.2-dev depend upon libsvga1-dev only on i386
+    (Patch thanks to Andreas Metzler) (Closes: #240907).
+  * Revert Lamont's incorrect solution to #240907.
+  * Remove arch-exclusions on certain build-time libs 
+    that don't need it anymore.  (from Lamont Jones).
+
+ -- Matthew Danish <mrd@debian.org>  Fri,  2 Apr 2004 23:22:23 -0500
+
+libsdl1.2 (1.2.7-4.1) unstable; urgency=low
+
+  * Fix Dependencies, patch in bts.  Closes: #240907
+
+ -- LaMont Jones <lamont@debian.org>  Fri,  2 Apr 2004 07:26:31 -0700
+
+libsdl1.2 (1.2.7-4) unstable; urgency=low
+
+  * Added dependency on various supporting dev libraries to libsdl1.2-dev.
+    (Closes: #239931)
+
+ -- Matthew Danish <mrd@debian.org>  Sat, 27 Mar 2004 18:58:37 -0500
+
+libsdl1.2 (1.2.7-3) unstable; urgency=low
+
+  * Oops!  Adrian Bunk pointed out that I screwed up the Depends syntax for
+    libsdl1.2-dev.  (Closes: #239248)
+
+ -- Matthew Danish <mrd@debian.org>  Sun, 21 Mar 2004 19:11:54 -0500
+
+libsdl1.2 (1.2.7-2) unstable; urgency=low
+
+  * Patch from Michel Daenzer revamps debian/rules and introduces a separate
+    package for ALSA.  (Closes: #124106)
+  * Matto Marjanovic reports that AC_CANONICAL_TARGET should be
+    AC_CANONICAL_HOST in sdl.m4.  (Closes: #231217)
+  * SDL -dev package now respects X11 lib split thanks to Moritz Muehlenhoff.
+    (Closes: #235861)
+
+ -- Matthew Danish <mrd@debian.org>  Sat,  6 Mar 2004 15:20:41 -0500
+
+libsdl1.2 (1.2.7-1) unstable; urgency=low
+
+  * New upstream release. (Closes: #234298)
+  * Zephaniah Hull rewrote the build system to use DBS.
+  * Upstream fixed incompatibility with new ALSA library.
+    - Notification of API change: (Closes: #229319)
+    - Alternative patch unnecessary: (Closes: #233892)
+  * Sigaction patch incorporated upstream, removing from diff.
+  * Illegal instruction bug not occurring, either it was a mysterious
+    compiler bug or a bug that upstream very briefly referred to as
+    "fixed". (Closes: #230164)
+  * libSDL-1.2.so.0 is linked to libpthread. (Closes: #187375)
+
+ -- Matthew Danish <mrd@debian.org>  Sun, 22 Feb 2004 22:30:40 -0500
+
+libsdl1.2 (1.2.6-3) unstable; urgency=low
+
+  * Patch to fix powerpc fullscreen mode.  (Closes: #210406) 
+
+ -- Matthew Danish <mrd@debian.org>  Sun, 25 Jan 2004 18:32:51 -0500
+
+libsdl1.2 (1.2.6-2) unstable; urgency=low
+
+  * K*BSD patch (Robert Millan) (Closes: #206579).
+    - Note: inflates diff size by 10x, but fixes build on hurd, I'm told
+  * Removed rpath from sdl-config --libs (Closes: #185521) take two.
+  * Updating Standards-Version to 3.6.1
+  * ``Fix segfault in XFree86 mode switching'' patch from Alan Swanson.
+
+ -- Matthew Danish <mrd@debian.org>  Fri, 26 Sep 2003 10:50:05 -0400
+
+libsdl1.2 (1.2.6-1) unstable; urgency=low
+
+  * New upstream version (Closes: #207989).
+  * Applied http://www.libsdl.org/pipermail/sdl/2003-September/056168.html
+    patch to allow building with gcc 3.3.
+  * Applied my patch to make SDL use sigaction instead of signal.
+  * libsdl1.2-dev depends on xlibmesa-glu-dev | libglu-dev now (Closes: #188626).
+  * Removed -L/usr/lib from sdl-config --libs output (Closes: #185521).
+  * Added Build-Conflicts on automake1.7 to work-around a FTBFS bug for now
+    (Closes: #206575).
+  * Updated config.{sub,guess} 
+
+ -- Matthew Danish <mrd@debian.org>  Tue,  9 Sep 2003 00:29:00 -0400
+
+libsdl1.2 (1.2.5-8) unstable; urgency=low
+
+  * Fix stupid-shell-quoting error in generating shlib file (Closes: #196875) 
+
+ -- Matthew Danish <mrd@debian.org>  Tue, 10 Jun 2003 17:50:26 -0400
+
+libsdl1.2 (1.2.5-7) unstable; urgency=low
+
+  * We need a version convention for releases that the public might
+    see, but which are not uploaded.
+  * -3 was the last version uploaded, so:
+    -3: (closes: #185576)
+    -5: (closes: #196497)
+  * Compile with --enable-dlopen.
+
+ -- Zephaniah E. Hull <warp@debian.org>  Mon, 09 Jun 2003 21:22:17 -0400
+
+libsdl1.2 (1.2.5-6) unstable; urgency=low
+
+  * Ok!  And fix the last fix so that things actually /work/.
+  * Also compile with --enable-dlopen.
+
+ -- Zephaniah E. Hull <warp@debian.org>  Mon, 09 Jun 2003 18:03:55 -0400
+
+libsdl1.2 (1.2.5-5) unstable; urgency=low
+
+  * Fixed a bug with the X11_GL_Shutdown() patch that kept SDL from
+    linking properly.
+  * Fix an inline asm declaration to work with gcc 3.3.
+
+ -- Zephaniah E. Hull <warp@debian.org>  Sun, 25 May 2003 15:50:05 -0400
+
+libsdl1.2 (1.2.5-4) unstable; urgency=low
+
+  * Patched SDL_fatal.c to use sigaction appropriately instead of signal.
+    This allows sigaction-dependent applications such as SBCL to interface
+    correctly to libSDL.
+  * Patch from Pasi Kärkkäinen: fixes a bug in SDL which causes SDL to crash
+    in X11_GL_Shutdown() if you are using DRI/Mesa drivers AND glew
+  * Updated shlib files to use proper version number. (Closes: #185576)
+
+ -- Matthew Danish <mrd@debian.org>  Wed, 21 May 2003 01:19:37 -0400
+
+libsdl1.2 (1.2.5-3) unstable; urgency=low
+
+  * Changed libarts-dev build-dependency to newer libarts1-dev, as well
+    as libartsc0-dev. (Closes: #180036)
+  * Removed out-of-date shlibs.local entry for libartsc as well.
+
+ -- Matthew Danish <mrd@debian.org>  Fri,  7 Feb 2003 06:15:42 -0500
+
+libsdl1.2 (1.2.5-2) unstable; urgency=low
+
+  * Using ``mrd-sdl@debian.org'' as maintainer address.
+  * Updated config.{sub,guess}
+  * Calling configure ``the right way.''
+
+ -- Matthew Danish <mrd@debian.org>  Mon,  3 Feb 2003 18:00:58 -0500
+
+libsdl1.2 (1.2.5-1) unstable; urgency=low
+
+  * Initial ``adoption'' of package in conjunction with Zephaniah Hull.
+
+ -- Matthew Danish <mrd@debian.org>  Mon, 30 Dec 2002 12:41:37 -0500
+
+libsdl1.2 (1.2.5-0) unstable; urgency=low
+
+  * Maintainer Non-upload
+  * Hopefully fixed the auto* mess
+
+ -- Joseph Carter <knghtbrd@debian.org>  Sun, 29 Dec 2002 20:37:29 -0800
+
+libsdl1.2 (1.2.4-1) unstable; urgency=medium
+
+  * Okay, 1.2.4 release is good to go!
+  * Verified that examples _do_ compile properly (Closes: #139161)
+  * tests/testgl.c: The OpenGL test can run in 8 bit RGB mode, but it was
+    trying to initialize a 233 mode.  Only two bits of red?  How horrible!
+    This grievous injustice has been remidied.  =)
+  * Changes for 1.2.4-0.1:
+    - The fix from 1.2.3+cvs20020303-0.3 for upstream's -rpath silliness
+      was lost in 1.2.4-0, reapplied.
+    - SDL does not compile from source.  SDL build-depends on libasound1-dev
+      and libarts-dev, but libarts-dev now depends on libasound2-dev, which
+      doesn't compile with SDL 1.2.4 and under.  Applied upstream's patch to
+      build with libasound2-dev properly.  The patch Works For Me(TM) with
+      0.9+0beta12+3+p0 (try saying that ten times fast...)
+  * Changes for 1.2.4-0:
+    - New upstream version, here's the portion of the changelog which applies
+      to the woody packages:
+      - Place surfaces in video memory only if there are accellerated blits
+      - Bugfix to SDL's blitter (possible fix for #138153?)
+      - Part of SDL_opengl.h used a very non-free license, fixed
+      - GNU pthreads fixes
+      - Explicitly specifies the C calling convention for the API
+      These new features are disabled for woody, to minimize the chance of
+      breaking the package just before release:
+      - Support for DSO loading of EsounD/aRts
+      - Support for UNIX RDTSC code
+      - Support for 720x576 and 720x480 in fbcon
+
+ -- Joseph Carter <knghtbrd@debian.org>  Thu, 18 Apr 2002 20:51:46 +0000
+
+libsdl1.2 (1.2.4-0.1) unstable; urgency=medium
+
+  * Preliminary test package - not uploaded to Debian.
+
+ -- root <knghtbrd@debian.org>  Thu, 18 Apr 2002 14:55:53 +0000
+
+libsdl1.2 (1.2.4-0) unstable; urgency=medium
+
+  * Preliminary test package - not uploaded to Debian.
+
+ -- Joseph Carter <knghtbrd@debian.org>  Mon, 15 Apr 2002 18:04:49 +0000
+
+libsdl1.2 (1.2.3+cvs20020303-1) unstable; urgency=low
+
+  * Finally, a version to upload to Debian!
+  * No substantive changes over -0.5.  I didn't get the Sparc test I was
+    hoping for before uploading, but at the very least this package will
+    not break anything new.  It fixes much that was previously broken,
+    however, and should be considered for woody.
+  * Changes for 1.2.3+cvs20020303-0.5:
+    - autogen.sh: added --add-missing to automake, PowerPC's automake
+      wants depcomp.  Yuck.
+    - debian/rules, autogen.sh: Revenge of libtool for all the bashing I
+      gave it for the rpath mess, it isn't rebuilding properly.  Moved
+      libtoolize to autogen.sh and added the --automake parameter.
+  * Changes for 1.2.3+cvs20020303-0.4:
+    - Added build dep for libtool
+  * Changes for 1.2.3+cvs20020303-0.3:
+    - Proper fix for the rpath problem.  I hope.
+  * Changes for 1.2.3+cvs20020303-0.2:
+    - Things built with this package do not run with the current packages
+      in Debian.  Shlibs files fixed to depend on (>> 1.2.3).  Existing
+      packages need not be recompiled.
+    - 1.2.2-3.1 introduced new options for sdl-config which are no longer
+      needed.  To prevent build-from-source errors with woody packages,
+      these options are once again recognized.
+    - Attempt to fix libtool's rpath "feature"
+  * Changes for 1.2.3+cvs20020303-0.1:
+    - Fix for #128075 got lost in -0, put it back (Thanks Michel!)
+  * Changes for 1.2.3+cvs20020303-0:
+    - New upstream version (Closes: #135898)
+    - Upstream fix for #114808 brings Debian's ABI back inline with that
+      used by other distributions (Closes: #136237)
+    - Disabled GGI in the -all package.  This is against my stated
+      intention when adopting the package, however the GGI target is not
+      maintained upstream at this time.  A patch to fix support for GGI is
+      welcome, but for now Sam Lantinga has urged it be disabled.
+      (Closes: #108558)
+    - alsalib-dev has been removed from build deps.  libasound1-dev takes
+      its place explicitly, since that's currently the only version which
+      actually works with SDL.  libasound2 support is an upstream todo.
+    - Tweaked build for automake 1.5, thanks Denis! (Closes: #115422)
+    - Added automake to build deps for the above.
+    - The SDL and X Extension Library mess has been provided with a better
+      fix upstream.  (Closes: #128827, #122754)
+      [ This has since been confirmed to _not_ need package recompiles! ]
+    - Frobbed libsdl1.2debian's deps to prefer the -oss package by
+      default.  This is to stop people in #SDL and #OpenGL from whining
+      about how trying to install any SDL app with apt pulls in about 15
+      megs worth of cruft that 2/3 of all users could not possibly care
+      less about.  This is for you, Erik!  ;)
+  * Changes for 1.2.2-3.5:
+    - Adopted package.
+    - Remove config.cache in clean target (fixes a lintian error)
+
+ -- Joseph Carter <knghtbrd@debian.org>  Sat,  9 Mar 2002 08:26:17 +0000
+
+libsdl1.2 (1.2.3+cvs20020303-0.5) unstable; urgency=low
+
+  * Preliminary test package, not uploaded to Debian, changes above.
+
+ -- Joseph Carter <knghtbrd@debian.org>  Tue,  5 Mar 2002 13:46:10 +0000
+
+libsdl1.2 (1.2.3+cvs20020303-0.4) unstable; urgency=low
+
+  * Preliminary test package, not uploaded to Debian, changes above.
+
+ -- Joseph Carter <knghtbrd@debian.org>  Tue,  5 Mar 2002 12:20:59 +0000
+
+libsdl1.2 (1.2.3+cvs20020303-0.3) unstable; urgency=low
+
+  * Preliminary test package, not uploaded to Debian, changes above.
+
+ -- Joseph Carter <knghtbrd@debian.org>  Tue,  5 Mar 2002 08:07:57 +0000
+
+libsdl1.2 (1.2.3+cvs20020303-0.2) unstable; urgency=low
+
+  * Preliminary test package, not uploaded to Debian, changes above.
+
+ -- Joseph Carter <knghtbrd@debian.org>  Tue,  5 Mar 2002 05:05:02 +0000
+
+libsdl1.2 (1.2.3+cvs20020303-0.1) unstable; urgency=low
+
+  * Preliminary test package, not uploaded to Debian, changes above.
+
+ -- Joseph Carter <knghtbrd@debian.org>  Mon,  4 Mar 2002 12:35:33 +0000
+
+libsdl1.2 (1.2.3+cvs20020303-0) unstable; urgency=low
+
+  * Preliminary test package, not uploaded to Debian, changes above.
+
+ -- Joseph Carter <knghtbrd@debian.org>  Mon,  4 Mar 2002 09:35:33 +0000
+
+libsdl1.2 (1.2.2-3.5) unstable; urgency=low
+
+  * Preliminary test package, not uploaded to Debian, changes above.
+
+ -- Joseph Carter <knghtbrd@debian.org>  Mon,  4 Mar 2002 06:04:24 +0000
+
+libsdl1.2 (1.2.2-3.4) unstable; urgency=low
+
+  * NMU
+  * src/video/x11/SDL_x11modes.c: remove code which disables use of the VidMode
+    extension on powerpc and alpha (Closes: #128075)
+
+ -- Michel Daenzer <daenzer@debian.org>  Sun, 20 Jan 2002 14:50:12 +0100
+
+libsdl1.2 (1.2.2-3.3) unstable; urgency=low
+
+  * NMU
+  * sdl-config.in: implement --plugin-libs option
+  * debian/sdl-config.1:
+    - document --plugin-libs option
+    - wrote EXAMPLES section
+    - added myself to AUTHORS section (as author of the manpage only)
+  * sdl.m4: define and export SDL_LIBS_FOR_PLUGINS
+  * aclocal; automake --foreign; autoconf
+  * debian/control: libsdl1.2-dev Conflicts: xlibs-pic (<< 4.1.0-10)
+    *** This is presently a no-op because the first version of xlibs-pic was
+    *** 4.1.0-10.  This relationship is here as a placeholder to remind the
+    *** libsdl1.2 package maintainer to update the versioning in this conflict
+    *** if and when the APIs of the static X extension libraries that SDL uses
+    *** (libXxf86vm, libXxf86dga, and libXv) change.  This will ensure that
+    *** SDL-based plugins are compiled in an environment where the extension
+    *** libraries' API is what SDL expects it to be.  The libsdl1.2 package
+    *** maintainer should keep in touch with the XFree86 package maintainer
+    *** (and vice versa) to ensure that this package relationship is properly
+    *** declared.  Alternatively, perhaps one day those extension libraries
+    *** will become proper shared objects and we can all learn to stop
+    *** worrying and love the bomb.
+
+ -- Branden Robinson <branden@debian.org>  Tue, 25 Dec 2001 04:53:04 -0500
+
+libsdl1.2 (1.2.2-3.2) unstable; urgency=low
+
+  * NMU
+  * debian/control:
+    - libsdl1.2debian-all Provides: libsdl1.2-all
+    - libsdl1.2debian-arts Provides: libsdl1.2-arts
+    - libsdl1.2debian-esd Provides: libsdl1.2-esd
+    - libsdl1.2debian-oss Provides: libsdl1.2-oss
+    - the above changes are to smooth upgrades from libsdl1.2 (<< 1.2.2-3.1)
+    - set priority of libsdl1.2debian-{arts,esd,oss} to extra, due to Debian
+      Policy 2.2
+
+ -- Branden Robinson <branden@debian.org>  Sat, 20 Oct 2001 21:52:45 -0500
+
+libsdl1.2 (1.2.2-3.1) unstable; urgency=low
+
+  * NMU to fix the Big SDL and X Extension Library Problem (Closes: #114808)
+  * Thanks to Eric Gillespie, Jr. for help preparing this solution
+  * configure.in: remove XF86VMLIB, XF86DGALIB, XF86VMLIB hacks
+  * ltmain.sh: corrected a boatload of cases where unquoted,
+    possibly-undefined variables were used in string comparison tests
+  * sdl.m4: change macro AM_PATH_SDL for usage by shared libraries,
+    exporting SDL_LIBS_FOR_LIBS
+  * sdl-config.1: wrote a manual page for sdl-config
+  * sdl-config.in:
+    - added --library-libs option, to be used by libraries that want to use
+      sdl-config; ordinary apps can and should still use --libs (or
+      --static-libs)
+    - documented "--library-libs" option in usage message
+    - documented "--static-libs" option in usage message (when it is
+      available)
+  * re-ran libtoolize --force --copy; aclocal; automake --foreign; autoconf
+    (using libtool 1.4.2-1, automake 1.4-p4-1, autoconf 2.25-2)
+    64 files changed, 5350 insertions(+), 2379 deletions(-)
+  * debian/control:
+    - use xlibmesa-dev as a real alternative for build-dependency on libgl-dev
+    - use libasound1-dev as real alternative for build-dependency on
+      alsalib-dev (Closes: #114583)
+    - bumped Standards-Version
+    - cleaned up package descriptions a bit, and made the short
+      descriptions unique with respect to each other
+    - libsdl1.2-dev provides libsdl-dev
+    - renamed the actual shared library packages from "libsd1.2*" to
+      "libsdl1.2debian"; this is necessary because:
+      1) 3 static X extension libraries are no longer present in the libSDL
+         shared object on half the architectures in Debian;
+      2) SDL-dependent packages on those same architectures, if built
+         against libsdl1.2-dev 1.2.2-3, didn't link against the static X
+         extension libraries themselves, thanks to sdl-config being fixed
+         incorrectly in that same version;
+      3) Unresolved symbol errors are not something we want to subject our
+         users to;
+      4) It's better to rename the shared library packages than have them
+         all Conflict: with every existing package that depends on
+         libsdl1.2 (that's just asking for trouble).
+    - added appropriate Replaces and Conflicts to libsdl1.2debian* packages
+    - changed libsdl1.2debian dependency to be on libsdl1.2debian* packages
+  * debian/libsdl1.2debian-{all,arts,esd,oss}.lintian: added lintian overrides
+    file to suppress lintian error on i386 "shlib-with-non-pic-code"; this
+    warning is caused due to one of two problems:
+    1) There is a bug in the SDL's .asm files, since they are not written to
+       support PIC correctly; or
+    2) The SDL .asm files are written correctly, and NASM simply does not
+       produce a valid PIC object. IOW, it may look PIC, and work like PIC,
+       but isn't actually conforming to PIC specs in one way or another.
+    So it's either an upstream bug in libsdl1.2 or an upstream bug in nasm; in
+    any event, the error only appears on i386, which seems to be able to
+    handle the SDL shared library just fine anyway.  Thanks to Ben Collins for
+    this analysis.
+  * debian/libsdl1.2-dev.manpages: ship sdl-config.1 manpage
+  * debian/rules:
+    - add "--with-pic" to all configure calls (not sure why this isn't the
+      default)
+    - reference "libsdl1.2debian" where appropriate instead of "libsdl1.2"
+    - ship new lintian override files
+  * debian/shlibs.local: just cleaned up the whitespace
+
+ -- Branden Robinson <branden@debian.org>  Tue,  9 Oct 2001 12:40:28 -0500
+
+libsdl1.2 (1.2.2-3) unstable; urgency=low
+
+  * Applied patch from LaMont Jones <lamont@smallone.fc.hp.com>
+    to fix problems with static XFree86 libraries (closes: #104344)
+
+ -- Fredrik Hallenberg <hallon@debian.org>  Tue, 31 Jul 2001 17:27:05 +0200
+
+libsdl1.2 (1.2.2-2) unstable; urgency=low
+
+  * Build -dev package from the libsdl-oss configuration to reduce
+    dependencies (closes: #106830, #106684)
+
+ -- Fredrik Hallenberg <hallon@debian.org>  Fri, 27 Jul 2001 20:30:40 +0200
+
+libsdl1.2 (1.2.2-1) unstable; urgency=low
+
+  * New upstream release
+  * Don't call gamma functions in VidMode-extension if they are not available
+    (closes: #97262)
+  * Dependencies on dev-package are back, they are needed when linking with
+    libtool (closes: #103320)
+
+ -- Fredrik Hallenberg <hallon@debian.org>  Tue, 24 Jul 2001 17:27:33 +0200
+
+libsdl1.2 (1.2.1-3) unstable; urgency=low
+
+  * Don't strip -L/usr/lib in sdl-config.in (closes: #102610)
+  * Use DH_COMPAT=3
+  * Put examples in tar ball and remove unnecessary files (closes: #102097)
+
+ -- Fredrik Hallenberg <hallon@debian.org>  Sat, 30 Jun 2001 19:11:13 +0200
+
+libsdl1.2 (1.2.1-2) unstable; urgency=low
+
+  * Lib-files was missing from dev-package (closes: #101850)
+  * Fixed shlibs files for the new packages so the dummy package
+    is used for dependencies.
+
+ -- Fredrik Hallenberg <hallon@debian.org>  Sat, 23 Jun 2001 21:00:53 +0200
+
+libsdl1.2 (1.2.1-1) unstable; urgency=low
+
+  * New upstream release
+  * Made three extra packages with reduced dependencies.
+
+ -- Fredrik Hallenberg <hallon@debian.org>  Tue, 19 Jun 2001 09:37:00 +0200
+
+libsdl1.2 (1.2.0-3) unstable; urgency=low
+
+  * Build-depend on libgl-dev (closes: #99445)
+
+ -- Fredrik Hallenberg <hallon@debian.org>  Sun,  3 Jun 2001 20:36:41 +0200
+
+libsdl1.2 (1.2.0-2) unstable; urgency=low
+
+  * Build-depend on xlibs-dev
+  * Updated description (closes: #93535)
+  * Remove build-dependency on svgalib for alpha (closes: #93166)
+
+ -- Fredrik Hallenberg <hallon@debian.org>  Thu, 29 Mar 2001 21:10:56 +0200
+
+libsdl1.2 (1.2.0-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Fredrik Hallenberg <hallon@debian.org>  Tue, 27 Mar 2001 12:52:52 +0200

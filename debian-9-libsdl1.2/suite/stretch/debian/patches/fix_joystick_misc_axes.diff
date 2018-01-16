@@ -1,0 +1,22 @@
+Description: Left/Right Joystick Axis doesn't work with some controllers
+ Introduced in 1.2.15-3 (June 2012)
+ .
+ Reviewed in 2013-10-19 for SDL2 and SDL1.2 and submitted new upstream bug
+ report for re-evaluation, the previous one (suggested by the bug submitted) was
+ probably not related.
+Author: Sam Hocevar <sam@hocevar.net>
+Last-Update: 2013-10-19
+Bug-Debian: http://bugs.debian.org/673324
+Forwarded: https://bugzilla.libsdl.org/show_bug.cgi?id=2165
+
+--- a/src/joystick/linux/SDL_sysjoystick.c
++++ b/src/joystick/linux/SDL_sysjoystick.c
+@@ -702,7 +702,7 @@
+ 				++joystick->nbuttons;
+ 			}
+ 		}
+-		for ( i=0; i<ABS_MISC; ++i ) {
++		for ( i=0; i<ABS_MAX; ++i ) {
+ 			/* Skip hats */
+ 			if ( i == ABS_HAT0X ) {
+ 				i = ABS_HAT3Y;

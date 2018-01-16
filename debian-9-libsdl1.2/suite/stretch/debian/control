@@ -1,0 +1,81 @@
+Source: libsdl1.2
+Priority: optional
+Section: libs
+Maintainer: Debian SDL packages maintainers <pkg-sdl-maintainers@lists.alioth.debian.org>
+Uploaders: Felix Geyer <fgeyer@debian.org>,
+           Manuel A. Fernandez Montecelo <mafm@debian.org>
+Standards-Version: 3.9.7
+Build-Depends: debhelper (>= 9.20160114),
+               dh-autoreconf,
+               dpkg-dev (>= 1.16.1~),
+               nasm [any-i386],
+               libx11-dev, 
+               libxext-dev,
+               libxt-dev,
+               libxv-dev,
+               x11proto-core-dev,
+               libts-dev,
+               libaudiofile-dev,
+               libpulse-dev,
+               libgl1-mesa-dev,
+               libasound2-dev [linux-any],
+               libcaca-dev,
+               libdirectfb-dev (>= 1.0) [!hurd-i386],
+               libusbhid-dev [kfreebsd-any],
+               libglu1-mesa-dev
+Vcs-Git: https://anonscm.debian.org/git/pkg-sdl/packages/libsdl1.2.git
+Vcs-Browser: https://anonscm.debian.org/cgit/pkg-sdl/packages/libsdl1.2.git
+Homepage: http://www.libsdl.org/
+
+Package: libsdl1.2debian
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Replaces: libsdl1.2debian-all,
+          libsdl1.2debian-alsa,
+          libsdl1.2debian-esd,
+          libsdl1.2debian-oss,
+          libsdl1.2debian-nas,
+          libsdl1.2debian-pulseaudio
+Conflicts: libsdl1.2debian-all,
+           libsdl1.2debian-alsa,
+           libsdl1.2debian-esd,
+           libsdl1.2debian-oss,
+           libsdl1.2debian-nas,
+           libsdl1.2debian-pulseaudio,
+           libsdl1.2-all,
+           libsdl1.2-esd,
+           libsdl1.2-oss,
+           libsdl1.2-nas,
+           libsdl1.2
+Description: Simple DirectMedia Layer
+ SDL is a library that allows programs portable low level access to
+ a video framebuffer, audio output, mouse, and keyboard.
+ .
+ This version of SDL is compiled with X11, caca and DirectFB graphics 
+ drivers and OSS, ALSA, NAS and PulseAudio sound drivers.
+
+Package: libsdl1.2-dev
+Architecture: any
+Section: libdevel
+Depends: ${misc:Depends},
+         libsdl1.2debian (= ${binary:Version}),
+         libasound2-dev [linux-any],
+         libcaca-dev,
+         libdirectfb-dev (>= 0.9.22),
+         libglu1-mesa-dev | libglu-dev,
+         libpulse-dev,
+         libusbhid-dev [kfreebsd-any],
+         libx11-dev,
+         libts-dev,
+         libxext-dev
+Replaces: libsdl-dev
+Conflicts: libsdl-dev
+Provides: libsdl-dev
+Description: Simple DirectMedia Layer development files
+ SDL is a library that allows programs portable low level access to a video
+ framebuffer, audio output, mouse, and keyboard.
+ .
+ This package contains the files needed to compile and link programs which
+ use SDL.

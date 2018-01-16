@@ -1,0 +1,85 @@
+#!/usr/bin/make -f
+
+SHLIBVER = 1.2.11
+
+DEB_HOST_ARCH_CPU ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_CPU)
+
+confflags = --disable-rpath --enable-sdl-dlopen --disable-loadso \
+            --disable-video-ggi --disable-video-svga --disable-video-aalib \
+            --disable-nas --disable-esd --disable-arts \
+            --disable-alsa-shared --disable-pulseaudio-shared \
+            --disable-x11-shared \
+            --enable-video-directfb --enable-video-caca
+
+# Only use NASM routines on x86 CPUs
+ifeq ($(DEB_HOST_ARCH_CPU),i386)
+	confflags += --enable-nasm
+endif
+
+# Don't use PlayStation 3 Cell driver on powerpc and ppc64
+ifneq (,$(findstring $(DEB_HOST_ARCH_CPU),powerpc ppc64))
+	confflags += --enable-video-ps3=no \
+	             --disable-altivec
+endif
+
+
+# for reproducible builds, timestamps_in_tarball
+SOURCE_DATE := $(shell dpkg-parsechangelog --show-field=Date)
+
+
+%:
+	dh $@ --with autoreconf --parallel
+
+override_dh_autoreconf:
+        # aclocal needs to include in specific order, and/or it seems that
+        # doesn't try to find .m4 files in /usr/share/aclocal at all.  Updates
+        # to both .m4 files and ltmain.sh (aclocal and libtoolize) are necessary
+        # to support new architectures aarch64 (arm64) and powerpc64le, and this
+        # seems the more straight way to achieve it.
+        #
+        # An alternative would be to just build-depend on libesd0-dev,
+        # libasound2-dev and libltdl-dev to provide the files "esd.m4 alsa.m4
+        # ltdl.m4" in /usr/share/aclocal, and not use the local "acinclude" dir
+        # at all, but this pull even more dependencies, and unneeded ones.
+        #
+        # Another equivalent alternative, but more verbose:
+        #
+        # ACLOCAL="cat acinclude/esd.m4 acinclude/alsa.m4 acinclude/ltdl.m4 \
+        #           /usr/share/aclocal/libtool.m4 \
+        #           /usr/share/aclocal/ltoptions.m4 \
+        #           /usr/share/aclocal/ltversion.m4 \
+        #           /usr/share/aclocal/ltsugar.m4 >> aclocal.m4; aclocal"
+        #          LIBTOOLIZE="libtoolize -f -i" dh_autoreconf --as-needed
+        #          autoreconf -- -I acinclude -f -i
+	AUTOHEADER=true ACLOCAL="aclocal --force --install -I /usr/share/aclocal/ -I acinclude" LIBTOOLIZE="libtoolize -fi" dh_autoreconf --as-needed
+        # To verify that it worked, grep should find these strings:
+        #
+        #rgrep -i aarch64 .
+        #rgrep -r powerpc64le .
+
+override_dh_auto_configure:
+	dh_auto_configure -- $(confflags)
+
+override_dh_auto_build:
+	dh_auto_build
+	GZIP="-9n" tar czf debian/examples.tar.gz test --owner=0 --group=0 --mode=go=rX,u+rw,a-s --clamp-mtime --mtime="$(SOURCE_DATE)" --sort=name
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -f debian/examples.tar.gz
+
+override_dh_install:
+	dh_install --fail-missing -XlibSDL.la -XlibSDLmain.la
+
+override_dh_installdocs:
+	dh_installdocs -Xdocs/man3/SDL
+
+override_dh_installexamples:
+	dh_installexamples -plibsdl1.2-dev debian/examples.tar.gz
+	dh_installexamples --remaining-packages
+
+override_dh_makeshlibs:
+	dh_makeshlibs -V"libsdl1.2debian (>= $(SHLIBVER))"
+
+override_dh_strip:
+	dh_strip --dbgsym-migration='libsdl1.2-dbg (<< 1.2.15+dfsg1-4~)'
