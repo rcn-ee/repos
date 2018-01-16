@@ -1,0 +1,85 @@
+== HISTORY ==
+
+This package supersedes the xmame-* packages, as the unix sdl port of Mame
+has been integrated in official mame since 0.136.
+See http://rbelmont.mameworld.info/?p=519 for info.
+
+== QUICK START ==
+
+1. Create a folder "mame" and a subfolder "mame/roms" in your home directory.
+
+2. Download the freely available rom World Rally from http://gaelco.com
+and put the wrally.zip file in the "roms" folder.
+
+3. Check now the sanity of your roms. Mame is very picky about that.
+
+{{{
+mame -verifyroms
+
+wrally  : tibpal20l8-25cnt.b23 (260 bytes) - NOT FOUND - NO GOOD DUMP KNOWN
+wrally  : gal16v8-25lnc.h21 (260 bytes) - NOT FOUND - NO GOOD DUMP KNOWN
+wrally  : tibpal20l8-25cnt.h15 (260 bytes) - NOT FOUND - NO GOOD DUMP KNOWN
+romset wrally is best available
+mac2bios: macs2os_l.bin (524288 bytes) - NOT FOUND - NO GOOD DUMP KNOWN
+mac2bios: macs2os_h.bin (524288 bytes) - NOT FOUND - NO GOOD DUMP KNOWN
+romset mac2bios is best available
+2 romsets found, 2 were OK.
+}}}
+
+You can safely ignore the mac2bios warning.
+
+4. Now start Mame with the command "mame" from the shell 
+or from your desktop applications menu.
+
+5. Basic keyboard commands include
+  * 5 key to insert a coin
+  * 1 key to start the game 
+  * Tab key to access the mame internal menu
+
+6. If mame is way too slow on your computer and you have 3D hardware 
+acceleration available, change the "video" parameter from "soft" to "opengl"
+in the Mame configuration file.
+
+== DEFAULT FILES PATH ==
+
+  * MAME binary: {{{/usr/games/mame}}}
+  * MAME tools directory: {{{/usr/bin}}} (chdman, ldresample, ...)
+  * Configuration file: {{{$HOME/.mame/mame.ini}}} or {{{/etc/mame/mame.ini}}}
+  * Output folders: {{{$HOME/.mame}}} (memory cards, snapshots, ...)
+  * Core folders: {{{/usr/share/games/mame}}} (roms, cheats, ...)
+
+== ROMS AND CONFIGURATION ==
+
+A default configuration file is provided with the package and installed 
+in {{{/etc/mame/mame.ini}}}
+
+If you need to change the location of the roms folder or tweak something like 
+video or cheats you can either:
+  * make your own copy of {{{/etc/mame/mame.ini}}} in {{{$HOME/.mame/mame.ini}}} and edit that file (recommended)
+  * edit directly {{{/etc/mame/mame.ini}}} 
+
+You can verify that MAME has read the correct options with "{{{mame -showconfig}}}"
+and even create a fresh mame.ini file with "{{{mame -createconfig}}}".
+
+If you upgraded from a previous version of mame, you might have to replace your
+rom sets, see the [[http://bit.ly/nBnkIf|Mame FAQ on ROMs]].
+
+== TOOLS ==
+
+MAME utilities like chdman, jedutil, ldresample or ldverify are available in a
+separate extra package called DebianPkg:mame-tools.
+
+== PATCH ==
+
+This package uses quilt to manage all modifications to the upstream source.
+Changes are stored in the source package as diffs in debian/patches and applied
+during the build. See {{{/usr/share/doc/quilt/README.source}}} for a detailed
+explanation.
+
+== ARTWORK ==
+
+Backdrop, overlay and bezel artwork can be downloaded from http://mirror.xmission.com/mame/ individually or globally with the following command (provided your artwork search path is {{{$HOME/mame/artwork}}}, which is the default)
+{{{
+wget --no-directories --recursive   --directory-prefix $HOME/mame/artwork ftp://mirror.xmission.com/mame/artwork/
+}}}
+

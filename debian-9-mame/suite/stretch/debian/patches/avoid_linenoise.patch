@@ -1,0 +1,79 @@
+Author: Jordi Mallach <jordi@debian.org>
+Description: avoid compiling linenoise, that includes the non-free file
+ ConvertUTF.cpp.
+
+Index: mame/makefile
+===================================================================
+--- mame.orig/makefile
++++ mame/makefile
+@@ -779,6 +779,10 @@ endif
+ ifdef WEBASSEMBLY
+ PARAMS += --WEBASSEMBLY='$(WEBASSEMBLY)'
+ endif
++
++ifdef NO_USE_LINENOISE
++PARAMS += --NO_USE_LINENOISE=1
++endif
+ #-------------------------------------------------
+ # All scripts
+ #-------------------------------------------------
+Index: mame/scripts/genie.lua
+===================================================================
+--- mame.orig/scripts/genie.lua
++++ mame/scripts/genie.lua
+@@ -388,6 +388,11 @@ newoption {
+ }
+ 
+ newoption {
++	trigger = "NO_USE_LINENOISE",
++	description = "Avoid using linenoise for licensing reasons.",
++}
++
++newoption {
+ 	trigger = "PROJECT",
+ 	description = "Select projects to be built. Will look into project folder for files.",
+ }
+Index: mame/scripts/src/3rdparty.lua
+===================================================================
+--- mame.orig/scripts/src/3rdparty.lua
++++ mame/scripts/src/3rdparty.lua
+@@ -572,7 +572,7 @@ project "lualibs"
+ 	includedirs {
+ 		MAME_DIR .. "3rdparty",
+ 	}
+-if (_OPTIONS["osd"] ~= "uwp") then
++if (_OPTIONS["osd"] ~= "uwp") and (not _OPTIONS["NO_USE_LINENOISE"]) then
+ 	includedirs {
+ 		MAME_DIR .. "3rdparty/linenoise-ng/include",
+ 	}
+@@ -595,7 +595,7 @@ end
+ 		MAME_DIR .. "3rdparty/lua-zlib/lua_zlib.c",
+ 		MAME_DIR .. "3rdparty/luafilesystem/src/lfs.c",
+ 	}
+-if (_OPTIONS["osd"] == "uwp") then
++if (_OPTIONS["osd"] == "uwp") or (_OPTIONS["NO_USE_LINENOISE"]) then
+ 	files {
+ 		MAME_DIR .. "3rdparty/lua-linenoise/linenoise_none.c",
+ 	}
+@@ -1572,7 +1572,7 @@ end
+ --------------------------------------------------
+ -- linenoise-ng library
+ --------------------------------------------------
+-if (_OPTIONS["osd"] ~= "uwp") then
++if (_OPTIONS["osd"] ~= "uwp") and (not _OPTIONS["NO_USE_LINENOISE"]) then
+ project "linenoise-ng"
+ 	uuid "7320ffc8-2748-4add-8864-ae29b72a8511"
+ 	kind (LIBTYPE)
+Index: mame/scripts/src/main.lua
+===================================================================
+--- mame.orig/scripts/src/main.lua
++++ mame/scripts/src/main.lua
+@@ -267,7 +267,7 @@ if (STANDALONE~=true) then
+ 		ext_lib("lua"),
+ 		"lualibs",
+ 	}
+-if (_OPTIONS["osd"] ~= "uwp") then
++if (_OPTIONS["osd"] ~= "uwp") and (not _OPTIONS["NO_USE_LINENOISE"]) then
+ 	links {
+ 		"linenoise-ng",
+ 	}

@@ -1,0 +1,281 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+# Default/i386/amd64 options from sdlmame rules file by Cesare Falco.
+
+#export DH_VERBOSE = 1
+
+DEB_BUILD_ARCH ?= $(shell dpkg-architecture -qDEB_BUILD_ARCH)
+DEB_HOST_ARCH_BITS ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_BITS)
+
+# Define DEB_HOST_MULTIARCH for QT prefix handling
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
+# add c++ hardening options (upstream makefile doesn't use CPPFLAGS)
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+export DEB_CFLAGS_MAINT_APPEND = $(shell dpkg-buildflags --get CPPFLAGS)
+
+# Sacrifice linking speed to avoid using so much memory
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--no-keep-memory
+
+# taken verbatim from debian policy
+ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+MAKEFLAGS += -j$(NUMJOBS)
+endif
+
+# Override relevant make variables in original makefile
+DEB_OPTS = \
+    NOWERROR=1 \
+    OSD=sdl \
+    DEBUG= \
+    TARGETOS=linux \
+    DISTRO=debian-stable \
+    FORCE_DRC_C_BACKEND=1 \
+    PTR64= \
+    BIGENDIAN= \
+    NOASM=1 \
+    NO_USE_LINENOISE=1 \
+    QT_HOME=/usr/lib/$(DEB_HOST_MULTIARCH)/qt5/ \
+    USE_SYSTEM_LIB_EXPAT=1 \
+    USE_SYSTEM_LIB_ZLIB=1 \
+    USE_SYSTEM_LIB_JPEG=1 \
+    USE_SYSTEM_LIB_FLAC=1 \
+    USE_SYSTEM_LIB_LUA=lua5.3:/usr/include/lua5.3 \
+    USE_SYSTEM_LIB_SQLITE3=1 \
+    USE_SYSTEM_LIB_PORTMIDI=1 \
+    USE_SYSTEM_LIB_PORTAUDIO=1 \
+    USE_SYSTEM_LIB_UV=1 \
+    VERBOSE=1
+
+# Override make variables for specific archs
+# Linux architectures
+ifeq ($(DEB_HOST_ARCH),amd64)
+DEB_OPTS += \
+    FORCE_DRC_C_BACKEND= \
+    PTR64=1 \
+    NOASM=
+endif
+
+ifeq ($(DEB_HOST_ARCH),arm64)
+DEB_OPTS += \
+    ARCHOPTS="-mabi=lp64 -fPIC"
+endif
+
+ifeq ($(DEB_HOST_ARCH),i386)
+DEB_OPTS += \
+    FORCE_DRC_C_BACKEND= \
+    NOASM=
+endif
+
+ifeq ($(DEB_HOST_ARCH),ia64)
+DEB_OPTS += \
+    PTR64=1
+endif
+
+ifeq ($(DEB_HOST_ARCH),mips)
+DEB_OPTS += \
+    ARCHOPTS=-Umips \
+    BIGENDIAN=1
+endif
+
+ifeq ($(DEB_HOST_ARCH),mipsel)
+DEB_OPTS += \
+    ARCHOPTS=-Umips
+endif
+
+ifeq ($(DEB_HOST_ARCH),powerpc)
+DEB_OPTS += \
+    ARCHOPTS=-Upowerpc \
+    NOASM= \
+    BIGENDIAN=1
+endif
+
+ifeq ($(DEB_HOST_ARCH),ppc64)
+DEB_OPTS += \
+    PTR64=1 \
+    NOASM= \
+    BIGENDIAN=1
+endif
+
+ifeq ($(DEB_HOST_ARCH),ppc64el)
+DEB_OPTS += \
+    PTR64=1 \
+    NOASM=
+endif
+
+ifeq ($(DEB_HOST_ARCH),s390)
+DEB_OPTS += \
+    BIGENDIAN=1
+endif
+
+ifeq ($(DEB_HOST_ARCH),s390x)
+DEB_OPTS += \
+    PTR64=1 \
+    BIGENDIAN=1
+endif
+
+ifeq ($(DEB_HOST_ARCH),sparc)
+DEB_OPTS += \
+    BIGENDIAN=1
+endif
+
+ifeq ($(DEB_HOST_ARCH),sparc64)
+DEB_OPTS += \
+    PTR64=1 \
+    BIGENDIAN=1
+endif
+
+ifeq ($(DEB_HOST_ARCH),x32)
+DEB_OPTS += \
+    FORCE_DRC_C_BACKEND= \
+    NOASM=
+endif
+
+# kFreeBSD architectures
+ifeq ($(DEB_HOST_ARCH),kfreebsd-amd64)
+DEB_OPTS += \
+    TARGETOS=freebsd \
+    FORCE_DRC_C_BACKEND= \
+    PTR64=1 \
+    NOASM= \
+    USE_SYSTEM_LIB_PORTMIDI=
+export DEB_LDFLAGS_MAINT_APPEND = -ldl
+endif
+
+ifeq ($(DEB_HOST_ARCH),kfreebsd-i386)
+DEB_OPTS += \
+    TARGETOS=freebsd \
+    FORCE_DRC_C_BACKEND= \
+    NOASM= \
+    USE_SYSTEM_LIB_PORTMIDI=
+export DEB_LDFLAGS_MAINT_APPEND = -ldl
+endif
+
+# GNU/Hurd architecture
+ifeq ($(DEB_HOST_ARCH),hurd-i386)
+DEB_OPTS += \
+    TARGETOS=gnu \
+    FORCE_DRC_C_BACKEND= \
+    NOASM= \
+    USE_SYSTEM_LIB_PORTMIDI= \
+    NO_USE_MIDI=1
+endif
+
+DEB_MAME_OPTS = \
+    SDL_INI_PATH=/etc/mame \
+    FULLNAME=mame \
+    TARGET=mame \
+    SUBTARGET=mame \
+    TOOLS=1
+
+ifndef DEBUG
+# Disable -g entirely
+CFLAGS := $(CFLAGS:-g=-g0)
+endif
+
+%:
+	dh $@
+
+override_dh_auto_build-arch:
+	$(MAKE) $(DEB_OPTS) $(DEB_MAME_OPTS)
+	-mv mame64 mame #FIXME
+	$(CURDIR)/mame -createconfig
+	mv mame.ini default.mame.ini
+	mv plugin.ini default.plugin.ini
+	mv ui.ini default.ui.ini
+
+override_dh_auto_build-indep:
+	$(MAKE) -C docs singlehtml
+
+override_dh_auto_test-arch:
+	# Run MAME's internal validation tests
+	-$(CURDIR)/mame -validate
+
+override_dh_install:
+	dh_install --fail-missing \
+		   --exclude=dir.txt \
+		   --exclude=LICENSE \
+		   --exclude=README.md \
+		   --exclude=jquery.js \
+		   --exclude=underscore.js
+
+override_dh_installchangelogs:
+	dh_installchangelogs whatsnew.txt
+
+override_dh_fixperms-arch:
+	dh_fixperms
+	find debian/mame/etc/mame -type f -execdir chmod 644 {} \;
+
+override_dh_fixperms-indep:
+	dh_fixperms
+	find debian/mame-data/usr/share/games/mame/artwork -type f -execdir chmod 644 {} \;
+	find debian/mame-data/usr/share/games/mame/bgfx -type f -execdir chmod 644 {} \;
+	find debian/mame-data/usr/share/games/mame/ctrlr -type f -execdir chmod 644 {} \;
+	find debian/mame-data/usr/share/games/mame/fonts -type f -execdir chmod 644 {} \;
+	find debian/mame-data/usr/share/games/mame/hash -type f -execdir chmod 644 {} \;
+	find debian/mame-data/usr/share/games/mame/keymaps -type f -execdir chmod 644 {} \;
+	find debian/mame-data/usr/share/games/mame/language -type f -name "*.po" -delete
+	find debian/mame-data/usr/share/games/mame/language -type f -execdir chmod 644 {} \;
+	find debian/mame-data/usr/share/games/mame/plugins -type f -execdir chmod 644 {} \;
+
+PKD := $(abspath $(dir $(MAKEFILE_LIST)))
+PKG := $(shell dpkg-parsechangelog -l$(PKD)/changelog --show-field=Source)
+DTYPE :=
+VER ?= $(shell dpkg-parsechangelog -l$(PKD)/changelog --show-field=Version | sed -e 's/\(.*\)-.*/\1/')
+# Upstream source has no dot in its name, so we have to cut it out
+UVER := $(shell echo $(VER) | sed -e 's/\.//' )
+TMPDIR := $(shell mktemp --dry-run --directory -p .)
+
+.PHONY: get-orig-source
+get-orig-source: $(PKG)_$(VER)$(DTYPE).orig.tar.xz $(info I: $(PKG)_$(VER)$(DTYPE))
+	@
+
+$(PKG)_$(VER)$(DTYPE).orig.tar.xz:
+	@echo "# Downloading..."
+	uscan --noconf --verbose --rename --destdir=$(CURDIR) \
+        --check-dirname-level=0 --force-download \
+        --download-version $(VER) $(PKD)
+	@echo "# Extracting..."
+	mkdir -p $(TMPDIR)/$(PKG)-$(VER)
+	tar -xzf $(PKG)_$(VER).orig.tar.gz --strip-component=1 \
+        -C $(TMPDIR)/$(PKG)-$(VER)/ --exclude=\.*
+	@echo "# Cleaning-up..."
+	# Remove binaries and other cruft
+	cd $(TMPDIR)/$(PKG)-$(VER) && make clean && make cleansrc
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/.mame_version
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/3rdparty/zlib/contrib/dotzlib/DotZLib.chm
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/3rdparty/bx/tools/bin/linux/bin2c
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/3rdparty/bx/tools/bin/linux/genie
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/3rdparty/bx/tools/bin/linux/ninja
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/3rdparty/bx/tools/bin/windows/bin2c.exe
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/3rdparty/bx/tools/bin/windows/genie.exe
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/3rdparty/bx/tools/bin/windows/ninja.exe
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/3rdparty/bgfx/3rdparty/remotery/vis/extern/BrowserLib/Core/Code/Convert.js
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/3rdparty/bgfx/3rdparty/scintilla/src/Editor.cxx.orig
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/3rdparty/bgfx/3rdparty/scintilla/gtk/makefile.orig
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/3rdparty/glm/doc/api
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/3rdparty/linenoise-ng/src/ConvertUTF.*
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/3rdparty/lzma/7zr.exe
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/3rdparty/lzma/lzma.exe
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/3rdparty/portmidi/pm_java/JavaExe.exe
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/3rdparty/portmidi/pm_java/UpdateRsrcJavaExe.exe
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/3rdparty/portmidi/pm_csharp/pm_managed/app.rc
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/3rdparty/portmidi/pm_csharp/pm_managed/resource.h
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/3rdparty/portmidi/pm_java/pmjni/pmjni.rc
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/3rdparty/portmidi/pm_java/setup/pmdefaults-setup.exe
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/android-project/gradle/wrapper/gradle-wrapper.jar
+	rm -rf $(TMPDIR)/$(PKG)-$(VER)/3rdparty/zlib/contrib/dotzlib/DotZLib.chm
+	# Add upstream changelog and other useful bits distributed separately
+	wget https://github.com/mamedev/build/archive/master.zip
+	unzip -oqjd $(TMPDIR) master.zip \
+        *mamedirs.zip *whatsnew_$(UVER).txt
+	mv $(TMPDIR)/whatsnew_$(UVER).txt \
+        $(TMPDIR)/$(PKG)-$(VER)/whatsnew.txt
+	unzip -oqd $(TMPDIR)/$(PKG)-$(VER)/ $(TMPDIR)/mamedirs.zip
+	@echo "# Packing..."
+	tar -C $(TMPDIR) -cf - $(PKG)-$(VER) | xz -9c > $(PKG)_$(VER)$(DTYPE).orig.tar.xz
+	rm -rf $(TMPDIR) $(PKG)_$(VER).orig.tar.gz master.zip

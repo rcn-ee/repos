@@ -1,0 +1,11 @@
+diff --git a/3rdparty/bx/include/compat/freebsd/dirent.h b/3rdparty/bx/include/compat/freebsd/dirent.h
+index b4f586b..5f52d2d 100644
+--- a/3rdparty/bx/include/compat/freebsd/dirent.h
++++ b/3rdparty/bx/include/compat/freebsd/dirent.h
+@@ -1 +1,5 @@
+-#include <sys/dirent.h>
++#if defined(__GLIBC__)
++#   include_next <dirent.h>
++#else
++#   include <sys/dirent.h>
++#endif

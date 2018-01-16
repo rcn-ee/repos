@@ -1,0 +1,19 @@
+Author: Jordi Mallach <jordi@debian.org>
+Description: Use the packaged version of MathJax.
+ Avoid a privacy breach by using the packaged version of
+ libjs-mathjax in the generated sphinx docs.
+Forwarded: no
+
+Index: mame-0.178/docs/source/conf.py
+===================================================================
+--- mame-0.178.orig/docs/source/conf.py
++++ mame-0.178/docs/source/conf.py
+@@ -38,7 +38,7 @@ edit_on_github_project = 'mamedev/docs'
+ edit_on_github_branch = 'master/source'
+ 
+ # Math
+-mathjax_path = "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
++mathjax_path = "file:///usr/share/javascript/mathjax/config/TeX-AMS-MML_HTMLorMML.js"
+ 
+ # Add any paths that contain templates here, relative to this directory.
+ templates_path = ['_templates']

@@ -1,0 +1,793 @@
+mame (0.182-1rcnee0~stretch+20180116) stretch; urgency=low
+
+  * Rebuild for repos.rcn-ee.com
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Tue, 16 Jan 2018 16:19:52 -0600
+
+mame (0.182-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Add kfreebsd_dirent.h_path.patch to fix dirent.h include path for
+    kFreeBSD builds (thanks Steven Chamberlain; closes: #852507).
+  * Drop ConvertUTF.* from the tarball as it is under the Unicode
+    non-free license.
+  * Add avoid_linenoise.patch: define NO_USE_LINENOISE and guard uses of
+    linenoise code with it, to avoid the need to compile 3rdparty/linenoise.
+
+ -- Jordi Mallach <jordi@debian.org>  Thu, 26 Jan 2017 01:56:43 +0100
+
+mame (0.181-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Bump debhelper compat to v10.
+  * Refresh patches.
+
+ -- Jordi Mallach <jordi@debian.org>  Wed, 28 Dec 2016 13:01:35 +0100
+
+mame (0.180-1) unstable; urgency=medium
+
+  * New upstream release
+  [ Cesare Falco ]
+  * Refresh patches.
+
+  [ Jordi Mallach ]
+  * Switch back to GCC6 for arm64, as the compiler regression is now fixed.
+
+ -- Jordi Mallach <jordi@debian.org>  Wed, 14 Dec 2016 12:37:35 +0100
+
+mame (0.179-2) unstable; urgency=medium
+
+  * Add -fPIC to arm64 ARCHOPTS to workaround yet another build issue.
+  * Add m68000_archopts.patch: Add $(ARCHOPTS) to compiler invocation in the
+    standalone m68000 makefile.
+
+ -- Jordi Mallach <jordi@debian.org>  Fri, 04 Nov 2016 11:15:21 +0100
+
+mame (0.179-1) unstable; urgency=medium
+
+  * New upstream release.
+  * hurd.patch: use the correct include for pthread_safe().
+  * Build-Depend on and set CC/CXX to gcc-5/g++-5 on arm64, to workaround
+    a GCC 6 bug that causes MAME to FTBFS (closes: #840468).
+  * Demote libjs-sphinxdoc and libjs-mathjax to Suggests, as the docs are
+    still readable without those installed.
+  * Remove testkeys and add floptool to mame-tools' description.
+
+ -- Jordi Mallach <jordi@debian.org>  Thu, 27 Oct 2016 10:30:19 +0200
+
+mame (0.178-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Add Build-Depends-Indep on python3-sphinx.
+  * Build the singlehtml flavour of docs.
+  * Add a new binary package mame-doc and move all the (generated) docs
+    to this package.
+  * Let mame suggest mame-doc.
+  * Exclude the install of jquery.js and underscore.js, and instead
+    depend and symlink to the packaged versions.
+  * Add sphinx_mathjax_location.patch: point at the local filesystem
+    path of the mathjax javascript, to avoid a privacy breach when opening
+    the docs in a browser.
+  * Add Depends on libjs-sphinxdoc and libjs-mathjax.
+  * Register the html docs with doc-base.
+  * Remove obsolete reference to MESS in mame-tools' description.
+  * Add missing patch headers.
+
+ -- Jordi Mallach <jordi@debian.org>  Thu, 29 Sep 2016 02:40:06 +0200
+
+mame (0.177-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Drop x32.patch, merged upstream.
+  * Adapt packaging to massive upstream docs rewrite.
+  * Install whatsnew.txt as upstream changelog.
+  * Enable all hardening options.
+  * Add the non-minified version of modernizr.js to d/missing-sources,
+    taken from the modernizr-2.6.2+ds1-1 Debian source package.
+
+ -- Jordi Mallach <jordi@debian.org>  Tue, 27 Sep 2016 18:15:28 +0200
+
+mame (0.176-3) unstable; urgency=medium
+
+  * Drop Build-Depends on subversion, nothing uses it these days, and it
+    was actually only necessary for get-orig-source target.
+  * Add x32.patch: fix incorrect detection of 64 bit architecture in
+    rapidjson, adding a check for __x86_64__ && __ILP32__, to fix a
+    build error on x32.
+
+ -- Jordi Mallach <jordi@debian.org>  Thu, 18 Aug 2016 18:13:13 +0200
+
+mame (0.176-2) unstable; urgency=medium
+
+  * Brown paper bag time: fix perms for /etc/mame contents in
+    override_dh_fixperms-arch, to fix arch:all builds.
+
+ -- Jordi Mallach <jordi@debian.org>  Thu, 28 Jul 2016 08:45:37 +0200
+
+mame (0.176-1) unstable; urgency=medium
+
+  [ Jordi Mallach ]
+  * New upstream release.
+    - Includes Steven Chamberlain's kfreebsd fixes for several build errors
+      on kfreebsd-*. Many thanks! (closes: #830974)
+    - Includes fixes for ppc64el builds (closes: #825483).
+  * Install bgfx, language, plugins and uismall.bdf files in mame-data.
+    Thanks to Vas Crabb for pointing this out.
+  * Add a override_dh_auto_test that just runs "mame -valid" after the build.
+    For now, make it non-fatal.
+  * Add some additional docs to the mame binary.
+  * Use system libuv.
+  * Install default plugin.ini and ui.ini files as examples.
+  * Add an empty override_dh_auto_build-indep rule, so arch-independent
+    don't actually build the whole thing. Also rename dh_auto_test to
+    their -arch variants.
+  * Add libutil-freebsd-dev to Build-Depends for kfreebsd-any.
+  * Add hurd.patch with some fixes to the build on hurd-i386 systems.
+  * Add a makefile hack to allow building on a "gnu" platform with genie.
+  * Drop remove-m64_flag_for_mips64el_alpha.patch, merged upstream.
+  * Make mame build verbosely by default, without entangling it to DH_VERBOSE.
+  * Remove generated doxygen docs for a 3rdparty module from source (lintian).
+  * Prune more generated binaries from the source tarball (lintian).
+  * Remove unused lintian overrides.
+
+  [ Cesare Falco ]
+  * Improved get-orig-source target
+  * Updated mame.ini files to most recent *path entries
+  * Install samples and additional .ini files as well
+
+ -- Jordi Mallach <jordi@debian.org>  Thu, 28 Jul 2016 07:28:07 +0200
+
+mame (0.175-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Rename and extend mips64el patch to attempt to fix alpha's similar
+    build failure.
+  * Build with included portmidi on kfreebsd-* architectures, as system
+    libportmidi-dev is not available on these.
+  * Add -ldl to LDFLAGS on kFreeBSD to fix an early build failure.
+  * Make GENIEOS=freebsd so the actual genie binary is called.
+
+ -- Jordi Mallach <jordi@debian.org>  Tue, 05 Jul 2016 18:14:40 +0200
+
+mame (0.174-1) unstable; urgency=medium
+
+  [ Cesare Falco ]
+  * New upstream release (LP: #1590678) (LP: #1562705)
+  * Removed patches now included upstream
+  * debian/rules:
+    - x32 has 32bit pointers, split amd64 rule
+    - reduce memory required by ld on all archs (Ubuntu)
+    - remove -g gcc switch when no DEBUG required
+
+  [ Jordi Mallach ]
+  * debian/rules: don't set PTR64 on mips64el.
+  * Add removing-m64_flag_for_mips64el.patch: avoid using -m64 on mips64el
+    to fix a FTBFS. Thanks to Daniel Knezevic for the patch (closes: #827798).
+
+ -- Jordi Mallach <jordi@debian.org>  Mon, 04 Jul 2016 16:05:33 +0200
+
+mame (0.173-6) unstable; urgency=medium
+
+  * Brown paper bag release.
+  * Revert x32 change in -5 that broke amd64 build.
+  * Substitute all uses of DEB_HOST_ARCH with DEB_BUILD_ARCH.
+
+ -- Jordi Mallach <jordi@debian.org>  Sat, 21 May 2016 02:43:43 +0200
+
+mame (0.173-5) unstable; urgency=medium
+
+  * Fix syntax error in arch_ppc_fixes.patch. Hopefully fixes ppc64el build.
+  * Try to fix x32 by defining PTR64 as in amd64.
+
+ -- Jordi Mallach <jordi@debian.org>  Mon, 16 May 2016 11:49:00 +0200
+
+mame (0.173-4) unstable; urgency=medium
+
+  * Define arch bits for alpha, ppc64 and mips64el.
+  * Add arch_ppc_fixes.patch: cherrypick from git to fix compilation on
+    Little Endian PPC targets.
+
+ -- Jordi Mallach <jordi@debian.org>  Sun, 15 May 2016 00:16:30 +0200
+
+mame (0.173-3) experimental; urgency=medium
+
+  * Define DEB_HOST_ARCH_BITS and, if the build is for a 32 bit arch,
+    - pass -g0 as CFLAGS.
+    - pass -Wl,--no-keep-memory to the linker.
+    Hopefully this fixes the build on 32 bit architectures.
+
+ -- Jordi Mallach <jordi@debian.org>  Sat, 14 May 2016 00:06:00 +0200
+
+mame (0.173-2) experimental; urgency=medium
+
+  * Add ftbfs_v60_m_fetch_xor.patch: cherrypick from git to fix a compile
+    error on several Debian architectures.
+  * Define PTR64 and BIGENDIAN for sparc64.
+
+ -- Jordi Mallach <jordi@debian.org>  Fri, 13 May 2016 00:15:16 +0200
+
+mame (0.173-1) unstable; urgency=medium
+
+  [ Cesare Falco ]
+  * debian/rules
+    - Remove dh_override_autoclean, use external debian/clean file instead
+    - Update get-orig-source to better fit upstream repository structure
+    - Now full build log can be requested by setting DH_VERBOSE
+    - Enable build optimizations, they increase performance greatly
+    - Some arch-specific tuning
+  * Removed refs to jquery library, no longer needed
+
+  [ Jordi Mallach ]
+  * New upstream release.
+    - Shows MAME's program name in lowercase in help output (closes: #747859)
+  * Drop date_timestamp.patch, fixed upstream.
+  * Add an additional source lintian override.
+  * Bump Standards-Version to 3.9.8.
+  * Define QT_HOME to /usr/lib/<triplet>/qt5/ and drop qt5_build.patch.
+    Thanks again to Sune Vuorela.
+  * Update copyright file for new sources.
+  * Don't install testkeys, as it no longer exists.
+  * Don't try to cleanup rapidjson non-free bits that are now gone upstream.
+  * Install manpages from new source location.
+  * Don't chmod data dirs unconditionally, use `find -type f` instead to
+    avoid installing dirs with wrong perms.
+  * Remove new binaries and cruft from upstream sources.
+
+ -- Jordi Mallach <jordi@debian.org>  Mon, 02 May 2016 14:20:14 +0200
+
+mame (0.172-1) unstable; urgency=medium
+
+  * New upstream release (closes: #794119).
+    - MAME is now licensed under the GPL-2
+  * Move to main section (closes: #816831).
+  * Massive update of debian/copyright to adapt to licensing changes.
+  * Add License paragraphs for all minor variants of BSD and custom licenses.
+  * Update MESS references in mame-tools' description.
+  * Update Build-Depends:
+    - libportaudio-dev → portaudio19-dev
+    - libqt4-dev → qtbase5-dev
+  * Build against system sqlite3. Define USE_SYSTEM_LIB_SQLITE3=1 and
+    add libsqlite3-dev to B-Ds.
+  * Build against system lua5.3. Define USE_SYSTEM_LIB_LUA passing Debian's
+    Lua5.3 path to the build system, and add liblua5.3-dev to B-Ds
+    (lua-zlib and lua-filesystem still unsupported).
+  * Add date_timestamp.patch: remove date of build, which is pointless and
+    makes the binary non-reproducible.
+  * Make the build verbose and remove obsolete define SDL_LIBVER.
+  * Don't try to install web/* data in mame-data, it no longer exists.
+  * Avoid installing LICENSE files for CC0-1.0.
+  * Add some extra info to mame-tools' short description.
+  * Use secure URLs for Vcs-* fields, and point to cgit instead of gitweb.
+  * Remove mame.menu and install/mame.xpm.
+  * Update Standards-Version to 3.9.7, no changes needed.
+  * Add qt5_build.patch: add -qt5 parametres to all calls of moc and qmake.
+    Patch by Sune Vuorela, thanks!
+  * Remove non-free bits of rapidjson and all generated binaries and files
+    from the orig tarball at get-orig-source rule to appease lintian.
+  * Update debian/mame.ini with some upstream changes to config.
+  * Add lintian overrides for all source issues on 3rdparty modules we don't
+    compile.
+  * Add another source lintian override for a false positive on rapidjson's
+    "The Software shall be used for Good, not Evil" clause.
+
+ -- Jordi Mallach <jordi@debian.org>  Thu, 14 Apr 2016 22:26:53 +0200
+
+mame (0.164-1) unstable; urgency=medium
+
+  * New upstream release
+  * Accomodate to massive upstream make process refactoring:
+    - debian/patches:
+      + Dropped gnu-fixes patch
+    - debian/rules: Reworked makefile variables overrides
+  * After upstream merge of MESS into MAME:
+    - removed mess package
+    - renamed mess-data package to mame-data
+
+ -- Cesare Falco <c.falco@ubuntu.com>  Thu, 28 May 2015 05:49:01 +0200
+
+mame (0.160-1) unstable; urgency=medium
+
+  * New upstream release
+  * debian/patches:
+    - removed man pages updates, contributed upstream
+    - updated gnu-fixes to new source layout
+
+ -- Cesare Falco <c.falco@ubuntu.com>  Fri, 27 Mar 2015 16:03:45 +0100
+
+mame (0.159-1) unstable; urgency=medium
+
+  * New upstream release
+  * debian/patches:
+    - removed tools linkage fix
+    - added man pages updates
+
+ -- Cesare Falco <c.falco@ubuntu.com>  Fri, 27 Feb 2015 08:29:26 +0100
+
+mame (0.158-1) unstable; urgency=medium
+
+  * New upstream release
+  * Fix permissions in mess-data resource files
+  * debian/patches: fix tools linkage against system libraries
+
+ -- Cesare Falco <c.falco@ubuntu.com>  Thu, 05 Feb 2015 09:31:58 +0100
+
+mame (0.157-1) unstable; urgency=medium
+
+  * New upstream release
+  * debian/patches: removed manpages updates, contributed upstream
+
+ -- Cesare Falco <c.falco@ubuntu.com>  Fri, 02 Jan 2015 16:53:49 +0100
+
+mame (0.156-1) unstable; urgency=medium
+
+  * New upstream release
+  * Updated man pages patch
+  * Switch to SDL 2.0 on upstream recommendation
+  * Improved mame.ini consistency by simlinking
+    /usr/share/games/mess/* directories in /usr/share/games/mame/
+
+ -- Cesare Falco <c.falco@ubuntu.com>  Mon, 08 Dec 2014 22:14:47 +0100
+
+mame (0.155-1) unstable; urgency=medium
+
+  * New upstream release
+  * Removed old patches accepted upstream
+  * New patch: fix typos and bump version in manpages
+  * Use system jQuery lib instead of embedded one
+  * Improved menu entries:
+    + Added Keywords= entry in desktop files
+    + Reworked and translated text into italian in desktop files
+    + Added icons and menu file for Mess
+  * Updated get-orig-source, upstream repo moved to Github
+  * Reworked ctrlr dir, including cfg files now distributed upstream
+
+ -- Cesare Falco <c.falco@ubuntu.com>  Mon, 27 Oct 2014 08:25:54 +0100
+
+mame (0.154-3.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Change dependency to libjpeg-dev. Closes: #765822
+
+ -- Andreas Barth <aba@ayous.org>  Wed, 22 Oct 2014 21:54:14 +0000
+
+mame (0.154-3) unstable; urgency=medium
+
+  [ Cesare Falco ]
+  * Build embedded libportmidi for kfreebsd and hurd archs
+    (libportmidi-dev not available)
+  * Removed lintian warnings:
+    + Fixed License: headers in debian/copyright:
+      - Added some short names
+      - Removed unused paragraph CC-BY-3.0
+    + Improved hardening:
+      - Use dpkg-buildflags in debian/rules
+      - Bump to level 9 in debian/compat
+  * Make specific build options override general ones
+
+  [ Jordi Mallach ]
+  * Switch to libjpeg-dev Build-Dep for the libjpeg-turbo transition
+    (closes: #708716).
+
+ -- Jordi Mallach <jordi@debian.org>  Mon, 20 Oct 2014 11:30:12 +0200
+
+mame (0.154-2) unstable; urgency=medium
+
+  * debian/rules: Reworked arch specific variables (FTBFS arm64 ppc64el)
+
+ -- Cesare Falco <c.falco@ubuntu.com>  Sat, 30 Aug 2014 10:43:04 +0200
+
+mame (0.154-1) UNRELEASED; urgency=medium
+
+  * New upstream release
+  * debian/control:
+    + Bump debhelper version
+    + Added dep on libsqlite3
+  * debian/patches: updated manpages
+
+ -- Cesare Falco <c.falco@ubuntu.com>  Tue, 12 Aug 2014 20:34:04 +0200
+
+mame (0.153-1) UNRELEASED; urgency=low
+
+  * New upstream release
+  * mame-tools: added floptool utility
+  * debian/patches: updated manpages
+
+ -- Cesare Falco <c.falco@ubuntu.com>  Mon, 14 Apr 2014 22:46:19 +0200
+
+mame (0.152-1) UNRELEASED; urgency=low
+
+  * New upstream release
+  * debian/control:
+    + Bump debhelper version
+    + Remove dep on gcc 4.6 (use distro default)
+    + Make dep on QT stricter, 4.7 or more (upstream recommendation)
+    + Add dep on subversion, used by get-orig-source
+  * debian/rules:
+    + get-orig-source: retrieve source from svn (upstream recommendation)
+
+ -- Cesare Falco <c.falco@ubuntu.com>  Tue, 11 Feb 2014 00:05:14 +0100
+
+mame (0.151-1) UNRELEASED; urgency=low
+
+  * New upstream release
+  * debian/patches:
+    - removed manpages updates, accepted upstream
+    - removed hack to set document root, now read from ini files
+
+ -- Cesare Falco <c.falco@ubuntu.com>  Tue, 05 Nov 2013 22:12:38 +0100
+
+mame (0.150-1) UNRELEASED; urgency=low
+
+  * New upstream release
+  * debian/patches:
+    + updated gnu fixes
+    + updated man pages
+    + new: set the internal webserver document root
+
+ -- Cesare Falco <c.falco@ubuntu.com>  Sun, 23 Sep 2013 15:35:55 +0200
+
+mame (0.149-1) UNRELEASED; urgency=low
+
+  * New upstream release
+  * debian/control: updated deps according to new debugger based on QT
+  * debian/patches:
+    + updated gnu fixes
+    + removed check for gcc 4.6 fix, accepted upstream
+    + reworked manpages after forwarding previous patch upstream
+  * debian/rules: removed erase-upstream target
+  * mess-data: updated keymap files location
+
+ -- Cesare Falco <c.falco@ubuntu.com>  Wed, 12 Jun 2013 09:54:12 +0200
+
+mame (0.148-1) experimental; urgency=low
+
+  [ Cesare Falco ]
+  * New upstream release
+  * debian/patches:
+    + Reworked updates to man pages, removed those previously accepted upstream
+    + Fix check for gcc 4.6 in makefile
+  * debian/watch
+    + Download mamexxxs.exe, smaller than mamexxxs.zip
+  * debian/rules:
+    + Unset BUILD_MIDILIB flag to allow linking system Portmidi library
+    + Removed trailing CR stripping, not needed any more by gcc/g++/patch
+    + Reworked get-orig-source for main mame tarball
+  * Removed mess-related man pages, accepted upstream
+  * Split mame-extra stuff into a separate source package
+  * Rearranged distribution of documentation in binary packages
+
+  [ Jordi Mallach ]
+  * Add get-orig-source to PHONY.
+  * Use default compression for the debian tar.
+
+ -- Jordi Mallach <jordi@debian.org>  Thu, 28 Mar 2013 23:51:51 -0500
+
+mame (0.147-2) experimental; urgency=low
+
+  [ Jordi Mallach ]
+  * Fix mame-extra's description.
+  * Add necessary Breaks/Replaces for the nplayers.ini move to mame-extra.
+
+  [ Emmanuel Kasper ]
+  * Removing -mtune=generic build options: optimizing gain is minimal
+    and segfault on i386 may occured if we use it
+
+ -- Jordi Mallach <jordi@debian.org>  Tue, 08 Jan 2013 00:40:39 +0100
+
+mame (0.147-1) experimental; urgency=low
+
+  [ Cesare Falco ]
+  * New upstream release
+  * Updated quilt patches
+  * Removed all transitional packages related to xmame and sdlmame
+  * Mess source imported in Mame project; packages merged accordingly
+  * mame.ini:
+    - pointed hash- and ctrlrpath entries to mess-data directories
+  * mess.ini:
+    - added uimodekey entry (default doesn't work)
+  * New mame-extra packages for additional files:
+    - nplayers.ini (moved from mame)
+    - history.dat (new)
+  * debian/copyright:
+    - added history file
+    - various fixes
+  * debian/rules:
+    - Removed duplicate NOWERROR make variable in debian/rules
+    - Changelogs removed upstream
+    - Added targets for Mess and tools
+    - get-orig-source:
+      + retrieve .exe, significantly smaller than .zip
+      + added rules for history file
+  * debian/watch: added history file
+
+  [ Jon Dowland ]
+  * Remove deprecated dm-upload-allowed from the control file.
+
+  [ Emmanuel Kasper ]
+  * Remove Felix and Ludo from Uploaders, following request in private mail.
+  * Bump Standards-Version to 3.9.4
+
+  [ Jordi Mallach ]
+  * Avoid using xz -9, both for generated tarballs and binaries; gains us
+    little and is a big burden for some buidds.
+
+ -- Jordi Mallach <jordi@debian.org>  Mon, 07 Jan 2013 16:35:27 +0100
+
+mame (0.146-5) unstable; urgency=low
+
+  [ Cesare Falco ]
+  * Replace -march with -mtune=generic gcc flag for compatibility issues
+    with older CPUs (LP: #1063993)
+
+  [ Emmanuel Kasper ]
+  * Add support for parallel building using DEB_BUILD_OPTIONS
+  * Reorganize default paths:
+       $HOME/.mame for ini file and output files
+       $HOME/mame for data search paths
+
+ -- Emmanuel Kasper <emmanuel@libera.cc>  Tue, 13 Nov 2012 22:54:27 +0100
+
+mame (0.146-4) unstable; urgency=low
+
+  * Removes danglink symlink after xmame-sdl,xmame-x,xmame-svga update.
+    closes: bug#687654, #689718
+
+ -- Emmanuel Kasper <emmanuel@libera.cc>  Tue, 09 Oct 2012 19:45:03 +0200
+
+mame (0.146-3) experimental; urgency=low
+
+  * Add preinst script for xmame-x,xmame-sdl,xmame-svga as a fix for #687654
+
+ -- Emmanuel Kasper <emmanuel@libera.cc>  Mon, 08 Oct 2012 15:27:37 +0200
+
+mame (0.146-2) unstable; urgency=low
+
+  [ Cesare Falco ] 
+  * mame.ini: start mame in full screen until issue solved in Ubuntu, see:
+    https://bugs.launchpad.net/ubuntu/+source/mame/+bug/994508
+  * Man page updated to 0.146
+  
+  [ Emmanuel Kasper ]
+  * Default gcc optimize flag switched to -O2 (-O3 segfaults on arm and i386)
+
+ -- Emmanuel Kasper <emmanuel@libera.cc>  Thu, 19 Jul 2012 22:15:16 +0200
+
+mame (0.146-1) unstable; urgency=low
+
+  [ Emmanuel Kasper ]
+  * New upstream release
+  * Drop patch to fix man pages section and patches to link with flac 
+    and jpeg system lib: all this has been pushed upstream by Cesare Falco
+  * Add DM-Upload-Allowed: yes field.
+
+  [ Jordi Mallach ]
+  * Create a "gnu" TARGETOS stanza that defines NO_AFFINITY_NP.
+  * Stop setting TARGETOS to "unix" in d/rules. It should be autodetected,
+    and set to the appropriate value.
+  * mame_manpage_section.patch: Change mame's manpage section to 6 (games),
+    in the TH declaration.
+
+ -- Jordi Mallach <jordi@debian.org>  Tue, 05 Jun 2012 20:02:23 +0200
+
+mame (0.145-1) unstable; urgency=low
+
+  [ Emmanuel Kasper ]
+  * New upstream release (closes: #663429)
+  * New patch: makefile switch to link system flac library
+  * Remove "all" from build target as we build the tools in mess package
+  * Yet another batch of syntax errors in DEP5 copyright file corrected
+
+  [ Cesare Falco ]
+  * Improve backward compatibility in Ubuntu:
+    * Added /usr/local/* paths in mame.ini
+    * Some cleanup and refactoring in control
+  * Make lintian happier:
+    * Included BSD licence in copyright
+    * Fixed Section: header in control
+  * New patch: makefile switch to link system jpeg library
+  * Packaged nplayers as a supplemental tarball
+  * Removed references to mess
+    * Swept out any remaining debris in debian/*
+    * Don't compile tools, as mame-tools is now build by mess
+
+  [ Jordi Mallach ]
+  * gnu_fixes.patch: Add a check for __GNU__ to fix builds on the Hurd.
+  * Point to the 1.0 machine-readable copyright format spec.
+  * Make get-orig-source target drop tarballs in the current directory,
+    as policy mandates.
+  * Bump Standards-Version to 3.9.3.
+  * Remove leading slashes from mame.dirs.
+  * Add back Section field for transitional packages, but switch to oldlibs
+    (as opposed to metapackages), which apparently is what everyone is doing
+    due to lintian.
+
+ -- Jordi Mallach <jordi@debian.org>  Sat, 12 May 2012 11:01:21 +0200
+
+mame (0.144-1) unstable; urgency=low
+
+  [ Jordi Mallach ]
+  * Fix syntax errors in DEP5 copyright file (lintian).
+  * Use a versioned copyright Format specification field.
+  * Update Vcs-* URLs.
+  * Move transitional packages to the new metapackages section, and make
+    them priority extra.
+  * Remove references to GNU/Linux and MESS sources from copyright.
+  * Add build variables for s390x.
+  * Use .xz tarballs as it cuts 4MB for the upstream sources.
+  * Add nplayers.ini as a patch. Update copyright file to add CC-BY-SA-3.0.
+
+  [ Emmanuel Kasper ]
+  * New upstream release. Closes: #651538.
+  * Add Free Desktop compliant png icons of various sizes taken from
+    the hydroxygen iconset
+  * Mess is now built from a new source package, to avoid possible source
+    incompatibilities between mame and the mess overlay.
+  * Mame-tools are not built from the mame source package anymore, but
+    from the mess source package
+
+ -- Jordi Mallach <jordi@debian.org>  Mon, 19 Dec 2011 22:56:27 +0100
+
+mame (0.143-3) unstable; urgency=low
+
+  * Avoid ignoring "make clean" errors.
+  * There is no need to override dh_builddeb: debian/source/options
+    already does it for us.
+  * Add necessary Breaks for sdlmame and sdlmame-tools to ensure smooth
+    upgrades from Ubuntu and other unofficial repositories (closes: #635858).
+
+ -- Jordi Mallach <jordi@debian.org>  Thu, 04 Aug 2011 17:35:44 +0200
+
+mame (0.143-2) unstable; urgency=low
+
+  * Fix builds on MIPS, adding -Umips to ARCHOPTS (Emmanuel Kasper).
+  * Make xmess-sdl and xmess-x Architecture: all.
+  * Make mess-data's short description unique.
+
+ -- Jordi Mallach <jordi@debian.org>  Mon, 18 Jul 2011 00:50:07 +0200
+
+mame (0.143-1) unstable; urgency=low
+
+  [ Emmanuel Kasper ]
+  * New upstream release
+  * Start by default in windowed mode
+  * Add missing resources directories to match our default mess.ini
+
+  [ Félix Arreola Rodríguez ]
+  * Remove kfreebsd-build.patch (fixed upstream)
+
+ -- Jordi Mallach <jordi@debian.org>  Wed, 13 Jul 2011 23:45:22 +0200
+
+mame (0.142-2) unstable; urgency=low
+
+  [ Jordi Mallach ]
+  * Add the necessary variables to fix s390 and sparc builds (they are big
+    endian and have no targetted DRC implementation).
+  * Add variables for mips and ia64.
+  * Modify get-orig-source to also fetch MESS sources and build a new
+    dpkg source component tarball.
+  * Add a new mess binary package and transitional packages for xmess-*
+    (closes: #507932). 
+  * Setup the source dir to enable building mess even if its source is in
+    a mess subdir, by creating necessary symlinks and directory renames
+    before the build, and restoring everything on clean.
+  * Rework debian/rules as needed to make mess fit in.
+  * Create a minimal mess.ini (identical to mame.ini).
+  * Add castool and imgtool to mame-tools.
+  * Improve desktop file and translate it to Catalan.
+
+  [ Cesare Falco ]
+  * Initial merge from Ubuntu package.
+  * Some imports from corresponding debian/ files from Ubuntu package:
+    - control: sdlmame/sdlmame-tools transitional packages
+      (upgrading from Ubuntu 10.04 LTS still needs them)
+    - rules:
+      + override dh_installchangelogs instead of dh_auto_install
+      + override_dh_install, exclude keymaps for OSX
+      + renamed clean to override_dh_auto_clean, moved up
+      + strip CR from source files
+    - watch: added URL for MESS
+    - mame-tools: removed unidasm, tool intended for development only
+    - manpages for mess, castool and imgtool
+
+  [ Emmanuel Kasper ]
+  * Remove executable bit set by windows on all mess hash files 
+  * Fix clean rule on a clean tree.
+  * Add copyright information for MESS sources.
+  * Remove symlinking of megatech.xml.
+  * Add README.Debian for the mess binary package.
+  * Create a mess-data package for mess architecture independent files
+
+ -- Jordi Mallach <jordi@debian.org>  Thu, 12 May 2011 16:37:27 +0200
+
+mame (0.142-1) unstable; urgency=low
+
+  [ Emmanuel Kasper ]
+  * New upstream release
+  * Set NOWERROR=1 to allow compiling with gcc-4.6
+  * Remove fix_powerpc_build.patch, as upstream has taken it in this release
+  * Add gnome-video-arcade front end as a suggested package
+
+  [ Félix Arreola Rodríguez ]
+  * Add kfreebsd-build.patch to quilt series, to fix build on kfreebsd
+
+  [ Jordi Mallach ]
+  * Remove unneeded and bogus addition of --with-quilt to the dh invocation.
+  * Add Cesare Falco (long time Ubuntu maintainer) to Uploaders, and wrap
+    them into multiple lines.
+
+ -- Jordi Mallach <jordi@debian.org>  Wed, 11 May 2011 21:06:50 +0200
+
+mame (0.141-3) unstable; urgency=low
+
+  [ Emmanuel Kasper ]
+  * Add make variables to build on GNU/kFreeBSD
+
+  [ Jordi Mallach ]
+  * Add fix_powerpc_build.patch: Fix an incorrectly declared ifdef that
+    made big-endian builds fail.
+  * Set NOASM=1 globally, and unset for the targets that are known to have
+    a native ASM implementation (x86 and ppc). Builds for most other
+    Debian architectures will fail due to memory alignment issues, though.
+  * Add a minimal mame.ini, only showing the default paths options and
+    other important options like "video" or "multithreading", and install
+    it as a proper conffile.
+  * Remove mame.postinst and mame.prerm, to stop generating a mame.ini
+    file on postinst, which was never being updated on upgrades.
+  * If the generated mame.ini in 0.141-1 or 0.141-2 is not modified,
+    remove mame.ini to avoid a dpkg conffile prompt.
+  * Autogenerate a mame.ini using mame -createconfig after the build is
+    done, and install it as an example.
+  * Change all uses of Conflicts to Breaks.
+  * Bump debhelper compat version to 8.
+  * Bump Standards-Version to 3.9.2 (no changes needed).
+  * Use bzip2 for the debian tar.
+  * Upload to unstable.
+
+ -- Jordi Mallach <jordi@debian.org>  Fri, 22 Apr 2011 18:33:44 +0200
+
+mame (0.141-2) experimental; urgency=low
+
+  [ Emmanuel Kasper ]
+  * Update VCS address to point to Alioth
+  * Improve handling of upgrade in case of existing /etc/mame/mame.ini
+  * Documentation improvements
+  * Remove mame-regrep, mame-split, mame-src2html and mame-srcclean from
+    mame-tools as suggested by upstream
+  * Link with --as-needed LDFLAGS
+  * Debian Games Team as package maintainer
+
+  [ Jordi Mallach ]
+  * Minor cleanups in maintainer scripts.
+
+ -- Jordi Mallach <jordi@debian.org>  Sun, 03 Apr 2011 20:36:43 +0200
+
+mame (0.141-1) experimental; urgency=low
+
+  [ Emmanuel Kasper ]
+  * New upstream release
+
+  [ Jordi Mallach ]
+  * Add DEP-3 header to rename-tools patch.
+  * Override dh_auto_install to explicitly install whatsnew.txt as an
+    upstream changelog.
+  * Add missing escaping of minus signs in several manpages.
+  * Upload to experimental, as this package should replace xmame.
+  * Add myself to Uploaders.
+
+ -- Jordi Mallach <jordi@debian.org>  Wed, 12 Jan 2011 21:29:51 +0100
+
+mame (0.140-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Emmanuel Kasper <emmanuel@libera.cc>  Thu, 25 Nov 2010 07:41:21 +0100
+
+mame (0.139-1) unstable; urgency=low
+
+  * Built from sdlmame 0.135 package and inspired from xmame 0.106 package.
+    Closes: #424905.
+  * This package replaces sdlmame as "there are no longer separate programs
+    called SDLMAME or SDLMESS. Instead, the SDL capability is included in MAME
+    and MESS" - http://rbelmont.mameworld.info/?page_id=163
+
+ -- Ludovic Lechapt <ludomatic@gmail.com>  Mon, 06 Sep 2010 23:44:19 +1100
