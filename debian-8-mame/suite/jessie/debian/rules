@@ -1,0 +1,201 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+# Default/i386/amd64 options from sdlmame rules file by Cesare Falco.
+
+DEB_HOST_ARCH := $(shell dpkg-architecture -qDEB_HOST_ARCH)
+
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+
+# add c++ hardening options (upstream makefile doesn't use CPPFLAGS)
+export DEB_CFLAGS_MAINT_APPEND = $(shell dpkg-buildflags --get CPPFLAGS)
+
+# taken verbatim from debian policy
+ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+MAKEFLAGS += -j$(NUMJOBS)
+endif
+
+# Override relevant make variables in original makefile
+DEB_OPTS = \
+    OSD=sdl \
+    CROSS_BUILD_OSD= \
+    BIGENDIAN= \
+    NOASM=1 \
+    PREFIX= \
+    SUFFIX= \
+    DEBUG= \
+    NO_USE_QTDEBUG=1 \
+    PROFILER= \
+    FORCE_DRC_C_BACKEND=1 \
+    NOWERROR=1 \
+    MACOSX_USE_LIBSDL= \
+    BUILD_EXPAT= \
+    BUILD_ZLIB= \
+    BUILD_JPEGLIB= \
+    BUILD_SQLITE3= \
+    BUILD_MIDILIB= \
+    BUILD_FLAC= \
+    SYMBOLS= \
+    SYMLEVEL= \
+    DUMPSYM= \
+    PROFILE= \
+    MAP= \
+    VERBOSE= \
+    OPTIMIZE=
+
+# Override make variables for specific archs
+# Linux architectures
+ifeq ($(DEB_HOST_ARCH),amd64)
+DEB_OPTS += \
+    FORCE_DRC_C_BACKEND= \
+    PTR64=1 \
+    NOASM=
+endif
+
+ifeq ($(DEB_HOST_ARCH),arm64)
+DEB_OPTS += \
+    PTR64=1
+endif
+
+ifeq ($(DEB_HOST_ARCH),i386)
+DEB_OPTS += \
+    FORCE_DRC_C_BACKEND= \
+    PTR64= \
+    NOASM=
+endif
+
+ifeq ($(DEB_HOST_ARCH),ia64)
+DEB_OPTS += \
+    PTR64=1
+endif
+
+ifeq ($(DEB_HOST_ARCH),mips)
+DEB_OPTS += \
+    ARCHOPTS=-Umips \
+    BIGENDIAN=1
+endif
+
+ifeq ($(DEB_HOST_ARCH),mipsel)
+DEB_OPTS += \
+    ARCHOPTS=-Umips
+endif
+
+ifeq ($(DEB_HOST_ARCH),powerpc)
+DEB_OPTS += \
+    ARCHOPTS=-Upowerpc \
+    NOASM= \
+    BIGENDIAN=1
+endif
+
+ifeq ($(DEB_HOST_ARCH),ppc64el)
+DEB_OPTS += \
+    PTR64=1 \
+    NOASM=
+endif
+
+ifeq ($(DEB_HOST_ARCH),s390)
+DEB_OPTS += \
+    BIGENDIAN=1
+endif
+
+ifeq ($(DEB_HOST_ARCH),s390x)
+DEB_OPTS += \
+    PTR64=1 \
+    BIGENDIAN=1
+endif
+
+ifeq ($(DEB_HOST_ARCH),sparc)
+DEB_OPTS += \
+    BIGENDIAN=1
+endif
+
+# kFreeBSD architectures
+ifeq ($(DEB_HOST_ARCH),kfreebsd-amd64)
+DEB_OPTS += \
+    TARGETOS=freebsd \
+    BUILD_MIDILIB=1 \
+    FORCE_DRC_C_BACKEND= \
+    PTR64=1 \
+    NOASM=
+endif
+
+ifeq ($(DEB_HOST_ARCH),kfreebsd-i386)
+DEB_OPTS += \
+    TARGETOS=freebsd \
+    BUILD_MIDILIB=1 \
+    FORCE_DRC_C_BACKEND= \
+    PTR64= \
+    NOASM=
+endif
+
+# kFreeBSD architecture
+ifeq ($(DEB_HOST_ARCH),hurd-i386)
+DEB_OPTS += \
+    BUILD_MIDILIB=1
+endif
+
+DEB_MAME_OPTS = \
+    OPT_FLAGS="-D'INI_PATH=\"/etc/mame\"'" \
+    FULLNAME=mame \
+    TARGET=mame \
+    SUBTARGET=mame
+
+DEB_MESS_OPTS = \
+    OPT_FLAGS="-D'INI_PATH=\"/etc/mess\"'" \
+    FULLNAME=mess \
+    TARGET=mess \
+    SUBTARGET=mess
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	$(MAKE) $(DEB_OPTS) $(DEB_MAME_OPTS)
+	$(CURDIR)/mame -createconfig
+	mv mame.ini default.mame.ini
+# Force rebuild to allow Mess specific value for INI_PATH
+	find obj -type f \
+             -not -name \*.lh -and -not -name drivlist.c \
+             -exec rm {} \;
+	$(MAKE) $(DEB_OPTS) $(DEB_MESS_OPTS) all
+	$(CURDIR)/mess -createconfig
+	mv mess.ini default.mess.ini
+
+override_dh_auto_clean:
+	-$(MAKE) $(DEB_MAME_OPTS) $(DEB_OPTS) clean
+	-$(MAKE) $(DEB_MESS_OPTS) $(DEB_OPTS) clean
+	rm -rf obj
+	rm -f default.mame.ini default.mess.ini
+
+# Remove OSX specific keymaps
+override_dh_install:
+	dh_install --exclude=OSX.txt
+
+
+# Retrieve source from svn repo (recommended by upstream developers)
+VERSION := $(shell dpkg-parsechangelog | sed -ne 's/^Version: \(.*\)-.*/\1/p')
+TMPDIR := $(shell mktemp --dry-run --directory -p .)
+
+MAME_PACKAGE = mame
+# Upstream source has no dot in its name, so we have to cut it out
+MAME_VERSION := $(shell echo $(VERSION) | sed -e 's/\.//' )
+MAME_URL = svn://dspnet.fr/mame/
+MAME_TAG = tags/$(MAME_PACKAGE)$(MAME_VERSION)
+MAME_SRCDIR = $(MAME_PACKAGE)-$(VERSION)
+MAME_TARBALL = $(MAME_PACKAGE)_$(VERSION).orig.tar.xz
+
+get-orig-source:
+	mkdir $(TMPDIR)
+	svn export $(MAME_URL)$(MAME_TAG) $(TMPDIR)/$(MAME_SRCDIR)
+	svn export $(MAME_URL)build/whatsnew/whatsnew_$(MAME_VERSION).txt \
+        $(TMPDIR)/$(MAME_SRCDIR)/whatsnew.txt
+	svn export $(MAME_URL)build/messnew/messnew_$(MAME_VERSION).txt \
+        $(TMPDIR)/$(MAME_SRCDIR)/messnew.txt
+	tar -C $(TMPDIR) -cf - $(MAME_SRCDIR) | xz -9c > $(MAME_TARBALL)
+	rm -rf $(TMPDIR)
+
+.PHONY: get-orig-source

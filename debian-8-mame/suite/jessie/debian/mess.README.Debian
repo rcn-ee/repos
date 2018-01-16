@@ -1,0 +1,82 @@
+== HISTORY ==
+
+This package supersedes the xmess-* packages, as the unix sdl port of mess
+has been integrated in official mess since 0.136.
+
+== QUICK START ==
+
+1. Create a folder "mess" and a subfolder "mess/roms" in your home directory.
+
+2. For each emulated system, Mess needs a bios/romset to be put in this directory, plus some software to run (an exception is the famicom/Nintendo 
+Entertainment System where everything happens inside the cartridge)
+
+3. Check the sanity of your roms. Mess is very picky about that.
+
+{{{
+mess -verifyroms | grep ^romset
+
+romset famicom [nes] is best available
+romset fami_key [nes] is best available
+romset famitwin [nes] is best available
+romset stbook [ste] is best available
+romset ti99_224 is best available
+romset ti99_232 [ti99_224] is best available
+romset tmc1800 is best available
+romset tmc2000e is best available
+romset osc1000b [tmc1800] is best available
+}}}
+
+
+4. Get a ROM image of LJ65, a Tetris clone for NES distributed as free software
+{{{
+wget http://www.pineight.com/nes/lj65.zip
+}}}
+{{{
+unzip lj65.zip
+}}}
+
+5. Now start mess with 
+{{{
+mess nes -cart lj65.nes
+}}}
+
+6. Basic keyboard commands include
+  * Tab key to access the mess internal menu
+  * 5 to select
+  * 1 to start
+
+7. If mess is way too slow on your computer and you have 3D hardware 
+acceleration available, change the "video" parameter from "soft" to "opengl"
+in the mess configuration file.
+
+== DEFAULT FILES ==
+
+  * mess binary: {{{/usr/games/mess}}}
+  * Configuration file: {{{$HOME/mess/mess.ini}}} or {{{/etc/mess/mess.ini}}}
+  * Output folders: {{{$HOME/mess}}} (memory cards, snapshots, ...)
+  * Core folders: {{{/usr/share/games/mess}}} (roms, cheats, ...)
+
+== ROMS AND CONFIGURATION ==
+
+A default configuration file is provided with the package and installed 
+in {{{/etc/mess/mess.ini}}}
+
+If you need to change the location of the roms folder or tweak something like 
+video or cheats you can either:
+  * make your own copy of {{{/etc/mess/mess.ini}}} in your home at {{{$HOME/mess/mess.ini}}} and edit that file (recommended)
+  * edit directly {{{/etc/mess/mess.ini}}} 
+
+You can verify that mess have read the correct options with "{{{mess -showconfig}}}"
+and even create a fresh mess.ini file with "{{{mess -createconfig}}}".
+
+== TOOLS ==
+
+mess utilities like chdman, jedutil, ldresample or ldverify are available in a
+separate extra package called DebianPkg:mame-tools.
+
+== PATCH ==
+
+This package uses quilt to manage all modifications to the upstream source.
+Changes are stored in the source package as diffs in debian/patches and applied
+during the build. See {{{/usr/share/doc/quilt/README.source}}} for a detailed
+explanation.
