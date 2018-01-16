@@ -6,7 +6,7 @@ package_name="libsdl1.2"
 debian_pkg_name="${package_name}"
 package_version="1.2.15+dfsg1"
 package_source="${debian_pkg_name}_${package_version}.orig.tar.xz"
-src_dir="SDL-${package_version}"
+src_dir="SDL-1.2.15/"
 
 git_repo=""
 git_sha=""
