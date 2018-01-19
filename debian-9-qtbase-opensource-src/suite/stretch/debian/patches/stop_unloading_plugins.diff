@@ -1,0 +1,61 @@
+Description: stop unloading plugins in QPluginLoader and QFactoryLoader
+ QPluginLoader hasn't unloaded in its destructor since Qt 5.0, but we
+ missed the equivalent code in QFactoryLoader (which bypasses
+ QPluginLoader). Besides, QPluginLoader::unload() was still doing
+ unloading, which it won't anymore.
+ .
+ Not unloading plugins is Qt's policy, as decided during the 5.0
+ development process and reaffirmed now in 5.6. This is due to static
+ data in plugins leaking out and remaining in use past the unloading of
+ the plugin, causing crashes.
+ .
+ This does not affect QLibrary and QLibrary::unload(). Those are meant
+ for non-Qt loadable modules, so unloading them may be safe.
+Origin: upstream, https://code.qt.io/cgit/qt/qtbase.git/commit/?id=ca4d93d85ee446c5
+Last-Update: 2017-01-11
+
+--- a/src/corelib/plugin/qfactoryloader.cpp
++++ b/src/corelib/plugin/qfactoryloader.cpp
+@@ -187,10 +187,12 @@
+                     ++keyUsageCount;
+                 }
+             }
+-            if (keyUsageCount || keys.isEmpty())
++            if (keyUsageCount || keys.isEmpty()) {
++                library->setLoadHints(QLibrary::PreventUnloadHint); // once loaded, don't unload
+                 d->libraryList += library;
+-            else
++            } else {
+                 library->release();
++            }
+         }
+     }
+ #else
+--- a/src/corelib/plugin/qpluginloader.cpp
++++ b/src/corelib/plugin/qpluginloader.cpp
+@@ -154,6 +154,7 @@
+     : QObject(parent), d(0), did_load(false)
+ {
+     setFileName(fileName);
++    setLoadHints(QLibrary::PreventUnloadHint);
+ }
+ 
+ /*!
+@@ -348,7 +349,7 @@
+ void QPluginLoader::setFileName(const QString &fileName)
+ {
+ #if defined(QT_SHARED)
+-    QLibrary::LoadHints lh;
++    QLibrary::LoadHints lh = QLibrary::PreventUnloadHint;
+     if (d) {
+         lh = d->loadHints();
+         d->release();
+@@ -394,7 +395,7 @@
+     \brief Give the load() function some hints on how it should behave.
+ 
+     You can give hints on how the symbols in the plugin are
+-    resolved. By default, none of the hints are set.
++    resolved. By default since Qt 5.7, QLibrary::PreventUnloadHint is set.
+ 
+     See the documentation of QLibrary::loadHints for a complete
+     description of how this property works.

@@ -1,0 +1,372 @@
+Description: qsettings: simplify confFiles logic
+ Use a QVector to hold the QConfFile(s) to allow more configuration
+ files than the statically defined number -> this will allow considering
+ multiple system-wide configuration files if needed.
+ .
+ To use a dynamic container we get rid of use QScopedSharedPointer, which
+ actually wasn't needed anyway, as the "deref" logic was/is done manually
+ in the QConfFileSettingsPrivate destructor.
+Origin: upstream, https://code.qt.io/cgit/qt/qtbase.git/commit/?id=ee35fbbf526d18d5
+Last-Update: 2016-10-22
+
+--- a/src/corelib/io/qsettings.cpp
++++ b/src/corelib/io/qsettings.cpp
+@@ -229,7 +229,7 @@
+ // QSettingsPrivate
+ 
+ QSettingsPrivate::QSettingsPrivate(QSettings::Format format)
+-    : format(format), scope(QSettings::UserScope /* nothing better to put */), iniCodec(0), spec(0), fallbacks(true),
++    : format(format), scope(QSettings::UserScope /* nothing better to put */), iniCodec(0), fallbacks(true),
+       pendingChanges(false), status(QSettings::NoError)
+ {
+ }
+@@ -237,7 +237,7 @@
+ QSettingsPrivate::QSettingsPrivate(QSettings::Format format, QSettings::Scope scope,
+                                    const QString &organization, const QString &application)
+     : format(format), scope(scope), organizationName(organization), applicationName(application),
+-      iniCodec(0), spec(0), fallbacks(true), pendingChanges(false), status(QSettings::NoError)
++      iniCodec(0), fallbacks(true), pendingChanges(false), status(QSettings::NoError)
+ {
+ }
+ 
+@@ -949,7 +949,7 @@
+ 
+ void QConfFileSettingsPrivate::initAccess()
+ {
+-    if (confFiles[spec]) {
++    if (!confFiles.isEmpty()) {
+         if (format > QSettings::IniFormat) {
+             if (!readFunc)
+                 setStatus(QSettings::AccessError);
+@@ -1119,7 +1119,6 @@
+     : QSettingsPrivate(format, scope, organization, application),
+       nextPosition(0x40000000) // big positive number
+ {
+-    int i;
+     initFormat();
+ 
+     QString org = organization;
+@@ -1134,21 +1133,14 @@
+     if (scope == QSettings::UserScope) {
+         QString userPath = getPath(format, QSettings::UserScope);
+         if (!application.isEmpty())
+-            confFiles[F_User | F_Application].reset(QConfFile::fromName(userPath + appFile, true));
+-        confFiles[F_User | F_Organization].reset(QConfFile::fromName(userPath + orgFile, true));
++            confFiles.append(QConfFile::fromName(userPath + appFile, true));
++        confFiles.append(QConfFile::fromName(userPath + orgFile, true));
+     }
+ 
+     QString systemPath = getPath(format, QSettings::SystemScope);
+     if (!application.isEmpty())
+-        confFiles[F_System | F_Application].reset(QConfFile::fromName(systemPath + appFile, false));
+-    confFiles[F_System | F_Organization].reset(QConfFile::fromName(systemPath + orgFile, false));
+-
+-    for (i = 0; i < NumConfFiles; ++i) {
+-        if (confFiles[i]) {
+-            spec = i;
+-            break;
+-        }
+-    }
++        confFiles.append(QConfFile::fromName(systemPath + appFile, false));
++    confFiles.append(QConfFile::fromName(systemPath + orgFile, false));
+ 
+     initAccess();
+ }
+@@ -1160,7 +1152,7 @@
+ {
+     initFormat();
+ 
+-    confFiles[0].reset(QConfFile::fromName(fileName, true));
++    confFiles.append(QConfFile::fromName(fileName, true));
+ 
+     initAccess();
+ }
+@@ -1171,40 +1163,39 @@
+     ConfFileHash *usedHash = usedHashFunc();
+     ConfFileCache *unusedCache = unusedCacheFunc();
+ 
+-    for (int i = 0; i < NumConfFiles; ++i) {
+-        if (confFiles[i] && !confFiles[i]->ref.deref()) {
+-            if (confFiles[i]->size == 0) {
+-                delete confFiles[i].take();
++    for (auto conf_file : qAsConst(confFiles)) {
++        if (!conf_file->ref.deref()) {
++            if (conf_file->size == 0) {
++                delete conf_file;
+             } else {
+                 if (usedHash)
+-                    usedHash->remove(confFiles[i]->name);
++                    usedHash->remove(conf_file->name);
+                 if (unusedCache) {
+                     QT_TRY {
+                         // compute a better size?
+-                        unusedCache->insert(confFiles[i]->name, confFiles[i].data(),
+-                                        10 + (confFiles[i]->originalKeys.size() / 4));
+-                        confFiles[i].take();
++                        unusedCache->insert(conf_file->name, conf_file,
++                                            10 + (conf_file->originalKeys.size() / 4));
+                     } QT_CATCH(...) {
+                         // out of memory. Do not cache the file.
+-                        delete confFiles[i].take();
++                        delete conf_file;
+                     }
+                 } else {
+                     // unusedCache is gone - delete the entry to prevent a memory leak
+-                    delete confFiles[i].take();
++                    delete conf_file;
+                 }
+             }
+         }
+-        // prevent the ScopedPointer to deref it again.
+-        confFiles[i].take();
+     }
+ }
+ 
+ void QConfFileSettingsPrivate::remove(const QString &key)
+ {
+-    QConfFile *confFile = confFiles[spec].data();
+-    if (!confFile)
++    if (confFiles.isEmpty())
+         return;
+ 
++    // Note: First config file is always the most specific.
++    QConfFile *confFile = confFiles.at(0);
++
+     QSettingsKey theKey(key, caseSensitivity);
+     QSettingsKey prefix(key + QLatin1Char('/'), caseSensitivity);
+     QMutexLocker locker(&confFile->mutex);
+@@ -1228,10 +1219,12 @@
+ 
+ void QConfFileSettingsPrivate::set(const QString &key, const QVariant &value)
+ {
+-    QConfFile *confFile = confFiles[spec].data();
+-    if (!confFile)
++    if (confFiles.isEmpty())
+         return;
+ 
++    // Note: First config file is always the most specific.
++    QConfFile *confFile = confFiles.at(0);
++
+     QSettingsKey theKey(key, caseSensitivity, nextPosition++);
+     QMutexLocker locker(&confFile->mutex);
+     confFile->removedKeys.remove(theKey);
+@@ -1244,29 +1237,27 @@
+     ParsedSettingsMap::const_iterator j;
+     bool found = false;
+ 
+-    for (int i = 0; i < NumConfFiles; ++i) {
+-        if (QConfFile *confFile = confFiles[i].data()) {
+-            QMutexLocker locker(&confFile->mutex);
+-
+-            if (!confFile->addedKeys.isEmpty()) {
+-                j = confFile->addedKeys.constFind(theKey);
+-                found = (j != confFile->addedKeys.constEnd());
+-            }
+-            if (!found) {
+-                ensureSectionParsed(confFile, theKey);
+-                j = confFile->originalKeys.constFind(theKey);
+-                found = (j != confFile->originalKeys.constEnd()
+-                         && !confFile->removedKeys.contains(theKey));
+-            }
+-
+-            if (found && value)
+-                *value = *j;
++    for (auto confFile : qAsConst(confFiles)) {
++        QMutexLocker locker(&confFile->mutex);
+ 
+-            if (found)
+-                return true;
+-            if (!fallbacks)
+-                break;
+-        }
++        if (!confFile->addedKeys.isEmpty()) {
++            j = confFile->addedKeys.constFind(theKey);
++            found = (j != confFile->addedKeys.constEnd());
++        }
++        if (!found) {
++            ensureSectionParsed(confFile, theKey);
++            j = confFile->originalKeys.constFind(theKey);
++            found = (j != confFile->originalKeys.constEnd()
++                     && !confFile->removedKeys.contains(theKey));
++        }
++
++        if (found && value)
++            *value = *j;
++
++        if (found)
++            return true;
++        if (!fallbacks)
++            break;
+     }
+     return false;
+ }
+@@ -1279,34 +1270,31 @@
+     QSettingsKey thePrefix(prefix, caseSensitivity);
+     int startPos = prefix.size();
+ 
+-    for (int i = 0; i < NumConfFiles; ++i) {
+-        if (QConfFile *confFile = confFiles[i].data()) {
+-            QMutexLocker locker(&confFile->mutex);
+-
+-            if (thePrefix.isEmpty()) {
+-                ensureAllSectionsParsed(confFile);
+-            } else {
+-                ensureSectionParsed(confFile, thePrefix);
+-            }
++    for (auto confFile : qAsConst(confFiles)) {
++        QMutexLocker locker(&confFile->mutex);
+ 
+-            j = const_cast<const ParsedSettingsMap *>(
+-                    &confFile->originalKeys)->lowerBound( thePrefix);
+-            while (j != confFile->originalKeys.constEnd() && j.key().startsWith(thePrefix)) {
+-                if (!confFile->removedKeys.contains(j.key()))
+-                    processChild(j.key().originalCaseKey().midRef(startPos), spec, result);
+-                ++j;
+-            }
+-
+-            j = const_cast<const ParsedSettingsMap *>(
+-                    &confFile->addedKeys)->lowerBound(thePrefix);
+-            while (j != confFile->addedKeys.constEnd() && j.key().startsWith(thePrefix)) {
++        if (thePrefix.isEmpty())
++            ensureAllSectionsParsed(confFile);
++        else
++            ensureSectionParsed(confFile, thePrefix);
++
++        j = const_cast<const ParsedSettingsMap *>(
++                &confFile->originalKeys)->lowerBound( thePrefix);
++        while (j != confFile->originalKeys.constEnd() && j.key().startsWith(thePrefix)) {
++            if (!confFile->removedKeys.contains(j.key()))
+                 processChild(j.key().originalCaseKey().midRef(startPos), spec, result);
+-                ++j;
+-            }
++            ++j;
++        }
+ 
+-            if (!fallbacks)
+-                break;
++        j = const_cast<const ParsedSettingsMap *>(
++                &confFile->addedKeys)->lowerBound(thePrefix);
++        while (j != confFile->addedKeys.constEnd() && j.key().startsWith(thePrefix)) {
++            processChild(j.key().originalCaseKey().midRef(startPos), spec, result);
++            ++j;
+         }
++
++        if (!fallbacks)
++            break;
+     }
+     std::sort(result.begin(), result.end());
+     result.erase(std::unique(result.begin(), result.end()),
+@@ -1316,10 +1304,12 @@
+ 
+ void QConfFileSettingsPrivate::clear()
+ {
+-    QConfFile *confFile = confFiles[spec].data();
+-    if (!confFile)
++    if (confFiles.isEmpty())
+         return;
+ 
++    // Note: First config file is always the most specific.
++    QConfFile *confFile = confFiles.at(0);
++
+     QMutexLocker locker(&confFile->mutex);
+     ensureAllSectionsParsed(confFile);
+     confFile->addedKeys.clear();
+@@ -1331,12 +1321,9 @@
+     // people probably won't be checking the status a whole lot, so in case of
+     // error we just try to go on and make the best of it
+ 
+-    for (int i = 0; i < NumConfFiles; ++i) {
+-        QConfFile *confFile = confFiles[i].data();
+-        if (confFile) {
+-            QMutexLocker locker(&confFile->mutex);
+-            syncConfFile(i);
+-        }
++    for (auto confFile : qAsConst(confFiles)) {
++        QMutexLocker locker(&confFile->mutex);
++        syncConfFile(confFile);
+     }
+ }
+ 
+@@ -1347,10 +1334,11 @@
+ 
+ QString QConfFileSettingsPrivate::fileName() const
+ {
+-    QConfFile *confFile = confFiles[spec].data();
+-    if (!confFile)
++    if (confFiles.isEmpty())
+         return QString();
+-    return confFile->name;
++
++    // Note: First config file is always the most specific.
++    return confFiles.at(0)->name;
+ }
+ 
+ bool QConfFileSettingsPrivate::isWritable() const
+@@ -1358,16 +1346,14 @@
+     if (format > QSettings::IniFormat && !writeFunc)
+         return false;
+ 
+-    QConfFile *confFile = confFiles[spec].data();
+-    if (!confFile)
++    if (confFiles.isEmpty())
+         return false;
+ 
+-    return confFile->isWritable();
++    return confFiles.at(0)->isWritable();
+ }
+ 
+-void QConfFileSettingsPrivate::syncConfFile(int confFileNo)
++void QConfFileSettingsPrivate::syncConfFile(QConfFile *confFile)
+ {
+-    QConfFile *confFile = confFiles[confFileNo].data();
+     bool readOnly = confFile->addedKeys.isEmpty() && confFile->removedKeys.isEmpty();
+     bool ok;
+ 
+--- a/src/corelib/io/qsettings_p.h
++++ b/src/corelib/io/qsettings_p.h
+@@ -236,19 +236,6 @@
+                                        QTextCodec *codec);
+     static QStringList splitArgs(const QString &s, int idx);
+ 
+-    /*
+-    The numeric values of these enums define their search order. For example,
+-    F_User | F_Organization is searched before F_System | F_Application,
+-    because their values are respectively 1 and 2.
+-    */
+-    enum {
+-        F_Application = 0x0,
+-        F_Organization = 0x1,
+-        F_User = 0x0,
+-        F_System = 0x2,
+-        NumConfFiles = 4
+-    };
+-
+     QSettings::Format format;
+     QSettings::Scope scope;
+     QString organizationName;
+@@ -258,7 +245,6 @@
+ protected:
+     QStack<QSettingsGroup> groupStack;
+     QString groupPrefix;
+-    int spec;
+     bool fallbacks;
+     bool pendingChanges;
+     mutable QSettings::Status status;
+@@ -293,7 +279,7 @@
+ private:
+     void initFormat();
+     void initAccess();
+-    void syncConfFile(int confFileNo);
++    void syncConfFile(QConfFile *confFile);
+     bool writeIniFile(QIODevice &device, const ParsedSettingsMap &map);
+ #ifdef Q_OS_MAC
+     bool readPlistFile(const QString &fileName, ParsedSettingsMap *map) const;
+@@ -302,7 +288,7 @@
+     void ensureAllSectionsParsed(QConfFile *confFile) const;
+     void ensureSectionParsed(QConfFile *confFile, const QSettingsKey &key) const;
+ 
+-    QScopedSharedPointer<QConfFile> confFiles[NumConfFiles];
++    QVector<QConfFile *> confFiles;
+     QSettings::ReadFunc readFunc;
+     QSettings::WriteFunc writeFunc;
+     QString extension;

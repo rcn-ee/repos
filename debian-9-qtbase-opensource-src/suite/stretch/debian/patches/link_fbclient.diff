@@ -1,0 +1,23 @@
+Description: build ibase sql plugin against firebird
+Author: Fathi Boudra <fabo@debian.org>
+Forwarded: no
+Last-Update: 2015-08-14
+
+--- a/config.tests/unix/ibase/ibase.pro
++++ b/config.tests/unix/ibase/ibase.pro
+@@ -1,3 +1,3 @@
+ SOURCES = ibase.cpp
+ CONFIG -= qt dylib
+-LIBS += -lgds
++LIBS += -lfbclient
+--- a/src/sql/drivers/ibase/qsql_ibase.pri
++++ b/src/sql/drivers/ibase/qsql_ibase.pri
+@@ -2,7 +2,7 @@
+ SOURCES += $$PWD/qsql_ibase.cpp
+ 
+ unix {
+-    !contains(LIBS, .*gds.*):!contains(LIBS, .*libfb.*):LIBS += -lgds
++    !contains(LIBS, .*gds.*):!contains(LIBS, .*libfb.*):LIBS += -lfbclient
+ } else {
+     !contains(LIBS, .*gds.*):!contains(LIBS, .*fbclient.*) {
+         LIBS += -lgds32_ms

@@ -1,0 +1,79 @@
+Description: use QPersistentModelIndex for storing a model index
+ QModelIndex is not safe to be used to store an index as it is designed
+ to be discarded right after use as the index information can change.
+ .
+ Therefore a QPersistentModelIndex should be used instead to store the
+ index. Subsequently the m_index does not need to be updated whenever
+ the model changes anymore as this is already done for us.
+Origin: upstream, https://code.qt.io/cgit/qt/qtbase.git/commit/?id=bd591064be388216
+Last-Update: 2017-01-04
+
+--- a/src/widgets/accessible/itemviews.cpp
++++ b/src/widgets/accessible/itemviews.cpp
+@@ -556,20 +556,8 @@
+             QAccessible::Id id = iter.value();
+             QAccessibleInterface *iface = QAccessible::accessibleInterface(id);
+             Q_ASSERT(iface);
+-            if (iface->role() == QAccessible::Cell || iface->role() == QAccessible::ListItem) {
+-                Q_ASSERT(iface->tableCellInterface());
+-                QAccessibleTableCell *cell = static_cast<QAccessibleTableCell*>(iface->tableCellInterface());
+-                if (event->modelChangeType() == QAccessibleTableModelChangeEvent::RowsInserted
+-                        && cell->m_index.row() >= event->firstRow()) {
+-                    int newRow = cell->m_index.row() + newRows;
+-                    cell->m_index = cell->m_index.sibling(newRow, cell->m_index.column());
+-                } else if (event->modelChangeType() == QAccessibleTableModelChangeEvent::ColumnsInserted
+-                        && cell->m_index.column() >= event->firstColumn()) {
+-                    int newColumn = cell->m_index.column() + newColumns;
+-                    cell->m_index = cell->m_index.sibling(cell->m_index.row(), newColumn);
+-                }
+-            } else if (event->modelChangeType() == QAccessibleTableModelChangeEvent::RowsInserted
+-                       && iface->role() == QAccessible::RowHeader) {
++            if (event->modelChangeType() == QAccessibleTableModelChangeEvent::RowsInserted
++                && iface->role() == QAccessible::RowHeader) {
+                 QAccessibleTableHeaderCell *cell = static_cast<QAccessibleTableHeaderCell*>(iface);
+                 if (cell->index >= event->firstRow()) {
+                     cell->index += newRows;
+@@ -608,27 +596,11 @@
+             if (iface->role() == QAccessible::Cell || iface->role() == QAccessible::ListItem) {
+                 Q_ASSERT(iface->tableCellInterface());
+                 QAccessibleTableCell *cell = static_cast<QAccessibleTableCell*>(iface->tableCellInterface());
+-                if (event->modelChangeType() == QAccessibleTableModelChangeEvent::RowsRemoved) {
+-                    if (cell->m_index.row() < event->firstRow()) {
+-                        newCache.insert(indexOfChild(cell), id);
+-                    } else if (cell->m_index.row() > event->lastRow()) {
+-                        int newRow = cell->m_index.row() - deletedRows;
+-                        cell->m_index = cell->m_index.sibling(newRow, cell->m_index.column());
+-                        newCache.insert(indexOfChild(cell), id);
+-                    } else {
+-                        QAccessible::deleteAccessibleInterface(id);
+-                    }
+-                } else if (event->modelChangeType() == QAccessibleTableModelChangeEvent::ColumnsRemoved) {
+-                    if (cell->m_index.column() < event->firstColumn()) {
+-                        newCache.insert(indexOfChild(cell), id);
+-                    } else if (cell->m_index.column() > event->lastColumn()) {
+-                        int newColumn = cell->m_index.column() - deletedColumns;
+-                        cell->m_index = cell->m_index.sibling(cell->m_index.row(), newColumn);
+-                        newCache.insert(indexOfChild(cell), id);
+-                    } else {
+-                        QAccessible::deleteAccessibleInterface(id);
+-                    }
+-                }
++                // Since it is a QPersistentModelIndex, we only need to check if it is valid
++                if (cell->m_index.isValid())
++                    newCache.insert(indexOfChild(cell), id);
++                else
++                    QAccessible::deleteAccessibleInterface(id);
+             } else if (event->modelChangeType() == QAccessibleTableModelChangeEvent::RowsRemoved
+                        && iface->role() == QAccessible::RowHeader) {
+                 QAccessibleTableHeaderCell *cell = static_cast<QAccessibleTableHeaderCell*>(iface);
+--- a/src/widgets/accessible/itemviews_p.h
++++ b/src/widgets/accessible/itemviews_p.h
+@@ -213,7 +213,7 @@
+     QHeaderView *verticalHeader() const;
+     QHeaderView *horizontalHeader() const;
+     QPointer<QAbstractItemView > view;
+-    QModelIndex m_index;
++    QPersistentModelIndex m_index;
+     QAccessible::Role m_role;
+ 
+     void selectCell();

@@ -1,0 +1,26 @@
+Description: QGtk3Dialog: don't crash on Wayland
+ Check if it's an X11 window before calling XSetTransientForHint().
+ No transient parent will be set for GTK+ dialogs on Wayland. That
+ has to be implemented separately.
+Origin: upstream, https://code.qt.io/cgit/qt/qtbase.git/commit/?id=84ea00d47049d882
+Last-Update: 2017-01-06
+
+--- a/src/plugins/platformthemes/gtk3/qgtk3dialoghelpers.cpp
++++ b/src/plugins/platformthemes/gtk3/qgtk3dialoghelpers.cpp
+@@ -129,10 +129,12 @@
+ 
+     GdkWindow *gdkWindow = gtk_widget_get_window(gtkWidget);
+     if (parent) {
+-        GdkDisplay *gdkDisplay = gdk_window_get_display(gdkWindow);
+-        XSetTransientForHint(gdk_x11_display_get_xdisplay(gdkDisplay),
+-                             gdk_x11_window_get_xid(gdkWindow),
+-                             parent->winId());
++        if (GDK_IS_X11_WINDOW(gdkWindow)) {
++            GdkDisplay *gdkDisplay = gdk_window_get_display(gdkWindow);
++            XSetTransientForHint(gdk_x11_display_get_xdisplay(gdkDisplay),
++                                 gdk_x11_window_get_xid(gdkWindow),
++                                 parent->winId());
++        }
+     }
+ 
+     if (modality != Qt::NonModal) {

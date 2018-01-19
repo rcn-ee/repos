@@ -1,0 +1,21 @@
+# -*- sh -*-
+# Xsession.d script to set the QT_XCB_FORCE_SOFTWARE_OPENGL env variable when
+# the user does not has at least OpenGL 2 support.
+#
+# This file is sourced by Xsession(5), not executed.
+
+if [ "$(which glxinfo)" = "" ] ; then
+    echo "To detect whether software based rendering is needed for Qt 5 the glxinfo program is a requirement but it was not found on this system."
+    echo "On Debian (based) systems, install the mesa-utils package."
+    #echo "On RedHat (based) systems, install the glx-utils package."
+else
+    OPENGL_VERSION=`LANG=C glxinfo | grep '^OpenGL version string: ' | head -n 1 | sed -e 's/^OpenGL version string: \([0-9]\).*$/\1/g'`
+    if [ -n "$OPENGL_VERSION" ] && [ "$OPENGL_VERSION" -lt 2 ]; then
+        QT_XCB_FORCE_SOFTWARE_OPENGL=1
+        export QT_XCB_FORCE_SOFTWARE_OPENGL
+    elif [ -n "$OPENGL_VERSION" ] ; then
+        echo "OpenGL version: $OPENGL_VERSION."
+    else
+        echo "OpenGL version not found."
+    fi
+fi
