@@ -6,7 +6,7 @@ package_name="qtbase-opensource-src"
 debian_pkg_name="${package_name}"
 package_version="5.7.1+dfsg"
 package_source="${debian_pkg_name}_${package_version}.orig.tar.xz"
-src_dir="${package_name}-${package_version}.orig"
+src_dir="${package_name}-5.7.1"
 
 git_repo=""
 git_sha=""
