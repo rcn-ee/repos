@@ -4,16 +4,20 @@
 
 localdir="/mnt/farm"
 
+cleanup_suite () {
+	if [ -d ./${suite} ] ; then
+		rm -rf ./${suite}/
+	fi
+}
+
 run () {
 	touch /tmp/sbuild-BUILDING.lock
 	out_dir="${localdir}/outgoing/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}/"
 	if [ -f /var/lib/sbuild/${suite}-${deb_arch}.tar.gz ] ; then
-		if [ -d ./${suite} ] ; then
-			rm -rf ./${suite}/
-		fi
+			cleanup_suite
 
-		mkdir ./${suite}
-		cd ./${suite}
+			mkdir ./${suite}
+			cd ./${suite}
 
 		dsc_file=$(ls ${localdir}/incoming/${suite}/${debian_pkg_name}_${debian_version}/ | grep dsc)
 		options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite}"
