@@ -1,4 +1,9 @@
 #!/usr/bin/make -f
+
+DEB_BUILD_MAINT_OPTIONS = hardening=+bindnow
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/buildflags.mk
+
 %:
 	dh $@ --with autoreconf,xsf
 
@@ -13,7 +18,7 @@ override_dh_autoreconf_clean:
 	rm -rf m4
 
 override_dh_auto_configure:
-	dh_auto_configure -- $(shell dpkg-buildflags --export=configure)
+	dh_auto_configure -- --libdir=/usr/lib $(shell dpkg-buildflags --export=configure)
 
 # create debug package
 override_dh_strip:

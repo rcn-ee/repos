@@ -1,8 +1,8 @@
 Source: xf86-video-omap
 Section: x11
 Priority: optional
-Maintainer: Robert Nelson <robertcnelson@gmail.com>
-Build-Depends: debhelper (>= 8),
+Maintainer: Sebastian Reichel <sre@debian.org>
+Build-Depends: debhelper (>= 9),
                dh-autoreconf,
                libdrm-dev (>= 2.4.36),
                libudev-dev,
@@ -14,9 +14,9 @@ Build-Depends: debhelper (>= 8),
                x11proto-xf86dri-dev,
                xutils-dev,
                xserver-xorg-dev (>= 2:1.9.4)
-Standards-Version: 3.9.6
-Vcs-Git: git://anongit.freedesktop.org/xorg/driver/xf86-video-omap
-Vcs-Browser: http://cgit.freedesktop.org/xorg/driver/xf86-video-omap/
+Standards-Version: 3.9.8
+Vcs-Git: https://anonscm.debian.org/cgit/collab-maint/xf86-video-omap.git
+Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/xf86-video-omap.git
 
 
 Package: xserver-xorg-video-omap
@@ -30,8 +30,8 @@ Description: X.Org X server -- OMAP display driver
  This driver for the X.Org X server (see xserver-xorg for a further
  description) provides support for OMAP2 and newer devices.
  .
- The driver depends on omapdrm support in the kernel, which is
- in the staging area of the mainline kernel since version 3.3.
+ The driver depends on omapdrm support in the kernel and does
+ not work with legacy omapfb kernel driver.
  .
  More information about X.Org can be found at:
   * <URL:http://www.X.org>
@@ -50,8 +50,8 @@ Description: X.Org X server -- OMAP display driver (debug symbols)
  This driver for the X.Org X server (see xserver-xorg for a further
  description) provides support for OMAP2 and newer devices.
  .
- The driver depends on omapdrm support in the kernel, which is
- in the staging area of the mainline kernel since version 3.3.
+ The driver depends on omapdrm support in the kernel and does
+ not work with legacy omapfb kernel driver.
  .
  More information about X.Org can be found at:
   * <URL:http://www.X.org>
