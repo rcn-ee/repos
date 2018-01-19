@@ -24,6 +24,16 @@ echo "deb-src http://apt-proxy:3142/repos.rcn-ee.net/debian stretch main" >> /et
 apt-get update ; apt-get --yes --allow-unauthenticated install apt-transport-https rcn-ee-archive-keyring ; \
 apt-get update ; apt-get clean ; exit
 
+#debian stretch (exp)
+sudo sbuild-shell source:stretch-armhf-exp-sbuild
+
+echo "deb http://apt-proxy:3142/repos.rcn-ee.net/debian stretch main" >> /etc/apt/sources.list ; \
+echo "deb-src http://apt-proxy:3142/repos.rcn-ee.net/debian stretch main" >> /etc/apt/sources.list ; \
+echo "deb http://apt-proxy:3142/repos.rcn-ee.net/debian-exp stretch main" >> /etc/apt/sources.list ; \
+echo "deb-src http://apt-proxy:3142/repos.rcn-ee.net/debian-exp stretch main" >> /etc/apt/sources.list ; \
+apt-get update ; apt-get --yes --allow-unauthenticated install apt-transport-https rcn-ee-archive-keyring ; \
+apt-get update ; apt-get clean ; exit
+
 #debian buster:
 sudo sbuild-shell source:buster-armhf-sbuild
 
