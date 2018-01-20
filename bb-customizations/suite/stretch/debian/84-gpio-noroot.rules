@@ -1,5 +1,7 @@
 # /etc/udev/rules.d/84-gpio-noroot.rules
 #
+# Corrects sys GPIO permissions on the BB so non-root users in the gpio group can manipulate bits
+#
 # Change group to gpio
 KERNEL=="44e10800.pinmux", PROGRAM="/bin/sh -c '/bin/chown -R root:gpio /sys/kernel/debug/pinctrl/44e10800.pinmux'"
 # Change user permissions to ensure user and group have read/write permissions
