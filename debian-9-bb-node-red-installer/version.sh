@@ -11,7 +11,7 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee4"
+debian_version="${package_version}-0rcnee5"
 debian_untar=""
 debian_patch=""
 
@@ -20,8 +20,8 @@ dl_mirror="https://github.com/rcn-ee/npm-package-node-red/raw/master/deploy/stre
 v6="v6.12.3"
 v8="v8.9.4"
 
-node_red="node-red-0.17.5-a3640bd"
-node_red_mongodb="node-red-node-mongodb-0.0.13-9f290f6"
+node_red="node-red-0.17.5-71fee00"
+node_red_mongodb="node-red-node-mongodb-0.0.13-ecb545c"
 node_red_gpio="node-red-contrib-gpio-0.10.0"
 node_red_serial="node-red-node-serialport-0.6.2"
 node_red_can="node-red-contrib-can-1.0.6"
@@ -38,4 +38,4 @@ debian_dl_8="${dl_mirror}/${node_red_gpio}-${v6}.tar.xz"
 debian_dl_9="${dl_mirror}/${node_red_serial}-${v6}.tar.xz"
 debian_dl_10="${dl_mirror}/${node_red_can}-${v6}.tar.xz"
 
-stretch_version="~stretch+20180112"
+stretch_version="~stretch+20180120"
