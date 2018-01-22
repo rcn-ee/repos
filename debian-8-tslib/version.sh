@@ -4,7 +4,7 @@ mirror="http://http.debian.net/debian"
 
 package_name="tslib"
 debian_pkg_name="${package_name}"
-package_version="1.14"
+package_version="1.15"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}-${package_version}"
 
@@ -18,6 +18,6 @@ debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 local_patch="rcnee0"
 
-jessie_version="~jessie+20171122"
-stretch_version="~stretch+20171122"
-buster_version="~buster+20171122"
+jessie_version="~jessie+20180122"
+stretch_version="~stretch+20180122"
+buster_version="~buster+20180122"
