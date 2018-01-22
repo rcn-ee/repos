@@ -11,7 +11,7 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee1"
+debian_version="${package_version}-0rcnee2"
 debian_untar=""
 debian_patch=""
 
@@ -19,8 +19,8 @@ dl_mirror="https://github.com/rcn-ee/npm-package-node-red/raw/master/deploy/bust
 
 v8="v8.9.4"
 
-node_red_bbio="beaglebone-io-2.3.0-8d4e9f4"
+node_red_bbio="beaglebone-io-2.3.0-bb07aec"
 
 debian_dl_1="${dl_mirror}/${node_red_bbio}-${v8}.tar.xz"
 
-buster_version="~buster+20180120"
+buster_version="~buster+20180122"
