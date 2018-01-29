@@ -67,9 +67,9 @@ check_http () {
 		fi
 	else
 		if [ "x${ignore}" = "x" ] ; then
-			version=$(cat /tmp/index.html | grep ${filter} | grep -v '~deb' | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+			version=$(cat /tmp/index.html | grep ${filter} | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
 		else
-			version=$(cat /tmp/index.html | grep -v ${ignore} | grep ${filter} | grep -v '~deb' | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
+			version=$(cat /tmp/index.html | grep -v ${ignore} | grep ${filter} | grep -v exp | grep -v bpo | grep dsc | tail -n 1 | awk -F ".dsc" '{print $1}')
 			unset ignore
 		fi
 		unset filter
@@ -231,7 +231,8 @@ chromium () {
 
 	echo "chromium-browser: (stretch)"
 	site="${debian_pool}/main/c"
-	package_name="chromium-browser" ; package_version="${package_name}_63.0.3239.84-1" ; check_http
+	filter="deb9"
+	package_name="chromium-browser" ; package_version="${package_name}_63.0.3239.84-1~deb9u1" ; check_http
 }
 
 important
