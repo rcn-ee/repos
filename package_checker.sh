@@ -156,7 +156,7 @@ mesa () {
 	package_name="wayland" ; package_version="${package_name}_1.12.0-1" ; check_http
 
 	site="${debian_pool}/main/m"
-	package_name="mesa" ; package_version="${package_name}_17.3.1-1" ; check_http
+	package_name="mesa" ; package_version="${package_name}_18.0.0~rc2-1" ; check_http
 	package_name="mesa-demos" ; package_version="${package_name}_8.3.0-5" ; check_http
 }
 
