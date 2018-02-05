@@ -2,7 +2,7 @@
 
 package_name="bb-beaglebone-io-installer"
 debian_pkg_name="${package_name}"
-package_version="2.3.0"
+package_version="3.0.0"
 package_source=""
 src_dir=""
 
@@ -11,16 +11,17 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee2"
+debian_version="${package_version}-0rcnee0"
 debian_untar=""
 debian_patch=""
 
 dl_mirror="https://github.com/rcn-ee/npm-package-node-red/raw/master/deploy/buster"
 
+v6="v6.12.3"
 v8="v8.9.4"
 
-node_red_bbio="beaglebone-io-2.3.0-bb07aec"
+node_red_bbio="beaglebone-io-3.0.0-cdc5ef2"
 
 debian_dl_1="${dl_mirror}/${node_red_bbio}-${v8}.tar.xz"
 
-buster_version="~buster+20180122"
+buster_version="~buster+20180205"
