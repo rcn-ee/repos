@@ -11,7 +11,7 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee0"
+debian_version="${package_version}-0rcnee1"
 debian_untar=""
 debian_patch=""
 
@@ -32,4 +32,4 @@ debian_dl_3="${dl_mirror}/${node_red_gpio}-${v8}.tar.xz"
 debian_dl_4="${dl_mirror}/${node_red_serial}-${v8}.tar.xz"
 debian_dl_5="${dl_mirror}/${node_red_can}-${v8}.tar.xz"
 
-buster_version="~buster+20180205"
+buster_version="~buster+20180206"
