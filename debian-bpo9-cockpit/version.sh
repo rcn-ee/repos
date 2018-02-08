@@ -16,6 +16,6 @@ debian_untar=""
 debian_patch=""
 
 dist="debian"
-suite="jessie"
+suite="stretch"
 deb_arch="armhf"
 
