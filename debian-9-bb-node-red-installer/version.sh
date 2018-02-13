@@ -11,7 +11,7 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee1"
+debian_version="${package_version}-0rcnee2"
 debian_untar=""
 debian_patch=""
 
@@ -35,7 +35,7 @@ debian_dl_5="${dl_mirror}/${node_red_serial}-${v8}.tar.xz"
 debian_dl_6="${dl_mirror}/${node_red_can}-${v8}.tar.xz"
 
 debian_dl_7="${dl_mirror}/${node_red}-${v6}.tar.xz"
-debian_dl_9="${dl_mirror}/${node_red_dashboard}-${v6}.tar.xz"
+debian_dl_8="${dl_mirror}/${node_red_dashboard}-${v6}.tar.xz"
 debian_dl_9="${dl_mirror}/${node_red_mongodb}-${v6}.tar.xz"
 debian_dl_10="${dl_mirror}/${node_red_gpio}-${v6}.tar.xz"
 debian_dl_11="${dl_mirror}/${node_red_serial}-${v6}.tar.xz"
