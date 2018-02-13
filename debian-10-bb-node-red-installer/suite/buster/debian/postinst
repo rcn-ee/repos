@@ -30,8 +30,9 @@ npm_install () {
 	v6="v6.12.3"
 	v8="v8.9.4"
 
-	node_red="node-red-0.18.2-2f6ac42"
-	node_red_mongodb="node-red-node-mongodb-0.0.13-3b20b80"
+	node_red="node-red-0.18.2-9066ced"
+	node_red_dashboard="node-red-dashboard-2.8.0"
+	node_red_mongodb="node-red-node-mongodb-0.0.13-bb3d302"
 	node_red_gpio="node-red-contrib-gpio-0.10.0"
 	node_red_serial="node-red-node-serialport-0.6.3"
 	node_red_can="node-red-contrib-can-1.0.6"
@@ -62,6 +63,10 @@ npm_install () {
 
 	case "${node_version}" in
 	v8.*)
+		npm_project="node-red-dashboard"
+		npm_file="${node_red_dashboard}-${v8}.tar.xz"
+		npm_pkg_install
+
 		npm_project="node-red-node-mongodb"
 		npm_file="${node_red_mongodb}-${v8}.tar.xz"
 		npm_pkg_install
