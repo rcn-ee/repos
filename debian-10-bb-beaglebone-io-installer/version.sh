@@ -11,13 +11,13 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee0"
+debian_version="${package_version}-0rcnee1"
 debian_untar=""
 debian_patch=""
 
 dl_mirror="https://github.com/rcn-ee/npm-package-node-red/raw/master/deploy/buster"
 
-v6="v6.12.3"
+v6="v6.13.0"
 v8="v8.9.4"
 
 node_red_bbio="beaglebone-io-3.0.0-cdc5ef2"
