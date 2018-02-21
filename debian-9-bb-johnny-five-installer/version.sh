@@ -2,7 +2,7 @@
 
 package_name="bb-johnny-five-installer"
 debian_pkg_name="${package_name}"
-package_version="0.13.0"
+package_version="0.14.1"
 package_source=""
 src_dir=""
 
@@ -17,12 +17,12 @@ debian_patch=""
 
 dl_mirror="https://github.com/rcn-ee/npm-package-node-red/raw/master/deploy/stretch"
 
-v6="v6.12.3"
+v6="v6.13.0"
 v8="v8.9.4"
 
-node_red_five="johnny-five-0.13.0"
+node_red_five="johnny-five-0.14.1"
 
 debian_dl_1="${dl_mirror}/${node_red_five}-${v6}.tar.xz"
 debian_dl_2="${dl_mirror}/${node_red_five}-${v8}.tar.xz"
 
-stretch_version="~stretch+20180112"
+stretch_version="~stretch+20180221"
