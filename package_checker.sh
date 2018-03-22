@@ -134,7 +134,7 @@ mesa () {
 #	package_name="llvm-toolchain-4.0" ; package_version="${package_name}_4.0.1-8" ; check_http
 	#https://packages.debian.org/source/sid/llvm-toolchain-5.0
 	ignore="rc"
-	package_name="llvm-toolchain-5.0" ; package_version="${package_name}_5.0.1-3" ; check_http
+	package_name="llvm-toolchain-5.0" ; package_version="${package_name}_5.0.1-4" ; check_http
 	#https://packages.debian.org/source/sid/llvm-toolchain-6.0
 	ignore="rc"
 	package_name="llvm-toolchain-6.0" ; package_version="${package_name}_6.0-1" ; check_http
@@ -156,7 +156,7 @@ mesa () {
 	package_name="wayland" ; package_version="${package_name}_1.12.0-1" ; check_http
 
 	site="${debian_pool}/main/m"
-	package_name="mesa" ; package_version="${package_name}_18.0.0~rc2-1" ; check_http
+	package_name="mesa" ; package_version="${package_name}_18.0.0~rc4-1" ; check_http
 	package_name="mesa-demos" ; package_version="${package_name}_8.3.0-5" ; check_http
 }
 
