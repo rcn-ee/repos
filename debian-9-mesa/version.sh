@@ -4,9 +4,9 @@ mirror="http://http.debian.net/debian"
 
 package_name="mesa"
 debian_pkg_name="${package_name}"
-package_version="18.0.0~rc4"
+package_version="18.0.0~rc5"
 package_source="${package_name}_${package_version}.orig.tar.gz"
-src_dir="${package_name}-18.0.0-rc4"
+src_dir="${package_name}-18.0.0-rc5"
 #src_dir="${package_name}-${package_version}"
 
 git_repo=""
@@ -19,4 +19,4 @@ debian_untar=""
 debian_patch="${package_name}_${debian_version}.diff.gz"
 local_patch="rcnee0"
 
-stretch_version="~stretch+20180212"
+stretch_version="~stretch+20180326"
