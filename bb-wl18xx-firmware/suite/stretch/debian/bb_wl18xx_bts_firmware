@@ -1,0 +1,18 @@
+#!/bin/sh -e
+# Copy the ble *.bts's into the initramfs
+ 
+if [ "$1" = "prereqs" ]; then exit 0; fi
+ 
+. /usr/share/initramfs-tools/hook-functions
+ 
+if [ -d /lib/firmware/ ] ; then
+    unset check
+    check=$(ls /lib/firmware/ | grep TIInit_11.8.32.bts | head -n 1)
+    if [ ! "x${check}" = "x" ] ; then
+        mkdir -p $DESTDIR/lib/firmware/
+        if [ -f /lib/firmware/ti-connectivity/TIInit_11.8.32.bts ] ; then
+            mkdir -p $DESTDIR/lib/firmware/ti-connectivity/
+            cp -a /lib/firmware/ti-connectivity/TIInit_11.8.32.bts $DESTDIR/lib/firmware/ti-connectivity/
+        fi
+    fi
+fi

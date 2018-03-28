@@ -26,6 +26,9 @@ echo_default () {
 	echo "# USE_WL18XX_IP_PREFIX: default IP block of SoftAP0 interface" >> /etc/default/bb-wl18xx
 	echo "USE_WL18XX_IP_PREFIX=\"192.168.8\"" >> /etc/default/bb-wl18xx
 	echo "" >> /etc/default/bb-wl18xx
+	echo "# USE_INTERNAL_WL18XX_MAC_ADDRESS: use internal mac address; set to no to disable." >> /etc/default/bb-wl18xx
+	echo "USE_INTERNAL_WL18XX_MAC_ADDRESS=yes" >> /etc/default/bb-wl18xx
+	echo "" >> /etc/default/bb-wl18xx
 	echo "# USE_WL18XX_MAC_ADDRESS: use custom mac address, for when work wifi starts sending deauthentication packet spam." >> /etc/default/bb-wl18xx
 	echo "#USE_WL18XX_MAC_ADDRESS=\"EC:11:27:B:14:97\"" >> /etc/default/bb-wl18xx
 	echo "" >> /etc/default/bb-wl18xx
@@ -73,6 +76,15 @@ else
 		echo "" >> /etc/default/bb-wl18xx
 		echo "# USE_WL18XX_IP_PREFIX: default IP block of SoftAP0 interface" >> /etc/default/bb-wl18xx
 		echo "USE_WL18XX_IP_PREFIX=\"192.168.8\"" >> /etc/default/bb-wl18xx
+		echo "" >> /etc/default/bb-wl18xx
+	fi
+
+	unset test_new_option
+	test_new_option=$(cat /etc/default/bb-wl18xx | grep USE_INTERNAL_WL18XX_MAC_ADDRESS || true)
+	if [ "x${test_new_option}" = "x" ] ; then
+		echo "" >> /etc/default/bb-wl18xx
+		echo "# USE_INTERNAL_WL18XX_MAC_ADDRESS: use internal mac address; set to no to disable." >> /etc/default/bb-wl18xx
+		echo "#USE_INTERNAL_WL18XX_MAC_ADDRESS=yes" >> /etc/default/bb-wl18xx
 		echo "" >> /etc/default/bb-wl18xx
 	fi
 
