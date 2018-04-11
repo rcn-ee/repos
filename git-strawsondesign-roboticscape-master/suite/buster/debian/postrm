@@ -1,0 +1,18 @@
+#!/bin/sh
+
+systemctl daemon-reload
+
+if [ "$1" = purge ] && [ -e /usr/share/debconf/confmodule ]; then
+	. /usr/share/debconf/confmodule
+	db_purge
+fi
+
+if [ "$1" = "remove" ]; then
+	# just removed so library, so need to run ldconfig
+	ldconfig
+fi
+
+echo "Uninstallation Complete"
+
+exit 0
+
