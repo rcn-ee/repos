@@ -2,7 +2,7 @@
 
 package_name="bb-johnny-five-installer"
 debian_pkg_name="${package_name}"
-package_version="0.14.2"
+package_version="0.14.3"
 package_source=""
 src_dir=""
 
@@ -17,11 +17,11 @@ debian_patch=""
 
 dl_mirror="https://github.com/rcn-ee/npm-package-node-red/raw/master/deploy/buster"
 
-v6="v6.14.0"
-v8="v8.11.0"
+v6="v6.14.1"
+v8="v8.11.1"
 
-node_red_five="johnny-five-0.14.2"
+node_red_five="johnny-five-0.14.3"
 
 debian_dl_1="${dl_mirror}/${node_red_five}-${v8}.tar.xz"
 
-buster_version="~buster+20180329"
+buster_version="~buster+20180413"
