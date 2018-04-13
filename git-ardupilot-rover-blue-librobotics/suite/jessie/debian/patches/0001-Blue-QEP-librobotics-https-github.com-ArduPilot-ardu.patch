@@ -1,0 +1,2187 @@
+From 880b0dfb5dbbc481e5a35e1bcd10104ddb93e317 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Fri, 13 Apr 2018 12:48:48 -0500
+Subject: [PATCH] Blue: QEP librobotics:
+ https://github.com/ArduPilot/ardupilot/pull/7117/
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ APMrover2/AP_MotorsUGV.cpp                    |  21 +-
+ APMrover2/sensors.cpp                         |   1 +
+ APMrover2/wscript                             |   5 +-
+ ArduPlane/wscript                             |   4 +-
+ ArduSub/wscript                               |   4 +-
+ libraries/AP_Arming/AP_Arming.cpp             | 113 ++-
+ libraries/AP_Arming/AP_Arming.h               |   2 +-
+ libraries/AP_WheelEncoder/AP_WheelEncoder.cpp |  10 +-
+ libraries/AP_WheelEncoder/AP_WheelEncoder.h   |   2 +
+ .../QEP_WheelEncoder_Quadrature.cpp           |  48 +
+ .../QEP_WheelEncoder_Quadrature.h             |  46 +
+ .../AP_WheelEncoder/WheelEncoder_Quadrature.h |   9 +-
+ libraries/mmap/rc_mmap_pwmss.c                | 264 +++++
+ libraries/mmap/rc_mmap_pwmss.h                |  32 +
+ libraries/mmap/rc_tipwmss.h                   |  62 ++
+ libraries/roboticscape/preprocessor_macros.h  |  42 +
+ .../roboticscape/rc_pwm_userspace_defs.h      |  94 ++
+ libraries/roboticscape/roboticscape.c         | 939 ++++++++++++++++++
+ libraries/roboticscape/roboticscape.h         | 209 ++++
+ 19 files changed, 1875 insertions(+), 32 deletions(-)
+ create mode 100644 libraries/AP_WheelEncoder/QEP_WheelEncoder_Quadrature.cpp
+ create mode 100644 libraries/AP_WheelEncoder/QEP_WheelEncoder_Quadrature.h
+ create mode 100644 libraries/mmap/rc_mmap_pwmss.c
+ create mode 100644 libraries/mmap/rc_mmap_pwmss.h
+ create mode 100644 libraries/mmap/rc_tipwmss.h
+ create mode 100644 libraries/roboticscape/preprocessor_macros.h
+ create mode 100644 libraries/roboticscape/rc_pwm_userspace_defs.h
+ create mode 100644 libraries/roboticscape/roboticscape.c
+ create mode 100644 libraries/roboticscape/roboticscape.h
+
+diff --git a/APMrover2/AP_MotorsUGV.cpp b/APMrover2/AP_MotorsUGV.cpp
+index 2e29234e9..860151bed 100644
+--- a/APMrover2/AP_MotorsUGV.cpp
++++ b/APMrover2/AP_MotorsUGV.cpp
+@@ -15,7 +15,9 @@
+ #include "SRV_Channel/SRV_Channel.h"
+ #include "AP_MotorsUGV.h"
+ #include "Rover.h"
+-
++#include "stdio.h"
++#include "roboticscape/roboticscape.h"
++#include "AP_Arming/AP_Arming.h"
+ extern const AP_HAL::HAL& hal;
+ 
+ // parameters for the motor class
+@@ -365,7 +367,7 @@ void AP_MotorsUGV::output_regular(bool armed, float steering, float throttle)
+     // output to throttle channels
+     if (armed) {
+         // handle armed case
+-        output_throttle(SRV_Channel::k_throttle, throttle);
++        SRV_Channels::set_output_scaled(SRV_Channel::k_throttle, throttle);
+     } else {
+         // handle disarmed case
+         if (_disarm_disable_pwm) {
+@@ -379,10 +381,7 @@ void AP_MotorsUGV::output_regular(bool armed, float steering, float throttle)
+ // output to skid steering channels
+ void AP_MotorsUGV::output_skid_steering(bool armed, float steering, float throttle)
+ {
+-    if (!have_skid_steering()) {
+-        return;
+-    }
+-
++	//hal.console->printf("output_skid_steering_call\n");
+     // handle simpler disarmed case
+     if (!armed) {
+         if (_disarm_disable_pwm) {
+@@ -418,8 +417,14 @@ void AP_MotorsUGV::output_skid_steering(bool armed, float steering, float thrott
+     const float motor_right = throttle_scaled - (steering_dir * steering_scaled);
+ 
+     // send pwm value to each motor
+-    output_throttle(SRV_Channel::k_throttleLeft, 100.0f * motor_left);
+-    output_throttle(SRV_Channel::k_throttleRight, 100.0f * motor_right);
++    //output_throttle(SRV_Channel::k_throttleLeft, 100.0f * motor_left);
++    //output_throttle(SRV_Channel::k_throttleRight, 100.0f * motor_right);
++
++    //send to inbuilt motor driver module of BBBlue
++    if(init_check==1){
++        rc_set_motor(2,motor_left);
++        rc_set_motor(3,-motor_right);
++    }
+ }
+ 
+ // output throttle value to main throttle channel, left throttle or right throttle.  throttle should be scaled from -100 to 100
+diff --git a/APMrover2/sensors.cpp b/APMrover2/sensors.cpp
+index c6b3c83a6..dc059337b 100644
+--- a/APMrover2/sensors.cpp
++++ b/APMrover2/sensors.cpp
+@@ -97,6 +97,7 @@ void Rover::update_visual_odom()
+ // update wheel encoders
+ void Rover::update_wheel_encoder()
+ {
++	g2.wheel_encoder.num_sensors();
+     // exit immediately if not enabled
+     if (g2.wheel_encoder.num_sensors() == 0) {
+         return;
+diff --git a/APMrover2/wscript b/APMrover2/wscript
+index c5dadbae3..532178982 100644
+--- a/APMrover2/wscript
++++ b/APMrover2/wscript
+@@ -11,17 +11,20 @@ def build(bld):
+             'AP_Arming',
+             'AP_Camera',
+             'AP_L1_Control',
++            'AP_Menu',
+             'AP_Mount',
+             'AP_Navigation',
+             'AP_RCMapper',
+             'AP_RSSI',
+-            'AC_PID',
++            'AC_PID',
+             'AP_Stats',
+             'AP_Beacon',
+             'AP_VisualOdom',
+             'AP_AdvancedFailsafe',
+             'AP_WheelEncoder',
+             'AP_SmartRTL',
++            'roboticscape',
++            'mmap'
+         ],
+     )
+ 
+diff --git a/ArduPlane/wscript b/ArduPlane/wscript
+index 5f2bd3fb7..5414a9604 100644
+--- a/ArduPlane/wscript
++++ b/ArduPlane/wscript
+@@ -32,7 +32,9 @@ def build(bld):
+             'AP_Landing',
+             'AP_Beacon',
+             'PID',
+-            'AP_Soaring'
++            'AP_Soaring',
++            'roboticscape',
++            'mmap'
+         ],
+     )
+ 
+diff --git a/ArduSub/wscript b/ArduSub/wscript
+index 5def0964d..59aa468b9 100644
+--- a/ArduSub/wscript
++++ b/ArduSub/wscript
+@@ -22,7 +22,9 @@ def build(bld):
+             'AP_Gripper',
+             'AP_Beacon',
+             'AP_TemperatureSensor',
+-            'AP_Arming'
++            'AP_Arming',
++            'roboticscape',
++            'mmap'  
+         ],
+     )
+ 
+diff --git a/libraries/AP_Arming/AP_Arming.cpp b/libraries/AP_Arming/AP_Arming.cpp
+index 3f98bb10c..b2f278c70 100644
+--- a/libraries/AP_Arming/AP_Arming.cpp
++++ b/libraries/AP_Arming/AP_Arming.cpp
+@@ -1,28 +1,21 @@
+-/*
+-   This program is free software: you can redistribute it and/or modify
+-   it under the terms of the GNU General Public License as published by
+-   the Free Software Foundation, either version 3 of the License, or
+-   (at your option) any later version.
+-
+-   This program is distributed in the hope that it will be useful,
+-   but WITHOUT ANY WARRANTY; without even the implied warranty of
+-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-   GNU General Public License for more details.
+-
+-   You should have received a copy of the GNU General Public License
+-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+- */
+ 
++#include <signal.h>
++#include <stdio.h>
++#include <unistd.h>
++#include <stdlib.h>
++#include "mmap/rc_mmap_pwmss.h"		// used for fast pwm functions
++#include "roboticscape/rc_motors.h"
+ #include "AP_Arming.h"
+ #include <AP_Notify/AP_Notify.h>
+ #include <GCS_MAVLink/GCS.h>
+-
++#include "roboticscape/roboticscape.h"
+ #define AP_ARMING_COMPASS_MAGFIELD_EXPECTED 530
+ #define AP_ARMING_COMPASS_MAGFIELD_MIN  185     // 0.35 * 530 milligauss
+ #define AP_ARMING_COMPASS_MAGFIELD_MAX  875     // 1.65 * 530 milligauss
+ #define AP_ARMING_BOARD_VOLTAGE_MIN     4.3f
+ #define AP_ARMING_BOARD_VOLTAGE_MAX     5.8f
+ #define AP_ARMING_ACCEL_ERROR_THRESHOLD 0.75f
++int init_check=0;
+ #define AP_ARMING_AHRS_GPS_ERROR_MAX    10      // accept up to 10m difference between AHRS and GPS
+ 
+ extern const AP_HAL::HAL& hal;
+@@ -554,6 +547,72 @@ bool AP_Arming::arm(uint8_t method)
+         armed = true;
+         arming_method = NONE;
+         gcs().send_text(MAV_SEVERITY_INFO, "Throttle armed");
++
++		//changes
++		FILE *fd; 
++
++		// ensure root privaleges until we sort out udev rules
++		if(geteuid()!=0){
++		fprintf(stderr,"ERROR: Robotics Cape library must be run as root\n");
++		return -1;
++		}
++
++		// check if another project was using resources
++		// kill that process cleanly with sigint if so
++	//	#ifdef DEBUG
++			printf("checking for existing PID_FILE\n");
++	//	#endif
++		rc_kill();
++
++		// start state as Uninitialized
++		rc_set_state(UNINITIALIZED);
++	
++		// initialize gpio pins
++		hal.console->printf("Initializing: GPIO\n");
++		if(configure_gpio_pins()<0){
++			hal.console->printf("ERROR: failed to configure GPIO\n");
++			return -1;
++		}
++
++
++		// motors
++		hal.console->printf("Initializing: Motors\n");
++		if(initialize_motors()){
++			fprintf(stderr,"WARNING: Failed to initialize motors\n");
++		}
++		hal.console->printf("Enabling Motors\n");
++		rc_enable_motors();
++
++		hal.console->printf("Setting Motor values\n");
++		hal.console->printf("Initializing: eQEP\n");
++		if(init_eqep(0)){
++			hal.console->printf("failed to initialize eQEP0\n");
++		}
++		if(init_eqep(1)){
++			hal.console->printf("failed to initialize eQEP1\n");
++		}
++		if(init_eqep(2)){
++			hal.console->printf("failed to initialize eQEP2\n");
++		}
++
++		// create new pid file with process id
++		hal.console->printf("opening PID_FILE\n");
++		fd = fopen(PID_FILE, "ab+");
++		if (fd == NULL) {
++
++			return -1;
++		}
++		pid_t current_pid = getpid();
++		fprintf(fd,"%d",(int)current_pid);
++		fflush(fd);
++		fclose(fd);
++	
++		hal.console->printf("Process ID: %d\n", (int)current_pid); 
++ 		// wait to let threads start up
++		usleep(100000);
++		init_check=1;
++	//changes
++
+         return true;
+     }
+ 
+@@ -588,7 +647,29 @@ bool AP_Arming::disarm()
+     armed = false;
+ 
+     gcs().send_text(MAV_SEVERITY_INFO, "Throttle disarmed");
+-
++	
++	//change	
++	// just in case the user forgot, set state to exiting
++	rc_set_state(EXITING);
++
++	// announce we are starting cleanup process
++	hal.console->printf("\nExiting Cleanly\n");
++
++	hal.console->printf("Turning off motors\n");
++	rc_disable_motors();
++
++	hal.console->printf("Deleting PID file\n");
++	FILE* fd;
++	// clean up the pid_file if it still exists
++	fd = fopen(PID_FILE, "r");
++	if (fd != NULL) {
++		// close and delete the old file
++		fclose(fd);
++		remove(PID_FILE);
++	}
++	init_check=0;
++	hal.console->printf("end of cleanup_cape\n");
++	//change
+     //TODO: Log motor disarming to the dataflash
+     //Can't do this from this class until there is a unified logging library.
+ 
+diff --git a/libraries/AP_Arming/AP_Arming.h b/libraries/AP_Arming/AP_Arming.h
+index 105236a0f..32af70638 100644
+--- a/libraries/AP_Arming/AP_Arming.h
++++ b/libraries/AP_Arming/AP_Arming.h
+@@ -6,7 +6,7 @@
+ #include <AP_Param/AP_Param.h>
+ #include <GCS_MAVLink/GCS_MAVLink.h>
+ #include <RC_Channel/RC_Channel.h>
+-
++extern int init_check;
+ class AP_Arming {
+ public:
+     enum ArmingChecks {
+diff --git a/libraries/AP_WheelEncoder/AP_WheelEncoder.cpp b/libraries/AP_WheelEncoder/AP_WheelEncoder.cpp
+index 2bb52b914..c68a0690e 100644
+--- a/libraries/AP_WheelEncoder/AP_WheelEncoder.cpp
++++ b/libraries/AP_WheelEncoder/AP_WheelEncoder.cpp
+@@ -14,8 +14,10 @@
+  */
+ 
+ #include "AP_WheelEncoder.h"
+-#include "WheelEncoder_Quadrature.h"
++//#include "WheelEncoder_Quadrature.h"
+ 
++#include "QEP_WheelEncoder_Quadrature.h"
++#include "roboticscape/roboticscape.h"
+ extern const AP_HAL::HAL& hal;
+ 
+ // table of user settable parameters
+@@ -157,13 +159,15 @@ void AP_WheelEncoder::init(void)
+         return;
+     }
+     for (uint8_t i=0; i<WHEELENCODER_MAX_INSTANCES; i++) {
+-#if CONFIG_HAL_BOARD == HAL_BOARD_PX4  || CONFIG_HAL_BOARD == HAL_BOARD_VRBRAIN
++#if CONFIG_HAL_BOARD == HAL_BOARD_PX4  || CONFIG_HAL_BOARD == HAL_BOARD_VRBRAIN || CONFIG_HAL_BOARD == HAL_BOARD_LINUX
+         uint8_t type = _type[num_instances];
+         uint8_t instance = num_instances;
+ 
+         if (type == WheelEncoder_TYPE_QUADRATURE) {
+             state[instance].instance = instance;
+-            drivers[instance] = new AP_WheelEncoder_Quadrature(*this, instance, state[instance]);
++            //drivers[instance] = new AP_WheelEncoder_Quadrature(*this, instance, state[instance]);
++            //new driver for QEP module
++            drivers[instance] = new QEP_WheelEncoder_Quadrature(*this, instance, state[instance]);
+         }
+ #endif
+ 
+diff --git a/libraries/AP_WheelEncoder/AP_WheelEncoder.h b/libraries/AP_WheelEncoder/AP_WheelEncoder.h
+index 0cd510916..e5b8ce67e 100644
+--- a/libraries/AP_WheelEncoder/AP_WheelEncoder.h
++++ b/libraries/AP_WheelEncoder/AP_WheelEncoder.h
+@@ -31,6 +31,8 @@ class AP_WheelEncoder
+ public:
+     friend class AP_WheelEncoder_Backend;
+     friend class AP_WheelEncoder_Quadrature;
++    //new qep class for wheelencoder in BBBlue
++    friend class QEP_WheelEncoder_Quadrature;
+ 
+     AP_WheelEncoder(void);
+ 
+diff --git a/libraries/AP_WheelEncoder/QEP_WheelEncoder_Quadrature.cpp b/libraries/AP_WheelEncoder/QEP_WheelEncoder_Quadrature.cpp
+new file mode 100644
+index 000000000..bd787c3de
+--- /dev/null
++++ b/libraries/AP_WheelEncoder/QEP_WheelEncoder_Quadrature.cpp
+@@ -0,0 +1,48 @@
++/*
++   This program is free software: you can redistribute it and/or modify
++   it under the terms of the GNU General Public License as published by
++   the Free Software Foundation, either version 3 of the License, or
++   (at your option) any later version.
++
++   This program is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++   GNU General Public License for more details.
++
++   You should have received a copy of the GNU General Public License
++   along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include <AP_HAL/AP_HAL.h>
++
++#if CONFIG_HAL_BOARD == HAL_BOARD_PX4 || CONFIG_HAL_BOARD == HAL_BOARD_VRBRAIN || CONFIG_HAL_BOARD == HAL_BOARD_LINUX
++#include <AP_BoardConfig/AP_BoardConfig.h>
++//#include <board_config.h>
++#include "QEP_WheelEncoder_Quadrature.h"
++#include <stdio.h>
++#include "roboticscape/roboticscape.h"
++extern const AP_HAL::HAL& hal;
++QEP_WheelEncoder_Quadrature::IrqState QEP_WheelEncoder_Quadrature::irq_state[WHEELENCODER_MAX_INSTANCES];
++int flag=0;
++int32_t previous_read=0;
++// constructor
++QEP_WheelEncoder_Quadrature::QEP_WheelEncoder_Quadrature(AP_WheelEncoder &frontend, uint8_t instance, AP_WheelEncoder::WheelEncoder_State &state) :
++	AP_WheelEncoder_Backend(frontend, instance, state)
++{
++}
++
++void QEP_WheelEncoder_Quadrature::update(void)
++{
++    uint8_t instance = _state.instance;
++
++    irq_state[instance].distance_count = rc_get_encoder_pos(instance+2);
++    _state.distance_count =irq_state[instance].distance_count;
++      irq_state[instance].last_reading_ms = AP_HAL::millis();
++
++    _state.last_reading_ms = irq_state[instance].last_reading_ms;
++
++}
++
++
++
++#endif // CONFIG_HAL_BOARD
+diff --git a/libraries/AP_WheelEncoder/QEP_WheelEncoder_Quadrature.h b/libraries/AP_WheelEncoder/QEP_WheelEncoder_Quadrature.h
+new file mode 100644
+index 000000000..c3f0e86e6
+--- /dev/null
++++ b/libraries/AP_WheelEncoder/QEP_WheelEncoder_Quadrature.h
+@@ -0,0 +1,46 @@
++/*
++   This program is free software: you can redistribute it and/or modify
++   it under the terms of the GNU General Public License as published by
++   the Free Software Foundation, either version 3 of the License, or
++   (at your option) any later version.
++
++   This program is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++   GNU General Public License for more details.
++
++   You should have received a copy of the GNU General Public License
++   along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++#pragma once
++
++#include "AP_WheelEncoder.h"
++#include "WheelEncoder_Backend.h"
++#include <Filter/Filter.h>
++#include <AP_Math/AP_Math.h>
++
++class QEP_WheelEncoder_Quadrature : public AP_WheelEncoder_Backend
++{
++public:
++    // constructor
++    QEP_WheelEncoder_Quadrature(AP_WheelEncoder &frontend, uint8_t instance, AP_WheelEncoder::WheelEncoder_State &state);
++    //void encoder_count(uint8_t instance);
++
++    // update state
++    void update(void);
++
++private:
++
++    struct IrqState {
++        uint32_t last_gpio_a;       // gpio used for pin a
++        uint32_t last_gpio_b;       // gpio used for pin b
++        int32_t  phase;             // current phase of encoder (from 0 to 3)
++        int32_t  distance_count;    // distance measured by cumulative steps forward or backwards
++        uint32_t total_count;       // total number of successful readings from sensor (used for sensor quality calcs)
++        uint32_t error_count;       // total number of errors reading from sensor (used for sensor quality calcs)
++        uint32_t last_reading_ms;   // system time of last update from encoder
++    };
++    static struct IrqState irq_state[WHEELENCODER_MAX_INSTANCES];
++
++
++};
+diff --git a/libraries/AP_WheelEncoder/WheelEncoder_Quadrature.h b/libraries/AP_WheelEncoder/WheelEncoder_Quadrature.h
+index 4e7860a5d..d3b099f89 100644
+--- a/libraries/AP_WheelEncoder/WheelEncoder_Quadrature.h
++++ b/libraries/AP_WheelEncoder/WheelEncoder_Quadrature.h
+@@ -37,6 +37,9 @@ private:
+     static int irq_handler1_pinb(int irq, void *context);   // instance 1's pin_b handler
+     static void irq_handler(uint8_t instance, bool pin_a);  // combined irq handler
+ 
++    static void irq_handler(uint8_t instance);  // combined irq handler
++
++
+     // get gpio id from pin number
+     static uint32_t get_gpio(uint8_t pin_number);
+ 
+@@ -46,10 +49,14 @@ private:
+     // update phase, distance_count and error count using pin a and b's latest state
+     static void update_phase_and_error_count(bool pin_a_now, bool pin_b_now, uint8_t &phase, int32_t &distance_count, uint32_t &total_count, uint32_t &error_count);
+ 
++   static void update_phase_and_error_count_new(int32_t &phase, int32_t &distance_count, uint32_t &total_count, uint32_t &error_count);
++   static void new_update(int8_t instance);
++
++
+     struct IrqState {
+         uint32_t last_gpio_a;       // gpio used for pin a
+         uint32_t last_gpio_b;       // gpio used for pin b
+-        uint8_t  phase;             // current phase of encoder (from 0 to 3)
++        int32_t  phase;             // current phase of encoder (from 0 to 3)
+         int32_t  distance_count;    // distance measured by cumulative steps forward or backwards
+         uint32_t total_count;       // total number of successful readings from sensor (used for sensor quality calcs)
+         uint32_t error_count;       // total number of errors reading from sensor (used for sensor quality calcs)
+diff --git a/libraries/mmap/rc_mmap_pwmss.c b/libraries/mmap/rc_mmap_pwmss.c
+new file mode 100644
+index 000000000..4a9fd3946
+--- /dev/null
++++ b/libraries/mmap/rc_mmap_pwmss.c
+@@ -0,0 +1,264 @@
++/*******************************************************************************
++* rc_mmap_pwmss.c
++*******************************************************************************/
++
++#include "rc_mmap_pwmss.h"
++#include "rc_tipwmss.h"
++#include "roboticscape/preprocessor_macros.h"
++#include <stdio.h>
++#include <sys/types.h>
++#include <sys/stat.h>
++#include <stdint.h>
++#include <sys/mman.h>
++#include <fcntl.h>
++#include <math.h>
++#include <errno.h>
++
++volatile char *cm_per_base;
++int cm_per_mapped=0;
++volatile char *pwm_base[3]; // pwm subsystem pointers for eQEP
++int pwmss_mapped[3] = {0,0,0}; // to record which subsystems have been mapped
++int eqep_initialized[3] = {0,0,0};
++int pwm_initialized[3] = {0,0,0};
++
++/********************************************
++*  PWMSS Mapping
++*********************************************/
++// maps the base of each PWM subsystem into an array
++// this is used by eQEP and PWM
++// returns immediately if this has already been done 
++int map_pwmss(int ss){
++	if(ss>2 || ss<0){
++		printf("error: PWM subsystem must be 0, 1, or 2\n");
++		return -1;
++	}
++	//return 0 if it's already been mapped.
++	if(pwmss_mapped[ss]){
++		return 0;
++	}
++	
++	//open /dev/mem file pointer for mmap
++	#ifdef DEBUG
++		printf("opening /dev/mem\n");
++	#endif
++	int dev_mem = open("/dev/mem", O_RDWR | O_SYNC);
++	errno=0;
++	if (unlikely(dev_mem ==-1)){
++	  perror("in map_pwmss(),Could not open /dev/mem");
++	  return -1;
++	}
++	
++	// first open the clock register to see if the PWMSS has clock enabled
++	if(!cm_per_mapped){
++		#ifdef DEBUG
++		printf("mapping CM_PER\n");
++		#endif
++		cm_per_base=mmap(0,CM_PER_PAGE_SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,dev_mem,CM_PER);
++		if(cm_per_base == (void *) -1) {
++			printf("Unable to mmap cm_per\n");
++			return -1;
++		}
++		cm_per_mapped = 1;
++	}
++	
++	// if this subsystem hasn't already been mapped, 
++	// then we probably need to enable clock signal to it in cm_per
++	uint32_t cm_per_clkctrl;
++	switch(ss){
++	case 0:
++		cm_per_clkctrl = CM_PER_EPWMSS0_CLKCTRL;
++		break;
++	case 1:
++		cm_per_clkctrl = CM_PER_EPWMSS1_CLKCTRL;
++		break;
++	case 2:
++		cm_per_clkctrl = CM_PER_EPWMSS2_CLKCTRL;
++		break;
++	default:
++		return -1;
++	}
++	
++	*(uint16_t*)(cm_per_base + cm_per_clkctrl) |= MODULEMODE_ENABLE;
++	#ifdef DEBUG
++	printf("new clkctrl%d: %d\n", ss, *(uint16_t*)(cm_per_base + cm_per_clkctrl));
++	#endif
++
++	
++	// now map the appropriate subsystem base address
++	#ifdef DEBUG
++		printf("calling mmap() for base %d\n", ss);
++	#endif
++	switch(ss){
++	case 0:
++		pwm_base[0] = mmap(0,PWMSS_MEM_SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,dev_mem,PWMSS0_BASE);
++		break;
++	case 1:
++		pwm_base[1] = mmap(0,PWMSS_MEM_SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,dev_mem,PWMSS1_BASE);
++		break;
++	case 2:
++		pwm_base[2] = mmap(0,PWMSS_MEM_SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,dev_mem,PWMSS2_BASE);
++		break;
++	default:
++		printf("invalid ss\n");
++		return -1;
++	}
++	#ifdef DEBUG
++		printf("finished mapping for base %d\n", ss);
++	#endif
++	
++	if(pwm_base[ss] == (void *) -1) {
++		printf("Unable to mmap pwm \n");
++		return -1;
++	}
++	pwmss_mapped[ss]=1;
++	
++	// enable clock from PWMSS
++	*(uint32_t*)(pwm_base[ss]+PWMSS_CLKCONFIG) |= 0x010;
++	
++	close(dev_mem);
++	#ifdef DEBUG
++		printf("closed /dev/mem\n");
++	#endif
++	return 0;
++}
++
++/********************************************
++*  eQEP
++*********************************************/
++
++// init_eqep takes care of sanity checks and returns quickly
++// if nothing is to be initialized.
++int init_eqep(int ss){
++	// range sanity check
++	if(ss>2 || ss<0){
++		printf("error: PWM subsystem must be 0, 1, or 2\n");
++		return -1;
++	}
++	// see if eQEP already got initialized
++	if(eqep_initialized[ss]){
++		return 0;
++	}
++
++	// check ti-eqep driver is up
++	switch(ss){
++	case 0:
++		if(access("/sys/devices/platform/ocp/48300000.epwmss/48300180.eqep", F_OK ) != 0){
++			printf("ERROR: ti-eqep driver not loaded for eqep0\n");
++			return -1;
++		}
++		break;
++	case 1:
++		if(access("/sys/devices/platform/ocp/48302000.epwmss/48302180.eqep", F_OK ) != 0){
++			printf("ERROR: ti-eqep driver not loaded for eqep1\n");
++			return -1;
++		}
++		break;
++	case 2:
++		if(access("/sys/devices/platform/ocp/48304000.epwmss/48304180.eqep", F_OK ) != 0){
++			printf("ERROR: ti-eqep driver not loaded for eqep2\n");
++			return -1;
++		}
++		break;
++	default:
++		break;
++	}
++
++
++	// make sure the subsystem is mapped
++	if(map_pwmss(ss)){
++		printf("failed to map PWMSS %d\n", ss);
++		return -1;
++	}
++	#ifdef DEBUG
++		printf("setting eqep ctrl registers\n");
++	#endif
++	//turn off clock to eqep
++	*(uint32_t*)(pwm_base[ss]+PWMSS_CLKCONFIG) &= ~PWMSS_EQEPCLK_EN;
++	// Write the decoder control settings
++	*(uint16_t*)(pwm_base[ss]+EQEP_OFFSET+QDECCTL) = 0;
++	// set maximum position to two's compliment of -1, aka UINT_MAX
++	*(uint32_t*)(pwm_base[ss]+EQEP_OFFSET+QPOSMAX)=-1;
++	// Enable interrupt
++	*(uint16_t*)(pwm_base[ss]+EQEP_OFFSET+QEINT) = UTOF;
++	// set unit period register
++	*(uint32_t*)(pwm_base[ss]+EQEP_OFFSET+QUPRD)=0x5F5E100;
++	// enable counter in control register
++	*(uint16_t*)(pwm_base[ss]+EQEP_OFFSET+QEPCTL) = PHEN|IEL0|SWI|UTE|QCLM;
++	//enable clock from PWMSS
++	*(uint32_t*)(pwm_base[ss]+PWMSS_CLKCONFIG) |= PWMSS_EQEPCLK_EN;
++	
++	// Test eqep by resetting position
++	#ifdef DEBUG
++		printf("testing eQEP write\n");
++	#endif
++	*(uint32_t*)(pwm_base[ss] + EQEP_OFFSET +QPOSCNT) = 0;
++	#ifdef DEBUG
++		printf("successfully tested eQEP write\n");
++	#endif
++	eqep_initialized[ss] = 1;
++	return 0;
++}
++
++// read a value from eQEP counter
++int read_eqep(int ch){
++	if(init_eqep(ch)) return -1;
++	return  *(int*)(pwm_base[ch] + EQEP_OFFSET +QPOSCNT);
++}
++
++// write a value to the eQEP counter
++int write_eqep(int ch, int val){
++	if(init_eqep(ch)) return -1;
++	*(int*)(pwm_base[ch] + EQEP_OFFSET +QPOSCNT) = val;
++	return 0;
++}
++
++/*******************************************************************************
++* int rc_pwm_set_duty_mmap(int ss, char ch, float duty)
++*
++* This is the fastest way to set the pwm duty cycle and is used internally by
++* the rc_set_motor() function but is also available to the user. This is done
++* with direct memory access from userspace to the pwm subsystem. It's use is
++* identical to rc_pwm_set_duty where subsystem ss must be 0,1, or 2 where
++* 1 and 2 are used by the motor H bridges. Channel 'ch' must be 'A' or 'B' and
++* duty must be from 0.0f to 1.0f. The subsystem must be intialized with
++* rc_pwm_init() before use. Returns 0 on success or -1 on failure.
++*******************************************************************************/
++
++// set duty cycle for either channel A or B in a given subsystem
++// input channel is a character 'A' or 'B'
++int rc_pwm_set_duty_mmap(int ss, char ch, float duty){
++	// make sure the subsystem is mapped
++	if(unlikely(map_pwmss(ss))){
++		fprintf(stderr,"ERROR in rc_pwm_set_duty_mmap,failed to map PWMSS %d\n", ss);
++		return -1;
++	}
++	//sanity check duty
++	if(unlikely(duty>1.0f||duty<0.0f)){
++		fprintf(stderr,"ERROR in rc_pwm_set_duty_mmap, duty must be between 0.0f & 1.0f\n");
++		return -1;
++	}
++	
++	// duty ranges from 0 to TBPRD+1 for 0-100% PWM duty
++	uint16_t period = *(uint16_t*)(pwm_base[ss]+PWM_OFFSET+TBPRD);
++	uint16_t new_duty = (uint16_t)lroundf(duty * (period+1));
++	
++	#ifdef DEBUG
++		printf("period : %d\n", period);
++		printf("new_duty : %d\n", new_duty);
++	#endif
++	
++	// change appropriate compare register
++	switch(ch){
++	case 'A':
++		*(uint16_t*)(pwm_base[ss]+PWM_OFFSET+CMPA) = new_duty;
++		break;
++	case 'B':
++		*(uint16_t*)(pwm_base[ss]+PWM_OFFSET+CMPB) = new_duty;
++		break;
++	default:
++		fprintf(stderr,"ERROR in rc_pwm_set_duty_mmap, pwm channel must be 'A' or 'B'\n");
++		return -1;
++	}
++	
++	return 0;
++}
+diff --git a/libraries/mmap/rc_mmap_pwmss.h b/libraries/mmap/rc_mmap_pwmss.h
+new file mode 100644
+index 000000000..69dddb715
+--- /dev/null
++++ b/libraries/mmap/rc_mmap_pwmss.h
+@@ -0,0 +1,32 @@
++/*
++This is a collection of functions for operating eQEP and PWM
++on the TI AM335x Sitara Processors. These operate with direct memory access
++instead of userspace drivers. Therefore this code must be run as root, but
++they execute roughly 2 orders of magnitude faster than userspace drivers
++depending on the exact function.
++
++Note that a device tree overlay is still necessary to configure the
++pin multiplexer and enable clock signal to each subsystem.
++
++the pwm driver is still needed to set up pwm output. This can
++be done through /sys/class/pwm or with simple_pwm.c
++*/
++
++#ifndef MMAP_PWMSS
++#define MMAP_PWMSS
++#ifdef __cplusplus
++#define EXTERNC extern "C"
++#else
++#define EXTERNC
++#endif	
++
++// eQEP
++EXTERNC int init_eqep(int ss);
++EXTERNC int read_eqep(int ch);
++EXTERNC int write_eqep(int ch, int val);
++
++
++#endif
++
++
++
+diff --git a/libraries/mmap/rc_tipwmss.h b/libraries/mmap/rc_tipwmss.h
+new file mode 100644
+index 000000000..b5247f887
+--- /dev/null
++++ b/libraries/mmap/rc_tipwmss.h
+@@ -0,0 +1,62 @@
++// Collection of register names in the TI PWM Subsystem
++// for use with BeagleBone and TI Sitara AM335X series
++
++//top level subsystem config and clock registers
++#define PWMSS_CLKCONFIG 		0x8
++#define PWMSS_EQEPCLK_EN		(0x01<<4)
++
++
++// eQEP register offsets from its base IO address
++#define QPOSCNT    0x0000
++#define QPOSMAX    0x0008
++#define QUPRD      0x0020
++#define QDECCTL    0x0028
++#define QEPCTL     0x002A
++#define QEINT      0x0030
++
++
++// Bits for the QEPCTL register
++
++#define SWI        (0x0001 << 7)
++#define IEL0       (0x0001 << 4)
++#define PHEN       (0x0001 << 3)
++#define QCLM       (0x0001 << 2)
++#define UTE        (0x0001 << 1)
++
++// Bits for the interrupt registers
++#define EQEP_INTERRUPT_MASK (0x0FFF)
++#define UTOF                (0x0001 << 11)
++
++//// eQep and pwmss registers
++#define PWMSS0_BASE   0x48300000
++#define PWMSS1_BASE   0x48302000
++#define PWMSS2_BASE   0x48304000
++#define EQEP_OFFSET  0x180
++#define PWM_OFFSET  0x200
++#define PWMSS_MEM_SIZE 8192 // 8kb
++
++
++
++// eHRPWM control register locations
++
++#define TBPRD 0x0A
++#define CMPA 0x12
++#define CMPB 0x14
++
++
++/*********************************
++* clock control registers
++*********************************/
++#ifndef CM_PER
++	#define CM_PER 0x44E00000 //base of Clock Module Peripheral control
++	#define CM_PER_PAGE_SIZE 1024 //1kb
++#endif
++
++#define CM_PER_EPWMSS1_CLKCTRL 0xCC //16 bit register
++#define CM_PER_EPWMSS0_CLKCTRL 0xD4 //16 bit register
++#define CM_PER_EPWMSS2_CLKCTRL 0xD8 //16 bit register
++
++#define MODULEMODE_DISABLED 0x0
++#define MODULEMODE_ENABLE 	0x2 //aa
++
++
+diff --git a/libraries/roboticscape/preprocessor_macros.h b/libraries/roboticscape/preprocessor_macros.h
+new file mode 100644
+index 000000000..ca5dd7661
+--- /dev/null
++++ b/libraries/roboticscape/preprocessor_macros.h
+@@ -0,0 +1,42 @@
++  /*******************************************************************************
++* preprocessor_macros.h
++*
++* This is a list of macros to clean up GNU-C extensions in a safe and portable
++* way. Thank you Robert Love for providing this in "Linux System Programming",
++* it is an excellent book.
++*******************************************************************************/
++
++
++#if __GNUC__ >= 3
++# undef inline
++# define inline			inline __attribute__ ((always_inline))
++# define __noinline		__attribute__ ((noinline))
++# define __pure			__attribute__ ((pure))
++# define __const		__attribute__ ((const))
++# define __noreturn		__attribute__ ((noreturn))
++# define __malloc		__attribute__ ((malloc))
++# define __must_check	__attribute__ ((warn_unused_result))
++# define __deprecated	__attribute__ ((deprecated))
++# define __used			__attribute__ ((used))
++# define __unused		__attribute__ ((unused))
++# define __packed		__attribute__ ((packed))
++# define __align(x)		__attribute__ ((aligned (x)))
++# define __align_max	__attribute__ ((aligned))
++# define likely(x)		__builtin_expect (!!(x), 1)
++# define unlikely(x)	__builtin_expect (!!(x), 0)
++#else
++# define __noinline		/* no noinline */
++# define __pure			/* pure */
++# define __const		/* const */
++# define __noreturn		/* noreturn */
++# define __malloc		/* malloc */
++# define __must_check	/* warn_unused_result */
++# define __deprecated	/* deprecated */
++# define __used			/* used */
++# define __unused		/* unused */
++# define __packed		/* packed */
++# define __align(x)		/* aligned */
++# define __align_max	/* align_max */
++# define likely(x) (x)
++# define unlikely(x) (x)
++#endif
+diff --git a/libraries/roboticscape/rc_pwm_userspace_defs.h b/libraries/roboticscape/rc_pwm_userspace_defs.h
+new file mode 100644
+index 000000000..440d5f508
+--- /dev/null
++++ b/libraries/roboticscape/rc_pwm_userspace_defs.h
+@@ -0,0 +1,94 @@
++// ti_pwm_userspace_defs.h
++//
++// this is a list of the userspace directories created by the ti pwm driver
++// all directories derived from 4.4.9-bone10
++
++
++// export directories
++const char* pwm_export_path[2][3] = {{ \
++"/sys/devices/platform/ocp/48300000.epwmss/48300200.ehrpwm/pwm/pwmchip0/export", \
++"/sys/devices/platform/ocp/48302000.epwmss/48302200.ehrpwm/pwm/pwmchip2/export", \
++"/sys/devices/platform/ocp/48304000.epwmss/48304200.ehrpwm/pwm/pwmchip4/export"},{ \
++"/sys/devices/platform/ocp/48300000.epwmss/48300200.pwm/pwm/pwmchip0/export", \
++"/sys/devices/platform/ocp/48302000.epwmss/48302200.pwm/pwm/pwmchip2/export", \
++"/sys/devices/platform/ocp/48304000.epwmss/48304200.pwm/pwm/pwmchip4/export"}};\
++
++
++const char* pwm_unexport_path[2][3] = {{ \
++"/sys/devices/platform/ocp/48300000.epwmss/48300200.ehrpwm/pwm/pwmchip0/unexport", \
++"/sys/devices/platform/ocp/48302000.epwmss/48302200.ehrpwm/pwm/pwmchip2/unexport", \
++"/sys/devices/platform/ocp/48304000.epwmss/48304200.ehrpwm/pwm/pwmchip4/unexport"},{ \
++"/sys/devices/platform/ocp/48300000.epwmss/48300200.pwm/pwm/pwmchip0/unexport", \
++"/sys/devices/platform/ocp/48302000.epwmss/48302200.pwm/pwm/pwmchip2/unexport", \
++"/sys/devices/platform/ocp/48304000.epwmss/48304200.pwm/pwm/pwmchip4/unexport"}};\
++
++
++// channel enable
++const char* pwm_chA_enable_path[2][3] = {{ \
++"/sys/devices/platform/ocp/48300000.epwmss/48300200.ehrpwm/pwm/pwmchip0/pwm0/enable", \
++"/sys/devices/platform/ocp/48302000.epwmss/48302200.ehrpwm/pwm/pwmchip2/pwm0/enable", \
++"/sys/devices/platform/ocp/48304000.epwmss/48304200.ehrpwm/pwm/pwmchip4/pwm0/enable"},{
++"/sys/devices/platform/ocp/48300000.epwmss/48300200.pwm/pwm/pwmchip0/pwm0/enable", \
++"/sys/devices/platform/ocp/48302000.epwmss/48302200.pwm/pwm/pwmchip2/pwm0/enable", \
++"/sys/devices/platform/ocp/48304000.epwmss/48304200.pwm/pwm/pwmchip4/pwm0/enable"}};
++
++const char* pwm_chB_enable_path[2][3] = {{ \
++"/sys/devices/platform/ocp/48300000.epwmss/48300200.ehrpwm/pwm/pwmchip0/pwm1/enable", \
++"/sys/devices/platform/ocp/48302000.epwmss/48302200.ehrpwm/pwm/pwmchip2/pwm1/enable", \
++"/sys/devices/platform/ocp/48304000.epwmss/48304200.ehrpwm/pwm/pwmchip4/pwm1/enable"},{
++"/sys/devices/platform/ocp/48300000.epwmss/48300200.pwm/pwm/pwmchip0/pwm1/enable", \
++"/sys/devices/platform/ocp/48302000.epwmss/48302200.pwm/pwm/pwmchip2/pwm1/enable", \
++"/sys/devices/platform/ocp/48304000.epwmss/48304200.pwm/pwm/pwmchip4/pwm1/enable"}};
++
++// channel polarity
++const char* pwm_chA_polarity_path[2][3] = {{ \
++"/sys/devices/platform/ocp/48300000.epwmss/48300200.ehrpwm/pwm/pwmchip0/pwm0/polarity", \
++"/sys/devices/platform/ocp/48302000.epwmss/48302200.ehrpwm/pwm/pwmchip2/pwm0/polarity", \
++"/sys/devices/platform/ocp/48304000.epwmss/48304200.ehrpwm/pwm/pwmchip4/pwm0/polarity"},{
++"/sys/devices/platform/ocp/48300000.epwmss/48300200.pwm/pwm/pwmchip0/pwm0/polarity", \
++"/sys/devices/platform/ocp/48302000.epwmss/48302200.pwm/pwm/pwmchip2/pwm0/polarity", \
++"/sys/devices/platform/ocp/48304000.epwmss/48304200.pwm/pwm/pwmchip4/pwm0/polarity"}};
++
++const char* pwm_chB_polarity_path[2][3] = {{ \
++"/sys/devices/platform/ocp/48300000.epwmss/48300200.ehrpwm/pwm/pwmchip0/pwm1/polarity", \
++"/sys/devices/platform/ocp/48302000.epwmss/48302200.ehrpwm/pwm/pwmchip2/pwm1/polarity", \
++"/sys/devices/platform/ocp/48304000.epwmss/48304200.ehrpwm/pwm/pwmchip4/pwm1/polarity"},{
++"/sys/devices/platform/ocp/48300000.epwmss/48300200.pwm/pwm/pwmchip0/pwm1/polarity", \
++"/sys/devices/platform/ocp/48302000.epwmss/48302200.pwm/pwm/pwmchip2/pwm1/polarity", \
++"/sys/devices/platform/ocp/48304000.epwmss/48304200.pwm/pwm/pwmchip4/pwm1/polarity"}};
++
++
++// channel period
++const char* pwm_chA_period_path[2][3] = {{ \
++"/sys/devices/platform/ocp/48300000.epwmss/48300200.ehrpwm/pwm/pwmchip0/pwm0/period", \
++"/sys/devices/platform/ocp/48302000.epwmss/48302200.ehrpwm/pwm/pwmchip2/pwm0/period", \
++"/sys/devices/platform/ocp/48304000.epwmss/48304200.ehrpwm/pwm/pwmchip4/pwm0/period"},{
++"/sys/devices/platform/ocp/48300000.epwmss/48300200.pwm/pwm/pwmchip0/pwm0/period", \
++"/sys/devices/platform/ocp/48302000.epwmss/48302200.pwm/pwm/pwmchip2/pwm0/period", \
++"/sys/devices/platform/ocp/48304000.epwmss/48304200.pwm/pwm/pwmchip4/pwm0/period"}};
++
++const char* pwm_chB_period_path[2][3] = {{ \
++"/sys/devices/platform/ocp/48300000.epwmss/48300200.ehrpwm/pwm/pwmchip0/pwm1/period", \
++"/sys/devices/platform/ocp/48302000.epwmss/48302200.ehrpwm/pwm/pwmchip2/pwm1/period", \
++"/sys/devices/platform/ocp/48304000.epwmss/48304200.ehrpwm/pwm/pwmchip4/pwm1/period"},{
++"/sys/devices/platform/ocp/48300000.epwmss/48300200.pwm/pwm/pwmchip0/pwm1/period", \
++"/sys/devices/platform/ocp/48302000.epwmss/48302200.pwm/pwm/pwmchip2/pwm1/period", \
++"/sys/devices/platform/ocp/48304000.epwmss/48304200.pwm/pwm/pwmchip4/pwm1/period"}};
++
++// channel duty cycle
++const char* pwm_chA_duty_path[2][3] = {{ \
++"/sys/devices/platform/ocp/48300000.epwmss/48300200.ehrpwm/pwm/pwmchip0/pwm0/duty_cycle", \
++"/sys/devices/platform/ocp/48302000.epwmss/48302200.ehrpwm/pwm/pwmchip2/pwm0/duty_cycle", \
++"/sys/devices/platform/ocp/48304000.epwmss/48304200.ehrpwm/pwm/pwmchip4/pwm0/duty_cycle"},{
++"/sys/devices/platform/ocp/48300000.epwmss/48300200.pwm/pwm/pwmchip0/pwm0/duty_cycle", \
++"/sys/devices/platform/ocp/48302000.epwmss/48302200.pwm/pwm/pwmchip2/pwm0/duty_cycle", \
++"/sys/devices/platform/ocp/48304000.epwmss/48304200.pwm/pwm/pwmchip4/pwm0/duty_cycle"}};
++
++const char* pwm_chB_duty_path[2][3] = {{ \
++"/sys/devices/platform/ocp/48300000.epwmss/48300200.ehrpwm/pwm/pwmchip0/pwm1/duty_cycle", \
++"/sys/devices/platform/ocp/48302000.epwmss/48302200.ehrpwm/pwm/pwmchip2/pwm1/duty_cycle", \
++"/sys/devices/platform/ocp/48304000.epwmss/48304200.ehrpwm/pwm/pwmchip4/pwm1/duty_cycle"},{
++"/sys/devices/platform/ocp/48300000.epwmss/48300200.pwm/pwm/pwmchip0/pwm1/duty_cycle", \
++"/sys/devices/platform/ocp/48302000.epwmss/48302200.pwm/pwm/pwmchip2/pwm1/duty_cycle", \
++"/sys/devices/platform/ocp/48304000.epwmss/48304200.pwm/pwm/pwmchip4/pwm1/duty_cycle"}};
++
+diff --git a/libraries/roboticscape/roboticscape.c b/libraries/roboticscape/roboticscape.c
+new file mode 100644
+index 000000000..b2244e52c
+--- /dev/null
++++ b/libraries/roboticscape/roboticscape.c
+@@ -0,0 +1,939 @@
++
++#include <signal.h>
++#include "roboticscape.h"
++#include "mmap/rc_mmap_pwmss.h"		// used for fast pwm functions
++//#include "rc_motors.h"
++#include <time.h>
++#include <sys/time.h>
++#include <errno.h>
++#include "rc_pwm_userspace_defs.h"
++#include "preprocessor_macros.h"
++#include <stdio.h>
++#include <dirent.h>
++#include <fcntl.h>
++#include <unistd.h>
++#include <poll.h>
++#include <sys/types.h>
++#include <sys/stat.h>
++#include <stdint.h>
++#include <sys/mman.h>
++#include <fcntl.h>
++#include <unistd.h>
++#include <errno.h>
++
++
++// global variables
++int mdir1a, mdir2b; // variable gpio pin assignments
++int motors_initialized = 0;
++#define SYSFS_GPIO_DIR "/sys/class/gpio"
++#define MAX_BUF 64
++#define MAXBUF 64
++
++// variables
++int duty_fd[6];   // pointers to duty cycle file descriptor
++int period_ns[3];   //one period (frequency) per subsystem
++char simple_pwm_initialized[3] = {0,0,0};
++int ver; // pwm driver version, 0 or 1. automatically detected
++
++/*******************************************************************************
++* Global Variables
++*******************************************************************************/
++// global roboticscape state
++enum rc_state_t rc_state = UNINITIALIZED;
++
++
++volatile uint32_t *map; // pointer to /dev/mem
++int mapped = 0; // boolean to check if mem mapped
++int gpio_initialized = 0;
++int adc_initialized = 0;
++
++/*******************************************************************************
++*   Shared Map Function
++*******************************************************************************/
++// map /dev/mem if it hasn't been done already
++int init_mmap() {
++  if(mapped){
++    return 0;
++  }
++  int fd = open("/dev/mem", O_RDWR);
++  errno=0;
++  if(unlikely(fd==-1)){
++    printf("Unable to open /dev/mem\n");
++    if(unlikely(errno==EPERM)) printf("Insufficient privileges\n");
++    return -1;
++  }
++  map = (uint32_t*)mmap(NULL, MMAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED,\
++                              fd, MMAP_OFFSET);
++  if(map == MAP_FAILED) {
++    close(fd);
++    printf("Unable to map /dev/mem\n");
++    return -1;
++  }
++  mapped = TRUE;
++  return 0;
++}
++
++int initialize_mmap_gpio(){
++  // return immediately if gpio already initialized
++  if(gpio_initialized){
++    return 0;
++  }
++  // check the mmap poitner is sorted
++  if (init_mmap()){
++    return -1;
++  }
++
++  // now we must enable clock signal to the gpio subsystems
++  // first open the clock register to see if the PWMSS has clock enabled
++  int dev_mem;
++  dev_mem = open("/dev/mem", O_RDWR);
++  if(dev_mem == -1) {
++    printf("Unable to open /dev/mem\n");
++    return -1;
++  }
++  volatile char *cm_per_base;
++  cm_per_base=mmap(0,CM_PER_PAGE_SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,\
++                                dev_mem,CM_PER);
++  if(cm_per_base == (void *) -1) {
++    printf("Unable to mmap cm_per\n");
++    return -1;
++  }
++
++  #ifdef DEBUG
++  printf("turning on cm-per module_enable bits for gpio 1,2,3\n");
++  #endif
++  *(uint16_t*)(cm_per_base + CM_PER_GPIO1_CLKCTRL) |= MODULEMODE_ENABLE;
++  *(uint16_t*)(cm_per_base + CM_PER_GPIO2_CLKCTRL) |= MODULEMODE_ENABLE;
++  *(uint16_t*)(cm_per_base + CM_PER_GPIO3_CLKCTRL) |= MODULEMODE_ENABLE;
++
++  #ifdef DEBUG
++  printf("new cm_per_gpio3_clkctrl: %d\n", *(uint16_t*)(cm_per_base+CM_PER_GPIO3_CLKCTRL));
++  #endif
++  close(dev_mem);
++  int fd, len;
++  char buf[32];
++
++  fd = open("/sys/class/gpio/export", O_WRONLY);
++  if (fd == -1) {
++    printf("/sys/class/gpio/export doesn't exist\n");
++    return -1;
++  }
++  len = snprintf(buf, sizeof(buf), "%d", 113);
++  write(fd, buf, len);
++  close(fd);
++
++  gpio_initialized=1;
++  return 0;
++}
++
++// write HIGH or LOW to a pin
++// pinMUX must already be configured for output
++int rc_gpio_set_value_mmap(int pin, int state) {
++  if(initialize_mmap_gpio()){
++    return -1;
++  }
++  if(pin<0 || pin>128){
++    printf("invalid gpio pin\n");
++    return -1;
++  }
++  int bank = pin/32;
++  int id = pin - bank*32;
++  int bank_offset;
++  switch(bank){
++    case 0:
++      bank_offset=GPIO0;
++      break;
++    case 1:
++      bank_offset=GPIO1;
++      break;
++    case 2:
++      bank_offset=GPIO2;
++      break;
++    case 3:
++      bank_offset=GPIO3;
++      break;
++    default:
++      return -1;
++  }
++  //map[(bank_offset-MMAP_OFFSET+GPIO_OE)/4] &= ~(1<<p.bank_id);
++  if(state) map[(bank_offset-MMAP_OFFSET+GPIO_DATAOUT)/4] |= (1<<id);
++  else map[(bank_offset-MMAP_OFFSET+GPIO_DATAOUT)/4] &= ~(1<<id);
++  return 0;
++}
++
++// returns 1 or 0 for HIGH or LOW
++// pinMUX must already be configured for input
++int rc_gpio_get_value_mmap(int pin) {
++  if(initialize_mmap_gpio()){
++    return -1;
++  }
++  if(pin<0 || pin>128){
++    printf("invalid gpio pin\n");
++    return -1;
++  }
++  int bank = pin/32;
++  int id = pin - bank*32;
++  int bank_offset;
++  switch(bank){
++    case 0:
++      bank_offset=GPIO0;
++      break;
++    case 1:
++      bank_offset=GPIO1;
++      break;
++    case 2:
++      bank_offset=GPIO2;
++      break;
++    case 3:
++      bank_offset=GPIO3;
++      break;
++    default:
++      return -1;
++  }
++  return (map[(bank_offset-MMAP_OFFSET+GPIO_DATAIN)/4] & (1<<id))>>id;
++}
++
++
++
++rc_state_t rc_get_state(){
++	return rc_state;
++}
++
++/*******************************************************************************
++* @ int rc_set_state(rc_state_t new_state)
++*
++* sets the high-level robot state variable
++* use this for managing how your threads start and stop
++*******************************************************************************/
++int rc_set_state(rc_state_t new_state){
++	rc_state = new_state;
++	return 0;
++}
++
++/*******************************************************************************
++* int rc_get_encoder_pos(int ch)
++* 
++* returns the encoder counter position
++*******************************************************************************/
++int rc_get_encoder_pos(int ch){
++	if(ch<1 || ch>4){
++		fprintf(stderr,"Encoder Channel must be from 1 to 4\n");
++		return -1;
++	}
++	// first 3 channels counted by eQEP
++	  return  read_eqep(ch-1);
++}
++
++/*******************************************************************************
++* int rc_set_encoder_pos(int ch, int val)
++* 
++* sets the encoder counter position
++*******************************************************************************/
++int rc_set_encoder_pos(int ch, int val){
++	if(ch<1 || ch>4){
++		fprintf(stderr,"Encoder Channel must be from 1 to 4\n");
++		return -1;
++	}
++	return write_eqep(ch-1, val);
++}
++
++
++int rc_kill(){
++	FILE* fd;
++	int old_pid, i;
++	// start by checking if a pid file exists
++	if(access(PID_FILE, F_OK ) != 0){
++		// PID file missing
++		return 0;
++	}
++	// attempt to open PID file
++	// if the file didn't open, no project is runnning in the background
++	// so return 0
++	fd = fopen(PID_FILE, "r");
++	if(fd==NULL) return 0;
++	// try to read the current process ID
++	fscanf(fd,"%d", &old_pid);
++	fclose(fd);
++	// if the file didn't contain a PID number, remove it and 
++	// return -1 indicating weird behavior
++	if(old_pid == 0){
++		remove(PID_FILE);
++		return -2;
++	}
++	// check if it's our own pid, if so return 0
++	if(old_pid == (int)getpid()) return 0;
++	// now see if the process for the read pid is still running
++	if(getpgid(old_pid) < 0){
++		// process not running, remove the pid file
++		remove(PID_FILE);
++		return 0;
++	}
++	// process must be running, attempt a clean shutdown
++	kill((pid_t)old_pid, SIGINT);
++	// check every 0.1 seconds to see if it closed 
++	for(i=0; i<30; i++){
++		if(getpgid(old_pid) >= 0) rc_usleep(100000);
++		else{ // succcess, it shut down properly
++			remove(PID_FILE);
++			return 1; 
++		}
++	}
++	// otherwise force kill the program if the PID file never got cleaned up
++	kill((pid_t)old_pid, SIGKILL);
++	rc_usleep(500000);
++	// delete the old PID file if it was left over
++	remove(PID_FILE);
++	// return -1 indicating the program had to be killed
++	return -1;
++}
++
++
++/*******************************************************************************
++* int initialize_motors()
++*
++* set up gpio assignments, pwm channels, and make sure motors are left off.
++* GPIO exporting must be done previously with simple_init_gpio()
++*******************************************************************************/
++int rc_pwm_init(int ss, int frequency){
++  int export_fd;
++  int periodA_fd; // pointers to frequency file descriptor
++  int periodB_fd;
++  int enableA_fd;  // run (enable) file pointers
++  int enableB_fd;
++  int polarityA_fd;
++  int polarityB_fd;
++  char buf[MAXBUF];
++  int len;
++
++  if(ss<0 || ss>2){
++    printf("PWM subsystem must be between 0 and 2\n");
++    return -1;
++  }
++
++  // check driver is loaded
++  if(access(pwm_export_path[0][ss], F_OK ) == 0) ver=0;
++  else if(access(pwm_export_path[1][ss], F_OK ) == 0) ver=1;
++  else{
++    fprintf(stderr,"ERROR: ti-pwm driver not loaded for pwm subsystem %d\n", ss);
++    return -1;
++  }
++
++  // open export file for that subsystem
++  export_fd = open(pwm_export_path[ver][ss], O_WRONLY);
++  if(unlikely(export_fd<0)){
++    fprintf(stderr,"ERROR in rc_pwm_init, can't open pwm export file for writing\n");
++    return -1;
++  }
++
++  // export just the A channel for that subsystem and check that it worked
++  write(export_fd, "0", 1);
++  if(unlikely(access(pwm_chA_enable_path[ver][ss], F_OK ) != 0)){
++    fprintf(stderr,"ERROR: export failed for hrpwm%d channel A\n", ss);
++    return -1;
++  }
++
++  // set up file descriptors for A channel
++  enableA_fd = open(pwm_chA_enable_path[ver][ss], O_WRONLY);
++  periodA_fd = open(pwm_chA_period_path[ver][ss], O_WRONLY);
++  duty_fd[(2*ss)] = open(pwm_chA_duty_path[ver][ss], O_WRONLY);
++  polarityA_fd = open(pwm_chA_polarity_path[ver][ss], O_WRONLY);
++
++
++  // disable A channel and set polarity before period
++  write(enableA_fd, "0", 1);
++  write(duty_fd[(2*ss)], "0", 1); // set duty cycle to 0
++  write(polarityA_fd, "0", 1); // set the polarity
++
++  // set the period in nanoseconds
++  period_ns[ss] = 1000000000/frequency;
++  len = snprintf(buf, sizeof(buf), "%d", period_ns[ss]);
++  write(periodA_fd, buf, len);
++
++
++  // now we can set up the 'B' channel since the period has been set
++  // the driver will not let you change the period when both are exported
++
++  // export the B channel and check that it worked
++  write(export_fd, "1", 1);
++  if(unlikely(access(pwm_chB_enable_path[ver][ss], F_OK )!=0)){
++    fprintf(stderr,"ERROR: export failed for hrpwm%d channel B\n", ss);
++    return -1;
++  }
++
++  // set up file descriptors for B channel
++  enableB_fd = open(pwm_chB_enable_path[ver][ss], O_WRONLY);
++  periodB_fd = open(pwm_chB_period_path[ver][ss], O_WRONLY);
++  duty_fd[(2*ss)+1] = open(pwm_chB_duty_path[ver][ss], O_WRONLY);
++  polarityB_fd = open(pwm_chB_polarity_path[ver][ss], O_WRONLY);
++
++  // disable and set polarity before period
++  write(enableB_fd, "0", 1);
++  write(polarityB_fd, "0", 1);
++  write(duty_fd[(2*ss)+1], "0", 1);
++
++  // set the period to match the A channel
++  len = snprintf(buf, sizeof(buf), "%d", period_ns[ss]);
++  write(periodB_fd, buf, len);
++
++  // enable A&B channels
++  write(enableA_fd, "1", 1);
++  write(enableB_fd, "1", 1);
++
++  // close all the files
++  close(export_fd);
++  close(enableA_fd);
++  close(enableB_fd);
++  close(periodA_fd);
++  close(periodB_fd);
++  close(polarityA_fd);
++  close(polarityB_fd);
++
++  // everything successful
++  simple_pwm_initialized[ss] = 1;
++  return 0;
++}
++
++/*******************************************************************************
++* int rc_pwm_close(int ss){
++*
++* Unexports a subsystem to put it into low-power state. Not necessary for the
++* the user to call during normal program operation. This is mostly for internal
++* use and cleanup.
++*******************************************************************************/
++int rc_pwm_close(int ss){
++  int fd;
++
++  // sanity check
++  if(unlikely(ss<0 || ss>2)){
++    fprintf(stderr,"ERROR in rc_pwm_close, subsystem must be between 0 and 2\n");
++    return -1;
++  }
++
++  // attempt both driver versions
++  if(access(pwm_unexport_path[0][ss], F_OK ) == 0) ver=0;
++  else if(access(pwm_unexport_path[1][ss], F_OK ) == 0) ver=1;
++  else{
++    fprintf(stderr,"ERROR in rc_pwm_close: ti-pwm driver not loaded for pwm subsystem %d\n", ss);
++    return -1;
++  }
++
++  // open the unexport file for that subsystem
++  fd = open(pwm_unexport_path[ver][ss], O_WRONLY);
++  if(unlikely(fd < 0)){
++    fprintf(stderr,"ERROR in rc_pwm_close: can't open pwm unexport file for hrpwm%d\n", ss);
++    return -1;
++  }
++
++  // write 0 and 1 to the file to unexport both channels
++  write(fd, "0", 1);
++  write(fd, "1", 1);
++
++  close(fd);
++  simple_pwm_initialized[ss] = 0;
++  return 0;
++
++}
++
++
++/****************************************************************
++ * rc_gpio_export
++ ****************************************************************/
++int rc_gpio_export(unsigned int gpio){
++  int fd, len;
++  char buf[MAX_BUF];
++
++  fd = open(SYSFS_GPIO_DIR "/export", O_WRONLY);
++  if (fd < 0) {
++    perror("gpio/export");
++    return fd;
++  }
++  len = snprintf(buf, sizeof(buf), "%d", gpio);
++  write(fd, buf, len);
++  close(fd);
++
++  return 0;
++}
++
++/****************************************************************
++ * rc_gpio_unexport
++ ****************************************************************/
++int rc_gpio_unexport(unsigned int gpio){
++  int fd, len;
++  char buf[MAX_BUF];
++
++  fd = open(SYSFS_GPIO_DIR "/unexport", O_WRONLY);
++  if (fd < 0) {
++    perror("gpio/export");
++    return fd;
++  }
++
++  len = snprintf(buf, sizeof(buf), "%d", gpio);
++  write(fd, buf, len);
++  close(fd);
++  return 0;
++}
++
++/****************************************************************
++ * rc_gpio_set_dir
++ ****************************************************************/
++int rc_gpio_set_dir(int gpio, rc_pin_direction_t out_flag){
++  int fd;
++  char buf[MAX_BUF];
++  snprintf(buf, sizeof(buf), "/sys/class/gpio/gpio%i/direction", gpio);
++  fd = open(buf, O_WRONLY);
++  //printf("%d\n", gpio);
++  if (fd < 0) {
++    perror("gpio/direction");
++    return fd;
++  }
++
++  if (out_flag == OUTPUT_PIN)
++    write(fd, "out", 4);
++  else
++    write(fd, "in", 3);
++
++  close(fd);
++  return 0;
++}
++
++/****************************************************************
++ * rc_gpio_set_value
++ ****************************************************************/
++int rc_gpio_set_value(unsigned int gpio, int value){
++  int fd;
++  char buf[MAX_BUF];
++
++  snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
++
++  fd = open(buf, O_WRONLY);
++  if (fd < 0) {
++    perror("gpio/set-value");
++    return fd;
++  }
++
++  if(value)
++    write(fd, "1", 2);
++  else
++    write(fd, "0", 2);
++
++  close(fd);
++  return 0;
++}
++
++/****************************************************************
++ * rc_gpio_get_value
++ ****************************************************************/
++int rc_gpio_get_value(unsigned int gpio){
++  int fd, ret;
++  char buf[MAX_BUF];
++  char ch;
++
++  snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
++
++  fd = open(buf, O_RDONLY);
++  if (fd < 0) {
++    perror("gpio/get-value");
++    return fd;
++  }
++
++  read(fd, &ch, 1);
++
++  if (ch != '0') ret = 1;
++  else ret = 0;
++
++  close(fd);
++  return ret;
++}
++/****************************************************************
++ * rc_gpio_fd_open
++ ****************************************************************/
++
++int rc_gpio_fd_open(unsigned int gpio)
++{
++  int fd;
++  char buf[MAX_BUF];
++
++  snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
++
++  fd = open(buf, O_RDONLY | O_NONBLOCK );
++  if (fd < 0) {
++    perror("gpio/fd_open");
++  }
++  return fd;
++}
++
++/****************************************************************
++ * rc_gpio_fd_close
++ ****************************************************************/
++
++int rc_gpio_fd_close(int fd){
++  return close(fd);
++}
++
++
++int setup_output_pin(int pin, int val){
++
++  if(rc_gpio_export(pin)){
++    fprintf(stderr,"ERROR: Failed to export gpio pin %d\n", pin);
++    return -1;
++  }
++  if(rc_gpio_set_dir(pin, OUTPUT_PIN)){
++    fprintf(stderr,"ERROR: Failed to set gpio pin %d as output\n", pin);
++    return -1;
++  }
++  if(rc_gpio_set_value(pin, val)){
++    fprintf(stderr, "ERROR: Failed to set gpio pin %d value\n", pin);
++    return -1;
++  }
++  return 0;
++}
++
++int setup_input_pin(int pin){
++
++  if(rc_gpio_export(pin)){
++    fprintf(stderr,"ERROR: Failed to export gpio pin %d\n", pin);
++    return -1;
++  }
++  if(rc_gpio_set_dir(pin, INPUT_PIN)){
++    fprintf(stderr,"ERROR: Failed to set gpio pin %d as output\n", pin);
++    return -1;
++  }
++  return 0;
++}
++
++
++int configure_gpio_pins(){
++  int mdir1a, mdir2b;
++  int ret = 0;
++
++    mdir1a = MDIR1A_BLUE;
++    mdir2b = MDIR2B_BLUE;
++
++  int old_stderr;
++  FILE  *null_out;
++  // change stdout to null for this operation as the prussdrv.so
++  // functions are noisy
++  old_stderr = dup(STDERR_FILENO);
++  fflush(stderr);
++  null_out = fopen("/dev/null", "w");
++  dup2(fileno(null_out), STDERR_FILENO);
++
++  // put back stdout
++  fflush(stderr);
++  fclose(null_out);
++  dup2(old_stderr,STDERR_FILENO);
++  close(old_stderr);
++
++
++  // MOTOR Direction and Standby pins
++  ret |= setup_output_pin(mdir1a, LOW);
++  ret |= setup_output_pin(MDIR1B, LOW);
++  ret |= setup_output_pin(MDIR2A, LOW);
++  ret |= setup_output_pin(mdir2b, LOW);
++  ret |= setup_output_pin(MDIR3A, LOW);
++  ret |= setup_output_pin(MDIR3B, LOW);
++  ret |= setup_output_pin(MDIR4A, LOW);
++  ret |= setup_output_pin(MDIR4B, LOW);
++  ret |= setup_output_pin(MOT_STBY, LOW);
++
++  // IMU
++  ret |= setup_input_pin(IMU_INTERRUPT_PIN);
++
++  if(ret){
++    printf("WARNING: Failed to configure all gpio pins\n");
++    return -1;
++  }
++
++  return 0;
++}
++
++
++
++
++/*******************************************************************************
++* int rc_pwm_set_duty(int ss, char ch, float duty)
++*
++* Updates the duty cycle through the file system userspace driver. subsystem ss
++* must be 0,1,or 2 and channel 'ch' must be A or B. Duty cycle must be bounded
++* between 0.0f (off) and 1.0f(full on). Returns 0 on success or -1 on failure.
++*******************************************************************************/
++int rc_pwm_set_duty(int ss, char ch, float duty){
++  // start with sanity checks
++  if(unlikely(duty>1.0f || duty<0.0f)){
++    fprintf(stderr,"ERROR in rc_pwm_set_duty: duty must be between 0.0 & 1.0\n");
++    return -1;
++  }
++
++  // set the duty
++  int duty_ns = duty*period_ns[ss];
++  return rc_pwm_set_duty_ns(ss, ch, duty_ns);
++}
++
++/*******************************************************************************
++* int rc_pwm_set_duty_ns(int ss, char ch, int duty_ns)
++*
++* like rc_pwm_set_duty() but takes a pulse width in nanoseconds which must range
++* from 0 (off) to the number of nanoseconds in a single cycle as determined
++* by the freqency specified when calling rc_pwm_init(). The default PWM
++* frequency of the motors is 25kz corresponding to a maximum pulse width of
++* 40,000ns. However, this function will likely only be used by the user if they
++* have set a custom PWM frequency for a more specific purpose. Returns 0 on
++* success or -1 on failure.
++*******************************************************************************/
++int rc_pwm_set_duty_ns(int ss, char ch, int duty_ns){
++  int len;
++  char buf[MAXBUF];
++  // start with sanity checks
++  if(unlikely(ss<0 || ss>2)){
++    fprintf(stderr,"ERROR in rc_pwm_set_duty_ns, PWM subsystem must be between 0 and 2\n");
++    return -1;
++  }
++  // initialize subsystem if not already
++  if(simple_pwm_initialized[ss]==0){
++    printf("initializing PWMSS%d with default PWM frequency %dhz\n", ss, DEFAULT_PWM_FREQ);
++    rc_pwm_init(ss, DEFAULT_PWM_FREQ);
++  }
++  // boundary check
++  if(unlikely(duty_ns>period_ns[ss] || duty_ns<0)){
++    fprintf(stderr,"ERROR in rc_pwm_set_duty_ns, duty must be between 0 & %d for current frequency\n", period_ns[ss]);
++    return -1;
++  }
++
++  // set the duty
++  len = snprintf(buf, sizeof(buf), "%d", duty_ns);
++  switch(ch){
++  case 'A':
++    write(duty_fd[(2*ss)], buf, len);
++    break;
++  case 'B':
++    write(duty_fd[(2*ss)+1], buf, len);
++    break;
++  default:
++    printf("pwm channel must be 'A' or 'B'\n");
++    return -1;
++  }
++
++  return 0;
++
++}
++int initialize_motors(){
++
++    mdir1a = MDIR1A_BLUE;
++    mdir2b = MDIR2B_BLUE;
++
++  #ifdef DEBUG
++  printf("Initializing: PWM\n");
++  #endif
++  if(rc_pwm_init(1,DEFAULT_PWM_FREQ)){
++    printf("ERROR: failed to initialize hrpwm1\n");
++    return -1;
++  }
++  if(rc_pwm_init(2,DEFAULT_PWM_FREQ)){
++    printf("ERROR: failed to initialize PWMSS 2\n");
++    return -1;
++  }
++
++  motors_initialized = 1;
++  rc_disable_motors();
++  return 0;
++}
++
++
++/*******************************************************************************
++* rc_enable_motors()
++*
++* turns on the standby pin to enable the h-bridge ICs
++* returns 0 on success
++*******************************************************************************/
++int rc_enable_motors(){
++  if(motors_initialized==0){
++    printf("ERROR: trying to enable motors before they have been initialized\n");
++    return -1;
++  }
++  rc_set_motor_free_spin_all();
++  return rc_gpio_set_value_mmap(MOT_STBY, HIGH);
++}
++
++/*******************************************************************************
++* int rc_disable_motors()
++*
++* turns off the standby pin to disable the h-bridge ICs
++* and disables PWM output signals, returns 0 on success
++*******************************************************************************/
++int rc_disable_motors(){
++  if(motors_initialized==0){
++    printf("ERROR: trying to disable motors before they have been initialized\n");
++    return -1;
++  }
++  rc_gpio_set_value_mmap(MOT_STBY, LOW);
++  rc_set_motor_free_spin_all();
++  return 0;
++}
++
++/*******************************************************************************
++* int rc_set_motor(int motor, float duty)
++*
++* set a motor direction and power
++* motor is from 1 to 4, duty is from -1.0 to +1.0
++*******************************************************************************/
++int rc_set_motor(int motor, float duty){
++  uint8_t a,b;
++  if(motors_initialized==0){
++    printf("ERROR: trying to rc_set_motor before they have been initialized\n");
++    return -1;
++  }
++  //check that the duty cycle is within +-1
++  if (duty>1.0){
++    duty = 1.0;
++  }
++  else if(duty<-1.0){
++    duty=-1.0;
++  }
++  //switch the direction pins to H-bridge
++  if (duty>=0){
++    a=HIGH;
++    b=LOW;
++  }
++  else{
++    a=LOW;
++    b=HIGH;
++    duty=-duty;
++  }
++
++  // set gpio direction outputs & duty
++  switch(motor){
++    case 1:
++      rc_gpio_set_value_mmap(mdir1a, a);
++      rc_gpio_set_value_mmap(MDIR1B, b);
++      rc_pwm_set_duty_mmap(1, 'A', duty);
++      break;
++    case 2:
++      rc_gpio_set_value_mmap(MDIR2A, b);
++      rc_gpio_set_value_mmap(mdir2b, a);
++      rc_pwm_set_duty_mmap(1, 'B', duty);
++      break;
++    case 3:
++      rc_gpio_set_value_mmap(MDIR3A, b);
++      rc_gpio_set_value_mmap(MDIR3B, a);
++      rc_pwm_set_duty_mmap(2, 'A', duty);
++      break;
++    case 4:
++      rc_gpio_set_value_mmap(MDIR4A, a);
++      rc_gpio_set_value_mmap(MDIR4B, b);
++      rc_pwm_set_duty_mmap(2, 'B', duty);
++      break;
++    default:
++      printf("enter a motor value between 1 and 4\n");
++      return -1;
++  }
++  return 0;
++}
++
++/*******************************************************************************
++* int rc_set_motor_all(float duty)
++*
++* applies the same duty cycle argument to all 4 motors
++*******************************************************************************/
++int rc_set_motor_all(float duty){
++  int i;
++  if(motors_initialized==0){
++    printf("ERROR: trying to rc_set_motor_all before they have been initialized\n");
++    return -1;
++  }
++  for(i=1;i<=MOTOR_CHANNELS; i++){
++    rc_set_motor(i, duty);
++  }
++  return 0;
++}
++
++/*******************************************************************************
++* int rc_set_motor_free_spin(int motor)
++*
++* This puts one or all motor outputs in high-impedance state which lets the
++* motor spin freely as if it wasn't connected to anything.
++*******************************************************************************/
++int rc_set_motor_free_spin(int motor){
++  if(motors_initialized==0){
++    printf("ERROR: trying to rc_set_motor_free_spin before they have been initialized\n");
++    return -1;
++  }
++  // set gpio direction outputs & duty
++  switch(motor){
++    case 1:
++      rc_gpio_set_value_mmap(mdir1a, 0);
++      rc_gpio_set_value_mmap(MDIR1B, 0);
++      rc_pwm_set_duty_mmap(1, 'A', 0.0);
++      break;
++    case 2:
++      rc_gpio_set_value_mmap(MDIR2A, 0);
++      rc_gpio_set_value_mmap(mdir2b, 0);
++      rc_pwm_set_duty_mmap(1, 'B', 0.0);
++      break;
++    case 3:
++      rc_gpio_set_value_mmap(MDIR3A, 0);
++      rc_gpio_set_value_mmap(MDIR3B, 0);
++      rc_pwm_set_duty_mmap(2, 'A', 0.0);
++      break;
++    case 4:
++      rc_gpio_set_value_mmap(MDIR4A, 0);
++      rc_gpio_set_value_mmap(MDIR4B, 0);
++      rc_pwm_set_duty_mmap(2, 'B', 0.0);
++      break;
++    default:
++      printf("enter a motor value between 1 and 4\n");
++      return -1;
++  }
++  return 0;
++}
++
++/*******************************************************************************
++* @ int rc_set_motor_free_spin_all()
++*******************************************************************************/
++int rc_set_motor_free_spin_all(){
++  int i;
++  if(motors_initialized==0){
++    printf("ERROR: trying to rc_set_motor_free_spin_all before they have been initialized\n");
++    return -1;
++  }
++  for(i=1;i<=MOTOR_CHANNELS; i++){
++    rc_set_motor_free_spin(i);
++  }
++  return 0;
++}
++
++/*******************************************************************************
++* @ void rc_nanosleep(uint64_t ns)
++*
++* A wrapper for the normal UNIX nanosleep function which takes a number of
++* nanoseconds instead of a timeval struct. This also handles restarting
++* nanosleep with the remaining time in the event that nanosleep is interrupted
++* by a signal. There is no upper limit on the time requested.
++*******************************************************************************/
++void rc_nanosleep(uint64_t ns){
++  struct timespec req,rem;
++  req.tv_sec = ns/1000000000;
++  req.tv_nsec = ns%1000000000;
++  // loop untill nanosleep sets an error or finishes successfully
++  errno=0; // reset errno to avoid false detection
++  while(nanosleep(&req, &rem) && errno==EINTR){
++    req.tv_sec = rem.tv_sec;
++    req.tv_nsec = rem.tv_nsec;
++  }
++  return;
++}
++
++/*******************************************************************************
++* @ void rc_usleep(uint64_t ns)
++*
++* The traditional usleep function, however common, is deprecated in linux as it
++* uses SIGALARM which interferes with alarm and timer functions. This uses the
++* new POSIX standard nanosleep to accomplish the same thing which further
++* supports sleeping for lengths longer than 1 second. This also handles
++* restarting nanosleep with the remaining time in the event that nanosleep is
++* interrupted by a signal. There is no upper limit on the time requested.
++*******************************************************************************/
++void rc_usleep(unsigned int us){
++  rc_nanosleep(us*1000);
++  return;
++}
++
+diff --git a/libraries/roboticscape/roboticscape.h b/libraries/roboticscape/roboticscape.h
+new file mode 100644
+index 000000000..5ebf7fc29
+--- /dev/null
++++ b/libraries/roboticscape/roboticscape.h
+@@ -0,0 +1,209 @@
++/*******************************************************************************
++* roboticscape.h
++*
++* This contains the complete Robotics Cape API. All functions declared here can 
++* be executed by linking to /usr/lib/robotics_cape.so
++*
++* All functions return 0 on success or -1 on failure unless otherwise stated.
++*
++* James Strawson - 2016
++*******************************************************************************/
++
++#ifndef ROBOTICS_CAPE
++#define ROBOTICS_CAPE
++
++// library version, can also be printed from the command line with the included
++// example program rc_version
++#define RC_LIB_VERSION_FLOAT	0.34
++#define RC_LIB_VERSION_STRING	0.3.4
++
++// necessary types for function prototypes
++#include <stdint.h> // for uint8_t types etc
++typedef struct timespec	timespec;
++typedef struct timeval timeval;
++
++#ifdef __cplusplus
++#define EXTERNC extern "C"
++#else
++#define EXTERNC
++#endif	
++
++EXTERNC int rc_initialize();	// call at the beginning of main()
++EXTERNC int rc_cleanup();		// call at the end of main()
++EXTERNC int rc_kill();	// not usually necessary, use kill_robot example instead
++EXTERNC void rc_enable_signal_handler();
++
++
++#define HIGH 1
++#define LOW  0
++
++
++// GPIO
++EXTERNC int initialize_mmap_gpio();
++
++#define MMAP_OFFSET (0x44C00000)
++#define MMAP_SIZE   (0x481AEFFF-MMAP_OFFSET)
++
++
++
++
++/* GPIO Memory Registers */
++#define GPIO_REGISTER_SIZE (4)
++
++#define GPIO0   (0x44E07000)
++#define GPIO1   (0x4804C000)
++#define GPIO2   (0x481AC000)
++#define GPIO3   (0x481AE000)
++
++#define GPIO_CLEARDATAOUT (0x190)
++#define GPIO_SETDATAOUT   (0x194)
++#define GPIO_OE           (0x134)
++#define GPIO_DATAOUT      (0x13C)
++#define GPIO_DATAIN       (0x138)
++
++#define TRUE 1
++#define FALSE 0
++
++
++#define INPUT    ((unsigned char)(1))
++#define OUTPUT   ((unsigned char)(0))
++#define PULLUP   ((unsigned char)(1))
++#define PULLDOWN ((unsigned char)(0))
++#define PULL_DISABLED ((unsigned char)(2))
++
++/*********************************
++* clock control registers
++*********************************/
++#ifndef CM_PER
++  #define CM_PER 0x44E00000 //base of Clock Module Peripheral control
++  #define CM_PER_PAGE_SIZE 1024 //1kb
++#endif
++
++
++#define CM_PER_GPIO1_CLKCTRL 0xAC
++#define CM_PER_GPIO2_CLKCTRL 0xB0
++#define CM_PER_GPIO3_CLKCTRL 0xB4
++
++/* Clock Module Memory Registers */
++#define CM_WKUP 0x44E00400
++
++#define MODULEMODE_DISABLED 0x0
++#define MODULEMODE_ENABLE   0x2
++
++#define CM_WKUP_ADC_TSC_CLKCTRL 0xBC
++
++
++
++
++typedef enum rc_state_t {
++	UNINITIALIZED,
++	RUNNING,
++	PAUSED,
++	EXITING
++} rc_state_t;
++
++rc_state_t rc_get_state();
++EXTERNC int rc_set_state(rc_state_t new_state);
++int rc_print_state();
++
++
++EXTERNC int rc_enable_motors();
++EXTERNC int rc_disable_motors();
++EXTERNC int rc_set_motor(int motor, float duty);
++EXTERNC int rc_set_motor_all(float duty);
++EXTERNC int rc_set_motor_free_spin(int motor);
++EXTERNC int rc_set_motor_free_spin_all();
++EXTERNC int rc_set_motor_brake(int motor);
++EXTERNC int rc_set_motor_brake_all();
++
++
++
++#define PID_FILE "/var/run/robotics_cape.pid"
++
++
++#define MOTOR_CHANNELS  4
++#define DEFAULT_PWM_FREQ 25000
++
++#define IMU_INTERRUPT_PIN 117  //gpio3.21 P9.25
++
++//// gpio output pins
++#define MDIR1A_BLUE 64  //gpio2.0 pin T13
++#define MDIR1B      31  //gpio0.31  P9.13
++#define MDIR2A      48  //gpio1.16  P9.15
++#define MDIR2B_BLUE 10  //gpio0.10  P8_31
++#define MDIR4A      70  //gpio2.6   P8.45
++#define MDIR4B      71  //gpio2.7   P8.46
++#define MDIR3B      72  //gpio2.8   P8.43
++#define MDIR3A      73  //gpio2.9   P8.44
++#define MOT_STBY    20  //gpio0.20  P9.41
++
++//// BB Blue GPIO OUT
++#define BLUE_GP0_PIN_4 49 // gpio 1_17 pin P9.23
++
++// Battery Indicator LEDs
++#define BATT_LED_1  27 // P8.17
++#define BATT_LED_2  65 // P8.18
++#define BATT_LED_2_BLUE 11 // different on BB Blue
++#define BATT_LED_3  61 // P8.26
++#define BATT_LED_4  26 // P8.14
++
++#define POLL_TIMEOUT 100 /* 0.1 seconds */
++#define INTERRUPT_PIN 117  //gpio3.21 P9.25
++
++
++
++/******************************************************************************
++* QUADRATURE ENCODER
++*
++* @ int rc_get_encoder_pos(int ch)
++* @ int rc_set_encoder_pos(int ch, int value)
++*
++* The Robotics Cape includes 4 JST-SH sockets {E1 E2 E3 E4} for connecting
++* quadrature encoders. The pins for each are assigned as follows:
++*
++* 1 - Ground
++* 2 - 3.3V
++* 3 - Signal A
++* 4 - Signal B
++*
++* The first 3 channels are counted by the Sitara's eQEP hardware encoder
++* counters. The 4th channel is counted by the PRU. As a result, no CPU cycles
++* are wasted counting encoders and the user only needs to read the channel
++* at any point in their code to get the current position. All channels are 
++* reset to 0 when initialize_cape() is called. However, the user can reset
++* the counter to zero or any other signed 32 bit value with rc_set_encoder_pos().
++*
++* See the test_encoders example for sample use case.
++******************************************************************************/
++EXTERNC int rc_get_encoder_pos(int ch);
++EXTERNC int rc_set_encoder_pos(int ch, int value);
++
++/*******************************************************************************
++* GPIO
++*******************************************************************************/
++#define HIGH 1
++#define LOW 0
++
++typedef enum rc_pin_direction_t{
++	INPUT_PIN,
++	OUTPUT_PIN
++}rc_pin_direction_t;
++
++
++int rc_pwm_init(int ss, int frequency);
++int rc_pwm_close(int ss);
++int rc_pwm_set_duty(int ss, char ch, float duty);
++int rc_pwm_set_duty_ns(int ss, char ch, int duty_ns);
++EXTERNC int rc_pwm_set_duty_mmap(int ss, char ch, float duty);
++
++void rc_nanosleep(uint64_t ns);
++EXTERNC void rc_usleep(unsigned int us);
++
++
++EXTERNC int initialize_motors();
++EXTERNC int configure_gpio_pins();
++
++
++#endif //ROBOTICS_CAPE
++
++
+-- 
+2.17.0
+
