@@ -11,16 +11,16 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee1"
+debian_version="${package_version}-0rcnee2"
 debian_untar=""
 debian_patch=""
 
 dl_mirror="https://github.com/rcn-ee/npm-package-node-red/raw/master/deploy/buster"
 
-v6="v6.14.0"
-v8="v8.11.0"
+v6="v6.14.1"
+v8="v8.11.1"
 
-node_red="node-red-0.18.4-ebb3fb9"
+node_red="node-red-0.18.4-838c7a5"
 node_red_dashboard="node-red-dashboard-2.8.2"
 node_red_mongodb="node-red-node-mongodb-0.0.14"
 node_red_gpio="node-red-contrib-gpio-0.14.0"
@@ -34,4 +34,4 @@ debian_dl_4="${dl_mirror}/${node_red_gpio}-${v8}.tar.xz"
 debian_dl_5="${dl_mirror}/${node_red_serial}-${v8}.tar.xz"
 debian_dl_6="${dl_mirror}/${node_red_can}-${v8}.tar.xz"
 
-buster_version="~buster+20180329"
+buster_version="~buster+20180413"
