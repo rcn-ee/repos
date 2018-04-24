@@ -13,8 +13,9 @@ git_sha="1965b0135fcf13f0a1b27897957286f6cc5f6313"
 reprepro_dir="r/${package_name}"
 dl_path=""
 
-debian_version="${package_version}-0rcnee0"
+debian_version="${package_version}-0rcnee1"
 debian_patch=""
 debian_diff=""
 
+stretch_version="~stretch+20180424"
 buster_version="~buster+20180424"
