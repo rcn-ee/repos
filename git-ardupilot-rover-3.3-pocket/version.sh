@@ -15,7 +15,7 @@ git_branch="Rover-3.3"
 reprepro_dir="a/${package_name}"
 dl_path=""
 
-debian_version="${package_version}-0rcnee2"
+debian_version="${package_version}-0rcnee3"
 debian_patch=""
 debian_diff=""
 
