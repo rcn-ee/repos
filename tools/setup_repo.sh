@@ -154,4 +154,8 @@ setup_repo
 suite="bionic"
 archs="armhf source"
 setup_repo
+
+suite="cosmic"
+archs="armhf source"
+setup_repo
 #
