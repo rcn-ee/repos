@@ -65,13 +65,13 @@ SEARCH_PATH=--search_path=$(ARM_CGT)/lib \
 --search_path=$(SW_CGT_DIR)/am335x/beaglebone/platform/Release/ \
 --search_path=$(SW_CGT_DIR)/am335x/system_config/Release \
 
-HEX_FILES=../pru_fw/PRU_Audio/gen/PRU_Audio_image.object \
-../pru_fw/PRU_HDQ_TempSensor0/gen/PRU_HDQ_TempSensor0_image.object \
-../pru_fw/PRU_HDQ_TempSensor1/gen/PRU_HDQ_TempSensor1_image.object \
-../pru_fw/PRU_Hardware_UART/gen/PRU_Hardware_UART_image.object \
-../pru_fw/PRU_LED0/gen/PRU_LED0_image.object \
-../pru_fw/PRU_LED1/gen/PRU_LED1_image.object \
-../pru_fw/PRU_Switch/gen/PRU_Switch_image.object
+HEX_FILES=../../pru_fw/PRU_Audio/gen/PRU_Audio_image.object \
+../../pru_fw/PRU_HDQ_TempSensor0/gen/PRU_HDQ_TempSensor0_image.object \
+../../pru_fw/PRU_HDQ_TempSensor1/gen/PRU_HDQ_TempSensor1_image.object \
+../../pru_fw/PRU_Hardware_UART/gen/PRU_Hardware_UART_image.object \
+../../pru_fw/PRU_LED0/gen/PRU_LED0_image.object \
+../../pru_fw/PRU_LED1/gen/PRU_LED1_image.object \
+../../pru_fw/PRU_Switch/gen/PRU_Switch_image.object
 
 LINKER_COMMAND_FILE=./pru_cape_demo_make.cmd
 
@@ -130,7 +130,7 @@ firmwares:
 	@echo '************************************************************'
 	@echo 'Building firmwares'
 	@echo ''
-	@$(MAKE) -C ../pru_fw/
+	@$(MAKE) -C ../../pru_fw/
 	@echo ''
 	@echo 'Finished building firmwares'
 	@echo '************************************************************'

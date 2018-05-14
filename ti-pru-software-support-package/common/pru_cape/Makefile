@@ -1,4 +1,4 @@
-SUBDIRS=pru_fw pru_demo
+SUBDIRS=pru_fw pru_demo/StarterWare
 
 all: $(SUBDIRS)
 

@@ -197,5 +197,6 @@ void pwm_config(unsigned int time_interval)
 	CT_ECAP.CAP1_bit.CAP1 = time_interval * 200000000;	// APRD active register
 	CT_ECAP.ECCTL2 |= 0x200;							// APWM mode
 	CT_ECAP.ECEINT |= 0x40;								// Enable PRDEQ interrupt source (PRDEQ = 1)
+	CT_ECAP.ECCLR = 0xFFFF;					// Clear all ECAP flags
 
 }
