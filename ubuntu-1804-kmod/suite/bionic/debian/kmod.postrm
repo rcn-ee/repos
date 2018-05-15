@@ -1,0 +1,13 @@
+#!/bin/sh -e
+
+dpkg-maintscript-helper rm_conffile /etc/modprobe.d/mlx4.conf 24-1ubuntu2 kmod -- "$@"
+
+case "$1" in
+  purge)
+  rm -f /etc/modules
+  ;;
+esac
+
+#DEBHELPER#
+
+exit 0
