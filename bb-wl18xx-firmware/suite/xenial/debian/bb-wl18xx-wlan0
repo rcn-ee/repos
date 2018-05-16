@@ -187,6 +187,9 @@ set_wlan_0_mac_from_bb_wl18xx () {
 }
 
 start_tether () {
+	if [ -f /usr/sbin/rfkill ] ; then
+		/usr/sbin/rfkill unblock all || true
+	fi
 	if [ "x${TETHER_ENABLED}" = "xyes" ] ; then
 		connmanctl_bin=$(which connmanctl || true)
 		if [ -f ${connmanctl_bin} ] ; then
