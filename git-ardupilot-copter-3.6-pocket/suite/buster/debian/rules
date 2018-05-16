@@ -1,6 +1,8 @@
 #!/usr/bin/make -f
 #export DH_VERBOSE=1
 
+DEB_BUILD_OPTIONS=noautodbgsym
+
 ###boards:
 #board=bbbmini
 #board=blue
@@ -23,4 +25,3 @@ override_dh_auto_configure:
 override_dh_auto_build:
 	./waf $(target)
 	mv ./build/$(board)/bin/ardu$(target) ./build/$(board)/bin/$(board)-$(ver)-ardu$(target)
-	mv ./build/$(board)/bin/ardu$(target)-heli ./build/$(board)/bin/$(board)-$(ver)-ardu$(target)-heli
