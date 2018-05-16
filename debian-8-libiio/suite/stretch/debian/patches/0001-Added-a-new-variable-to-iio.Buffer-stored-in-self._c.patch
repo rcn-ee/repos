@@ -1,0 +1,31 @@
+From 7d29b98ac28a78f001e304540af55db99e48caf4 Mon Sep 17 00:00:00 2001
+From: Jonas Hansen <hr.jonas.hansen@gmail.com>
+Date: Mon, 29 Jan 2018 11:00:25 +0100
+Subject: [PATCH 01/15] Added a new variable to iio.Buffer stored in self._ctx,
+ this is reference to a Context variable. This reference ensures that the
+ Context outlives the buffer, if this is not the case a segmentation violation
+ will occur when destroying the buffer.
+
+Signed-off-by: Jonas Hansen <joha@gomspace.com>
+---
+ bindings/python/iio.py | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/bindings/python/iio.py b/bindings/python/iio.py
+index b408eec..3ffe2a2 100644
+--- a/bindings/python/iio.py
++++ b/bindings/python/iio.py
+@@ -519,6 +519,10 @@ class Buffer(object):
+ 		self._length = samples_count * device.sample_size
+ 		self._samples_count = samples_count
+ 
++		self._ctx = device.ctx() 
++		# Holds a reference to the corresponding IIO Context. This ensures that
++		# every iio.Buffer object is destroyed before its corresponding IIO Context.
++
+ 	def __del__(self):
+ 		if self._buffer is not None:
+ 			_buffer_destroy(self._buffer)
+-- 
+2.11.0
+

@@ -1,0 +1,32 @@
+From f5d8ddc0625d86b3f1a2e36b3e7ee5c63af680f8 Mon Sep 17 00:00:00 2001
+From: AlexandraTrifan <Alexandra.Trifan@analog.com>
+Date: Tue, 20 Feb 2018 10:30:53 +0200
+Subject: [PATCH 04/15] appveyor.yml: Drop the initial core update which
+ updates the package list and upgrades all the outdated packages. The
+ conflicts are not handled properly when using the --noconfirm option(default
+ values).
+
+Removing this should not cause any missing package errors, or affect
+the build, because we already synchronize the package database before
+installing any needed package.
+
+Signed-off-by: Alexandra Trifan <Alexandra.Trifan@analog.com>
+---
+ appveyor.yml | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/appveyor.yml b/appveyor.yml
+index 344bdda..4f9ab9c 100644
+--- a/appveyor.yml
++++ b/appveyor.yml
+@@ -28,7 +28,6 @@ build_script:
+     - set OLD_PATH=%PATH%
+     - set OPT_PATH=C:\msys64\mingw32\bin;C:\msys64\mingw64\bin;
+     - set PATH=%OPT_PATH%%PATH%
+-    - C:\msys64\usr\bin\bash -lc "pacman --noconfirm -Syu"
+     - set GENERATOR=Unix Makefiles
+     - cd C:\projects\libiio
+     - set folder-path=C:\projects\libiio\build-mingw-win32\%configuration%
+-- 
+2.11.0
+

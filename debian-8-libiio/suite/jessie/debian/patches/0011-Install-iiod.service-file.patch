@@ -1,0 +1,63 @@
+From e688c767522d59b13b5d7a264da99ab0df3d49a6 Mon Sep 17 00:00:00 2001
+From: Adrian Freihofer <adrian.freihofer@gmail.com>
+Date: Wed, 14 Feb 2018 00:14:56 +0100
+Subject: [PATCH 11/15] Install iiod.service file
+
+If WITH_SYSTEMD is set to ON the service file of iiod gets
+installed into ${SYSTEMD_UNIT_INSTALL_DIR} folder.
+SYSTEMD_UNIT_INSTALL_DIR defaults to /lib/systemd/system.
+
+Signed-off-by: Adrian Freihofer <adrian.freihofer@gmail.com>
+---
+ CMakeLists.txt                                   | 3 +++
+ iiod/CMakeLists.txt                              | 5 +++++
+ iiod/init/{iiod.service => iiod.service.cmakein} | 2 +-
+ 3 files changed, 9 insertions(+), 1 deletion(-)
+ rename iiod/init/{iiod.service => iiod.service.cmakein} (85%)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e697ede..75852a6 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -405,6 +405,9 @@ if(OSX_PACKAGE)
+ endif()
+ 
+ if(WITH_IIOD)
++	option(WITH_SYSTEMD "Enable installation of systemd service file for iiod" OFF)
++	set(SYSTEMD_UNIT_INSTALL_DIR /lib/systemd/system CACHE PATH "default install path for systemd unit files")
++
+ 	if (NOT PTHREAD_LIBRARIES)
+ 		message(WARNING "IIOD requires threads support; disabling")
+ 		set(WITH_IIOD OFF CACHE BOOL "" FORCE)
+diff --git a/iiod/CMakeLists.txt b/iiod/CMakeLists.txt
+index ea136b3..76e14fa 100644
+--- a/iiod/CMakeLists.txt
++++ b/iiod/CMakeLists.txt
+@@ -62,3 +62,8 @@ add_definitions(-D_GNU_SOURCE=1)
+ if(NOT SKIP_INSTALL_ALL)
+ 	install(TARGETS iiod RUNTIME DESTINATION ${CMAKE_INSTALL_SBINDIR})
+ endif()
++
++if (WITH_SYSTEMD)
++	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/init/iiod.service.cmakein ${PROJECT_BINARY_DIR}/init/iiod.service)
++	install(FILES ${PROJECT_BINARY_DIR}/init/iiod.service DESTINATION ${SYSTEMD_UNIT_INSTALL_DIR})
++endif()
+diff --git a/iiod/init/iiod.service b/iiod/init/iiod.service.cmakein
+similarity index 85%
+rename from iiod/init/iiod.service
+rename to iiod/init/iiod.service.cmakein
+index ecf3dc9..1b6d2ac 100644
+--- a/iiod/init/iiod.service
++++ b/iiod/init/iiod.service.cmakein
+@@ -8,7 +8,7 @@ After=network.target
+ ConditionPathExists=/sys/bus/iio
+ 
+ [Service]
+-ExecStart=/usr/sbin/iiod
++ExecStart=@CMAKE_INSTALL_FULL_SBINDIR@/iiod
+ KillMode=process
+ Restart=on-failure
+ 
+-- 
+2.11.0
+
