@@ -157,18 +157,20 @@ connman_disable_tether () {
 		fi
 	fi
 
-	if [ "x${USE_CONNMAN_TETHER}" = "xyes" ] ; then
-		if [ -d /sys/class/net/tether ] ; then
-			if [ -d /sys/class/net/${eth_interface} ] ; then
-				is_eth_bb_gadget_wifi_off
-			else
-				connmanctl_tether_wifi_off
-			fi
-		else
-			if [ -f /lib/systemd/system/connman.service ] ; then
-				#Someone plugged an ${eth_interface} device..
+	if [ -f ${connmanctl_bin} ] ; then
+		if [ "x${USE_CONNMAN_TETHER}" = "xyes" ] ; then
+			if [ -d /sys/class/net/tether ] ; then
 				if [ -d /sys/class/net/${eth_interface} ] ; then
-					is_eth_not_bb_gadget_wifi_on
+					is_eth_bb_gadget_wifi_off
+				else
+					connmanctl_tether_wifi_off
+				fi
+			else
+				if [ -f /lib/systemd/system/connman.service ] ; then
+					#Someone plugged an ${eth_interface} device..
+					if [ -d /sys/class/net/${eth_interface} ] ; then
+						is_eth_not_bb_gadget_wifi_on
+					fi
 				fi
 			fi
 		fi

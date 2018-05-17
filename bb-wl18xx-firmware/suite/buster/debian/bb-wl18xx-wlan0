@@ -191,10 +191,7 @@ start_tether () {
 		/usr/sbin/rfkill unblock all || true
 	fi
 	if [ "x${TETHER_ENABLED}" = "xyes" ] ; then
-		connmanctl_bin=$(which connmanctl || true)
-		if [ -f ${connmanctl_bin} ] ; then
-			/usr/bin/bb-wl18xx-tether || true
-		fi
+		/usr/bin/bb-wl18xx-tether || true
 	fi
 }
 
