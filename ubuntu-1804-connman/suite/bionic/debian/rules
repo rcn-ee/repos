@@ -28,7 +28,8 @@ override_dh_auto_configure:
 		--with-openconnect=/usr/sbin/openconnect \
 		--with-openvpn=/usr/sbin/openvpn \
 		--with-systemdunitdir=/lib/systemd/system \
-		--with-tmpfilesdir=/usr/lib/tmpfiles.d
+		--with-tmpfilesdir=/usr/lib/tmpfiles.d \
+		--with-dns-backend=systemd-resolved
 
 override_dh_install:
 	find $(CURDIR) -name "*.la" -print -delete
