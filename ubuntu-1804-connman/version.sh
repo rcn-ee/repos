@@ -16,6 +16,6 @@ dl_path="pool/universe/${reprepro_dir}/"
 debian_version="${package_version}-1"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
-local_patch="rcnee1"
+local_patch="rcnee2"
 
 bionic_version="~bionic+20180517"
