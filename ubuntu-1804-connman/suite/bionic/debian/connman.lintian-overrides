@@ -1,0 +1,16 @@
+# known bug, won't fix (and also won't fixed upstream)
+connman: spelling-error-in-binary usr/bin/connmanctl prefered preferred
+connman: spelling-error-in-binary usr/sbin/connmand prefered preferred
+
+# false positive - man connman is the manpage for connmand
+connman: binary-without-manpage usr/sbin/connmand
+
+# We know
+connman: binary-without-manpage usr/sbin/connmand-wait-online
+connman: systemd-service-file-refers-to-unusual-wantedby-target lib/systemd/system/connman-wait-online.service network-online.target
+
+# Send upstream patch later
+connman: manpage-has-errors-from-man usr/share/man/man1/connmanctl.1.gz 282: warning [p 4, 6.0i]: cannot adjust line
+connman: manpage-has-errors-from-man usr/share/man/man8/connman-vpn.8.gz 62: warning [p 1, 8.8i]: cannot adjust line
+connman: manpage-has-errors-from-man usr/share/man/man8/connman.8.gz 100: warning [p 2, 3.2i]: cannot adjust line
+
