@@ -1,0 +1,111 @@
+diff -urN nodejs-0.8.0/deps/npm/bin/npm-cli.js nodejs-0.8.0.orig/deps/npm/bin/npm-cli.js
+--- nodejs-0.8.0/deps/npm/bin/npm-cli.js	2012-06-27 20:17:00.000000000 +0000
++++ nodejs-0.8.0.orig/deps/npm/bin/npm-cli.js	2012-06-25 14:37:20.000000000 +0000
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env nodejs
++#!/usr/bin/env node
+ ;(function () { // wrapper in case we're in module_context mode
+ 
+ // windows: running "npm blah" in this folder will invoke WSH, not node.
+diff -urN nodejs-0.8.0/deps/npm/cli.js nodejs-0.8.0.orig/deps/npm/cli.js
+--- nodejs-0.8.0/deps/npm/cli.js	2012-06-27 20:17:00.000000000 +0000
++++ nodejs-0.8.0.orig/deps/npm/cli.js	2012-06-25 14:37:20.000000000 +0000
+@@ -1,2 +1,2 @@
+-#!/usr/bin/env nodejs
++#!/usr/bin/env node
+ require("./bin/npm-cli.js")
+diff -urN nodejs-0.8.0/deps/npm/node_modules/node-gyp/bin/node-gyp.js nodejs-0.8.0.orig/deps/npm/node_modules/node-gyp/bin/node-gyp.js
+--- nodejs-0.8.0/deps/npm/node_modules/node-gyp/bin/node-gyp.js	2012-06-27 20:17:00.000000000 +0000
++++ nodejs-0.8.0.orig/deps/npm/node_modules/node-gyp/bin/node-gyp.js	2012-06-25 14:37:20.000000000 +0000
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env nodejs
++#!/usr/bin/env node
+ 
+ /**
+  * Set the title.
+diff -urN nodejs-0.8.0/deps/npm/node_modules/nopt/bin/nopt.js nodejs-0.8.0.orig/deps/npm/node_modules/nopt/bin/nopt.js
+--- nodejs-0.8.0/deps/npm/node_modules/nopt/bin/nopt.js	2012-06-27 20:17:00.000000000 +0000
++++ nodejs-0.8.0.orig/deps/npm/node_modules/nopt/bin/nopt.js	2012-06-25 14:37:20.000000000 +0000
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env nodejs
++#!/usr/bin/env node
+ var nopt = require("../lib/nopt")
+   , types = { num: Number
+             , bool: Boolean
+diff -urN nodejs-0.8.0/deps/npm/node_modules/semver/bin/semver nodejs-0.8.0.orig/deps/npm/node_modules/semver/bin/semver
+--- nodejs-0.8.0/deps/npm/node_modules/semver/bin/semver	2012-06-27 20:17:00.000000000 +0000
++++ nodejs-0.8.0.orig/deps/npm/node_modules/semver/bin/semver	2012-06-25 14:37:20.000000000 +0000
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env nodejs
++#!/usr/bin/env node
+ // Standalone semver comparison program.
+ // Exits successfully and prints matching version(s) if
+ // any supplied version is valid and passes all tests.
+diff -urN nodejs-0.8.0/deps/npm/node_modules/which/bin/which nodejs-0.8.0.orig/deps/npm/node_modules/which/bin/which
+--- nodejs-0.8.0/deps/npm/node_modules/which/bin/which	2012-06-27 20:17:00.000000000 +0000
++++ nodejs-0.8.0.orig/deps/npm/node_modules/which/bin/which	2012-06-25 14:37:20.000000000 +0000
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env nodejs
++#!/usr/bin/env node
+ var which = require("../")
+ if (process.argv.length < 3) {
+   console.error("Usage: which <thing>")
+diff -urN nodejs-0.8.0/deps/npm/scripts/index-build.js nodejs-0.8.0.orig/deps/npm/scripts/index-build.js
+--- nodejs-0.8.0/deps/npm/scripts/index-build.js	2012-06-27 20:17:00.000000000 +0000
++++ nodejs-0.8.0.orig/deps/npm/scripts/index-build.js	2012-06-25 14:37:20.000000000 +0000
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env nodejs
++#!/usr/bin/env node
+ var fs = require("fs")
+   , path = require("path")
+   , cli = path.resolve(__dirname, "..", "doc", "cli")
+diff -urN nodejs-0.8.0/deps/npm/test/packages/npm-test-array-bin/bin/array-bin nodejs-0.8.0.orig/deps/npm/test/packages/npm-test-array-bin/bin/array-bin
+--- nodejs-0.8.0/deps/npm/test/packages/npm-test-array-bin/bin/array-bin	2012-06-27 20:17:00.000000000 +0000
++++ nodejs-0.8.0.orig/deps/npm/test/packages/npm-test-array-bin/bin/array-bin	2012-06-25 14:37:20.000000000 +0000
+@@ -1,2 +1,2 @@
+-#!/usr/bin/env nodejs
++#!/usr/bin/env node
+ console.log('ok')
+diff -urN nodejs-0.8.0/deps/npm/test/packages/npm-test-dir-bin/bin/dir-bin nodejs-0.8.0.orig/deps/npm/test/packages/npm-test-dir-bin/bin/dir-bin
+--- nodejs-0.8.0/deps/npm/test/packages/npm-test-dir-bin/bin/dir-bin	2012-06-27 20:17:00.000000000 +0000
++++ nodejs-0.8.0.orig/deps/npm/test/packages/npm-test-dir-bin/bin/dir-bin	2012-06-25 14:37:20.000000000 +0000
+@@ -1,2 +1,2 @@
+-#!/usr/bin/env nodejs
++#!/usr/bin/env node
+ console.log('ok')
+diff -urN nodejs-0.8.0/tools/blog/generate.js nodejs-0.8.0.orig/tools/blog/generate.js
+--- nodejs-0.8.0/tools/blog/generate.js	2012-06-27 20:17:00.000000000 +0000
++++ nodejs-0.8.0.orig/tools/blog/generate.js	2012-06-25 14:37:20.000000000 +0000
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env nodejs
++#!/usr/bin/env node
+ var fs = require('fs');
+ var marked = require('marked');
+ var mkdirp = require('mkdirp');
+diff -urN nodejs-0.8.0/tools/blog/node_modules/marked/bin/marked nodejs-0.8.0.orig/tools/blog/node_modules/marked/bin/marked
+--- nodejs-0.8.0/tools/blog/node_modules/marked/bin/marked	2012-06-27 20:17:00.000000000 +0000
++++ nodejs-0.8.0.orig/tools/blog/node_modules/marked/bin/marked	2012-06-25 14:37:20.000000000 +0000
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env nodejs
++#!/usr/bin/env node
+ 
+ /**
+  * Marked CLI
+diff -urN nodejs-0.8.0/tools/blog/node_modules/semver/bin/semver nodejs-0.8.0.orig/tools/blog/node_modules/semver/bin/semver
+--- nodejs-0.8.0/tools/blog/node_modules/semver/bin/semver	2012-06-27 20:17:00.000000000 +0000
++++ nodejs-0.8.0.orig/tools/blog/node_modules/semver/bin/semver	2012-06-25 14:37:20.000000000 +0000
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env nodejs
++#!/usr/bin/env node
+ // Standalone semver comparison program.
+ // Exits successfully and prints matching version(s) if
+ // any supplied version is valid and passes all tests.
+diff -urN nodejs-0.8.0/tools/doc/node_modules/marked/bin/marked nodejs-0.8.0.orig/tools/doc/node_modules/marked/bin/marked
+--- nodejs-0.8.0/tools/doc/node_modules/marked/bin/marked	2012-06-27 20:17:00.000000000 +0000
++++ nodejs-0.8.0.orig/tools/doc/node_modules/marked/bin/marked	2012-06-25 14:37:20.000000000 +0000
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env nodejs
++#!/usr/bin/env node
+ 
+ /**
+  * Marked CLI
