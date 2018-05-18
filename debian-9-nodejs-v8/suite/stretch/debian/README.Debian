@@ -1,22 +1,24 @@
-nodejs for Debian
----------------
+/usr/bin/node, /usr/bin/nodejs
+==============================
 
-Warning: the API is expected to change until nodejs reaches version 0.2
+"node" binary name is not available in stretch,
+and is replaced by "nodejs".
+"node" binary name is available in buster, and
+"nodejs" is kept to avoid breaking old scripts.
 
-node-repl is using rlwrap, and is located at :
-/usr/bin/nodejs-repl
+However, the preferred name is "node" since it is
+the upstream binary name.
 
-node-waf is in nodejs-dev package, to build a module using waf, do :
-/usr/bin/nodejs-waf configure build
 
-To install such a module, be root and do :
-/usr/bin/nodejs-waf install
+Supported architectures
+=======================
 
-Modules path : /usr/lib/nodejs/
-Module 'foo' is searched in that order :
-/usr/lib/nodejs/foo.js
-/usr/lib/nodejs/foo.node
-/usr/lib/nodejs/foo/index.js
-/usr/lib/nodejs/foo/index.addon
+nodejs runs on architectures where v8 runs.
+In particular, v8 cannot run on these debian ports:
+- armel because v8 requires v6+ instruction set:
+  https://bugs.chromium.org/p/v8/issues/detail?id=3285
+- powerpc because v8 requires POWER5+ instruction set:
+  https://github.com/ibmruntimes/node/issues/65
+  
 
- -- Jérémy Lal <kapouer@melix.org>  Fri, 07 May 2010 18:13:57 +0200
+
