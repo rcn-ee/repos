@@ -1,10 +1,10 @@
 #!/bin/bash -e
 
-#https://nodejs.org/download/release/latest-v8.x/
+#https://nodejs.org/download/release/latest-v6.x/
 
 package_name="nodejs"
 debian_pkg_name="${package_name}"
-package_version="8.11.2"
+package_version="6.14.2"
 package_source="${debian_pkg_name}_${package_version}.orig.tar.gz"
 src_dir="node-v${package_version}"
 

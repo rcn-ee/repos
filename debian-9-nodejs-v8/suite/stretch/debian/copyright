@@ -21,6 +21,9 @@ Files-Excluded:
  deps/icu-small/*
  deps/npm/*
  deps/openssl/*
+ deps/zlib/*
+ deps/uv/*
+ test/gc/node_modules/*
  tools/certdata.txt
  tools/gyp/*
  tools/doc/node_modules/marked/*
@@ -32,14 +35,13 @@ Comment: ./src/CNNICHashWhitelist.inc has an unclear status as
  See also https://bugzilla.mozilla.org/show_bug.cgi?id=1151512
 
 Files: *
-Copyright: Node.js contributors,
- Joyent, Inc. and other Node contributors.
+Copyright: Joyent, Inc. and other Node contributors.
 License: Expat
 
 Files: deps/cares/*
 Copyright: 1998-2000 Greg Hudson <ghudson@mit.edu>,
  Massachusetts Institute of Technology.
- 2000-2016 Daniel Stenberg, Dominick Meglio, liren at vivisimo.com,
+ 2000-2013 Daniel Stenberg, Dominick Meglio, liren at vivisimo.com,
  James Bursa, Duncan Wilcox, Dirk Manske, Dan Fandrich,
  Gisle Vanem, Gunter Knauf, Henrik Stoerner, Yang Tse,
  Nick Mathewson, Alexander Lazic, Andreas Rieke,
@@ -64,73 +66,9 @@ Files: deps/http_parser/*
 Copyright: Igor Sysoev, Joyent, Inc. and other Node contributors.
 License: Expat
 
-Files: deps/nghttp2/*
-Copyright: 2012-2015 Tatsuhiro Tsujikawa and nghttp2 contributors
-License: Expat
-
-Files: deps/uv/*
-Copyright: 2011-2015, Joyent, Inc. and other Node contributors.
-License: Expat
-
-Files: deps/uv/src/inet.c
-Copyright: 2004, Internet Systems Consortium, Inc. ("ISC")
-           1996-1999, Internet Software Consortium.
-License: ISC
-
-Files: deps/uv/include/android-ifaddrs.h
-Copyright: 1995-1999, Berkeley Software Design
-License: BSD-1-clause
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions are
- met:
- .
- 1. Redistributions of source code must retain the above copyright
- notice, this list of conditions and the following disclaimer.
- .
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
- IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
- PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-Files: deps/uv/src/unix/android-ifaddrs.c
-Copyright: 2013, Kenneth MacKay
-           2014, Emergya (Cloud4all, FP7/2007-2013, grant agreement n° 289016)
-License: BSD-2-clause~contributors
-
-Files: deps/uv/include/tree.h
+Files: src/tree.h
 Copyright: 2002, Niels Provos <provos@citi.umich.edu>
 License: BSD-2-clause~author
-
-Files: deps/uv/include/stdint-msvc2008.h
-Copyright: 2006-2008, Alexander Chemeris
-License: BSD-3-clause~author
-
-Files: deps/uv/src/unix/pthread-fixes.c
-Copyright: 2012, Google Inc.
-           2013, Sony Mobile Communications AB
-License: BSD-3-clause~contributors
-
-Files: deps/uv/include/pthread-barrier.h
-Copyright: 2016, Kari Tristan Helgason <kthelgason@gmail.com>
-License: ISC
-
-Files: deps/uv/include/tree.h
-Copyright: 2002, Niels Provos <provos@citi.umich.edu>
-License: BSD-2-clause~author
-
-Files: deps/uv/autogen.sh
- deps/uv/checksparse.sh
- deps/uv/src/heap-inl.h
- deps/uv/src/queue.h
-Copyright: 2013-2015, Ben Noordhuis <info@bnoordhuis.nl>
-License: ISC
 
 Files: deps/v8/*
  tools/test.py
@@ -161,54 +99,20 @@ Comment:
  license.  For details, see the Prototype web site:
  http://prototype.conio.net/
 
-Files: deps/v8/base/trace_event/common/trace_event_common.h
- deps/v8/BUILD.gn
- deps/v8/gypfiles/set_clang_warning_flags.gypi
- deps/v8/gypfiles/isolate.gypi
- deps/v8/gypfiles/win/msvs_dependencies.isolate
- deps/v8/gypfiles/vs_toolchain.py
- deps/v8/src/base/safe_math.h
- deps/v8/src/base/free_deleter.h
- deps/v8/src/base/debug/stack_trace_win.cc
- deps/v8/src/base/debug/stack_trace_android.cc
- deps/v8/src/base/debug/stack_trace_posix.cc
- deps/v8/src/base/debug/stack_trace.h
- deps/v8/src/base/optional.h
+Files: deps/v8/src/base/safe_math.h
  deps/v8/src/base/adapters.h
  deps/v8/src/base/safe_math_impl.h
  deps/v8/src/base/safe_conversions.h
  deps/v8/src/base/safe_conversions_impl.h
- deps/v8/third_party/binutils/download.py
- deps/v8/third_party/inspector_protocol/*
- deps/v8/tools/isolate_driver.py
- deps/v8/tools/gyp_flag_compare.py
- deps/v8/tools/mb/mb.py
- deps/v8/tools/mb/mb_unittest.py
- deps/v8/tools/mb/PRESUBMIT.py
- deps/v8/tools/mb/mb
- deps/zlib/zlib.gyp
- src/tracing/trace_event_common.h
+ deps/v8/BUILD.gn
+ deps/v8/build/isolate.gypi
+ deps/v8/build/config/win/msvs_dependencies.isolate
+ deps/v8/build/vs_toolchain.py
+ deps/v8/build/download_gold_plugin.py
+ deps/v8/base/trace_event/common/trace_event_common.h
  tools/icu/icu-generic.gyp
-Copyright: 2012-2016 The Chromium Authors
+Copyright: 2012, 2014, 2015 The Chromium Authors
 License: BSD-3-clause~Google
-
-Files: deps/v8/src/inspector/*
-Copyright: Copyright: 2007-2009 Apple Inc.
- 2009-2013 Google Inc.
- 2014-2016 The Chromium Authors
-License: BSD-3-clause~Google
-
-Files: deps/v8/src/inspector/build/rjsmin.py
-Copyright: 2011-2013 André Malo or his licensors, as applicable
-License: Apache-2.0
-
-Files: deps/v8/third_party/jinja2/*
-Copyright: 2009 Jinja Team
-License: BSD-3-clause~contributors
-
-Files: deps/v8/third_party/markupsafe/*
-Copyright: 2010 by Armin Ronacher and contributors
-License: BSD-3-clause~contributors
 
 Files: tools/icu/*
 Copyright: 1995-2015 International Business Machines Corporation and others
@@ -253,6 +157,7 @@ Files: deps/v8/src/arm/assembler-arm*
  deps/v8/src/ppc/assembler-ppc*
  deps/v8/src/s390/assembler-s390*
  deps/v8/src/x64/assembler-x64*
+ deps/v8/src/x87/assembler-x87*
 Copyright: 1994-2006,2011, Sun Microsystems Inc.
 License: BSD-3-clause~Sun
 
@@ -268,7 +173,7 @@ Files: deps/v8/src/third_party/vtune/*
 Copyright: 2005-2012, Intel Corporation.
 License: BSD-3-clause~Intel or GPL-2
 
-Files: deps/v8/src/base/ieee754.cc
+Files: deps/v8/src/third_party/fdlibm/*
 Copyright: 1993-2004 by Sun Microsystems, Inc. All rights reserved.
 License: ISC-no-disclaim
  Developed at SunSoft, a Sun Microsystems, Inc. business.
@@ -287,30 +192,23 @@ License: public-domain
  Some minor modifications have been made by the V8 authors. The work
  remains in the public domain.
 
-Files: deps/zlib/*
-Copyright: 1995-1998 Jean-loup Gailly <jloup@gzip.org> and
- Mark Adler <madler@alumni.caltech.edu>
-License: zlib
- This software is provided 'as-is', without any express or implied
- warranty.  In no event will the authors be held liable for any damages
- arising from the use of this software.
- .
- Permission is granted to anyone to use this software for any purpose,
- including commercial applications, and to alter it and redistribute it
- freely, subject to the following restrictions:
- .
- 1. The origin of this software must not be misrepresented; you must not
-    claim that you wrote the original software. If you use this software
-    in a product, an acknowledgment in the product documentation would be
-    appreciated but is not required.
- 2. Altered source versions must be plainly marked as such, and must not be
-    misrepresented as being the original software.
- 3. This notice may not be removed or altered from any source distribution.
-Comment:
- The deflate format used by zlib was defined by Phil Katz. The deflate
- and zlib specifications were written by Peter Deutsch. Thanks to all the
- people who reported problems and suggested various improvements in zlib;
- they are too numerous to cite here.
+Files: deps/v8_inspector/third_party/v8_inspector/*
+Copyright: 2007-2009 Apple Inc.
+ 2009-2013 Google Inc.
+ 2014-2016 The Chromium Authors
+License: BSD-3-clause~Google
+
+Files: deps/v8_inspector/third_party/v8_inspector/platform/v8_inspector/build/rjsmin.py
+Copyright: 2011-2013 André Malo or his licensors, as applicable
+License: Apache-2.0
+
+Files: deps/v8_inspector/third_party/jinja2/*
+Copyright: 2009-2011 Armin Ronacher, Jinja Team
+License: BSD-3-clause~contributors
+
+Files: deps/v8_inspector/third_party/markupsafe/*
+Copyright: 2010, 2013 Armin Ronacher and contributors
+License: BSD-3-clause~contributors
 
 Files: debian/patches/1005_restore_sh_javascript_nonminified.patch
  doc/api_assets/sh*
@@ -333,6 +231,12 @@ License: Expat
 
 Files: lib/punycode.js
 Copyright: 2011-2014 Mathias Bynens <http://mathiasbynens.be/>
+License: Expat
+
+
+Files: src/debug-agent.cc
+ src/debug-agent.h
+Copyright: Fedor Indutny and other Node contributors.
 License: Expat
 
 Files: src/node_root_certs.h
@@ -470,30 +374,6 @@ License: BSD-2-clause~author
  IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
 
-License: BSD-2-clause~contributors
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions are
- met:
- .
- 1. Redistributions of source code must retain the above copyright
- notice, this list of conditions and the following disclaimer.
- .
- 2. Redistributions in binary form must reproduce the above copyright
- notice, this list of conditions and the following disclaimer in the
- documentation and/or other materials provided with the distribution.
- .
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
- IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
- PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 License: BSD-3-clause~Google
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
@@ -601,31 +481,6 @@ License: BSD-3-clause~contributors
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-License: BSD-3-clause~author
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions are met:
- .
-   1. Redistributions of source code must retain the above copyright notice,
-      this list of conditions and the following disclaimer.
- .
-   2. Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
- .
-   3. The name of the author may be used to endorse or promote products
-      derived from this software without specific prior written permission.
- .
- THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
- WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
- EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 License: BSD-4-clause~author
  Redistribution and use in source and binary forms, with or without
