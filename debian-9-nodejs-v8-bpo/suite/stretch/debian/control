@@ -1,0 +1,92 @@
+Source: nodejs
+Section: javascript
+Priority: optional
+Maintainer: Debian Javascript Maintainers <pkg-javascript-devel@lists.alioth.debian.org>
+Uploaders: Jérémy Lal <kapouer@melix.org>,
+ Jonas Smedegaard <dr@jones.dk>
+Build-Depends: cdbs,
+ debhelper (>=9.20160114),
+ dh-buildinfo,
+ openssl (>= 1.0.2),
+ pkg-config,
+ bash-completion,
+ curl,
+ procps,
+ zlib1g-dev,
+ libicu-dev,
+ libc-ares-dev (>= 1.14~),
+ libhttp-parser-dev (>= 2.8~),
+ libkvm-dev [kfreebsd-any],
+ gyp (>= 0.1~svn1773),
+ ca-certificates,
+ python,
+ libssl1.0-dev (>= 1.0.2),
+ libuv1-dev (>= 1.15.0)
+Build-Depends-Indep: node-js-yaml,
+ node-marked
+Standards-Version: 4.1.2
+Homepage: http://nodejs.org/
+Vcs-Browser: https://salsa.debian.org/js-team/nodejs/tree/master-8.x
+Vcs-Git: https://salsa.debian.org/js-team/nodejs.git -b master-8.x
+
+Package: nodejs-dev
+Section: devel
+Architecture: amd64 arm64 armhf i386 kfreebsd-i386 kfreebsd-amd64 mips mips64el mipsel ppc64 ppc64el s390x
+Depends: ${cdbs:Depends},
+ ${misc:Depends},
+ nodejs (= ${binary:Version})
+Suggests: ${cdbs:Suggests}
+Description: evented I/O for V8 javascript (development files)
+ Node.js is a platform built on Chrome's JavaScript runtime for easily
+ building fast, scalable network applications. Node.js uses an
+ event-driven, non-blocking I/O model that makes it lightweight and
+ efficient, perfect for data-intensive real-time applications that run
+ across distributed devices.
+ .
+ This package is needed to build plugins.
+
+Package: nodejs
+Architecture: amd64 arm64 armhf i386 kfreebsd-i386 kfreebsd-amd64 mips mips64el mipsel ppc64 ppc64el s390x
+Depends: ${shlibs:Depends},
+ ${misc:Depends}
+Provides: ${cdbs:Provides}
+Recommends: ${cdbs:Recommends},
+ nodejs-doc
+Replaces: nodejs-legacy
+Conflicts: nodejs-legacy
+Description: evented I/O for V8 javascript
+ Node.js is a platform built on Chrome's JavaScript runtime for easily
+ building fast, scalable network applications. Node.js uses an
+ event-driven, non-blocking I/O model that makes it lightweight and
+ efficient, perfect for data-intensive real-time applications that run
+ across distributed devices.
+ .
+ Node.js is bundled with several useful libraries to handle server
+ tasks:
+ .
+ System, Events, Standard I/O, Modules, Timers, Child Processes, POSIX,
+ HTTP, Multipart Parsing, TCP, DNS, Assert, Path, URL, Query Strings.
+
+Package: nodejs-doc
+Section: doc
+Architecture: all
+Depends: ${misc:Depends}
+Provides: ${cdbs:Provides}
+Recommends: ${cdbs:Recommends}, nodejs
+Replaces: nodejs (<< 6.11.2~dfsg-3)
+Conflicts: nodejs (<< 6.11.2~dfsg-3)
+Description: API documentation for Node.js, the javascript platform
+ Node.js is a platform built on Chrome's JavaScript runtime for easily
+ building fast, scalable network applications. Node.js uses an
+ event-driven, non-blocking I/O model that makes it lightweight and
+ efficient, perfect for data-intensive real-time applications that run
+ across distributed devices.
+ .
+ Node.js is bundled with several useful libraries to handle server
+ tasks:
+ .
+ System, Events, Standard I/O, Modules, Timers, Child Processes, POSIX,
+ HTTP, Multipart Parsing, TCP, DNS, Assert, Path, URL, Query Strings.
+ .
+ This package contains API documentation for nodejs.
+

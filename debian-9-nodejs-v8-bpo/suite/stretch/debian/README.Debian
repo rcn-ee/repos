@@ -1,0 +1,24 @@
+/usr/bin/node, /usr/bin/nodejs
+==============================
+
+"node" binary name is not available in stretch,
+and is replaced by "nodejs".
+"node" binary name is available in buster, and
+"nodejs" is kept to avoid breaking old scripts.
+
+However, the preferred name is "node" since it is
+the upstream binary name.
+
+
+Supported architectures
+=======================
+
+nodejs runs on architectures where v8 runs.
+In particular, v8 cannot run on these debian ports:
+- armel because v8 requires v6+ instruction set:
+  https://bugs.chromium.org/p/v8/issues/detail?id=3285
+- powerpc because v8 requires POWER5+ instruction set:
+  https://github.com/ibmruntimes/node/issues/65
+  
+
+

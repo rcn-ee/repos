@@ -1,0 +1,15 @@
+Description: fix test flakyness, inspired by upstream fix
+Forwarded: not-needed
+Last-Update: 2017-12-25
+Origin: https://github.com/nodejs/node/blob/81c2b59609b5a354219acc5cc0f376be5be86cc4/test/parallel/test-http2-connect.js#L39
+--- a/test/parallel/test-http2-connect.js
++++ b/test/parallel/test-http2-connect.js
+@@ -33,7 +33,7 @@
+ // check for https as protocol
+ {
+   const authority = 'https://localhost';
+-  doesNotThrow(() => connect(authority));
++  doesNotThrow(() => connect(authority).on('error', () => {}));
+ }
+ 
+ // check for error for an invalid protocol (not http or https)

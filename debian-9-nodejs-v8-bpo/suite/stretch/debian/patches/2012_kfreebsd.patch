@@ -1,0 +1,135 @@
+Description: add __FreeBSD_kernel__ to the list of *bsd conditions
+Forwarded: not-needed, not yet tested enough
+Author: Jérémy Lal <kapouer@melix.org>
+Last-Update: 2015-09-18
+--- a/tools/install.py
++++ b/tools/install.py
+@@ -136,7 +136,7 @@
+   action(['deps/v8/tools/lldbinit'], 'share/doc/node/')
+   action(['deps/v8/tools/lldb_commands.py'], 'share/doc/node/')
+ 
+-  if 'freebsd' in sys.platform or 'openbsd' in sys.platform:
++  if ('freebsd' in sys.platform and not 'kfreebsd' in sys.platform)  or 'openbsd' in sys.platform:
+     action(['doc/node.1'], 'man/man1/')
+   else:
+     action(['doc/node.1'], 'share/man/man1/')
+--- a/node.gyp
++++ b/node.gyp
+@@ -533,6 +533,11 @@
+             '_LINUX_SOURCE_COMPAT',
+           ],
+         }],
++	[ 'OS=="kfreebsd"', {
++          'libraries': [
++            '-lkvm',
++          ],
++        }],
+         [ 'OS=="solaris"', {
+           'libraries': [
+             '-lkstat',
+--- a/common.gypi
++++ b/common.gypi
+@@ -393,7 +393,7 @@
+           }],
+         ],
+       }],
+-      ['OS=="freebsd" and node_use_dtrace=="true"', {
++      ['(OS=="freebsd" or OS=="kfreebsd") and node_use_dtrace=="true"', {
+         'libraries': [ '-lelf' ],
+       }],
+       ['OS=="freebsd"', {
+--- a/deps/v8/include/v8config.h
++++ b/deps/v8/include/v8config.h
+@@ -95,7 +95,7 @@
+ #elif defined(_AIX)
+ #define V8_OS_POSIX 1
+ #define V8_OS_AIX 1
+-#elif defined(__FreeBSD__)
++#elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
+ # define V8_OS_BSD 1
+ # define V8_OS_FREEBSD 1
+ # define V8_OS_POSIX 1
+--- a/deps/v8/src/base/platform/platform-posix.cc
++++ b/deps/v8/src/base/platform/platform-posix.cc
+@@ -23,7 +23,7 @@
+ #include <sys/time.h>
+ #include <sys/types.h>
+ #if defined(__APPLE__) || defined(__DragonFly__) || defined(__FreeBSD__) || \
+-    defined(__NetBSD__) || defined(__OpenBSD__)
++    defined(__NetBSD__) || defined(__OpenBSD__) || defined(__FreeBSD_kernel__)
+ #include <sys/sysctl.h>  // NOLINT, for sysctl
+ #endif
+ 
+@@ -345,7 +345,7 @@
+   return static_cast<int>(gettid());
+ #elif V8_OS_AIX
+   return static_cast<int>(thread_self());
+-#elif V8_OS_SOLARIS
++#elif V8_OS_SOLARIS || defined(__FreeBSD_kernel__)
+   return static_cast<int>(pthread_self());
+ #else
+   return static_cast<int>(reinterpret_cast<intptr_t>(pthread_self()));
+@@ -563,7 +563,8 @@
+ 
+ 
+ static void SetThreadName(const char* name) {
+-#if V8_OS_DRAGONFLYBSD || V8_OS_FREEBSD || V8_OS_OPENBSD
++
++#if (V8_OS_DRAGONFLYBSD || V8_OS_FREEBSD || V8_OS_OPENBSD ) && !defined(__FreeBSD_kernel__)
+   pthread_set_name_np(pthread_self(), name);
+ #elif V8_OS_NETBSD
+   STATIC_ASSERT(Thread::kMaxThreadNameLength <= PTHREAD_MAX_NAMELEN_NP);
+--- a/deps/v8/src/d8-posix.cc
++++ b/deps/v8/src/d8-posix.cc
+@@ -372,7 +372,7 @@
+ // See http://code.google.com/p/v8/issues/detail?id=401.
+ #if defined(WNOWAIT) && !defined(ANDROID) && !defined(__APPLE__) \
+     && !defined(__NetBSD__)
+-#if !defined(__FreeBSD__)
++#if !defined(__FreeBSD__) && !defined(__FreeBSD_kernel__)
+ #define HAS_WAITID 1
+ #endif
+ #endif
+--- a/src/node.cc
++++ b/src/node.cc
+@@ -3474,7 +3474,7 @@
+ 
+ void SignalExit(int signo) {
+   uv_tty_reset_mode();
+-#ifdef __FreeBSD__
++#if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
+   // FreeBSD has a nasty bug, see RegisterSignalHandler for details
+   struct sigaction sa;
+   memset(&sa, 0, sizeof(sa));
+--- a/deps/v8/tools/gyp/v8.gyp
++++ b/deps/v8/tools/gyp/v8.gyp
+@@ -1827,7 +1827,6 @@
+         ['OS=="freebsd"', {
+             'link_settings': {
+               'libraries': [
+-                '-L/usr/local/lib -lexecinfo',
+             ]},
+             'sources': [
+               '../../src/base/platform/platform-freebsd.cc',
+--- a/deps/v8/src/base/platform/platform-linux.cc
++++ b/deps/v8/src/base/platform/platform-linux.cc
+@@ -49,6 +49,8 @@
+ // PNaCL doesn't have this, so we always grab all of the memory, which is bad.
+ #define MAP_NORESERVE 0
+ #endif
++#elif defined(__FreeBSD_kernel__)
++#include <sys/syscall.h>
+ #else
+ #include <sys/prctl.h>
+ #include <sys/syscall.h>
+--- a/tools/utils.py
++++ b/tools/utils.py
+@@ -47,6 +47,8 @@
+   id = platform.system()
+   if id == 'Linux':
+     return 'linux'
++  elif id == 'GNU/kFreeBSD':
++    return 'freebsd'
+   elif id == 'Darwin':
+     return 'macos'
+   elif id.find('CYGWIN') >= 0:

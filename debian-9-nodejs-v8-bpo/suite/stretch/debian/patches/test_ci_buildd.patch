@@ -1,0 +1,108 @@
+Description: adapt test-ci build target for buildd
+ * run tests with ./node
+ * remove addons from test-ci suite, because it creates a dependency loop
+   nodejs -> node-gyp -> nodejs which is painful to manage.
+ * disabled because it requires stdin:
+   + test-stdout-close-unref
+   + test-regress-GH-746
+ * test-tick-processor fails on ppc64 and s390x, currently investigated
+   https://github.com/nodejs/node/issues/2471
+ * test-cluster-disconnect sometimes fails on busy buildd, forwarded upstream
+   https://github.com/nodejs/node/issues/3383
+ * test-fs-watch is flaky, might be related to https://github.com/nodejs/node/issues/4082
+ * huge timeout value for all platforms, buildd could be busy
+ * test-npm-install must fail, debian package dfsg-repacked npm out
+ * ability to override CI_NATIVE_SUITES, CI_JS_SUITES
+ * disable tests failing because DNS is disabled
+Forwarded: not-needed
+Last-Update: 2016-03-09
+Author: Jérémy Lal <kapouer@melix.org>
+--- a/Makefile
++++ b/Makefile
+@@ -403,7 +403,7 @@
+ 
+ # This target should not use a native compiler at all
+ test-ci-js: | clear-stalled
+-	$(PYTHON) tools/test.py $(PARALLEL_ARGS) -p tap --logfile test.tap \
++	$(PYTHON) tools/test.py $(PARALLEL_ARGS) -p tap \
+ 		--mode=release --flaky-tests=$(FLAKY_TESTS) \
+ 		$(TEST_CI_ARGS) $(CI_ASYNC_HOOKS) $(CI_JS_SUITES) known_issues
+ 	# Clean up any leftover processes, error if found.
+--- a/test/parallel/parallel.status
++++ b/test/parallel/parallel.status
+@@ -6,6 +6,29 @@
+ 
+ [true] # This section applies to all platforms
+ 
++test-process-config                  : PASS,FLAKY
++test-regress-GH-746                  : PASS,FLAKY
++test-stdout-close-unref              : PASS,FLAKY
++test-npm-install                     : FAIL
++# skip tests accessing network
++test-dns                             : SKIP
++test-net-connect-immediate-finish    : SKIP
++test-net-better-error-messages-port-hostname : SKIP
++
++# in debian build env, skip because it somehow tries to access network
++test-https-connect-address-family : SKIP 
++test-tls-connect-address-family : SKIP
++test-dns-cancel-reverse-lookup: SKIP
++
++# should have been disabled 'cause openssl 1.1.0
++test-tls-ecdh-disable : SKIP
++
++# only works with zlib >= 1.2.11
++test-zlib-failed-init: SKIP
++
++# might fail, see https://github.com/nodejs/node/issues/17909
++test-fs-utimes: PASS,FLAKY
++
+ test-tls-alert: SKIP
+ 
+ [$system==win32]
+@@ -17,6 +40,10 @@
+ [$arch==arm || $arch==arm64]
+ test-npm-install:      PASS,FLAKY
+ 
++[$arch==mips64el]
++# the debug flag is for hacking v8 internals
++test-debug-args: PASS,FLAKY
++
+ [$system==solaris] # Also applies to SmartOS
+ 
+ [$system==freebsd]
+--- a/test/sequential/sequential.status
++++ b/test/sequential/sequential.status
+@@ -5,6 +5,8 @@
+ # sample-test                       : PASS,FLAKY
+ 
+ [true] # This section applies to all platforms
++test-fs-watch                                   : PASS,FLAKY
++test-force-repl                                 : SKIP
+ 
+ [$system==win32]
+ test-inspector-async-call-stack       : PASS, FLAKY
+--- a/tools/test.py
++++ b/tools/test.py
+@@ -904,10 +904,7 @@
+     self.v8_enable_inspector = True
+ 
+   def GetVm(self, arch, mode):
+-    if arch == 'none':
+-      name = 'out/Debug/node' if mode == 'debug' else 'out/Release/node'
+-    else:
+-      name = 'out/%s.%s/node' % (arch, mode)
++    name = './node'
+ 
+     # Currently GYP does not support output_dir for MSVS.
+     # http://code.google.com/p/gyp/issues/detail?id=40
+--- a/test/common/index.js
++++ b/test/common/index.js
+@@ -338,6 +338,7 @@
+ };
+ 
+ exports.platformTimeout = function(ms) {
++  return 20 * ms; // for debian build servers
+   if (process.features.debug)
+     ms = 2 * ms;
+ 

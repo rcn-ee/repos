@@ -1,0 +1,26 @@
+Description: a test uses a benchmark that read alice.html, dfsg excluded
+Last-Update: 2017-12-25
+Author: Jérémy Lal <kapouer@melix.org>
+Forwarded: not-needed
+--- a/benchmark/buffers/buffer-indexof-number.js
++++ b/benchmark/buffers/buffer-indexof-number.js
+@@ -12,7 +12,7 @@
+   const n = +conf.n;
+   const search = +conf.value;
+   const aliceBuffer = fs.readFileSync(
+-    path.resolve(__dirname, '../fixtures/alice.html')
++    path.resolve(__dirname, '../../doc/api/all.html')
+   );
+ 
+   bench.start();
+--- a/benchmark/buffers/buffer-indexof.js
++++ b/benchmark/buffers/buffer-indexof.js
+@@ -31,7 +31,7 @@
+ function main(conf) {
+   const iter = (conf.iter) * 100000;
+   var aliceBuffer = fs.readFileSync(
+-    path.resolve(__dirname, '../fixtures/alice.html')
++    path.resolve(__dirname, '../../doc/api/all.html')
+   );
+   var search = conf.search;
+   var encoding = conf.encoding;

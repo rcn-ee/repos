@@ -1,0 +1,36 @@
+Description: build doc using js-yaml debian package
+Forwarded: not-needed
+Last-Update: 2018-03-15
+Author: Jérémy Lal <kapouer@melix.org>
+--- a/tools/doc/node_modules/js-yaml/index.js
++++ /dev/null
+@@ -1,15 +0,0 @@
+-'use strict';
+-
+-// Hack to load the js-yaml module from eslint.
+-// No other reason than that it’s huge.
+-
+-const path = require('path');
+-
+-const realJSYaml = path.resolve(
+-  __dirname, '..', '..', '..', // tools/
+-  'eslint',
+-  'node_modules',
+-  'js-yaml'
+-);
+-
+-module.exports = require(realJSYaml);
+--- a/Makefile
++++ b/Makefile
+@@ -567,7 +567,10 @@
+ # Just copy everything under doc/api over.
+ out/doc/api: doc/api
+ 	mkdir -p $@
+-	cp -r doc/api out/doc
++	cp -r doc/api out/doc/
++	rm -f out/doc/api/*.html
++	rm -f out/doc/api/*.json
++
+ 
+ # If it's a source tarball, assets are already in doc/api/assets
+ out/doc/api/assets:
