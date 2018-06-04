@@ -13,15 +13,15 @@ git_sha=""
 reprepro_dir="c/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee0"
+debian_version="${package_version}-0rcnee1"
 debian_untar=""
 debian_patch=""
 
 dl_mirror="https://github.com/rcn-ee/bb.org-cloud9-core/raw/master/deploy/buster/"
 
 v6="v6.12.2"
-v8="v8.11.1"
+v8="v8.11.2"
 
 debian_dl_1="${dl_mirror}/c9-core_${package_version}-${v8}-build.tar.xz"
 
-buster_version="~buster+20180424"
+buster_version="~buster+20180604"

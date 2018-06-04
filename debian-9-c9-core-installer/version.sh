@@ -20,6 +20,7 @@ debian_patch=""
 dl_mirror="https://github.com/rcn-ee/bb.org-cloud9-core/raw/master/deploy/stretch"
 
 v6="v6.12.2"
+v8="v8.11.2"
 
 debian_dl_1="${dl_mirror}/c9-core_${package_version}-${v6}-build.tar.xz"
 
