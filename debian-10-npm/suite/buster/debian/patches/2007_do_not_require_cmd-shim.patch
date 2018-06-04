@@ -1,0 +1,19 @@
+Description: cmd-shim is only needed on win32
+Author: Jérémy Lal <kapouer@melix.org>
+Forwarded: not-needed, todo: better patch
+Last-Update: 2013-09-08
+Index: npm/lib/build.js
+===================================================================
+--- npm.orig/lib/build.js
++++ npm/lib/build.js
+@@ -16,8 +16,8 @@ var lifecycle = require('./utils/lifecyc
+ var readJson = require('read-package-json')
+ var link = require('./utils/link.js')
+ var linkIfExists = link.ifExists
+-var cmdShim = require('cmd-shim')
+-var cmdShimIfExists = cmdShim.ifExists
++//var cmdShim = require('cmd-shim')
++//var cmdShimIfExists = cmdShim.ifExists
+ var asyncMap = require('slide').asyncMap
+ var ini = require('ini')
+ var writeFile = require('write-file-atomic')

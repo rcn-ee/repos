@@ -1,0 +1,49 @@
+Description: use ansi-color-table instead of text-table, and ansi instead of ansicolors, ansistyles
+ node-ansi is already available in debian, it's easier to depend on it and it's been patched to
+ be a drop-in replacement of ansicolors and ansistyles.
+Author: Jérémy Lal <kapouer@melix.org>
+Forwarded: not-needed, waiting for upstream ansi.js to accept patch
+Last-Update: 2014-08-05
+Index: npm/lib/outdated.js
+===================================================================
+--- npm.orig/lib/outdated.js
++++ npm/lib/outdated.js
+@@ -27,9 +27,9 @@ var log = require('npmlog')
+ var readPackageTree = require('read-package-tree')
+ var readJson = require('read-package-json')
+ var asyncMap = require('slide').asyncMap
+-var color = require('ansicolors')
+-var styles = require('ansistyles')
+-var table = require('text-table')
++var color = require('ansi')
++var styles = color
++var table = require('ansi-color-table')
+ var semver = require('semver')
+ var npa = require('npm-package-arg')
+ var mutateIntoLogicalTree = require('./install/mutate-into-logical-tree.js')
+Index: npm/lib/help-search.js
+===================================================================
+--- npm.orig/lib/help-search.js
++++ npm/lib/help-search.js
+@@ -6,7 +6,7 @@ var path = require('path')
+ var asyncMap = require('slide').asyncMap
+ var npm = require('./npm.js')
+ var glob = require('glob')
+-var color = require('ansicolors')
++var color = require('ansi')
+
+ helpSearch.usage = 'npm help-search <text>'
+
+Index: npm/lib/ls.js
+===================================================================
+--- npm.orig/lib/ls.js
++++ npm/lib/ls.js
+@@ -12,7 +12,7 @@ var readPackageTree = require('read-pack
+ var log = require('npmlog')
+ var archy = require('archy')
+ var semver = require('semver')
+-var color = require('ansicolors')
++var color = require('ansi')
+ var npa = require('npm-package-arg')
+ var iferr = require('iferr')
+ var npm = require('./npm.js')

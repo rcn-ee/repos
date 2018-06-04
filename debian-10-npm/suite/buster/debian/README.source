@@ -1,0 +1,24 @@
+git-buildpackage
+================
+
+
+CDBS+git-buildpackage
+---------------------
+
+This source package uses CDBS and git-buildpackage.  NMUs need not (but
+are encouraged to) make special use of these tools.  In particular, the
+debian/control.in file can be completely ignored.
+
+More info here: http://wiki.debian.org/CDBS+git-buildpackage
+
+
+symlinks to man pages
+---------------------
+
+npm searches for man pages in ./man/man1/*.1, and that is why symlinks
+are there :
+/usr/share/man/man1/npm-xxx.1.gz -> /usr/share/npm/man/man1/xxx.1
+
+npm does not search for man pages with .gz extension, so we get :
+E: npm: compressed-symlink-with-wrong-ext
+This is just to avoid having to patch npm.

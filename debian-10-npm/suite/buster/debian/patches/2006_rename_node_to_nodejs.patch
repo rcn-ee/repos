@@ -1,0 +1,131 @@
+Description: Change shell command from node to nodejs.
+Forwarded: not-needed
+Author: Jérémy Lal <kapouer@melix.org>
+Last-Update: 2013-04-28
+
+Index: npm/scripts/index-build.js
+===================================================================
+--- npm.orig/scripts/index-build.js
++++ npm/scripts/index-build.js
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env node
++#!/usr/bin/nodejs
+ var fs = require('fs')
+ var path = require('path')
+ var root = path.resolve(__dirname, '..')
+Index: npm/scripts/clean-old.sh
+===================================================================
+--- npm.orig/scripts/clean-old.sh
++++ npm/scripts/clean-old.sh
+@@ -26,7 +26,7 @@ if [ "x$npm_config_prefix" != "x" ]; the
+ else
+   node="$NODE"
+   if [ "x$node" = "x" ]; then
+-    node=`which node`
++    node=`which nodejs`
+   fi
+   if [ "x$node" = "x" ]; then
+     echo "Can't find node to determine prefix. Aborting."
+Index: npm/scripts/install.sh
+===================================================================
+--- npm.orig/scripts/install.sh
++++ npm/scripts/install.sh
+@@ -51,7 +51,7 @@ fi
+ export npm_config_loglevel
+
+ # make sure that node exists
+-node=`which node 2>&1`
++node=`which nodejs 2>&1`
+ ret=$?
+ if [ $ret -eq 0 ] && [ -x "$node" ]; then
+   (exit 0)
+Index: npm/Makefile
+===================================================================
+--- npm.orig/Makefile
++++ npm/Makefile
+@@ -1,5 +1,6 @@
+ # vim: set softtabstop=2 shiftwidth=2:
+ SHELL = bash
++node = nodejs
+
+ PUBLISHTAG = $(shell node scripts/publish-tag.js)
+ BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
+@@ -53,23 +54,23 @@ latest:
+ 	@echo "Installing latest published npm"
+ 	@echo "Use 'make install' or 'make link' to install the code"
+ 	@echo "in this folder that you're looking at right now."
+-	node cli.js install -g -f npm ${NPMOPTS}
++	$(node) cli.js install -g -f npm ${NPMOPTS}
+
+ install: all
+-	node cli.js install -g -f ${NPMOPTS}
++	$(node) cli.js install -g -f ${NPMOPTS}
+
+ # backwards compat
+ dev: install
+
+ link: uninstall
+-	node cli.js link -f
++	$(node) cli.js link -f
+
+ clean: markedclean marked-manclean doc-clean uninstall
+ 	rm -rf npmrc
+-	node cli.js cache clean
++	$(node) cli.js cache clean
+
+ uninstall:
+-	node cli.js rm npm -g -f
++	$(node) cli.js rm npm -g -f
+
+ doc: $(mandocs) $(htmldocs)
+
+@@ -107,7 +108,7 @@ man/man5/%.5: doc/files/%.md scripts/doc
+ 	scripts/doc-build.sh $< $@
+
+ doc/misc/npm-index.md: scripts/index-build.js package.json
+-	node scripts/index-build.js > $@
++	$(node) scripts/index-build.js > $@
+
+ html/doc/index.html: doc/misc/npm-index.md $(html_docdeps)
+ 	@[ -d html/doc ] || mkdir -p html/doc
+@@ -143,19 +144,19 @@ html/doc/misc/%.html: doc/misc/%.md $(ht
+ marked: node_modules/.bin/marked
+
+ node_modules/.bin/marked:
+-	node cli.js install marked --no-global
++	$(node) cli.js install marked --no-global
+
+ marked-man: node_modules/.bin/marked-man
+
+ node_modules/.bin/marked-man:
+-	node cli.js install marked-man --no-global
++	$(node) cli.js install marked-man --no-global
+
+ doc: man
+
+ man: $(cli_docs)
+
+ test: doc
+-	node cli.js test
++	$(node) cli.js test
+
+ tag:
+ 	npm tag npm@$(PUBLISHTAG) latest
+Index: npm/cli.js
+===================================================================
+--- npm.orig/cli.js
++++ npm/cli.js
+@@ -1,2 +1,2 @@
+-#!/usr/bin/env node
++#!/usr/bin/nodejs
+ require('./bin/npm-cli.js')
+Index: npm/bin/npm-cli.js
+===================================================================
+--- npm.orig/bin/npm-cli.js
++++ npm/bin/npm-cli.js
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env node
++#!/usr/bin/nodejs
+ ;(function () { // wrapper in case we're in module_context mode
+
+   // windows: running "npm blah" in this folder will invoke WSH, not node.

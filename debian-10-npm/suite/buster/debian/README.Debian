@@ -1,0 +1,50 @@
+npm for Debian
+==============
+
+nodejs Debian package provides /usr/bin/nodejs
+----------------------------------------------
+
+Modules installed by npm can ship executables.
+These executables depend on /usr/bin/node, which is
+provided by the nodejs-legacy Debian package.
+
+More information:
+/usr/share/doc/nodejs/README.Debian
+
+
+global mode npm
+---------------
+
+When run in global mode, npm is configured like this :
+
+	prefix=/usr/local
+	globalconfig=/etc/npmrc
+	globalignorefile=/etc/npmignore
+
+That means npm -g install mymodule will be installed in :
+
+	/usr/local/lib/node_modules/
+
+If mymodule installs executables, they go to :
+
+	/usr/local/bin
+
+And man pages to
+
+	/usr/local/share/man
+
+Please read npm-config(1), npm-folders(1) and npm-link(1) man pages.
+
+This global configuration is kept across a global self update of npm.
+It is not guaranteed it will stay like this, so it's safer to update
+npm debian package instead.
+
+
+do not confuse with /usr/lib/nodejs
+-----------------------------------
+
+/usr/lib/nodejs directory is reserved for modules that are provided by a
+debian package.
+
+
+ -- Jérémy Lal <kapouer@melix.org>  Fri, 28 Jan 2011 00:33:28 +0200
