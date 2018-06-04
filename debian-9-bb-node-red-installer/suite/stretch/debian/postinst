@@ -30,11 +30,10 @@ npm_install () {
 	v6="v6.14.2"
 	v8="v8.11.2"
 
-	node_red="node-red-0.18.5-30c2aa9"
-	node_red_dashboard="node-red-dashboard-2.9.3"
-	node_red_mongodb="node-red-node-mongodb-0.0.14"
+	node_red="node-red-0.18.7-472bbdb5"
+	node_red_dashboard="node-red-dashboard-2.9.4"
 	node_red_gpio="node-red-contrib-gpio-0.14.0"
-	node_red_serial="node-red-node-serialport-0.6.6"
+	node_red_serial="node-red-node-serialport-0.6.7"
 	node_red_can="node-red-contrib-can-1.0.6"
 
 	npm_project="node-red"
@@ -71,10 +70,6 @@ npm_install () {
 		npm_file="${node_red_dashboard}-${v6}.tar.xz"
 		npm_pkg_install
 
-		npm_project="node-red-node-mongodb"
-		npm_file="${node_red_mongodb}-${v6}.tar.xz"
-		npm_pkg_install
-
 		npm_project="node-red-contrib-gpio"
 		npm_file="${node_red_gpio}-${v6}.tar.xz"
 		npm_pkg_install
@@ -90,10 +85,6 @@ npm_install () {
 	v8.*)
 		npm_project="node-red-dashboard"
 		npm_file="${node_red_dashboard}-${v8}.tar.xz"
-		npm_pkg_install
-
-		npm_project="node-red-node-mongodb"
-		npm_file="${node_red_mongodb}-${v8}.tar.xz"
 		npm_pkg_install
 
 		npm_project="node-red-contrib-gpio"
@@ -118,6 +109,10 @@ npm_install () {
 
 	if [ -d /usr/local/lib/node_modules/node-red-node-beaglebone/ ] ; then
 		rm -rf /usr/local/lib/node_modules/node-red-node-beaglebone/ || true
+	fi
+
+	if [ -d /usr/local/lib/node_modules/node-red-node-mongodb/ ] ; then
+		rm -rf /usr/local/lib/node_modules/node-red-node-mongodb/ || true
 	fi
 
 	if [ -d /etc/avahi/services/ ] ; then
