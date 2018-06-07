@@ -1,0 +1,12 @@
+#!/bin/sh
+
+user=$(getent passwd 1000 | awk -F: '{ print $1 }')
+
+if [ -d /home/${user}/.c9 ] ; then
+	rm -rf /home/${user}/.c9 || true
+else
+	if [ -f /home/${user}/.c9 ] ; then
+		rm /home/${user}/.c9 || true
+	fi
+fi
+ln -sf /opt/cloud9/.c9/ /home/${user}/
