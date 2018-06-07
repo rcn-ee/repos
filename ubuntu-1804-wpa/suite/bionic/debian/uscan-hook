@@ -1,0 +1,27 @@
+#!/bin/sh
+set -e
+
+# This script is invoked by uscan after downloading a new tarball
+
+if [ "x$1" != "x--upstream-version" ] || [ $# != 3 ]; then
+	echo "invalid arguments: $*" >&2
+	exit 2
+fi
+
+version="$2"
+filename="$3"
+
+rm -f "$filename" "../hostapd-${2}.tar.gz"
+merged_tarball="$(./debian/get-orig-source $(pwd) ${version} | awk '/^SUCCESS: New upstream tarball has been saved at/{print $9}')"
+if [ -n "${merged_tarball}" ] && [ -w "${merged_tarball}" ]; then
+	# write to ../tarballs/, if it exists - ../ otherwise
+	if [ ! -e "../wpa_${version}.orig.tar.xz" ]; then
+		ln -fs "${merged_tarball}" "../"
+	fi
+	echo "svn-upgrade ../$(basename ${merged_tarball}) -V ${version}" >&2
+	exit 0
+else
+	echo "failed to generate merged upstream tarball" >&2
+	exit 3
+fi
+

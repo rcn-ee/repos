@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -e
+
+if [ -x /bin/systemctl ] && [ "$1" = purge ]
+then
+	systemctl unmask hostapd.service
+fi
+
+#DEBHELPER#
+exit 0

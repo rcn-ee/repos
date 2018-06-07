@@ -1,0 +1,15 @@
+[Unit]
+Description=Advanced IEEE 802.11 AP and IEEE 802.1X/WPA/WPA2/EAP Authenticator (%I)
+After=network.target
+BindsTo=sys-subsystem-net-devices-%i.device
+
+[Service]
+Type=forking
+PIDFile=/run/hostapd.%i.pid
+Restart=on-failure
+RestartSec=2
+EnvironmentFile=/etc/default/hostapd
+ExecStart=/usr/sbin/hostapd -P /run/hostapd.%i.pid $DAEMON_OPTS /etc/hostapd/%i.conf
+
+[Install]
+WantedBy=multi-user.target sys-subsystem-net-devices-%i.device

@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+[ -d /run/wpa_supplicant ] || exit 0
+
+if [ "$2" = "suspend" ] || [ "$2" = "hybrid-sleep" ]; then
+    case "$1" in
+        pre) /sbin/wpa_cli suspend ;;
+        post) /sbin/wpa_cli resume ;;
+    esac
+fi
