@@ -11,19 +11,18 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee0"
+debian_version="${package_version}-0rcnee2"
 debian_untar=""
 debian_patch=""
 
 dl_mirror="https://github.com/rcn-ee/npm-package-bonescript/raw/master/deploy/buster/"
 
-v6="v6.13.0"
-v8="v8.9.4"
+v8="v8.11.2"
 
-bonescript="bonescript-0.6.3-ae48732"
+bonescript="bonescript-0.6.3-9221fee"
    winston="winston-2.1.1"
 
 debian_dl_1="${dl_mirror}/${bonescript}-${v8}.tar.xz"
 debian_dl_2="${dl_mirror}/${winston}-${v8}.tar.xz"
 
-buster_version="~buster+20180305"
+buster_version="~buster+20180607"
