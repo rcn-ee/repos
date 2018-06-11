@@ -11,7 +11,7 @@ git_sha="a9ca418002664c0bb9a38c5b2a791b2e46b72687"
 reprepro_dir="b/${package_name}"
 dl_path=""
 
-debian_version="${package_version}-0rcnee0"
+debian_version="${package_version}-0rcnee1"
 debian_patch=""
 debian_diff=""
 
@@ -22,7 +22,7 @@ v8="v8.10.0"
 bonescript="bonescript-0.6.4-beta3-a9ca418"
    winston="winston-2.1.1"
 
-debian_dl_1="${dl_mirror}/${bonescript}-${v8}.tar.xz"
+debian_dl_1="${dl_mirror}/${bonescript}-${v8}-20180611.tar.xz"
 debian_dl_2="${dl_mirror}/${winston}-${v8}.tar.xz"
 
-bionic_version="~bionic+20180608"
+bionic_version="~bionic+20180611"
