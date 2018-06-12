@@ -4,7 +4,7 @@
 
 package_name="c9-core-installer"
 debian_pkg_name="${package_name}"
-package_version="3.1.4056.git20171215"
+package_version="3.1.5000.git20180223"
 package_source=""
 src_dir=""
 
@@ -19,9 +19,9 @@ debian_patch=""
 
 dl_mirror="https://github.com/rcn-ee/bb.org-cloud9-core/raw/master/deploy/stretch"
 
-v6="v6.12.2"
+v6="v6.14.2"
 v8="v8.11.2"
 
 debian_dl_1="${dl_mirror}/c9-core_${package_version}-${v6}-build.tar.xz"
 
-stretch_version="~stretch+20171229"
+stretch_version="~stretch+20180612"
