@@ -4,7 +4,7 @@
 
 package_name="c9-core-installer"
 debian_pkg_name="${package_name}"
-package_version="3.1.5000.git20180124"
+package_version="3.1.5000.git20180223"
 package_source=""
 src_dir=""
 
@@ -23,4 +23,4 @@ v8="v8.11.2"
 
 debian_dl_1="${dl_mirror}/c9-core_${package_version}-${v8}-build.tar.xz"
 
-buster_version="~buster+20180611"
+buster_version="~buster+20180612"
