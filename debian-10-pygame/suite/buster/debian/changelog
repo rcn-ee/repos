@@ -1,0 +1,611 @@
+pygame (1.9.3+dfsg2-2rcnee0~buster+20180619) buster; urgency=low
+
+  * Rebuild for repos.rcn-ee.com
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Tue, 19 Jun 2018 14:40:09 -0500
+
+pygame (1.9.3+dfsg2-2) unstable; urgency=medium
+
+  * Bring back Python 2 version for now. (Closes: #894560)
+  * Amend last changelog with missing bug number.
+  * Refresh a patch to fix clean step.
+  * Use pkg-config to find freetype. (Closes: #892436)
+  * Fix installation of documentation into correct directory.
+  * Bump Standards-Version (no changes needed).
+  * Fix tests on FreeBSD (and probably others). (Closes: #861254)
+
+ -- Dominik George <natureshadow@debian.org>  Wed, 11 Apr 2018 11:02:05 +0200
+
+pygame (1.9.3+dfsg2-1) unstable; urgency=medium
+
+  [ Ondřej Nový ]
+  * d/control: Set Vcs-* to salsa.debian.org
+  * d/copyright: Use https protocol in Format field
+  * d/watch: Use https protocol
+  * d/changelog: Remove trailing whitespaces
+
+  [ Dominik George ]
+  * Update dependency on timgm6mb-soundfont. (Closes: #871910)
+  * Depend on FreeSans font. (Closes: #861499)
+  * Update my mail address in Uploaders.
+  * Remove Python 2 build.
+  * Bumb Standards-Version and compat level.
+    + Remove default variables from d/rules.
+  * Fix arithmetic errors on some platforms.
+    (Closes: #861250, #861252, #861253, #861249, #861256)
+  * Fix unicode in Sphinx output.
+  * Fix orig tarball, which contained files it shouldn't.
+    + Bump upstream dfsg version for that.
+
+ -- Dominik George <natureshadow@debian.org>  Sat, 31 Mar 2018 22:11:00 +0200
+
+pygame (1.9.3+dfsg-2) unstable; urgency=medium
+
+  * License review to update d/copyright.
+
+ -- Dominik George <nik@naturalnet.de>  Mon, 24 Apr 2017 19:45:54 +0200
+
+pygame (1.9.3+dfsg-1) unstable; urgency=medium
+
+  * New upstream release. (Closes: #779319)
+    + Upload to unstable as we got a stable release.
+  * Add myself tu Uploaders.
+  * Use uscan to get orig tarball.
+    + Exclude font copy.
+    + Exclude dump of website comments (unnecessary and almost
+      impossible to license-check).
+  * Update watch file to use PyPI.
+  * Add a separate python-pygame-doc package. (Closes: #747567)
+    + Use sphinxdoc to build.
+    + Also install examples in the -doc package.
+  * Re-introduce python3 package.
+  * Enable all hardening flags.
+  * Fix many spelling issues. (Closes: #708936)
+  * Re-enable test suites.
+    + Enable display test suite using Xvfb.
+
+ -- Dominik George <nik@naturalnet.de>  Thu, 26 Jan 2017 23:23:49 +0100
+
+pygame (1.9.2~pre~r3449-2) experimental; urgency=medium
+
+  * Ignore test failures temporarily (pre-release).
+
+ -- Vincent Cheng <vcheng@debian.org>  Tue, 03 May 2016 23:58:01 -0700
+
+pygame (1.9.2~pre~r3449-1) experimental; urgency=medium
+
+  [ Vincent Cheng ]
+  * Stop symlinking fonts into deprecated /usr/share/pyshared/ directory;
+    fixes FTBFS. (Closes: #750315)
+  * Drop doc-base file.
+  * Update Standards version to 3.9.8.
+
+  [ Stefano Rivera ]
+  * New upstream snapshot.
+    - Fixes FTBFS with clang. (Closes: #812717)
+  * Support Python 3 in setup_ignore_portmidi_on_non_linux.diff
+  * Drop ffmpeg, and smpeg dependencies, upstream has dropped movie support.
+    (Closes: #803555)
+  * Run tests against built pygame, don't build-depend on it.
+    - Build-Depend on: fluid-soundfont-gm, fontconfig, fonts-dejavu-core,
+      musescore-soundfont-gm, for the tests.
+  * Port to pybuild.
+
+  [ Ondřej Nový ]
+  * Fixed VCS URL (https)
+
+ -- Vincent Cheng <vcheng@debian.org>  Tue, 03 May 2016 21:39:41 -0700
+
+pygame (1.9.2~pre~r3348-1) experimental; urgency=medium
+
+  [ Vincent Cheng ]
+  * Set Debian Python Modules Team <python-modules-team@l.a.d.o> as new
+    maintainer, and move Ed Boraas into Uploaders with his consent.
+    - Update Vcs-* fields accordingly.
+  * Replace dependency ttf-freefont -> fonts-freefont-ttf. (Closes: #738244)
+  * Replace build-dep on python3.2 (>= 3.2.3-7) with build-conflicts instead.
+  * Remove dependency on ${python:Provides}.
+  * Remove Replaces+Conflicts with obsolete pygame packages.
+  * Update Standards version to 3.9.5.
+  * Update my email address.
+
+  [ Jakub Wilk ]
+  * Run tests only if DEB_BUILD_OPTIONS=nocheck is not set.
+
+ -- Vincent Cheng <vcheng@debian.org>  Wed, 19 Feb 2014 01:41:42 -0800
+
+pygame (1.9.2~pre~r3189-2) experimental; urgency=low
+
+  * Fix FTBFS by reverting faulty fix for #700997; distutils in Debian now
+    takes care of installing headers into the right location as of python3.2
+    (>= 3.2.3-7), so add a build-dep on that instead. (Closes: #700997)
+
+ -- Vincent Cheng <Vincentc1208@gmail.com>  Thu, 21 Feb 2013 22:40:36 -0800
+
+pygame (1.9.2~pre~r3189-1) experimental; urgency=low
+
+  * New upstream hg snapshot (rev 3189).
+  * Avoid potentially overriding a symlink in python3.2-dev. (Closes: #700997)
+  * Generate correct versioned dependency on python-numpy following ABI change
+    using the dh_numpy and dh_numpy3 helpers. (Closes: #698169)
+    - Add build-depends on python3-numpy.
+  * Fix a number of failing tests that rely on pygame being tested with OpenGL
+    and a graphical display available, as well as audio/video devices.
+  * Remove deprecated DMUA flag in debian/control.
+  * Fix lintian tag vcs-field-not-canonical.
+  * Update Standards version from 3.9.3 to 3.9.4, no updates required.
+
+ -- Vincent Cheng <Vincentc1208@gmail.com>  Thu, 21 Feb 2013 00:23:03 -0800
+
+pygame (1.9.2~pre~r3144-1) experimental; urgency=low
+
+  * New upstream hg snapshot (rev 3144).
+    - Drop drop_v4l_support.patch, set_WM_CLASS.patch, check_for_v4l2.diff,
+      no_asm_types_h.diff; applied upstream.
+    - Refresh remaining patches.
+  * Add build-depends on libfreetype6-dev, libavformat-dev, libswscale-dev.
+  * Add build-depends on python-pygame in order to run tests.
+  * Remove unneeded debian/python-pygame.bug-{presubj,script} files;
+    src:libsdl1.2 merged all builds into a single package as of 1.2.14-6.3.
+  * Build pygame module for Python 3. (LP: #682144)
+    - Add build-depends on python3-all-dev.
+  * Add depends on libjs-sphinxdoc and replace embedded js libraries
+    with symlinks in debian/rules.
+  * Add lintian overrides for hardening-no-fortify-function and
+    image-file-in-usr-lib.
+  * Add missing DEP-3 patch headers.
+  * Set DMUA flag in debian/control as per agreement with sponsor.
+
+ -- Vincent Cheng <Vincentc1208@gmail.com>  Mon, 10 Sep 2012 18:24:55 -0700
+
+pygame (1.9.1release+dfsg-7) unstable; urgency=low
+
+  * Add missing licenses and copyright holders in debian/copyright.
+    (Closes: #685189)
+
+ -- Vincent Cheng <Vincentc1208@gmail.com>  Mon, 10 Sep 2012 15:08:11 -0700
+
+pygame (1.9.1release+dfsg-6) unstable; urgency=low
+
+  * Add b-d on libpng-dev and libjpeg-dev to fix FTBFS. (Closes: #669464)
+  * Update Standards version from 3.9.2 to 3.9.3, no updates required.
+  * Update debhelper compatibility level from 8 to 9.
+
+ -- Vincent Cheng <Vincentc1208@gmail.com>  Thu, 19 Apr 2012 20:07:10 -0700
+
+pygame (1.9.1release+dfsg-5) unstable; urgency=high
+
+  * camera.h : do not include asm/types.h -- not all arches have it,
+    and linux does not need it
+  * Setting priority on high so as to (possibly) migrate
+    before Ubuntu snapshot.
+
+ -- A Mennucc1 <mennucc1@debian.org>  Fri, 06 Jan 2012 09:16:52 +0100
+
+pygame (1.9.1release+dfsg-4) unstable; urgency=high
+
+  * check for v4l2 , if absent do not compile camera module
+  * Setting priority on high so as to (possibly) migrate
+    before Ubuntu snapshot.
+
+ -- A Mennucc1 <mennucc1@debian.org>  Thu, 05 Jan 2012 22:29:11 +0100
+
+pygame (1.9.1release+dfsg-3) unstable; urgency=high
+
+  * Build-depends on portmidi only in linux-any architectures.
+  * Turn on MMX instructions, thanks to jeff@jab.org;
+    (Closes: #653215).
+  * Setting priority on high so as to (possibly) migrate
+    before Ubuntu snapshot.
+
+ -- A Mennucc1 <mennucc1@debian.org>  Thu, 05 Jan 2012 08:10:48 +0100
+
+pygame (1.9.1release+dfsg-2) unstable; urgency=low
+
+  * Upload to unstable.
+  * Repack tarball to remove lib/freesansbold.ttf.
+  * Import debian/patches/set_the_SDL_WM_CLASS_when_running_under_X11.diff
+    from Ubuntu.
+  * Drop debian/patches/documentation_fix since the revised link doesn't seem
+    to work either.
+  * Update debian/copyright to conform to DEP-5.
+  * Update debian/rules to dh 7 rules.tiny style.
+  * Modify debian/watch to ensure uscan can process it correctly.
+  * Add Vcs-* fields in debian/control.
+  * Add Homepage: field in debian/control.
+
+ -- Vincent Cheng <Vincentc1208@gmail.com>  Sun, 25 Sep 2011 17:41:16 -0700
+
+pygame (1.9.1release-1) experimental; urgency=low
+
+  * Upload to experimental.
+  * New upstream release. (Closes: #544347)
+  * Add myself to uploaders.
+  * Add build dependency on libportmidi-dev.
+  * Transition to dh_python2: (Closes: #616965)
+    - Remove dependency on python-central.
+    - Bump dependency on python-all-dev to >= 2.6.6-3~.
+    - Remove XB-Python-Version.
+    - Change XS-Python-Version to X-Python-Version.
+    - Use dh_python2 instead of dh_pycentral in debian/rules.
+  * Add timidity as a suggested package for python-pygame. (Closes: #428070)
+  * Include a doc-base registration file. (Closes: #451674)
+  * Update Standards version from 3.8.4 to 3.9.2, no updates required.
+  * Update debhelper compatiblity level from 7 to 8.
+  * Import debian/patches from Ubuntu.
+
+ -- Vincent Cheng <Vincentc1208@gmail.com>  Wed, 29 Jun 2011 14:56:36 -0700
+
+pygame (1.8.1release-2) unstable; urgency=low
+
+  * Switch to dpkg-source 3.0 (quilt) format
+  * Add debian/python-pygame.bug-presubj . The contents of this file are
+    displayed to the user by the bug reporting tool before allowing the
+    user to write a bug report. This file explains that the user may need
+    to install some libsdl libraries to hear audio.
+  * bump standard, no changes
+  * fix lintian warnings:
+    - duplicate-font-file usr/share/pyshared/pygame/freesansbold.ttf
+       also in ttf-freefont : replace with symlink
+    - some executable-not-elf-or-script
+    - debhelper-but-no-misc-depends, added
+  * Thanks morph for NMU.
+
+ -- A Mennucc1 <mennucc1@debian.org>  Sun, 07 Mar 2010 14:58:47 +0100
+
+pygame (1.8.1release-1.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Prepare for the upcoming Python 2.6 transition; thanks to Piotr Ożarowski
+    for the bug report and to Kumar Appaiah for the patch; Closes: #556151
+    - debian/rules
+      + pass --prefix=/usr when installing
+  * debian/control
+    - removed Joe Wreschnig from Uploaders field; Closes: #547234
+
+ -- Sandro Tosi <morph@debian.org>  Sun, 15 Nov 2009 22:22:48 +0100
+
+pygame (1.8.1release-1) unstable; urgency=low
+
+  * Upload in unstable.
+  * Add myself to uploaders.
+  * Added a script for reportbug ,
+    build-dep debhelper >= 7.2.3.
+
+ -- A Mennucc1 <mennucc1@debian.org>  Sat, 16 May 2009 14:28:04 +0200
+
+pygame (1.8.1release-0) experimental; urgency=low
+
+  * Non-maintainer upload.
+  [ Barry deFreese ]
+   * New upstream release. (Closes: #473672).
+     + image.fromstring fixes. (Closes: #481071).
+   * Depend and Build-depend on python-numpy. (Closes: #478450).
+     + Drop python-numeric depend and build-dep.
+   * Add noopt handling in rules. (Closes: #481062).
+     Thanks to Sam Morris for the patch.
+   * Add watch file.
+   * Bump Standards Version to 3.7.3. (No changes needed).
+
+ -- A Mennucc1 <mennucc1@debian.org>  Fri, 12 Dec 2008 19:17:02 +0100
+
+pygame (1.8.0release-0) experimental; urgency=low
+
+  * Non-maintainer upload.
+  * New upstream release
+    thanks to René Dudfield (Closes: #473672).
+  * Bug fix: "python-pygame: pygame.image.fromstring does not work",
+    thanks to Sam Morris (Closes: #481071).
+
+ -- A Mennucc1 <mennucc1@debian.org>  Wed, 04 Jun 2008 20:36:19 +0200
+
+pygame (1.7.1release-4.1) unstable; urgency=high
+
+  * Non-maintainer upload.
+  * Build-depend on python-numeric instead of python2.[34]-numeric.
+    Closes: #399697
+  * Likewise build-depend on python-all-dev instead of python2.[34]-dev.
+  * Dropped useless build-dependency on python (it's granted with
+    python-all-dev).
+  * Add missing dependency on python-numeric. Closes: #399816
+  * Changed XS-Python-Version to ">= 2.3" since pygame apparently supports
+    python 2.5 and I couldn't find a rationale for "2.3, 2.4" in the
+    changelog.
+  * Fix lintian errors/warnings:
+    - Added empty binary-indep target in debian/rules.
+    - Removed dh_python call and adjust python-central build-dependency
+      accordingly.
+
+ -- Raphael Hertzog <hertzog@debian.org>  Thu, 30 Nov 2006 15:07:18 +0100
+
+pygame (1.7.1release-4) unstable; urgency=low
+
+  * control: Add ${shlibs:Depends} Depends:.
+
+ -- Joe Wreschnig <piman@debian.org>  Tue, 13 Jun 2006 16:55:04 -0500
+
+pygame (1.7.1release-3) unstable; urgency=low
+
+  * control, rules: Update to new Python policy, using pycentral.
+  * Switch to debhelper level 5.
+
+ -- Joe Wreschnig <piman@debian.org>  Mon, 12 Jun 2006 23:45:00 -0500
+
+pygame (1.7.1release-2) unstable; urgency=low
+
+  * Ignore invalid fonts.scale files. (Closes: #337120)
+
+ -- Joe Wreschnig <piman@debian.org>  Mon, 21 Nov 2005 19:01:52 -0600
+
+pygame (1.7.1release-1) unstable; urgency=low
+
+  * New upstream release.
+  * Remove 64-bit patch from 1.6-0.2, merged upstream.
+  * Remove SMPEG detection patch from 1.4-1, no longer needed.
+
+ -- Joe Wreschnig <piman@debian.org>  Thu, 15 Sep 2005 15:10:45 -0500
+
+pygame (1.6-3) unstable; urgency=low
+
+  * debian/control:
+    - Add myself to Uploaders.
+    - Section: python.
+    - Standards-Version 3.6.2.
+  * debian/copyright: Include proper copyright line. (Closes: #290220)
+  * Build packages for Python 2.3/2.4 instead of 2.2/2.3.
+  * Move API documentation and examples to arch-indep python-pygame.
+  * Build-Dep on libsmpeg-dev >= 0.4.5+cvs20030824-1.3 to get libsmpeg0c2.
+
+ -- Joe Wreschnig <piman@debian.org>  Sun, 14 Aug 2005 12:26:45 -0500
+
+pygame (1.6-2) unstable; urgency=low
+
+  * Actually build-depend on python (for dh_python)
+    * Closes: #264086
+
+ -- Ed Boraas <ed@debian.org>  Sun,  8 Aug 2004 00:10:10 -0600
+
+pygame (1.6-1) unstable; urgency=low
+
+  * Acknowledge NMUs (Closes: #186916, #219524, #246278)
+
+ -- Ed Boraas <ed@debian.org>  Sat,  7 Aug 2004 23:56:37 -0600
+
+pygame (1.6-0.2) unstable; urgency=low
+
+  * NMU on maintainer's request.
+  * src/constants.c: cast constants to ints to prevent breakage on 64-bit
+    architectures (closes: #186916, #246278).
+  * debian/rules: use dh_python.
+  * debian/python2.X-pygame.{prerm,postinst}: removed.
+  * debian/control:
+    + require debhelper 4.1.25.
+    + make python-pygame depend on ${python:Depends}.
+    + Standards-version is 3.6.1 (no changes required).
+
+ -- Josselin Mouette <joss@debian.org>  Fri, 28 May 2004 15:57:25 +0200
+
+pygame (1.6-0.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Don't build the Python 2.1 target anymore, Pygame now requires 2.2
+    or better.
+  * Update the download URL in the copyright file to www.pygame.org/ftp.
+  * New upstream version. (Closes: #219524)
+
+ -- Joe Wreschnig <piman@debian.org>  Tue, 10 Feb 2004 19:26:36 -0600
+
+pygame (1.5.6-2) unstable; urgency=low
+
+  * Build python-pygame dummy package where it should be,
+    in binary-arch (Closes: #207192)
+
+ -- Ed Boraas <ed@debian.org>  Mon, 25 Aug 2003 11:27:18 -0600
+
+pygame (1.5.6-1) unstable; urgency=low
+
+  * New upstream release
+  * Build (and default to) Python 2.3 version
+
+ -- Ed Boraas <ed@debian.org>  Mon, 11 Aug 2003 20:20:39 -0600
+
+pygame (1.5.5-2) unstable; urgency=low
+
+  * Rebuild against libsdl-ttf2.0-dev
+
+ -- Ed Boraas <ed@debian.org>  Wed, 16 Apr 2003 20:44:48 -0600
+
+pygame (1.5.5-1) unstable; urgency=low
+
+  * New upstream release
+  * Rebuild against current python-numeric (Closes: #173041)
+  * Add build-depends on python2.[12]-numeric (Closes: #174770)
+  * Version python dependency in python-pygame package
+    (Closes: #174289)
+  * Only install documentation and examples in "real"
+    (python2.[12]-pygame) packages (Closes: #175268)
+
+ -- Ed Boraas <ed@debian.org>  Mon, 6 Jan 2002 20:06:15 -0700
+
+pygame (1.5.3-2) unstable; urgency=low
+
+  * Version the conflicts and replaces on python2.1-pygame
+  * Add (versioned) conflicts and replaces to python2.2-pygame
+    (Closes: #159347)
+  * Remove emacs settings from changelog.Debian
+
+ -- Ed Boraas <ed@debian.org>  Thu, 19 Sep 2002 17:11:38 -0600
+
+pygame (1.5.3-1) unstable; urgency=low
+
+  * New upstream release
+  * Update documentation paths in postinst (Closes: #159481)
+  * pygame2.1-pygame conflicts with pygame (Closes: #159482)
+  * python-pygame suggests all other pygame versions
+
+ -- Ed Boraas <ed@debian.org>  Sun, 8 Sep 2002 15:30:14 -0600
+
+pygame (1.5-4) unstable; urgency=medium
+
+  * Update postinst and prerm to precompile the right things
+
+ -- Ed Boraas <ed@debian.org>  Sat, 24 Aug 2002 21:06:34 -0600
+
+pygame (1.5-3) unstable; urgency=low
+
+  * Build separate python2.1-pygame and python2.2-pygame
+    packages (Closes: #158078)
+
+ -- Ed Boraas <ed@debian.org>  Sat, 24 Aug 2002 20:51:12 -0600
+
+pygame (1.5-2) unstable; urgency=low
+
+  * Move to python 2.2 (#135323)
+  * Fix errors in documentation (Closes: #145388)
+
+ -- Ed Boraas <ed@debian.org>  Sat, 24 Aug 2002 13:43:54 -0600
+
+pygame (1.5-1) unstable; urgency=high
+
+  * New upstream release (Closes: #155030)
+  * Upstream now includes Helmet Bold (not condensed)
+
+ -- Ed Boraas <ed@debian.org>  Tue, 6 Aug 2002 06:54:56 -0600
+
+pygame (1.4-3) unstable; urgency=high
+
+  * RC Fix: include Helmet Condensed Bold from openoffice
+    and set default font accordingly
+
+ -- Ed Boraas <ed@debian.org>  Mon, 29 Apr 2002 07:56:12 -0700
+
+pygame (1.4-2) unstable; urgency=high
+
+  * RC Fix: Remove bluebold.ttf from package, as it's non-free
+    (Closes: #143960)
+  * Suggests ttf-larabie-straight, which provides this font
+    (bluebold.ttf remains the default font)
+
+ -- Ed Boraas <ed@debian.org>  Sun, 28 Apr 2002 22:04:37 -0700
+
+pygame (1.4-1) unstable; urgency=medium
+
+  * New upstream release (Closes: #131196)
+  * Extend default path to allow detection of libsmpeg
+  * pygame.sprite now built correctly (Closes: #126244)
+
+ -- Ed Boraas <ed@debian.org>  Wed, 20 Feb 2002 06:39:24 -0700
+
+pygame (1.2-5) unstable; urgency=medium
+
+  * Fix python 2.0 references in postinst (Closes: #120422)
+
+ -- Ed Boraas <ed@debian.org>  Wed, 21 Nov 2001 06:54:08 -0700
+
+pygame (1.2-4) unstable; urgency=medium
+
+  * Move to python 2.1
+  * Update dependencies (Closes: #118251)
+
+ -- Ed Boraas <ed@debian.org>  Tue, 20 Nov 2001 06:35:16 -0700
+
+pygame (1.2-3) unstable; urgency=low
+
+  * Rebuild against new SDL packages (Closes: #115863)
+
+ -- Ed Boraas <ed@debian.org>  Wed, 17 Oct 2001 18:18:34 -0600
+
+pygame (1.2-2) unstable; urgency=low
+
+  * Build as non-native package (oops)
+  * Hardcode Debian directory locations, to ensure correct builds
+    on the autobuilders (Closes: #113714)
+
+ -- Ed Boraas <ed@debian.org>  Sat, 30 Sep 2001 19:27:49 -0600
+
+pygame (1.2-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Ed Boraas <ed@debian.org>  Mon, 24 Sep 2001 20:14:06 -0600
+
+pygame (1.1-3) unstable; urgency=low
+
+  * New maintainer, in that I am adopting contributed third-party debs
+    for official use (Thanks, Francis).
+  * Updated config_unix.py to check for depends in /usr as well as
+    /usr/local
+  * Removed invalid versioning on libsdl1.2-dev (which is no longer
+    necessary, with the above fix)
+
+ -- Ed Boraas <ed@debian.org>  Tue, 26 Jun 2001 18:39:37 -0600
+
+pygame (1.1-2) unstable; urgency=low
+
+  * Fixed standards version so it is lintian compliant
+  * Closes: #83446 (ITP: pygame)
+
+ -- Francis Irving <francis@flourish.org>  Wed, 27 Jun 2001 00:32:02 +0100
+
+pygame (1.1-1) unstable; urgency=low
+
+  * New upstream release
+  * Now depends on 1.2 versions of all SDL libraries
+  * Added dependencies for python2-numeric, so more examples work
+
+ -- Francis Irving <francis@flourish.org>  Sun, 24 Jun 2001 10:46:00 +0100
+
+pygame (1.0-2) unstable; urgency=low
+
+  * Now depends on libsdl-ttf1.2 1.2.2-1 as it is available in Debian.
+    More of the examples can be now be run.
+
+ -- Francis Irving <francis@flourish.org>  Mon, 16 Apr 2001 22:49:38 +0100
+
+pygame (1.0-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Francis Irving <francis@flourish.org>  Sat,  7 Apr 2001 13:04:19 +0100
+
+pygame (0.99pre-1-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Francis Irving <francis@flourish.org>  Sat, 31 Mar 2001 10:09:39 +0100
+
+pygame (0.9-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Francis Irving <francis@flourish.org>  Tue, 20 Feb 2001 03:03:20 +0000
+
+pygame (0.5-3) unstable; urgency=low
+
+  * Tidied up documentation so installation instructions and documentation
+    building tools are not installed
+
+ -- Francis Irving <francis@flourish.org>  Sun, 28 Jan 2001 13:15:22 +0000
+
+pygame (0.5-2) unstable; urgency=low
+
+  * Correctly compiles *.py files to *.pyc and *.pyo on installation, and
+    deletes the *.pyc and *.pyo files on uninstallation
+  * Build depedency now includes python2-dev
+  * Documentation moved to correct place within /usr/share/doc/pygame
+
+ -- Francis Irving <francis@flourish.org>  Thu, 25 Jan 2001 00:52:56 +0000
+
+pygame (0.5-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Francis Irving <francis@flourish.org>  Mon, 22 Jan 2001 23:02:10 +0000
+
+pygame (0.4-1) unstable; urgency=low
+
+  * Initial Release.
+  * This is my first Debian package ;-)
+
+ -- Francis Irving <francis@flourish.org>  Fri,  5 Jan 2001 00:22:42 +0000
+

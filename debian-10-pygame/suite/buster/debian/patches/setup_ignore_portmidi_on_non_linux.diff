@@ -1,0 +1,28 @@
+From 23f8f7c737b396c77a3d8135f21131d89e0061d8 Mon Sep 17 00:00:00 2001
+From: A Mennucc1 <mennucc1@debian.org>
+Date: Thu, 8 Oct 2015 10:33:21 -0700
+Subject: Ignore missing portmidi/porttime build dependencies on kfreebsd
+
+Forwarded: no
+Last-Update: 2012-08-26
+
+Patch-Name: setup_ignore_portmidi_on_non_linux.diff
+---
+ config_unix.py | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+--- a/config_unix.py
++++ b/config_unix.py
+@@ -208,7 +208,11 @@ def main():
+ 
+     for d in DEPS[1:]:
+         if not d.found:
+-            if "-auto" not in sys.argv and not confirm("""
++            if ( d.name=='PORTMIDI' or d.name=='PORTTIME') and  \
++                    os.getenv('DEB_HOST_ARCH_OS') != 'linux':
++                print ('Debian specific hack: ignore missing dependency %s on %s.' %
++                       (d.name , os.getenv('DEB_HOST_ARCH_OS')))
++            elif not confirm("""
+ Warning, some of the pygame dependencies were not found. Pygame can still
+ compile and install, but games that depend on those missing dependencies
+ will not run. Would you like to continue the configuration?"""):
