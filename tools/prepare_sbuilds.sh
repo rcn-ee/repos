@@ -109,14 +109,6 @@ if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 fi
 
 if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
-	dist="artful"
-	unset flavor
-	arch="armhf"
-	options="--exclude=debfoster"
-	setup_update_sbuild
-fi
-
-if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
 	dist="bionic"
 	unset flavor
 	arch="armhf"

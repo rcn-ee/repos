@@ -79,7 +79,6 @@ start_run () {
 	suite="stretch" ; runner
 	suite="buster" ; runner
 	suite="xenial" ; runner
-	suite="artful" ; runner
 	suite="bionic" ; runner
 }
 
@@ -88,7 +87,6 @@ cleanup () {
 	suite="stretch" ; cleanup_suite
 	suite="buster" ; cleanup_suite
 	suite="xenial" ; cleanup_suite
-	suite="artful" ; cleanup_suite
 	suite="bionic" ; cleanup_suite
 }
 

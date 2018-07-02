@@ -22,12 +22,6 @@ deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ xenial main
 #deb-src [arch=armhf] http://repos.rcn-ee.com/ubuntu/ xenial main
 ```
 
-Ubuntu 17.10: (artful): http://repos.rcn-ee.com/ubuntu/
-```
-deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ artful main
-#deb-src [arch=armhf] http://repos.rcn-ee.com/ubuntu/ artful main
-```
-
 Ubuntu 18.04 lts: (bionic): http://repos.rcn-ee.com/ubuntu/
 ```
 deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ bionic main

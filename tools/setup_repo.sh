@@ -147,6 +147,7 @@ suite="zesty"
 archs="armhf source"
 setup_repo
 
+#eol: July 2018
 suite="artful"
 archs="armhf source"
 setup_repo
