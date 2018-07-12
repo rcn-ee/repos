@@ -1,0 +1,67 @@
+Source: libgpiod
+Section: misc
+Priority: optional
+Maintainer: SZ Lin (林上智) <szlin@debian.org>
+Build-Depends: debhelper (>= 9),
+               dh-autoreconf,
+               libc6,
+               automake,
+               pkg-config,
+               m4,
+               python3-dev
+Standards-Version: 4.1.4
+Homepage: https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git
+Vcs-Git: https://salsa.debian.org/debian/libgpiod.git
+Vcs-Browser: https://salsa.debian.org/debian/libgpiod
+
+Package: libgpiod-dev
+Section: libdevel
+Architecture: linux-any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         libgpiod2 (= ${binary:Version})
+Description: C library for interacting with Linux GPIO device - static libraries and headers
+ libgpiod encapsulates the ioctl calls and data structures
+ behind a straightforward API. This new character device
+ interface guarantees all allocated resources are freed after
+ closing the device file descriptor and adds several new
+ features that are not present in the obsolete sysfs interface
+ (like event polling, setting/reading multiple values at once or
+ open-source and open-drain GPIOs).
+ .
+ This package contains the required static libraries, headers.
+
+Package: libgpiod2
+Section: libs
+Architecture: linux-any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Multi-Arch: same
+Replaces: libgpiod1
+Conflicts: libgpiod1
+Description: C library for interacting with Linux GPIO device - shared libraries
+ libgpiod encapsulates the ioctl calls and data structures
+ behind a straightforward API. This new character device
+ interface guarantees all allocated resources are freed after
+ closing the device file descriptor and adds several new
+ features that are not present in the obsolete sysfs interface
+ (like event polling, setting/reading multiple values at once or
+ open-source and open-drain GPIOs).
+ .
+ This package contains the required shared libraries.
+
+Package: gpiod
+Replaces: libgpiod-utils
+Architecture: linux-any
+Depends: ${shlibs:Depends},
+         ${misc:Depends}, python3
+Description: Tools for interacting with Linux GPIO character device - binary
+ libgpiod encapsulates the ioctl calls and data structures
+ behind a straightforward API. This new character device
+ interface guarantees all allocated resources are freed after
+ closing the device file descriptor and adds several new
+ features that are not present in the obsolete sysfs interface
+ (like event polling, setting/reading multiple values at once or
+ open-source and open-drain GPIOs).
+ .
+ This package contains the gpiod binary tools.
