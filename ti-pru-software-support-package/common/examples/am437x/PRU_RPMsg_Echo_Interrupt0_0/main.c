@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2018 Texas Instruments Incorporated - http://www.ti.com/
  *
  *
  * Redistribution and use in source and binary forms, with or without
@@ -74,7 +74,9 @@ volatile register uint32_t __R31;
 #define PRUSS1_CFG_SYSCFG		*(volatile unsigned int *) 0x66004
 #define STANDY_INIT_BIT			(1 << 4)
 
-uint8_t payload[RPMSG_BUF_SIZE];
+
+#define RPMSG_BUF_HEADER_SIZE           16
+uint8_t payload[RPMSG_BUF_SIZE - RPMSG_BUF_HEADER_SIZE];
 
 /*
  * main.c

@@ -135,7 +135,7 @@ hostBuffer buf;
 #define DCHMAP_10	(0x0128 / 4)
 #define QUEPRI		(0x0284 / 4)
 #define EMR		(0x0300 / 4)
-#define EMCR		(0x0307 / 4)
+#define EMCR		(0x0308 / 4)
 #define EMCRH		(0x030C / 4)
 #define QEMCR		(0x0314 / 4)
 #define CCERRCLR	(0x031C / 4)

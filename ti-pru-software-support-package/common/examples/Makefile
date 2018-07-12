@@ -1,4 +1,4 @@
-SUBDIRS=am335x am437x am572x k2g
+SUBDIRS=am335x am437x am572x k2g am65x
 
 all: $(SUBDIRS)
 
