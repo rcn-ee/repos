@@ -1,9 +1,0 @@
-# /etc/udev/rules.d/83-eqep-noroot.rules
-#
-# Corrects sys eQEP permissions on the Beaglebone so non-root users in the eqep
-# group can access the Quadrature Encoder Pulse modules
-#
-# Change group to eqep
-SUBSYSTEM=="platform", DRIVER=="eqep", PROGRAM="/bin/sh -c '/bin/chown -R root:eqep /sys/devices/platform/ocp/*.epwmss/*.eqep'"
-# Change user permissions to ensure user and group have read/write permissions
-SUBSYSTEM=="platform", DRIVER=="eqep", PROGRAM="/bin/sh -c '/bin/chmod -R ug+rw /sys/devices/platform/ocp/*.epwmss/*.eqep'"
