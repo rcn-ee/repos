@@ -1,0 +1,13 @@
+diff --git a/include/llvm/IR/ValueMap.h b/include/llvm/IR/ValueMap.h
+index f2ea405f..f9a1a624 100644
+--- a/include/llvm/IR/ValueMap.h
++++ b/include/llvm/IR/ValueMap.h
+@@ -101,7 +101,7 @@ public:
+ 
+   ~ValueMap() {}
+ 
+-  bool hasMD() const { return MDMap; }
++  bool hasMD() const { return static_cast<bool>(MDMap); }
+   MDMapT &MD() {
+     if (!MDMap)
+       MDMap.reset(new MDMapT);
