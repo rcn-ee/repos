@@ -1,0 +1,51 @@
+Description: Revert commit 131458847bbf2fe971c6b5e40a8b59d0d48b0d0c
+ This commit disable building shared library of TS.
+Author: Nobuhiro Iwamatsu <iwamatsu@debian.org>
+Forwarded: no
+Last-Update: <2014-01-14>
+
+diff --git a/modules/ts/include/opencv2/ts/ts.hpp b/modules/ts/include/opencv2/ts/ts.hpp
+index 8ea1ad9..3ac7db2 100644
+--- a/modules/ts/include/opencv2/ts/ts.hpp
++++ b/modules/ts/include/opencv2/ts/ts.hpp
+@@ -1,6 +1,13 @@
+ #ifndef __OPENCV_GTESTCV_HPP__
+ #define __OPENCV_GTESTCV_HPP__
+ 
++#include "cvconfig.h"                                                                                                                                                                    
++#ifndef GTEST_CREATE_SHARED_LIBRARY                                                                                                                                                      
++#ifdef BUILD_SHARED_LIBS                                                                                                                                                                 
++#define GTEST_LINKED_AS_SHARED_LIBRARY 1                                                                                                                                                 
++#endif                                                                                                                                                                                   
++#endif                                                                                                                                                                                   
++
+ #include <stdarg.h> // for va_list
+ 
+ #ifdef HAVE_WINRT
+diff --git a/modules/ts/CMakeLists.txt b/modules/ts/CMakeLists.txt
+index bb56da2..38864a4 100644
+--- a/modules/ts/CMakeLists.txt
++++ b/modules/ts/CMakeLists.txt
+@@ -4,7 +4,10 @@ if(IOS)
+   ocv_module_disable(ts)
+ endif()
+ 
+-set(OPENCV_MODULE_TYPE STATIC)
++if(MINGW)
++  set(OPENCV_MODULE_TYPE STATIC)
++endif()
++
+ set(OPENCV_MODULE_IS_PART_OF_WORLD FALSE)
+ 
+ ocv_warnings_disable(CMAKE_CXX_FLAGS -Wundef)
+@@ -15,4 +18,10 @@ ocv_glob_module_sources()
+ ocv_module_include_directories()
+ ocv_create_module()
+ 
++if(BUILD_SHARED_LIBS AND NOT MINGW)
++  add_definitions(-DGTEST_CREATE_SHARED_LIBRARY=1)
++else()
++  add_definitions(-DGTEST_CREATE_SHARED_LIBRARY=0)
++endif()
++
+ ocv_add_precompiled_headers(${the_module})

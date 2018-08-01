@@ -1,0 +1,28 @@
+Description: Support build static libraries
+Author: Nobuhiro Iwamatsu <iwamatsu@debian.org>
+Forwarded: no
+Last-Update: <2013-11-23>
+
+diff --git a/cmake/OpenCVModule.cmake b/cmake/OpenCVModule.cmake
+index c923aba..acef84c 100644
+--- a/cmake/OpenCVModule.cmake
++++ b/cmake/OpenCVModule.cmake
+@@ -107,6 +107,7 @@ macro(ocv_add_module _name)
+   string(TOLOWER "${_name}" name)
+   string(REGEX REPLACE "^opencv_" "" ${name} "${name}")
+   set(the_module opencv_${name})
++  set(the_module_s opencv_${name}_s)
+ 
+   # the first pass - collect modules info, the second pass - create targets
+   if(OPENCV_INITIAL_PASS)
+@@ -533,6 +534,10 @@ macro(ocv_create_module)
+     "${OPENCV_CONFIG_FILE_INCLUDE_DIR}/cvconfig.h" "${OPENCV_CONFIG_FILE_INCLUDE_DIR}/opencv2/opencv_modules.hpp"
+     ${${the_module}_pch})
+ 
++  add_library(${the_module_s} STATIC ${OPENCV_MODULE_TYPE} ${OPENCV_MODULE_${the_module}_HEADERS} ${OPENCV_MODULE_${the_module}_SOURCES}
++    "${OPENCV_CONFIG_FILE_INCLUDE_DIR}/cvconfig.h" "${OPENCV_CONFIG_FILE_INCLUDE_DIR}/opencv2/opencv_modules.hpp"
++    ${${the_module}_pch})
++
+   if(NOT "${ARGN}" STREQUAL "SKIP_LINK")
+     target_link_libraries(${the_module} ${OPENCV_MODULE_${the_module}_DEPS})
+     target_link_libraries(${the_module} LINK_INTERFACE_LIBRARIES ${OPENCV_MODULE_${the_module}_DEPS})

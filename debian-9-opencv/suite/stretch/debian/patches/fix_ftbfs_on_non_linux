@@ -1,0 +1,54 @@
+Description: Fix FTBFS on non linux
+Forwarded: not yet
+Author: Pino Toscano <pino@debian.org>
+Last-Update: 2014-01-14
+
+diff --git a/modules/core/src/parallel.cpp b/modules/core/src/parallel.cpp
+index 27d7ecc..2c0b7c1 100644
+--- a/modules/core/src/parallel.cpp
++++ b/modules/core/src/parallel.cpp
+@@ -50,13 +50,13 @@
+     #undef abs
+ #endif
+ 
+-#if defined __linux__ || defined __APPLE__
++#if defined __linux__ || defined __APPLE__ || defined __GLIBC__
+     #include <unistd.h>
+     #include <stdio.h>
+     #include <sys/types.h>
+     #if defined ANDROID
+         #include <sys/sysconf.h>
+-    #else
++    #elif !defined __GNU__
+         #include <sys/sysctl.h>
+     #endif
+ #endif
+@@ -463,7 +463,7 @@ int cv::getNumberOfCPUs(void)
+ #elif defined ANDROID
+     static int ncpus = getNumberOfCPUsImpl();
+     return ncpus;
+-#elif defined __linux__
++#elif defined __linux__ || defined __GLIBC__
+     return (int)sysconf( _SC_NPROCESSORS_ONLN );
+ #elif defined __APPLE__
+     int numCPU=0;
+diff --git a/modules/core/src/system.cpp b/modules/core/src/system.cpp
+index 09dacee..26b0240 100644
+--- a/modules/core/src/system.cpp
++++ b/modules/core/src/system.cpp
+@@ -157,13 +157,13 @@ std::wstring GetTempFileNameWinRT(std::wstring prefix)
+ 
+ #include <stdarg.h>
+ 
+-#if defined __linux__ || defined __APPLE__ || defined __EMSCRIPTEN__
++#if defined __linux__ || defined __APPLE__ || defined __EMSCRIPTEN__ || defined __GLIBC__
+ #include <unistd.h>
+ #include <stdio.h>
+ #include <sys/types.h>
+ #if defined ANDROID
+ #include <sys/sysconf.h>
+-#else
++#elif !defined __GNU__
+ #include <sys/sysctl.h>
+ #endif
+ #endif

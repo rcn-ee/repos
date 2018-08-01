@@ -1,0 +1,25 @@
+Description: Fix FTBFS on kfreebsd
+Author: Nobuhiro Iwamatsu <iwamatsu@debian.org>
+Forwarded: no
+Last-Update: <2013-08-07>
+
+--- a/modules/highgui/src/cap_libv4l.cpp
++++ b/modules/highgui/src/cap_libv4l.cpp
+@@ -237,15 +237,16 @@ make & enjoy!
+ #include <sys/mman.h>
+ #include <string.h>
+ #include <stdlib.h>
+-#include <asm/types.h>          /* for videodev2.h */
+ #include <assert.h>
+ #include <sys/stat.h>
+ #include <sys/ioctl.h>
+ 
+ #ifdef HAVE_CAMV4L
++#include <asm/types.h>          /* for videodev2.h */
+ #include <linux/videodev.h>
+ #endif
+ #ifdef HAVE_CAMV4L2
++#include <asm/types.h>          /* for videodev2.h */
+ #include <linux/videodev2.h>
+ #endif
+ 

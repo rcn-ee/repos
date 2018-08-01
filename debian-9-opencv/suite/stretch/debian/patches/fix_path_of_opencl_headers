@@ -1,0 +1,20 @@
+Description: Fix path of opencl header file. This patch modified can be set
+by OPENCL_INCLUDE_DIR option for path of the header file of OpenCL.
+Bug: None
+Bug-Debian: None
+Author: Nobuhiro Iwamatsu
+Last-Update: 2014-01-07
+
+diff --git a/cmake/OpenCVDetectOpenCL.cmake b/cmake/OpenCVDetectOpenCL.cmake
+index f732546..3cc09ce 100644
+--- a/cmake/OpenCVDetectOpenCL.cmake
++++ b/cmake/OpenCVDetectOpenCL.cmake
+@@ -7,7 +7,7 @@ if(APPLE)
+ else(APPLE)
+   set(OPENCL_FOUND YES)
+   set(HAVE_OPENCL_STATIC OFF)
+-  set(OPENCL_INCLUDE_DIR "${OpenCV_SOURCE_DIR}/3rdparty/include/opencl/1.2")
++  set(OPENCL_INCLUDE_DIR "" CACHE STRING "OpenCL include directory")
+ endif(APPLE)
+ 
+ if(OPENCL_FOUND)

@@ -1,0 +1,55 @@
+Description: Don't use sysctl on unsupported targets
+Author: Thorsten Glaser <tg@mirbsd.de>
+Forwarded: not yet
+Debian-Bug: 792264
+Last-Update: <2016-02-08>
+
+--- opencv-2.4.9.1+dfsg.orig/CMakeLists.txt
++++ opencv-2.4.9.1+dfsg/CMakeLists.txt
+@@ -441,6 +441,8 @@ if(UNIX)
+   else()
+     set(HAVE_LIBPTHREAD YES)
+   endif()
++
++  CHECK_INCLUDE_FILE(sys/sysctl.h HAVE_SYS_SYSCTL_H)
+ endif()
+ 
+ include(cmake/OpenCVPCHSupport.cmake)
+--- opencv-2.4.9.1+dfsg.orig/modules/core/src/parallel.cpp
++++ opencv-2.4.9.1+dfsg/modules/core/src/parallel.cpp
+@@ -57,7 +57,9 @@
+     #if defined ANDROID
+         #include <sys/sysconf.h>
+     #elif !defined __GNU__
++      #ifdef HAVE_SYS_SYSCTL_H
+         #include <sys/sysctl.h>
++      #endif
+     #endif
+ #endif
+ 
+--- opencv-2.4.9.1+dfsg.orig/modules/core/src/system.cpp
++++ opencv-2.4.9.1+dfsg/modules/core/src/system.cpp
+@@ -164,9 +164,11 @@ std::wstring GetTempFileNameWinRT(std::w
+ #if defined ANDROID
+ #include <sys/sysconf.h>
+ #elif !defined __GNU__
++#ifdef HAVE_SYS_SYSCTL_H
+ #include <sys/sysctl.h>
+ #endif
+ #endif
++#endif
+ 
+ #ifdef ANDROID
+ # include <android/log.h>
+--- opencv-2.4.9.1+dfsg.orig/modules/highgui/src/cap_ffmpeg_impl.hpp
++++ opencv-2.4.9.1+dfsg/modules/highgui/src/cap_ffmpeg_impl.hpp
+@@ -149,7 +149,9 @@ extern "C" {
+     #include <unistd.h>
+     #include <stdio.h>
+     #include <sys/types.h>
++    #ifdef HAVE_SYS_SYSCTL_H
+     #include <sys/sysctl.h>
++    #endif
+ #endif
+ 
+ #ifndef MIN
