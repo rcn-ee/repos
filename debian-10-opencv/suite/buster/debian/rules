@@ -26,6 +26,13 @@ else
 CMAKE_ARCH_FLAGS += -DWITH_1394=OFF -DWITH_V4L=OFF
 endif
 
+# armhf options
+ifeq ($(DEB_HOST_ARCH_CPU),armhf)
+CMAKE_ARCH_FLAGS = -DENABLE_NEON=ON -DENABLE_VFPV3=ON -DWITH_QT=ON
+else
+CMAKE_ARCH_FLAGS = -DENABLE_NEON=OFF -DENABLE_VFPV3=OFF -DWITH_QT=OFF
+endif
+
 # For Java
 export JAVA_HOME=/usr/lib/jvm/default-java
 
