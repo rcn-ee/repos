@@ -1,0 +1,67 @@
+From 5633a5cea173265496ef9d95679de2675d1c60f5 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Tue, 7 Aug 2018 16:13:21 -0500
+Subject: [PATCH 5/5] hack: OCL_TIDL_FW_DIR
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ makefile               | 6 +++---
+ monitor/Makefile.am57x | 2 +-
+ monitor_ipu/Makefile   | 2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/makefile b/makefile
+index eb14ee0..52c2768 100644
+--- a/makefile
++++ b/makefile
+@@ -86,7 +86,7 @@ ifeq ($(BUILD_EVE_FIRMWARE),1)
+     EVE_SUBMODULE = eve_submodule
+ else
+ 	EVE_SUBMODULE = opencl-firmware
+-	export OCL_TIDL_FW_DIR=../opencl-firmware
++	export OCL_TIDL_FW_DIR=/usr/share/ti/ti-opencl-tidl-fw-tree
+ endif
+ export DESTDIR?=$(CURDIR)/$(OCL_INSTALL_DIR)
+ 
+@@ -127,10 +127,10 @@ $(DESTDIR):
+ 
+ .PHONY: eve_submodule
+ eve_submodule:
+-	git submodule update --init
++	mkdir -p opencl-firmware || true
+ 
+ opencl-firmware:
+-	git clone --depth 1 ssh://git@bitbucket.itg.ti.com/mctools/opencl-firmware.git
++	mkdir -p opencl-firmware || true
+ 
+ change:
+ 	git log --pretty=format:"- %s%n%b" $(TAG).. ; \
+diff --git a/monitor/Makefile.am57x b/monitor/Makefile.am57x
+index 516d89a..6ecddad 100644
+--- a/monitor/Makefile.am57x
++++ b/monitor/Makefile.am57x
+@@ -33,7 +33,7 @@ ifeq ($(BUILD_EVE_FIRMWARE),1)
+ OCL_TIDL_PATH = ../monitor_ipu/monitor_eve
+ OCL_TIDL_LIB = $(OCL_TIDL_PATH)/dsp/ocl_tidl_dsp.lib
+ else
+-OCL_TIDL_LIB = ${OCL_TIDL_FW_DIR}/ocl_tidl_dsp.lib
++OCL_TIDL_LIB = /usr/share/ti/ti-opencl-tidl-fw-tree/ocl_tidl_dsp.lib
+ endif
+ 
+ LIBS   += $(OCL_TIDL_LIB)
+diff --git a/monitor_ipu/Makefile b/monitor_ipu/Makefile
+index ee4fbda..9c75d54 100644
+--- a/monitor_ipu/Makefile
++++ b/monitor_ipu/Makefile
+@@ -118,7 +118,7 @@ bin/$(BUILD_TYPE)/obj/%.oem4: %.c $(CONFIG)/compiler.opt $(HEADERS)
+ src/eve_firmware.c: $(EVE_FIRMWARE)
+ 	touch $@
+ 
+-src/eve_firmware.h: ${OCL_TIDL_FW_DIR}/eve_firmware.bin
++src/eve_firmware.h: /usr/share/ti/ti-opencl-tidl-fw-tree/eve_firmware.bin
+ 	hexdump -ve '1/1 "0x%02x,"' $< | \
+             sed -e "s/\(0x..,\)\{90\}/&\n/g" -e "\$$a // bytes" > $@
+ 
+-- 
+2.18.0
+
