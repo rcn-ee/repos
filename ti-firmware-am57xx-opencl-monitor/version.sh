@@ -2,7 +2,7 @@
 
 package_name="firmware-am57xx-opencl-monitor"
 debian_pkg_name="${package_name}"
-package_version="1.1.13.0-r0.0"
+package_version="1.1.15.3-r0.0"
 package_source=""
 src_dir=""
 
@@ -21,6 +21,6 @@ debian_dl_3="https://github.com/rcn-ee/sdk-firmware/raw/master/opencl-monitor/${
 debian_dl_4="https://github.com/rcn-ee/sdk-firmware/raw/master/opencl-monitor/${package_version}/files/dsp.syms"
 debian_dl_5="https://github.com/rcn-ee/sdk-firmware/raw/master/opencl-monitor/${package_version}/files/dsp_syms.obj"
 
-jessie_version="~jessie+20170629"
-stretch_version="~stretch+20170629"
-xenial_version="~xenial+20170629"
+stretch_version="~stretch+20180807"
+buster_version="~buster+20180807"
+bionic_version="~bionic+20180807"
