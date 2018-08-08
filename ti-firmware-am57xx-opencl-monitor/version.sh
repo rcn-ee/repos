@@ -11,7 +11,7 @@ git_sha=""
 reprepro_dir="f/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}rcnee0"
+debian_version="${package_version}rcnee1"
 debian_untar=""
 debian_patch=""
 
@@ -20,7 +20,8 @@ debian_dl_2="https://github.com/rcn-ee/sdk-firmware/raw/master/opencl-monitor/${
 debian_dl_3="https://github.com/rcn-ee/sdk-firmware/raw/master/opencl-monitor/${package_version}/files/dsp.out"
 debian_dl_4="https://github.com/rcn-ee/sdk-firmware/raw/master/opencl-monitor/${package_version}/files/dsp.syms"
 debian_dl_5="https://github.com/rcn-ee/sdk-firmware/raw/master/opencl-monitor/${package_version}/files/dsp_syms.obj"
+debian_dl_6="https://github.com/rcn-ee/sdk-firmware/raw/master/opencl-monitor-ipu/${package_version}/files/dra7-ipu1-fw.xem4"
 
-stretch_version="~stretch+20180807"
-buster_version="~buster+20180807"
-bionic_version="~bionic+20180807"
+stretch_version="~stretch+20180808"
+buster_version="~buster+20180808"
+bionic_version="~bionic+20180808"
