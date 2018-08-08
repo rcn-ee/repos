@@ -4,7 +4,7 @@ mirror="http://http.debian.net/debian"
 
 package_name="wayland"
 debian_pkg_name="${package_name}"
-package_version="1.14.0-1"
+package_version="1.15.0-2"
 
 git_repo=""
 git_sha=""
