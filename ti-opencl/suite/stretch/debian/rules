@@ -20,10 +20,10 @@ override_dh_auto_build:
 	cp -v /usr/share/ti/opencl/dsp.syms ./monitor/monitor_am57x/dsp0.syms
 	cp -v /usr/share/ti/opencl/dsp_syms.obj ./monitor/monitor_am57x/dsp0.syms.obj
 	cp -v /lib/firmware/dra7-dsp2-fw.xe66 ./monitor/monitor_am57x/dsp1.out
-	dh_auto_build -- BUILD_OUTPUT=lib BUILD_AM57=1 ARM_LLVM_DIR=/opt/ti-llvm-3.6 DESTDIR=$(CURDIR)/debian/ti-opencl
+	dh_auto_build -- BUILD_EVE_FIRMWARE=0 BUILD_OUTPUT=lib BUILD_AM57=1 ARM_LLVM_DIR=/opt/ti-llvm-3.6 DESTDIR=$(CURDIR)/debian/ti-opencl
 
 override_dh_auto_install:
-	dh_auto_install -- BUILD_OUTPUT=lib BUILD_AM57=1 ARM_LLVM_DIR=/opt/ti-llvm-3.6
+	dh_auto_install -- BUILD_EVE_FIRMWARE=0 BUILD_OUTPUT=lib BUILD_AM57=1 ARM_LLVM_DIR=/opt/ti-llvm-3.6
 
 override_dh_auto_test:
 	dh_auto_test -- BUILD_AM57=1
