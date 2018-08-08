@@ -1,0 +1,13 @@
+[Unit]
+Description=cmemk kernel modules
+After=systemd-modules-load.service
+ConditionPathExists=/sys/devices/platform/44000000.ocp/41000000.dsp/
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/sbin/modprobe cmemk
+
+[Install]
+WantedBy=basic.target
+

@@ -1,0 +1,32 @@
+#!/usr/bin/make -f
+
+# Uncomment this to turn on verbose mode.
+export DH_VERBOSE=1
+
+DEB_BUILD_OPTIONS=noautodbgsym
+
+%:
+	dh $@
+
+override_dh_auto_clean:
+	dh_auto_clean -- BUILD_AM57=1
+
+# Currently the monitor must be built in an X86 cross-compile environment
+# If doing an opencl build/install on an ARM platform the monitor files
+# must be copied over.
+override_dh_auto_build:
+	mkdir -p ./monitor/monitor_am57x/
+	cp -v /usr/share/ti/opencl/dsp.out ./monitor/monitor_am57x/dsp0.out
+	cp -v /usr/share/ti/opencl/dsp.syms ./monitor/monitor_am57x/dsp0.syms
+	cp -v /usr/share/ti/opencl/dsp_syms.obj ./monitor/monitor_am57x/dsp0.syms.obj
+	cp -v /lib/firmware/dra7-dsp2-fw.xe66 ./monitor/monitor_am57x/dsp1.out
+	dh_auto_build -- BUILD_OUTPUT=lib BUILD_AM57=1 ARM_LLVM_DIR=/opt/ti-llvm-3.6 DESTDIR=$(CURDIR)/debian/ti-opencl
+
+override_dh_auto_install:
+	dh_auto_install -- BUILD_OUTPUT=lib BUILD_AM57=1 ARM_LLVM_DIR=/opt/ti-llvm-3.6
+
+override_dh_auto_test:
+	dh_auto_test -- BUILD_AM57=1
+
+override_dh_strip:
+override_dh_strip_nondeterminism:
