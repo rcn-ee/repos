@@ -1,10 +1,11 @@
 #!/bin/bash -e
 
+#https://packages.debian.org/source/buster/libdrm
 mirror="http://http.debian.net/debian"
 
 package_name="libdrm"
 debian_pkg_name="${package_name}"
-package_version="2.4.89"
+package_version="2.4.92"
 package_source="${package_name}_${package_version}.orig.tar.gz"
 src_dir="${package_name}-${package_version}"
 
@@ -18,4 +19,4 @@ debian_untar=""
 debian_patch="${package_name}_${debian_version}.diff.gz"
 local_patch="rcnee0"
 
-stretch_version="~stretch+20171228"
+stretch_version="~stretch+20180808"
