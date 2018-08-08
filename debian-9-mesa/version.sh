@@ -1,13 +1,15 @@
 #!/bin/bash -e
 
-mirror="http://http.debian.net/debian"
+#https://packages.debian.org/source/buster/mesa
+#mirror="http://http.debian.net/debian"
+mirror="https://snapshot.debian.org/archive/debian/20180604T155423Z/"
 
 package_name="mesa"
 debian_pkg_name="${package_name}"
-package_version="18.0.0~rc5"
+package_version="18.0.5"
 package_source="${package_name}_${package_version}.orig.tar.gz"
-src_dir="${package_name}-18.0.0-rc5"
-#src_dir="${package_name}-${package_version}"
+#src_dir="${package_name}-18.0.0-rc5"
+src_dir="${package_name}-${package_version}"
 
 git_repo=""
 git_sha=""
@@ -19,4 +21,4 @@ debian_untar=""
 debian_patch="${package_name}_${debian_version}.diff.gz"
 local_patch="rcnee0"
 
-stretch_version="~stretch+20180326"
+stretch_version="~stretch+20180808"
