@@ -4,12 +4,12 @@
 
 package_name="ti-opencl"
 debian_pkg_name="${package_name}"
-package_version="01.01.14.02"
+package_version="01.01.14.04"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
 git_repo="git://git.ti.com/opencl/ti-opencl.git"
-git_sha="e1314591c668c32b8d360badfa4d6a3dc1d345f2"
+git_sha="733e105ab96d0395cd8ed2f405c5e038543d33ba"
 reprepro_dir="c/${package_name}"
 dl_path=""
 
