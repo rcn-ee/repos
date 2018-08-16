@@ -134,6 +134,18 @@ run () {
 		cd ../
 	fi
 
+	if [ ! "x${debian_dl_13}" = "x" ] ; then
+		cd ./debian/
+		wget -c ${debian_dl_13}
+		cd ../
+	fi
+
+	if [ ! "x${debian_dl_14}" = "x" ] ; then
+		cd ./debian/
+		wget -c ${debian_dl_14}
+		cd ../
+	fi
+
 	if [ -d ${DIR}/common/ ] ; then
 		mkdir -p ./debian/common/
 		cp -rv ${DIR}/common/* ./debian/common/
