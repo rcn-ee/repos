@@ -33,7 +33,7 @@ Vcs-Git: git://git.ti.com/opencl/ti-opencl.git
 Package: ti-opencl
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         libopencl1 (= ${binary:Version}),
+         libtiopencl1 (= ${binary:Version}),
          mesa-common-dev,
          ti-c6000-cgt-v8.2.x-installer
 Conflicts: opencl-headers
@@ -41,9 +41,10 @@ Architecture: armhf
 Description: OpenCL for TI Keystone
  OpenCL implementation for TI Keystone.
 
-Package: libopencl1
+Package: libtiopencl1
 Section: libs
-Depends: ${shlibs:Depends},
+Depends: ocl-icd-libopencl1 | libopencl1,
+         ${shlibs:Depends},
          ${misc:Depends}
 Architecture: armhf
 Description: OpenCL for TI Keystone - runtime libraries
