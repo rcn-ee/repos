@@ -1,25 +1,276 @@
-opencv (2.4.9.1+dfsg1-2) unstable; urgency=medium
+opencv (3.2.0+dfsg-4.1rcnee0~stretch+20180817) stretch; urgency=low
 
-  * Team upload.
-  * Do not forcefully disable PIE anymore, -pie changed meaning.
-    Closes: #859440
+  * Rebuild for repos.rcn-ee.com
 
- -- Mattia Rizzolo <mattia@debian.org>  Mon, 03 Apr 2017 18:28:26 +0200
+ -- Robert Nelson <robertcnelson@gmail.com>  Fri, 17 Aug 2018 11:24:52 -0500
 
-opencv (2.4.9.1+dfsg1-1) unstable; urgency=medium
-
-  * Team upload.
-  * New upstream version 2.4.9.1+dfsg1 (Closes: #794856)
-
- -- Jochen Sprickerhof <jspricke@debian.org>  Sun, 19 Feb 2017 17:15:16 +0100
-
-opencv (2.4.9.1+dfsg-2.2) unstable; urgency=medium
+opencv (3.2.0+dfsg-4.1) unstable; urgency=medium
 
   * Non-maintainer upload.
-  * Add Breaks against all non-v5 packages to all v5 packages, this
-    fixes apt dist-upgrade. (Closes: #853124)
+  * debian/patches: Fix building with ffmpeg 4.0. (Closes: #888386)
 
- -- Julian Andres Klode <jak@debian.org>  Mon, 30 Jan 2017 13:21:19 +0100
+ -- Sebastian Ramacher <sramacher@debian.org>  Wed, 11 Jul 2018 22:59:18 +0200
+
+opencv (3.2.0+dfsg-4) unstable; urgency=medium
+
+  * Team upload.
+  * Install maven artifacts with maven-repo-helper so reverse dependencies can
+    automatically pick the dependency by using ${maven:Depends}.
+    Thanks to Gilles Filippini <pini@debian.org> for the patch.  Closes: #878949
+  * d/control:
+    + Use unversioned Conflicts in libopencv-dev, to force the removal
+      of some old packages.  Closes: #880921
+    + Remove dbus-x11 work around now that #878878 is fixed.
+
+ -- Mattia Rizzolo <mattia@debian.org>  Sat, 11 Nov 2017 13:46:48 +0100
+
+opencv (3.2.0+dfsg-3) unstable; urgency=medium
+
+  * Team upload.
+  * d/p/support_multiarch: forward the patch after a small edit.
+  * d/p/mathjax: make the MATHJAX_RELPATH option configurable at build time
+    through cmake, and then forward the patch.
+  * Despite tbb being available in all linux architectures, we need it in a
+    version that is not available everywhere, so revert back to enabling it
+    only on a hand-picked list of architectures.  Closes: #878830
+  * d/control: work around #878878 in dbus by explictly adding dbus-x11 to
+    build-deps for !linux.
+
+ -- Mattia Rizzolo <mattia@debian.org>  Tue, 17 Oct 2017 16:27:02 +0200
+
+opencv (3.2.0+dfsg-2) unstable; urgency=medium
+
+  * Team upload.
+  * d/patches:
+    + support_x32 patch: drop, it actually did nothing useful.
+    + fix_ftbfs_on_non_linux: simplify patch, by removing several hunks no
+      longer needed.
+      Incidentally, this fixes the FTBFS in x32.  Closes: #878705
+  * d/rules:
+    + Enable DICOM support.  Closes: #843513
+    + tbb is now available in all linux archs, so enable it for all linux-any.
+    + Enable SSE and SSE2 on all architectures based on a amd64 cpu, not just
+      amd64 itself
+    + Use /usr/share/dpkg/architecture.mk instead of calling dpkg-architecture.
+
+ -- Mattia Rizzolo <mattia@debian.org>  Mon, 16 Oct 2017 23:44:22 +0200
+
+opencv (3.2.0+dfsg-1) unstable; urgency=medium
+
+  * Team upload.
+  * Upload to unstable.
+  * Bump Standards-Version to 4.1.1:
+    + Use HTTPS in debian/copyright's Format field.
+  * Use HTTPS for the Homepage URL.
+
+ -- Mattia Rizzolo <mattia@debian.org>  Fri, 13 Oct 2017 19:32:01 +0200
+
+opencv (3.2.0+dfsg-1~exp2) experimental; urgency=medium
+
+  * Team upload.
+  * Explicitly disable carotene support to fix FTBFS on arm*.
+  * Drop conditional enabling of OpenGL, it can't be enabled with GTK+3
+    anyway.  Closes: #869975
+  * Changelog for 3.2.0+dfsg-1~exp2
+
+ -- Mattia Rizzolo <mattia@debian.org>  Mon, 31 Jul 2017 10:50:25 +0200
+
+opencv (3.2.0+dfsg-1~exp1) experimental; urgency=medium
+
+  * Update to 3.2.0.
+    - Add freetype and phase_unwrapping modules into libopencv-contrib.
+    - Disable DNN and tracking module (temporary).
+  * Add patches/fix_VFP_asm.patch.
+  * Update Standards-Version to 4.0.0.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Thu, 29 Jun 2017 09:42:02 +0900
+
+opencv (3.1.0+dfsg1-1~exp1) experimental; urgency=medium
+
+  * Team upload.
+
+  [ Mattia Rizzolo ]
+  * Rewrite d/copyright using copyright-format 1.0.
+  * Add Files-Excluded listing the removed files.
+  * Update watch file, pointing to github.
+  * Add the contrib modules as a multiple upstream tarball.
+  * Add new build-dependencies needed by contrib modules.
+  * Override lintian tag debian-watch-file-should-mangle-version (see #505857).
+  * override lintian warning package-name-doesnt-match-sonames for
+    libopencv-contrib.
+  * Add some DEP-3 descriptions to two patches.
+
+  [ Nobuhiro Iwamatsu ]
+  * Remove obsolete files of libopencv-legacy.
+  * Build the opencv_contrib libraries.  Closes: #861194
+  * Fix Build with HDF5. Add patches/moudles_hdf5.patch
+
+ -- Mattia Rizzolo <mattia@debian.org>  Wed, 26 Apr 2017 18:17:33 +0200
+
+opencv (3.1.0+dfsg-1~exp5) experimental; urgency=medium
+
+  * Team upload.
+  * wrap-and-sort -ast.
+  * Add (Build-)Depends on libavresample-dev.
+  * Add (Build-)Depends on libgphoto2-dev.
+  * Install usr/include/opencv2/cvconfig.h in libopencv-core-dev.  LP: #1315418
+  * d/rules: use --fail-missing instead of --list-missing, to be really sure
+    nothing is left out.
+
+ -- Mattia Rizzolo <mattia@debian.org>  Mon, 24 Apr 2017 01:35:03 +0200
+
+opencv (3.1.0+dfsg-1~exp4) experimental; urgency=medium
+
+  * Team upload.
+  * debian/rules cleanup:
+    + Remove rm(1)s that do not seem to do anything (anymore).
+    + DRY up the BUILDDIR variable.
+    + Do not mangle BUILDDIR on i386, there should be no need for it.
+    + Add an override to dh_auto_install to pass the correct BUILDDIR (should
+      fix FTBFS for kfreebsd-i386 (and probably this is what the original
+      BUILDDIR mangling is about)).
+    + Proper calls to clean cmake build products.
+    + The build system is recognized by debhelper, no need to tell it.
+    + Use a single cp call to copy the static libs.
+
+ -- Mattia Rizzolo <mattia@debian.org>  Sun, 23 Apr 2017 22:12:08 +0200
+
+opencv (3.1.0+dfsg-1~exp3) experimental; urgency=medium
+
+  * Team upload.
+  * debian/rules:
+    + Do not forcefully disable PIE anymore, -pie changed meaning.
+      Also remove +fortify, as that's on by default anyway.  Closes: #859440
+    + Drop empty override_dh_fixperms.
+    + Remove empty directories from the installed tree.
+  * debian/control:
+    + Make libopencv-dev suggest opencv-doc.  Closes: #806703
+    + Drop not needed libgtk2.0-dev dependency of libopencv-highgui-dev.
+      Closes: #817017
+    + Fix installability problem in case of binNMUs.  Closes: #844067
+     Mark libopencv3.1-java as Breaking/Replacing the 2.4 version.
+     Closes: #810516
+    + Avoid duplicate long descriptions.
+  * Build a python3 package.  Closes: #799262; LP: #1556156
+    Thanks to Kota Kato <orangain@gmail.com> for the initial patch.
+  * Use dh_numpy instead of hardconding the numpy ABI number.
+  * Build with GTK+ 3 (instead of GTK+ 2). (Closes: #822607)
+  * Remove disabled patches
+  * Refresh patches.
+  * Remove obsolete lintian override.
+
+ -- Mattia Rizzolo <mattia@debian.org>  Mon, 03 Apr 2017 22:25:01 +0200
+
+opencv (3.1.0+dfsg-1~exp2) experimental; urgency=medium
+
+  * Fix Depends of libopencv-shape3.1 and libopencv-shape-dev.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Wed, 19 Oct 2016 09:17:57 +0900
+
+opencv (3.1.0+dfsg-1~exp1) experimental; urgency=medium
+
+  * Add old header files into libopencv-dev.
+  * Update debian/control.
+    - Add Replaces and Conflicts to libopencv-dev.
+    - Fix version of libopencv3.1-jni for libopencv3.1-java.
+    - Fix Depends of libopencv-dev. Add libopencv3.1-java. (Closes: #833616)
+    - Add libopencv-shape-dev to Depends of libopencv-dev. (Closes: #818738)
+    - Add libtbb-dev to Depends of libopencv-core-dev. (Closes: #838916)
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Tue, 18 Oct 2016 06:22:32 +0900
+
+opencv (3.1.0+dfsg-1~exp0) experimental; urgency=medium
+
+  * Update to 3.1.0.
+  * Add patches/disable_opengl_test_build.
+  * Add libjs-mathjax to Depends of opencv-doc and debian/patches/mathjax.
+  * Add libjs-jquery to Depends of opencv-doc and add
+    debian/patches/change_jquery.js_path.
+  * Update Standards-Version to 3.9.8.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Sat, 25 Jun 2016 06:15:45 +0900
+
+opencv (3.0.0+dfsg-1~exp7) experimental; urgency=medium
+
+  * Fix libopencv_shape dependencies.
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Wed, 27 Jul 2016 15:07:29 +0200
+
+opencv (3.0.0+dfsg-1~exp6) experimental; urgency=medium
+
+  [ Nobuhiro Iwamatsu ]
+  * Fix missing install of opencv2/core.hpp
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Tue, 26 Jul 2016 08:39:25 +0200
+
+opencv (3.0.0+dfsg-1~exp5) experimental; urgency=medium
+
+  * Fix libvtk6.3 runtime dependency
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Sun, 17 Jul 2016 10:08:15 +0200
+
+opencv (3.0.0+dfsg-1~exp4) experimental; urgency=medium
+
+  * Upload again on experimental, to build against new gdal 2.1.1
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Sat, 16 Jul 2016 10:07:18 +0200
+
+opencv (3.0.0+dfsg-1~exp3) experimental; urgency=medium
+
+  [ Andreas Cadhalpun ]
+  * Fix build with ffmpeg 3.0. (Closes: #803847)
+
+  [ Gianfranco Costamagna ]
+  * Team upload
+  * merge unstable NMUs
+  * rebase ffmpeg patch
+  * Disable optimize i586 patch, now Debian has i686
+
+  [ Tobias Frost ]
+  * Do not use precompiled headers (Closes: #818450)
+
+  [ Mattia Rizzolo ]
+  * Use HTTPS in Vcs-* fields.
+  * Disable opengl when building in armhf (in Ubuntu only)
+  * Don't build with jasper.  Closes: #818207
+    - This causes libopencv-highgui to lose symbols, but we don't rename the
+      package because the breakage is in experimental only.
+  * Fix typo in README.Debian.
+  * Remove unused lintian override python-script-but-no-python-dep.
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Fri, 08 Jul 2016 15:43:15 +0200
+
+opencv (3.0.0+dfsg-1~exp2) experimental; urgency=medium
+
+  * Fix FTBFS on i386.
+  * Build with -march=i586 instead of -march=i686 on i386.
+    Add debian/patches/optimize_i586.patch.
+  * Fix FTBFS on x32. (Closes: #792264)
+    Add debian/patches/support_x32. Thanks to Thorsten Glaser <tg@mirbsd.de>.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Thu, 07 Jan 2016 23:48:01 +0900
+
+opencv (3.0.0+dfsg-1~exp1) experimental; urgency=medium
+
+  * Update to 3.0.0 (Closes: #792677, #805099; LP: #1516985).
+  * Remove libopencv-legacy and libopencv-contrib.
+    These features are not provided from the new version.
+  * Remove old packages (libcv*, libhighgui*, libcvaux*).
+  * Add support gdal and vtk.
+  * Enable parallel building.
+  * Remove image files of Lena (Closes: #794856).
+  * Add debug packages (Closes: #803404).
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Thu, 10 Dec 2015 00:07:44 +0900
+
+opencv (2.4.11+dfsg-1) unstable; urgency=medium
+
+  * Update to 2.4.11.
+  * Update debian/control.
+    - Bumped standards-version to 3.9.6.
+  * Remove image files of Lena (Closes: #794856)
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Wed, 09 Dec 2015 00:36:05 +0900
 
 opencv (2.4.9.1+dfsg-2.1) unstable; urgency=medium
 

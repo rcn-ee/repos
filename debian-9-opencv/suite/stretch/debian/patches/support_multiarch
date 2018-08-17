@@ -1,34 +1,24 @@
-Description: Support multiarch
-Author: Nobuhiro Iwamatsu <iwamatsu@debian.org>
-Forwarded: no
-Last-Update: <2014-07-01>
+Description: Install the libraries in the multiarch path
+Forwarded: https://github.com/opencv/opencv/pull/9864
 
-index b610ecf..3ebacf3 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -312,7 +312,7 @@ else()
-     set(OPENCV_3P_LIB_INSTALL_PATH  "${OpenCV_INSTALL_BINARIES_PREFIX}staticlib${LIB_SUFFIX}")
-     set(OPENCV_SAMPLES_SRC_INSTALL_PATH    samples/native)
+@@ -395,7 +395,8 @@
+     ocv_update(OPENCV_OTHER_INSTALL_PATH   etc)
+     ocv_update(OPENCV_CONFIG_INSTALL_PATH  ".")
    else()
--    set(OPENCV_LIB_INSTALL_PATH     lib${LIB_SUFFIX})
+-    ocv_update(OPENCV_LIB_INSTALL_PATH     lib${LIB_SUFFIX})
++    include(GNUInstallDirs)
 +    set(OPENCV_LIB_INSTALL_PATH     ${CMAKE_INSTALL_LIBDIR}${LIB_SUFFIX})
-     set(OPENCV_3P_LIB_INSTALL_PATH  share/OpenCV/3rdparty/${OPENCV_LIB_INSTALL_PATH})
-     set(OPENCV_SAMPLES_SRC_INSTALL_PATH    share/OpenCV/samples)
-   endif()
-@@ -320,7 +320,7 @@ else()
- 
-   math(EXPR SIZEOF_VOID_P_BITS "8 * ${CMAKE_SIZEOF_VOID_P}")
-   if(LIB_SUFFIX AND NOT SIZEOF_VOID_P_BITS EQUAL LIB_SUFFIX)
--    set(OPENCV_CONFIG_INSTALL_PATH lib${LIB_SUFFIX}/cmake/opencv)
-+    set(OPENCV_CONFIG_INSTALL_PATH ${CMAKE_INSTALL_LIBDIR}${LIB_SUFFIX}/cmake/opencv)
-   else()
-     set(OPENCV_CONFIG_INSTALL_PATH share/OpenCV)
-   endif()
-@@ -427,6 +427,7 @@ if(UNIX)
-   include(cmake/OpenCVFindPkgConfig.cmake OPTIONAL)
-   include(CheckFunctionExists)
-   include(CheckIncludeFile)
-+  include(GNUInstallDirs)
- 
-   if(NOT APPLE)
-     CHECK_INCLUDE_FILE(pthread.h HAVE_LIBPTHREAD)
+     ocv_update(OPENCV_3P_LIB_INSTALL_PATH  share/OpenCV/3rdparty/${OPENCV_LIB_INSTALL_PATH})
+     ocv_update(OPENCV_SAMPLES_SRC_INSTALL_PATH    share/OpenCV/samples)
+     ocv_update(OPENCV_JAR_INSTALL_PATH share/OpenCV/java)
+@@ -404,7 +405,7 @@
+     if(NOT DEFINED OPENCV_CONFIG_INSTALL_PATH)
+       math(EXPR SIZEOF_VOID_P_BITS "8 * ${CMAKE_SIZEOF_VOID_P}")
+       if(LIB_SUFFIX AND NOT SIZEOF_VOID_P_BITS EQUAL LIB_SUFFIX)
+-        ocv_update(OPENCV_CONFIG_INSTALL_PATH lib${LIB_SUFFIX}/cmake/opencv)
++        ocv_update(OPENCV_CONFIG_INSTALL_PATH ${CMAKE_INSTALL_LIBDIR}${LIB_SUFFIX}/cmake/opencv)
+       else()
+         ocv_update(OPENCV_CONFIG_INSTALL_PATH share/OpenCV)
+       endif()
