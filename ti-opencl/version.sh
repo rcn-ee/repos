@@ -1,15 +1,16 @@
 #!/bin/bash -e
 
 #http://git.ti.com/gitweb/?p=opencl/ti-opencl.git;a=summary
+#https://github.com/rcn-ee/ti-opencl/commits/v01.01.15.03-bb.org
 
 package_name="ti-opencl"
 debian_pkg_name="${package_name}"
-package_version="01.01.15.03-git20180817.0"
+package_version="01.01.15.03-git20180817.1"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
 git_repo="https://github.com/rcn-ee/ti-opencl.git"
-git_sha="b3ea7e860c9d8ead1ba0ffbb937a59342b1b05de"
+git_sha="b0bf34ced52717e9fe17534236aee28bb64fbfc4"
 reprepro_dir="c/${package_name}"
 dl_path=""
 
