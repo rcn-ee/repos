@@ -5,7 +5,7 @@
 
 package_name="ti-opencl"
 debian_pkg_name="${package_name}"
-package_version="01.01.15.03-git20180817.1"
+package_version="01.01.15.03-g20180817.1"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
@@ -14,7 +14,7 @@ git_sha="b0bf34ced52717e9fe17534236aee28bb64fbfc4"
 reprepro_dir="c/${package_name}"
 dl_path=""
 
-debian_version="${package_version}-0rcnee0"
+debian_version="${package_version}-0rcnee1"
 debian_patch=""
 debian_diff=""
 
