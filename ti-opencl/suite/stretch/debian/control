@@ -44,9 +44,12 @@ Description: OpenCL for TI Keystone
 
 Package: libtiopencl1
 Section: libs
-Depends: ocl-icd-libopencl1 | libopencl1,
+Depends: ocl-icd-libopencl1,
          ${shlibs:Depends},
          ${misc:Depends}
+Replaces: libopencl1
+Conflicts: libopencl1
+Provides: libopencl1
 Architecture: armhf
 Description: OpenCL for TI Keystone - runtime libraries
  OpenCL implementation for TI Keystone.
