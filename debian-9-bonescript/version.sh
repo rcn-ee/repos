@@ -11,7 +11,7 @@ git_sha="b968db7a2e051e4c7eae0accf113c13db1ef7ef7"
 reprepro_dir="b/${package_name}"
 dl_path=""
 
-debian_version="${package_version}-0rcnee0"
+debian_version="${package_version}-0rcnee1"
 debian_patch=""
 debian_diff=""
 
@@ -26,9 +26,9 @@ bonescript="bonescript-0.7.0-b968db7"
    winston="winston-2.1.1"
 
 debian_dl_1="${dl_mirror}/${bonescript}-${v6}-${datestamp}.tar.xz"
-debian_dl_2="${dl_mirror}/${winston}-${v6}-${datestamp}.tar.xz"
+debian_dl_2="${dl_mirror}/${winston}-${v6}.tar.xz"
 
 debian_dl_3="${dl_mirror}/${bonescript}-${v8}-${datestamp}.tar.xz"
-debian_dl_4="${dl_mirror}/${winston}-${v8}-${datestamp}.tar.xz"
+debian_dl_4="${dl_mirror}/${winston}-${v8}.tar.xz"
 
 stretch_version="~stretch+20180821"
