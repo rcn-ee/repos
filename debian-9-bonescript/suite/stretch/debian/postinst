@@ -26,29 +26,31 @@ npm_install () {
 	node_version=$(/usr/bin/nodejs --version || true)
 	echo "${package}:nodejs:[${node_version}]"
 
-	v6="v6.14.2"
-	v8="v8.11.2"
+	v6="v6.14.4"
+	v8="v8.11.4"
 
-	bonescript="bonescript-0.6.3-9221fee"
+	datestamp="20180821"
+
+	bonescript="bonescript-0.7.0-b968db7"
 	   winston="winston-2.1.1"
 
 	case "${node_version}" in
 	v6.*)
 		npm_project="bonescript"
-		npm_file="${bonescript}-${v6}.tar.xz"
+		npm_file="${bonescript}-${v6}-${datestamp}.tar.xz"
 		npm_pkg_install
 
 		npm_project="winston"
-		npm_file="${winston}-${v6}.tar.xz"
+		npm_file="${winston}-${v6}-${datestamp}.tar.xz"
 		npm_pkg_install
 		;;
 	v8.*)
 		npm_project="bonescript"
-		npm_file="${bonescript}-${v8}.tar.xz"
+		npm_file="${bonescript}-${v8}-${datestamp}.tar.xz"
 		npm_pkg_install
 
 		npm_project="winston"
-		npm_file="${winston}-${v8}.tar.xz"
+		npm_file="${winston}-${v8}-${datestamp}.tar.xz"
 		npm_pkg_install
 		;;
 	esac
