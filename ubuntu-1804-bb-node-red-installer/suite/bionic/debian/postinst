@@ -29,13 +29,14 @@ npm_install () {
 
 	v8="v8.10.0"
 
-           node_red="node-red-0.19.1-28b311b7"
-       node_red_can="node-red-contrib-can-1.0.6"
+           node_red="node-red-0.19.2-3169f93c"
+       node_red_can="node-red-contrib-can-1.0.8"
       node_red_gpio="node-red-contrib-gpio-0.14.0"
 node_red_mjpgcamera="node-red-contrib-mjpgcamera-1.0.4"
   node_red_particle="node-red-contrib-particle-0.0.7"
- node_red_dashboard="node-red-dashboard-2.9.6"
+ node_red_dashboard="node-red-dashboard-2.9.7"
     node_red_serial="node-red-node-serialport-0.6.8"
+   node_red_blockly="node-red-contrib-blockly-1.0.0"
 
 	npm_project="node-red"
 	case "${node_version}" in
@@ -85,6 +86,10 @@ node_red_mjpgcamera="node-red-contrib-mjpgcamera-1.0.4"
 
 		npm_project="node-red-node-serialport"
 		npm_file="${node_red_serial}-${v8}.tar.xz"
+		npm_pkg_install
+
+		npm_project="node-red-contrib-blockly"
+		npm_file="${node_red_blockly}-${v8}.tar.xz"
 		npm_pkg_install
 
 		;;
