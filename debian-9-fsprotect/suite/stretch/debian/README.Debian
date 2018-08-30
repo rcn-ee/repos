@@ -1,0 +1,79 @@
+fsprotect for Debian
+--------------------
+
+fsprotect will only act when the "fsprotect" parameter is passed to the kernel.
+Also, it will be disabled if a "nofsprotect" parameter is passed to the kernel.
+This means that when having a "fsprotect" and a "nofsprotect" parameter at the
+same time, the nofsprotect will be used.
+
+when fsprotect is in effect, a /fastboot file is created preventing filesystem
+checks from init scripts. Without this, the boot process will fail on fsck.
+Using the "nofsprotect" argument will prevent the creation of /fastboot.
+
+fsprotect is very useful for computers with public access like libraries, labs,
+etc. It is essential to also prevent kernel parameters from being altered.
+To do this you should add a password to grub as well (if you use grub).
+
+aufs
+----
+
+In order for fsprotect to work, the system must support aufs. For debian
+systems >= stretch:
+
+  * Make sure you have the linux kernel headers installed. E.g:
+
+      # apt-get install linux-headers-amd64
+
+  * Rebuild initramfs to include aufs:
+
+      # update-initramfs -u
+
+Documentation
+-------------
+
+The complete documentation is in fsprotect.pdf. Please refer to that for more
+information.
+
+Root filesystem
+---------------
+
+To enable fsprotect for the root filesystem add:
+
+fsprotect=size
+
+to kernel. size should be the size of the tmpfs. You should make sure that
+there is enough memory+swap space available.
+
+size parameter is optional but it is strongly suggested to be used. It is
+passed to mount(8) as the size option of the tmpfs. It can be one of:
+
+  * A size in bytes with or without multiplicators: 512M, 1G, 1024K
+  * A percentage of system's memory: 30%
+  * "auto" to use 50% of system's memory - the default for tmpfs
+
+Other filesystems
+-----------------
+
+To enable fsprotect for other filesystems edit /etd/default/fsprotect as needed
+
+Those filesystems will only be protected when fsprotect parameter is passed
+to the kernel.
+
+Currently there is no way to protect other filesystems without protecting /.
+Is there a reason to do so?
+
+fstab
+-----
+
+If you want to use fsprotect you should have a look at your mount options,
+especially for the root filesystem. See bug #530241
+(http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=530241)
+
+Contact
+-------
+For suggestions, bug reports, etc contact:
+
+Stefanos Harhalakis <v13@v13.gr>
+
+or file a bug report in debian's bugtracker.
+

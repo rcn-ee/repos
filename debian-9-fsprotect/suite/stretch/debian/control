@@ -1,0 +1,22 @@
+Source: fsprotect
+Section: admin
+Priority: extra
+Maintainer: Stefanos Harhalakis <v13@v13.gr>
+Build-Depends: cdbs, debhelper (>= 10)
+Standards-Version: 3.9.8
+Homepage: http://www.v13.gr/
+Vcs-Git: https://github.com/sharhalakis/fsprotect.git
+
+Package: fsprotect
+Architecture: all
+Depends: initramfs-tools, lsb-base (>= 3.0-6), ${misc:Depends}
+Description: Helper scripts to make filesystems immutable
+ This is a set of scripts that make immutable the root and other filesystems.
+ Using aufs they pack a tmpfs filesystem and the filesystem forcing
+ changes to be written to the tmpfs.
+ .
+ The root filesystem is protected by an initramfs script. Other filesystems
+ are protected by an init script. All protected filesystems become read-only
+ ensuring their immutability even on power-offs.
+ .
+ This can be used for public computers to prevent damage or changes.
