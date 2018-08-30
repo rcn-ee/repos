@@ -1,13 +1,15 @@
 #!/bin/bash -e
 
 #https://git.launchpad.net/~cloud-initramfs-tools/cloud-initramfs-tools
-mirror="http://http.debian.net/debian"
+#https://packages.ubuntu.com/source/cosmic/cloud-initramfs-tools
+#mirror="http://http.debian.net/debian"
+mirror="http://archive.ubuntu.com/ubuntu"
 
 package_name="cloud-initramfs-tools"
 debian_pkg_name="${package_name}"
-package_version="0.18.debian6"
+package_version="0.42ubuntu1"
 package_source="${debian_pkg_name}_${package_version}.tar.xz"
-src_dir="${debian_pkg_name}-${package_version}"
+src_dir="wtd"
 
 git_repo=""
 git_sha=""

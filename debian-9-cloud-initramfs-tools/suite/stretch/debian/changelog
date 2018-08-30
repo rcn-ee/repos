@@ -1,56 +1,219 @@
-cloud-initramfs-tools (0.18.debian6) unstable; urgency=medium
+cloud-initramfs-tools (0.42ubuntu1rcnee0~stretch+20180830) stretch; urgency=low
 
-  * Update path of udevadm to /bin (instead of /sbin). (Closes: #852569)
-  * Depends on fdisk. (Closes: #872102)
+  * Rebuild for repos.rcn-ee.com
 
- -- Thomas Goirand <zigo@debian.org>  Thu, 28 Sep 2017 11:20:36 +0200
+ -- Robert Nelson <robertcnelson@gmail.com>  Thu, 30 Aug 2018 13:29:42 -0500
 
-cloud-initramfs-tools (0.18.debian5) unstable; urgency=medium
+cloud-initramfs-tools (0.42ubuntu1) cosmic; urgency=medium
 
-  * Add myself in Uploaders
-  * copy /bin/readlink in the initrd to be able to use the -f parameter
-    as expected by growroot (Closes: #744822)
+  * debian/control: fix lintian warnings
+    ancient-standards-version (3.9.3 -> 4.1.5),
+    spelling-error-in-description,
+    priority-extra-is-replaced-by-priority-optional
+  * debian/copyright: fix lintian missing-license-paragraph-in-dep5-copyright
+  * debian/compat fix lintian
+    package-uses-deprecated-debhelper-compat-version (7 -> 11)
 
- -- Gonéri Le Bouder <goneri@debian.org>  Tue, 15 Apr 2014 01:48:56 +0200
+ -- Scott Moser <smoser@ubuntu.com>  Tue, 10 Jul 2018 10:20:50 -0400
 
-cloud-initramfs-tools (0.18.debian4) unstable; urgency=medium
+cloud-initramfs-tools (0.41ubuntu1) cosmic; urgency=medium
 
-  * Removed the overlayroot package, because there's no kernel module available
-    in Debian to support it (Closes: #732788).
-  * Bumps Standards-Version: to 3.9.5.
+  * growroot: copy_exec from wherever they were in path. Closes #852569.
+  * overlayroot: Make overlay mount 'noauto' if backing mount is 'noauto'.
+    (LP: #1779279)
 
- -- Thomas Goirand <zigo@debian.org>  Fri, 28 Feb 2014 13:04:19 +0800
+ -- Scott Moser <smoser@ubuntu.com>  Tue, 10 Jul 2018 09:15:28 -0400
 
-cloud-initramfs-tools (0.18.debian3) unstable; urgency=low
+cloud-initramfs-tools (0.40ubuntu1) bionic; urgency=medium
 
-  * Removed patch for disabling growpart checkups.
-  * Added "rm" in the growpart requires.
-  * cloud-initramfs-growroot now needs cloud-utils >= 0.26-2~ (since this is
-    the version containing the fix for the growpart trap).
-  * Bumps Standards-Version: to 3.9.4.
+  * rooturl: adjust squashfs url matching to not require '.'.
+    Previously it would match <url>*.squashfs or <url>*.squash
+    Now it will match <url>*squashfs or <url>*.squash.
+    (LP: #1728048)
+  * overlayroot: Comment out the read-only line for /.  This hopes to
+    avoid systemd confusion and transient ordering cycle. (LP: #1723183)
 
- -- Thomas Goirand <zigo@debian.org>  Thu, 13 Jun 2013 06:59:38 +0000
+ -- Scott Moser <smoser@ubuntu.com>  Fri, 27 Oct 2017 09:44:49 -0400
 
-cloud-initramfs-tools (0.18.debian2) unstable; urgency=low
+cloud-initramfs-tools (0.39ubuntu1) artful; urgency=medium
 
-  [ Julien Danjou ]
-  * Fix Vcs-Git field (Closes: #705474)
+  * overlayroot, rooturl: fix usage of log_warning_msg. 
 
-  [ Thomas Goirand ]
-  * Remove the check for the growpart --dry-run which made everything fail.
-  * Added a debian/gbp.conf to have the debian/unstable branch as default.
-  * Adds sed and awk in the initramfs (without it, growpart fails).
-  * Added myself as uploader.
-  * Added patch descrtion (patch from Julien).
-  * Reviewed/reformated a bit the debian/copyright file.
+ -- Scott Moser <smoser@ubuntu.com>  Thu, 31 Aug 2017 16:12:43 -0400
 
- -- Thomas Goirand <zigo@debian.org>  Sun, 26 May 2013 22:51:56 +0800
+cloud-initramfs-tools (0.38ubuntu1) artful; urgency=medium
 
-cloud-initramfs-tools (0.18.debian1) unstable; urgency=low
+  * overlayroot: add 'noauto' to the options for the /media/root-ro 
+    fstab entry (LP: #1666573).
 
-  * Package for Debian
+ -- Scott Moser <smoser@ubuntu.com>  Tue, 13 Jun 2017 16:52:16 -0400
 
- -- Julien Danjou <acid@debian.org>  Tue, 29 Jan 2013 14:14:00 +0100
+cloud-initramfs-tools (0.37ubuntu1) artful; urgency=medium
+
+  * Remove unintended files from source upload.
+  * remove trailing white space in many files.
+
+ -- Scott Moser <smoser@ubuntu.com>  Thu, 11 May 2017 15:45:18 -0400
+
+cloud-initramfs-tools (0.36ubuntu1) artful; urgency=medium
+
+  * cloud-initramfs-rooturl: add squashfs module to initramfs
+    via manual_add_modules (LP: #1689642).
+
+ -- Scott Moser <smoser@ubuntu.com>  Tue, 09 May 2017 16:12:35 -0400
+
+cloud-initramfs-tools (0.35ubuntu1) zesty; urgency=medium
+
+  * add cloud-initramfs-updateroot package.
+
+ -- Scott Moser <smoser@ubuntu.com>  Wed, 11 Jan 2017 09:45:46 -0500
+
+cloud-initramfs-tools (0.34ubuntu1) zesty; urgency=medium
+
+  * cloud-initramfs-rooturl: fix bug resulting in warning message
+    being written when provided a tarball as root.
+
+ -- Scott Moser <smoser@ubuntu.com>  Tue, 10 Jan 2017 20:28:21 -0500
+
+cloud-initramfs-tools (0.33ubuntu1) zesty; urgency=medium
+
+  * add cloud-initramfs-rooturl package.
+
+ -- Scott Moser <smoser@ubuntu.com>  Fri, 09 Dec 2016 05:28:54 -0500
+
+cloud-initramfs-tools (0.32ubuntu1) zesty; urgency=medium
+
+  * overlayroot: fix overlayroot=crypt with newer initramfs-tools
+    (LP: #1634310)
+  * overlayroot: support random seed from systemd
+    systemd-random-seed.service
+
+ -- Scott Moser <smoser@ubuntu.com>  Mon, 14 Nov 2016 12:25:10 -0500
+
+cloud-initramfs-tools (0.31ubuntu1) zesty; urgency=medium
+
+  * cloud-initramfs-dyn-netconf: Further adjustments to support
+    IPV6 and the new DEVICE6 and net6-DEVICE.conf files.
+    (LP: #1621615)
+
+ -- Scott Moser <smoser@ubuntu.com>  Wed, 02 Nov 2016 15:55:39 -0400
+
+cloud-initramfs-tools (0.30ubuntu1) yakkety; urgency=medium
+
+  [ LaMont Jones ]
+  * cloud-initramfs-dyn-netconf: Fix bug in previously added IPV6
+    support. (LP: #1621615)
+
+ -- Scott Moser <smoser@ubuntu.com>  Wed, 05 Oct 2016 11:52:32 -0400
+
+cloud-initramfs-tools (0.29ubuntu2) yakkety; urgency=medium
+
+  [ LaMont Jones ]
+  * Add IPV6 support to cloud-initramfs-dyn-netconf.  (LP: #1621615)
+
+ -- LaMont Jones <lamont@canonical.com>  Tue, 27 Sep 2016 16:07:48 -0600
+
+cloud-initramfs-tools (0.29ubuntu1) yakkety; urgency=medium
+
+  * overlayroot: support 'overlay' filesystem explicitly rather than
+    relying on ubuntu specific kernel module 'overlayfs'.  (LP: #1493188)
+
+ -- Scott Moser <smoser@ubuntu.com>  Fri, 23 Sep 2016 17:00:37 -0400
+
+cloud-initramfs-tools (0.28ubuntu1) yakkety; urgency=medium
+
+  * overlayroot: write debug to /run/initramfs not /dev/.initramfs but
+    support writing to /dev/.initramfs if that is all there is. (LP: #1485752)
+  * overlayroot: fix overlayroot if recurse=0 was not provided.
+    This fuctionality was lost since workdir support was added. (LP: #1619459)
+
+ -- Scott Moser <smoser@ubuntu.com>  Fri, 02 Sep 2016 11:20:53 -0400
+
+cloud-initramfs-tools (0.27ubuntu1) wily; urgency=medium
+
+  * cloud-initramfs-dyn-netconf: bring up networking if ip is on kernel
+    command line and it has not been brought up (LP: #1463846)
+  * cloud-initramfs-copymods: do not warn to console if /lib/modules
+    exists in the target, as that is an expected case.
+
+ -- Scott Moser <smoser@ubuntu.com>  Tue, 23 Jun 2015 12:46:29 -0400
+
+cloud-initramfs-tools (0.26ubuntu1) vivid; urgency=medium
+
+  * cloud-initramfs-dyn-netconf: support BOOTIF= that contains
+    upper case a-f.
+  * overlayroot: use required 'workdir' option on overlayfs mount for
+    kernels >= 3.18 (LP: #1411294)
+
+ -- Scott Moser <smoser@ubuntu.com>  Fri, 16 Jan 2015 12:01:06 -0500
+
+cloud-initramfs-tools (0.25ubuntu1) trusty; urgency=medium
+
+  * cloud-initramfs-copymods: Add new package that is useful
+    if you're booting kernel/initramfs that live external to
+    the root filesystem.
+
+ -- Scott Moser <smoser@ubuntu.com>  Tue, 25 Mar 2014 17:22:34 -0400
+
+cloud-initramfs-tools (0.24ubuntu1) trusty; urgency=medium
+
+  * overlayroot: package conf-hooks.d/overlayroot which was previously
+    not included in the package.
+
+ -- Scott Moser <smoser@ubuntu.com>  Wed, 12 Feb 2014 13:31:57 -0500
+
+cloud-initramfs-tools (0.23ubuntu1) trusty; urgency=low
+
+   [ Dimitri John Ledkov ]
+   * modify overlayroot config to export CRYPTSETUP=yes so that
+     crypto modules are included by cryptsetup. (LP: #1267225)
+
+ -- Scott Moser <smoser@ubuntu.com>  Wed, 05 Feb 2014 15:13:58 +0200
+
+cloud-initramfs-tools (0.22ubuntu1) trusty; urgency=medium
+
+  * correctly identify partition and block device for devices named
+    like devnameXpN, such as mmcblk0p1 (LP: #1236380).
+  * always include aesni_intel rather than doing it if there is
+    cpu support (LP: #1267225).
+
+ -- Scott Moser <smoser@ubuntu.com>  Mon, 03 Feb 2014 22:09:00 +0200
+
+cloud-initramfs-tools (0.21ubuntu2) trusty; urgency=low
+
+  * Fix Makefile to avoid FTBS caused by subdir in overlayroot/etc
+    Makefile now takes into account when subdirectories are present in
+    the overlayroot directory.
+
+ -- Louis Bouchard <louis.bouchard@ubuntu.com>  Thu, 02 Jan 2014 03:26:22 +0000
+
+cloud-initramfs-tools (0.21ubuntu1) trusty; urgency=low
+
+  * === added directory overlayroot/etc/update-motd.d,
+    debian/overlayroot.install, overlayroot/etc/update-motd.d/97-
+    overlayroot:
+    - add an update-motd message, when booted in an overlayroot
+      environment
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 15 Nov 2013 12:05:58 -0600
+
+cloud-initramfs-tools (0.20ubuntu1) saucy; urgency=low
+
+  * debian/control: depend on cloud-utils or cloud-guest-utils.
+  * overlayroot: include a fix for creating /etc/init in overlay so
+    inotify works correctly.
+
+ -- Scott Moser <smoser@ubuntu.com>  Tue, 27 Aug 2013 16:48:53 -0400
+
+cloud-initramfs-tools (0.19ubuntu1) raring; urgency=low
+
+  * cloud-initramfs-growroot: support growpart exit status of '1'
+    indicating "no-change-necessary"
+  * cloud-initramfs-dyn-netconf: run at init-premount rather than
+    init-top to ensure that 'load_modules' has been run and udev is
+    running (LP: #1116426)
+
+ -- Scott Moser <smoser@ubuntu.com>  Tue, 05 Feb 2013 16:49:23 -0500
 
 cloud-initramfs-tools (0.18-ubuntu1) quantal; urgency=low
 
