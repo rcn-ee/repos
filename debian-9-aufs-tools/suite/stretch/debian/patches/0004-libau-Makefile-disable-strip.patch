@@ -1,0 +1,19 @@
+Description: Disable call of strip in libau/Makefile
+ Disable the call of strip in libau/Makefile since this
+ breaks some hardening options.
+Author: Jan Luca Naumann <j.naumann@fu-berlin.de>
+Forwarded: not-needed>
+Last-Update: 2017-12-03
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/libau/Makefile
++++ b/libau/Makefile
+@@ -78,7 +78,7 @@
+ 	${CC} -Wl,-soname,${LibSo}.${LibSoMajor} \
+ 		-Wl,--version-script,${LibSoVerScript} \
+ 		${LDFLAGS} --shared -o $@ $^ ${LDLIBS}
+-	${STRIP} -R EXP $@
++#	${STRIP} -R EXP $@
+ #	readelf --syms --use-dynamic libau.so
+ 
+ install_ulib: File = ${LibSo}.${LibSoMajor}.${LibSoMinor}

@@ -1,0 +1,59 @@
+commit abeceade670f73b7b0b5e0beb0eb2fd2c5830c06
+Author: J. R. Okajima <hooanon05@yahoo.co.jp>
+Date:   Wed Sep 4 15:37:55 2013 +0900
+
+    refine the xino truncation
+    
+    Signed-off-by: J. R. Okajima <hooanon05@yahoo.co.jp>
+
+diff --git a/aufs.in.5 b/aufs.in.5
+index f8a2acf..07c7c9d 100644
+--- a/aufs.in.5
++++ b/aufs.in.5
+@@ -199,13 +199,13 @@ These options are already implemented, but its design is not fixed
+ .B trunc_xino | notrunc_xino
+ Enable (or disable) the automatic truncation of xino files.
+ The truncation is done by discarding the internal "hole" (unused blocks).
+-When the number of blocks by the xino file for the branch exceeds
+-the predefined upper limit, the automatic truncation begins. If the xino
+-files contain few holes and the result size is still exceeds the upper
+-limit, then the upper limit is added by \*[AUFS_XINO_TRUNC_STEP] blocks. The
+-initial upper limit is \*[AUFS_XINO_TRUNC_INIT] blocks.
+-Currently the type of branch fs supported by this automatic truncation
+-is tmpfs or ramfs only.
++.\" When the number of blocks by the xino file for the branch exceeds
++.\" the predefined upper limit, the automatic truncation begins. If the xino
++.\" files contain few holes and the result size is still exceeds the upper
++.\" limit, then the upper limit is added by \*[AUFS_XINO_TRUNC_STEP] blocks. The
++.\" initial upper limit is \*[AUFS_XINO_TRUNC_INIT] blocks.
++.\" Currently the type of branch fs supported by this automatic truncation
++.\" is tmpfs or ramfs only.
+ The default is notrunc_xino.
+ These options are already implemented, but its design is not fixed
+ (cf. External Inode Number Bitmap, Translation Table and Generation Table).
+@@ -768,6 +768,12 @@ $ cp --sparse=always <current xino file> <new xino file> &&
+ It means that you have two xino files during the copy, and you should
+ pay attention to the free space of the filesystem where the xino file is
+ located.
++If the free space is not large enough to hold two xino files temporary
++during the copy, then the truncation fails and the xino file will go on
++growing. For such case, you should move the xino file to another larger
++partition, and move it back to where it was (if you want). To do this,
++use `xino=' mount option. During this move, the xino file is truncated
++automatically.
+ 
+ If you do not want to truncate it (it may be slow) when you delete a
+ branch, specify `notrunc_xib' after `del' mount option.
+diff --git a/c2tmac.c b/c2tmac.c
+index fec0f28..21eb421 100644
+--- a/c2tmac.c
++++ b/c2tmac.c
+@@ -30,8 +30,6 @@ main(int argc, char *argv[])
+ 	pstr(AUFS_VERSION);
+ 	pstr(AUFS_XINO_FNAME);
+ 	pstr(AUFS_XINO_DEFPATH);
+-	pint(AUFS_XINO_TRUNC_INIT);
+-	pint(AUFS_XINO_TRUNC_STEP);
+ 	pint(AUFS_DIRWH_DEF);
+ 	pstr(AUFS_WH_PFX);
+ 	pint(AUFS_WH_PFX_LEN);
