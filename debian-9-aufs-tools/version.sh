@@ -7,7 +7,7 @@ debian_pkg_name="${package_name}"
 epoch="1"
 package_version="4.9+20170918"
 package_source="${debian_pkg_name}_${package_version}.orig.tar.gz"
-src_dir="${package_name}-${package_version}.orig"
+src_dir=""
 
 git_repo=""
 git_sha=""
