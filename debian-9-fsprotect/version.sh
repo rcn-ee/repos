@@ -6,7 +6,7 @@ package_name="fsprotect"
 debian_pkg_name="${package_name}"
 package_version="1.0.7"
 package_source="${debian_pkg_name}_${package_version}.tar.xz"
-src_dir=""
+src_dir="${debian_pkg_name}-${package_version}"
 
 git_repo=""
 git_sha=""
