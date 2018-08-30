@@ -1,0 +1,41 @@
+Description: remove wait for root in overlayroot init-bottom
+Author: Julien Danjou <acid@debian.org>
+Forwarded: no
+Date: 2013-01-29
+
+--- a/growroot/scripts/local-bottom/growroot
++++ b/growroot/scripts/local-bottom/growroot
+@@ -88,7 +88,11 @@
+ 
+ # this is taken from 'mountroot' function
+ #   see /usr/share/initramfs-tools/scripts/local
+-FSTYPE=$(wait-for-root "${ROOT}" ${ROOTDELAY:-30})
++if [ -z "${ROOTFSTYPE}" ]; then
++    FSTYPE=$(get_fstype "${ROOT}")
++else
++    FSTYPE=${ROOTFSTYPE}
++fi
+ roflag="-r"
+ [ "${readonly}" = "y" ] || roflag="-w"
+ mount ${roflag} ${FSTYPE:+-t ${FSTYPE} }${ROOTFLAGS} ${ROOT} ${rootmnt} ||
+--- a/overlayroot/scripts/init-bottom/overlayroot
++++ b/overlayroot/scripts/init-bottom/overlayroot
+@@ -137,8 +137,16 @@
+ 	local dev="$1" timeout="${2:-0}"
+ 	[ -b "$dev" ] && return 0
+ 	[ "$timeout" = "0" ] && return 1
+-	# wait-for-root writes fstype to stdout, redirect to null
+-	wait-for-root "$dev" "$timeout" >/dev/null
++        timeout=$(( ${timeout} * 10 ))
++        while [ ! -e "$dev" ]; do
++            /bin/sleep 0.1
++            timeout=$(( ${timeout} - 1 ))
++            [ ${timeout} -gt 0 ] || break
++        done
++	if [ ${timeout} -gt 0 ]; then
++	    return 0
++        fi
++        return 1
+ }
+ crypto_setup() {
+ 	local fstype="ext4" pass="" mapname="secure" mkfs="1" dev=""
