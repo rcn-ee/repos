@@ -4,7 +4,7 @@
 
 package_name="libetnaviv"
 debian_pkg_name="${package_name}"
-package_version="0.0.0-git20141102"
+package_version="0.0.0-git20141102.0"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
@@ -16,8 +16,10 @@ dl_path=""
 debian_version="${package_version}-0"
 debian_patch=""
 debian_diff=""
-local_patch="rcnee3"
+local_patch="rcnee4"
 
-jessie_version="~bpo80+20161122+1"
-stretch_version="~bpo90+20161122+1"
-xenial_version="~bpo1604+20161122+1"
+jessie_version="~jessie+20180831"
+stretch_version="~stretch+20180831"
+buster_version="~buster+20180831"
+xenial_version="~xenial+20180831"
+bionic_version="~bionic+20180831"
