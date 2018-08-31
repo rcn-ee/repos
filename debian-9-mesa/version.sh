@@ -20,4 +20,4 @@ debian_untar=""
 debian_patch="${package_name}_${debian_version}.diff.gz"
 local_patch="rcnee0"
 
-stretch_version="~stretch+20180809"
+stretch_version="~stretch+20180831"
