@@ -16,7 +16,7 @@ dl_path=""
 debian_version="${package_version}-0"
 debian_patch=""
 debian_diff=""
-local_patch="rcnee4"
+local_patch="rcnee5"
 
 jessie_version="~jessie+20180831"
 stretch_version="~stretch+20180831"
