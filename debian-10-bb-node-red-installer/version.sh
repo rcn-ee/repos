@@ -2,7 +2,7 @@
 
 package_name="bb-node-red-installer"
 debian_pkg_name="${package_name}"
-package_version="0.19.3"
+package_version="0.19.4"
 package_source=""
 src_dir=""
 
@@ -19,7 +19,7 @@ dl_mirror="https://github.com/rcn-ee/npm-package-node-red/raw/master/deploy/bust
 
 v8="v8.11.2"
 
-           node_red="node-red-0.19.3-fc0cf1ff"
+           node_red="node-red-0.19.4-08fccc4e"
        node_red_can="node-red-contrib-can-1.0.8"
       node_red_gpio="node-red-contrib-gpio-0.14.0"
 node_red_mjpgcamera="node-red-contrib-mjpgcamera-1.0.4"
@@ -37,4 +37,4 @@ debian_dl_6="${dl_mirror}/${node_red_dashboard}-${v8}.tar.xz"
 debian_dl_7="${dl_mirror}/${node_red_serial}-${v8}.tar.xz"
 debian_dl_8="${dl_mirror}/${node_red_blockly}-${v8}.tar.xz"
 
-buster_version="~buster+20180910"
+buster_version="~buster+20180917"
