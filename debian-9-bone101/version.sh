@@ -11,7 +11,7 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee0"
+debian_version="${package_version}-0rcnee1"
 debian_untar=""
 debian_patch=""
 sbuild_chroot=""
@@ -19,7 +19,7 @@ sbuild_chroot=""
 dl_mirror="https://github.com/rcn-ee/npm-package-bb-doc-bone101/raw/master/deploy/stretch/"
 
 v6="v6.14.4"
-v8="v8.11.2"
+v8="v8.12.0"
 
     node_async="async-2.0.0-rc.6"
 node_sensortag="sensortag-1.2.3"
