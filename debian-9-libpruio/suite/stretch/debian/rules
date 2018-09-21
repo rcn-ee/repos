@@ -1,0 +1,39 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# Sample debian/rules that uses debhelper.
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+
+include /usr/share/dpkg/pkg-info.mk
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+#DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+export PREFIX:=/usr
+export PYBUILD_NAME = pruio
+
+override_dh_auto_configure:
+	cmake . -DCMAKE_MODULE_PATH=$$(pwd)/cmake/Modules -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_VERBOSE_MAKEFILE=ON
+
+override_dh_auto_build:
+	make fb_examples && make python
+
+override_dh_dkms:
+	dh_dkms -V $(DEB_VERSION_UPSTREAM)
+
+override_dh_install:
+# next command installs in first package, so -lkm must be first!
+	dh_install src/lkm/x/* usr/src/libpruio-lkm-$(DEB_VERSION_UPSTREAM)/
+	dh_install
+
+override_dh_installinit:
+	dh_installinit --noscripts
+
+override_dh_compress:
+	dh_compress -X.bas -X.bi -X.py -X.c -X.h -X.bin/
+
+%:
+	dh $@ --with systemd --with dkms --with autotools-dev
