@@ -21,9 +21,6 @@ override_dh_auto_configure:
 override_dh_auto_build:
 	make fb_examples && make python
 
-override_dh_dkms:
-	dh_dkms -V $(DEB_VERSION_UPSTREAM)
-
 override_dh_install:
 # next command installs in first package, so -lkm must be first!
 	dh_install src/lkm/x/* usr/src/libpruio-lkm-$(DEB_VERSION_UPSTREAM)/
@@ -36,4 +33,4 @@ override_dh_compress:
 	dh_compress -X.bas -X.bi -X.py -X.c -X.h -X.bin/
 
 %:
-	dh $@ --with systemd --with dkms --with autotools-dev
+	dh $@ --with systemd --with autotools-dev
