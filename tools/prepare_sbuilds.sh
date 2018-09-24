@@ -73,46 +73,36 @@ arch="armhf"
 options="--chroot-suffix=${flavor}-sbuild"
 setup_update_sbuild
 
-if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
-	dist="stretch"
-	unset flavor
-	arch="armhf"
-	options="--exclude=debfoster"
-	setup_update_sbuild
-fi
+dist="stretch"
+unset flavor
+arch="armhf"
+options="--exclude=debfoster"
+setup_update_sbuild
 
-if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
-	dist="stretch"
-	flavor="-exp"
-	arch="armhf"
-	options="--exclude=debfoster --chroot-suffix=${flavor}-sbuild"
-	setup_update_sbuild
-fi
+dist="stretch"
+flavor="-exp"
+arch="armhf"
+options="--exclude=debfoster --chroot-suffix=${flavor}-sbuild"
+setup_update_sbuild
 
-if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
-	dist="buster"
-	unset flavor
-	arch="armhf"
-	options="--exclude=debfoster"
-	setup_update_sbuild
-fi
+dist="buster"
+unset flavor
+arch="armhf"
+options="--exclude=debfoster"
+setup_update_sbuild
 
 mirror="http://${proxy}${ubuntu_server}"
 deboot="gutsy"
 
-if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
-	dist="xenial"
-	unset flavor
-	arch="armhf"
-	options="--exclude=debfoster"
-	setup_update_sbuild
-fi
+dist="xenial"
+unset flavor
+arch="armhf"
+options="--exclude=debfoster"
+setup_update_sbuild
 
-if [ ! "x${builder}" = "xapm-mustang-8gb" ] ; then
-	dist="bionic"
-	unset flavor
-	arch="armhf"
-	options="--exclude=debfoster"
-	setup_update_sbuild
-fi
+dist="bionic"
+unset flavor
+arch="armhf"
+options="--exclude=debfoster"
+setup_update_sbuild
 #
