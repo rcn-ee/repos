@@ -1,0 +1,20 @@
+description: class definitions were defined outside of namespace when using gtk2
+author: Michael Gilbert <mgilbert@debian.org>
+
+--- a/ui/accessibility/platform/atk_util_auralinux_gtk2.cc
++++ b/ui/accessibility/platform/atk_util_auralinux_gtk2.cc
+@@ -56,6 +56,8 @@ void FinishAccessibilityInitOnMainThread
+   init_func();
+ }
+ 
++namespace ui {
++
+ bool AtkUtilAuraLinux::PlatformShouldEnableAccessibility() {
+   std::unique_ptr<base::Environment> env(base::Environment::Create());
+   std::string gtk_modules;
+@@ -78,3 +80,5 @@ void AtkUtilAuraLinux::PlatformInitializ
+       base::Bind(&GetAccessibilityModuleInitFunc),
+       base::Bind(&FinishAccessibilityInitOnMainThread));
+ }
++
++}

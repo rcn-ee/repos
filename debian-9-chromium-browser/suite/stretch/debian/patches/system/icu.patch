@@ -1,23 +1,9 @@
 description: backwards compatibility for older versions of icu
 author: Michael Gilbert <mgilbert@debian.org>
 
---- a/v8/src/runtime/runtime-intl.cc
-+++ b/v8/src/runtime/runtime-intl.cc
-@@ -714,7 +714,11 @@ RUNTIME_FUNCTION(Runtime_PluralRulesSele
-   return *isolate->factory()
-               ->NewStringFromTwoByte(Vector<const uint16_t>(
-                   reinterpret_cast<const uint16_t*>(
-+#if U_ICU_VERSION_MAJOR_NUM >= 59
-                       icu::toUCharPtr(result.getBuffer())),
-+#else
-+                      result.getBuffer()),
-+#endif
-                   result.length()))
-               .ToHandleChecked();
- }
---- a/third_party/WebKit/Source/platform/graphics/LoggingCanvas.cpp
-+++ b/third_party/WebKit/Source/platform/graphics/LoggingCanvas.cpp
-@@ -527,8 +527,12 @@ String StringForUTF32LEText(const void*
+--- a/third_party/blink/renderer/platform/graphics/logging_canvas.cc
++++ b/third_party/blink/renderer/platform/graphics/logging_canvas.cc
+@@ -528,8 +528,12 @@ String StringForUTF32LEText(const void*
    utf16 = icu::UnicodeString::fromUTF32(reinterpret_cast<const UChar32*>(text),
                                          static_cast<int32_t>(byte_length));
  #endif
@@ -40,13 +26,16 @@ author: Michael Gilbert <mgilbert@debian.org>
  import("//third_party/protobuf/proto_library.gni")
  import("//tools/grit/grit_rule.gni")
  import("//url/features.gni")
---- a/v8/gni/isolate.gni
-+++ b/v8/gni/isolate.gni
-@@ -3,7 +3,6 @@
- # found in the LICENSE file.
- 
- import("//build/config/sanitizers/sanitizers.gni")
--import("//third_party/icu/config.gni")
- import("v8.gni")
- 
- declare_args() {
+--- a/components/url_formatter/idn_spoof_checker.cc
++++ b/components/url_formatter/idn_spoof_checker.cc
+@@ -378,8 +378,8 @@ bool IDNSpoofChecker::SimilarToTopDomain
+   if ((u04cf_pos = host.indexOf(0x4CF)) != -1) {
+     icu::UnicodeString host_alt(host);
+     size_t length = host_alt.length();
+-    char16_t* buffer = host_alt.getBuffer(-1);
+-    for (char16_t* uc = buffer + u04cf_pos ; uc < buffer + length; ++uc) {
++    UChar* buffer = host_alt.getBuffer(-1);
++    for (UChar* uc = buffer + u04cf_pos ; uc < buffer + length; ++uc) {
+       if (*uc == 0x4CF)
+         *uc = 0x6C;  // Lowercase L
+     }

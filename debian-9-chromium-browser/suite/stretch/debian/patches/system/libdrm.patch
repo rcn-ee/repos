@@ -1,0 +1,14 @@
+description: libdrm in stretch doesn't explicitly define DRM_FORMAT_MOD_INVALID
+author: Michael Gilbert <mgilbert@debian.org>
+
+--- a/ui/gfx/native_pixmap_handle.cc
++++ b/ui/gfx/native_pixmap_handle.cc
+@@ -11,7 +11,7 @@
+ 
+ namespace gfx {
+ 
+-#if defined(OS_LINUX)
++#if 0
+ static_assert(NativePixmapPlane::kNoModifier == DRM_FORMAT_MOD_INVALID,
+               "gfx::NativePixmapPlane::kNoModifier should be an alias for"
+               "DRM_FORMAT_MOD_INVALID");

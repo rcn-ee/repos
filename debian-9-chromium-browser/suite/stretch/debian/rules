@@ -6,6 +6,10 @@ export DH_VERBOSE=1
 # enable all build hardening flags
 export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 
+# needed to avoid build system choosing clang as the compiler
+export CC=gcc
+export CXX=g++
+
 # build with gcc instead of clang
 defines=is_clang=false clang_use_chrome_plugins=false
 
@@ -28,22 +32,25 @@ ifeq (arm64,$(DEB_HOST_ARCH))
 defines+=host_cpu=\"arm64\"
 endif
 ifeq (armhf,$(DEB_HOST_ARCH))
-defines+=host_cpu=\"arm\" \
-	 arm_use_neon=true
+defines+=host_cpu=\"arm\" arm_use_neon=true symbol_level=0
 endif
 
 # disabled features
 defines+=is_debug=false \
+         use_allocator=\"none\" \
          use_gtk3=false \
          use_ozone=false \
-         use_gconf=false \
          use_sysroot=false \
          use_openh264=false \
+         use_jumbo_build=false \
          use_custom_libcxx=false \
          use_gnome_keyring=false \
+         use_system_harfbuzz=false \
          rtc_libvpx_build_vp9=false \
          treat_warnings_as_errors=false \
+         remove_webcore_debug_symbols=true \
          optimize_webui=false \
+         enable_swiftshader=false \
          enable_nacl=false \
          enable_nacl_nonsfi=false \
          enable_google_now=false \
@@ -59,8 +66,12 @@ defines+=use_gio=true \
          use_pulseaudio=true \
          link_pulseaudio=true \
          enable_widevine=true \
-         use_jumbo_build=true \
+         use_libjpeg_turbo=true \
+         use_system_libjpeg=true \
          use_system_freetype=true \
+         concurrent_links=1 \
+         use_jumbo_build=true \
+         jumbo_file_merge_limit=16 \
          proprietary_codecs=true \
          ffmpeg_branding=\"Chrome\" \
          fieldtrial_testing_like_official_build=true \
@@ -86,12 +97,14 @@ override_dh_auto_configure:
 	$(CXX) --version
 	# use system flot
 	for file in $(flotpaths); do ln -sf $$file third_party/flot; done
+	# put yasm script in the location expected by gn
+	ln -sf ../pdfium/third_party/yasm/run_yasm.py third_party/yasm
 	# strip out system third_party libraries
-	cp third_party/freetype/src/src/psnames/pstables.h .
+	rm -f build/config/freetype/freetype.gni
+	mkdir -p base/third_party/libevent
 	./debian/scripts/unbundle
-	mkdir -p third_party/freetype/src/src/psnames
-	mv pstables.h third_party/freetype/src/src/psnames
 	# build gn
+	cp base/numerics/safe_conversions_arm_impl.h base/numerics/safe_math_arm_impl.h tools/gn/base/numerics
 	./tools/gn/bootstrap/bootstrap.py -s $(njobs)
 	# configure
 	./out/Release/gn gen out/Release --args="$(defines)"
@@ -132,8 +145,6 @@ override_dh_fixperms:
 	dh_fixperms --exclude chrome-sandbox
 
 override_dh_strip:
-	# skip dbgsym package for widevine to prevent duplication of the src package
-	dh_strip -pchromium-widevine --no-automatic-dbgsym
 	# this line can be removed once stretch is released
 	dh_strip --remaining-packages --ddeb-migration='chromium-dbg (<< 47.0.2526.80-4~)'
 
