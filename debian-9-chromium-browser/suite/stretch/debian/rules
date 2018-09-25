@@ -37,7 +37,6 @@ endif
 
 # disabled features
 defines+=is_debug=false \
-         use_allocator=\"none\" \
          use_gtk3=false \
          use_ozone=false \
          use_sysroot=false \
@@ -50,7 +49,6 @@ defines+=is_debug=false \
          treat_warnings_as_errors=false \
          remove_webcore_debug_symbols=true \
          optimize_webui=false \
-         enable_swiftshader=false \
          enable_nacl=false \
          enable_nacl_nonsfi=false \
          enable_google_now=false \
@@ -97,14 +95,11 @@ override_dh_auto_configure:
 	$(CXX) --version
 	# use system flot
 	for file in $(flotpaths); do ln -sf $$file third_party/flot; done
-	# put yasm script in the location expected by gn
-	ln -sf ../pdfium/third_party/yasm/run_yasm.py third_party/yasm
 	# strip out system third_party libraries
 	rm -f build/config/freetype/freetype.gni
 	mkdir -p base/third_party/libevent
 	./debian/scripts/unbundle
 	# build gn
-	cp base/numerics/safe_conversions_arm_impl.h base/numerics/safe_math_arm_impl.h tools/gn/base/numerics
 	./tools/gn/bootstrap/bootstrap.py -s $(njobs)
 	# configure
 	./out/Release/gn gen out/Release --args="$(defines)"

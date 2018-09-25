@@ -1,22 +1,14 @@
-description: Stretch binutils doesn't recognize LR on arm64
+description: backport from upstream glibc 2.27 / gcc 7.3 buildfixes form ARM
 author: Riku Voipio
 
 --- a/third_party/crashpad/crashpad/util/misc/capture_context_linux.S
 +++ b/third_party/crashpad/crashpad/util/misc/capture_context_linux.S
-@@ -312,14 +312,14 @@ CAPTURECONTEXT_SYMBOL2:
-   stp x28, x29, [x0, #0x198]
+@@ -288,7 +288,7 @@ CAPTURECONTEXT_SYMBOL2:
+ #elif defined(__aarch64__)
  
-   // The original LR can't be recovered.
--  str LR, [x0, #0x1a8]
-+  str x30, [x0, #0x1a8]
+   // Zero out fault_address, which is unused.
+-  str x31, [x0, #0xb0]  // context->uc_mcontext.fault_address
++  str xzr, [x0, #0xb0]  // context->uc_mcontext.fault_address
  
-   // Use x1 as a scratch register.
-   mov x1, SP
-   str x1, [x0, #0x1b0] // context->uc_mcontext.sp
- 
-   // The link register holds the return address for this function.
--  str LR, [x0, #0x1b8]  // context->uc_mcontext.pc
-+  str x30, [x0, #0x1b8]  // context->uc_mcontext.pc
- 
-   // NZCV, pstate, and CPSR are synonyms.
-   mrs x1, NZCV
+   // Save general purpose registers in context->uc_mcontext.regs[i].
+   // The original x0 can't be recovered.
