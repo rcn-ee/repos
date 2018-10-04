@@ -11,7 +11,7 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee0"
+debian_version="${package_version}-0rcnee1"
 debian_untar=""
 debian_patch=""
 
@@ -19,14 +19,14 @@ dl_mirror="https://github.com/rcn-ee/npm-package-node-red/raw/master/deploy/bust
 
 v8="v8.11.2"
 
-           node_red="node-red-0.19.4-08fccc4e"
+           node_red="node-red-0.19.4-e03a0fff"
        node_red_can="node-red-contrib-can-1.0.8"
       node_red_gpio="node-red-contrib-gpio-0.14.0"
 node_red_mjpgcamera="node-red-contrib-mjpgcamera-1.0.4"
-  node_red_particle="node-red-contrib-particle-0.0.8"
+  node_red_particle="node-red-contrib-particle-0.0.9"
  node_red_dashboard="node-red-dashboard-2.9.8"
     node_red_serial="node-red-node-serialport-0.6.8"
-   node_red_blockly="node-red-contrib-blockly-1.0.0"
+   node_red_blockly="node-red-contrib-blockly-1.1.0"
 
 debian_dl_1="${dl_mirror}/${node_red}-${v8}.tar.xz"
 debian_dl_2="${dl_mirror}/${node_red_can}-${v8}.tar.xz"
@@ -37,4 +37,4 @@ debian_dl_6="${dl_mirror}/${node_red_dashboard}-${v8}.tar.xz"
 debian_dl_7="${dl_mirror}/${node_red_serial}-${v8}.tar.xz"
 debian_dl_8="${dl_mirror}/${node_red_blockly}-${v8}.tar.xz"
 
-buster_version="~buster+20180917"
+buster_version="~buster+20181004"
