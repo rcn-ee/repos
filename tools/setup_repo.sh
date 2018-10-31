@@ -159,4 +159,8 @@ setup_repo
 suite="cosmic"
 archs="armhf source"
 setup_repo
+
+suite="disco"
+archs="armhf source"
+setup_repo
 #
