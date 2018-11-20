@@ -9,7 +9,7 @@ DEB_HOST_ARCH_OS  ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
 DEB_HOST_ARCH_CPU ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_CPU)
 
 %:
-	dh $@ --with autoreconf,python3 --exclude=.la
+	dh $@ --with python3 --exclude=.la
 
 override_dh_auto_configure:
 	dh_auto_configure -- \
@@ -36,14 +36,7 @@ override_dh_installdocs:
 
 override_dh_clean:
 	dh_clean
-	find -name "lt~obsolete.m4" | xargs rm -rf
-	find -name "ltversion.m4" | xargs rm -rf
-	find -name "ltsugar.m4" | xargs rm -rf
-	find -name "ltoptions.m4" | xargs rm -rf
-	find -name "libtool.m4" | xargs rm -rf
-	find -name "aclocal.m4" | xargs rm -rf
 	rm -rf confdefs.h
-	rm -rf autostuff
 	rm -rf doc/*
 
 override_dh_missing:
