@@ -15,7 +15,8 @@ debian_version="${package_version}-0rcnee2"
 debian_untar=""
 debian_patch=""
 
-dl_mirror="https://github.com/rcn-ee/npm-package-node-red/raw/master/deploy/bionic"
+#dl_mirror="https://github.com/rcn-ee/npm-package-node-red/raw/master/deploy/bionic"
+dl_mirror="http://gitlab.gfnd.rcn-ee.org/RobertCNelson/npm-package-node-red/raw/master/deploy/bionic"
 
 v8="v8.10.0_0.4"
 
