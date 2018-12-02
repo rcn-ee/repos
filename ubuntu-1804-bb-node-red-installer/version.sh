@@ -2,7 +2,7 @@
 
 package_name="bb-node-red-installer"
 debian_pkg_name="${package_name}"
-package_version="0.19.4"
+package_version="0.19.5"
 package_source=""
 src_dir=""
 
@@ -11,20 +11,21 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee1"
+debian_version="${package_version}-0rcnee0"
 debian_untar=""
 debian_patch=""
 
-dl_mirror="https://github.com/rcn-ee/npm-package-node-red/raw/master/deploy/bionic"
+#dl_mirror="https://github.com/rcn-ee/npm-package-node-red/raw/master/deploy/bionic"
+dl_mirror="http://gitlab.gfnd.rcn-ee.org/RobertCNelson/npm-package-node-red/raw/master/deploy/bionic"
 
-v8="v8.10.0_0.3"
+v8="v8.10.0_0.4"
 
-           node_red="node-red-0.19.4-e03a0fff"
+           node_red="node-red-0.19.5-2f93bb96"
        node_red_can="node-red-contrib-can-1.0.8"
       node_red_gpio="node-red-contrib-gpio-0.14.0"
 node_red_mjpgcamera="node-red-contrib-mjpgcamera-1.0.4"
-  node_red_particle="node-red-contrib-particle-0.0.9"
- node_red_dashboard="node-red-dashboard-2.9.8"
+  node_red_particle="node-red-contrib-particle-0.1.2"
+ node_red_dashboard="node-red-dashboard-2.11.0"
     node_red_serial="node-red-node-serialport-0.6.8"
    node_red_blockly="node-red-contrib-blockly-1.1.0"
 
@@ -37,4 +38,4 @@ debian_dl_6="${dl_mirror}/${node_red_dashboard}-${v8}.tar.xz"
 debian_dl_7="${dl_mirror}/${node_red_serial}-${v8}.tar.xz"
 debian_dl_8="${dl_mirror}/${node_red_blockly}-${v8}.tar.xz"
 
-bionic_version="~bionic+20181004"
+bionic_version="~bionic+20181201"
