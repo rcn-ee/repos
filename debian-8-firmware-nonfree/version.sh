@@ -20,5 +20,3 @@ debian_patch=""
 local_patch="rcnee1"
 
 jessie_version="~jessie+20180328"
-stretch_version="~stretch+20180328"
-buster_version="~buster+20180328"
