@@ -1,6 +1,6 @@
-From c5c49bc70bbc2da25aa2ad94c043804ba3347274 Mon Sep 17 00:00:00 2001
+From f5d15cffc4650c5ea189851e34eeb3264d0bbc90 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Thu, 9 Aug 2018 19:14:27 -0500
+Date: Thu, 3 Jan 2019 09:59:28 -0600
 Subject: [PATCH 3/3] gcc8-disable-Werror=return-type
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -9,17 +9,17 @@ Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
  1 file changed, 1 insertion(+)
 
 diff --git a/host/src/CMakeLists.txt b/host/src/CMakeLists.txt
-index 3ad7245..b28ef76 100644
+index 491c2e0..02ae387 100644
 --- a/host/src/CMakeLists.txt
 +++ b/host/src/CMakeLists.txt
-@@ -35,6 +35,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-variable")
- set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
- set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-literal-suffix")
+@@ -37,6 +37,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-literal-suffix")
  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
+ # https://gcc.gnu.org/ml/gcc/2017-05/msg00073.html
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-psabi")
 +set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-return-type")
  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FILE_OFFSET_BITS=64")
  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_PRODUCT_VERSION=${${PROJECT_NAME}_PKG_VERSION}")
 -- 
-2.18.0
+2.20.1
 
