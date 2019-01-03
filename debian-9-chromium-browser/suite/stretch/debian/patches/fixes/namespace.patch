@@ -1,21 +1,17 @@
-description: gcc 6 isn't able to correctly deduce the namespace
+description: jumbo build has trouble with these namespaces
 author: Michael Gilbert <mgilbert@debian.org>
 
---- a/third_party/blink/renderer/platform/graphics/path.h
-+++ b/third_party/blink/renderer/platform/graphics/path.h
-@@ -199,13 +199,13 @@ class PLATFORM_EXPORT Path {
-   SkPath path_;
- };
+--- a/chrome/browser/apps/platform_apps/api/sync_file_system/extension_sync_event_observer.h
++++ b/chrome/browser/apps/platform_apps/api/sync_file_system/extension_sync_event_observer.h
+@@ -81,8 +81,10 @@ class ExtensionSyncEventObserver : publi
+ }  // namespace api
+ }  // namespace chrome_apps
  
--class PLATFORM_EXPORT RefCountedPath : public Path,
-+class PLATFORM_EXPORT RefCountedPath : public blink::Path,
-                                        public RefCounted<RefCountedPath> {
-   USING_FAST_MALLOC(RefCountedPath);
++namespace extensions {
+ template <>
+-void extensions::BrowserContextKeyedAPIFactory<
++void BrowserContextKeyedAPIFactory<
+     chrome_apps::api::ExtensionSyncEventObserver>::DeclareFactoryDependencies();
++}
  
-  public:
-   template <typename... Args>
--  RefCountedPath(Args&&... args) : Path(std::forward<Args>(args)...) {}
-+  RefCountedPath(Args&&... args) : blink::Path(std::forward<Args>(args)...) {}
- };
- 
- // Only used for DCHECKs
+ #endif  // CHROME_BROWSER_APPS_PLATFORM_APPS_API_SYNC_FILE_SYSTEM_EXTENSION_SYNC_EVENT_OBSERVER_H_
