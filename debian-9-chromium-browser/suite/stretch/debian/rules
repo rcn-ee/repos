@@ -14,10 +14,10 @@ export CXX=g++
 defines=is_clang=false clang_use_chrome_plugins=false
 
 # more verbose linker output
-export LDFLAGS+=-Wl,--stats
+defines+=target_extra_ldflags=\"-Wl,--stats\"
 
 # avoid error in v8's garbage collector (see http://gcc.gnu.org/bugzilla/show_bug.cgi?id=68853)
-export CXXFLAGS+=-fno-delete-null-pointer-checks
+defines+=target_extra_cxxflags=\"-fno-delete-null-pointer-checks\"
 
 DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
 
@@ -36,9 +36,8 @@ defines+=host_cpu=\"arm\" arm_use_neon=true symbol_level=0
 endif
 
 # disabled features
-defines+=gtk_version=2 \
-         is_debug=false \
-         use_allocator=\"none\" \
+defines+=is_debug=false \
+         use_gtk3=false \
          use_ozone=false \
          use_sysroot=false \
          use_openh264=false \
@@ -50,10 +49,9 @@ defines+=gtk_version=2 \
          treat_warnings_as_errors=false \
          remove_webcore_debug_symbols=true \
          optimize_webui=false \
-         enable_swiftshader=false \
          enable_nacl=false \
          enable_nacl_nonsfi=false \
-         enable_one_click_signin=false \
+         enable_google_now=false \
          enable_hangout_services_extension=false \
          enable_iterator_debugging=false \
          goma_dir=\"\" \
@@ -97,17 +95,12 @@ override_dh_auto_configure:
 	$(CXX) --version
 	# use system flot
 	for file in $(flotpaths); do ln -sf $$file third_party/flot; done
-	# use polymer from chromium's top level third_party directory
-	ln -sf ../../../../third_party/polymer/v1_0/components-chromium third_party/catapult/third_party/polymer/components
-	# put yasm script in the location expected by gn
-	ln -sf ../pdfium/third_party/yasm/run_yasm.py third_party/yasm
 	# strip out system third_party libraries
 	rm -f build/config/freetype/freetype.gni
 	mkdir -p base/third_party/libevent
 	./debian/scripts/unbundle
 	# build gn
-	cp base/numerics/safe_conversions_arm_impl.h base/numerics/safe_math_arm_impl.h tools/gn/base/numerics
-	./tools/gn/bootstrap/bootstrap.py --skip-generate-buildfiles -s $(njobs)
+	./tools/gn/bootstrap/bootstrap.py -s $(njobs)
 	# configure
 	./out/Release/gn gen out/Release --args="$(defines)"
 

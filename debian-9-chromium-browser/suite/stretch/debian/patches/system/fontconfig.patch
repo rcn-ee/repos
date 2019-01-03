@@ -10,19 +10,24 @@ author: Michael Gilbert <mgilbert@debian.org>
 -import("//buildtools/deps_revisions.gni")
  import("//build/config/c++/c++.gni")
  import("//build/config/clang/clang.gni")
- import("//build/config/compiler/compiler.gni")
+ import("//build/config/sanitizers/sanitizers.gni")
 --- a/base/test/BUILD.gn
 +++ b/base/test/BUILD.gn
-@@ -206,7 +206,7 @@ static_library("test_support") {
-     deps += [ "//third_party/fuchsia-sdk:zx" ]
+@@ -187,13 +187,6 @@ static_library("test_support") {
+ 
+   if (is_linux) {
+     public_deps += [ ":fontconfig_util_linux" ]
+-    data_deps = [
+-      "//third_party/test_fonts",
+-    ]
+-    if (current_toolchain == host_toolchain) {
+-      data_deps += [ ":do_generate_fontconfig_caches" ]
+-      data += [ "$root_out_dir/fontconfig_caches/" ]
+-    }
    }
  
--  if (is_linux) {
-+  if (false) {
-     public_deps += [ ":fontconfig_util_linux" ]
-     data_deps = [
-       "//third_party/test_fonts",
-@@ -362,7 +362,7 @@ if (is_linux) {
+   if (is_ios) {
+@@ -340,7 +333,7 @@ if (is_linux) {
      ]
    }
  
@@ -33,12 +38,12 @@ author: Michael Gilbert <mgilbert@debian.org>
        sources = [
 --- a/content/shell/test_runner/BUILD.gn
 +++ b/content/shell/test_runner/BUILD.gn
-@@ -178,7 +178,7 @@ group("resources") {
-   if (is_mac) {
-     deps += [ ":test_runner_bundle_data" ]
-     data_deps += [ ":test_runner_bundle_data" ]
--  } else {
-+  } else if (false) {
+@@ -203,7 +203,7 @@ group("resources") {
+     deps += [ ":copy_android_fonts_config" ]
+     data_deps += [ ":copy_android_fonts_config" ]
+   }
+-  if (is_android || is_linux || is_fuchsia) {
++  if (false) {
      deps += [ "//third_party/test_fonts" ]
      data_deps += [ "//third_party/test_fonts" ]
    }
