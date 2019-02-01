@@ -1,0 +1,21 @@
+#!/bin/sh
+set -e
+
+# Remove shutdown and reboot links; this init script does not need them.
+case "$1" in
+  configure)
+	if dpkg --compare-versions "$2" lt "5.38+svn2879-1"; then
+		if [ -e /etc/rc0.d/K20smartmontools ]; then
+			rm -f /etc/rc0.d/K20smartmontools
+		fi
+		if [ -e /etc/rc6.d/K20smartmontools ]; then
+			rm -f /etc/rc6.d/K20smartmontools
+		fi
+	fi
+ ;;
+esac
+
+dpkg-maintscript-helper rm_conffile \
+	/etc/init.d/smartd 6.1+svn3812-1~ smartmontools -- "$@"
+
+#DEBHELPER#

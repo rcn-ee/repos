@@ -1,0 +1,1044 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Bad block HOWTO for smartmontools</title><meta name="generator" content="DocBook XSL Stylesheets V1.75.2"><meta name="description" content="This article describes what actions might be taken when smartmontools detects a bad block on a disk. It demonstrates how to identify the file associated with an unreadable disk sector, and how to force that sector to reallocate."></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article" title="Bad block HOWTO for smartmontools"><div class="titlepage"><div><div><h2 class="title"><a name="index"></a>Bad block HOWTO for smartmontools</h2></div><div><div class="author"><h3 class="author"><span class="firstname">Bruce</span> <span class="surname">Allen</span></h3><div class="affiliation"><div class="address"><p><br>
+      <code class="email">&lt;<a class="email" href="mailto:smartmontools-support@lists.sourceforge.net">smartmontools-support@lists.sourceforge.net</a>&gt;</code><br>
+     </p></div></div></div></div><div><div class="author"><h3 class="author"><span class="firstname">Douglas</span> <span class="surname">Gilbert</span></h3><div class="affiliation"><div class="address"><p><br>
+      <code class="email">&lt;<a class="email" href="mailto:smartmontools-support@lists.sourceforge.net">smartmontools-support@lists.sourceforge.net</a>&gt;</code><br>
+     </p></div></div></div></div><div><p class="copyright">Copyright © 2004, 2005, 2006, 2007 Bruce Allen</p></div><div><div class="legalnotice" title="Legal Notice"><a name="id2541562"></a><p>
+      Permission is granted to copy, distribute and/or modify this document
+      under the terms of the GNU Free Documentation License, Version 1.1
+      or any later version published by the Free Software Foundation;
+      with no Invariant Sections, with no Front-Cover Texts, and with
+      no Back-Cover Texts.
+   </p><p>
+    For an online copy of the license see
+    <a class="ulink" href="http://www.fsf.org/copyleft/fdl.html" target="_top">
+    <code class="literal">www.fsf.org/copyleft/fdl.html</code></a>.
+   </p></div></div><div><p class="pubdate">2007-01-23</p></div><div><div class="revhistory"><table border="1" width="100%" summary="Revision history"><tr><th align="left" valign="top" colspan="3"><b>Revision History</b></th></tr><tr><td align="left">Revision 1.1</td><td align="left">2007-01-23</td><td align="left">dpg</td></tr><tr><td align="left" colspan="3">
+             add sections on ReiserFS and partition table damage
+       </td></tr><tr><td align="left">Revision 1.0</td><td align="left">2006-11-14</td><td align="left">dpg</td></tr><tr><td align="left" colspan="3">
+             merge BadBlockHowTo.txt and BadBlockSCSIHowTo.txt
+       </td></tr></table></div></div><div><div class="abstract" title="Abstract"><p class="title"><b>Abstract</b></p><p>
+    This article describes what actions might be taken when smartmontools
+    detects a bad block on a disk. It demonstrates how to identify the file
+    associated with an unreadable disk sector, and how to force that sector
+    to reallocate.
+  </p></div></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="#intro">Introduction</a></span></dt><dt><span class="sect1"><a href="#rfile">Repairs in a file system</a></span></dt><dd><dl><dt><span class="sect2"><a href="#e2_example1">ext2/ext3 first example</a></span></dt><dt><span class="sect2"><a href="#e2_example2">ext2/ext3 second example</a></span></dt><dt><span class="sect2"><a href="#unassigned">Unassigned sectors</a></span></dt><dt><span class="sect2"><a href="#reiserfs_ex">ReiserFS example</a></span></dt></dl></dd><dt><span class="sect1"><a href="#sdisk">Repairs at the disk level</a></span></dt><dd><dl><dt><span class="sect2"><a href="#partition">Partition table problems</a></span></dt><dt><span class="sect2"><a href="#lvm">LVM repairs</a></span></dt><dt><span class="sect2"><a href="#bb">Bad block reassignment</a></span></dt></dl></dd></dl></div><div class="sect1" title="Introduction"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="intro"></a>Introduction</h2></div></div></div><p>
+Handling bad blocks is a difficult problem as it often involves
+decisions about losing information. Modern storage devices tend
+to handle the simple cases automatically, for example by writing
+a disk sector that was read with difficulty to another area on
+the media. Even though such a remapping can be done by a disk
+drive transparently, there is still a lingering worry about media
+deterioration and the disk running out of spare sectors to remap.
+</p><p>
+Can smartmontools help? As the <acronym class="acronym">SMART</acronym> acronym
+<sup>[<a name="id2506421" href="#ftn.id2506421" class="footnote">1</a>]</sup>
+suggests, the <span class="command"><strong>smartctl</strong></span> command and the
+<span class="command"><strong>smartd</strong></span> daemon concentrate on monitoring and analysis.
+So apart from changing some reporting settings, smartmontools will not
+modify the raw data in a device. Also smartmontools only works with
+physical devices, it does not know about partitions and file systems.
+So other tools are needed. The job of smartmontools is to alert the user
+that something is wrong and user intervention may be required.
+</p><p>
+When a bad block is reported one approach is to work out the mapping between
+the logical block address used by a storage device and a file or some other
+component of a file system using that device. Note that there may not be such
+a mapping reflecting that a bad block has been found at a location not
+currently used by the file system. A user may want to do this analysis to
+localize and minimize the number of replacement files that are retrieved from
+some backup store. This approach requires knowledge of the file system
+involved and this document uses the Linux ext2/ext3 and ReiserFS file systems
+for examples. Also the type of content may come into play. For example if
+an area storing video has a corrupted sector, it may be easiest to accept
+that a frame or two might be corrupted and instruct the disk not to retry
+as that may have the visual effect of causing a momentary blank into a 1
+second pause (while the disk retries the faulty sector, often accompanied
+by a telltale clicking sound).
+</p><p>
+Another approach is to ignore the upper level consequences (e.g. corrupting
+a file or worse damage to a file system) and use the facilities offered by
+a storage device to repair the damage. The SCSI disk command set is used
+elaborate on this low level approach.
+</p></div><div class="sect1" title="Repairs in a file system"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="rfile"></a>Repairs in a file system</h2></div></div></div><p>
+This section contains examples of what to do at the file system level
+when smartmontools reports a bad block. These examples assume the Linux
+operating system and either the ext2/ext3 or ReiserFS file system. The
+various Linux commands shown have man pages and the reader is encouraged
+to examine these. Of note is the <span class="command"><strong>dd</strong></span> command which is
+often used in repair work
+<sup>[<a name="id2506498" href="#ftn.id2506498" class="footnote">2</a>]</sup>
+and has a unique command line syntax.
+</p><p>
+The authors would like to thank Sergey Vlasov, Theodore Ts'o,
+Michael Bendzick, and others for explaining this approach. The authors would
+like to add text showing how to do this for other file systems, in
+particular XFS, and JFS: please email if you can provide this
+information.
+</p><div class="sect2" title="ext2/ext3 first example"><div class="titlepage"><div><div><h3 class="title"><a name="e2_example1"></a>ext2/ext3 first example</h3></div></div></div><p>
+In this example, the disk is failing self-tests at Logical Block
+Address LBA = 0x016561e9 = 23421417.  The LBA counts sectors in units
+of 512 bytes, and starts at zero.
+</p><p>
+</p><pre class="programlisting">
+root]# smartctl -l selftest /dev/hda:
+
+SMART Self-test log structure revision number 1
+Num  Test_Description    Status                  Remaining  LifeTime(hours)  LBA_of_first_error
+# 1  Extended offline    Completed: read failure       90%       217         0x016561e9
+</pre><p>
+Note that other signs that there is a bad sector on the disk can be
+found in the non-zero value of the Current Pending Sector count:
+</p><pre class="programlisting">
+root]# smartctl -A /dev/hda
+ID# ATTRIBUTE_NAME          FLAG     VALUE WORST THRESH TYPE      UPDATED  WHEN_FAILED RAW_VALUE
+  5 Reallocated_Sector_Ct   0x0033   100   100   005    Pre-fail  Always       -       0
+196 Reallocated_Event_Count 0x0032   100   100   000    Old_age   Always       -       0
+197 Current_Pending_Sector  0x0022   100   100   000    Old_age   Always       -       1
+198 Offline_Uncorrectable   0x0008   100   100   000    Old_age   Offline      -       1
+</pre><p>
+</p><p>
+First Step: We need to locate the partition on which this sector of
+the disk lives:
+</p><pre class="programlisting">
+root]# fdisk -lu /dev/hda
+
+Disk /dev/hda: 123.5 GB, 123522416640 bytes
+255 heads, 63 sectors/track, 15017 cylinders, total 241254720 sectors
+Units = sectors of 1 * 512 = 512 bytes
+
+   Device Boot    Start       End    Blocks   Id  System
+/dev/hda1   *        63   4209029   2104483+  83  Linux
+/dev/hda2       4209030   5269319    530145   82  Linux swap
+/dev/hda3       5269320 238227884 116479282+  83  Linux
+/dev/hda4     238227885 241248104   1510110   83  Linux
+</pre><p>
+
+The partition <code class="filename">/dev/hda3</code> starts at LBA 5269320 and
+extends past the 'problem' LBA.  The 'problem' LBA is offset
+23421417 - 5269320 = 18152097 sectors into the partition
+<code class="filename">/dev/hda3</code>.
+</p><p>
+To verify the type of the file system and the mount point, look in
+<code class="filename">/etc/fstab</code>:
+</p><pre class="programlisting">
+root]# grep hda3 /etc/fstab
+/dev/hda3 /data ext2 defaults 1 2
+</pre><p>
+You can see that this is an ext2 file system, mounted at
+<code class="filename">/data</code>.
+</p><p>
+Second Step: we need to find the block size of the file system
+(normally 4096 bytes for ext2):
+</p><pre class="programlisting">
+root]# tune2fs -l /dev/hda3 | grep Block
+Block count:              29119820
+Block size:               4096
+</pre><p>
+In this case the block size is 4096 bytes.
+
+Third Step: we need to determine which File System Block contains this
+LBA.  The formula is:
+</p><pre class="programlisting">
+  b = (int)((L-S)*512/B)
+where:
+b = File System block number
+B = File system block size in bytes
+L = LBA of bad sector
+S = Starting sector of partition as shown by fdisk -lu
+and (int) denotes the integer part.
+</pre><p>
+
+In our example, L=23421417, S=5269320, and B=4096.  Hence the
+'problem' LBA is in block number
+</p><pre class="programlisting">
+   b = (int)18152097*512/4096 = (int)2269012.125
+so b=2269012.
+</pre><p>
+</p><p>
+Note: the fractional part of 0.125 indicates that this problem LBA is
+actually the second of the eight sectors that make up this file system
+block.
+</p><p>
+Fourth Step: we use debugfs to locate the inode stored in this block,
+and the file that contains that inode:
+</p><pre class="programlisting">
+root]# debugfs
+debugfs 1.32 (09-Nov-2002)
+debugfs:  open /dev/hda3
+debugfs:  testb 2269012
+Block 2269012 not in use
+</pre><p>
+
+If the block is not in use, as in the above example, then you can skip
+the rest of this step and go ahead to Step Five.
+</p><p>
+If, on the other hand, the block is in use, we want to identify
+the file that uses it:
+</p><pre class="programlisting">
+debugfs:  testb 2269012
+Block 2269012 marked in use
+debugfs:  icheck 2269012
+Block   Inode number
+2269012 41032
+debugfs:  ncheck 41032
+Inode   Pathname
+41032   /S1/R/H/714197568-714203359/H-R-714202192-16.gwf
+</pre><p>
+In this example, you can see that the problematic file (with the mount
+point included in the path) is:
+<code class="filename">/data/S1/R/H/714197568-714203359/H-R-714202192-16.gwf</code>
+</p><p>
+When we are working with an ext3 file system, it may happen that the
+affected file is the journal itself.  Generally, if this is the case,
+the inode number will be very small.  In any case, debugfs will not
+be able to get the file name:
+</p><pre class="programlisting">
+debugfs:  testb 2269012
+Block 2269012 marked in use
+debugfs:  icheck 2269012
+Block   Inode number
+2269012 8
+debugfs:  ncheck 8
+Inode   Pathname
+debugfs:
+</pre><p>
+</p><p>
+To get around this situation, we can remove the journal altogether:
+</p><pre class="programlisting">
+tune2fs -O ^has_journal /dev/hda3
+</pre><p>
+
+and then start again with Step Four: we should see this time that the
+wrong block is not in use any more.  If we removed the journal file, at
+the end of the whole procedure we should remember to rebuild it:
+</p><pre class="programlisting">
+tune2fs -j /dev/hda3
+</pre><p>
+</p><p>
+Fifth Step
+<span class="emphasis"><em>NOTE:</em></span> This last step will <span class="emphasis"><em>permanently
+
+</em></span> and irretrievably <span class="emphasis"><em>destroy</em></span> the contents
+of the file system block that is damaged: if the block was allocated to
+a file, some of the data that is in this file is going to be overwritten
+with zeros.  You will not be able to recover that data unless you can
+replace the file with a fresh or correct version.
+</p><p>
+To force the disk to reallocate this bad block we'll write zeros to
+the bad block, and sync the disk:
+</p><pre class="programlisting">
+root]# dd if=/dev/zero of=/dev/hda3 bs=4096 count=1 seek=2269012
+root]# sync
+</pre><p>
+</p><p>
+Now everything is back to normal: the sector has been reallocated.
+Compare the output just below to similar output near the top of this
+article:
+</p><pre class="programlisting">
+root]# smartctl -A /dev/hda
+ID# ATTRIBUTE_NAME          FLAG     VALUE WORST THRESH TYPE      UPDATED  WHEN_FAILED RAW_VALUE
+  5 Reallocated_Sector_Ct   0x0033   100   100   005    Pre-fail  Always       -       1
+196 Reallocated_Event_Count 0x0032   100   100   000    Old_age   Always       -       1
+197 Current_Pending_Sector  0x0022   100   100   000    Old_age   Always       -       0
+198 Offline_Uncorrectable   0x0008   100   100   000    Old_age   Offline      -       1
+</pre><p>
+
+Note: for some disks it may be necessary to update the SMART Attribute values by using
+<span class="command"><strong>smartctl -t offline /dev/hda</strong></span>
+</p><p>
+We have corrected the first errored block.  If more than one blocks
+were errored, we should repeat all the steps for the subsequent ones.
+After we do that, the disk will pass its self-tests again:
+
+</p><pre class="programlisting">
+root]# smartctl -t long /dev/hda  [wait until test completes, then]
+root]# smartctl -l selftest /dev/hda
+
+SMART Self-test log structure revision number 1
+Num  Test_Description    Status                  Remaining  LifeTime(hours)  LBA_of_first_error
+# 1  Extended offline    Completed without error       00%       239         -
+# 2  Extended offline    Completed: read failure       90%       217         0x016561e9
+# 3  Extended offline    Completed: read failure       90%       212         0x016561e9
+# 4  Extended offline    Completed: read failure       90%       181         0x016561e9
+# 5  Extended offline    Completed without error       00%        14         -
+# 6  Extended offline    Completed without error       00%         4         -
+</pre><p>
+</p><p>
+and no longer shows any offline uncorrectable sectors:
+
+</p><pre class="programlisting">
+root]# smartctl -A /dev/hda
+ID# ATTRIBUTE_NAME          FLAG     VALUE WORST THRESH TYPE      UPDATED  WHEN_FAILED RAW_VALUE
+  5 Reallocated_Sector_Ct   0x0033   100   100   005    Pre-fail  Always       -       1
+196 Reallocated_Event_Count 0x0032   100   100   000    Old_age   Always       -       1
+197 Current_Pending_Sector  0x0022   100   100   000    Old_age   Always       -       0
+198 Offline_Uncorrectable   0x0008   100   100   000    Old_age   Offline      -       0
+</pre><p>
+</p></div><div class="sect2" title="ext2/ext3 second example"><div class="titlepage"><div><div><h3 class="title"><a name="e2_example2"></a>ext2/ext3 second example</h3></div></div></div><p>
+On this drive, the first sign of trouble was this email from smartd:
+</p><pre class="programlisting">
+    To: ballen
+    Subject: SMART error (selftest) detected on host: medusa-slave166.medusa.phys.uwm.edu
+
+    This email was generated by the smartd daemon running on host:
+    medusa-slave166.medusa.phys.uwm.edu in the domain: master001-nis
+
+    The following warning/error was logged by the smartd daemon:
+    Device: /dev/hda, Self-Test Log error count increased from 0 to 1
+</pre><p>
+</p><p>
+Running <span class="command"><strong>smartctl -a /dev/hda</strong></span> confirmed the problem:
+    
+</p><pre class="programlisting">
+Num  Test_Description    Status                  Remaining  LifeTime(hours)  LBA_of_first_error
+# 1  Extended offline    Completed: read failure       80%       682         0x021d9f44
+
+Note that the failing LBA reported is 0x021d9f44 (base 16) = 35495748 (base 10)
+    
+ID# ATTRIBUTE_NAME          FLAG     VALUE WORST THRESH TYPE      UPDATED  WHEN_FAILED RAW_VALUE
+  5 Reallocated_Sector_Ct   0x0033   100   100   005    Pre-fail  Always       -       0
+196 Reallocated_Event_Count 0x0032   100   100   000    Old_age   Always       -       0
+197 Current_Pending_Sector  0x0022   100   100   000    Old_age   Always       -       3
+198 Offline_Uncorrectable   0x0008   100   100   000    Old_age   Offline      -       3
+</pre><p>
+</p><p>
+and one can see above that there are 3 sectors on the list of pending
+sectors that the disk can't read but would like to reallocate.
+</p><p>
+The device also shows errors in the SMART error log:
+</p><pre class="programlisting">
+Error 212 occurred at disk power-on lifetime: 690 hours
+  After command completion occurred, registers were:
+  ER ST SC SN CL CH DH
+  -- -- -- -- -- -- --
+  40 51 12 46 9f 1d e2  Error: UNC 18 sectors at LBA = 0x021d9f46 = 35495750
+
+  Commands leading to the command that caused the error were:
+  CR FR SC SN CL CH DH DC   Timestamp  Command/Feature_Name
+  -- -- -- -- -- -- -- --   ---------  --------------------
+  25 00 12 46 9f 1d e0 00 2485545.000  READ DMA EXT
+</pre><p>
+</p><p>
+Signs of trouble at this LBA may also be found in SYSLOG:
+</p><pre class="programlisting">
+[root]# grep LBA /var/log/messages | awk '{print $12}' | sort | uniq
+ LBAsect=35495748
+ LBAsect=35495750
+</pre><p>
+</p><p>
+So I decide to do a quick check to see how many bad sectors there
+really are. Using the bash shell I check 70 sectors around the trouble
+area:
+</p><pre class="programlisting">
+[root]# export i=35495730
+[root]# while [ $i -lt 35495800 ]
+        &gt; do echo $i
+        &gt; dd if=/dev/hda of=/dev/null bs=512 count=1 skip=$i
+        &gt; let i+=1
+        &gt; done
+ 
+&lt;SNIP&gt;   
+
+35495734
+1+0 records in
+1+0 records out
+35495735
+dd: reading `/dev/hda': Input/output error
+0+0 records in
+0+0 records out
+
+&lt;SNIP&gt;
+
+35495751
+dd: reading `/dev/hda': Input/output error
+0+0 records in
+0+0 records out
+35495752
+1+0 records in
+1+0 records out
+
+&lt;SNIP&gt;
+</pre><p>
+</p><p>
+which shows that the seventeen sectors 35495735-35495751 (inclusive)
+are not readable.
+</p><p>
+Next, we identify the files at those locations.  The partitioning
+information on this disk is identical to the first example above, and
+as in that case the problem sectors are on the third partition
+<code class="filename">/dev/hda3</code>.  So we have:
+</p><pre class="programlisting">
+     L=35495735 to 35495751
+     S=5269320
+     B=4096
+</pre><p>
+so that b=3778301 to 3778303 are the three bad blocks in the file
+system.
+
+</p><pre class="programlisting">
+[root]# debugfs
+debugfs 1.32 (09-Nov-2002)
+debugfs:  open /dev/hda3
+debugfs:  icheck 3778301
+Block   Inode number
+3778301 45192
+debugfs:  icheck 3778302
+Block   Inode number
+3778302 45192
+debugfs:  icheck 3778303
+Block   Inode number
+3778303 45192
+debugfs:  ncheck 45192
+Inode   Pathname
+45192   /S1/R/H/714979488-714985279/H-R-714979984-16.gwf
+debugfs:  quit
+</pre><p>
+Note that the first few steps of this procedure could also be done
+with a single command, which is very helpful if there are many bad
+blocks (thanks to Danie Marais for pointing this out):
+</p><pre class="programlisting">
+debugfs: icheck 3778301 3778302 3778303
+</pre><p>
+</p><p>
+And finally, just to confirm that this is really the damaged file:
+</p><p>
+</p><pre class="programlisting">
+[root]# md5sum /data/S1/R/H/714979488-714985279/H-R-714979984-16.gwf
+md5sum: /data/S1/R/H/714979488-714985279/H-R-714979984-16.gwf: Input/output error
+</pre><p>
+</p><p>
+Finally we force the disk to reallocate the three bad blocks:
+</p><pre class="programlisting">
+[root]# dd if=/dev/zero of=/dev/hda3 bs=4096 count=3 seek=3778301
+[root]# sync
+</pre><p>
+</p><p>
+We could also probably use:
+</p><pre class="programlisting">
+[root]# dd if=/dev/zero of=/dev/hda bs=512 count=17 seek=35495735
+</pre><p>
+</p><p>
+At this point we now have:
+</p><pre class="programlisting">
+ID# ATTRIBUTE_NAME          FLAG     VALUE WORST THRESH TYPE      UPDATED  WHEN_FAILED RAW_VALUE
+  5 Reallocated_Sector_Ct   0x0033   100   100   005    Pre-fail  Always       -       0
+196 Reallocated_Event_Count 0x0032   100   100   000    Old_age   Always       -       0
+197 Current_Pending_Sector  0x0022   100   100   000    Old_age   Always       -       0
+198 Offline_Uncorrectable   0x0008   100   100   000    Old_age   Offline      -       0
+</pre><p>
+</p><p>
+which is encouraging, since the pending sectors count is now zero.
+Note that the drive reallocation count has not yet increased: the
+drive may now have confidence in these sectors and have decided not to
+reallocate them..
+</p><p>
+A device self test: 
+</p><pre class="programlisting">
+  [root#] smartctl -t long /dev/hda
+(then wait about an hour) shows no unreadable sectors or errors:
+
+Num  Test_Description    Status                  Remaining  LifeTime(hours)  LBA_of_first_error
+# 1  Extended offline    Completed without error       00%       692         -
+# 2  Extended offline    Completed: read failure       80%       682         0x021d9f44
+</pre><p>
+</p></div><div class="sect2" title="Unassigned sectors"><div class="titlepage"><div><div><h3 class="title"><a name="unassigned"></a>Unassigned sectors</h3></div></div></div><p>
+This section was written by Kay Diederichs. Even though this section
+assumes Linux and the ext2/ext3 file system, the strategy should be
+more generally applicable.
+</p><p>
+I read your badblocks-howto at and greatly
+benefited from it. One thing that's (maybe) missing is that often the
+<span class="command"><strong>smartctl -t long</strong></span> scan finds a bad sector which is
+<span class="emphasis"><em> not</em></span> assigned to
+any file. In that case it does not help to run debugfs, or rather
+debugfs reports the fact that no file owns that sector. Furthermore,
+it is somewhat laborious to come up with the correct numbers for
+debugfs, and debugfs is slow ...
+</p><p>
+So what I suggest in the case of presence of
+Current_Pending_Sector/Offline_Uncorrectable errors is to create a
+huge file on that file system.
+</p><pre class="programlisting">
+  dd if=/dev/zero of=/some/mount/point bs=4k
+</pre><p>
+creates the file. Leave it running until the partition/file system is
+full. This will make the disk reallocate those sectors which do not
+belong to a file. Check the <span class="command"><strong>smartctl -a</strong></span> output after
+that and make
+sure that the sectors are reallocated. If any remain, use the debugfs
+method.  Of course the usual caveats apply - back it up first, and so
+on.
+</p></div><div class="sect2" title="ReiserFS example"><div class="titlepage"><div><div><h3 class="title"><a name="reiserfs_ex"></a>ReiserFS example</h3></div></div></div><p>
+This section was written by Joachim Jautz with additions from Manfred
+Schwarb.
+</p><p>
+The following problems were reported during a scheduled test:
+</p><pre class="programlisting">
+smartd[575]: Device: /dev/hda, starting scheduled Offline Immediate Test.
+[... 1 hour later ...]
+smartd[575]: Device: /dev/hda, 1 Currently unreadable (pending) sectors
+smartd[575]: Device: /dev/hda, 1 Offline uncorrectable sectors
+</pre><p>
+</p><p>
+[Step 0] The SMART selftest/error log
+(see <span class="command"><strong>smartctl -l selftest</strong></span>) indicated there was a problem
+with block address (i.e. the 512 byte sector at) 58656333. The partition
+table (e.g. see <span class="command"><strong>sfdisk -luS /dev/hda</strong></span> or
+<span class="command"><strong>fdisk -ul /dev/hda</strong></span>) indicated that this block was in the
+<code class="filename">/dev/hda3</code> partition which contained a ReiserFS file
+system. That partition started at block address 54781650.
+</p><p>
+While doing the initial analysis it may also be useful to take a copy
+of the disk attributes returned by <span class="command"><strong>smartctl -A /dev/hda</strong></span>.
+Specifically the values associated with the "Reallocated_Sector_Ct" and
+"Reallocated_Event_Count" attributes (for ATA disks, the grown list (GLIST)
+length for SCSI disks). If these are incremented at the end of the procedure
+it indicates that the disk has re-allocated one or more sectors.
+</p><p>
+[Step 1] Get the file system's block size:
+</p><pre class="programlisting">
+# debugreiserfs /dev/hda3 | grep '^Blocksize'
+Blocksize: 4096
+</pre><p>
+</p><p>
+[Step 2] Calculate the block number:
+</p><pre class="programlisting">
+# echo "(58656333-54781650)*512/4096" | bc -l
+484335.37500000000000000000
+</pre><p>
+It is re-assuring that the calculated 4 KB damaged block address in
+<code class="filename">/dev/hda3</code> is less than "Count of blocks on the
+device" shown in the output of <span class="command"><strong>debugreiserfs</strong></span> shown above.
+</p><p>
+[Step 3] Try to get more info about this block =&gt; reading the block
+fails as expected but at least we see now that it seems to be unused.
+If we do not get the `Cannot read the block' error we should
+check if our calculation in [Step 2] was correct ;)
+</p><pre class="programlisting">
+# debugreiserfs -1 484335 /dev/hda3
+debugreiserfs 3.6.19 (2003 http://www.namesys.com)
+
+484335 is free in ondisk bitmap
+The problem has occurred looks like a hardware problem.
+</pre><p>
+</p><p>
+If you have bad blocks, we advise you to get a new hard drive, because
+once you get one bad block that the disk drive internals cannot hide from
+your sight, the chances of getting more are generally said to become
+much higher (precise statistics are unknown to us), and this disk
+drive is probably not expensive enough for you to risk your
+time and data on it. If you don't want to follow that 
+advice then if you have just a few bad blocks, try writing to the
+bad blocks and see if the drive remaps the bad blocks (that means
+it takes a block it has in reserve and allocates it for use for
+of that block number). If it cannot remap the block, use
+<span class="command"><strong>badblock</strong></span> option (-B) with reiserfs utils to handle
+this block correctly.
+</p><pre class="programlisting">
+bread: Cannot read the block (484335): (Input/output error).
+
+Aborted
+</pre><p>
+So it looks like we have the right (i.e. faulty) block address.
+</p><p>
+[Step 4] Try then to find the affected file
+<sup>[<a name="id2550815" href="#ftn.id2550815" class="footnote">3</a>]</sup>:
+</p><pre class="programlisting">
+tar -cO /mydir | cat &gt;/dev/null
+</pre><p>
+If you do not find any unreadable files, then the block may be free or
+located in some metadata of the file system.
+</p><p>
+[Step 5] Try your luck: bang the affected block with
+<span class="command"><strong>badblocks -n</strong></span> (non-destructive read-write mode, do unmount
+first), if you are very lucky the failure is transient and you can provoke
+reallocation
+<sup>[<a name="id2550862" href="#ftn.id2550862" class="footnote">4</a>]</sup>:
+</p><pre class="programlisting">
+# badblocks -b 4096 -p 3 -s -v -n /dev/hda3 `expr 484335 + 100` `expr 484335 - 100`
+</pre><p>
+<sup>[<a name="id2550876" href="#ftn.id2550876" class="footnote">5</a>]</sup>
+</p><p>
+check success with <span class="command"><strong>debugreiserfs -1 484335 /dev/hda3</strong></span>.
+Otherwise:
+</p><p>
+[Step 6] Perform this step <span class="emphasis"><em>only</em></span> if Step 5 has failed
+to fix the problem: overwrite that block to force reallocation:
+</p><pre class="programlisting">
+# dd if=/dev/zero of=/dev/hda3 count=1 bs=4096 seek=484335
+1+0 records in
+1+0 records out
+4096 bytes transferred in 0.007770 seconds (527153 bytes/sec)
+</pre><p>
+</p><p>
+[Step 7] If you can't rule out the bad block being in metadata, do
+a file system check:
+</p><pre class="programlisting">
+reiserfsck --check
+</pre><p>
+This could take a long time so you probably better go for lunch ...
+</p><p>
+[Step 8] Proceed as stated earlier. For example, sync disk and run a long
+selftest that should succeed now.
+</p></div></div><div class="sect1" title="Repairs at the disk level"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sdisk"></a>Repairs at the disk level</h2></div></div></div><p>
+This section first looks at a damaged partition table. Then it ignores
+the upper level impact of a bad block and just repairs the underlying
+sector so that defective sector will not cause problems in the future.
+</p><div class="sect2" title="Partition table problems"><div class="titlepage"><div><div><h3 class="title"><a name="partition"></a>Partition table problems</h3></div></div></div><p>
+Some software failures can lead to zeroes or random data being written
+on the first block of a disk. For disks that use a DOS-based partitioning
+scheme this will overwrite the partition table which is found at the
+end of the first block. This is a single point of failure so after the
+damage tools like <span class="command"><strong>fdisk</strong></span> have no alternate data to use
+so they report no partitions or a damaged partition table.
+</p><p>
+One utility that may help is 
+<a class="ulink" href="http://www.cgsecurity.org/wiki/TestDisk" target="_top">
+<code class="literal">testdisk</code></a> which can scan a disk looking for
+partitions and recreate a partition table if requested.
+<sup>[<a name="id2550980" href="#ftn.id2550980" class="footnote">6</a>]</sup>
+</p><p>
+Programs that create DOS partitions
+often place the first partition at logical block address 63. In Linux
+a loop back mount can be attempted at the appropriate offset of a disk
+with a damaged partition table. This approach may involve placing the
+disk with the damaged partition table in a working computer or perhaps
+an external USB enclosure. Assuming the disk with the damaged partition
+is <code class="filename">/dev/hdb</code>. Then the following read-only loop back
+mount could be tried:
+</p><pre class="programlisting">
+# mount -r /dev/hdb -o loop,offset=32256 /mnt
+</pre><p>
+The offset is in bytes so the number given is (63 * 512). If the file
+system cannot be identified then a '-t &lt;fs_type&gt;'
+may be needed (although this is not a good sign). If this mount is
+successful, a backup procedure is advised.
+</p><p>
+Only the primary DOS partitions are recorded in the first block of
+a disk. The extended DOS partition table is placed elsewhere on
+a disk. Again there is only one copy of it so it represents another
+single point of failure. All DOS partition information can be
+read in a form that can be used to recreate the tables with the
+<span class="command"><strong>sfdisk</strong></span> command. Obviously this needs to be done
+beforehand and the file put on other media. Here is how to fetch the
+partition table information:
+</p><pre class="programlisting">
+# sfdisk -dx /dev/hda &gt; my_disk_partition_info.txt
+</pre><p>
+Then <code class="filename">my_disk_partition_info.txt</code> should be placed on
+other media. If disaster strikes, then the disk with the damaged partition
+table(s) can be placed in a working system, let us say the damaged disk is
+now at <code class="filename">/dev/hdc</code>, and the following command restores
+the partition table(s):
+</p><pre class="programlisting">
+# sfdisk -x -O part_block_prior.img /dev/hdc &lt; my_disk_partition_info.txt
+</pre><p>
+Since the above command is potentially destructive it takes a copy of the
+block(s) holding the partition table(s) and puts it in
+<code class="filename">part_block_prior.img</code> prior to any changes. Then it
+changes the partition tables as indicated by
+<code class="filename">my_disk_partition_info.txt</code>. For what it is worth the
+author did test this on his system!
+<sup>[<a name="id2551099" href="#ftn.id2551099" class="footnote">7</a>]</sup>
+</p><p>
+For creating, destroying, resizing, checking and copying partitions, and
+the file systems on them, GNU's
+<a class="ulink" href="http://www.gnu.org/software/parted" target="_top">
+<code class="literal">parted</code></a> is worth examining.
+The <a class="ulink" href="http://www.tldp.org/HOWTO/Large-Disk-HOWTO.html" target="_top">
+<code class="literal">Large Disk HOWTO</code></a> is also a useful resource.
+</p></div><div class="sect2" title="LVM repairs"><div class="titlepage"><div><div><h3 class="title"><a name="lvm"></a>LVM repairs</h3></div></div></div><p>
+This section was written by Frederic BOITEUX. It was titled: "HOW TO
+LOCATE AND REPAIR BAD BLOCKS ON AN LVM VOLUME".
+</p><p>
+Smartd reports an error in a short test :
+</p><pre class="programlisting">
+# smartctl -a /dev/hdb
+...
+SMART Self-test log structure revision number 1
+Num  Test_Description    Status                  Remaining  LifeTime(hours)  LBA_of_first_error
+# 1  Short offline       Completed: read failure       90%        66         37383668
+</pre><p>
+So the disk has a bad block located in LBA block 37383668
+</p><p>
+In which physical partition is the bad block ?
+</p><pre class="programlisting">
+# sfdisk -luS /dev/hdb  # or 'fdisk -ul /dev/hdb'
+
+Disk /dev/hdb: 9729 cylinders, 255 heads, 63 sectors/track
+Units = sectors of 512 bytes, counting from 0
+
+   Device Boot    Start       End   #sectors  Id  System
+/dev/hdb1            63    996029     995967  82  Linux swap / Solaris
+/dev/hdb2   *    996030   1188809     192780  83  Linux
+/dev/hdb3       1188810 156296384  155107575  8e  Linux LVM
+/dev/hdb4             0         -          0   0  Empty
+</pre><p>
+
+It's in the <code class="filename">/dev/hdb3</code> partition, a LVM2 partition.
+From the LVM2 partition beginning, the bad block has an offset of
+</p><pre class="programlisting">
+(37383668 - 1188810) = 36194858
+</pre><p>
+</p><p>
+We have to find in which LVM2 logical partition the block belongs to.
+</p><p>
+In which logical partition is the bad block ?
+</p><p>
+<span class="emphasis"><em>IMPORTANT</em></span> : LVM2 can use different schemes dividing
+its physical partitions to logical ones : linear, striped, contiguous or
+ not... The following example assumes that allocation is linear !
+</p><p>
+The physical partition used by LVM2 is divided in PE (Physical Extent)
+units of the same size, starting at pe_start' 512 bytes blocks from
+the beginning of the physical partition.
+</p><p>
+The 'pvdisplay' command gives the size of the PE (in KB) of the
+LVM partition :
+</p><pre class="programlisting">
+#  part=/dev/hdb3 ; pvdisplay -c $part | awk -F: '{print $8}'
+4096
+</pre><p>
+</p><p>
+To get its size in LBA block size (512 bytes or 0.5 KB), we multiply this
+number by 2 : 4096 * 2 = 8192 blocks for each PE.
+</p><p>
+To find the offset from the beginning of the physical partition is a
+bit more difficult : if you have a recent LVM2 version, try :
+</p><pre class="programlisting">
+# pvs -o+pe_start $part
+</pre><p>
+</p><p>
+Either, you can look in /etc/lvm/backup :
+</p><pre class="programlisting">
+# grep pe_start $(grep -l $part /etc/lvm/backup/*)
+                        pe_start = 384
+</pre><p>
+</p><p>
+Then, we search in which PE is the badblock, calculating the PE rank
+in which the faulty block of the partition is :
+physical partition's bad block number / sizeof(PE) =
+</p><pre class="programlisting">
+36194858 / 8192 = 4418.3176
+</pre><p>
+</p><p>
+So we have to find in which LVM2 logical partition is used the PE
+number 4418 (count starts from 0) :
+</p><pre class="programlisting">
+# lvdisplay --maps |egrep 'Physical|LV Name|Type'
+  LV Name                /dev/WDC80Go/racine
+    Type                linear
+    Physical volume     /dev/hdb3
+    Physical extents    0 to 127
+  LV Name                /dev/WDC80Go/usr
+    Type                linear
+    Physical volume     /dev/hdb3
+    Physical extents    128 to 1407
+  LV Name                /dev/WDC80Go/var
+    Type                linear
+    Physical volume     /dev/hdb3
+    Physical extents    1408 to 1663
+  LV Name                /dev/WDC80Go/tmp
+    Type                linear
+    Physical volume     /dev/hdb3
+    Physical extents    1664 to 1791
+  LV Name                /dev/WDC80Go/home
+    Type                linear
+    Physical volume     /dev/hdb3
+    Physical extents    1792 to 3071
+  LV Name                /dev/WDC80Go/ext1
+    Type                linear
+    Physical volume     /dev/hdb3
+    Physical extents    3072 to 10751
+  LV Name                /dev/WDC80Go/ext2
+    Type                linear
+    Physical volume     /dev/hdb3
+    Physical extents    10752 to 18932
+</pre><p>
+</p><p>
+So the PE #4418 is in the <code class="filename">/dev/WDC80Go/ext1</code>
+LVM logical partition.
+</p><p>
+Size of logical block of file system on <code class="filename">/dev/WDC80Go/ext1
+</code> :
+</p><p>
+It's a ext3 fs, so I get it like this :
+</p><pre class="programlisting">
+# dumpe2fs /dev/WDC80Go/ext1 | grep 'Block size'
+dumpe2fs 1.37 (21-Mar-2005)
+Block size:               4096
+</pre><p>
+</p><p>
+bad block number for the file system :
+</p><p>
+The logical partition begins on PE 3072 :
+</p><pre class="programlisting">
+ (# PE's start of partition * sizeof(PE)) + parttion offset[pe_start] =
+ (3072 * 8192) + 384 = 25166208
+</pre><p>
+512b block of the physical partition, so the bad block number for the
+file system  is :
+</p><pre class="programlisting">
+(36194858 - 25166208) / (sizeof(fs block) / 512)
+= 11028650 / (4096 / 512)  = 1378581.25
+</pre><p>
+</p><p>
+Test of the fs bad block :
+</p><pre class="programlisting">
+dd if=/dev/WDC80Go/ext1 of=block1378581 bs=4096 count=1 skip=1378581
+</pre><p>
+</p><p>
+If this dd command succeeds, without any error message in console or
+syslog, then the block number calculation is probably wrong ! *Don't*
+go further, re-check it and if you don't find the error, please
+renounce !
+</p><p>
+Search / correction follows the same scheme as for simple
+partitions :
+</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>
+find possible impacted files with debugfs (icheck &lt;fs block nb&gt;,
+then ncheck &lt;icheck nb&gt;).
+</p></li><li class="listitem"><p>
+reallocate bad block writing zeros in it, *using the fs block size* :
+</p></li></ul></div><p>
+</p><p>
+</p><pre class="programlisting">
+dd if=/dev/zero of=/dev/WDC80Go/ext1 count=1 bs=4096 seek=1378581
+</pre><p>
+</p><p>
+Et voilà !
+</p></div><div class="sect2" title="Bad block reassignment"><div class="titlepage"><div><div><h3 class="title"><a name="bb"></a>Bad block reassignment</h3></div></div></div><p>
+The SCSI disk command set and associated disk architecture are assumed
+in this section. SCSI disks have their own logical to physical mapping
+allowing a damaged sector (usually carrying 512 bytes of data) to be
+remapped irrespective of the operating system, file system or software
+RAID being used.
+</p><p>
+The terms <span class="emphasis"><em>block</em></span> and <span class="emphasis"><em>sector</em></span> are
+used interchangeably, although block tends to get used in higher level or
+more abstract contexts such as a <span class="emphasis"><em>logical block</em></span>.
+</p><p>
+When a SCSI disk is formatted, defective sectors identified during
+the manufacturing process (the so called primary list: PLIST),
+those found during the format itself (the certification list: CLIST),
+those given explicitly to the format command (the DLIST) and optionally
+the previous grown list (GLIST) are not used in the logical block
+map. The number (and low level addresses) of the unmapped sectors can be
+found with the READ DEFECT DATA SCSI command.
+</p><p>
+SCSI disks tend to be divided into zones which have spare sectors and
+perhaps spare tracks, to support the logical block address mapping
+process. The idea is that if a logical block is remapped, the heads do not
+have to move a long way to access the replacement sector. Note that spare
+sectors are a scarce resource.
+</p><p>
+Once a SCSI disk format has completed successfully, other problems
+may appear over time. These fall into two categories:
+</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>
+recoverable: the Error Correction Codes (ECC) detect a problem
+but it is small enough to be corrected. Optionally other strategies
+such as retrying the access may retrieve the data.
+</p></li><li class="listitem"><p>
+unrecoverable: try as it may, the disk logic and ECC algorithms
+cannot recover the data. This is often reported as a
+<span class="emphasis"><em>medium error</em></span>.
+</p></li></ul></div><p>
+</p><p>
+Other things can go wrong, typically associated with the transport and
+they will be reported using a term other than
+<span class="emphasis"><em>medium error</em></span>. For example a disk may decide a read
+operation was successful but a computer's host bus adapter (HBA) checking
+the incoming data detects a CRC error due to a bad cable or termination.
+</p><p>
+Depending on the disk vendor, recoverable errors can be ignored. After all,
+some disks have up to 68 bytes of ECC above the payload size of 512 bytes
+so why use up spare sectors which are limited in number
+<sup>[<a name="id2551516" href="#ftn.id2551516" class="footnote">8</a>]</sup>
+?
+If the disk can recover the data and does decide to re-allocate (reassign)
+a sector, then first it checks the settings of the ARRE and AWRE bits in the
+read-write error recovery mode page. Usually these bits are set
+<sup>[<a name="id2551535" href="#ftn.id2551535" class="footnote">9</a>]</sup>
+enabling automatic (read or write) re-allocation. The automatic
+re-allocation may also fail if the zone (or disk) has run out of spare
+sectors.
+</p><p>
+Another consideration with RAIDs, and applications that require a high
+data rate without pauses, is that the controller logic may not want a
+disk to spend too long trying to recover an error.
+</p><p>
+Unrecoverable errors will cause a <span class="emphasis"><em>medium error</em></span> sense
+key, perhaps with some useful additional sense information. If the extended
+background self test includes a full disk read scan, one would expect the
+self test log to list the bad block, as shown in the <a class="xref" href="#rfile" title="Repairs in a file system">the section called &#8220;Repairs in a file system&#8221;</a>.
+Recent SCSI disks with a periodic background scan should also list
+unrecoverable read errors (and some recoverable errors as well). The
+advantage of the background scan is that it runs to completion while self
+tests will often terminate at the first serious error.
+</p><p>
+SCSI disks expect unrecoverable errors to be fixed manually using the
+REASSIGN BLOCKS SCSI command since loss of data is involved. It is possible
+that an operating system or a file system could issue the REASSIGN BLOCKS
+command itself but the authors are unaware of any examples. The REASSIGN BLOCKS
+command will reassign one or more blocks, attempting to (partially ?) recover
+the data (a forlorn hope at this stage), fetch an unused spare sector from the
+current zone while adding the damaged old sector to the GLIST (hence the
+name "grown" list). The contents of the GLIST may not be that interesting
+but <span class="command"><strong>smartctl</strong></span> prints out the number of entries in the grown
+list and if that number grows quickly, the disk may be approaching the end
+of its useful life.
+</p><p>
+Here is an alternate brute force technique to consider: if the data on the
+SCSI or ATA disk has all been backed up (e.g. is held on the other disks in
+a RAID 5 enclosure), then simply reformatting the disk may be the least
+cumbersome approach.
+</p><div class="sect3" title="Example"><div class="titlepage"><div><div><h4 class="title"><a name="sexample"></a>Example</h4></div></div></div><p>
+Given a "bad block", it still may be useful to look at the
+<span class="command"><strong>fdisk</strong></span> command (if the disk has multiple partitions)
+to find out which partition is involved, then use
+<span class="command"><strong>debugfs</strong></span> (or a similar tool for the file system in
+question) to find out which, if any, file or other part of the file system
+may have been damaged. This is discussed in the <a class="xref" href="#rfile" title="Repairs in a file system">the section called &#8220;Repairs in a file system&#8221;</a>.
+</p><p>
+Then a program that can execute the REASSIGN BLOCKS SCSI command is
+required. In Linux (2.4 and 2.6 series), FreeBSD, Tru64(OSF) and Windows
+the author's <span class="command"><strong>sg_reassign</strong></span> utility in the sg3_utils
+package can be used. Also found in that package is
+<span class="command"><strong>sg_verify</strong></span> which can be used to check that a block is
+readable.
+</p><p>
+Assume that logical block address 1193046 (which is 123456 in hex) is
+corrupt
+<sup>[<a name="id2551756" href="#ftn.id2551756" class="footnote">10</a>]</sup>
+on the disk at <code class="filename">/dev/sdb</code>. A long selftest command like
+<span class="command"><strong>smartctl -t long /dev/sdb</strong></span> may result in log results
+like this:
+</p><pre class="programlisting">
+# smartctl -l selftest /dev/sdb
+smartctl version 5.37 [i686-pc-linux-gnu] Copyright (C) 2002-6 Bruce Allen
+Home page is http://smartmontools.sourceforge.net/
+
+
+SMART Self-test log
+Num  Test              Status            segment  LifeTime  LBA_first_err [SK ASC ASQ]
+     Description                         number   (hours)
+# 1  Background long   Failed in segment      -     354           1193046 [0x3 0x11 0x0]
+# 2  Background short  Completed              -     323                 - [-   -    -]
+# 3  Background short  Completed              -     194                 - [-   -    -]
+</pre><p>
+</p><p>
+The <span class="command"><strong>sg_verify</strong></span> utility can be used to confirm that there
+is a problem at that address:
+</p><pre class="programlisting">
+# sg_verify --lba=1193046 /dev/sdb
+verify (10):  Fixed format, current;  Sense key: Medium Error
+ Additional sense: Unrecovered read error
+  Info fld=0x123456 [1193046]
+  Field replaceable unit code: 228
+  Actual retry count: 0x008b
+medium or hardware error, reported lba=0x123456
+</pre><p>
+</p><p>
+Now the GLIST length is checked before the block reassignment:
+</p><pre class="programlisting">
+# sg_reassign --grown /dev/sdb
+&gt;&gt; Elements in grown defect list: 0
+</pre><p>
+</p><p>
+And now for the actual reassignment followed by another check of the GLIST
+length:
+</p><pre class="programlisting">
+# sg_reassign --address=1193046 /dev/sdb
+
+# sg_reassign --grown /dev/sdb
+&gt;&gt; Elements in grown defect list: 1
+</pre><p>
+</p><p>
+The GLIST length has grown by one as expected. If the disk was unable to
+recover any data, then the "new" block at lba 0x123456 has vendor specific
+data in it. The <span class="command"><strong>sg_reassign</strong></span> utility can also do bulk
+reassigns, see <span class="command"><strong>man sg_reassign</strong></span> for more information.
+</p><p>
+The <span class="command"><strong>dd</strong></span> command could be used to read the contents of
+the "new" block:
+</p><pre class="programlisting">
+# dd if=/dev/sdb iflag=direct skip=1193046 of=blk.img bs=512 count=1
+</pre><p>
+</p><p>
+and a hex editor
+<sup>[<a name="id2551874" href="#ftn.id2551874" class="footnote">11</a>]</sup>
+used to view and potentially change the
+<code class="filename">blk.img</code> file. An altered <code class="filename">blk.img</code>
+file (or <code class="filename">/dev/zero</code>) could be written back with:
+</p><pre class="programlisting">
+# dd if=blk.img of=/dev/sdb seek=1193046 oflag=direct bs=512 count=1
+</pre><p>
+</p><p>
+More work may be needed at the file system level, especially if the
+reassigned block held critical file system information such as
+a superblock or a directory.
+</p><p>
+Even if a full backup of the disk is available, or the disk has been
+"ejected" from a RAID, it may still be worthwhile to reassign the bad
+block(s) that caused the problem (or simply format the disk (see
+<span class="command"><strong>sg_format</strong></span> in the sg3_utils package)) and re-use the
+disk later (not unlike the way a replacement disk from a manufacturer
+might be used).
+</p><p>
+$Id: badblockhowto.xml 2873 2009-08-11 21:46:20Z dipohl $
+</p></div></div></div><div class="footnotes"><br><hr width="100" align="left"><div class="footnote"><p><sup>[<a name="ftn.id2506421" href="#id2506421" class="para">1</a>] </sup>
+Self-Monitoring, Analysis and Reporting Technology -&gt; SMART
+</p></div><div class="footnote"><p><sup>[<a name="ftn.id2506498" href="#id2506498" class="para">2</a>] </sup>
+Starting with GNU coreutils release 5.3.0, the <span class="command"><strong>dd</strong></span>
+command in Linux includes the options 'iflag=direct' and 'oflag=direct'.
+Using these with the <span class="command"><strong>dd</strong></span> commands should be helpful,
+because adding these flags should avoid any interaction
+with the block buffering IO layer in Linux and permit direct reads/writes
+from the raw device.  Use <span class="command"><strong>dd --help</strong></span> to see if your
+version of dd supports these options. If not, the latest code for dd
+can be found at <a class="ulink" href="http://alpha.gnu.org/gnu/coreutils" target="_top">
+<code class="literal">alpha.gnu.org/gnu/coreutils</code></a>.
+</p></div><div class="footnote"><p><sup>[<a name="ftn.id2550815" href="#id2550815" class="para">3</a>] </sup>
+Do not use <span class="command"><strong>tar -c -f /dev/null</strong></span> or
+<span class="command"><strong>tar -cO /mydir &gt;/dev/null</strong></span>. GNU tar does not
+actually read the files if <code class="filename">/dev/null</code> is used as
+archive path or as standard output, see <span class="command"><strong>info tar</strong></span>.
+</p></div><div class="footnote"><p><sup>[<a name="ftn.id2550862" href="#id2550862" class="para">4</a>] </sup>
+Important: set blocksize range is arbitrary, but do not only test a single
+block, as bad blocks are often social. Not too large as this test probably
+has not 0% risk.
+</p></div><div class="footnote"><p><sup>[<a name="ftn.id2550876" href="#id2550876" class="para">5</a>] </sup>
+The rather awkward `expr 484335 + 100` (note the back quotes) can be replaced
+with $((484335+100)) if the bash shell is being used. Similarly the last
+argument can become $((484335-100)) .
+</p></div><div class="footnote"><p><sup>[<a name="ftn.id2550980" href="#id2550980" class="para">6</a>] </sup>
+<span class="command"><strong>testdisk</strong></span> scans the media for the beginning of file
+systems that it recognizes. It can be tricked by data that looks
+like the beginning of a file system or an old file system from a
+previous partitioning of the media (disk). So care should be taken.
+Note that file systems should not overlap apart from the fact that
+extended partitions lie wholly within a extended partition table
+allocation. Also if the root partition of a Linux/Unix installation
+can be found then the <code class="filename">/etc/fstab</code> file is a useful
+resource for finding the partition numbers of other partitions.
+</p></div><div class="footnote"><p><sup>[<a name="ftn.id2551099" href="#id2551099" class="para">7</a>] </sup>
+Thanks to Manfred Schwarb for the information about storing partition
+table(s) beforehand.
+</p></div><div class="footnote"><p><sup>[<a name="ftn.id2551516" href="#id2551516" class="para">8</a>] </sup>
+Detecting and fixing an error with ECC "on the fly" and not going the further
+step and reassigning the block in question may explain why some disks have
+large numbers in their read error counter log. Various worried users have
+reported large numbers in the "errors corrected without substantial delay"
+counter field which is in the "Errors corrected by ECC fast" column in
+the <span class="command"><strong>smartctl -l error</strong></span> output.
+</p></div><div class="footnote"><p><sup>[<a name="ftn.id2551535" href="#id2551535" class="para">9</a>] </sup>
+Often disks inside a hardware RAID have the ARRE and AWRE bits
+cleared (disabled) so the RAID controller can do things manually or flag
+the disk for replacement.
+</p></div><div class="footnote"><p><sup>[<a name="ftn.id2551756" href="#id2551756" class="para">10</a>] </sup>
+In this case the corruption was manufactured by using the WRITE LONG
+SCSI command. See <span class="command"><strong>sg_write_long</strong></span> in sg3_utils.
+</p></div><div class="footnote"><p><sup>[<a name="ftn.id2551874" href="#id2551874" class="para">11</a>] </sup>
+Most window managers have a handy calculator that will do hex to
+decimal conversions. More work may be needed at the file system level,
+</p></div></div></div></body></html>

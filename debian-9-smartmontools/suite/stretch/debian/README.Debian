@@ -1,0 +1,24 @@
+smartmontools for Debian
+------------------------
+
+To start smartd automatically on system startup set:
+ start_smartd=yes
+in /etc/default/smartmontools. If you only want to enable S.M.A.R.T. for a 
+device without running the daemon use the enable_smart variable.
+
+Don't use enable_smart for any disk monitored by smartd, this is likely to
+cause problems, especially for SATA (see e.g.
+http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=365027).
+
+Package Maintainers and system administrators can put scripts to be run
+when smartd detects an error into /etc/smartmontools/run.d. These
+scripts will be run by smartd-runner using run-parts(8). The script will
+receive the filename of the file containing the errormessage as first
+parameter. See /etc/smartmontools/run.d/10mail for an example.
+
+Upstream recommends running short self tests every day and long self tests once
+per week.
+
+Please read the file WARNINGS in this directory.
+
+ -- Guido Guenther <agx@sigxcpu.org>, Wen, 03 May 2006 21:47:00 +0000
