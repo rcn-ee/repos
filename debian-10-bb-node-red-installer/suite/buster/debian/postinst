@@ -27,10 +27,9 @@ npm_install () {
 	node_version=$(/usr/bin/nodejs --version || true)
 	echo "${package}:nodejs:[${node_version}]"
 
-v8="v8.11.2"
+v10="v10.15.1"
 
            node_red="node-red-0.19.5-a6ef7551"
-       node_red_can="node-red-contrib-can-1.0.8"
       node_red_gpio="node-red-contrib-gpio-0.14.0"
 node_red_mjpgcamera="node-red-contrib-mjpgcamera-1.0.4"
   node_red_particle="node-red-contrib-particle-1.0.1"
@@ -40,8 +39,8 @@ node_red_mjpgcamera="node-red-contrib-mjpgcamera-1.0.4"
 
 	npm_project="node-red"
 	case "${node_version}" in
-	v8.*)
-		npm_file="${node_red}-${v8}.tar.xz"
+	v10.*)
+		npm_file="${node_red}-${v10}.tar.xz"
 		npm_pkg_install
 		;;
 	esac
@@ -63,33 +62,29 @@ node_red_mjpgcamera="node-red-contrib-mjpgcamera-1.0.4"
 	fi
 
 	case "${node_version}" in
-	v8.*)
-		npm_project="node-red-contrib-can"
-		npm_file="${node_red_can}-${v8}.tar.xz"
-		npm_pkg_install
-
+	v10.*)
 		npm_project="node-red-contrib-gpio"
-		npm_file="${node_red_gpio}-${v8}.tar.xz"
+		npm_file="${node_red_gpio}-${v10}.tar.xz"
 		npm_pkg_install
 
 		npm_project="node-red-contrib-mjpgcamera"
-		npm_file="${node_red_mjpgcamera}-${v8}.tar.xz"
+		npm_file="${node_red_mjpgcamera}-${v10}.tar.xz"
 		npm_pkg_install
 
 		npm_project="node-red-contrib-particle"
-		npm_file="${node_red_particle}-${v8}.tar.xz"
+		npm_file="${node_red_particle}-${v10}.tar.xz"
 		npm_pkg_install
 
 		npm_project="node-red-dashboard"
-		npm_file="${node_red_dashboard}-${v8}.tar.xz"
+		npm_file="${node_red_dashboard}-${v10}.tar.xz"
 		npm_pkg_install
 
 		npm_project="node-red-node-serialport"
-		npm_file="${node_red_serial}-${v8}.tar.xz"
+		npm_file="${node_red_serial}-${v10}.tar.xz"
 		npm_pkg_install
 
 		npm_project="node-red-contrib-blockly"
-		npm_file="${node_red_blockly}-${v8}.tar.xz"
+		npm_file="${node_red_blockly}-${v10}.tar.xz"
 		npm_pkg_install
 
 		;;
