@@ -11,7 +11,7 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee5"
+debian_version="${package_version}-0rcnee6"
 debian_untar=""
 debian_patch=""
 
@@ -24,7 +24,7 @@ v10="v10.15.1"
       node_red_gpio="node-red-contrib-gpio-0.14.0"
 node_red_mjpgcamera="node-red-contrib-mjpgcamera-1.0.4"
   node_red_particle="node-red-contrib-particle-1.0.3"
- node_red_dashboard="node-red-dashboard-2.13.0"
+ node_red_dashboard="node-red-dashboard-2.13.2"
     node_red_serial="node-red-node-serialport-0.6.8"
    node_red_blockly="node-red-contrib-blockly-1.1.0"
 
