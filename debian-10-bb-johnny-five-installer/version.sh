@@ -11,14 +11,13 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee1"
+debian_version="${package_version}-0rcnee4"
 debian_untar=""
 debian_patch=""
 
-dl_mirror="https://github.com/rcn-ee/npm-package-node-red/raw/master/deploy/buster"
+#dl_mirror="https://github.com/rcn-ee/npm-package-node-red/raw/master/deploy/buster"
+dl_mirror="http://gitlab.gfnd.rcn-ee.org/RobertCNelson/npm-package-node-red/raw/master/deploy/buster"
 
-v6="v6.14.4"
-v8="v8.11.2"
 v10="v10.15.1"
 
 node_red_five="johnny-five-1.0.0"
