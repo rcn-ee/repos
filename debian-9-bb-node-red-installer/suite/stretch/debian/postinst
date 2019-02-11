@@ -31,11 +31,10 @@ v6="v6.16.0"
 v8="v8.15.0"
 
            node_red="node-red-0.19.5-a6ef7551"
-       node_red_can="node-red-contrib-can-1.0.8"
       node_red_gpio="node-red-contrib-gpio-0.14.0"
 node_red_mjpgcamera="node-red-contrib-mjpgcamera-1.0.4"
-  node_red_particle="node-red-contrib-particle-1.0.1"
- node_red_dashboard="node-red-dashboard-2.13.0"
+  node_red_particle="node-red-contrib-particle-1.1.0"
+ node_red_dashboard="node-red-dashboard-2.13.2"
     node_red_serial="node-red-node-serialport-0.6.8"
    node_red_blockly="node-red-contrib-blockly-1.1.0"
 
@@ -69,10 +68,6 @@ node_red_mjpgcamera="node-red-contrib-mjpgcamera-1.0.4"
 
 	case "${node_version}" in
 	v6.*)
-		npm_project="node-red-contrib-can"
-		npm_file="${node_red_can}-${v6}.tar.xz"
-		npm_pkg_install
-
 		npm_project="node-red-contrib-gpio"
 		npm_file="${node_red_gpio}-${v6}.tar.xz"
 		npm_pkg_install
@@ -99,10 +94,6 @@ node_red_mjpgcamera="node-red-contrib-mjpgcamera-1.0.4"
 
 		;;
 	v8.*)
-		npm_project="node-red-contrib-can"
-		npm_file="${node_red_can}-${v8}.tar.xz"
-		npm_pkg_install
-
 		npm_project="node-red-contrib-gpio"
 		npm_file="${node_red_gpio}-${v8}.tar.xz"
 		npm_pkg_install
@@ -141,6 +132,10 @@ node_red_mjpgcamera="node-red-contrib-mjpgcamera-1.0.4"
 
 	if [ -d /usr/local/lib/node_modules/node-red-node-mongodb/ ] ; then
 		rm -rf /usr/local/lib/node_modules/node-red-node-mongodb/ || true
+	fi
+
+	if [ -d /usr/local/lib/node_modules/node-red-contrib-can/ ] ; then
+		rm -rf /usr/local/lib/node_modules/node-red-contrib-can/ || true
 	fi
 
 	if [ -d /etc/avahi/services/ ] ; then
