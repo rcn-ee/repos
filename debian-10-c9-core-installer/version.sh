@@ -13,14 +13,17 @@ git_sha=""
 reprepro_dir="c/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee0"
+debian_version="${package_version}-0rcnee1"
 debian_untar=""
 debian_patch=""
 
-dl_mirror="https://github.com/rcn-ee/bb.org-cloud9-core/raw/master/deploy/buster/"
+dl_mirror="http://gitlab.gfnd.rcn-ee.org/RobertCNelson/npm-package-cloud9/raw/master/deploy/buster"
 
-v8="v8.11.2"
+v10="v10.15.1"
 
-debian_dl_1="${dl_mirror}/c9-core_${package_version}-${v8}-build.tar.xz"
+real_version="3.1.4056.git20171215"
+datestamp="20190213"
 
-buster_version="~buster+20180612"
+debian_dl_1="${dl_mirror}/c9-core_${real_version}-${v10}-${datestamp}-build.tar.xz"
+
+buster_version="~buster+20190213"
