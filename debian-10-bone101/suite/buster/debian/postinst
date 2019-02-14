@@ -54,7 +54,10 @@ chmod -R 775 /var/lib/cloud9/ || true
 git config user.email "beagle@beagleboard.org"
 git config user.name "BeagleBoard"
 
+ls /var/lib/cloud9/
+
 if [ -d /var/lib/cloud9/examples/ ] ; then
+	rm -rf /var/lib/cloud9/examples/ || true
 	git clone --depth=1 https://github.com/beagleboard/cloud9-examples /var/lib/cloud9/examples/
 fi
 
