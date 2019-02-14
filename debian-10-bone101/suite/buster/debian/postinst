@@ -60,6 +60,9 @@ if [ -d /var/lib/cloud9/ ] ; then
 	cd /var/lib/cloud9/examples/
 	git config user.email "beagle@beagleboard.org"
 	git config user.name "BeagleBoard"
+
+	chown -R root:cloud9ide /var/lib/cloud9/ || true
+	chmod -R 775 /var/lib/cloud9/ || true
 fi
 
 # dh_installdeb will replace this with shell code automatically
