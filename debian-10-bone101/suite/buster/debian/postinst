@@ -26,19 +26,19 @@ npm_install () {
 	node_version=$(/usr/bin/nodejs --version || true)
 	echo "${package}:nodejs:[${node_version}]"
 
-	v8="v8.11.2"
+	v10="v10.15.1"
 
-	node_async="async-2.0.0-rc.6"
-	node_sensortag="sensortag-1.2.3"
+	node_async="async-2.0.1"
+#	node_sensortag="sensortag-1.2.3"
 
 	case "${node_version}" in
-	v8.*)
+	v10.*)
 		npm_project="async"
-		npm_file="${node_async}-${v8}.tar.xz"
+		npm_file="${node_async}-${v10}.tar.xz"
 		npm_pkg_install
-		npm_project="sensortag"
-		npm_file="${node_sensortag}-${v8}.tar.xz"
-		npm_pkg_install
+#		npm_project="sensortag"
+#		npm_file="${node_sensortag}-${v10}.tar.xz"
+#		npm_pkg_install
 		;;
 	esac
 }
@@ -50,13 +50,12 @@ echo "Setting up: /var/lib/cloud9/ permissions"
 
 chown -R root:cloud9ide /var/lib/cloud9/ || true
 chmod -R 775 /var/lib/cloud9/ || true
+
+git config user.email "beagle@beagleboard.org"
+git config user.name "BeagleBoard"
+
 if [ -d /var/lib/cloud9/examples/ ] ; then
-	cd /var/lib/cloud9/examples/
-	git init .
-	git config user.email "beagle@beagleboard.org"
-	git config user.name "BeagleBoard"
-	git add . -f
-	git commit -a -m 'inital repo' --author="BeagleBoard <beagle@beagleboard.org>" --quiet
+	git clone --depth=1 https://github.com/beagleboard/cloud9-examples /var/lib/cloud9/examples/
 fi
 
 # dh_installdeb will replace this with shell code automatically
