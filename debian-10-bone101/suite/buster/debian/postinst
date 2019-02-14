@@ -51,11 +51,12 @@ echo "Setting up: /var/lib/cloud9/ permissions"
 chown -R root:cloud9ide /var/lib/cloud9/ || true
 chmod -R 775 /var/lib/cloud9/ || true
 
-ls /var/lib/cloud9/
-
-if [ -d /var/lib/cloud9/examples/ ] ; then
-	rm -rf /var/lib/cloud9/examples/ || true
+if [ -d /var/lib/cloud9/ ] ; then
+	if [ -d /var/lib/cloud9/examples/ ] ; then
+		rm -rf /var/lib/cloud9/examples/ || true
+	fi
 	git clone --depth=1 https://github.com/beagleboard/cloud9-examples /var/lib/cloud9/examples/
+
 	cd /var/lib/cloud9/examples/
 	git config user.email "beagle@beagleboard.org"
 	git config user.name "BeagleBoard"
