@@ -13,7 +13,7 @@ git_sha=""
 reprepro_dir="c/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee2"
+debian_version="${package_version}-0rcnee3"
 debian_untar=""
 debian_patch=""
 
@@ -22,8 +22,8 @@ dl_mirror="http://gitlab.gfnd.rcn-ee.org/RobertCNelson/npm-package-cloud9/raw/ma
 v10="v10.15.1"
 
 real_version="3.1.4056.git20171215"
-datestamp="20190213"
+datestamp="20190214"
 
 debian_dl_1="${dl_mirror}/c9-core_${real_version}-${v10}-${datestamp}-build.tar.xz"
 
-buster_version="~buster+20190213"
+buster_version="~buster+20190214"
