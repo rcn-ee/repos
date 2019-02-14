@@ -90,6 +90,11 @@ c9_directory () {
 	systemctl enable cloud9.socket || true
 	systemctl restart cloud9.socket || true
 	echo "${package}:Installed"
+
+	if [ -d /var/lib/cloud9/ ] ; then
+		chown -R root:cloud9ide /var/lib/cloud9/ || true
+		chmod -R 775 /var/lib/cloud9/ || true
+	fi
 }
 
 case "$1" in
