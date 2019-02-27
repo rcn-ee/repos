@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# Copyright (c) 2016-2017 Robert Nelson <robertcnelson@gmail.com>
+# Copyright (c) 2016-2019 Robert Nelson <robertcnelson@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -379,6 +379,12 @@ start_hostapd () {
 
 default () {
 	connman_disable_tether
+
+	if [ "x${USE_WL18XX_POWER_MANAGMENT}" = "xoff" ] ; then
+		echo "wl18xx:wlan0:Power Management:off"
+		/sbin/iwconfig wlan0 power off || true
+	fi
+
 	if [ "x${USE_CONNMAN_TETHER}" != "xyes" ] ; then
 
 		if [ "x${USE_WL18XX_IP_PREFIX}" = "x" ] ; then
@@ -395,6 +401,12 @@ default () {
 
 just_softap () {
 	connman_disable_tether
+
+	if [ "x${USE_WL18XX_POWER_MANAGMENT}" = "xoff" ] ; then
+		echo "wl18xx:wlan0:Power Management:off"
+		/sbin/iwconfig wlan0 power off || true
+	fi
+
 	if [ "x${USE_CONNMAN_TETHER}" != "xyes" ] ; then
 
 		if [ "x${USE_WL18XX_IP_PREFIX}" = "x" ] ; then
