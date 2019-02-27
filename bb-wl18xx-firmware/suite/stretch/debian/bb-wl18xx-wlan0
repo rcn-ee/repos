@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2016-2018 Robert Nelson <robertcnelson@gmail.com>
+# Copyright (c) 2016-2019 Robert Nelson <robertcnelson@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -186,6 +186,13 @@ set_wlan_0_mac_from_bb_wl18xx () {
 	set_wlan_0_mac
 }
 
+set_wlan_0_power_off () {
+	if [ "x${USE_WL18XX_POWER_MANAGMENT}" = "xoff" ] ; then
+		echo "wl18xx:wlan0:Power Management:off"
+		/sbin/iwconfig wlan0 power off || true
+	fi
+}
+
 start_tether () {
 	if [ -f /usr/sbin/rfkill ] ; then
 		/usr/sbin/rfkill unblock all || true
@@ -213,6 +220,7 @@ TI_AM335x_BeagleBone_Green_Wireless)
 			echo 1 > /sys/class/leds/wl18xx_wl_en/brightness || true
 		fi
 	fi
+	set_wlan_0_power_off
 	start_tether
 	;;
 TI_AM335x_BeagleBone_Black_Wireless)
@@ -226,6 +234,7 @@ TI_AM335x_BeagleBone_Black_Wireless)
 			set_wlan_0_mac_from_bb_wl18xx
 		fi
 	fi
+	set_wlan_0_power_off
 	start_tether
 	;;
 TI_AM335x_BeagleBone_Black_Wireless_RoboticsCape)
@@ -239,6 +248,7 @@ TI_AM335x_BeagleBone_Black_Wireless_RoboticsCape)
 			set_wlan_0_mac_from_bb_wl18xx
 		fi
 	fi
+	set_wlan_0_power_off
 	start_tether
 	;;
 TI_AM335x_BeagleBone_Blue)
@@ -252,6 +262,7 @@ TI_AM335x_BeagleBone_Blue)
 			set_wlan_0_mac_from_bb_wl18xx
 		fi
 	fi
+	set_wlan_0_power_off
 	start_tether
 	;;
 TI_AM335x_BeagleBone_Black_Gateway_Cape)
@@ -265,6 +276,7 @@ TI_AM335x_BeagleBone_Black_Gateway_Cape)
 			set_wlan_0_mac_from_bb_wl18xx
 		fi
 	fi
+	set_wlan_0_power_off
 	start_tether
 	;;
 *)

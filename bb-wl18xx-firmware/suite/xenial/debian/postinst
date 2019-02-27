@@ -32,6 +32,11 @@ echo_default () {
 	echo "# USE_WL18XX_MAC_ADDRESS: use custom mac address, for when work wifi starts sending deauthentication packet spam." >> /etc/default/bb-wl18xx
 	echo "#USE_WL18XX_MAC_ADDRESS=\"EC:11:27:B:14:97\"" >> /etc/default/bb-wl18xx
 	echo "" >> /etc/default/bb-wl18xx
+
+	echo "# USE_WL18XX_POWER_MANAGMENT: (sudo iwconfig wlan0 power [on/off]). on = boot default, off is more reliable for accessing idle systems over time" >> /etc/default/bb-wl18xx
+	echo "USE_WL18XX_POWER_MANAGMENT=off" >> /etc/default/bb-wl18xx
+	echo "" >> /etc/default/bb-wl18xx
+
 	echo "# USE_PERSONAL_SSID: set custom ssid" >> /etc/default/bb-wl18xx
 	echo "USE_PERSONAL_SSID=\"BeagleBone\"" >> /etc/default/bb-wl18xx
 	echo "" >> /etc/default/bb-wl18xx
@@ -136,6 +141,14 @@ else
 	if [ "x${test_new_option}" = "x" ] ; then
 		echo "# TETHER_ENABLED: Whether or not to run the /usr/bin/bb-wl18xx-tether daemon; set to no to disable." >> /etc/default/bb-wl18xx
 		echo "TETHER_ENABLED=yes" >> /etc/default/bb-wl18xx
+		echo "" >> /etc/default/bb-wl18xx
+	fi
+
+	unset test_new_option
+	test_new_option=$(cat /etc/default/bb-wl18xx | grep USE_WL18XX_POWER_MANAGMENT || true)
+	if [ "x${test_new_option}" = "x" ] ; then
+		echo "# USE_WL18XX_POWER_MANAGMENT: (sudo iwconfig wlan0 power [on/off]). on = boot default, off is more reliable for accessing idle systems over time" >> /etc/default/bb-wl18xx
+		echo "USE_WL18XX_POWER_MANAGMENT=off" >> /etc/default/bb-wl18xx
 		echo "" >> /etc/default/bb-wl18xx
 	fi
 fi
