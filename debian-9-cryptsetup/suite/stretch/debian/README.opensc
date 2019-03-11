@@ -1,0 +1,129 @@
+opensc/pcscd with cryptsetup and LUKS on Debian
+------------------------------------------------------------------------
+
+This is an overview on how you can make use of cryptsetup with your
+smartcard device supported by opensc/pcscd. If your reader is supported
+by openct please refer to the README.openct.gz in the cryptsetup docs.
+
+I assume that you already have an initialized smartcard with a RSA key
+that has the proper X509 properties for encryption set. To generate such
+a key in hardware on the smartcard you should execute the following
+command:
+
+	# pkcs15-init -G rsa/2048 -a [PIN id] -u sign,decrypt
+
+If your smart card doesn't support 2048 bit RSA just change the argument
+to the largest size possible.
+
+The decrypt_opensc keyscript decrypts an encrypted key in your boot
+partition with the private key on your smartcard. Therefore you have to
+create a key for the partition that is to be decrypted using the
+smartcard. As pkcs15-crypt does not seem to support PKCS1 padding, the
+key is required to have the same size as your RSA key. For a 2048 bit
+key use the following (the byte count is 256 as 2048/8 is 256):
+
+	# dd if=/dev/random of=/boot/keys/key bs=1 count=256
+
+Now the key is added to the LUKS partition:
+
+	# cryptsetup luksAddKey /dev/sdXn /boot/keys/key
+
+Enter an already existing pass phrase and watch cryptsetup doing its
+job. As we don't want the key in clear on the hard drive, we are going
+to encrypt it with the public key to the key on the smartcard.
+Read the public key first:
+
+	# pkcs15-tool --read-public-key [key id] -o pubkey
+
+Then encrypt the random data with the extracted key, destroy the
+plain text one and remove your public key from the hard drive (it isn't
+necessary to shred it as a potential attacker can't use your public key
+for anything).
+
+	# openssl rsautl -in /boot/keys/key -inkey pubkey -pubin -raw \
+		-encrypt -out /boot/keys/root
+	# shred -u /boot/keys/key
+	# rm -rf pubkey
+
+Now you'll have to edit /etc/crypttab. The format should be familiar but
+I'll state it here again:
+
+	name device /boot/keys/root luks, keyscript=decrypt_opensc
+
+The modules needed by the reader should now be added to
+/etc/initramfs-tools/modules, so they are loaded on boot time. For
+example yenta_socket, pcmcia, pcmcia_core, serial_cs, rsrc_nonstatic for
+PCMCIA card readers.
+
+In a perfect world you would just rebuild the initramfs now and it would
+work. Unfortunately there are some additional issues to address. The
+most important one is pcscd. Newer versions of pcscd use HAL and dbus to
+detect readers. As most people (including me) aren't too enthusiastic
+about adding these two daemons to the initramfs, we will rebuild the
+daemon to use the traditional polling method with libusb. Again, this
+step is only necessary if your reader uses pcscd (for example the
+Gemalto PC Card readers).
+
+To do this, download the ccid and pcsc-lite packages from
+
+	<pcsc-lite.alioth.debian.org>
+
+Install the libusb header files, extract the tarballs and build pcscd
+with the following commands:
+
+	# apt-get install libusb-dev
+	# ./configure --disable-libhal --enable-libusb
+	# make
+	# make install
+
+Now go to the ccid directory and execute these commands (the option is
+only need if you use the libccidtwin.so to access your reader:
+
+	# ./configure [--enable-twinserial]
+	# make
+	# make install
+
+This installs the new pcscd and it's libraries in /usr/local/. To
+reflect the new situation we have to change the initramfs scripts.
+Edit /etc/reader.conf to instruct pcscd to use the new libraries (they
+should be in /usr/local/pcsc/drivers/) instead of the ones from the Debian
+package. Replace everything after line 45 in
+/usr/share/initramfs-tools/hooks/cryptopensc with the following chunk:
+
+	for dir in etc/opensc usr/local/pcsc var/run tmp ; do
+		if [ ! -d ${DESTDIR}/${dir} ] ; then mkdir -p ${DESTDIR}/${dir} ; fi
+	done
+
+	# Install pcscd daemon, drivers, conf file, and include libgcc as
+	# well since
+	# pcscd utilizes pthread_cancel
+	copy_exec /usr/local/sbin/pcscd
+	cp -r /usr/local/pcsc ${DESTDIR}/usr/local
+	cp /etc/reader.conf ${DESTDIR}/etc
+	cp -r /usr/local/lib ${DESTDIR}/usr/local
+	# Install opensc commands and conf file
+	copy_exec /usr/bin/opensc-tool
+	copy_exec /usr/bin/pkcs15-crypt
+	cp /lib/libgcc_s.so.1 ${DESTDIR}/lib
+	cp /etc/opensc/opensc.conf ${DESTDIR}/etc/opensc
+
+Edit /usr/share/initramfs-tools/scripts/local-bottom/cryptopensc and
+/usr/share/initramfs-tools/scripts/local-top/cryptopensc to use the new
+binary in /usr/local/sbin/pcscd instead of /usr/sbin/pcscd and change
+the path in the existence test to:
+
+	if [ ! -e /usr/local/sbin/pcscd ]; then
+		exit 0
+	fi
+
+If you have completed all the steps up to now, you can update your
+initramfs image with:
+
+	# update-initramfs -u -k `uname -r`
+
+and reboot your machine. This leaves a backup of your old initramfs in
+the boot partition if something doesn't work. If you have to debug your
+initramfs during boot just append the "break=mount" option to the kernel
+to have a debug shell just before the root partition would be mounted.
+
+ -- Benjamin Kiessling <benjaminkiessling@bttec.org>, Sun, 26 Jul 2009

@@ -1,0 +1,133 @@
+openct with cryptsetup and luks in Debian
+-----------------------------------------
+
+This is a overview on how you can make use of cryptsetup with your smartcard
+device supported by openct. Please make sure that your smartcard reader or token
+is supposed to be operated with openct and not with opensc or pcscd. You can get
+some information about the supported hardware by openct at the following
+homepage:
+
+	<http://www.opensc-project.org/openct/>
+
+This example is based on the ability of openct to store arbitrary data objects
+on the smartcard. Note that you therefore have to use openct in version 0.6.12
+or newer, any versions before 0.6.12 do not properly support data objects.
+
+Although this use case was done with the Aladdin eToken PRO 32k, an USB crypto
+token, this is a generic approach which works the same way with all supported
+smartcard devices by openct.
+
+First of all, you should plug in your crypto token into USB or whatever
+interface it uses and initialise the reader with the following command (as root):
+
+	# openct-control init
+
+To check if your reader has been detected, you can run:
+
+	# openct-tool list
+
+This should give you a similar result to this:
+
+	0 Aladdin eToken PRO
+
+If you do not see any reader listed, you have a problem and should read again
+about the supported hardware on <http://www.opensc-project.org/openct/> and make
+sure you have the required support (e.g. USB) compiled into your kernel needed
+to connect to your token. If you use a pre-compiled kernel from Debian,
+everything is already built kernel-wise and you probably only need to load the
+module.
+
+In case you want to erase your previously used smartcard, you can do that by
+executing the following command:
+
+	# pkcs15-init --erase-card
+
+To setup the smartcard, you need to do the following:
+
+	# pkcs15-init --create-pkcs15
+
+Caution: You are being asked about the 'Security Officer PIN' and the 'User
+unblocking PIN'. Although both of these pins are optional and can be left empty,
+you should never do this: In case the personal user pin is typed wrong for a
+given number (mostly three times), the smartcard is locked and can only be
+unlocked with the user unblocking pin. If you even mistype the user unblocking
+pin for a given number (mostly three times), the smartcard is locked and can
+only be unlocked with the security officer pin, which is the most superior pin
+in this hierarchy. With an unset (empty) security officer pin or user unblocking
+pin, depending on the smartcard, an attacker can have unlimited tries to crack
+your personal user pin, or, an attacker can simply make the smartcard unusable as
+it cannot be unlocked anymore at all.
+
+To create a new identity on the smartcard, do the following:
+
+	# pkcs15-init --store-pin --auth-id 01 --label "Daniel Baumann"
+
+If you have already one or more identities, you certainly want to bump the
+auth-id here, and normally, the label used to describe the identify is the
+persons first and last name.
+
+As we want to use the smartcard with luks, we first need to get some random
+data:
+
+	# dd if=/dev/random of=data.txt bs=1 count=32
+
+And we store that random data as a data object to the private section of the
+smartcard with:
+
+	# pkcs15-init --store-data data.txt --auth-id 01
+
+As of the time of writing, openct version 0.6.12 is available and does not
+support labelling different data objects. Once this gets fixed in openct
+upstream, you can store multiple data objects to the smartcard (create them by
+appending '--label foo' to the above command and replace foo with the label you
+want to use).
+
+Then, read the random data from the smartcard in order...
+
+	# pkcs15-tool --read-data-object pkcs15-init -o /proc/self/fd/3 3>&1 1>/dev/null 2>&1
+	# pkcs15-tool --read-data-object pkcs15-init -o key.txt 1>/dev/null 2>&1
+
+...to import that output to luks as a valid key (assumed that /dev/sda5 is your
+encrypted partition):
+
+	# cryptsetup luksAddKey /dev/sda5 key.txt
+
+To tell cryptsetup to let you authenticate with the openct backend, you need to
+pass the respective decrypt script to it as a parameter in /etc/crypttab
+(assumed that /dev/sda5 is your encrypted partition):
+
+	sda5_crypt /dev/sda5 none luks,keyscript=decrypt_openct
+
+At the moment all data objects have the same label 'pkcs15-init'. Once openct
+supports labelling data objects, you can pass the respective label to openct with
+the key parameter in /etc/crypttab like this:
+
+	sda5_crypt /dev/sda5 none luks,keyscript=decrypt_openct,key=foo
+
+For the time being, 'pkcs15-init' is passed to openct when no key is specified.
+
+Don't forget to backup key.txt to a save place and remove the temporary files
+afterwards:
+
+	# shred -uz key.txt data.txt
+
+Caution: cryptsetup as of version 1.0.5-1 does not support fallback to passphrase
+if smartcard authentication fails (be it three times wrong pin or not
+compatible/not detected smartcard reader). That means, that for testing
+purposes, it is recommended to keep an initrd image in /boot available which
+does *not* use openct or opensc for authentication, so that you can change
+your bootloader configuration on the fly if something does not work out as
+expected. Therefore, copy your current initrd (the .bak backups from
+initramfs-tools can maybe get overwritten by update-initramfs during the setup
+of openct, so it is better to be on the save side):
+
+	# cp /boot/initrd.img-`uname -r` /boot/initrd.img-`uname -r`.temp
+
+If you have completed all the steps up to now, you can update your initramfs
+image with:
+
+	# update-initramfs -u -k `uname -r`
+
+and reboot your machine.
+
+ -- Daniel Baumann <baumann@swiss-it.ch>  Wed, 22 Aug 2007 10:36:00 +0200

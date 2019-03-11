@@ -1,0 +1,45 @@
+# cryptdisks - enable encrypted block devices
+#
+# Sweep up any devices in /etc/crypttab that have not yet been started at
+# the end of udev coldplugging; this partly duplicates the cryptdisks-udev
+# job, but is necessary because:
+#  - some devices may not be registered as ID_FS_USAGE=crypto by udev (e.g.,
+#    random-encrypted devices), but we don't want to call the upstart job
+#    for every single block device
+#  - some devices can only be decrypted after other devices are decrypted and
+#    mounted first, so we need a two-pass system (like
+#    /etc/init.d/cryptdisks{,-early} previously)
+#
+# This job currently still does not guarantee a race-free startup; instances
+# of cryptdisks-udev may be started in parallel with this job.
+
+description    "enable remaining boot-time encrypted block devices"
+
+start on stopped udevtrigger or container
+
+# Currently stopping is a no-op, so we can stop this anywhere during the
+# shutdown sequence.  We let the cryptdisks-early init script take care of
+# device teardown instead; it happens that the distinction between the
+# 'cryptdisks' and 'cryptdisks-early' jobs is irrelevant on shutdown because
+# the only sequencing difference is lvm2, which has no init script that's
+# called on shutdown.
+stop on unmounted-remote-filesystems
+
+task
+
+pre-start script
+	if [ -r /lib/cryptsetup/cryptdisks.functions ]; then
+		. /lib/cryptsetup/cryptdisks.functions
+	else
+		exit 0
+	fi
+
+	case "$CRYPTDISKS_ENABLE" in
+	[Nn]*)
+		exit 1
+		;;
+	esac
+
+	INITSTATE="init"
+	do_start
+end script

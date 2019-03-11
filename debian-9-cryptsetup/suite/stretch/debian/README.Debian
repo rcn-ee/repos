@@ -1,0 +1,312 @@
+Cryptsetup for Debian
+---------------------
+
+   Table of Contents
+
+   1. Introduction into Cryptsetup for Debian
+
+   2. Encrypted swap partition(s)
+
+   3. Insecure mode/owner for keys
+
+   4. Cryptsetup and udev
+
+   5. Useful keyscripts: askpass and passdev
+
+   6. The 'check' option
+
+   7. Cryptsetup and Splashy
+
+   8. Remotely unlock encrypted rootfs
+
+   9. Backup the LUKS header
+
+   10. Changing the boot order of cryptdisks init scripts
+
+   11. Credits
+
+
+1. Introduction into Cryptsetup for Debian
+------------------------------------------
+
+ Cryptsetup is a command-line interface for configuring encrypted block
+devices via dm-crypt, a kernel device-mapper target. For documentation about
+the cryptsetup tool, see manpage of cryptsetup(8) and the frequently asked
+questions at /usr/share/doc/cryptsetup/FAQ.gz.
+
+ The Debian cryptsetup package provides the initscript /etc/init.d/cryptdisks
+and a configuration file /etc/crypttab for automatically configuring encrypted
+devices at boot time. The applications cryptdisks_start and cryptdisks_stop
+are provided to process crypttab configured devices manually. See the manpages
+of crypttab(5), cryptdisks_start(8) and cryptdisks_stop(8) for more information.
+
+ The luksformat script provides a simple interface for creating an encrypted
+device that follows the LUKS standard and for putting a file system onto the
+encrypted device. See man luksformat(8) for more information.
+
+ If you wish to perform a Debian installation to an encrypted root, you might
+be interested in using a version of Debian Installer with partman-crypto,
+which will install the system and setup cryptsetup and initramfs-tools.
+
+ For instructions about how to encrypt your root filesystem and integrate
+cryptsetup into initramfs on a running system, see
+	/usr/share/doc/cryptsetup/README.initramfs.gz.
+
+
+2. Encrypted swap partition(s)
+------------------------------
+
+ An encrypted swap partition prevents spying on plaintext secrets (passwords)
+that may be written to disk when memory is swapped to disk.
+
+ To encrypt your swap partitions, you'll first have to deactivate your swap:
+
+swapoff -a
+
+ You'll have to add an entry for every swap partition in /etc/crypttab. Be
+sure to place the source device (here /dev/sde9) with your swap devices:
+# <target name> <source device>	<key file>	<options>
+cswap1		/dev/sde9	/dev/urandom	swap,cipher=aes-xts-plain64,size=256,hash=sha1
+
+ Now you need to change the swap devices in /etc/fstab to the encrypted swap
+device names (/dev/mapper/cswap1 in this example).
+
+# <file system> <mount point>   <type>  <options>     <dump>  <pass>
+/dev/sde9        none           swap    sw            0       0
+
+becomes
+
+# <file system> <mount point>   <type>  <options>     <dump>  <pass>
+/dev/mapper/cswap1  none        swap    sw            0       0
+
+
+ Finally, you need to start the cryptsetup swap devices and reactivate swap:
+
+/etc/init.d/cryptdisks start
+swapon -a
+
+ That's it! You have a crypted swap device. Note that /dev/urandom provides
+only pseudo-random entropy. So if you're paranoid rather use /dev/random as
+source for random data. Be aware though that /dev/random might not provide
+enough random bytes for your key, causing your system to hang at boot, waiting
+for more entropy. Moving mouse and keyboard typing might help in this case.
+
+ Read the crypttab(5) manpage for more information, for example options to use
+a different encryption algorithm than the default.
+
+
+3. Insecure mode/owner for keys
+-------------------------------
+
+ Any key that is stored somewhere to be used with cryptsetup should have the
+mode 400 (-r--------) and root as owner/group. 'chown root.root keyfile' and
+'chmod 400 keyfile' will do the trick for you.
+
+ If a key is stored on a vfat filesystem (very common for removable media),
+chmod and chown will not work. The vfat filesystem (and several others too)
+does not support file permissions and ownership. Instead, you should use the
+uid, gid and umask options in /etc/fstab to ensure secure permissions for the
+key.
+
+ As an example, assume that /dev/sdg8 is the removable media containing
+keyfiles on a vfat filesystem and that it is going to be mounted on
+/media/flash0. The configuration in /etc/fstab should then be something
+like this:
+
+# <file system>	<mount point>	<type>	<options>		<dump>	<pass>
+/dev/sdg8	/media/flash0	vfat	uid=0,gid=0,umask=277	0	0
+
+ If you are using udev, it might be a good idea to use the /dev/disk/by-label
+links instead of /dev/sdg8 as the link will work no matter in which order the
+media is inserted and detected.
+
+
+4. Cryptsetup and udev
+----------------------
+
+ As a workaround for some yet-to-be-fixed race condition in kernel,
+device-mapper or udev, cryptsetup currently runs udevsettle.
+
+ This leads to problems if you invoke cryptsetup as part of a udev rule.
+udevsettle waits until queued kernel/udev events are processed and the
+'run programs' have finished. Due to cryptsetup itself being a 'run
+program' in this case, this ends in a deadlock.
+
+ Therefore cryptsetup should be detached directly after invocation in this
+case, so that it runs asynchronously.
+
+
+5. Useful keyscripts: askpass and passdev
+-----------------------------------------
+
+ The cryptsetup package ships with several keyscripts. Keyscripts may be
+configured in /etc/crypttab in order to provide the key required to unlock
+the device. The shipped keyscripts are located at /lib/cryptsetup/scripts.
+
+ Some keyscripts have an own README file at /usr/share/doc/cryptsetup/.
+
+ Two special keyscripts, worth being mentioned here, are askpass and passdev.
+
+ Askpass is located at /lib/cryptsetup/askpass. It's a simple helper program
+that supports different methods (console, fifo, splashy, ...) to prompt for a
+passphrase, and prints the result to stdout. The syntax is:
+
+/lib/cryptsetup/askpass PROMPT
+
+ Passdev will wait for a given device to appear, mount it read-only, read the
+key, and unmount the device. See /usr/share/doc/cryptsetup/README.initramfs.gz
+for more information about passdev.
+
+
+6. The 'check' option
+---------------------
+
+ The 'check' option in crypttab allows one to configure checks to be run
+against the target device after cryptsetup has been invoked.
+The default check 'blkid' can check for any known filesystem type, as it uses
+blkid from util-linux. you can check for a particular filesystem by giving for
+example 'checkargs=ext4' or 'checkargs=swap' as an option in /etc/crypttab.
+
+ The 'precheck' option is for configuring checks to be run against the source
+device before cryptsetup has been invoked. They are only available for plain
+cryptsetup devices. LUKS devices have a hardcoded precheck that uses the
+'isLuks' command of cryptsetup.
+As there is no way to check a device for plain cryptsetup data, you can only
+check for data that should not be on the device. for example the check could
+search for common filesystems on the device, and abort if it finds any.
+As this will never really ensure that no data is lost, the package doesn't
+provide such a check.
+Another example for a precheck could be to check the partition table id. For
+a device that shall be used as swap partition, it could verify that only
+partitions with type 'swap' (82) are used for encrypted swap.
+
+ Please send us your checks, if you write new ones. If they are generally
+useful, we will include them in the package.
+
+ See man crypttab(5) for more information about the checksystem.
+
+
+7. Cryptsetup and Splashy
+-------------------------
+
+ Splashy support in cryptsetup is currently somehow limited. Splashy is known
+to freeze at the password dialog for encrypted non-root filesystems. Only the
+password dialog for the encrypted root filesystem works.
+
+ It seems like splashy freezes for any input dialog in initscripts while
+input dialogs at initramfs stage seem to work. This leads to the assumption
+that the bug is somewhere in splashy and neither in cryptsetups initscripts
+nor in askpass.
+
+
+8. Remotely unlock encrypted rootfs
+-----------------------------------
+
+ Thanks to Chris <debian@x.ray.net> it's possible to install a dropbear SSH
+server into the initramfs, connect to this SSH server during execution of
+initramfs early in the boot process, and unlock encrypted devices - even the
+root device - before the boot process continues.
+
+ This way it is possible to use an encrypted root filesystem on headless
+systems where no physical access is available during boot process.
+
+ Dropbear 0.52-1 or later is required for this to work. (Since 2015.68-1 the
+functionality has its own binary package 'dropbear-initramfs'.) Consult
+/usr/share/doc/dropbear-initramfs/README.initramfs from the dropbear-initramfs
+package for information how to install and configure the dropbear SSH server
+into the initramfs.
+
+ You can then unlock the disk remotely via SSH with
+
+$ ssh -tF ~/.luks/ssh.conf root@remote.system.com cryptroot-unlock
+
+ Or, using a local gpg-encrypted key file:
+
+$ gpg --decrypt ~/.luks/remote.key.gpg | ssh -TF ~/.luks/ssh.conf root@remote.system.com cryptroot-unlock
+
+ That's it. Now that the encrypted root device is unlocked, the remote system
+should continue with the boot process.
+
+ You can also use the following authorized_keys(5) options in
+/etc/dropbear-initramfs/authorized_keys to restrict access and avoid
+users poking around:
+
+no-port-forwarding,no-agent-forwarding,no-X11-forwarding,command="/bin/cryptroot-unlock" ssh-rsa ...
+
+(Be sure to rebuild the initrd afterwards: `update-initramfs -u -k all`.)
+
+
+9. Backup the LUKS header
+-------------------------
+
+ WARNING: This information might be outdated. Please read the cryptsetup FAQ
+at /usr/share/doc/cryptsetup/FAQ.gz for up-to-date information on how to backup
+the LUKS header.
+
+ The LUKS header is located at the beginning of every LUKS encrypted device.
+It stores information such as used cipher, hash, etc. But most importantly,
+the header contains eight keyslots, which do keep an encrypted version of the
+LUKS masterkey. the data on an encrypted LUKS partition is encrypted with this
+masterkey. thus, there's no way to restore the data once the masterkey is
+lost. For that reason, one might want to backup the LUKS header in order to
+prevent accidental data loss.
+
+ On the other hand keeping a backup of the LUKS header isn't recommended for
+security reasons. The reason is, that LUKS was designed with key revocation in
+mind. Once the LUKS header is copied to a backup, revoking a (possibly
+compromised) passphrase or keyfile from the keyslot isn't enough anymore. the
+revoked passphrase/keyfile can easily be reactived by writing back the header
+backup to the device.
+
+ Beginning with version 1.1.0, cryptsetup has support for the commands
+luksHeaderBackup and luksHeaderRestore. If you want to store a backup of your
+LUKS header with the mentioned drawbacks in mind, do the following:
+
+ Prepare a ramdisk to store the backup temporarely. You should do that in order
+to prevent any hardware caching functions or filesystem jounals to copy the
+backup around to places you cannot control. If you want to store the backup
+permanently, write it to a read-only medium like CD immediately from ramdisk,
+without your burning program writing an intermediate image to some temp dir.
+
+ To actually backup the header, use the following command:
+
+# cryptsetup luksHeaderBackup <luks-device> --header-backup-file <destination-on-ramdisk>
+
+ That's it. But once again, keep in mind all the security implications when
+doing LUKS header backups. In general it's better to backup the data from
+encrypted LUKS devices to another encrypted LUKS device. That way you can
+manage the keyslots for both original and backup device independently.
+
+
+10. Changing the boot order of cryptdisks init scripts
+-----------------------------------------------------
+
+ In order to support non-standard setups, it might be necessary to change the
+order of init scripts in the boot process. Cryptsetup already installs two
+init scripts, cryptdisks-early and cryptdisks, in order to support some complex
+setups. For example, both "lvm on luks" and "luks on lvm" are supported that
+way.
+
+ If your system isn't supported by the default order of init scripts in the
+boot process, you need to change the boot process on your own. In some cases
+it might be enough to change the LSB dependency headers at initscripts, see
+/etc/init.d/README for more information about that. For more complex setups,
+more intrusive changes are required. For example, adding a third cryptdisks
+init script might help. See the log of bugreport #576646[1] and discussion
+on debian-devel[2] for further information.
+
+[1] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=576646
+[2] https://lists.debian.org/debian-devel/2010/06/msg00021.html
+
+
+11. Credits
+-----------
+
+ People who contributed to the Debian cryptsetup package:
+
+Jonas Meurer <jonas@freesources.org>
+David Härdeman <david@hardeman.nu>
+Bastian Kleineidam <calvin@debian.org>
+Michael Gebetsroither <michael.geb@gmx.at>
+
+ -- Jonas Meurer <mejo@debian.org>, Thu, 17 Feb 2011 20:54:56 +0100

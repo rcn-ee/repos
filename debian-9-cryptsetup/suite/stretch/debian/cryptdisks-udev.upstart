@@ -1,0 +1,25 @@
+# cryptdisks - enable encrypted block devices
+
+description    "enable encrypted block devices"
+
+start on block-device-added ID_FS_USAGE=crypto
+instance $DEVNAME
+
+task
+
+script
+	if [ -r /lib/cryptsetup/cryptdisks.functions ]; then
+		. /lib/cryptsetup/cryptdisks.functions
+	else
+		exit 0
+	fi
+
+	case "$CRYPTDISKS_ENABLE" in
+	[Nn]*)
+		exit 1
+		;;
+	esac
+
+	INITSTATE=udev
+	crypttab_start_one_disk "$DEVNAME"
+end script
