@@ -1,12 +1,13 @@
 #!/bin/bash -e
 
 #https://packages.debian.org/source/buster/mesa
-mirror="http://http.debian.net/debian"
-#mirror="https://snapshot.debian.org/archive/debian/20180604T155423Z/"
+#mirror="http://http.debian.net/debian"
+mirror="https://snapshot.debian.org/archive/debian/20181010T212219Z"
+#https://snapshot.debian.org/package/mesa/
 
 package_name="mesa"
 debian_pkg_name="${package_name}"
-package_version="18.1.6"
+package_version="18.1.9"
 package_source="${package_name}_${package_version}.orig.tar.gz"
 src_dir="${package_name}-${package_version}"
 
@@ -20,4 +21,4 @@ debian_untar=""
 debian_patch="${package_name}_${debian_version}.diff.gz"
 local_patch="rcnee0"
 
-stretch_version="~stretch+20180831"
+stretch_version="~stretch+20190321"
