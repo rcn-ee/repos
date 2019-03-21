@@ -597,7 +597,7 @@ canonical_device() {
 		return 0
 	fi
 
-	echo "cryptsetup: WARNING: failed to detect canonical device of $original"  | systemd-cat -t cryptsetup -p info
+	echo "cryptsetup: WARNING: failed to detect canonical device of $original" | systemd-cat -t cryptsetup -p info
 	return 1
 }
 
@@ -842,7 +842,7 @@ fi
 if [ -r /etc/crypttab ]; then
 	rootdevs=$(get_fs_devices /)
 	if [ -z "$rootdevs" ]; then
-		echo "cryptsetup: WARNING: could not determine root device from /etc/fstab" >&2
+		echo "cryptsetup: WARNING: could not determine root device from /etc/fstab" | systemd-cat -t cryptsetup -p info
 	fi
 	usrdevs=$(get_fs_devices /usr)
 	resumedevs=$(get_resume_devices)
