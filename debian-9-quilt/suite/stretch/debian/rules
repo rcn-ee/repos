@@ -24,7 +24,7 @@ override_dh_auto_build:
 	mkdir -p doc/tmp
 ifeq (,$(findstring stage1,$(DEB_BUILD_PROFILES)))
 	cd doc/tmp; LC_ALL=C hevea ../main.tex ; LC_ALL=C hevea ../main.tex; LC_ALL=C hevea ../main.tex
-	perl -pe 'if (/\\sh{.*}/) {s:\\sh{(.*)}:<I>$$1</I>:}'	\
+	perl -pe 'if (/\\sh\{.*}/) {s:\\sh\{(.*)}:<I>$$1</I>:}'	\
 	     < doc/tmp/main.html > doc/quilt.html
 	LC_ALL=C perl -e '$$/ = undef; $$f=<>; $$f =~ s|<A[^>]*?HREF="[^"]*#[^"]*">(.*?)</A>|$$1|msg; print $$f;' < doc/tmp/main.html > doc/tmp/tmp.html
 	LC_ALL=C lynx doc/tmp/tmp.html -dump > doc/quilt.txt

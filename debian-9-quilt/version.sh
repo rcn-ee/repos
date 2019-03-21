@@ -1,7 +1,8 @@
 #!/bin/bash -e
 
 #https://snapshot.debian.org/package/quilt/
-mirror="http://http.debian.net/debian"
+#mirror="http://http.debian.net/debian"
+mirror="https://snapshot.debian.org/archive/debian/20180101T180033Z"
 
 package_name="quilt"
 debian_pkg_name="${package_name}"
@@ -14,7 +15,7 @@ git_sha=""
 reprepro_dir="q/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-8"
+debian_version="${package_version}-8.2"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 local_patch="rcnee0"
 
