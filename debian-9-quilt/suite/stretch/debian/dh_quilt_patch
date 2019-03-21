@@ -1,0 +1,67 @@
+#!/usr/bin/perl -w
+
+=head1 NAME
+
+dh_quilt_patch - apply patches listed in debian/patches/series
+
+=cut
+
+use strict;
+use Debian::Debhelper::Dh_Lib;
+
+=head1 SYNOPSIS
+
+B<dh_quilt_patch> [S<I<debhelper options>>]
+
+=head1 DESCRIPTION
+
+dh_quilt_patch simply calls B<quilt push -a> after having set
+the environment variable B<QUILT_PATCHES> to B<debian/patches>.
+All patches listed in B<debian/patches/series> are then applied in the
+current directory. The command does not fail if the patches have
+already been applied.
+
+You can use another directory instead of B<debian/patches> by setting
+(and exporting) the environment variable B<QUILT_PATCH_DIR>.
+
+=head1 EXAMPLES
+
+dh_quilt_patch is usually called indirectly in a rules file via the
+dh command.
+
+	%:
+		dh $@ --with quilt
+
+It can also be direcly called at the start of the build (or configure)
+rule.
+
+	build:
+		dh_quilt_patch
+		./configure
+		$(MAKE)
+
+=cut
+
+init();
+
+$ENV{"QUILT_PATCHES"} = $ENV{"QUILT_PATCH_DIR"} ?
+                        $ENV{"QUILT_PATCH_DIR"} : "debian/patches";
+complex_doit('quilt --quiltrc /dev/null push -a || test $? = 2');
+
+=head1 NOTES
+
+This tool is useless if you use the source package format B<3.0 (quilt)>.
+Consider switching to this source format if you haven't done it yet.
+
+=head1 SEE ALSO
+
+L<debhelper(7)>, L<dh(1)>.
+
+This program is meant to be used together with debhelper.
+
+=head1 AUTHOR
+
+Raphael Hertzog <hertzog@debian.org>
+
+=cut
+

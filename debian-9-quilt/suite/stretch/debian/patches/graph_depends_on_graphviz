@@ -1,0 +1,62 @@
+Description: Informative message when using graph without graphviz
+ Previously, trying to use the graph subcommand without graphviz being
+ installed resulted in a cryptic error message: 
+ .
+ Can't exec "tred": No such file or directory at /usr/lib/perl/5.14/IO/File.pm line 66, <STDIN> line 1.
+ .
+ graphviz is already in the Suggests field of the debian package, and
+ we cannot raise this dependency severity given the central role of
+ quilt in the debian infrastructure. This informative error message is
+ much more sensible.
+ .
+ This fix is also interesting when generating the documentation, as
+ it allows to generate the doc correctly without having graphviz in
+ our build-depends (Closes: #748384).
+ .
+ Also, merge the error message with the one from quilt mail when
+ formail is not installed to ease the life of translators.
+Author: Martin Quinson <mquinson@debian.org>
+Bug-Debian: http://bugs.debian.org/659944
+Forwarded: 2014-01-18
+
+---
+ quilt/graph.in |   12 ++++++++++++
+ quilt/mail.in  |    2 +-
+ 2 files changed, 13 insertions(+), 1 deletion(-)
+
+Index: b/quilt/graph.in
+===================================================================
+--- a/quilt/graph.in
++++ b/quilt/graph.in
+@@ -109,6 +109,18 @@
+ 	usage
+ fi
+ 
++if [ "$opt_format" = "ps" ] && ! type dot &> /dev/null
++then
++	printf $"You have to install '%s' (from package %s) to use 'quilt %s'." dot graphviz "graph -T"
++	exit 1
++fi
++
++if [ -n "$opt_reduce" ] && ! type tred &> /dev/null
++then
++	printf $"You have to install '%s' (from package %s) to use 'quilt %s'." tred graphviz "graph --reduce"
++	exit 1
++fi
++
+ if [ -z "$opt_all" ]
+ then
+ 	patch=$(find_applied_patch "$1") || exit 1
+Index: b/quilt/mail.in
+===================================================================
+--- a/quilt/mail.in
++++ b/quilt/mail.in
+@@ -259,7 +259,7 @@
+ # check if formail is installed before doing anything
+ if ! type formail &> /dev/null
+ then
+-	echo $"You have to install 'formail' to use 'quilt mail'" >&2
++	printf $"You have to install '%s' (from package %s) to use 'quilt %s'." formail procmail mail >&2
+ 	exit 1
+ fi
+ 

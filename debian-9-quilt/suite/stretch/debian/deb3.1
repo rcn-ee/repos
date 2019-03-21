@@ -1,0 +1,79 @@
+.TH deb3 1 "Dec 25, 2012" "deb3"
+
+.SH NAME
+deb3 \- convert debian source package to new 3.0 (quilt) format
+
+.SH SYNOPSIS
+.B deb3
+[quilt|dpatch|0|1|2]
+
+.SH DESCRIPTION
+deb3 converts debian source packages which use series of patches from 
+1.0 format to new 3.0 (quilt) format while adjusting contents in 
+debian/patches.  This is run from the package top level directory.
+If run without argument, deb3 guesses source structure.  Following 
+formats are auto detected.
+
+.IP o 3
+dh_quilt_patch/dh_quilt_unpatch
+.IP o 3
+dpatch
+.IP o 3
+cdbs (simple-patchsys.mk)
+.IP o 3
+dbs (dbs-build.mk)
+
+.SH ARGUMENT
+
+You can force particular conversion using argument.
+
+.IP quilt 10
+conversion for dh_quilt_patch/dh_quilt_unpatch
+.IP dpatch 10
+conversion for dpatch
+.IP 0      10
+conversion for dbs and cdbs made with -p 0 patches (default)
+.IP 1      10
+conversion for dbs and cdbs made with -p 1 patches
+.IP 2      10
+conversion for dbs and cdbs made with -p 2 patches
+
+.SH TERMINATING THE CONVERSION
+
+This deb3 program only provides a starting point. After its execution,
+further modifications are needed to your package. Typical changes are:
+
+.IP o 3
+.BR Build-Depends :
+you should remove
+.IR cdbs , " dpatch " and " quilt" .
+Instead, you should add
+.I debhelper (>= 7.0.50~)
+.IP o 3
+Add
+.B override_dh_*
+targets to debian/rules to address special cases.
+.IP o 3
+Remove 
+.B --with quilt
+from the debian/rules, if it uses the 
+.B dh $@
+syntax.
+
+.PP
+You can find tutorial for packaging using this new 
+.B dh $@
+style and new 3.0 (quilt) source format in the maint-guide package.
+It is also available at:
+
+   http://www.debian.org/doc/manuals/maint-guide/index.en.html
+
+.SH COPYRIGHT
+(c) Osamu Aoki, 2010, GPL2+
+
+dpatch2quilt.sh is used as the base of this program;
+Parts from http://blog.orebokech.com/2007/08/converting-debian-packages-from-dpatch.html
+
+ (c) gregor herrmann, 2007-2008, GPL2+
+ (c) Damyan Ivanov, 2007-2008, GPL2+
+ (c) Martin Quinson, 2008, GPL2+

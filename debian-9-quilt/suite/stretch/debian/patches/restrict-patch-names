@@ -1,0 +1,158 @@
+Description: Enforce valid patch names
+ Allowing patch names to contain spaces would require major changes
+ (such as the format of the series file), so we'd better detect that
+ the user tries to use spaces in the patch name, and refuse it.
+ .
+ Also, refuse patches named series, as it would result in awful
+ corruptions of the internal state.
+Author: Martin Quinson
+---
+ quilt/fork.in                  |    2 +
+ quilt/import.in                |    2 +
+ quilt/new.in                   |    2 +
+ quilt/rename.in                |    2 +
+ quilt/scripts/patchfns.in      |   17 ++++++++++++
+ test/restrict-patch-names.test |   56 +++++++++++++++++++++++++++++++++++++++++
+ 6 files changed, 81 insertions(+)
+
+Index: b/quilt/scripts/patchfns.in
+===================================================================
+--- a/quilt/scripts/patchfns.in
++++ b/quilt/scripts/patchfns.in
+@@ -951,6 +951,23 @@
+ 	return 1
+ }
+ 
++# We don't want patch with spaces in their name
++check_potential_patchname()
++{
++	local patch="$1"
++	if echo "$patch" | grep -q ' '
++	then
++		printf $"Patch name '%s' invalid: cannot contain spaces.\n" "$patch" >&2
++		exit 1
++	fi
++
++	if [ "$patch" = "$QUILT_SERIES" ]
++	then
++		printf $"No patch can be named '%s' as this would conflict with the\nseries file used internally by quilt.\n" "$QUILT_SERIES" >&2
++		exit 1
++	fi
++}
++
+ print_patch()
+ {
+ 	echo "${QUILT_PATCHES_PREFIX:+$SUBDIR_DOWN$QUILT_PATCHES/}$1"
+Index: b/quilt/new.in
+===================================================================
+--- a/quilt/new.in
++++ b/quilt/new.in
+@@ -92,6 +92,8 @@
+ 
+ patch=${1#$QUILT_PATCHES/}
+ 
++check_potential_patchname "$patch"
++
+ if patch_in_series $patch
+ then
+ 	printf $"Patch %s exists already\n" "$(print_patch $patch)" >&2
+Index: b/quilt/import.in
+===================================================================
+--- a/quilt/import.in
++++ b/quilt/import.in
+@@ -186,6 +186,8 @@
+ 		patch=${orig_patch_file##*/}
+ 	fi
+ 
++	check_potential_patchname "$patch"
++
+ 	patch_file=$(find_patch_file "$orig_patch_file") || exit 1
+ 	merged_patch_file="$patch_file"
+ 
+Index: b/quilt/fork.in
+===================================================================
+--- a/quilt/fork.in
++++ b/quilt/fork.in
+@@ -77,6 +77,8 @@
+ 
+ new_patch=${new_patch#$QUILT_PATCHES/}
+ 
++check_potential_patchname "$new_patch"
++
+ if patch_in_series $new_patch || \
+    [ -d "$QUILT_PC/$new_patch" ] || \
+    [ -e "$(patch_file_name $new_patch)" ]
+Index: b/quilt/rename.in
+===================================================================
+--- a/quilt/rename.in
++++ b/quilt/rename.in
+@@ -77,6 +77,8 @@
+ 
+ new_patch=${1#$QUILT_PATCHES/}
+ 
++check_potential_patchname "$new_patch"
++
+ if patch_in_series "$new_patch" || \
+    [ -d "$QUILT_PC/$new_patch" ] || \
+    [ -e "$(patch_file_name "$new_patch")" ]
+Index: b/test/restrict-patch-names.test
+===================================================================
+--- /dev/null
++++ b/test/restrict-patch-names.test
+@@ -0,0 +1,56 @@
++$ mkdir patches
++
++$ quilt new "name with spaces"
++> Patch name 'name with spaces' invalid: cannot contain spaces.
++$ echo %{?}
++> 1
++
++$ quilt new series
++> No patch can be named 'series' as this would conflict with the
++> series file used internally by quilt.
++$ echo %{?}
++> 1
++
++
++
++$ echo "+toto" > patchfile
++
++$ quilt import -P 'name2 with spaces' patchfile
++> Patch name 'name2 with spaces' invalid: cannot contain spaces.
++$ echo %{?}
++> 1
++
++$ quilt import -P series patchfile
++> No patch can be named 'series' as this would conflict with the
++> series file used internally by quilt.
++$ echo %{?}
++> 1
++
++
++
++$ quilt new patch1
++> Patch patches/patch1 is now on top
++
++$ quilt fork "patch 1"
++> Patch name 'patch 1' invalid: cannot contain spaces.
++$ echo %{?}
++> 1
++
++$ quilt fork series
++> No patch can be named 'series' as this would conflict with the
++> series file used internally by quilt.
++$ echo %{?}
++> 1
++
++
++
++$ quilt rename "patch 1"
++> Patch name 'patch 1' invalid: cannot contain spaces.
++$ echo %{?}
++> 1
++
++$ quilt rename series
++> No patch can be named 'series' as this would conflict with the
++> series file used internally by quilt.
++$ echo %{?}
++> 1

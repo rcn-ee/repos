@@ -1,0 +1,38 @@
+Using quilt with debhelper
+--------------------------
+If you use the dh command provided by debhelper 7, you can simply
+call it with "dh --with quilt" and dh_quilt_patch/dh_quilt_unpatch
+will be called at the right time.
+
+Otherwise you can manually call dh_quilt_patch / dh_quilt_unpatch
+at the right place, see their respective manpages for examples.
+
+dh supports the --with parameter since debhelper (>= 7.0.8) and quilt
+provides the required debhelper plugin since quilt (>= 0.46-7).
+
+Using quilt with CDBS
+---------------------
+
+You can include /usr/share/cdbs/1/rules/patchsys-quilt.mk
+in debian/rules and be done with it.
+
+If you use DEB_SRCDIR you might want to set DEB_QUILT_TOPDIR to "."
+so that quilt patches are applied in the current directory and
+not in DEB_SRCDIR. This will ensure compatibility with the
+"3.0 (quilt)" source format.
+
+Using quilt in other packages
+-----------------------------
+
+You can include /usr/share/quilt/quilt.make in debian/rules and modify
+your rules to depend on the targets provided by this Makefile (unpatch and
+$(QUILT_STAMPFN)). Here's an example:
+
+    include /usr/share/quilt/quilt.make
+
+    clean: unpatch
+	    ...
+
+    build: $(QUILT_STAMPFN)
+	    ...
+

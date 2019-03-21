@@ -1,0 +1,56 @@
+Source: quilt
+Section: vcs
+Priority: optional
+Maintainer: Martin Quinson <mquinson@debian.org>
+Uploaders: Ryan Niebur <ryanryan52@gmail.com>
+Build-Depends: debhelper (>= 9)
+Build-Depends-Indep: gettext, hevea, lynx, diffstat, perl, procmail, ed
+Standards-Version: 3.9.8
+Vcs-git: git://anonscm.debian.org/collab-maint/quilt
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/quilt.git
+Homepage: http://savannah.nongnu.org/projects/quilt
+
+# Note that there is no need to depend on awk since it's essential
+
+Package: quilt
+Architecture: all
+Depends: patch (>= 2.6), diffstat, bzip2, gettext, bsdmainutils, ${misc:Depends}, ${perl:Depends}
+Suggests: procmail, graphviz, default-mta | mail-transport-agent
+Recommends: less
+Enhances: debhelper, cdbs
+Multi-Arch: foreign
+Description: Tool to work with series of patches
+ Quilt manages a series of patches by keeping track of the changes
+ each of them makes. They are logically organized as a stack, and you can
+ apply, un-apply, refresh them easily by traveling into the stack (push/pop).
+ .
+ Quilt is good for managing additional patches applied to a package received
+ as a tarball or maintained in another version control system. The stacked
+ organization is proven to be efficient for the management of very large patch
+ sets (more than hundred patches). As matter of fact, it was designed by and
+ for Linux kernel hackers (Andrew Morton, from the -mm  branch, is the
+ original author), and its main use by the current upstream maintainer is to
+ manage the (hundreds of) patches against the kernel made for the SUSE
+ distribution.
+ .
+ This package provides seamless integration into Debhelper or CDBS,
+ allowing maintainers to easily add a quilt-based patch management system in
+ their packages. The package also provides some basic support for those not
+ using those tools. See README.Debian for more information.
+
+Package: quilt-el
+Architecture: all
+Depends: emacs | emacsen, quilt (>= 0.48), ${misc:Depends}
+Description: simple Emacs interface of quilt
+ This is an Emacs minor mode for quilt. By using this,
+ it becomes easy to edit files controlled by quilt.
+ The main features are as follows:
+ .
+  - Automatically detects files that are in a quilt hierarchy
+    and enables itself.
+  - Only files in topmost patch can be writable.
+  - Some handy shortcut keys of quilt commands.
+
+# Local Variables:
+# Coding: utf-8
+# End:

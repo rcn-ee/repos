@@ -1,0 +1,98 @@
+Description: Implement a new "quilt shell" command
+ The command launches a shell in a duplicate environment. After exiting
+ the shell, any modifications made in this environment are applied to the
+ topmost patch.
+Author: Josselin Mouette <joss@debian.org>
+Bug-Debian: http://bugs.debian.org/526141
+Forwarded: submitted 2012-12-19
+
+---
+ bash_completion |    2 -
+ quilt/shell.in  |   67 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 68 insertions(+), 1 deletion(-)
+
+Index: b/quilt/shell.in
+===================================================================
+--- /dev/null
++++ b/quilt/shell.in
+@@ -0,0 +1,67 @@
++#! @BASH@
++
++#  This script is free software; you can redistribute it and/or modify
++#  it under the terms of the GNU General Public License version 2 as
++#  published by the Free Software Foundation.
++#
++#  See the COPYING and AUTHORS files for more details.
++
++# Read in library functions
++if [ "$(type -t patch_file_name)" != function ]
++then
++        if ! [ -r $QUILT_DIR/scripts/patchfns ]
++        then
++                echo "Cannot read library $QUILT_DIR/scripts/patchfns" >&2
++                exit 1
++        fi
++        . $QUILT_DIR/scripts/patchfns
++fi
++
++if [ "$1" = "-h" ]; then
++    printf $"Usage: quilt shell [command]\n"
++    printf $"
++Launch a shell in a duplicate environment. After exiting the shell, any
++modifications made in this environment are applied to the topmost patch.
++
++If a command is specified, it is executed instead of launching the shell.
++"
++    exit 0
++fi
++
++tmpdir=$(mktemp -d /tmp/quilt-XXXXXX)
++
++cp -a . $tmpdir
++
++(
++    cd $tmpdir/"$SUBDIR"
++    if [ $# -gt 0 ]; then
++        exec "$@"
++    else
++        $SHELL
++    fi
++)
++
++# Find new directories
++( cd $tmpdir; find . -type d ! -path ./"$QUILT_PC"/\* ! -path ./"$QUILT_PATCHES"/\* ) | while read dir; do
++    if [ ! -d "$dir" ]; then
++        mkdir -p "$dir"
++    fi
++done
++
++# New and modified files
++( cd $tmpdir; find . -type f ! -path ./"$QUILT_PC"/\* ! -path ./"$QUILT_PATCHES"/\* ) | while read file; do
++    if [ ! -f "$file" ] || ! diff -q "$file" $tmpdir/"$file" > /dev/null 2>&1; then
++        quilt_command add "$file"
++        cp -a $tmpdir/"$file" "$file"
++    fi
++done
++
++# Removed files
++( find . -type f ! -path ./"$QUILT_PC"/\* ! -path ./"$QUILT_PATCHES"/\* ) | while read file; do
++    if [ ! -f $tmpdir/"$file" ]; then
++        quilt_command add "$file"
++        rm -f "$file"
++    fi
++done
++
++rm -rf $tmpdir
+Index: b/bash_completion
+===================================================================
+--- a/bash_completion
++++ b/bash_completion
+@@ -102,7 +102,7 @@ _quilt_completion()
+     # quilt sub commands
+     cmds='add annotate applied delete diff edit files fold fork graph \
+ 	  grep header import init mail new next patches pop previous push refresh \
+-	  remove rename revert series setup snapshot top unapplied'
++	  remove rename revert series setup shell snapshot top unapplied'
+ 
+     # if no command were given, complete on commands
+     if [[ $COMP_CWORD -eq 1 ]] ; then

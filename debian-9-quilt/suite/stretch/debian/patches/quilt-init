@@ -1,0 +1,90 @@
+Description: adds a simple "quilt init" that creates the needed meta-data
+Origin: Vendor
+Author: Martin Quinson <mquinson@debian.org>
+---
+ bash_completion |    2 +-
+ quilt/init.in   |   49 +++++++++++++++++++++++++++++++++++++++++++++++++
+ test/one.test   |    3 +++
+ 3 files changed, 53 insertions(+), 1 deletion(-)
+
+Index: b/quilt/init.in
+===================================================================
+--- /dev/null
++++ b/quilt/init.in
+@@ -0,0 +1,49 @@
++#! @BASH@
++
++#  This script is free software; you can redistribute it and/or modify
++#  it under the terms of the GNU General Public License version 2 as
++#  published by the Free Software Foundation.
++#
++#  See the COPYING and AUTHORS files for more details.
++
++# Read in library functions
++if [ "$(type -t patch_file_name)" != function ]
++then
++	if ! [ -r $QUILT_DIR/scripts/patchfns ]
++	then
++		echo "Cannot read library $QUILT_DIR/scripts/patchfns" >&2
++		exit 1
++	fi
++	. $QUILT_DIR/scripts/patchfns
++fi
++
++usage()
++{
++	printf $"Usage: quilt init\n"
++	if [ x$1 = x-h ]
++	then
++		printf $"
++Initializes the quilt meta-data in the current sub-directory. This
++command is optional as any quilt command creates these meta-data on
++need, but it can still be interesting to specify easily the directory
++that should be used as root directory before working from a
++sub-directory."
++		exit 0
++	else
++		exit 1
++	fi
++}
++
++if [ $? -ne 0 ]
++then
++	usage
++fi
++
++create_db
++
++printf $"The quilt meta-data is now initialized.\n"
++
++### Local Variables:
++### mode: shell-script
++### End:
++# vim:filetype=sh
+Index: b/test/one.test
+===================================================================
+--- a/test/one.test
++++ b/test/one.test
+@@ -10,6 +10,9 @@ of the installed quilt with `make check'
+ 	$ quilt new patch1.diff
+ 	> Patch %{P}patch1.diff is now on top
+ 
++	$ quilt init
++	> The quilt meta-data is now initialized.
++
+ 	$ quilt add dir/file1
+ 	> File dir/file1 added to patch %{P}patch1.diff
+ 
+Index: b/bash_completion
+===================================================================
+--- a/bash_completion
++++ b/bash_completion
+@@ -101,7 +101,7 @@ _quilt_completion()
+ 
+     # quilt sub commands
+     cmds='add annotate applied delete diff edit files fold fork graph \
+-	  grep header import mail new next patches pop previous push refresh \
++	  grep header import init mail new next patches pop previous push refresh \
+ 	  remove rename revert series setup snapshot top unapplied'
+ 
+     # if no command were given, complete on commands

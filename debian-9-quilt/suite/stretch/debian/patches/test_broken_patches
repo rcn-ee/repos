@@ -1,0 +1,39 @@
+---
+ test/file-not-found.test |   30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
+
+Index: b/test/file-not-found.test
+===================================================================
+--- /dev/null
++++ b/test/file-not-found.test
+@@ -0,0 +1,30 @@
++# Try to push a patch touching a file which does not exist in this tree
++
++$ rm -rf d
++$ mkdir -p d/patches
++$ cd d
++
++$ mkdir subdir
++$ echo foo > subdir/file.txt
++$ echo bar > subdir/other.txt
++$ diff -u subdir/file.txt subdir/other.txt > patches/patch
++# simulate --no-timestamp
++$ sed 's|subdir/file.txt.*|subdir/file.txt|' patches/patch > patches/patch2
++$ sed 's|subdir/other.txt.*|subdir/other.txt|' patches/patch2 > patches/patch
++$ rm subdir/other.txt patches/patch2
++$ echo patch > patches/series
++
++$ quilt push
++> Applying patch patches/patch
++> patching file other.txt
++> Hunk #1 FAILED at 1.
++> 1 out of 1 hunk FAILED -- rejects in file other.txt
++> Patch patches/patch does not apply (enforce with -f)
++
++$ quilt push -qf
++> Applying patch patches/patch
++> 1 out of 1 hunk FAILED -- saving rejects to file other.txt.rej
++> Applied patch patches/patch (forced; needs refresh)
++
++$ cd ..
++$ rm -rf d

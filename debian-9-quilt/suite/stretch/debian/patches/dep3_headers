@@ -1,0 +1,94 @@
+Description: Adds the --dep3 option to include a DEP-3 template in the header.
+ .
+ Intensively using quilt for Debian packages and trying to adopt the
+ DEP-3 Patch Tagging Guidelines for my patches, I often get to go on
+ http://dep.debian.net/ to find the correct fields.
+ .
+ The proposed patch adds a --dep3 option to "quilt -e header" that
+ adds a template feeded to $EDITOR if the header is empty. The
+ template contains all fields and documents them, with indications of
+ required/optional.
+Origin:      vendor
+Author:      Didier Raboud <didier@raboud.com>
+Reviewed-by: Martin Quinson <mquinson@debian.org>
+Last-Update: 2012-02-02
+Bug-Debian: http://bugs.debian.org/543355
+
+---
+NOTE: Even if DEP-3 has started within Debian, it has been written as a
+vendor neutral specification and this patch should be forwarded upstream
+too. --Raphael Hertzog
+
+---
+ quilt/header.in |   30 ++++++++++++++++++++++++++++--
+ 1 file changed, 28 insertions(+), 2 deletions(-)
+
+Index: b/quilt/header.in
+===================================================================
+--- a/quilt/header.in
++++ b/quilt/header.in
+@@ -21,7 +21,7 @@
+ 
+ usage()
+ {
+-	printf $"Usage: quilt header [-a|-r|-e] [--backup] [--strip-diffstat] [--strip-trailing-whitespace] [patch]\n"
++	printf $"Usage: quilt header [-a|-r|-e] [--backup] [--dep3] [--strip-diffstat] [--strip-trailing-whitespace] [patch]\n"
+ 
+ 	if [ x$1 = x-h ]
+ 	then
+@@ -41,6 +41,10 @@
+ 
+ --backup
+ 	Create a backup copy of the old version of a patch as patch~.
++
++--dep3
++	When editing (-e), insert a template with DEP-3 headers.
++	DEP-3 is http://dep.debian.net/deps/dep3/ Patch Tagging Guidelines.
+ " "$EDITOR"
+ 		exit 0
+ 	else
+@@ -68,7 +72,7 @@
+ 	fi
+ }
+ 
+-options=`getopt -o areh --long backup,strip-trailing-whitespace,strip-diffstat -- "$@"`
++options=`getopt -o areh --long backup,dep3,strip-trailing-whitespace,strip-diffstat -- "$@"`
+ 
+ if [ $? -ne 0 ]
+ then
+@@ -92,6 +96,9 @@
+ 	--backup)
+ 		QUILT_BACKUP=1
+ 		shift ;;
++	--dep3)
++		opt_use_dep3_headers=1
++		shift ;;
+ 	--strip-diffstat)
+ 		opt_strip_diffstat=1
+ 		shift ;;
+@@ -149,6 +156,25 @@
+ 		fi
+ 	) > $tmp
+ 
++        # If triggered and file is empty, cat dep-3 headers into it
++	if [ -n "$opt_use_dep3_headers" -a ! -s $tmp ]
++	then
++		cat >$tmp <<-END
++		Description: <short description, required>
++		 <long description that can span multiple lines, optional>
++		Author: <name and email of author, optional>
++		Origin: <upstream|backport|vendor|other>, <URL, required except if Author is present>
++		Bug: <URL to the upstream bug report if any, implies patch has been forwarded, optional>
++		Bug-<Vendor>: <URL to the vendor bug report if any, optional>
++		Forwarded: <URL|no|not-needed, useless if you have a Bug field, optional>
++		Applied-Upstream: <version|URL|commit, identifies patches merged upstream, optional>
++		Reviewed-by: <name and email of a reviewer, optional>
++		Last-Update: $(LC_ALL=C date +%Y-%m-%d) <YYYY-MM-DD, last update of the meta-information, optional>
++		---
++		This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
++		END
++        fi
++
+ 	if [ -n "$opt_edit" ]
+ 	then
+ 		LANG=$ORIGINAL_LANG $EDITOR "$tmp" || exit 1

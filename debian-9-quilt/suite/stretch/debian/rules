@@ -1,0 +1,64 @@
+#!/usr/bin/make -f
+
+# Where we want quilt to install files
+export BUILD_ROOT=$(CURDIR)/debian/quilt
+
+%:
+	dh $@
+
+override_dh_auto_clean:
+	test ! -e Makefile || touch Makefile # Avoids auto-rebuild rule to kick-in
+	dh_auto_clean
+	# Restore pristine l10n files
+	for po in po/*.backup; do test ! -e $$po || mv $$po $${po%%.backup}; done
+
+override_dh_auto_configure:
+	dh_auto_configure -- --with-docdir=/usr/share/doc/quilt --with-sendmail=/usr/sbin/sendmail --with-awk=/usr/bin/awk
+
+override_dh_auto_build:
+	# Backup a pristine copy of l10n files
+	for po in po/*.po po/quilt.pot; do cp $$po $$po.backup; done
+	# Build quilt
+	dh_auto_build
+	# Build a HTML/txt copy of the documentation
+	mkdir -p doc/tmp
+ifeq (,$(findstring stage1,$(DEB_BUILD_PROFILES)))
+	cd doc/tmp; LC_ALL=C hevea ../main.tex ; LC_ALL=C hevea ../main.tex; LC_ALL=C hevea ../main.tex
+	perl -pe 'if (/\\sh{.*}/) {s:\\sh{(.*)}:<I>$$1</I>:}'	\
+	     < doc/tmp/main.html > doc/quilt.html
+	LC_ALL=C perl -e '$$/ = undef; $$f=<>; $$f =~ s|<A[^>]*?HREF="[^"]*#[^"]*">(.*?)</A>|$$1|msg; print $$f;' < doc/tmp/main.html > doc/tmp/tmp.html
+	LC_ALL=C lynx doc/tmp/tmp.html -dump > doc/quilt.txt
+else
+	touch doc/quilt.html doc/quilt.txt
+endif
+	rm -rf doc/tmp
+	pod2man -c Debhelper debian/dh_quilt_patch debian/dh_quilt_patch.1
+	pod2man -c Debhelper debian/dh_quilt_unpatch debian/dh_quilt_unpatch.1
+
+override_dh_auto_install:
+	dh_auto_install
+	install -d -m 0755 $(CURDIR)/debian/quilt-el/usr/share/emacs/site-lisp/quilt-el
+	install    -m 0644 $(BUILD_ROOT)/usr/share/emacs/site-lisp/quilt.el \
+			   $(CURDIR)/debian/quilt-el/usr/share/emacs/site-lisp/quilt-el/quilt-mode.el
+	rm -fr $(BUILD_ROOT)/usr/share/emacs
+
+override_dh_installdocs:
+	dh_installdocs --link-doc=quilt
+
+override_dh_installchangelogs:
+	dh_installchangelogs NEWS
+
+override_dh_compress:
+	# Don't compress the .pdf, it's annoying and brings almost nothing
+	# since the format is already compressed
+	dh_compress -X.pdf
+
+override_dh_auto_test:
+ifeq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
+	@if ! [ -d /proc/1 ]; then \
+	   echo "quilt needs a mounted /proc to correctly build";\
+	   echo "If you really want to build without /proc, add nocheck to DEB_BUILD_OPTIONS"; \
+	   exit 1; \
+	fi
+	dh_auto_test
+endif

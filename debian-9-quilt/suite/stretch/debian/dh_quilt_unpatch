@@ -1,0 +1,69 @@
+#!/usr/bin/perl -w
+
+=head1 NAME
+
+dh_quilt_unpatch - unapply patches listed in debian/patches/series
+
+=cut
+
+use strict;
+use Debian::Debhelper::Dh_Lib;
+
+=head1 SYNOPSIS
+
+B<dh_quilt_unpatch> [S<I<debhelper options>>]
+
+=head1 DESCRIPTION
+
+dh_quilt_unpatch simply calls B<quilt pop -a> after having set
+the environment variable B<QUILT_PATCHES> to B<debian/patches>.
+All patches listed in B<debian/patches/series> are then unapplied in the
+current directory. The command does not fail if the patches have
+already been unapplied.
+
+You can use another directory instead of B<debian/patches> by setting
+(and exporting) the environment variable B<QUILT_PATCH_DIR>.
+
+=head1 EXAMPLES
+
+dh_quilt_unpatch is usually called indirectly in a rules file via the
+dh command.
+
+	%:
+		dh $@ --with quilt
+
+It can also be direcly called in the clean rule.
+
+	clean:
+		dh_testdir
+		dh_testroot
+		[ ! -f Makefile ] || $(MAKE) clean
+		dh_quilt_unpatch
+		dh_clean
+
+=cut
+
+init();
+
+$ENV{"QUILT_PATCHES"} = $ENV{"QUILT_PATCH_DIR"} ?
+                        $ENV{"QUILT_PATCH_DIR"} : "debian/patches";
+complex_doit('quilt --quiltrc /dev/null pop -a || test $? = 2');
+complex_doit('rm -rf .pc');
+
+=head1 NOTES
+
+This tool is useless if you use the source package format B<3.0 (quilt)>.
+Consider switching to this source format if you haven't done it yet.
+
+=head1 SEE ALSO
+
+L<debhelper(7)>, L<dh(1)>.
+
+This program is meant to be used together with debhelper.
+
+=head1 AUTHOR
+
+Raphael Hertzog <hertzog@debian.org>
+
+=cut
+
