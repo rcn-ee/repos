@@ -4,7 +4,7 @@
 
 package_name="ti-libgbm2"
 debian_pkg_name="${package_name}"
-package_version="2.0.0-git20171206.0"
+package_version="2.0.0-git20171206.1"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 

@@ -1,0 +1,28 @@
+From 181e7b8d97acc10c3843b86af8fbc20523715912 Mon Sep 17 00:00:00 2001
+From: Eric Ruei <e-ruei1@ti.com>
+Date: Thu, 1 Dec 2016 11:10:00 -0500
+Subject: [PATCH] Hack gbm.pc.in: add -ldl at Libs: to pass the QT5
+ config.tests for eglfs_kms
+
+This is a temporary hack to avoid the link error at qtbase/config.tests/qpa/kms
+
+Signed-off-by: Eric Ruei <e-ruei1@ti.com>
+---
+ gbm.pc.in |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/gbm.pc.in b/gbm.pc.in
+index d7708c7..96b7e5b 100644
+--- a/gbm.pc.in
++++ b/gbm.pc.in
+@@ -7,6 +7,6 @@ Name: gbm
+ Description: gbm library
+ Requires.private: libudev
+ Version: @PACKAGE_VERSION@
+-Libs: -L${libdir} -lgbm
++Libs: -L${libdir} -lgbm -ldl
+ Libs.private: -ldl
+ Cflags: -I${includedir}/gbm
+-- 
+1.7.9.5
+
