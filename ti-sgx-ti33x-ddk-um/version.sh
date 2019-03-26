@@ -4,18 +4,17 @@
 
 package_name="ti-sgx-ti33x-ddk-um"
 debian_pkg_name="${package_name}"
-package_version="0.0.20151104"
+package_version="1.14.3699939-git20171201.0"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
 git_repo="git://git.ti.com/graphics/omap5-sgx-ddk-um-linux.git"
-git_sha="b535b96043ae2206e0c3d24b66599ca0fbe706d3"
+git_sha="bbbd5cbb55e4c54d3b02456ae553bea86fd61506"
 reprepro_dir="t/${package_name}"
 dl_path=""
 
-debian_version="${package_version}-1"
+debian_version="${package_version}-0rcnee0"
 debian_patch=""
 debian_diff=""
 
-
-jessie_version="~bpo80+20151110+1"
+stretch_version="~stretch+20190326"
