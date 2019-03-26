@@ -1,0 +1,41 @@
+Source: ti-libgbm2
+Section: graphics
+Priority: optional
+Maintainer: TI OMAP Developers <tiomap-dev@lists.launchpad.net>
+Build-Depends: cdbs,
+               debhelper (>= 7),
+               libtool,
+               dh-autoreconf,
+               quilt,
+               libdrm-dev (>= 2.4.32-1ubuntu1+ti1.1),
+               libdri2-dev (>= 1.0.2-0ubuntu3),
+               libudev-dev,
+               pkg-config
+Standards-Version: 3.9.2
+Homepage: git://github.com/robclark/libgbm.git
+Vcs-Git: git://gitorious.org/ubuntu-omap/libgbm.git
+
+Package: ti-libgbm2
+Section: libs
+Architecture: any
+Priority: optional
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+Pre-Depends: ${misc:Pre-Depends}
+Description: generic buffer management API -- runtime
+ This is the gbm frontend used by (for example) weston compositor to
+ load the GLES stack, and retrieve the backing buffer objects behind
+ an eglImage (created with EGL_WAYLAND_BUFFER_WL), etc.
+ 
+Package: ti-libgbm2-dev
+Section: libdevel
+Architecture: any
+Priority: optional
+Depends: ${misc:Depends},
+	 libgbm2 (= ${binary:Version}),
+	 libudev-dev
+Description: generic buffer management API -- runtime
+ This is the gbm frontend used by (for example) weston compositor to
+ load the GLES stack, and retrieve the backing buffer objects behind
+ an eglImage (created with EGL_WAYLAND_BUFFER_WL), etc.
