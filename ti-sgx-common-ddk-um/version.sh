@@ -2,7 +2,7 @@
 
 #http://git.ti.com/gitweb/?p=graphics/omap5-sgx-ddk-um-linux.git;a=summary
 
-package_name="ti-sgx-ti33x-ddk-um"
+package_name="ti-sgx-common-ddk-um"
 debian_pkg_name="${package_name}"
 package_version="1.14.3699939-git20171201.0"
 package_source="${package_name}_${package_version}.orig.tar.xz"
