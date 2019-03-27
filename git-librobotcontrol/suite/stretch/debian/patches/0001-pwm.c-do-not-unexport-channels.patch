@@ -1,0 +1,31 @@
+From ff36585c22ae91f51e0b21846a9e2ef9c78cb9cd Mon Sep 17 00:00:00 2001
+From: Jason Kridner <jdk@ti.com>
+Date: Wed, 27 Mar 2019 00:05:30 +0000
+Subject: [PATCH] pwm.c: do not unexport channels
+
+The kernel complains that the PWM is not stopped ahead of being
+unexported. This may or may not be the case, but in any case,
+this helps avoid the kernel issue.
+
+Fixes https://github.com/StrawsonDesign/librobotcontrol/issues/154
+---
+ library/src/io/pwm.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/library/src/io/pwm.c b/library/src/io/pwm.c
+index 926ba5c..881eae0 100644
+--- a/library/src/io/pwm.c
++++ b/library/src/io/pwm.c
+@@ -144,6 +144,9 @@ static int __export_channels(int ss)
+  */
+ static int __unexport_channels(int ss)
+ {
++	/* At a minimum, the channels need to be disabled prior to being unexported */
++	return 0;
++
+ 	int unexport_fd=0;
+ 	char buf[MAXBUF];
+ 	int len;
+-- 
+2.20.1
+
