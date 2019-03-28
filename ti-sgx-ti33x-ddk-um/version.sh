@@ -13,8 +13,8 @@ git_sha="bbbd5cbb55e4c54d3b02456ae553bea86fd61506"
 reprepro_dir="t/${package_name}"
 dl_path=""
 
-debian_version="${package_version}-0rcnee8"
+debian_version="${package_version}-0rcnee9"
 debian_patch=""
 debian_diff=""
 
-stretch_version="~stretch+20190326"
+stretch_version="~stretch+20190328"
