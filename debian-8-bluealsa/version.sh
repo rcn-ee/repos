@@ -6,7 +6,7 @@ package_name="bluealsa"
 debian_pkg_name="${package_name}"
 package_version="0.10"
 package_source="${package_name}_${package_version}.tar.xz"
-src_dir="${package_name}-${package_version}"
+src_dir="${package_name}"
 
 git_repo=""
 git_sha=""
