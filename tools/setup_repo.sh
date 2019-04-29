@@ -163,4 +163,9 @@ setup_repo
 suite="disco"
 archs="armhf source"
 setup_repo
+
+suite="eoan"
+archs="armhf source"
+setup_repo
+
 #
