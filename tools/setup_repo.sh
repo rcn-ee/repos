@@ -94,6 +94,10 @@ suite="buster"
 archs="armhf source"
 setup_repo
 
+suite="bullseye"
+archs="armhf source"
+setup_repo
+
 suite="sid"
 archs="armhf source"
 setup_repo
