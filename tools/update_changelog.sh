@@ -35,15 +35,6 @@ new_date=`LANG=C date -R`
 simple_date=`LANG=C date +%Y%m%d`
 
 dist="debian"
-suite="jessie"
-if [ -d ${DIR}/suite/${suite}/ ] ; then
-	rcn_ee_version="${jessie_version}"
-	cat ${DIR}/version.sh | grep -v jessie_version > ${DIR}/new-version.sh
-	echo "${suite}_version=\"~${suite}+${simple_date}\"" >> ${DIR}/new-version.sh
-	mv ${DIR}/new-version.sh ${DIR}/version.sh
-	run
-fi
-
 suite="stretch"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${stretch_version}"
@@ -57,6 +48,15 @@ suite="buster"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${buster_version}"
 	cat ${DIR}/version.sh | grep -v buster_version > ${DIR}/new-version.sh
+	echo "${suite}_version=\"~${suite}+${simple_date}\"" >> ${DIR}/new-version.sh
+	mv ${DIR}/new-version.sh ${DIR}/version.sh
+	run
+fi
+
+suite="bullseye"
+if [ -d ${DIR}/suite/${suite}/ ] ; then
+	rcn_ee_version="${bullseye_version}"
+	cat ${DIR}/version.sh | grep -v bullseye_version > ${DIR}/new-version.sh
 	echo "${suite}_version=\"~${suite}+${simple_date}\"" >> ${DIR}/new-version.sh
 	mv ${DIR}/new-version.sh ${DIR}/version.sh
 	run

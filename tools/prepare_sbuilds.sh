@@ -43,36 +43,6 @@ echo "\$distribution = 'stretch';" >> ~/.sbuildrc
 mirror="http://${proxy}${debian_server}"
 deboot="sid"
 
-dist="jessie"
-unset flavor
-arch="armhf"
-options=""
-setup_update_sbuild
-
-dist="jessie"
-flavor="-exp"
-arch="armhf"
-options="--chroot-suffix=${flavor}-sbuild"
-setup_update_sbuild
-
-dist="jessie"
-flavor="-nodejs-v0.12.x"
-arch="armhf"
-options="--chroot-suffix=${flavor}-sbuild"
-setup_update_sbuild
-
-dist="jessie"
-flavor="-nodejs-v4.x"
-arch="armhf"
-options="--chroot-suffix=${flavor}-sbuild"
-setup_update_sbuild
-
-dist="jessie"
-flavor="-nodejs-v6.x"
-arch="armhf"
-options="--chroot-suffix=${flavor}-sbuild"
-setup_update_sbuild
-
 dist="stretch"
 unset flavor
 arch="armhf"
@@ -86,6 +56,12 @@ options="--exclude=debfoster --chroot-suffix=${flavor}-sbuild"
 setup_update_sbuild
 
 dist="buster"
+unset flavor
+arch="armhf"
+options="--exclude=debfoster"
+setup_update_sbuild
+
+dist="bullseye"
 unset flavor
 arch="armhf"
 options="--exclude=debfoster"
