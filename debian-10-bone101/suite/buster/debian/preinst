@@ -2,12 +2,24 @@
 
 set -e
 
+#old, replaced, as we use base dir...
 if [ -d /var/lib/cloud9/examples_old/ ] ; then
 	rm -rf /var/lib/cloud9/examples_old/ || true
 fi
 
+#old, replaced, as we use base dir...
 if [ -d /var/lib/cloud9/examples/ ] ; then
 	mv /var/lib/cloud9/examples/ /var/lib/cloud9/examples_old/
+fi
+
+if [ -d /var/lib/cloud9_backup_examples/ ] ; then
+	rm -rf /var/lib/cloud9_backup_examples/ || true
+fi
+
+if [ -d /var/lib/cloud9/ ] ; then
+	mv /var/lib/cloud9/ /var/lib/cloud9_backup_examples/
+else
+	mkdir -p /var/lib/cloud9/ || true
 fi
 
 #DEBHELPER#
