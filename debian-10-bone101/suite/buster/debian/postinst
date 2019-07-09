@@ -44,14 +44,11 @@ npm_install () {
 }
 
 npm_install
-groupadd --system cloud9ide || true
 
 echo "Setting up: /var/lib/cloud9/ permissions"
 
 mkdir -p /var/lib/cloud9/ || true
-
-chown -R root:cloud9ide /var/lib/cloud9/ || true
-chmod -R 775 /var/lib/cloud9/ || true
+chown -R 1000:1000 /var/lib/cloud9/ || true
 
 if [ -d /var/lib/cloud9/ ] ; then
 	echo "Setting up Cloud9 examples from: https://github.com/beagleboard/cloud9-examples"
@@ -61,7 +58,7 @@ if [ -d /var/lib/cloud9/ ] ; then
 	git config user.email "beagle@beagleboard.org"
 	git config user.name "BeagleBoard"
 
-	chown -R root:cloud9ide /var/lib/cloud9/ || true
+	chown -R 1000:1000 /var/lib/cloud9/ || true
 fi
 
 # dh_installdeb will replace this with shell code automatically
