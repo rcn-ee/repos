@@ -59,7 +59,7 @@ chown -R 1000:1000 /var/lib/cloud9/ || true
 if [ -d /var/lib/cloud9/ ] ; then
 	echo "Setting up Cloud9 examples from: https://github.com/beagleboard/cloud9-examples"
 	if [ -d /var/cache/bone101/cloud9-examples.git/ ] ; then
-		git clone --depth=1 /var/cache/bone101/cloud9-examples.git /var/lib/cloud9/
+		git clone --depth=1 file:///var/cache/bone101/cloud9-examples.git /var/lib/cloud9/
 	else
 		git clone --depth=1 https://github.com/beagleboard/cloud9-examples /var/lib/cloud9/
 	fi
