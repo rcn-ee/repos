@@ -2,6 +2,11 @@
 
 set -e
 
+# drop the temporary mask from prerm
+if [ -d /run/systemd/system ] && [ "$1" = remove ]; then
+	systemctl unmask --runtime bb-bbai-tether.service || true
+fi
+
 #DEBHELPER#
 
 exit 0
