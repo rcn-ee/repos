@@ -325,11 +325,6 @@ start_hostapd () {
 default () {
 	connman_disable_tether
 
-	if [ "x${USE_WL18XX_POWER_MANAGMENT}" = "xoff" ] ; then
-		echo "bbai:wlan0:Power Management:off"
-		/sbin/iwconfig wlan0 power off || true
-	fi
-
 	if [ "x${USE_CONNMAN_TETHER}" != "xyes" ] ; then
 
 		if [ "x${USE_WL18XX_IP_PREFIX}" = "x" ] ; then
@@ -348,7 +343,7 @@ case "${board}" in
 BeagleBoard.org_BeagleBone_AI)
 	wait_for_ssh
 	wait_for_wlan
-	default
+	#default
 	;;
 *)
 	echo "${log} unsupported device, leaving things in default state..."
