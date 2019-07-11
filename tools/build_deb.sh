@@ -10,7 +10,8 @@ build () {
 		echo "-----------------"
 		echo "sbuild ${options} http://httphost/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}/${dsc_file}"
 		echo "-----------------"
-		sudo sbuild ${options} http://httphost/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}/${dsc_file}
+#		sudo sbuild ${options} http://httphost/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}/${dsc_file}
+		sbuild ${options} http://httphost/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}/${dsc_file}
 
 		if [ -f *.changes ] ; then
 			sudo chown -R 1000:1000 ./*
