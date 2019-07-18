@@ -2,7 +2,7 @@
 
 package_name="bb-customizations"
 debian_pkg_name="${package_name}"
-package_version="1.20190717.0"
+package_version="1.20190717.1"
 package_source=""
 src_dir=""
 
