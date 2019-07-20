@@ -13,7 +13,7 @@ git_sha=""
 reprepro_dir="c/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee7"
+debian_version="${package_version}-0rcnee8"
 debian_untar=""
 debian_patch=""
 
@@ -26,4 +26,4 @@ datestamp="20190710"
 
 debian_dl_1="${dl_mirror}/c9-core_${real_version}-${v10}-${datestamp}-build.tar.xz"
 
-buster_version="~buster+20190710"
+buster_version="~buster+20190718"
