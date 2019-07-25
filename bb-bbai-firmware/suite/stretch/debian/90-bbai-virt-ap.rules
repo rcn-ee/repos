@@ -1,0 +1,4 @@
+ACTION=="add", SUBSYSTEM=="ieee80211", ATTR{macaddress}=="80:c5:f2:??:??:??", KERNEL=="phy[0-9]", \
+RUN+="/sbin/iw wlan%n set power_save off", \
+RUN+="/sbin/iw phy %k interface add SoftAp%n type __ap", \
+RUN+="/sbin/iw ap%n set power_save off"

@@ -53,9 +53,9 @@ run () {
 
 			dsc_file=$(ls ${localdir}/incoming/${suite}/${debian_pkg_name}_${debian_version}/ | grep dsc)
 			if [ "x${sbuild_chroot}" = "x" ] ; then
-				options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite}"
+				options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite} --no-run-lintian"
 			else
-				options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite} --chroot=${suite}-${deb_arch}-${sbuild_chroot}-sbuild"
+				options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite} --chroot=${suite}-${deb_arch}-${sbuild_chroot}-sbuild --no-run-lintian"
 			fi
 
 			if [ ! "x${dsc_file}" = "x" ] ; then
