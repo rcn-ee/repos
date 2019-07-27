@@ -12,4 +12,4 @@ if [ ! -f ${package_name}_${package_version}.orig.tar.gz ] ; then
 fi
 
 git clone --bare https://github.com/beagleboard/cloud9-examples
-tar cvf ./suite/buster/debian/cloud9-examples.git.tar cloud9-examples.git/
+tar cvf ./suite/stretch/debian/cloud9-examples.git.tar cloud9-examples.git/
