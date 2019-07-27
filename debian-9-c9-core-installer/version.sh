@@ -13,17 +13,17 @@ git_sha=""
 reprepro_dir="c/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee3"
+debian_version="${package_version}-0rcnee4"
 debian_untar=""
 debian_patch=""
 
-dl_mirror="https://github.com/rcn-ee/bb.org-cloud9-core/raw/master/deploy/stretch"
+dl_mirror="http://gitlab.gfnd.rcn-ee.org/RobertCNelson/npm-package-cloud9/raw/master/deploy/stretch"
 
-v6="v6.12.2"
-v8="v8.11.2"
+v6="v6.17.0"
 
-#debian_dl_1="${dl_mirror}/c9-core_${package_version}-${v6}-build.tar.xz"
-debian_dl_1="${dl_mirror}/c9-core_3.1.4056.git20171215-${v6}-build.tar.xz"
-#debian_dl_2="${dl_mirror}/c9-core_${package_version}-${v8}-build.tar.xz"
+real_version="3.1.4056.git20171215"
+datestamp="20190727"
 
-stretch_version="~stretch+20180919"
+debian_dl_1="${dl_mirror}/c9-core_${real_version}-${v6}-${datestamp}-build.tar.xz"
+
+stretch_version="~stretch+20190726"

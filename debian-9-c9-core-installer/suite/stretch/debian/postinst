@@ -7,12 +7,11 @@ set -e
 package="c9-core-installer"
 
 core_version="3.1.4056.git20171215"
+v6="v6.17.0"
+datestamp="20190727"
+#c9-core_3.1.4056.git20171215-v10.15.2-20190710-build.tar.xz
 
-v6="v6.12.2"
-v8="v8.11.2"
-
-   wfile_6_x="c9-core_${core_version}-${v6}-build.tar.xz"
-#   wfile_8_x="c9-core_${core_version}-${v8}-build.tar.xz"
+wfile_6_x="c9-core_${core_version}-${v6}-${datestamp}-build.tar.xz"
 
 extract_dir="/opt/cloud9/build/"
 
@@ -47,9 +46,6 @@ dl_install() {
 	v6.*)
 		wfile=${wfile_6_x}
 		;;
-#	v8.*)
-#		wfile=${wfile_8_x}
-#		;;
 	*)
 		wfile=${wfile_6_x}
 		;;
@@ -84,12 +80,11 @@ c9_directory () {
 	fi
 	ln -sf /usr/bin/node /opt/cloud9/.c9/node/bin/node
 
-	groupadd --system cloud9ide || true
-	chown -R root:cloud9ide /opt/cloud9/.c9/ || true
+	chown -R 1000:1000 /opt/cloud9/.c9/ || true
 	chmod -R g+w /opt/cloud9/.c9/ || true
 
 	mkdir -p /opt/cloud9/.cache/ || true
-	chown -R root:cloud9ide  /opt/cloud9/.cache/ || true
+	chown -R 1000:1000  /opt/cloud9/.cache/ || true
 	chmod -R g+w  /opt/cloud9/.cache/ || true
 
 	systemctl enable cloud9.socket || true
