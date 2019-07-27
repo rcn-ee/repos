@@ -15,7 +15,6 @@ debian_version="${package_version}-0rcnee3"
 debian_patch=""
 debian_diff=""
 
-#dl_mirror="https://github.com/rcn-ee/npm-package-bonescript/raw/master/deploy/buster/"
 dl_mirror="http://gitlab.gfnd.rcn-ee.org/RobertCNelson/npm-package-bonescript/raw/master/deploy/buster"
 
 v10="v10.15.1"
