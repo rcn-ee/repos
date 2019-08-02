@@ -2,7 +2,7 @@
 
 package_name="bone101"
 debian_pkg_name="${package_name}"
-package_version="2.0.2"
+package_version="2.1.1"
 package_source="${package_name}_${package_version}.orig.tar.gz"
 src_dir="${package_name}-${package_version}"
 
@@ -29,4 +29,4 @@ debian_dl_2="${dl_mirror}/${node_sensortag}-${v6}.tar.xz"
 debian_dl_3="${dl_mirror}/${node_async}-${v8}.tar.xz"
 debian_dl_4="${dl_mirror}/${node_sensortag}-${v8}.tar.xz"
 
-stretch_version="~stretch+20190730"
+stretch_version="~stretch+20190802"
