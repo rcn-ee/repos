@@ -38,7 +38,7 @@ if [ -f /etc/default/bb-wl18xx ] ; then
 fi
 
 if [ "x${USE_PERSONAL_SSID}" = "x" ] ; then
-	wifi_ssid="BeagleBone-AI"
+	wifi_ssid="BeagleBone"
 else
 	wifi_ssid="${USE_PERSONAL_SSID}"
 fi
@@ -193,6 +193,44 @@ wait_for_wlan () {
 	done
 }
 
+create_softap0_interface () {
+	if [ ! -d /sys/class/net/${ap_interface} ] ; then
+		number_of_wlan=$(ls /sys/class/net/ | grep wlan | wc -l || true)
+
+		if [ "x${number_of_wlan}" = "x1" ] ; then
+			echo "${log} [iw phy phy0 interface add ${ap_interface} type __ap]"
+			iw phy phy0 interface add ${ap_interface} type __ap
+
+			p=$?
+			if [ $p==0 ];then
+				echo "${log} [phy0 created]"
+			else
+				echo "${log} [Err: can't creat phy0]"
+				exit 1
+			fi
+
+			sync
+
+			if [ ! -d /sys/class/net/${ap_interface} ] ; then
+				get_wl=$(ls /sys/class/net/ | grep wlx | tail -1 || true)
+				echo "${log} [ip link set dev ${get_wl} name ${ap_interface}]"
+				ip link set dev ${get_wl} name ${ap_interface}
+
+				#We really want to use ${ap_interface}
+				sleep 2
+				if [ ! -d /sys/class/net/${ap_interface} ] ; then
+					get_wl=$(ls /sys/class/net/ | grep wlx | tail -1 || true)
+					echo "${log} [ip link set dev ${get_wl} name ${ap_interface}]"
+					ip link set dev ${get_wl} name ${ap_interface}
+				fi
+			fi
+		else
+			#FIXME
+			echo "${log} FIXME, found multple wlan0's, SoftAp0 untested..."
+		fi
+	fi
+}
+
 bringup_softap0_interface () {
 	if [ -d /sys/class/net/${ap_interface} ] ; then
 		#not all devices support mac address modifications...
@@ -325,12 +363,18 @@ start_hostapd () {
 default () {
 	connman_disable_tether
 
+	if [ "x${USE_WL18XX_POWER_MANAGMENT}" = "xoff" ] ; then
+		echo "bbai:wlan0:Power Management:off"
+		/sbin/iwconfig wlan0 power off || true
+	fi
+
 	if [ "x${USE_CONNMAN_TETHER}" != "xyes" ] ; then
 
 		if [ "x${USE_WL18XX_IP_PREFIX}" = "x" ] ; then
 			USE_WL18XX_IP_PREFIX="192.168.8"
 		fi
 
+		create_softap0_interface
 		bringup_softap0_interface
 		disable_connman_dnsproxy
 		start_dnsmasq
@@ -343,7 +387,7 @@ case "${board}" in
 BeagleBoard.org_BeagleBone_AI)
 	wait_for_ssh
 	wait_for_wlan
-	#default
+	default
 	;;
 *)
 	echo "${log} unsupported device, leaving things in default state..."
