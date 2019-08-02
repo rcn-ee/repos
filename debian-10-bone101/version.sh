@@ -2,7 +2,7 @@
 
 package_name="bone101"
 debian_pkg_name="${package_name}"
-package_version="2.1.1"
+package_version="2.1.2"
 package_source="${package_name}_${package_version}.orig.tar.gz"
 src_dir="${package_name}-${package_version}"
 
