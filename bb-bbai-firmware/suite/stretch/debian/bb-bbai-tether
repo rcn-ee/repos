@@ -183,6 +183,15 @@ wait_for_ssh () {
 	done
 }
 
+wait_for_mac () {
+	mac_address="/proc/device-tree/ocp/ethernet@48484000/slave@48480200/mac-address"
+	if [ -f ${mac_address} ] ; then
+		cpsw_0_mac=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address} | sed 's/.$//')
+	else
+		cpsw_0_mac="1C:BA:8C:A2:ED:68"
+	fi
+}
+
 wait_for_wlan () {
 	if [ ! -d /sys/class/net/wlan0/ ] ; then
 		sleep 5
@@ -386,6 +395,12 @@ board=$(cat /proc/device-tree/model | sed "s/ /_/g" | tr -d '\000')
 case "${board}" in
 BeagleBoard.org_BeagleBone_AI)
 	wait_for_ssh
+	wait_for_mac
+	if [ "x${USE_APPENDED_SSID}" = "xyes" ] ; then
+		use_mac="${cpsw_0_mac}"
+	else
+		unset use_mac
+	fi
 	wait_for_wlan
 	default
 	;;

@@ -20,6 +20,10 @@ if [ ! -f /lib/firmware/brcm/brcmfmac43455-sdio.txt ] ; then
 	cp -v /lib/firmware/brcm/brcmfmac43455-sdio.beagleboard.org,am5729-beagleboneai.txt /lib/firmware/brcm/brcmfmac43455-sdio.txt
 fi
 
+if [ -f /etc/udev/rules.d/90-bbai-virt-ap.rules ] ; then
+	rm -f /etc/udev/rules.d/90-bbai-virt-ap.rules || true
+fi
+
 case "$1" in
 	configure)
 		systemctl enable bb-bbai-tether.service || true
