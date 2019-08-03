@@ -37,6 +37,9 @@ fi
 case "$1" in
 	configure)
 		systemctl enable bb-bbai-tether.service || true
+		if [ -x /usr/sbin/update-initramfs -a -e /etc/initramfs-tools/initramfs.conf ] ; then
+			update-initramfs -u
+		fi
 	;;
 
 	abort-upgrade|abort-remove|abort-deconfigure)
