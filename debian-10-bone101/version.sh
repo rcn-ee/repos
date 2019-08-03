@@ -2,7 +2,7 @@
 
 package_name="bone101"
 debian_pkg_name="${package_name}"
-package_version="2.1.2"
+package_version="2.1.3"
 package_source="${package_name}_${package_version}.orig.tar.gz"
 src_dir="${package_name}-${package_version}"
 
@@ -25,4 +25,4 @@ v10="v10.15.1"
 debian_dl_1="${dl_mirror}/${node_async}-${v10}.tar.xz"
 #debian_dl_2="${dl_mirror}/${node_sensortag}-${v10}.tar.xz"
 
-buster_version="~buster+20190802"
+buster_version="~buster+20190803"
