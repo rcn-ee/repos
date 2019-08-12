@@ -1,21 +1,20 @@
 #!/usr/bin/make -f
-
-DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
-
 %:
-	dh $@ --parallel --with python2
+	dh $@ --builddirectory=build --with python2 --with python3
 
 override_dh_auto_configure:
-	dh_auto_configure -- -DINSTALL_LIB_DIR=/usr/lib/$(DEB_HOST_MULTIARCH)
+	dh_auto_configure -- -DCMAKE_SKIP_INSTALL_RPATH=On
+
+override_dh_auto_build:
+	dh_auto_build
+	python3 build/bindings/python/setup.py build
+
+override_dh_auto_install:
+	dh_auto_install
+	python3 build/bindings/python/setup.py install --root=debian/tmp/ --prefix=/usr
 
 override_dh_compress:
 	dh_compress -X.c -X.C
 
-override_dh_clistrip:
-	dh_clistrip --exclude=mdb
-
-override_dh_auto_install:
-	dh_auto_install
-	# jquery.js is provided in another debian package, do not ship one here too
-	- rm debian/tmp/usr/share/doc/libiio0-doc/html/jquery.js
-	ln -s /usr/share/javascript/jquery/jquery.js debian/tmp/usr/share/doc/libiio0-doc/html/jquery.js
+#override_dh_clistrip:
+#	dh_clistrip --exclude=mdb
