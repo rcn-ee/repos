@@ -4,7 +4,7 @@
 
 package_name="ti-tidl"
 debian_pkg_name="${package_name}"
-package_version="01.02.02-bb.org-0.0"
+package_version="01.02.02-bb.org-0.1"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
