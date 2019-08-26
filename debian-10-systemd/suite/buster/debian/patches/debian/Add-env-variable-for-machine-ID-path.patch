@@ -1,0 +1,77 @@
+From: Martin Pitt <mpitt@debian.org>
+Date: Wed, 18 Jan 2017 11:21:35 +0100
+Subject: Add env variable for machine ID path
+
+During package build, in minimal chroots, or other systems which do not already
+have an /etc/machine-id we get six test failures. Introduce a
+$SYSTEMD_MACHINE_ID_PATH environment variable which can specify a location
+other than /etc/machine-id, so that the unit tests are independent from the
+environment.
+
+Also adjust test-fs-util to not assume that /etc/machine-id exists. Use
+/etc/passwd instead which is created by base-files.
+
+Closes: #851445
+
+Bug: https://bugs.freedesktop.org/show_bug.cgi?id=62344
+---
+ src/libsystemd/sd-id128/sd-id128.c |  2 +-
+ src/test/test-fs-util.c            | 11 +++++++----
+ 2 files changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/src/libsystemd/sd-id128/sd-id128.c b/src/libsystemd/sd-id128/sd-id128.c
+index e72af15..b194143 100644
+--- a/src/libsystemd/sd-id128/sd-id128.c
++++ b/src/libsystemd/sd-id128/sd-id128.c
+@@ -88,7 +88,7 @@ _public_ int sd_id128_get_machine(sd_id128_t *ret) {
+         assert_return(ret, -EINVAL);
+ 
+         if (sd_id128_is_null(saved_machine_id)) {
+-                r = id128_read("/etc/machine-id", ID128_PLAIN, &saved_machine_id);
++                r = id128_read(getenv("SYSTEMD_MACHINE_ID_PATH") ?: "/etc/machine-id", ID128_PLAIN, &saved_machine_id);
+                 if (r < 0)
+                         return r;
+ 
+diff --git a/src/test/test-fs-util.c b/src/test/test-fs-util.c
+index e049abc..fef8515 100644
+--- a/src/test/test-fs-util.c
++++ b/src/test/test-fs-util.c
+@@ -185,7 +185,7 @@ static void test_chase_symlinks(void) {
+         assert_se(streq(result, "/test-chase.fsldajfl"));
+         result = mfree(result);
+ 
+-        r = chase_symlinks("/etc/machine-id/foo", NULL, 0, &result);
++        r = chase_symlinks("/etc/passwd/foo", NULL, 0, &result);
+         assert_se(r == -ENOTDIR);
+         result = mfree(result);
+ 
+@@ -258,23 +258,26 @@ static void test_chase_symlinks(void) {
+                 assert_se(chase_symlinks(q, NULL, CHASE_SAFE, NULL) >= 0);
+         }
+ 
+-        p = strjoina(temp, "/machine-id-test");
+-        assert_se(symlink("/usr/../etc/./machine-id", p) >= 0);
++        p = strjoina(temp, "/passwd-test");
++        assert_se(symlink("/usr/../etc/./passwd", p) >= 0);
+ 
+         pfd = chase_symlinks(p, NULL, CHASE_OPEN, NULL);
+         if (pfd != -ENOENT) {
+                 _cleanup_close_ int fd = -1;
++/*
+                 sd_id128_t a, b;
++*/
+ 
+                 assert_se(pfd >= 0);
+ 
+                 fd = fd_reopen(pfd, O_RDONLY|O_CLOEXEC);
+                 assert_se(fd >= 0);
+                 safe_close(pfd);
+-
++/*
+                 assert_se(id128_read_fd(fd, ID128_PLAIN, &a) >= 0);
+                 assert_se(sd_id128_get_machine(&b) >= 0);
+                 assert_se(sd_id128_equal(a, b));
++*/
+         }
+ 
+         /* Test CHASE_NOFOLLOW */

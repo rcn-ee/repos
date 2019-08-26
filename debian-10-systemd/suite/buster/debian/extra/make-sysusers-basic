@@ -1,0 +1,18 @@
+#!/bin/sh
+# generate a sysusers.d(5) file from Debian's static master passwd/group files
+set -eu
+
+echo '# generated from /usr/share/base-passwd/{passwd,group}.master'
+
+# only take groups whose name+gid != the corresponding user in passwd.master
+export IFS=:
+while read name _ id _; do
+    if ! grep -q "^$name:\*:$id:$id:" /usr/share/base-passwd/passwd.master; then
+        printf "g %-10s %-5s -\n" $name $id
+    fi
+done < /usr/share/base-passwd/group.master
+
+echo
+
+# treat "nobody:nogroup" specially: same ID, but different name, so prevent creating a "nobody" group
+awk -F:  '{ i = ($3 == $4 && $4 != 65534) ? $3 : $3":"$4; printf("u %-10s %-7s - %-20s %s\n", $1,i,$6,$7) }'  < /usr/share/base-passwd/passwd.master

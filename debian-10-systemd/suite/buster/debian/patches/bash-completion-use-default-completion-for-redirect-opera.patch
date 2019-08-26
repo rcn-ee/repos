@@ -1,0 +1,27 @@
+From: Frantisek Sumsal <frantisek@sumsal.cz>
+Date: Sat, 23 Mar 2019 21:49:17 +0100
+Subject: bash-completion: use default completion for redirect operators
+
+(cherry picked from commit 1413763ea540a897852494259cb949fe01e1e7e7)
+---
+ shell-completion/bash/journalctl | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/shell-completion/bash/journalctl b/shell-completion/bash/journalctl
+index bcd4533..5a6a3da 100644
+--- a/shell-completion/bash/journalctl
++++ b/shell-completion/bash/journalctl
+@@ -52,6 +52,13 @@ _journalctl() {
+                               --vacuum-size --vacuum-time --vacuum-files --output-fields'
+         )
+ 
++        # Use the default completion for shell redirect operators
++        if __contains_word "$prev" '>' '>>' '&>'; then
++                compopt -o filenames
++                COMPREPLY=( $(compgen -f -- "$cur") )
++                return 0;
++        fi
++
+         if __contains_word "$prev" ${OPTS[ARG]} ${OPTS[ARGUNKNOWN]}; then
+                 case $prev in
+                         --boot|-b)

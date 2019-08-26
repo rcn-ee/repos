@@ -1,0 +1,25 @@
+systemd (241-4) unstable; urgency=medium
+
+  DRM render nodes (/dev/dri/renderD*) are now owned by group "render"
+  (previously group "video"). Dynamic ACLs via the "uaccess" udev tag are still
+  applied, so in the common case things should just continue to work.
+  If you rely on static permissions to access those devices, you need to update
+  group memberships accordingly to use group "render" now.
+
+ -- Michael Biebl <biebl@debian.org>  Fri, 17 May 2019 19:15:32 +0200
+
+systemd (220-7) unstable; urgency=medium
+
+  The mechanism for providing stable network interface names changed.
+  Previously they were kept in /etc/udev/rules.d/70-persistent-net.rules
+  which mapped device MAC addresses to the (arbitrary) name they got when
+  they first appeared (i. e. mostly at the time of installation). As this
+  had several problems and is not supported any more, this is deprecated in
+  favor of the "net.ifnames" mechanism. With this most of your network
+  interfaces will get location-based names. If you have ifupdown, firewall,
+  or other configuration that relies on the old names, you need to update
+  these by Debian 10/Ubuntu 18.04 LTS, and then remove
+  /etc/udev/rules.d/70-persistent-net.rules. Please see
+  /usr/share/doc/udev/README.Debian.gz for details about this.
+
+ -- Martin Pitt <mpitt@debian.org>  Mon, 15 Jun 2015 15:30:29 +0200

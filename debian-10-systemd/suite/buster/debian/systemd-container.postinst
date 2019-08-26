@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -e
+
+# Enable machines.target by default on new installs and upgrades
+if dpkg --compare-versions "$2" lt "232-4~"; then
+    systemctl enable machines.target || true
+fi
+
+#DEBHELPER#

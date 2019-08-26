@@ -1,0 +1,108 @@
+From: =?utf-8?b?VmVzYSBKw6TDpHNrZWzDpGluZW4=?=
+ <vesa.jaaskelainen@vaisala.com>
+Date: Sat, 9 Mar 2019 22:30:45 +0200
+Subject: systemctl: restore "systemctl reboot ARG" functionality
+
+Commit d85515edcf9700dc068201ab9f7103f04f3b25b2 changed logic how reboot is
+executed. That commit changed behavior to use emergency action reboot code path
+to perform the reboot.
+
+This inadvertently broke rebooting with argument:
+$ systemctl reboot custom-reason
+
+Restore original behavior so that if reboot service unit similar to
+systemd-reboot.service is executed it is possible to override reboot reason
+with "systemctl reboot ARG".
+
+When "systemctl reboot ARG" is executed ARG is placed in file
+/run/systemd/reboot-param and reboot is issued using logind's Reboot
+dbus-service.
+
+If RebootArgument is specified in systemd-reboot.service it takes precedence
+over what systemctl sets.
+
+Fixes: #11828
+(cherry picked from commit 77defcf5382a557189350f928967d676510e362c)
+---
+ src/core/emergency-action.c | 4 ++--
+ src/shared/reboot-util.c    | 5 ++++-
+ src/shared/reboot-util.h    | 2 +-
+ src/systemctl/systemctl.c   | 4 ++--
+ 4 files changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/src/core/emergency-action.c b/src/core/emergency-action.c
+index f98b0de..52edec0 100644
+--- a/src/core/emergency-action.c
++++ b/src/core/emergency-action.c
+@@ -47,7 +47,7 @@ int emergency_action(
+         case EMERGENCY_ACTION_REBOOT:
+                 log_and_status(m, warn, "Rebooting", reason);
+ 
+-                (void) update_reboot_parameter_and_warn(reboot_arg);
++                (void) update_reboot_parameter_and_warn(reboot_arg, true);
+                 (void) manager_add_job_by_name_and_warn(m, JOB_START, SPECIAL_REBOOT_TARGET, JOB_REPLACE_IRREVERSIBLY, NULL);
+ 
+                 break;
+@@ -55,7 +55,7 @@ int emergency_action(
+         case EMERGENCY_ACTION_REBOOT_FORCE:
+                 log_and_status(m, warn, "Forcibly rebooting", reason);
+ 
+-                (void) update_reboot_parameter_and_warn(reboot_arg);
++                (void) update_reboot_parameter_and_warn(reboot_arg, true);
+                 m->objective = MANAGER_REBOOT;
+ 
+                 break;
+diff --git a/src/shared/reboot-util.c b/src/shared/reboot-util.c
+index ca40159..6d5eee0 100644
+--- a/src/shared/reboot-util.c
++++ b/src/shared/reboot-util.c
+@@ -12,10 +12,13 @@
+ #include "umask-util.h"
+ #include "virt.h"
+ 
+-int update_reboot_parameter_and_warn(const char *parameter) {
++int update_reboot_parameter_and_warn(const char *parameter, bool keep) {
+         int r;
+ 
+         if (isempty(parameter)) {
++                if (keep)
++                        return 0;
++
+                 if (unlink("/run/systemd/reboot-param") < 0) {
+                         if (errno == ENOENT)
+                                 return 0;
+diff --git a/src/shared/reboot-util.h b/src/shared/reboot-util.h
+index d459333..ac59b7d 100644
+--- a/src/shared/reboot-util.h
++++ b/src/shared/reboot-util.h
+@@ -1,7 +1,7 @@
+ /* SPDX-License-Identifier: LGPL-2.1+ */
+ #pragma once
+ 
+-int update_reboot_parameter_and_warn(const char *parameter);
++int update_reboot_parameter_and_warn(const char *parameter, bool keep);
+ 
+ typedef enum RebootFlags {
+         REBOOT_LOG      = 1 << 0, /* log about what we are going to do and all errors */
+diff --git a/src/systemctl/systemctl.c b/src/systemctl/systemctl.c
+index 63dae2c..d05219d 100644
+--- a/src/systemctl/systemctl.c
++++ b/src/systemctl/systemctl.c
+@@ -3634,7 +3634,7 @@ static int start_special(int argc, char *argv[], void *userdata) {
+                 return r;
+ 
+         if (a == ACTION_REBOOT && argc > 1) {
+-                r = update_reboot_parameter_and_warn(argv[1]);
++                r = update_reboot_parameter_and_warn(argv[1], false);
+                 if (r < 0)
+                         return r;
+ 
+@@ -8005,7 +8005,7 @@ static int halt_parse_argv(int argc, char *argv[]) {
+                 }
+ 
+         if (arg_action == ACTION_REBOOT && (argc == optind || argc == optind + 1)) {
+-                r = update_reboot_parameter_and_warn(argc == optind + 1 ? argv[optind] : NULL);
++                r = update_reboot_parameter_and_warn(argc == optind + 1 ? argv[optind] : NULL, false);
+                 if (r < 0)
+                         return r;
+         } else if (optind < argc)

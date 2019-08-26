@@ -1,0 +1,61 @@
+From: Martin Pitt <martin@piware.de>
+Date: Wed, 27 Feb 2019 23:15:31 +0100
+Subject: networkd-test: ignore failures of test_route_only_dns* in containers
+
+This test exposes a race condition when running in LXC, see issue #11848
+for details. Until that is understood and fixed, skip the test as it's
+not a recent regression.
+
+(cherry picked from commit 09b8826ea371e027c76a573a226bfd8f8c5652a2)
+---
+ test/networkd-test.py | 23 +++++++++++++++++++----
+ 1 file changed, 19 insertions(+), 4 deletions(-)
+
+diff --git a/test/networkd-test.py b/test/networkd-test.py
+index 9487910..6efeef9 100755
+--- a/test/networkd-test.py
++++ b/test/networkd-test.py
+@@ -29,6 +29,7 @@ import time
+ import unittest
+ 
+ HAVE_DNSMASQ = shutil.which('dnsmasq') is not None
++IS_CONTAINER = subprocess.call(['systemd-detect-virt', '--quiet', '--container']) == 0
+ 
+ NETWORK_UNITDIR = '/run/systemd/network'
+ 
+@@ -476,8 +477,15 @@ Address=192.168.42.100
+ DNS=192.168.42.1
+ Domains= ~company''')
+ 
+-        self.do_test(coldplug=True, ipv6=False,
+-                     extra_opts='IPv6AcceptRouterAdvertisements=False')
++        try:
++            self.do_test(coldplug=True, ipv6=False,
++                         extra_opts='IPv6AcceptRouterAdvertisements=False')
++        except subprocess.CalledProcessError as e:
++            # networkd often fails to start in LXC: https://github.com/systemd/systemd/issues/11848
++            if IS_CONTAINER and e.cmd == ['systemctl', 'start', 'systemd-networkd']:
++                raise unittest.SkipTest('https://github.com/systemd/systemd/issues/11848')
++            else:
++                raise
+ 
+         with open(RESOLV_CONF) as f:
+             contents = f.read()
+@@ -500,8 +508,15 @@ Address=192.168.42.100
+ DNS=192.168.42.1
+ Domains= ~company ~.''')
+ 
+-        self.do_test(coldplug=True, ipv6=False,
+-                     extra_opts='IPv6AcceptRouterAdvertisements=False')
++        try:
++            self.do_test(coldplug=True, ipv6=False,
++                         extra_opts='IPv6AcceptRouterAdvertisements=False')
++        except subprocess.CalledProcessError as e:
++            # networkd often fails to start in LXC: https://github.com/systemd/systemd/issues/11848
++            if IS_CONTAINER and e.cmd == ['systemctl', 'start', 'systemd-networkd']:
++                raise unittest.SkipTest('https://github.com/systemd/systemd/issues/11848')
++            else:
++                raise
+ 
+         with open(RESOLV_CONF) as f:
+             contents = f.read()

@@ -1,0 +1,71 @@
+#!/bin/sh
+# test 20 successful reboots in a row
+# Author: Martin Pitt <martin.pitt@ubuntu.com>
+# For bisecting/testing you can replace individual binaries in /lib/systemd
+# with --copy /host/path/systemd-foo:/tmp/systemd-replace/systemd-foo
+set -e
+
+. `dirname $0`/assert.sh
+
+fail() {
+    journalctl --sync
+    journalctl -a > "$AUTOPKGTEST_ARTIFACTS/boot-smoke-journal.txt"
+    udevadm info --export-db > "$AUTOPKGTEST_ARTIFACTS/boot-smoke-udevdb.txt"
+    exit 1
+}
+
+if [ -z "$AUTOPKGTEST_REBOOT_MARK" ]; then
+    # enable persistent journal
+    mkdir -p /var/log/journal
+    # allow X to start even on headless machines
+    mkdir -p /etc/X11/xorg.conf.d/
+    cat << EOF > /etc/X11/xorg.conf.d/dummy.conf
+Section "Device"
+    Identifier "test"
+    Driver "dummy"
+EndSection
+EOF
+
+
+    AUTOPKGTEST_REBOOT_MARK=0
+    if [ -d /tmp/systemd-replace/ ]; then
+        for f in /tmp/systemd-replace/*; do
+            echo "Installing $f..."
+            rm -f /lib/systemd/$(basename $f)
+            cp $f /lib/systemd/
+        done
+    fi
+else
+    echo "checking for failed unmounts for user systemd"
+    # grep complete journal to catch shutdown messages
+    if journalctl | grep -E "systemd\[([2-9]|[1-9][0-9]+)\].*Failed unmounting"; then
+        fail
+    fi
+    # grep only this boot's journal, earlier ones complain about missing "render" group
+    echo "checking for connection timeouts"
+    if journalctl -b | grep "Connection timed out"; then
+        fail
+    fi
+
+    echo "checking that polkitd runs"
+    pidof polkitd
+
+    echo "checking that there are no running jobs"
+    TIMEOUT=10
+    while [ $TIMEOUT -ge 0 ]; do
+        running="$(systemctl --no-pager --no-legend list-jobs || true)"
+        [ -n "$running" ] || break
+        TIMEOUT=$((TIMEOUT - 1))
+    done
+    if [ -n "$running" ]; then
+        echo "running jobs after remaining timeout $TIMEOUT: $running"
+        fail
+    fi
+fi
+
+if [ "$AUTOPKGTEST_REBOOT_MARK" -ge 5 ]; then
+    exit 0
+fi
+
+echo "reboot #$AUTOPKGTEST_REBOOT_MARK"
+/tmp/autopkgtest-reboot $(($AUTOPKGTEST_REBOOT_MARK + 1))

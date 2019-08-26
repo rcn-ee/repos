@@ -1,0 +1,33 @@
+From: Martin Pitt <martin@piware.de>
+Date: Thu, 21 Feb 2019 12:24:16 +0100
+Subject: networkd-test: disable DNSSEC in domain-restricted DNS test
+
+dnsmasq 2.80 changed behaviour when being queried by resolved with
+enabled DNSSEC: It returns errors for SOA and DS queries which cause the
+entire query to fail. As we don't configure DNSSEC in this test anyway,
+just disable it so that we retain compatibility with old and new dnsmasq
+versions.
+
+(cherry picked from commit 6592c9c850675fb20236271efc4f65acbe3bfa00)
+---
+ test/networkd-test.py | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/test/networkd-test.py b/test/networkd-test.py
+index 7011abc..71ee06f 100755
+--- a/test/networkd-test.py
++++ b/test/networkd-test.py
+@@ -575,6 +575,13 @@ class DnsmasqClientTest(ClientTestBase, unittest.TestCase):
+     def test_resolved_domain_restricted_dns(self):
+         '''resolved: domain-restricted DNS servers'''
+ 
++        # FIXME: resolvectl query fails with enabled DNSSEC against our dnsmasq
++        conf = '/run/systemd/resolved.conf.d/test-disable-dnssec.conf'
++        os.makedirs(os.path.dirname(conf), exist_ok=True)
++        with open(conf, 'w') as f:
++            f.write('[Resolve]\nDNSSEC=no\n')
++        self.addCleanup(os.remove, conf)
++
+         # create interface for generic connections; this will map all DNS names
+         # to 192.168.42.1
+         self.create_iface(dnsmasq_opts=['--address=/#/192.168.42.1'])

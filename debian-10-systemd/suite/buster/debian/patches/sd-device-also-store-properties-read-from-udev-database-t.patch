@@ -1,0 +1,51 @@
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Sat, 16 Feb 2019 05:21:59 +0900
+Subject: sd-device: also store properties read from udev database to
+ sd_device::properties_db
+
+Follow-up for a3ce813697bcc1c4644e097a2f1cd0459326d6ee and
+5ce41697bd3ddc19cd6e1e6834751082ca0c8b02.
+
+Before a3ce813697bcc1c4644e097a2f1cd0459326d6ee, all properties in
+src->properties and src->properties_db are mixed and copied to
+dst->properties_db by device_copy_properties().
+So, it is not necessary to store data from udev database file to
+sd_device::properties_db before copying properties.
+
+But now, properties are not mixed. So, the read data need to be
+stored to also ::properties_db.
+
+Fixes #11721.
+
+(cherry picked from commit 03dd7b7ddec1b0e06f254972a2e05f516a05edaf)
+---
+ src/libsystemd/sd-device/sd-device.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/src/libsystemd/sd-device/sd-device.c b/src/libsystemd/sd-device/sd-device.c
+index 2a69f2e..9137a93 100644
+--- a/src/libsystemd/sd-device/sd-device.c
++++ b/src/libsystemd/sd-device/sd-device.c
+@@ -1110,6 +1110,7 @@ int device_add_devlink(sd_device *device, const char *devlink) {
+ static int device_add_property_internal_from_string(sd_device *device, const char *str) {
+         _cleanup_free_ char *key = NULL;
+         char *value;
++        int r;
+ 
+         assert(device);
+         assert(str);
+@@ -1127,7 +1128,13 @@ static int device_add_property_internal_from_string(sd_device *device, const cha
+         if (isempty(++value))
+                 value = NULL;
+ 
+-        return device_add_property_internal(device, key, value);
++        /* Add the property to both sd_device::properties and sd_device::properties_db,
++         * as this is called by only handle_db_line(). */
++        r = device_add_property_aux(device, key, value, false);
++        if (r < 0)
++                return r;
++
++        return device_add_property_aux(device, key, value, true);
+ }
+ 
+ int device_set_usec_initialized(sd_device *device, usec_t when) {

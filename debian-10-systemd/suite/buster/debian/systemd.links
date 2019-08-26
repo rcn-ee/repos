@@ -1,0 +1,84 @@
+# These are all services which have native implementations
+# So we mask them by linking against /dev/null or create an alias
+/lib/systemd/system/systemd-random-seed.service /lib/systemd/system/urandom.service
+/lib/systemd/system/systemd-sysctl.service /lib/systemd/system/procps.service
+
+/lib/systemd/system/rc-local.service /lib/systemd/system/rc.local.service
+
+/lib/systemd/system/systemd-modules-load.service /lib/systemd/system/module-init-tools.service
+/lib/systemd/system/systemd-modules-load.service /lib/systemd/system/kmod.service
+/etc/modules /etc/modules-load.d/modules.conf
+
+# X server and ICE socket directories are created by /usr/lib/tmpfiles.d/x11.conf
+/dev/null /lib/systemd/system/x11-common.service
+
+# systemd sets the hostname internally during early boot
+/dev/null /lib/systemd/system/hostname.service
+
+# /run/nologin is handled by systemd-user-sessions.service
+/dev/null /lib/systemd/system/rmnologin.service
+/dev/null /lib/systemd/system/bootmisc.service
+
+# Although bootlogd is disabled by default (via /etc/default/bootlogd)
+# by masking them we avoid spawning a shell uselessly thrice during boot.
+# Besides, bootlogd doesn't look particularly useful in a systemd world.
+/dev/null /lib/systemd/system/bootlogd.service
+/dev/null /lib/systemd/system/stop-bootlogd-single.service
+/dev/null /lib/systemd/system/stop-bootlogd.service
+
+# Don't set the hwclock, as the kernel does that on its own when using NTP
+# Without NTP, we shouldn't store the time either
+# https://github.com/systemd/systemd/commit/da2617378523e007ec0c6efe99d0cebb2be994e1
+/dev/null /lib/systemd/system/hwclock.service
+
+# We use native mount support so mask those services
+# TODO: check if any SysV init scripts depend on those facilities
+/dev/null /lib/systemd/system/mountkernfs.service
+/dev/null /lib/systemd/system/mountdevsubfs.service
+/dev/null /lib/systemd/system/mountall.service
+/dev/null /lib/systemd/system/mountall-bootclean.service
+/dev/null /lib/systemd/system/mountnfs.service
+/dev/null /lib/systemd/system/mountnfs-bootclean.service
+/dev/null /lib/systemd/system/umountfs.service
+/dev/null /lib/systemd/system/umountnfs.service
+/dev/null /lib/systemd/system/umountroot.service
+/dev/null /lib/systemd/system/checkfs.service
+/dev/null /lib/systemd/system/checkroot.service
+/dev/null /lib/systemd/system/checkroot-bootclean.service
+
+# We use the built-in cryptsetup support
+/dev/null /lib/systemd/system/cryptdisks.service
+/dev/null /lib/systemd/system/cryptdisks-early.service
+
+# Single user mode is implemented natively, don't use legacy SysV init scripts
+# to avoid spawning sulogin twice.
+/dev/null /lib/systemd/system/single.service
+/dev/null /lib/systemd/system/killprocs.service
+
+# Those services are useless under systemd. Mask them so they can't
+# be run manually by accident.
+/dev/null /lib/systemd/system/sendsigs.service
+/dev/null /lib/systemd/system/halt.service
+/dev/null /lib/systemd/system/reboot.service
+/dev/null /lib/systemd/system/rc.service
+/dev/null /lib/systemd/system/rcS.service
+
+# The motd SysV init script is no longer required to create the dynamic part of
+# /etc/motd to display the uname information as pam_exec is used for that now.
+# An explicit Breaks against older versions of login, which still use
+# /run/motd.dynamic, is not necessary, as pam_motd will silently ignore it if
+# that file is missing and simply display nothing.
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=735521
+/dev/null /lib/systemd/system/motd.service
+
+# We have the journal to handle kernel messages from early boot
+/dev/null /lib/systemd/system/bootlogs.service
+
+# Enable Debian specific units
+/lib/systemd/system/getty-static.service /lib/systemd/system/getty.target.wants/getty-static.service
+
+# Compat symlink
+/lib/systemd/systemd /bin/systemd
+
+# Create a compat symlink as systemd-sysctl no longer reads /etc/sysctl.conf
+/etc/sysctl.conf /etc/sysctl.d/99-sysctl.conf

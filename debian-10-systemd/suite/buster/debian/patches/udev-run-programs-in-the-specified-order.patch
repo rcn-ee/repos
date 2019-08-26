@@ -1,0 +1,161 @@
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Tue, 5 Mar 2019 04:01:34 +0900
+Subject: udev: run programs in the specified order
+
+This fixes bugs introduced by 29448498c724da7ade1b5efb20d7472c1b128d2c
+and d838e14515c82b05a07f2bf393cce057b45b2b53.
+
+Previously, RUN and SECLABEL keys are stored in udev_list with its unique
+flag is false. If the flag is false, then udev_list is just a linked
+list and new entries are always added in the last.
+So, we should use OrderedHashmap instead of Hashmap.
+
+Fixes #11368.
+
+(cherry picked from commit 39a15c8a8dad26deda140867f03e44a535b7bd8d)
+---
+ src/udev/udev-event.c   |  6 +++---
+ src/udev/udev-node.c    |  6 +++---
+ src/udev/udev-node.h    |  2 +-
+ src/udev/udev-rules.c   | 12 ++++++------
+ src/udev/udev.h         |  4 ++--
+ src/udev/udevadm-test.c |  2 +-
+ 6 files changed, 16 insertions(+), 16 deletions(-)
+
+diff --git a/src/udev/udev-event.c b/src/udev/udev-event.c
+index 07b7365..faec4fc 100644
+--- a/src/udev/udev-event.c
++++ b/src/udev/udev-event.c
+@@ -71,8 +71,8 @@ UdevEvent *udev_event_free(UdevEvent *event) {
+         sd_device_unref(event->dev);
+         sd_device_unref(event->dev_db_clone);
+         sd_netlink_unref(event->rtnl);
+-        hashmap_free_free_key(event->run_list);
+-        hashmap_free_free_free(event->seclabel_list);
++        ordered_hashmap_free_free_key(event->run_list);
++        ordered_hashmap_free_free_free(event->seclabel_list);
+         free(event->program_result);
+         free(event->name);
+ 
+@@ -873,7 +873,7 @@ void udev_event_execute_run(UdevEvent *event, usec_t timeout_usec) {
+         void *val;
+         Iterator i;
+ 
+-        HASHMAP_FOREACH_KEY(val, cmd, event->run_list, i) {
++        ORDERED_HASHMAP_FOREACH_KEY(val, cmd, event->run_list, i) {
+                 enum udev_builtin_cmd builtin_cmd = PTR_TO_INT(val);
+                 char command[UTIL_PATH_SIZE];
+ 
+diff --git a/src/udev/udev-node.c b/src/udev/udev-node.c
+index 1c00dd1..cfbbd7b 100644
+--- a/src/udev/udev-node.c
++++ b/src/udev/udev-node.c
+@@ -272,7 +272,7 @@ int udev_node_update_old_links(sd_device *dev, sd_device *dev_old) {
+ 
+ static int node_permissions_apply(sd_device *dev, bool apply,
+                                   mode_t mode, uid_t uid, gid_t gid,
+-                                  Hashmap *seclabel_list) {
++                                  OrderedHashmap *seclabel_list) {
+         const char *devnode, *subsystem, *id_filename = NULL;
+         struct stat stats;
+         dev_t devnum;
+@@ -318,7 +318,7 @@ static int node_permissions_apply(sd_device *dev, bool apply,
+                         log_device_debug(dev, "Preserve permissions of %s, %#o, uid=%u, gid=%u", devnode, mode, uid, gid);
+ 
+                 /* apply SECLABEL{$module}=$label */
+-                HASHMAP_FOREACH_KEY(label, name, seclabel_list, i) {
++                ORDERED_HASHMAP_FOREACH_KEY(label, name, seclabel_list, i) {
+                         int q;
+ 
+                         if (streq(name, "selinux")) {
+@@ -386,7 +386,7 @@ static int xsprintf_dev_num_path_from_sd_device(sd_device *dev, char **ret) {
+ 
+ int udev_node_add(sd_device *dev, bool apply,
+                   mode_t mode, uid_t uid, gid_t gid,
+-                  Hashmap *seclabel_list) {
++                  OrderedHashmap *seclabel_list) {
+         const char *devnode, *devlink;
+         _cleanup_free_ char *filename = NULL;
+         int r;
+diff --git a/src/udev/udev-node.h b/src/udev/udev-node.h
+index 223c8f0..5ae816d 100644
+--- a/src/udev/udev-node.h
++++ b/src/udev/udev-node.h
+@@ -10,6 +10,6 @@
+ 
+ int udev_node_add(sd_device *dev, bool apply,
+                   mode_t mode, uid_t uid, gid_t gid,
+-                  Hashmap *seclabel_list);
++                  OrderedHashmap *seclabel_list);
+ int udev_node_remove(sd_device *dev);
+ int udev_node_update_old_links(sd_device *dev, sd_device *dev_old);
+diff --git a/src/udev/udev-rules.c b/src/udev/udev-rules.c
+index 7fa4fd4..93709cc 100644
+--- a/src/udev/udev-rules.c
++++ b/src/udev/udev-rules.c
+@@ -2291,13 +2291,13 @@ int udev_rules_apply_to_event(
+                                 return log_oom();
+ 
+                         if (IN_SET(cur->key.op, OP_ASSIGN, OP_ASSIGN_FINAL))
+-                                hashmap_clear_free_free(event->seclabel_list);
++                                ordered_hashmap_clear_free_free(event->seclabel_list);
+ 
+-                        r = hashmap_ensure_allocated(&event->seclabel_list, NULL);
++                        r = ordered_hashmap_ensure_allocated(&event->seclabel_list, NULL);
+                         if (r < 0)
+                                 return log_oom();
+ 
+-                        r = hashmap_put(event->seclabel_list, name, label);
++                        r = ordered_hashmap_put(event->seclabel_list, name, label);
+                         if (r < 0)
+                                 return log_oom();
+                         log_device_debug(dev, "SECLABEL{%s}='%s' %s:%u",
+@@ -2474,9 +2474,9 @@ int udev_rules_apply_to_event(
+                         _cleanup_free_ char *cmd = NULL;
+ 
+                         if (IN_SET(cur->key.op, OP_ASSIGN, OP_ASSIGN_FINAL))
+-                                hashmap_clear_free_key(event->run_list);
++                                ordered_hashmap_clear_free_key(event->run_list);
+ 
+-                        r = hashmap_ensure_allocated(&event->run_list, NULL);
++                        r = ordered_hashmap_ensure_allocated(&event->run_list, NULL);
+                         if (r < 0)
+                                 return log_oom();
+ 
+@@ -2484,7 +2484,7 @@ int udev_rules_apply_to_event(
+                         if (!cmd)
+                                 return log_oom();
+ 
+-                        r = hashmap_put(event->run_list, cmd, INT_TO_PTR(cur->key.builtin_cmd));
++                        r = ordered_hashmap_put(event->run_list, cmd, INT_TO_PTR(cur->key.builtin_cmd));
+                         if (r < 0)
+                                 return log_oom();
+ 
+diff --git a/src/udev/udev.h b/src/udev/udev.h
+index 3bc69ff..2fb49dc 100644
+--- a/src/udev/udev.h
++++ b/src/udev/udev.h
+@@ -25,8 +25,8 @@ typedef struct UdevEvent {
+         mode_t mode;
+         uid_t uid;
+         gid_t gid;
+-        Hashmap *seclabel_list;
+-        Hashmap *run_list;
++        OrderedHashmap *seclabel_list;
++        OrderedHashmap *run_list;
+         usec_t exec_delay_usec;
+         usec_t birth_usec;
+         sd_netlink *rtnl;
+diff --git a/src/udev/udevadm-test.c b/src/udev/udevadm-test.c
+index 54c525e..9c17844 100644
+--- a/src/udev/udevadm-test.c
++++ b/src/udev/udevadm-test.c
+@@ -135,7 +135,7 @@ int test_main(int argc, char *argv[], void *userdata) {
+         FOREACH_DEVICE_PROPERTY(dev, key, value)
+                 printf("%s=%s\n", key, value);
+ 
+-        HASHMAP_FOREACH_KEY(val, cmd, event->run_list, i) {
++        ORDERED_HASHMAP_FOREACH_KEY(val, cmd, event->run_list, i) {
+                 char program[UTIL_PATH_SIZE];
+ 
+                 udev_event_apply_format(event, cmd, program, sizeof(program), false);

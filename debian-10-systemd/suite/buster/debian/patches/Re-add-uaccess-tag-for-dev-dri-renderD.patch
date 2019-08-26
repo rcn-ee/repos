@@ -1,0 +1,49 @@
+From: Michael Biebl <biebl@debian.org>
+Date: Wed, 13 Mar 2019 23:22:26 +0100
+Subject: Re-add uaccess tag for /dev/dri/renderD*
+
+Setting an access mode != 0666 is explicitly supported via -Dgroup-render-mode
+In such a case, re-add the uaccess tag.
+
+This is basically the same change that was done for /dev/kvm in
+commit fa53e24130af3a389573acb9585eadbf7192955f and
+ace5e3111c0b8d8bfd84b32f2c689b0a4d92c061
+and partially reverts the changes from
+4e15a7343cb389e97f3eb4f49699161862d8b8b2
+
+(cherry picked from commit 055a083a47de968744c4988fe305592477118c86)
+---
+ meson.build                   | 4 +++-
+ src/login/70-uaccess.rules.m4 | 4 ++++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/meson.build b/meson.build
+index 56c98b9..d340736 100644
+--- a/meson.build
++++ b/meson.build
+@@ -818,7 +818,9 @@ conf.set10('ENABLE_WHEEL_GROUP', get_option('wheel-group'))
+ dev_kvm_mode = get_option('dev-kvm-mode')
+ substs.set('DEV_KVM_MODE', dev_kvm_mode)
+ conf.set10('DEV_KVM_UACCESS', dev_kvm_mode != '0666')
+-substs.set('GROUP_RENDER_MODE', get_option('group-render-mode'))
++group_render_mode = get_option('group-render-mode')
++substs.set('GROUP_RENDER_MODE', group_render_mode)
++conf.set10('GROUP_RENDER_UACCESS', group_render_mode != '0666')
+ 
+ kill_user_processes = get_option('default-kill-user-processes')
+ conf.set10('KILL_USER_PROCESSES', kill_user_processes)
+diff --git a/src/login/70-uaccess.rules.m4 b/src/login/70-uaccess.rules.m4
+index d55e5bf..4bb144a 100644
+--- a/src/login/70-uaccess.rules.m4
++++ b/src/login/70-uaccess.rules.m4
+@@ -46,6 +46,10 @@ SUBSYSTEM=="firewire", ATTR{units}=="*0x00a02d:0x014001*", TAG+="uaccess"
+ 
+ # DRI video devices
+ SUBSYSTEM=="drm", KERNEL=="card*", TAG+="uaccess"
++m4_ifdef(`GROUP_RENDER_UACCESS',``
++# DRI render nodes
++SUBSYSTEM=="drm", KERNEL=="renderD*", TAG+="uaccess"''
++)m4_dnl
+ m4_ifdef(`DEV_KVM_UACCESS',``
+ # KVM
+ SUBSYSTEM=="misc", KERNEL=="kvm", TAG+="uaccess"''

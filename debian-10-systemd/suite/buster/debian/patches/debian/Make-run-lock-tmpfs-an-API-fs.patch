@@ -1,0 +1,42 @@
+From: Michael Biebl <biebl@debian.org>
+Date: Fri, 5 Sep 2014 01:15:16 +0200
+Subject: Make /run/lock tmpfs an API fs
+
+The /run/lock directory is world-writable in Debian due to historic
+reasons. To avoid user processes filling up /run, we mount a separate
+tmpfs for /run/lock. As this directory needs to be available during
+early boot, we make it an API fs.
+
+Drop it from tmpfiles.d/legacy.conf to not clobber the permissions.
+
+Closes: #751392
+---
+ src/core/mount-setup.c | 2 ++
+ tmpfiles.d/legacy.conf | 1 -
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/core/mount-setup.c b/src/core/mount-setup.c
+index 3ce6164..3aae4c8 100644
+--- a/src/core/mount-setup.c
++++ b/src/core/mount-setup.c
+@@ -83,6 +83,8 @@ static const MountPoint mount_table[] = {
+ #endif
+         { "tmpfs",       "/run",                      "tmpfs",      "mode=755",                MS_NOSUID|MS_NODEV|MS_STRICTATIME,
+           NULL,          MNT_FATAL|MNT_IN_CONTAINER },
++        { "tmpfs",       "/run/lock",                 "tmpfs",      "mode=1777,size=5242880",  MS_NOSUID|MS_NODEV|MS_NOEXEC,
++          NULL,          MNT_FATAL|MNT_IN_CONTAINER },
+         { "cgroup2",     "/sys/fs/cgroup",            "cgroup2",    "nsdelegate",              MS_NOSUID|MS_NOEXEC|MS_NODEV,
+           cg_is_unified_wanted, MNT_IN_CONTAINER|MNT_CHECK_WRITABLE },
+         { "cgroup2",     "/sys/fs/cgroup",            "cgroup2",    NULL,                      MS_NOSUID|MS_NOEXEC|MS_NODEV,
+diff --git a/tmpfiles.d/legacy.conf b/tmpfiles.d/legacy.conf
+index 62e2ae0..ea5e735 100644
+--- a/tmpfiles.d/legacy.conf
++++ b/tmpfiles.d/legacy.conf
+@@ -10,7 +10,6 @@
+ # These files are considered legacy and are unnecessary on legacy-free
+ # systems.
+ 
+-d /run/lock 0755 root root -
+ L /var/lock - - - - ../run/lock
+ 
+ # /run/lock/subsys is used for serializing SysV service execution, and

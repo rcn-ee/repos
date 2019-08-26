@@ -1,0 +1,56 @@
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Fri, 22 Feb 2019 13:32:47 +0900
+Subject: network: do not remove rule when it is requested by existing links
+
+Otherwise, the first link once removes all saved rules in the foreign
+rule database, and the second or later links create again...
+
+(cherry picked from commit 031fb59a984e5b51f3c72aa8125ecc50b08011fe)
+---
+ src/network/networkd-routing-policy-rule.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+diff --git a/src/network/networkd-routing-policy-rule.c b/src/network/networkd-routing-policy-rule.c
+index 21a40fa..65a9af2 100644
+--- a/src/network/networkd-routing-policy-rule.c
++++ b/src/network/networkd-routing-policy-rule.c
+@@ -1250,6 +1250,26 @@ int routing_policy_load_rules(const char *state_file, Set **rules) {
+         return 0;
+ }
+ 
++static bool manager_links_have_routing_policy_rule(Manager *m, RoutingPolicyRule *rule) {
++        RoutingPolicyRule *link_rule;
++        Iterator i;
++        Link *link;
++
++        assert(m);
++        assert(rule);
++
++        HASHMAP_FOREACH(link, m->links, i) {
++                if (!link->network)
++                        continue;
++
++                LIST_FOREACH(rules, link_rule, link->network->rules)
++                        if (routing_policy_rule_compare_func(link_rule, rule) == 0)
++                                return true;
++        }
++
++        return false;
++}
++
+ void routing_policy_rule_purge(Manager *m, Link *link) {
+         RoutingPolicyRule *rule, *existing;
+         Iterator i;
+@@ -1263,6 +1283,12 @@ void routing_policy_rule_purge(Manager *m, Link *link) {
+                 if (!existing)
+                         continue; /* Saved rule does not exist anymore. */
+ 
++                if (manager_links_have_routing_policy_rule(m, existing))
++                        continue; /* Existing links have the saved rule. */
++
++                /* Existing links do not have the saved rule. Let's drop the rule now, and re-configure it
++                 * later when it is requested. */
++
+                 r = routing_policy_rule_remove(existing, link, NULL);
+                 if (r < 0) {
+                         log_warning_errno(r, "Could not remove routing policy rules: %m");

@@ -1,0 +1,57 @@
+From: Nis Martensen <nis.martensen@web.de>
+Date: Tue, 19 Jan 2016 22:01:43 +0100
+Subject: Skip filesystem check if already done by the initramfs
+
+Newer versions of initramfs-tools already fsck and mount / and /usr in
+the initramfs. Skip the filesystem check in this case.
+
+Based on a previous patch by Michael Biebl <biebl@debian.org>.
+
+Closes: #782522
+Closes: #810748
+---
+ src/fstab-generator/fstab-generator.c | 11 ++++++++---
+ units/systemd-fsck-root.service.in    |  1 +
+ 2 files changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/src/fstab-generator/fstab-generator.c b/src/fstab-generator/fstab-generator.c
+index 55a8242..777ae5f 100644
+--- a/src/fstab-generator/fstab-generator.c
++++ b/src/fstab-generator/fstab-generator.c
+@@ -310,6 +310,7 @@ static int add_mount(
+                 *where_escaped = NULL;
+         _cleanup_fclose_ FILE *f = NULL;
+         int r;
++        struct stat sb;
+ 
+         assert(what);
+         assert(where);
+@@ -387,9 +388,13 @@ static int add_mount(
+         }
+ 
+         if (passno != 0) {
+-                r = generator_write_fsck_deps(f, dest, what, where, fstype);
+-                if (r < 0)
+-                        return r;
++                if (streq(where, "/usr") && stat("/run/initramfs/fsck-usr", &sb) == 0)
++                        ; /* skip /usr fsck if it has already been checked in the initramfs */
++                else {
++                        r = generator_write_fsck_deps(f, dest, what, where, fstype);
++                        if (r < 0)
++                                return r;
++                }
+         }
+ 
+         fprintf(f, "\n[Mount]\n");
+diff --git a/units/systemd-fsck-root.service.in b/units/systemd-fsck-root.service.in
+index bea6c16..49df031 100644
+--- a/units/systemd-fsck-root.service.in
++++ b/units/systemd-fsck-root.service.in
+@@ -16,6 +16,7 @@ Before=local-fs.target shutdown.target
+ Wants=systemd-fsckd.socket
+ After=systemd-fsckd.socket
+ ConditionPathIsReadWrite=!/
++ConditionPathExists=!/run/initramfs/fsck-root
+ 
+ [Service]
+ Type=oneshot

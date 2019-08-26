@@ -1,0 +1,26 @@
+#!/bin/sh
+set -eu
+
+EXFAIL=""
+
+res=0
+for t in /usr/lib/systemd/tests/test-*; do
+    tname=$(basename $t)
+    # test-udev needs special prep and has its own test
+    [ "$tname" != test-udev ] || continue
+    echo "====== $tname ======="
+    # exit code 77 means "skip"
+    rc=0
+    $t || rc=$?
+    if [ "$rc" = 0 ]; then
+        echo "PASS: $tname"
+    elif [ "$rc" = 77 ]; then
+        echo "SKIP: $tname"
+    elif [ "${EXFAIL%$tname*}" != "$EXFAIL" ]; then
+        echo "EXFAIL: $tname"
+    else
+        echo "FAIL: $tname (code: $rc)"
+        res=$rc
+    fi
+done
+exit $res

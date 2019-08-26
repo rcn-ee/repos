@@ -1,0 +1,34 @@
+From: Martin Pitt <martin@piware.de>
+Date: Thu, 21 Feb 2019 12:34:23 +0100
+Subject: networkd-test: fix test_dropin()
+
+ - This test needs resolved, so make sure it is started. In some Debian
+   environments it is not.
+ - It was an unnecessary, and now failing assumption that name servers
+   get atomically written to the resolved's resolv.conf. Wait until both
+   expected name servers are in the file.
+
+(cherry picked from commit f5cf985e9cc6fff747ca17acadb1b4751076103b)
+---
+ test/networkd-test.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/test/networkd-test.py b/test/networkd-test.py
+index c03e760..9487910 100755
+--- a/test/networkd-test.py
++++ b/test/networkd-test.py
+@@ -950,12 +950,12 @@ DNS=192.168.42.1''')
+ [Network]
+ DNS=127.0.0.1''')
+ 
+-        subprocess.check_call(['systemctl', 'start', 'systemd-networkd'])
++        subprocess.check_call(['systemctl', 'start', 'systemd-resolved', 'systemd-networkd'])
+ 
+         for timeout in range(50):
+             with open(RESOLV_CONF) as f:
+                 contents = f.read()
+-            if ' 127.0.0.1' in contents:
++            if ' 127.0.0.1' in contents and '192.168.42.1' in contents:
+                 break
+             time.sleep(0.1)
+         self.assertIn('nameserver 192.168.42.1\n', contents)

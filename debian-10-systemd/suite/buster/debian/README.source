@@ -1,0 +1,103 @@
+Building from source
+--------------------
+Install “git-buildpackage” and run the following steps:
+
+  gbp clone git+ssh://git.debian.org/git/pkg-systemd/systemd.git
+  cd systemd
+  gbp buildpackage
+
+We recommend you use pbuilder to make sure you build in a clean environment:
+
+  gbp buildpackage --git-pbuilder
+
+Changelog
+---------
+The systemd package uses gbp dch for automatically generating
+debian/changelog entries from the corresponding git commits. This makes
+cherry-picking, merging, and rebasing much simpler.
+
+Thus, for any packaging change *don't* modify debian/changelog, just write a
+meaningful git commit log with proper bug references (such as "Closes: #12345"
+on the last line). For doing a release, run
+
+  gbp dch --auto
+
+then beautify the generated debian/changelog, then run the usual "dch -r" and
+"debcommit -ar --sign-tags".
+
+Patch handling
+--------------
+The systemd package uses gbp pq for maintaining patches with a git-like
+workflow in a "patch-queue/<branch>" local branch and then exporting them as
+quilt series.  For working on patches you run
+
+  gbp pq import --force
+
+Then you are in the patch-queue branch and can git log, commit, cherry-pick
+upstream commits, rebase, etc. there. After you are done, run
+
+  gbp pq export
+
+which will put you back into master and update debian/patches/ (including
+series). You need to git add etc. new patches, possibly other
+packaging changes, and then git commit as usual.
+
+systemd uses gbp pq's "topic" branches for organizing patches; for simplicity
+(as this is the most common operation), upstream cherry-picks go into the
+"empty" topic (i. e. directly into debian/patches/), while Debian specific
+patches go into "Gbp-Pq: Topic debian" (i. e. debian/patches/debian/).
+
+Rebasing patches to a new upstream version
+------------------------------------------
+gbp pq's "rebase" command does not work very conveniently as it fails on merge
+conflicts. First, ensure you are in the master branch:
+
+  git checkout master  # in case you aren't already
+
+Now, do one of
+
+ (1) To import a new upstream release into the existing master branch for unstable,
+do:
+
+  gbp pq import --force
+  gbp pq switch   # switch back to master from patch-queue/master
+  gbp import-orig [...]
+  gbp pq switch   # switch to patch-queue/master
+  git rebase master
+
+ (2) To import a new upstream release into a new branch for Debian experimental, do:
+
+  git branch experimental
+  git checkout experimental
+  editor debian/gbp.conf  # set "debian-branch=experimental"
+  gbp import-orig [...]
+  git branch patch-queue/experimental patch-queue/master
+  git checkout patch-queue/experimental
+  git rebase experimental
+
+Now resolve all the conflicts, skip obsolete patches, etc. When you are done, run
+
+  gbp pq export
+
+Note that our debian/gbp.conf disables patch numbers.
+
+Cherry-picking upstream patches
+-------------------------------
+You can add the systemd upstream branch as an additional remote to the Debian
+packaging branch. Call it "github" or similar to avoid confusing it with the
+already existing "upstream" branch from git-buildpackage:
+
+  git remote add github https://github.com/systemd/systemd.git
+  git fetch github -n
+
+Now you can look at the upstream log and cherry-pick patches into the
+patch-queue branch:
+
+  gbp pq import --force
+  git log github/master
+  git cherry-pick 123DEADBEEF
+
+debian/git-cherry-pick is a nice tool to automate all that:
+
+  debian/git-cherry-pick 123DEADBEEF 987654 AFFE99
+  git checkout master  # switch back from patch-queue branch

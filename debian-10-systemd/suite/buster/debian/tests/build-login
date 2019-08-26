@@ -1,0 +1,38 @@
+#!/bin/sh
+# autopkgtest check: Test build against libsystemd-login-dev
+# (C) 2014 Canonical Ltd.
+# Author: Martin Pitt <martin.pitt@ubuntu.com>
+
+set -e
+
+WORKDIR=$(mktemp -d)
+trap "rm -rf $WORKDIR" 0 INT QUIT ABRT PIPE TERM
+cd $WORKDIR
+cat <<EOF > loginmonitor.c
+#include <assert.h>
+#include <stdio.h>
+#include <systemd/sd-login.h>
+
+int main(int argc, char **argv)
+{
+    sd_login_monitor* mon = NULL;
+    int res;
+
+    res = sd_login_monitor_new(NULL, &mon);
+    if (res < 0) {
+        fprintf(stderr, "sd_login_monitor_new failed with value %i\n", res);
+        return 1;
+    }
+
+    assert(sd_login_monitor_get_fd(mon) > 0);
+    sd_login_monitor_unref(mon);
+
+    return 0;
+}
+EOF
+
+gcc -Wall -Werror -o loginmonitor loginmonitor.c `pkg-config --cflags --libs libsystemd`
+echo "build: OK"
+[ -x loginmonitor ]
+./loginmonitor
+echo "run: OK"

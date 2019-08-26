@@ -1,0 +1,29 @@
+From: Franck Bui <fbui@suse.com>
+Date: Tue, 5 Mar 2019 11:03:07 +0100
+Subject: udev: restore debug level when logging a failure in the external
+ prog called by IMPORT{program}
+
+It was already the case before commit a75211421fc9366068e6d9446e8e567246c72feb,
+which upgraded the log to warning.
+
+This seems an unintended side effect as the commit message doesn't mention it
+and the old behavior looks more appropriate.
+
+(cherry picked from commit 3c37dadf627677eef62fcfc0c0f07cc67c748a9e)
+---
+ src/udev/udev-rules.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/udev/udev-rules.c b/src/udev/udev-rules.c
+index bc9c6c2..7fa4fd4 100644
+--- a/src/udev/udev-rules.c
++++ b/src/udev/udev-rules.c
+@@ -647,7 +647,7 @@ static int import_program_into_properties(UdevEvent *event,
+         char *line;
+         int r;
+ 
+-        r = udev_event_spawn(event, timeout_usec, false, program, result, sizeof result);
++        r = udev_event_spawn(event, timeout_usec, true, program, result, sizeof result);
+         if (r < 0)
+                 return r;
+         if (r > 0)

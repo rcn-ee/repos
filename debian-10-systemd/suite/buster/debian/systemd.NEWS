@@ -1,0 +1,28 @@
+systemd (236-1) unstable; urgency=medium
+
+  DynamicUser=yes has been enabled for systemd-journal-upload.service and
+  systemd-journal-gatewayd.service.
+  This means we no longer need to statically allocate a systemd-journal-upload
+  and systemd-journal-gateway user and you can now safely remove those system
+  users along with their associated groups.
+
+ -- Michael Biebl <biebl@debian.org>  Sun, 17 Dec 2017 21:17:32 +0100
+
+systemd (231-1) unstable; urgency=low
+
+  This version drops support for running /etc/rcS.d SysV init scripts.
+  These are prone to cause dependency loops, and almost all Debian packages
+  with rcS scripts now ship a native systemd service. If you have custom or
+  third-party rcS scripts you need to convert them or change them to run
+  in rc2.d/ - rc5.d/; see this page for details:
+  <https://wiki.debian.org/Teams/pkg-systemd/rcSMigration>.
+
+ -- Martin Pitt <mpitt@debian.org>  Thu, 14 Jul 2016 12:54:34 +0200
+
+systemd (224-2) unstable; urgency=medium
+
+  This version splits out systemd-nspawn, systemd-machined, and machinectl
+  into the new "systemd-container" package. That now also enables
+  systemd-importd.
+
+ -- Martin Pitt <mpitt@debian.org>  Sat, 22 Aug 2015 15:58:43 +0200

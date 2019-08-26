@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -e
+
+case "$1" in
+    purge)
+        # clean up after manually enabled units in postinst
+        rm -f /etc/systemd/system/multi-user.target.wants/machines.target
+    ;;
+esac
+
+#DEBHELPER#

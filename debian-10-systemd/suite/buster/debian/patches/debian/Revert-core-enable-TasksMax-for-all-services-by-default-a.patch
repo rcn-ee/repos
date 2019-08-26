@@ -1,0 +1,56 @@
+From: Martin Pitt <martin.pitt@ubuntu.com>
+Date: Mon, 9 May 2016 21:24:38 +0200
+Subject: Revert "core: enable TasksMax= for all services by default,
+ and set it to 512"
+
+This reverts commit 9ded9cd14cc03c67291b10a5c42ce5094ba0912f.
+
+Introducing a default limit on number of threads broke a lot of software which
+regularly needs more, such as MySQL and RabbitMQ, or services that spawn off an
+indefinite number of subtasks that are not in a scope, like LXC or cron.
+
+15% is way too much for most "simple" services, and it's too little for others
+such as the ones mentioned above. There is also no particular rationale about
+any particular global limit, so even if we'd bump it higher we'd just make the
+limit even less useful while still breaking software.
+
+It is both much safer and also much more effective in terms of guarding against
+berserk programs/bugs/unintended fork bombs etc. to set limits in units
+individually. Once someone looks at one, this is then a great time to also flip
+on the other resource and privilege limitations that systemd offers.
+
+Bug: https://github.com/systemd/systemd/issues/3211
+Bug-Debian: https://bugs.debian.org/823530
+Bug-Ubuntu: https://launchpad.net/bugs/1578080
+---
+ man/systemd-system.conf.xml | 3 +--
+ src/core/system.conf.in     | 2 +-
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/man/systemd-system.conf.xml b/man/systemd-system.conf.xml
+index 27242b3..9ff7cc5 100644
+--- a/man/systemd-system.conf.xml
++++ b/man/systemd-system.conf.xml
+@@ -320,8 +320,7 @@
+         <listitem><para>Configure the default value for the per-unit <varname>TasksMax=</varname> setting. See
+         <citerefentry><refentrytitle>systemd.resource-control</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+         for details. This setting applies to all unit types that support resource control settings, with the exception
+-        of slice units. Defaults to 15%, which equals 4915 with the kernel's defaults on the host, but might be smaller
+-        in OS containers.</para></listitem>
++        of slice units.</para></listitem>
+       </varlistentry>
+ 
+       <varlistentry>
+diff --git a/src/core/system.conf.in b/src/core/system.conf.in
+index 0a58737..97ecd75 100644
+--- a/src/core/system.conf.in
++++ b/src/core/system.conf.in
+@@ -45,7 +45,7 @@
+ #DefaultBlockIOAccounting=no
+ #DefaultMemoryAccounting=@MEMORY_ACCOUNTING_DEFAULT@
+ #DefaultTasksAccounting=yes
+-#DefaultTasksMax=15%
++#DefaultTasksMax=
+ #DefaultLimitCPU=
+ #DefaultLimitFSIZE=
+ #DefaultLimitDATA=

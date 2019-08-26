@@ -1,0 +1,297 @@
+#!/usr/bin/python3
+# autopkgtest check: Ensure that systemd-fsckd can report progress and cancel
+# (C) 2015 Canonical Ltd.
+# Author: Didier Roche <didrocks@ubuntu.com>
+
+from contextlib import suppress
+import inspect
+import fileinput
+import os
+import subprocess
+import shutil
+import stat
+import sys
+import unittest
+from time import sleep, time
+
+GRUB_AUTOPKGTEST_CONFIG_PATH = "/etc/default/grub.d/50-cloudimg-settings.cfg"
+TEST_AUTOPKGTEST_CONFIG_PATH = "/etc/default/grub.d/99-fsckdtest.cfg"
+
+SYSTEMD_ETC_SYSTEM_UNIT_DIR = "/etc/systemd/system/"
+SYSTEMD_PROCESS_KILLER_PATH = os.path.join(SYSTEMD_ETC_SYSTEM_UNIT_DIR, "process-killer.service")
+
+SYSTEMD_FSCK_ROOT_PATH = "/lib/systemd/system/systemd-fsck-root.service"
+SYSTEMD_FSCK_ROOT_ENABLE_PATH = os.path.join(SYSTEMD_ETC_SYSTEM_UNIT_DIR, 'local-fs.target.wants/systemd-fsck-root.service')
+
+SYSTEM_FSCK_PATH = '/sbin/fsck'
+PROCESS_KILLER_PATH = '/sbin/process-killer'
+SAVED_FSCK_PATH = "{}.real".format(SYSTEM_FSCK_PATH)
+
+FSCKD_TIMEOUT = 30
+
+
+class FsckdTest(unittest.TestCase):
+    '''Check that we run, report and can cancel fsck'''
+
+    def __init__(self, test_name, after_reboot, return_code):
+        super().__init__(test_name)
+        self._test_name = test_name
+        self._after_reboot = after_reboot
+        self._return_code = return_code
+
+    def setUp(self):
+        super().setUp()
+        # ensure we have our root fsck enabled by default (it detects it runs in a vm and doesn't pull the target)
+        # note that it can already exists in case of a reboot (as there was no tearDown as we wanted)
+        os.makedirs(os.path.dirname(SYSTEMD_FSCK_ROOT_ENABLE_PATH), exist_ok=True)
+        with suppress(FileExistsError):
+            os.symlink(SYSTEMD_FSCK_ROOT_PATH, SYSTEMD_FSCK_ROOT_ENABLE_PATH)
+        enable_plymouth()
+
+        # note that the saved real fsck can still exists in case of a reboot (as there was no tearDown as we wanted)
+        if not os.path.isfile(SAVED_FSCK_PATH):
+            os.rename(SYSTEM_FSCK_PATH, SAVED_FSCK_PATH)
+
+        # install mock fsck and killer
+        self.install_bin(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'fsck'),
+                         SYSTEM_FSCK_PATH)
+        self.install_bin(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'process-killer'),
+                         PROCESS_KILLER_PATH)
+
+        self.files_to_clean = [SYSTEMD_FSCK_ROOT_ENABLE_PATH, SYSTEM_FSCK_PATH, SYSTEMD_PROCESS_KILLER_PATH, PROCESS_KILLER_PATH]
+
+    def tearDown(self):
+        # tearDown is only called once the test really ended (not while rebooting during tests)
+        for f in self.files_to_clean:
+            with suppress(FileNotFoundError):
+                os.remove(f)
+        os.rename(SAVED_FSCK_PATH, SYSTEM_FSCK_PATH)
+        super().tearDown()
+
+    def test_fsckd_run(self):
+        '''Ensure we can reboot after a fsck was processed'''
+        if not self._after_reboot:
+            self.reboot()
+        else:
+            self.assertFsckdStop()
+            self.assertFsckProceeded()
+            self.assertSystemRunning()
+
+    def test_fsckd_run_without_plymouth(self):
+        '''Ensure we can reboot without plymouth after a fsck was processed'''
+        if not self._after_reboot:
+            enable_plymouth(enable=False)
+            self.reboot()
+        else:
+            self.assertFsckdStop()
+            self.assertFsckProceeded(with_plymouth=False)
+            self.assertSystemRunning()
+
+    def test_fsck_with_failure(self):
+        '''Ensure that a failing fsck doesn't prevent fsckd to stop'''
+        if not self._after_reboot:
+            self.install_process_killer_unit('fsck')
+            self.reboot()
+        else:
+            self.assertFsckdStop()
+            self.assertWasRunning('process-killer')
+            self.assertFalse(self.is_failed_unit('process-killer'))
+            self.assertFsckProceeded()
+            self.assertSystemRunning()
+
+    def test_systemd_fsck_with_failure(self):
+        '''Ensure that a failing systemd-fsck doesn't prevent fsckd to stop'''
+        if not self._after_reboot:
+            self.install_process_killer_unit('systemd-fsck', kill=True)
+            self.reboot()
+        else:
+            self.assertFsckdStop()
+            self.assertProcessKilled()
+            self.assertTrue(self.is_failed_unit('systemd-fsck-root'))
+            self.assertWasRunning('systemd-fsckd')
+            self.assertWasRunning('plymouth-start')
+            self.assertSystemRunning()
+
+    def test_systemd_fsckd_with_failure(self):
+        '''Ensure that a failing systemd-fsckd doesn't prevent system to boot'''
+        if not self._after_reboot:
+            self.install_process_killer_unit('systemd-fsckd', kill=True)
+            self.reboot()
+        else:
+            self.assertFsckdStop()
+            self.assertProcessKilled()
+            self.assertFalse(self.is_failed_unit('systemd-fsck-root'))
+            self.assertTrue(self.is_failed_unit('systemd-fsckd'))
+            self.assertWasRunning('plymouth-start')
+            self.assertSystemRunning()
+
+    def test_systemd_fsck_with_plymouth_failure(self):
+        '''Ensure that a failing plymouth doesn't prevent fsckd to reconnect/exit'''
+        if not self._after_reboot:
+            self.install_process_killer_unit('plymouthd', kill=True)
+            self.reboot()
+        else:
+            self.assertFsckdStop()
+            self.assertWasRunning('process-killer')
+            self.assertFsckProceeded()
+            self.assertFalse(self.is_active_unit('plymouth-start'))
+            self.assertSystemRunning()
+
+    def install_bin(self, source, dest):
+        '''install mock fsck'''
+        shutil.copy2(source, dest)
+        st = os.stat(dest)
+        os.chmod(dest, st.st_mode | stat.S_IEXEC)
+
+    def is_active_unit(self, unit):
+        '''Check that given unit is active'''
+
+        return subprocess.call(['systemctl', 'status', unit],
+                               stdout=subprocess.PIPE) == 0
+
+    def is_failed_unit(self, unit):
+        '''Check that given unit failed'''
+
+        p = subprocess.Popen(['systemctl', 'is-active', unit], stdout=subprocess.PIPE)
+        out, err = p.communicate()
+        if b'failed' in out:
+            return True
+        return False
+
+    def assertWasRunning(self, unit, expect_running=True):
+        '''Assert that a given unit has been running'''
+        p = subprocess.Popen(['systemctl', 'status', '--no-pager', unit],
+                             stdout=subprocess.PIPE, universal_newlines=True)
+        out = p.communicate()[0].strip()
+        if expect_running:
+            self.assertRegex(out, 'Active:.*since')
+        else:
+            self.assertNotRegex(out, 'Active:.*since')
+        self.assertIn(p.returncode, (0, 3))
+
+    def assertFsckdStop(self):
+        '''Ensure systemd-fsckd stops, which indicates no more fsck activity'''
+        timeout = time() + FSCKD_TIMEOUT
+        while time() < timeout:
+            if not self.is_active_unit('systemd-fsckd'):
+                return
+            sleep(1)
+        raise Exception("systemd-fsckd still active after {}s".format(FSCKD_TIMEOUT))
+
+    def assertFsckProceeded(self, with_plymouth=True):
+        '''Assert we executed most of the fsck-related services successfully'''
+        self.assertWasRunning('systemd-fsckd')
+        self.assertFalse(self.is_failed_unit('systemd-fsckd'))
+        self.assertTrue(self.is_active_unit('systemd-fsck-root'))  # remains active after exit
+        if with_plymouth:
+            self.assertWasRunning('plymouth-start')
+        else:
+            self.assertWasRunning('plymouth-start', expect_running=False)
+
+    def assertSystemRunning(self):
+        '''Assert that the system is running'''
+
+        self.assertTrue(self.is_active_unit('default.target'))
+
+    def assertProcessKilled(self):
+        '''Assert the targeted process was killed successfully'''
+        self.assertWasRunning('process-killer')
+        self.assertFalse(self.is_failed_unit('process-killer'))
+
+    def reboot(self):
+        '''Reboot the system with the current test marker'''
+        subprocess.check_call(['/tmp/autopkgtest-reboot', "{}:{}".format(self._test_name, self._return_code)])
+
+    def install_process_killer_unit(self, process_name, kill=False):
+        '''Create a systemd unit which will kill process_name'''
+        with open(SYSTEMD_PROCESS_KILLER_PATH, 'w') as f:
+            f.write('''[Unit]
+DefaultDependencies=no
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/timeout 10 {} {}
+
+[Install]
+WantedBy=systemd-fsck-root.service'''.format(PROCESS_KILLER_PATH,
+                                             '--signal SIGKILL {}'.format(process_name) if kill else process_name))
+        subprocess.check_call(['systemctl', 'daemon-reload'])
+        subprocess.check_call(['systemctl', 'enable', 'process-killer'], stderr=subprocess.DEVNULL)
+
+
+def enable_plymouth(enable=True):
+    '''ensure plymouth is enabled in grub config (doesn't reboot)'''
+    plymouth_enabled = 'splash' in open('/boot/grub/grub.cfg').read()
+    if enable and not plymouth_enabled:
+        if os.path.exists(GRUB_AUTOPKGTEST_CONFIG_PATH):
+            shutil.copy2(GRUB_AUTOPKGTEST_CONFIG_PATH, TEST_AUTOPKGTEST_CONFIG_PATH)
+            for line in fileinput.input([TEST_AUTOPKGTEST_CONFIG_PATH], inplace=True):
+                if line.startswith("GRUB_CMDLINE_LINUX_DEFAULT"):
+                    print(line[:line.rfind('"')] + ' splash quiet"\n')
+        else:
+            os.makedirs(os.path.dirname(TEST_AUTOPKGTEST_CONFIG_PATH), exist_ok=True)
+            with open(TEST_AUTOPKGTEST_CONFIG_PATH, 'w') as f:
+                f.write('GRUB_CMDLINE_LINUX_DEFAULT="console=ttyS0 splash quiet"\n')
+    elif not enable and plymouth_enabled:
+        with suppress(FileNotFoundError):
+            os.remove(TEST_AUTOPKGTEST_CONFIG_PATH)
+    subprocess.check_call(['update-grub'], stderr=subprocess.DEVNULL)
+
+
+def boot_with_systemd_distro():
+    '''Reboot with systemd as init and distro setup for grub'''
+    enable_plymouth()
+    subprocess.check_call(['/tmp/autopkgtest-reboot', 'systemd-started'])
+
+
+def getAllTests(unitTestClass):
+    '''get all test names in predictable sorted order from unitTestClass'''
+    return sorted([test[0] for test in inspect.getmembers(unitTestClass, predicate=inspect.isfunction)
+                  if test[0].startswith('test_')])
+
+
+# AUTOPKGTEST_REBOOT_MARK contains the test name to pursue after reboot
+# (to check results and states after reboot, mostly).
+# we append the previous global return code (0 or 1) to it.
+# Example: AUTOPKGTEST_REBOOT_MARK=test_foo:0
+if __name__ == '__main__':
+    if os.path.exists('/run/initramfs/fsck-root'):
+        print('SKIP: root file system is being checked by initramfs already')
+        sys.exit(0)
+
+    all_tests = getAllTests(FsckdTest)
+    reboot_marker = os.getenv('AUTOPKGTEST_REBOOT_MARK')
+
+    current_test_after_reboot = ""
+    if not reboot_marker:
+        boot_with_systemd_distro()
+
+    # first test
+    if reboot_marker == "systemd-started":
+        current_test = all_tests[0]
+        return_code = 0
+    else:
+        (current_test_after_reboot, return_code) = reboot_marker.split(':')
+        current_test = current_test_after_reboot
+        return_code = int(return_code)
+
+    # loop on remaining tests to run
+    try:
+        remaining_tests = all_tests[all_tests.index(current_test):]
+    except ValueError:
+        print("Invalid value for AUTOPKGTEST_REBOOT_MARK, {} is not a valid test name".format(reboot_marker))
+        sys.exit(2)
+
+    # run all remaining tests
+    for test_name in remaining_tests:
+        after_reboot = False
+        # if this tests needed a reboot (and it has been performed), executes second part of it
+        if test_name == current_test_after_reboot:
+            after_reboot = True
+        suite = unittest.TestSuite()
+        suite.addTest(FsckdTest(test_name, after_reboot, return_code))
+        result = unittest.TextTestRunner(stream=sys.stdout, verbosity=2).run(suite)
+        if len(result.failures) != 0 or len(result.errors) != 0:
+            return_code = 1
+
+    sys.exit(return_code)

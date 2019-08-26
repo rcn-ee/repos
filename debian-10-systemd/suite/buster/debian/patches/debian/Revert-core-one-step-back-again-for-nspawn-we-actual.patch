@@ -1,0 +1,37 @@
+From: Martin Pitt <martin.pitt@ubuntu.com>
+Date: Mon, 27 Apr 2015 15:29:13 +0200
+Subject: Revert "core: one step back again,
+ for nspawn we actually can't wait for cgroups running empty since systemd
+ will get exactly zero notifications about it"
+
+This reverts commit 743970d2ea6d08aa7c7bff8220f6b7702f2b1db7.
+
+Bug-Debian: https://bugs.debian.org/784720
+Bug-Ubuntu: https://launchpad.net/bugs/1448259
+Bug-Fedora: https://bugzilla.redhat.com/show_bug.cgi?id=1141137
+---
+ src/core/unit.c | 11 +----------
+ 1 file changed, 1 insertion(+), 10 deletions(-)
+
+diff --git a/src/core/unit.c b/src/core/unit.c
+index 2a7359a..d55aba8 100644
+--- a/src/core/unit.c
++++ b/src/core/unit.c
+@@ -4553,16 +4553,7 @@ int unit_kill_context(
+ 
+                 } else if (r > 0) {
+ 
+-                        /* FIXME: For now, on the legacy hierarchy, we will not wait for the cgroup members to die if
+-                         * we are running in a container or if this is a delegation unit, simply because cgroup
+-                         * notification is unreliable in these cases. It doesn't work at all in containers, and outside
+-                         * of containers it can be confused easily by left-over directories in the cgroup — which
+-                         * however should not exist in non-delegated units. On the unified hierarchy that's different,
+-                         * there we get proper events. Hence rely on them. */
+-
+-                        if (cg_unified_controller(SYSTEMD_CGROUP_CONTROLLER) > 0 ||
+-                            (detect_container() == 0 && !unit_cgroup_delegate(u)))
+-                                wait_for_exit = true;
++                        wait_for_exit = true;
+ 
+                         if (send_sighup) {
+                                 set_free(pid_set);

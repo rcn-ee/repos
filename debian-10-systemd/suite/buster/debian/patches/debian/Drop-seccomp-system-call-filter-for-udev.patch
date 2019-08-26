@@ -1,0 +1,31 @@
+From: Michael Biebl <biebl@debian.org>
+Date: Wed, 18 Jul 2018 23:49:16 +0200
+Subject: Drop seccomp system call filter for udev
+
+The seccomp based system call whitelist requires at least systemd 239 to
+be the active init and during a dist-upgrade we can't guarantee that
+systemd has been fully configured before udev is restarted.
+
+This partially reverts upstream commit
+ee8f26180d01e3ddd4e5f20b03b81e5e737657ae.
+
+Once buster is released, this patch can be dropped.
+
+Closes: #903224
+---
+ units/systemd-udevd.service.in | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/units/systemd-udevd.service.in b/units/systemd-udevd.service.in
+index 6a3814e..2b9fa69 100644
+--- a/units/systemd-udevd.service.in
++++ b/units/systemd-udevd.service.in
+@@ -29,8 +29,6 @@ PrivateMounts=yes
+ MemoryDenyWriteExecute=yes
+ RestrictRealtime=yes
+ RestrictAddressFamilies=AF_UNIX AF_NETLINK AF_INET AF_INET6
+-SystemCallFilter=@system-service @module @raw-io
+-SystemCallErrorNumber=EPERM
+ SystemCallArchitectures=native
+ LockPersonality=yes
+ IPAddressDeny=any

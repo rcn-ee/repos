@@ -1,0 +1,42 @@
+#!/bin/sh
+set -e
+
+. `dirname $0`/assert.sh
+
+if [ -n "$TEST_UPSTREAM" ]; then
+    LOCALE_CONF=/etc/locale.conf
+else
+    LOCALE_CONF=/etc/default/locale
+fi
+
+if ! ORIG_LOC=`grep -v '^#' $LOCALE_CONF 2>/dev/null`; then
+    # set up for a minimal unconfigured system
+    if [ -e /etc/locale.gen ]; then
+        echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+    fi
+    locale-gen en_US.UTF-8
+    ORIG_LOC='LANG="en_US.UTF-8"'
+    echo "$ORIG_LOC" > $LOCALE_CONF
+fi
+
+if ! [ -e /etc/default/keyboard ]; then
+    /bin/echo -e 'XKBMODEL=us\nXKBLAYOUT=pc105' > /etc/default/keyboard
+fi
+
+# should activate daemon and work
+assert_in "System Locale:" "`localectl --no-pager`"
+
+# change locale
+assert_eq "`localectl --no-pager set-locale LANG=C LC_CTYPE=en_US.UTF-8 2>&1`" ""
+sync
+assert_eq "`cat $LOCALE_CONF`" "LANG=C
+LC_CTYPE=en_US.UTF-8"
+
+! [ -f /etc/locale.conf ]
+
+STATUS=`localectl`
+assert_in "System Locale: LANG=C" "$STATUS"
+assert_in "LC_CTYPE=en_US.UTF-8" "$STATUS"
+
+# reset locale to original
+echo "$ORIG_LOC" > $LOCALE_CONF

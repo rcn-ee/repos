@@ -1,0 +1,52 @@
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Fri, 22 Feb 2019 13:27:44 +0900
+Subject: network: remove routing policy rule from foreign rule database when
+ it is removed
+
+Previously, When the first link configures rules, it removes all saved
+rules, which were configured by networkd previously, in the foreign rule
+database, but the rules themselves are still in the database.
+Thus, when the second or later link configures rules, it errnously
+treats the rules already exist.
+This is the root of issue #11280.
+
+This removes rules from the foreign database when they are removed.
+
+Fixes #11280.
+
+(cherry picked from commit 92cd00b9749141907a1110044cc7d1f01caff545)
+---
+ src/network/networkd-routing-policy-rule.c | 19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
+
+diff --git a/src/network/networkd-routing-policy-rule.c b/src/network/networkd-routing-policy-rule.c
+index 2dc7862..21a40fa 100644
+--- a/src/network/networkd-routing-policy-rule.c
++++ b/src/network/networkd-routing-policy-rule.c
+@@ -1260,15 +1260,18 @@ void routing_policy_rule_purge(Manager *m, Link *link) {
+ 
+         SET_FOREACH(rule, m->rules_saved, i) {
+                 existing = set_get(m->rules_foreign, rule);
+-                if (existing) {
++                if (!existing)
++                        continue; /* Saved rule does not exist anymore. */
+ 
+-                        r = routing_policy_rule_remove(rule, link, NULL);
+-                        if (r < 0) {
+-                                log_warning_errno(r, "Could not remove routing policy rules: %m");
+-                                continue;
+-                        }
+-
+-                        link->routing_policy_rule_remove_messages++;
++                r = routing_policy_rule_remove(existing, link, NULL);
++                if (r < 0) {
++                        log_warning_errno(r, "Could not remove routing policy rules: %m");
++                        continue;
+                 }
++
++                link->routing_policy_rule_remove_messages++;
++
++                assert_se(set_remove(m->rules_foreign, existing) == existing);
++                routing_policy_rule_free(existing);
+         }
+ }

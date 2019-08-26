@@ -1,0 +1,30 @@
+From: Stephane Chazelas <stephane.chazelas@gmail.com>
+Date: Wed, 6 Mar 2019 22:16:55 +0000
+Subject: remove "." path components from required mount paths
+
+unit_require_mounts_for may be passed path arguments that contain "."
+components like for user's home directories where "." is sometimes used
+to specify some form of anchor point.
+
+This change stops considering such path as an error and removes the "."
+components instead.
+
+Closes: #11910
+(cherry picked from commit 106bf8e445a797f9d9c88b827ed42193f2f6b838)
+---
+ src/core/unit.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/core/unit.c b/src/core/unit.c
+index 24b14fb..2a7359a 100644
+--- a/src/core/unit.c
++++ b/src/core/unit.c
+@@ -4607,7 +4607,7 @@ int unit_require_mounts_for(Unit *u, const char *path, UnitDependencyMask mask)
+         if (!p)
+                 return -ENOMEM;
+ 
+-        path = path_simplify(p, false);
++        path = path_simplify(p, true);
+ 
+         if (!path_is_normalized(path))
+                 return -EPERM;
