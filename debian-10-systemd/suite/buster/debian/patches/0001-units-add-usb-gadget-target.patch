@@ -1,0 +1,82 @@
+From daa5d901114beecdb3b412c2df6e95f971680008 Mon Sep 17 00:00:00 2001
+From: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+Date: Tue, 29 Jan 2019 11:13:44 +0100
+Subject: [PATCH] units: add usb-gadget target
+
+Linux can be run on a device meant to act as a USB peripheral. In order
+for a machine to act as such a USB device it has to be equipped with
+a UDC - USB Device Controller.
+
+This patch adds a target reached when UDC becomes available. It can be used
+for activating e.g. a service unit which composes a USB gadget with
+configfs and activates it.
+---
+ man/systemd.special.xml   | 11 +++++++++++
+ rules/99-systemd.rules.in |  2 ++
+ units/usb-gadget.target   | 12 ++++++++++++
+ 3 files changed, 25 insertions(+)
+ create mode 100644 units/usb-gadget.target
+
+diff --git a/man/systemd.special.xml b/man/systemd.special.xml
+index fd5639ba03..5e1f4469af 100644
+--- a/man/systemd.special.xml
++++ b/man/systemd.special.xml
+@@ -83,6 +83,7 @@
+     <filename>time-sync.target</filename>,
+     <filename>timers.target</filename>,
+     <filename>umount.target</filename>,
++    <filename>usb-gadget.target</filename>,
+     <!-- slices --><filename>-.slice</filename>,
+     <filename>system.slice</filename>,
+     <filename>user.slice</filename>,
+@@ -799,6 +800,16 @@
+             dynamically when audio hardware is found.</para>
+           </listitem>
+         </varlistentry>
++        <varlistentry>
++          <term><filename>usb-gadget.target</filename></term>
++          <listitem>
++            <para>This target is started automatically as soon as a
++            USB Device Controller becomes available at boot.</para>
++
++            <para>This may be used to pull in usb gadget
++            dynamically when UDC hardware is found.</para>
++          </listitem>
++        </varlistentry>
+       </variablelist>
+     </refsect2>
+ 
+diff --git a/rules/99-systemd.rules.in b/rules/99-systemd.rules.in
+index 419ca4ed87..f982631766 100644
+--- a/rules/99-systemd.rules.in
++++ b/rules/99-systemd.rules.in
+@@ -56,6 +56,8 @@ SUBSYSTEM=="printer", TAG+="systemd", ENV{SYSTEMD_WANTS}+="printer.target"
+ SUBSYSTEM=="usb", KERNEL=="lp*", TAG+="systemd", ENV{SYSTEMD_WANTS}+="printer.target"
+ SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ENV{ID_USB_INTERFACES}=="*:0701??:*", TAG+="systemd", ENV{SYSTEMD_WANTS}+="printer.target"
+ 
++SUBSYSTEM=="udc", ACTION=="add", TAG+="systemd", ENV{SYSTEMD_WANTS}+="usb-gadget.target"
++
+ # Apply sysctl variables to network devices (and only to those) as they appear.
+ ACTION=="add", SUBSYSTEM=="net", KERNEL!="lo", RUN+="@rootlibexecdir@/systemd-sysctl --prefix=/net/ipv4/conf/$name --prefix=/net/ipv4/neigh/$name --prefix=/net/ipv6/conf/$name --prefix=/net/ipv6/neigh/$name"
+ 
+diff --git a/units/usb-gadget.target b/units/usb-gadget.target
+new file mode 100644
+index 0000000000..c666683a98
+--- /dev/null
++++ b/units/usb-gadget.target
+@@ -0,0 +1,12 @@
++#  SPDX-License-Identifier: LGPL-2.1+
++#
++#  This file is part of systemd.
++#
++#  systemd is free software; you can redistribute it and/or modify it
++#  under the terms of the GNU Lesser General Public License as published by
++#  the Free Software Foundation; either version 2.1 of the License, or
++#  (at your option) any later version.
++
++[Unit]
++Description=Hardware activated USB gadget
++Documentation=man:systemd.special(7)
+-- 
+2.20.1
+
