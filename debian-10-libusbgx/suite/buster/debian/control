@@ -1,0 +1,50 @@
+Source: libusbgx
+Section: misc
+Priority: optional
+Maintainer: Robert Nelson <robertcnelson@gmail.com>
+Build-Depends: debhelper (>= 11),
+               autoconf-archive,
+               automake,
+               pkg-config,
+               m4,
+               libconfig-dev,
+Standards-Version: 4.2.1
+Build-Depends-Indep: doxygen
+Homepage: https://github.com/libusbgx/libusbgx
+Vcs-Git: https://github.com/libusbgx/libusbgx
+Vcs-Browser: https://github.com/libusbgx/libusbgx
+
+Package: libusbgx-dev
+Section: libdevel
+Architecture: linux-any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         libusbgx (= ${binary:Version})
+Description: C library for interacting with kernel USB gadget-configfs - static libraries and headers
+ libusbgx is a C library encapsulating the kernel USB gadget-configfs
+ userspace API functionality.
+ .
+ This package contains the required static libraries, headers, and C++ bindings.
+
+Package: libusbgx
+Section: libs
+Architecture: linux-any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Multi-Arch: same
+Description: C library for interacting with kernel USB gadget-configfs - shared libraries
+ libusbgx is a C library encapsulating the kernel USB gadget-configfs
+ userspace API functionality.
+ .
+ This package contains the required shared libraries.
+
+Package: libusbgx-examples
+Architecture: linux-any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: Tools for interacting with kernel USB gadget-configfs - binary
+ libusbgx is a C library encapsulating the kernel USB gadget-configfs
+ userspace API functionality.
+ .
+ This package contains the gpiod binary tools.
+
