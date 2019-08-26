@@ -1,0 +1,67 @@
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Tue, 11 Jun 2019 23:20:56 +0900
+Subject: network: ignore requested ipv6 addresses when ipv6 is disabled by
+ sysctl
+
+(cherry picked from commit 54a1a535bd60f13964bbddd8f381601e33e8e56f)
+---
+ src/network/networkd-address.c | 7 ++++++-
+ src/network/networkd-link.c    | 4 ++--
+ src/network/networkd-ndisc.c   | 4 ++--
+ 3 files changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/src/network/networkd-address.c b/src/network/networkd-address.c
+index 3cdbd9e..a9f65e5 100644
+--- a/src/network/networkd-address.c
++++ b/src/network/networkd-address.c
+@@ -565,6 +565,11 @@ int address_configure(
+         assert(link->manager->rtnl);
+         assert(callback);
+ 
++        if (address->family == AF_INET6 && manager_sysctl_ipv6_enabled(link->manager) == 0) {
++                log_link_warning(link, "An IPv6 address is requested, but IPv6 is disabled by sysctl, ignoring.");
++                return 0;
++        }
++
+         /* If this is a new address, then refuse adding more than the limit */
+         if (address_get(link, address->family, &address->in_addr, address->prefixlen, NULL) <= 0 &&
+             set_size(link->addresses) >= ADDRESSES_PER_LINK_MAX)
+@@ -669,7 +674,7 @@ int address_configure(
+                 return log_error_errno(r, "Could not add address: %m");
+         }
+ 
+-        return 0;
++        return 1;
+ }
+ 
+ int config_parse_broadcast(
+diff --git a/src/network/networkd-link.c b/src/network/networkd-link.c
+index 322e701..638aae0 100644
+--- a/src/network/networkd-link.c
++++ b/src/network/networkd-link.c
+@@ -1123,8 +1123,8 @@ static int link_request_set_addresses(Link *link) {
+                         link_enter_failed(link);
+                         return r;
+                 }
+-
+-                link->address_messages++;
++                if (r > 0)
++                        link->address_messages++;
+         }
+ 
+         LIST_FOREACH(labels, label, link->network->address_labels) {
+diff --git a/src/network/networkd-ndisc.c b/src/network/networkd-ndisc.c
+index e5b8d11..78c98a0 100644
+--- a/src/network/networkd-ndisc.c
++++ b/src/network/networkd-ndisc.c
+@@ -205,8 +205,8 @@ static int ndisc_router_process_autonomous_prefix(Link *link, sd_ndisc_router *r
+                 link_enter_failed(link);
+                 return r;
+         }
+-
+-        link->ndisc_messages++;
++        if (r > 0)
++                link->ndisc_messages++;
+ 
+         return 0;
+ }

@@ -1,0 +1,45 @@
+From: =?utf-8?q?Zbigniew_J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Tue, 21 May 2019 19:31:49 +0200
+Subject: man: add note that %h/%u/%U are mostly useless
+
+Fixes #12389.
+
+(cherry picked from commit b4e2407716731d1ce099bad1c2778f7a4424ed2e)
+---
+ man/systemd.unit.xml | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/man/systemd.unit.xml b/man/systemd.unit.xml
+index f21f9ea..be6355d 100644
+--- a/man/systemd.unit.xml
++++ b/man/systemd.unit.xml
+@@ -1580,7 +1580,9 @@
+           <row>
+             <entry><literal>%h</literal></entry>
+             <entry>User home directory</entry>
+-            <entry>This is the home directory of the user running the service manager instance. In case of the system manager this resolves to <literal>/root</literal>.</entry>
++            <entry>This is the home directory of the <emphasis>user running the service manager instance</emphasis>. In case of the system manager this resolves to <literal>/root</literal>.
++
++Note that this setting is <emphasis>not</emphasis> influenced by the <varname>User=</varname> setting configurable in the [Service] section of the service unit.</entry>
+           </row>
+           <row>
+             <entry><literal>%H</literal></entry>
+@@ -1670,12 +1672,16 @@
+           <row>
+             <entry><literal>%u</literal></entry>
+             <entry>User name</entry>
+-            <entry>This is the name of the user running the service manager instance. In case of the system manager this resolves to <literal>root</literal>.</entry>
++            <entry>This is the name of the <emphasis>user running the service manager instance</emphasis>. In case of the system manager this resolves to <literal>root</literal>.
++
++Note that this setting is <emphasis>not</emphasis> influenced by the <varname>User=</varname> setting configurable in the [Service] section of the service unit.</entry>
+           </row>
+           <row>
+             <entry><literal>%U</literal></entry>
+             <entry>User UID</entry>
+-            <entry>This is the numeric UID of the user running the service manager instance. In case of the system manager this resolves to <literal>0</literal>.</entry>
++            <entry>This is the numeric UID of the <emphasis>user running the service manager instance</emphasis>. In case of the system manager this resolves to <literal>0</literal>.
++
++Note that this setting is <emphasis>not</emphasis> influenced by the <varname>User=</varname> setting configurable in the [Service] section of the service unit.</entry>
+           </row>
+           <row>
+             <entry><literal>%v</literal></entry>

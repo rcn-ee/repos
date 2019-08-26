@@ -1,0 +1,119 @@
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Mon, 18 Feb 2019 15:00:15 +0900
+Subject: network: check whether ipv6 is enabled in sysctl
+
+Currently, the value is read only once.
+
+Fixes #11711.
+
+(cherry picked from commit 4b600505dda8af6c43496f9e93e420a192d9a38b)
+---
+ src/network/networkd-link.c    | 12 ++++++++++++
+ src/network/networkd-manager.c | 18 ++++++++++++++++++
+ src/network/networkd-manager.h |  4 ++++
+ 3 files changed, 34 insertions(+)
+
+diff --git a/src/network/networkd-link.c b/src/network/networkd-link.c
+index 22392d7..322e701 100644
+--- a/src/network/networkd-link.c
++++ b/src/network/networkd-link.c
+@@ -51,6 +51,9 @@ static bool link_dhcp6_enabled(Link *link) {
+         if (!link->network)
+                 return false;
+ 
++        if (manager_sysctl_ipv6_enabled(link->manager) == 0)
++                return false;
++
+         return link->network->dhcp & ADDRESS_FAMILY_IPV6;
+ }
+ 
+@@ -108,6 +111,9 @@ static bool link_ipv6ll_enabled(Link *link) {
+         if (streq_ptr(link->kind, "wireguard"))
+                 return false;
+ 
++        if (manager_sysctl_ipv6_enabled(link->manager) == 0)
++                return false;
++
+         return link->network->link_local & ADDRESS_FAMILY_IPV6;
+ }
+ 
+@@ -120,6 +126,9 @@ static bool link_ipv6_enabled(Link *link) {
+         if (link->network->bridge)
+                 return false;
+ 
++        if (manager_sysctl_ipv6_enabled(link->manager) == 0)
++                return false;
++
+         /* DHCPv6 client will not be started if no IPv6 link-local address is configured. */
+         return link_ipv6ll_enabled(link) || network_has_static_ipv6_addresses(link->network);
+ }
+@@ -199,6 +208,9 @@ static bool link_ipv6_forward_enabled(Link *link) {
+         if (link->network->ip_forward == _ADDRESS_FAMILY_BOOLEAN_INVALID)
+                 return false;
+ 
++        if (manager_sysctl_ipv6_enabled(link->manager) == 0)
++                return false;
++
+         return link->network->ip_forward & ADDRESS_FAMILY_IPV6;
+ }
+ 
+diff --git a/src/network/networkd-manager.c b/src/network/networkd-manager.c
+index c8d369e..f32bc7f 100644
+--- a/src/network/networkd-manager.c
++++ b/src/network/networkd-manager.c
+@@ -23,6 +23,7 @@
+ #include "path-util.h"
+ #include "set.h"
+ #include "strv.h"
++#include "sysctl-util.h"
+ #include "tmpfile-util.h"
+ #include "virt.h"
+ 
+@@ -1360,6 +1361,8 @@ int manager_new(Manager **ret) {
+         if (!m->state_file)
+                 return -ENOMEM;
+ 
++        m->sysctl_ipv6_enabled = -1;
++
+         r = sd_event_default(&m->event);
+         if (r < 0)
+                 return r;
+@@ -1858,3 +1861,18 @@ int manager_request_product_uuid(Manager *m, Link *link) {
+ 
+         return 0;
+ }
++
++int manager_sysctl_ipv6_enabled(Manager *manager) {
++        _cleanup_free_ char *value = NULL;
++        int r;
++
++        if (manager->sysctl_ipv6_enabled >= 0)
++                return manager->sysctl_ipv6_enabled;
++
++        r = sysctl_read_ip_property(AF_INET6, "all", "disable_ipv6", &value);
++        if (r < 0)
++                return log_warning_errno(r, "Failed to read net.ipv6.conf.all.disable_ipv6 sysctl property: %m");
++
++        manager->sysctl_ipv6_enabled = value[0] == '0';
++        return manager->sysctl_ipv6_enabled;
++}
+diff --git a/src/network/networkd-manager.h b/src/network/networkd-manager.h
+index 289ca96..d292d76 100644
+--- a/src/network/networkd-manager.h
++++ b/src/network/networkd-manager.h
+@@ -58,6 +58,8 @@ struct Manager {
+         Set *rules;
+         Set *rules_foreign;
+         Set *rules_saved;
++
++        int sysctl_ipv6_enabled;
+ };
+ 
+ extern const sd_bus_vtable manager_vtable[];
+@@ -95,4 +97,6 @@ Link *manager_dhcp6_prefix_get(Manager *m, struct in6_addr *addr);
+ int manager_dhcp6_prefix_add(Manager *m, struct in6_addr *addr, Link *link);
+ int manager_dhcp6_prefix_remove_all(Manager *m, Link *link);
+ 
++int manager_sysctl_ipv6_enabled(Manager *manager);
++
+ DEFINE_TRIVIAL_CLEANUP_FUNC(Manager*, manager_free);

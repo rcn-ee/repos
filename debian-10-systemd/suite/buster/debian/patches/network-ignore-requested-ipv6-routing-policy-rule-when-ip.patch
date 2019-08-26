@@ -1,0 +1,51 @@
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Tue, 11 Jun 2019 23:29:57 +0900
+Subject: network: ignore requested ipv6 routing policy rule when ipv6 is
+ disabled by sysctl
+
+(cherry picked from commit 7ef7e5509b637e660e89ba8a938930ec01de6e54)
+---
+ src/network/networkd-link.c                | 4 ++--
+ src/network/networkd-routing-policy-rule.c | 7 ++++++-
+ 2 files changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/src/network/networkd-link.c b/src/network/networkd-link.c
+index 5a181c2..13852af 100644
+--- a/src/network/networkd-link.c
++++ b/src/network/networkd-link.c
+@@ -765,8 +765,8 @@ static int link_request_set_routing_policy_rule(Link *link) {
+                         link_enter_failed(link);
+                         return r;
+                 }
+-
+-                link->routing_policy_rule_messages++;
++                if (r > 0)
++                        link->routing_policy_rule_messages++;
+         }
+ 
+         routing_policy_rule_purge(link->manager, link);
+diff --git a/src/network/networkd-routing-policy-rule.c b/src/network/networkd-routing-policy-rule.c
+index 65a9af2..0b62a0e 100644
+--- a/src/network/networkd-routing-policy-rule.c
++++ b/src/network/networkd-routing-policy-rule.c
+@@ -492,6 +492,11 @@ int routing_policy_rule_configure(RoutingPolicyRule *rule, Link *link, link_netl
+         assert(link->manager);
+         assert(link->manager->rtnl);
+ 
++        if (rule->family == AF_INET6 && manager_sysctl_ipv6_enabled(link->manager) == 0) {
++                log_link_warning(link, "An IPv6 routing policy rule is requested, but IPv6 is disabled by sysctl, ignoring.");
++                return 0;
++        }
++
+         r = sd_rtnl_message_new_routing_policy_rule(link->manager->rtnl, &m, RTM_NEWRULE, rule->family);
+         if (r < 0)
+                 return log_error_errno(r, "Could not allocate RTM_NEWRULE message: %m");
+@@ -609,7 +614,7 @@ int routing_policy_rule_configure(RoutingPolicyRule *rule, Link *link, link_netl
+         if (r < 0)
+                 return log_error_errno(r, "Could not add rule: %m");
+ 
+-        return 0;
++        return 1;
+ }
+ 
+ static int parse_fwmark_fwmask(const char *s, uint32_t *fwmark, uint32_t *fwmask) {

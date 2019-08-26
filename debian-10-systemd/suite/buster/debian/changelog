@@ -1,8 +1,50 @@
-systemd (241-5rcnee0~buster+20190826) buster; urgency=low
+systemd (241-7~deb10u1rcnee0~buster+20190826) buster; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Mon, 26 Aug 2019 13:41:26 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Mon, 26 Aug 2019 16:51:55 -0500
+
+systemd (241-7~deb10u1) buster; urgency=medium
+
+  * Rebuild for buster
+
+ -- Michael Biebl <biebl@debian.org>  Tue, 20 Aug 2019 13:50:42 +0200
+
+systemd (241-7) unstable; urgency=medium
+
+  [ Michael Biebl ]
+  * network: Fix failure to bring up interface with Linux kernel 5.2.
+    Backport two patches from systemd master in order to fix a bug with 5.2
+    kernels where the network interface fails to come up with the following
+    error: "enp3s0: Could not bring up interface: Invalid argument"
+    (Closes: #931636)
+  * Use /usr/sbin/nologin as nologin shell.
+    In Debian the nologin shell is installed in /usr/sbin, not /sbin.
+    (Closes: #931850)
+
+  [ Mert Dirik ]
+  * 40-systemd: Don't fail if SysV init script uses set -u and $1 is unset
+    (Closes: #931719)
+
+ -- Michael Biebl <biebl@debian.org>  Thu, 18 Jul 2019 19:38:23 +0200
+
+systemd (241-6) unstable; urgency=medium
+
+  * ask-password: Prevent buffer overflow when reading from keyring.
+    Fixes a possible memory corruption that causes systemd-cryptsetup to
+    crash either when a single large password is used or when multiple
+    passwords have already been pushed to the keyring. (Closes: #929726)
+  * Clarify documentation regarding %h/%u/%U specifiers.
+    Make it clear, that setting "User=" has no effect on those specifiers.
+    Also ensure that "%h" is actually resolved to "/root" for the system
+    manager instance as documented in the systemd.unit man page.
+    (Closes: #927911)
+  * network: Behave more gracefully when IPv6 has been disabled.
+    Ignore any configured IPv6 settings when IPv6 has been disabled in the
+    kernel via sysctl. Instead of failing completely, continue and log a
+    warning instead. (Closes: #929469)
+
+ -- Michael Biebl <biebl@debian.org>  Mon, 08 Jul 2019 11:27:51 +0200
 
 systemd (241-5) unstable; urgency=medium
 

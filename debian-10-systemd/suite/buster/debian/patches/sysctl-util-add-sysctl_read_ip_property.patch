@@ -1,0 +1,49 @@
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Mon, 18 Feb 2019 14:41:43 +0900
+Subject: sysctl-util: add sysctl_read_ip_property()
+
+(cherry picked from commit a6b3b0aace152b77682d68d99b3e41580c955efb)
+---
+ src/shared/sysctl-util.c | 22 ++++++++++++++++++++++
+ src/shared/sysctl-util.h |  1 +
+ 2 files changed, 23 insertions(+)
+
+diff --git a/src/shared/sysctl-util.c b/src/shared/sysctl-util.c
+index 480e6c3..ba89489 100644
+--- a/src/shared/sysctl-util.c
++++ b/src/shared/sysctl-util.c
+@@ -69,3 +69,25 @@ int sysctl_read(const char *property, char **content) {
+         p = strjoina("/proc/sys/", property);
+         return read_full_file(p, content, NULL);
+ }
++
++int sysctl_read_ip_property(int af, const char *ifname, const char *property, char **ret) {
++        _cleanup_free_ char *value = NULL;
++        const char *p;
++        int r;
++
++        assert(IN_SET(af, AF_INET, AF_INET6));
++        assert(property);
++
++        p = strjoina("/proc/sys/net/ipv", af == AF_INET ? "4" : "6",
++                     ifname ? "/conf/" : "", strempty(ifname),
++                     property[0] == '/' ? "" : "/", property);
++
++        r = read_one_line_file(p, &value);
++        if (r < 0)
++                return r;
++
++        if (ret)
++                *ret = TAKE_PTR(value);
++
++        return r;
++}
+diff --git a/src/shared/sysctl-util.h b/src/shared/sysctl-util.h
+index fd7c78b..22f52f8 100644
+--- a/src/shared/sysctl-util.h
++++ b/src/shared/sysctl-util.h
+@@ -5,3 +5,4 @@ char *sysctl_normalize(char *s);
+ int sysctl_read(const char *property, char **value);
+ int sysctl_write(const char *property, const char *value);
+ 
++int sysctl_read_ip_property(int af, const char *ifname, const char *property, char **ret);

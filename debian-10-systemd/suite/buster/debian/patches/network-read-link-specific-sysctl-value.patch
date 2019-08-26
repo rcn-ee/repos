@@ -1,0 +1,208 @@
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Fri, 14 Jun 2019 09:42:51 +0900
+Subject: network: read link specific sysctl value
+
+This introduce link_sysctl_ipv6_enabled() and replaces
+manager_sysctl_ipv6_enabled() with it.
+
+(cherry picked from commit bafa9641446852f7fa15ca12d08a223d345c78ea)
+---
+ src/network/networkd-address.c             |  2 +-
+ src/network/networkd-link.c                | 24 ++++++++++++++++++++----
+ src/network/networkd-link.h                |  4 ++++
+ src/network/networkd-manager.c             | 17 -----------------
+ src/network/networkd-manager.h             |  4 ----
+ src/network/networkd-route.c               |  2 +-
+ src/network/networkd-routing-policy-rule.c |  2 +-
+ 7 files changed, 27 insertions(+), 28 deletions(-)
+
+diff --git a/src/network/networkd-address.c b/src/network/networkd-address.c
+index a9f65e5..e0ee896 100644
+--- a/src/network/networkd-address.c
++++ b/src/network/networkd-address.c
+@@ -565,7 +565,7 @@ int address_configure(
+         assert(link->manager->rtnl);
+         assert(callback);
+ 
+-        if (address->family == AF_INET6 && manager_sysctl_ipv6_enabled(link->manager) == 0) {
++        if (address->family == AF_INET6 && link_sysctl_ipv6_enabled(link) == 0) {
+                 log_link_warning(link, "An IPv6 address is requested, but IPv6 is disabled by sysctl, ignoring.");
+                 return 0;
+         }
+diff --git a/src/network/networkd-link.c b/src/network/networkd-link.c
+index 13852af..3cfdf4a 100644
+--- a/src/network/networkd-link.c
++++ b/src/network/networkd-link.c
+@@ -28,6 +28,7 @@
+ #include "stdio-util.h"
+ #include "string-table.h"
+ #include "strv.h"
++#include "sysctl-util.h"
+ #include "tmpfile-util.h"
+ #include "util.h"
+ #include "virt.h"
+@@ -39,6 +40,20 @@ DUID* link_get_duid(Link *link) {
+                 return &link->manager->duid;
+ }
+ 
++int link_sysctl_ipv6_enabled(Link *link) {
++        _cleanup_free_ char *value = NULL;
++        int r;
++
++        r = sysctl_read_ip_property(AF_INET6, link->ifname, "disable_ipv6", &value);
++        if (r < 0)
++                return log_link_warning_errno(link, r,
++                                              "Failed to read net.ipv6.conf.%s.disable_ipv6 sysctl property: %m",
++                                              link->ifname);
++
++        link->sysctl_ipv6_enabled = value[0] == '0';
++        return link->sysctl_ipv6_enabled;
++}
++
+ static bool link_dhcp6_enabled(Link *link) {
+         assert(link);
+ 
+@@ -51,7 +66,7 @@ static bool link_dhcp6_enabled(Link *link) {
+         if (!link->network)
+                 return false;
+ 
+-        if (manager_sysctl_ipv6_enabled(link->manager) == 0)
++        if (link_sysctl_ipv6_enabled(link) == 0)
+                 return false;
+ 
+         return link->network->dhcp & ADDRESS_FAMILY_IPV6;
+@@ -111,7 +126,7 @@ static bool link_ipv6ll_enabled(Link *link) {
+         if (streq_ptr(link->kind, "wireguard"))
+                 return false;
+ 
+-        if (manager_sysctl_ipv6_enabled(link->manager) == 0)
++        if (link_sysctl_ipv6_enabled(link) == 0)
+                 return false;
+ 
+         return link->network->link_local & ADDRESS_FAMILY_IPV6;
+@@ -126,7 +141,7 @@ static bool link_ipv6_enabled(Link *link) {
+         if (link->network->bridge)
+                 return false;
+ 
+-        if (manager_sysctl_ipv6_enabled(link->manager) == 0)
++        if (link_sysctl_ipv6_enabled(link) == 0)
+                 return false;
+ 
+         /* DHCPv6 client will not be started if no IPv6 link-local address is configured. */
+@@ -208,7 +223,7 @@ static bool link_ipv6_forward_enabled(Link *link) {
+         if (link->network->ip_forward == _ADDRESS_FAMILY_BOOLEAN_INVALID)
+                 return false;
+ 
+-        if (manager_sysctl_ipv6_enabled(link->manager) == 0)
++        if (link_sysctl_ipv6_enabled(link) == 0)
+                 return false;
+ 
+         return link->network->ip_forward & ADDRESS_FAMILY_IPV6;
+@@ -476,6 +491,7 @@ static int link_new(Manager *manager, sd_netlink_message *message, Link **ret) {
+                 .rtnl_extended_attrs = true,
+                 .ifindex = ifindex,
+                 .iftype = iftype,
++                .sysctl_ipv6_enabled = -1,
+         };
+ 
+         link->ifname = strdup(ifname);
+diff --git a/src/network/networkd-link.h b/src/network/networkd-link.h
+index dcb1ea6..6adea64 100644
+--- a/src/network/networkd-link.h
++++ b/src/network/networkd-link.h
+@@ -128,6 +128,8 @@ typedef struct Link {
+ 
+         Hashmap *bound_by_links;
+         Hashmap *bound_to_links;
++
++        int sysctl_ipv6_enabled;
+ } Link;
+ 
+ typedef int (*link_netlink_message_handler_t)(sd_netlink*, sd_netlink_message*, Link*);
+@@ -209,6 +211,8 @@ int link_send_changed(Link *link, const char *property, ...) _sentinel_;
+ #define LOG_LINK_MESSAGE(link, fmt, ...) "MESSAGE=%s: " fmt, (link)->ifname, ##__VA_ARGS__
+ #define LOG_LINK_INTERFACE(link) "INTERFACE=%s", (link)->ifname
+ 
++int link_sysctl_ipv6_enabled(Link *link);
++
+ #define ADDRESS_FMT_VAL(address)                   \
+         be32toh((address).s_addr) >> 24,           \
+         (be32toh((address).s_addr) >> 16) & 0xFFu, \
+diff --git a/src/network/networkd-manager.c b/src/network/networkd-manager.c
+index f32bc7f..acb9a75 100644
+--- a/src/network/networkd-manager.c
++++ b/src/network/networkd-manager.c
+@@ -1361,8 +1361,6 @@ int manager_new(Manager **ret) {
+         if (!m->state_file)
+                 return -ENOMEM;
+ 
+-        m->sysctl_ipv6_enabled = -1;
+-
+         r = sd_event_default(&m->event);
+         if (r < 0)
+                 return r;
+@@ -1861,18 +1859,3 @@ int manager_request_product_uuid(Manager *m, Link *link) {
+ 
+         return 0;
+ }
+-
+-int manager_sysctl_ipv6_enabled(Manager *manager) {
+-        _cleanup_free_ char *value = NULL;
+-        int r;
+-
+-        if (manager->sysctl_ipv6_enabled >= 0)
+-                return manager->sysctl_ipv6_enabled;
+-
+-        r = sysctl_read_ip_property(AF_INET6, "all", "disable_ipv6", &value);
+-        if (r < 0)
+-                return log_warning_errno(r, "Failed to read net.ipv6.conf.all.disable_ipv6 sysctl property: %m");
+-
+-        manager->sysctl_ipv6_enabled = value[0] == '0';
+-        return manager->sysctl_ipv6_enabled;
+-}
+diff --git a/src/network/networkd-manager.h b/src/network/networkd-manager.h
+index d292d76..289ca96 100644
+--- a/src/network/networkd-manager.h
++++ b/src/network/networkd-manager.h
+@@ -58,8 +58,6 @@ struct Manager {
+         Set *rules;
+         Set *rules_foreign;
+         Set *rules_saved;
+-
+-        int sysctl_ipv6_enabled;
+ };
+ 
+ extern const sd_bus_vtable manager_vtable[];
+@@ -97,6 +95,4 @@ Link *manager_dhcp6_prefix_get(Manager *m, struct in6_addr *addr);
+ int manager_dhcp6_prefix_add(Manager *m, struct in6_addr *addr, Link *link);
+ int manager_dhcp6_prefix_remove_all(Manager *m, Link *link);
+ 
+-int manager_sysctl_ipv6_enabled(Manager *manager);
+-
+ DEFINE_TRIVIAL_CLEANUP_FUNC(Manager*, manager_free);
+diff --git a/src/network/networkd-route.c b/src/network/networkd-route.c
+index 5b7e019..67b0ab4 100644
+--- a/src/network/networkd-route.c
++++ b/src/network/networkd-route.c
+@@ -509,7 +509,7 @@ int route_configure(
+         assert(IN_SET(route->family, AF_INET, AF_INET6));
+         assert(callback);
+ 
+-        if (route->family == AF_INET6 && manager_sysctl_ipv6_enabled(link->manager) == 0) {
++        if (route->family == AF_INET6 && link_sysctl_ipv6_enabled(link) == 0) {
+                 log_link_warning(link, "An IPv6 route is requested, but IPv6 is disabled by sysctl, ignoring.");
+                 return 0;
+         }
+diff --git a/src/network/networkd-routing-policy-rule.c b/src/network/networkd-routing-policy-rule.c
+index 0b62a0e..2378ed2 100644
+--- a/src/network/networkd-routing-policy-rule.c
++++ b/src/network/networkd-routing-policy-rule.c
+@@ -492,7 +492,7 @@ int routing_policy_rule_configure(RoutingPolicyRule *rule, Link *link, link_netl
+         assert(link->manager);
+         assert(link->manager->rtnl);
+ 
+-        if (rule->family == AF_INET6 && manager_sysctl_ipv6_enabled(link->manager) == 0) {
++        if (rule->family == AF_INET6 && link_sysctl_ipv6_enabled(link) == 0) {
+                 log_link_warning(link, "An IPv6 routing policy rule is requested, but IPv6 is disabled by sysctl, ignoring.");
+                 return 0;
+         }

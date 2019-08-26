@@ -1,0 +1,88 @@
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Tue, 11 Jun 2019 23:26:11 +0900
+Subject: network: ignore requested ipv6 route when ipv6 is disabled by sysctl
+
+(cherry picked from commit c442331750a2a9711036080f7590e190b9b0eb54)
+---
+ src/network/networkd-link.c  |  4 ++--
+ src/network/networkd-ndisc.c | 12 ++++++------
+ src/network/networkd-route.c |  7 ++++++-
+ 3 files changed, 14 insertions(+), 9 deletions(-)
+
+diff --git a/src/network/networkd-link.c b/src/network/networkd-link.c
+index 638aae0..5a181c2 100644
+--- a/src/network/networkd-link.c
++++ b/src/network/networkd-link.c
+@@ -840,8 +840,8 @@ static int link_request_set_routes(Link *link) {
+                                 link_enter_failed(link);
+                                 return r;
+                         }
+-
+-                        link->route_messages++;
++                        if (r > 0)
++                                link->route_messages++;
+                 }
+ 
+         if (link->route_messages == 0) {
+diff --git a/src/network/networkd-ndisc.c b/src/network/networkd-ndisc.c
+index 78c98a0..36fbe29 100644
+--- a/src/network/networkd-ndisc.c
++++ b/src/network/networkd-ndisc.c
+@@ -117,8 +117,8 @@ static int ndisc_router_process_default(Link *link, sd_ndisc_router *rt) {
+                 link_enter_failed(link);
+                 return r;
+         }
+-
+-        link->ndisc_messages++;
++        if (r > 0)
++                link->ndisc_messages++;
+ 
+         return 0;
+ }
+@@ -255,8 +255,8 @@ static int ndisc_router_process_onlink_prefix(Link *link, sd_ndisc_router *rt) {
+                 link_enter_failed(link);
+                 return r;
+         }
+-
+-        link->ndisc_messages++;
++        if (r > 0)
++                link->ndisc_messages++;
+ 
+         return 0;
+ }
+@@ -316,8 +316,8 @@ static int ndisc_router_process_route(Link *link, sd_ndisc_router *rt) {
+                 link_enter_failed(link);
+                 return r;
+         }
+-
+-        link->ndisc_messages++;
++        if (r > 0)
++                link->ndisc_messages++;
+ 
+         return 0;
+ }
+diff --git a/src/network/networkd-route.c b/src/network/networkd-route.c
+index 5553a7e..5b7e019 100644
+--- a/src/network/networkd-route.c
++++ b/src/network/networkd-route.c
+@@ -509,6 +509,11 @@ int route_configure(
+         assert(IN_SET(route->family, AF_INET, AF_INET6));
+         assert(callback);
+ 
++        if (route->family == AF_INET6 && manager_sysctl_ipv6_enabled(link->manager) == 0) {
++                log_link_warning(link, "An IPv6 route is requested, but IPv6 is disabled by sysctl, ignoring.");
++                return 0;
++        }
++
+         if (route_get(link, route->family, &route->dst, route->dst_prefixlen, route->tos, route->priority, route->table, NULL) <= 0 &&
+             set_size(link->routes) >= routes_max())
+                 return -E2BIG;
+@@ -675,7 +680,7 @@ int route_configure(
+         sd_event_source_unref(route->expire);
+         route->expire = TAKE_PTR(expire);
+ 
+-        return 0;
++        return 1;
+ }
+ 
+ int config_parse_gateway(

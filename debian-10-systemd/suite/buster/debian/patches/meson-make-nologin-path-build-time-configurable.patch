@@ -1,0 +1,354 @@
+From: Michael Biebl <biebl@debian.org>
+Date: Thu, 18 Jul 2019 01:24:00 +0200
+Subject: meson: make nologin path build time configurable
+
+Some distros install nologin as /usr/sbin/nologin, others as
+/sbin/nologin.
+Since we can't really on merged-usr everywhere (where the path wouldn't
+matter), make the path build time configurable via -Dnologin-path=.
+
+Closes #13028
+
+(cherry picked from commit 6db904625d413739c480ddbe7667d3f40acc4ae0)
+---
+ man/nss-mymachines.xml                        |  4 ++--
+ man/sysusers.d.xml                            |  4 ++--
+ meson.build                                   |  1 +
+ meson_options.txt                             |  1 +
+ src/basic/user-util.c                         |  4 ++--
+ src/nss-mymachines/nss-mymachines.c           |  4 ++--
+ src/nss-systemd/nss-systemd.c                 |  4 ++--
+ src/sysusers/sysusers.c                       |  2 +-
+ src/test/test-user-util.c                     |  4 ++--
+ test/TEST-21-SYSUSERS/test-1.expected-passwd  |  2 +-
+ test/TEST-21-SYSUSERS/test-10.expected-passwd |  4 ++--
+ test/TEST-21-SYSUSERS/test-11.expected-passwd |  2 +-
+ test/TEST-21-SYSUSERS/test-12.expected-passwd |  2 +-
+ test/TEST-21-SYSUSERS/test-2.expected-passwd  |  2 +-
+ test/TEST-21-SYSUSERS/test-3.expected-passwd  |  8 +++----
+ test/TEST-21-SYSUSERS/test-4.expected-passwd  |  4 ++--
+ test/TEST-21-SYSUSERS/test-5.expected-passwd  | 34 +++++++++++++--------------
+ test/TEST-21-SYSUSERS/test-6.expected-passwd  |  2 +-
+ test/TEST-21-SYSUSERS/test-7.expected-passwd  | 10 ++++----
+ test/TEST-21-SYSUSERS/test-8.expected-passwd  |  2 +-
+ test/TEST-21-SYSUSERS/test-9.expected-passwd  |  4 ++--
+ test/TEST-21-SYSUSERS/test.sh                 |  9 ++++++-
+ 22 files changed, 61 insertions(+), 52 deletions(-)
+
+diff --git a/man/nss-mymachines.xml b/man/nss-mymachines.xml
+index 5742d89..5100cd0 100644
+--- a/man/nss-mymachines.xml
++++ b/man/nss-mymachines.xml
+@@ -101,8 +101,8 @@ MACHINE CLASS     SERVICE        OS     VERSION ADDRESSES
+ rawhide container systemd-nspawn fedora 30      169.254.40.164 fe80::94aa:3aff:fe7b:d4b9
+ 
+ $ getent passwd vu-rawhide-0 vu-rawhide-81
+-vu-rawhide-0:*:20119552:65534:vu-rawhide-0:/:/sbin/nologin
+-vu-rawhide-81:*:20119633:65534:vu-rawhide-81:/:/sbin/nologin
++vu-rawhide-0:*:20119552:65534:vu-rawhide-0:/:/usr/sbin/nologin
++vu-rawhide-81:*:20119633:65534:vu-rawhide-81:/:/usr/sbin/nologin
+ 
+ $ getent group vg-rawhide-0 vg-rawhide-81
+ vg-rawhide-0:*:20119552:
+diff --git a/man/sysusers.d.xml b/man/sysusers.d.xml
+index e47d36c..b470532 100644
+--- a/man/sysusers.d.xml
++++ b/man/sysusers.d.xml
+@@ -207,12 +207,12 @@ u     root     0              "Superuser"           /root          /bin/zsh</pro
+       <title>Shell</title>
+ 
+       <para>The login shell of the user. If not specified, this will be set to
+-      <filename>/sbin/nologin</filename>, except if the UID of the user is 0, in
++      <filename>/usr/sbin/nologin</filename>, except if the UID of the user is 0, in
+       which case <filename>/bin/sh</filename> will be used.</para>
+ 
+       <para>Only applies to lines of type <varname>u</varname> and should otherwise
+       be left unset (or <literal>-</literal>). It is recommended to omit this, unless
+-      a shell different <filename>/sbin/nologin</filename> must be used.</para>
++      a shell different <filename>/usr/sbin/nologin</filename> must be used.</para>
+     </refsect2>
+   </refsect1>
+ 
+diff --git a/meson.build b/meson.build
+index d340736..3afe168 100644
+--- a/meson.build
++++ b/meson.build
+@@ -611,6 +611,7 @@ progs = [['quotaon',    '/usr/sbin/quotaon'    ],
+          ['umount',     '/usr/bin/umount',     'UMOUNT_PATH'],
+          ['loadkeys',   '/usr/bin/loadkeys',   'KBD_LOADKEYS'],
+          ['setfont',    '/usr/bin/setfont',    'KBD_SETFONT'],
++         ['nologin',    '/usr/sbin/nologin',   ],
+         ]
+ foreach prog : progs
+         path = get_option(prog[0] + '-path')
+diff --git a/meson_options.txt b/meson_options.txt
+index 044bb79..6304511 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -43,6 +43,7 @@ option('mount-path', type : 'string', description : 'path to mount')
+ option('umount-path', type : 'string', description : 'path to umount')
+ option('loadkeys-path', type : 'string', description : 'path to loadkeys')
+ option('setfont-path', type : 'string', description : 'path to setfont')
++option('nologin-path', type : 'string', description : 'path to nologin')
+ 
+ option('debug-shell', type : 'string', value : '/bin/sh',
+        description : 'path to debug shell binary')
+diff --git a/src/basic/user-util.c b/src/basic/user-util.c
+index 260f3d2..78656d9 100644
+--- a/src/basic/user-util.c
++++ b/src/basic/user-util.c
+@@ -146,7 +146,7 @@ static int synthesize_user_creds(
+                         *home = FLAGS_SET(flags, USER_CREDS_CLEAN) ? NULL : "/";
+ 
+                 if (shell)
+-                        *shell = FLAGS_SET(flags, USER_CREDS_CLEAN) ? NULL : "/sbin/nologin";
++                        *shell = FLAGS_SET(flags, USER_CREDS_CLEAN) ? NULL : NOLOGIN;
+ 
+                 return 0;
+         }
+@@ -522,7 +522,7 @@ int get_shell(char **_s) {
+         }
+         if (synthesize_nobody() &&
+             u == UID_NOBODY) {
+-                s = strdup("/sbin/nologin");
++                s = strdup(NOLOGIN);
+                 if (!s)
+                         return -ENOMEM;
+ 
+diff --git a/src/nss-mymachines/nss-mymachines.c b/src/nss-mymachines/nss-mymachines.c
+index 486a658..d576e69 100644
+--- a/src/nss-mymachines/nss-mymachines.c
++++ b/src/nss-mymachines/nss-mymachines.c
+@@ -501,7 +501,7 @@ enum nss_status _nss_mymachines_getpwnam_r(
+         pwd->pw_gecos = buffer;
+         pwd->pw_passwd = (char*) "*"; /* locked */
+         pwd->pw_dir = (char*) "/";
+-        pwd->pw_shell = (char*) "/sbin/nologin";
++        pwd->pw_shell = (char*) NOLOGIN;
+ 
+         return NSS_STATUS_SUCCESS;
+ 
+@@ -581,7 +581,7 @@ enum nss_status _nss_mymachines_getpwuid_r(
+         pwd->pw_gecos = buffer;
+         pwd->pw_passwd = (char*) "*"; /* locked */
+         pwd->pw_dir = (char*) "/";
+-        pwd->pw_shell = (char*) "/sbin/nologin";
++        pwd->pw_shell = (char*) NOLOGIN;
+ 
+         return NSS_STATUS_SUCCESS;
+ 
+diff --git a/src/nss-systemd/nss-systemd.c b/src/nss-systemd/nss-systemd.c
+index f8db27a..0ca0e8d 100644
+--- a/src/nss-systemd/nss-systemd.c
++++ b/src/nss-systemd/nss-systemd.c
+@@ -23,7 +23,7 @@
+ #define DYNAMIC_USER_GECOS       "Dynamic User"
+ #define DYNAMIC_USER_PASSWD      "*" /* locked */
+ #define DYNAMIC_USER_DIR         "/"
+-#define DYNAMIC_USER_SHELL       "/sbin/nologin"
++#define DYNAMIC_USER_SHELL       NOLOGIN
+ 
+ static const struct passwd root_passwd = {
+         .pw_name = (char*) "root",
+@@ -42,7 +42,7 @@ static const struct passwd nobody_passwd = {
+         .pw_gid = GID_NOBODY,
+         .pw_gecos = (char*) "User Nobody",
+         .pw_dir = (char*) "/",
+-        .pw_shell = (char*) "/sbin/nologin",
++        .pw_shell = (char*) NOLOGIN,
+ };
+ 
+ static const struct group root_group = {
+diff --git a/src/sysusers/sysusers.c b/src/sysusers/sysusers.c
+index df28bcf..91d46a7 100644
+--- a/src/sysusers/sysusers.c
++++ b/src/sysusers/sysusers.c
+@@ -361,7 +361,7 @@ static int rename_and_apply_smack(const char *temp_path, const char *dest_path)
+ }
+ 
+ static const char* default_shell(uid_t uid) {
+-        return uid == 0 ? "/bin/sh" : "/sbin/nologin";
++        return uid == 0 ? "/bin/sh" : NOLOGIN;
+ }
+ 
+ static int write_temporary_passwd(const char *passwd_path, FILE **tmpfile, char **tmpfile_path) {
+diff --git a/src/test/test-user-util.c b/src/test/test-user-util.c
+index 801824a..2e303ad 100644
+--- a/src/test/test-user-util.c
++++ b/src/test/test-user-util.c
+@@ -205,8 +205,8 @@ int main(int argc, char *argv[]) {
+ 
+         test_get_user_creds_one("root", "root", 0, 0, "/root", "/bin/sh");
+         test_get_user_creds_one("0", "root", 0, 0, "/root", "/bin/sh");
+-        test_get_user_creds_one(NOBODY_USER_NAME, NOBODY_USER_NAME, UID_NOBODY, GID_NOBODY, "/", "/sbin/nologin");
+-        test_get_user_creds_one("65534", NOBODY_USER_NAME, UID_NOBODY, GID_NOBODY, "/", "/sbin/nologin");
++        test_get_user_creds_one(NOBODY_USER_NAME, NOBODY_USER_NAME, UID_NOBODY, GID_NOBODY, "/", NOLOGIN);
++        test_get_user_creds_one("65534", NOBODY_USER_NAME, UID_NOBODY, GID_NOBODY, "/", NOLOGIN);
+ 
+         test_get_group_creds_one("root", "root", 0);
+         test_get_group_creds_one("0", "root", 0);
+diff --git a/test/TEST-21-SYSUSERS/test-1.expected-passwd b/test/TEST-21-SYSUSERS/test-1.expected-passwd
+index 8d0bfff..f59303b 100644
+--- a/test/TEST-21-SYSUSERS/test-1.expected-passwd
++++ b/test/TEST-21-SYSUSERS/test-1.expected-passwd
+@@ -1 +1 @@
+-u1:x:222:222::/:/sbin/nologin
++u1:x:222:222::/:NOLOGIN
+diff --git a/test/TEST-21-SYSUSERS/test-10.expected-passwd b/test/TEST-21-SYSUSERS/test-10.expected-passwd
+index 222334b..ca2d764 100644
+--- a/test/TEST-21-SYSUSERS/test-10.expected-passwd
++++ b/test/TEST-21-SYSUSERS/test-10.expected-passwd
+@@ -1,2 +1,2 @@
+-u1:x:300:300::/:/sbin/nologin
+-u2:x:SYSTEM_UID_MAX:SYSTEM_UID_MAX::/:/sbin/nologin
++u1:x:300:300::/:NOLOGIN
++u2:x:SYSTEM_UID_MAX:SYSTEM_UID_MAX::/:NOLOGIN
+diff --git a/test/TEST-21-SYSUSERS/test-11.expected-passwd b/test/TEST-21-SYSUSERS/test-11.expected-passwd
+index 3f9ab39..737e43b 100644
+--- a/test/TEST-21-SYSUSERS/test-11.expected-passwd
++++ b/test/TEST-21-SYSUSERS/test-11.expected-passwd
+@@ -2,5 +2,5 @@ root:x:0:0:root:/root:/bin/bash
+ systemd-network:x:492:492:Systemd Network Management:/:/usr/sbin/nologin
+ systemd-resolve:x:491:491:Systemd Resolver:/:/usr/sbin/nologin
+ systemd-timesync:x:493:493:Systemd Time Synchronization:/:/usr/sbin/nologin
+-u1:x:222:222::/:/sbin/nologin
++u1:x:222:222::/:NOLOGIN
+ +::::::
+diff --git a/test/TEST-21-SYSUSERS/test-12.expected-passwd b/test/TEST-21-SYSUSERS/test-12.expected-passwd
+index 75fe9b4..f076f3d 100644
+--- a/test/TEST-21-SYSUSERS/test-12.expected-passwd
++++ b/test/TEST-21-SYSUSERS/test-12.expected-passwd
+@@ -1,2 +1,2 @@
+ root:x:0:0:root:/root:/bin/bash
+-systemd-coredump:x:1:1:systemd Core Dumper:/:/sbin/nologin
++systemd-coredump:x:1:1:systemd Core Dumper:/:NOLOGIN
+diff --git a/test/TEST-21-SYSUSERS/test-2.expected-passwd b/test/TEST-21-SYSUSERS/test-2.expected-passwd
+index 9eeee5d..af80688 100644
+--- a/test/TEST-21-SYSUSERS/test-2.expected-passwd
++++ b/test/TEST-21-SYSUSERS/test-2.expected-passwd
+@@ -1,4 +1,4 @@
+-u1:x:SYSTEM_UID_MAX:SYSTEM_UID_MAX:some gecos:/random/dir:/sbin/nologin
++u1:x:SYSTEM_UID_MAX:SYSTEM_UID_MAX:some gecos:/random/dir:NOLOGIN
+ u2:x:777:777:some gecos:/random/dir:/bin/zsh
+ u3:x:778:778::/random/dir2:/bin/bash
+ u4:x:779:779::/:/bin/csh
+diff --git a/test/TEST-21-SYSUSERS/test-3.expected-passwd b/test/TEST-21-SYSUSERS/test-3.expected-passwd
+index a86954f..946303f 100644
+--- a/test/TEST-21-SYSUSERS/test-3.expected-passwd
++++ b/test/TEST-21-SYSUSERS/test-3.expected-passwd
+@@ -1,4 +1,4 @@
+-foo:x:301:301::/:/sbin/nologin
+-aaa:x:303:302::/:/sbin/nologin
+-bbb:x:304:302::/:/sbin/nologin
+-ccc:x:305:305::/:/sbin/nologin
++foo:x:301:301::/:NOLOGIN
++aaa:x:303:302::/:NOLOGIN
++bbb:x:304:302::/:NOLOGIN
++ccc:x:305:305::/:NOLOGIN
+diff --git a/test/TEST-21-SYSUSERS/test-4.expected-passwd b/test/TEST-21-SYSUSERS/test-4.expected-passwd
+index e0370a4..99d1048 100644
+--- a/test/TEST-21-SYSUSERS/test-4.expected-passwd
++++ b/test/TEST-21-SYSUSERS/test-4.expected-passwd
+@@ -1,2 +1,2 @@
+-yyy:x:311:310::/:/sbin/nologin
+-xxx:x:312:310::/:/sbin/nologin
++yyy:x:311:310::/:NOLOGIN
++xxx:x:312:310::/:NOLOGIN
+diff --git a/test/TEST-21-SYSUSERS/test-5.expected-passwd b/test/TEST-21-SYSUSERS/test-5.expected-passwd
+index 116b126..a83d566 100644
+--- a/test/TEST-21-SYSUSERS/test-5.expected-passwd
++++ b/test/TEST-21-SYSUSERS/test-5.expected-passwd
+@@ -1,18 +1,18 @@
+ root:x:0:0::/root:/bin/sh
+-daemon:x:1:1::/usr/sbin:/sbin/nologin
+-bin:x:2:2::/bin:/sbin/nologin
+-sys:x:3:3::/dev:/sbin/nologin
+-sync:x:4:65534::/bin:/sbin/nologin
+-games:x:5:60::/usr/games:/sbin/nologin
+-man:x:6:12::/var/cache/man:/sbin/nologin
+-lp:x:7:7::/var/spool/lpd:/sbin/nologin
+-mail:x:8:8::/var/mail:/sbin/nologin
+-news:x:9:9::/var/spool/news:/sbin/nologin
+-uucp:x:10:10::/var/spool/uucp:/sbin/nologin
+-proxy:x:13:13::/bin:/sbin/nologin
+-www-data:x:33:33::/var/www:/sbin/nologin
+-backup:x:34:34::/var/backups:/sbin/nologin
+-list:x:38:38::/var/list:/sbin/nologin
+-irc:x:39:39::/var/run/ircd:/sbin/nologin
+-gnats:x:41:41::/var/lib/gnats:/sbin/nologin
+-nobody:x:65534:65534::/nonexistent:/sbin/nologin
++daemon:x:1:1::/usr/sbin:NOLOGIN
++bin:x:2:2::/bin:NOLOGIN
++sys:x:3:3::/dev:NOLOGIN
++sync:x:4:65534::/bin:NOLOGIN
++games:x:5:60::/usr/games:NOLOGIN
++man:x:6:12::/var/cache/man:NOLOGIN
++lp:x:7:7::/var/spool/lpd:NOLOGIN
++mail:x:8:8::/var/mail:NOLOGIN
++news:x:9:9::/var/spool/news:NOLOGIN
++uucp:x:10:10::/var/spool/uucp:NOLOGIN
++proxy:x:13:13::/bin:NOLOGIN
++www-data:x:33:33::/var/www:NOLOGIN
++backup:x:34:34::/var/backups:NOLOGIN
++list:x:38:38::/var/list:NOLOGIN
++irc:x:39:39::/var/run/ircd:NOLOGIN
++gnats:x:41:41::/var/lib/gnats:NOLOGIN
++nobody:x:65534:65534::/nonexistent:NOLOGIN
+diff --git a/test/TEST-21-SYSUSERS/test-6.expected-passwd b/test/TEST-21-SYSUSERS/test-6.expected-passwd
+index 5af9d11..ba55a13 100644
+--- a/test/TEST-21-SYSUSERS/test-6.expected-passwd
++++ b/test/TEST-21-SYSUSERS/test-6.expected-passwd
+@@ -1 +1 @@
+-u1:x:SYSTEM_UID_MAX:SYSTEM_UID_MAX::/:/sbin/nologin
++u1:x:SYSTEM_UID_MAX:SYSTEM_UID_MAX::/:NOLOGIN
+diff --git a/test/TEST-21-SYSUSERS/test-7.expected-passwd b/test/TEST-21-SYSUSERS/test-7.expected-passwd
+index 79668c0..0c5d370 100644
+--- a/test/TEST-21-SYSUSERS/test-7.expected-passwd
++++ b/test/TEST-21-SYSUSERS/test-7.expected-passwd
+@@ -1,5 +1,5 @@
+-bin:x:1:1::/:/sbin/nologin
+-daemon:x:2:2::/:/sbin/nologin
+-mail:x:8:12::/var/spool/mail:/sbin/nologin
+-ftp:x:14:11::/srv/ftp:/sbin/nologin
+-http:x:33:33::/srv/http:/sbin/nologin
++bin:x:1:1::/:NOLOGIN
++daemon:x:2:2::/:NOLOGIN
++mail:x:8:12::/var/spool/mail:NOLOGIN
++ftp:x:14:11::/srv/ftp:NOLOGIN
++http:x:33:33::/srv/http:NOLOGIN
+diff --git a/test/TEST-21-SYSUSERS/test-8.expected-passwd b/test/TEST-21-SYSUSERS/test-8.expected-passwd
+index 727b819..23e99f0 100644
+--- a/test/TEST-21-SYSUSERS/test-8.expected-passwd
++++ b/test/TEST-21-SYSUSERS/test-8.expected-passwd
+@@ -1 +1 @@
+-username:x:SYSTEM_UID_MAX:300::/:/sbin/nologin
++username:x:SYSTEM_UID_MAX:300::/:NOLOGIN
+diff --git a/test/TEST-21-SYSUSERS/test-9.expected-passwd b/test/TEST-21-SYSUSERS/test-9.expected-passwd
+index a23260f..0bffbcd 100644
+--- a/test/TEST-21-SYSUSERS/test-9.expected-passwd
++++ b/test/TEST-21-SYSUSERS/test-9.expected-passwd
+@@ -1,2 +1,2 @@
+-user1:x:300:300::/:/sbin/nologin
+-user2:x:SYSTEM_UID_MAX:300::/:/sbin/nologin
++user1:x:300:300::/:NOLOGIN
++user2:x:SYSTEM_UID_MAX:300::/:NOLOGIN
+diff --git a/test/TEST-21-SYSUSERS/test.sh b/test/TEST-21-SYSUSERS/test.sh
+index b1049e7..809653c 100755
+--- a/test/TEST-21-SYSUSERS/test.sh
++++ b/test/TEST-21-SYSUSERS/test.sh
+@@ -25,7 +25,14 @@ preprocess() {
+     # get this value from config.h, however the autopkgtest fails with
+     # it
+     SYSTEM_UID_MAX=$(awk 'BEGIN { uid=999 } /^\s*SYS_UID_MAX\s+/ { uid=$2 } END { print uid }' /etc/login.defs)
+-    sed "s/SYSTEM_UID_MAX/${SYSTEM_UID_MAX}/g" "$in"
++
++    # we can't rely on config.h to get the nologin path, as autopkgtest
++    # uses pre-compiled binaries, so extract it from the systemd-sysusers
++    # binary which we are about to execute
++    NOLOGIN=$(strings $(type -p systemd-sysusers) | grep nologin)
++
++    sed -e "s/SYSTEM_UID_MAX/${SYSTEM_UID_MAX}/g" \
++        -e "s#NOLOGIN#${NOLOGIN}#g" "$in"
+ }
+ 
+ compare() {

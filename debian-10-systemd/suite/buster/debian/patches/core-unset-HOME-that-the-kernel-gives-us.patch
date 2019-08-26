@@ -1,0 +1,30 @@
+From: =?utf-8?q?Zbigniew_J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Tue, 21 May 2019 19:26:12 +0200
+Subject: core: unset HOME=/ that the kernel gives us
+
+Partially fixes #12389.
+
+%h would return "/" in a machine, but "/root" in a container. Let's fix
+this by resetting $HOME to the expected value.
+
+(cherry picked from commit 9d48671c62de133a2b9fe7c31e70c0ff8e68f2db)
+---
+ src/core/main.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/src/core/main.c b/src/core/main.c
+index 561f956..bc7fcc6 100644
+--- a/src/core/main.c
++++ b/src/core/main.c
+@@ -1503,6 +1503,11 @@ static int fixup_environment(void) {
+         if (setenv("TERM", t, 1) < 0)
+                 return -errno;
+ 
++        /* The kernels sets HOME=/ for init. Let's undo this. */
++        if (path_equal_ptr(getenv("HOME"), "/") &&
++            unsetenv("HOME") < 0)
++                log_warning_errno(errno, "Failed to unset $HOME: %m");
++
+         return 0;
+ }
+ 

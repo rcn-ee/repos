@@ -8,12 +8,12 @@ if [ -d /run/systemd/system ]; then
         executable="$__init_d_script_name"
         argument="$1"
     elif [ "${0##*/}" = "init-d-script" ] ||
-         [ "${0##*/}" = "${1##*/}" ]; then # scripts run with old  init-d-script
+         [ "${0##*/}" = "${1:-}" ]; then # scripts run with old init-d-script
         executable="$1"
         argument="$2"
     else # plain old scripts
         executable="$0"
-        argument="$1"
+        argument="${1:-}"
     fi
 
     prog=${executable##*/}
