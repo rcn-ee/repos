@@ -4,7 +4,7 @@ mirror="http://http.debian.net/debian"
 
 package_name="libiio"
 debian_pkg_name="${package_name}"
-package_version="0.18"
+package_version="0.16"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}-${package_version}"
 
@@ -18,5 +18,4 @@ debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 local_patch="rcnee0"
 
-stretch_version="~stretch+20190903"
-buster_version="~buster+20190903"
+stretch_version="~stretch+20190812"

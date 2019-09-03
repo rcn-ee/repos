@@ -5,6 +5,14 @@
 override_dh_auto_configure:
 	dh_auto_configure -- -DCMAKE_SKIP_INSTALL_RPATH=On
 
+override_dh_auto_build:
+	dh_auto_build
+	python3 build/bindings/python/setup.py build
+
+override_dh_auto_install:
+	dh_auto_install
+	python3 build/bindings/python/setup.py install --root=debian/tmp/ --prefix=/usr
+
 override_dh_compress:
 	dh_compress -X.c -X.C
 
