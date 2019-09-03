@@ -1,0 +1,26 @@
+From bb9831afa8a474fd78b5c42ceeac952bc7114457 Mon Sep 17 00:00:00 2001
+From: Paul Cercueil <paul@crapouillou.net>
+Date: Tue, 28 May 2019 19:37:08 +0200
+Subject: [PATCH 01/12] iiod: usbd: Fix wrong null pointer check
+
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ iiod/usbd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/iiod/usbd.c b/iiod/usbd.c
+index ea58c79..0efbfbf 100644
+--- a/iiod/usbd.c
++++ b/iiod/usbd.c
+@@ -96,7 +96,7 @@ static int usb_open_pipe(struct usbd_pdata *pdata, unsigned int pipe_id)
+ 		return -EINVAL;
+ 
+ 	cpdata = malloc(sizeof(*cpdata));
+-	if (!pdata)
++	if (!cpdata)
+ 		return -ENOMEM;
+ 
+ 	/* Either we open this pipe for the first time, or it was closed before.
+-- 
+2.20.1
+
