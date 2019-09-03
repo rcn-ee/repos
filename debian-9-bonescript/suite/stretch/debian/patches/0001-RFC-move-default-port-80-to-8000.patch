@@ -6,7 +6,6 @@ Subject: [PATCH] RFC: move default port 80 to 8000
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
 ---
  etc/avahi/services/bone101.service | 2 +-
- src/bonescript.js                  | 4 ++--
  src/server.js                      | 4 ++--
  systemd/bonescript.socket          | 2 +-
  test/TODO/remote_bonetest.js       | 2 +-
@@ -24,26 +23,6 @@ index 97655a5..6228dcd 100644
 +    <port>8000</port>
    </service>
  </service-group>
-diff --git a/src/bonescript.js b/src/bonescript.js
-index 38672ba..04ceb4c 100644
---- a/src/bonescript.js
-+++ b/src/bonescript.js
-@@ -41,7 +41,7 @@ _bonescript.on.initialized = function () {};
- function _onSocketIOLoaded(host, port, socketio, passphrase_hash) {
-     //console.log("socket.io loaded");
-     if (typeof host == 'undefined') host = '___INSERT_HOST___';
--    if (typeof port == 'undefined') port = 80;
-+    if (typeof port == 'undefined') port = 8000;
-     if (typeof socketio == 'undefined' && typeof io != 'undefined') socketio = io;
-     var socket;
-     if (typeof host == 'string')
-@@ -139,4 +139,4 @@ function myrequire(module) {
- 
- if (typeof module != 'undefined') {
-     module.exports.require = myrequire;
--}
-\ No newline at end of file
-+}
 diff --git a/src/server.js b/src/server.js
 index 04c7112..d590dc4 100644
 --- a/src/server.js
