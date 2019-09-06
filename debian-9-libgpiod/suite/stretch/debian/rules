@@ -36,15 +36,5 @@ override_dh_installdocs:
 
 override_dh_clean:
 	dh_clean
-	find -name "lt~obsolete.m4" | xargs rm -rf
-	find -name "ltversion.m4" | xargs rm -rf
-	find -name "ltsugar.m4" | xargs rm -rf
-	find -name "ltoptions.m4" | xargs rm -rf
-	find -name "libtool.m4" | xargs rm -rf
-	find -name "aclocal.m4" | xargs rm -rf
 	rm -rf confdefs.h
-	rm -rf autostuff
 	rm -rf doc/*
-
-override_dh_missing:
-	dh_missing --fail-missing
