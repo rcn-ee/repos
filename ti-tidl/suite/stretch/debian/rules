@@ -3,7 +3,17 @@
 
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
+export DEST_DIR=./build/
 
 %:
 	dh $@
+
+build: install-examples build-examples ;
+build-examples:
+	$(MAKE) build-examples
+install-examples:
+	$(MAKE) install-examples
+
+clean::
+	dh_clean
 
