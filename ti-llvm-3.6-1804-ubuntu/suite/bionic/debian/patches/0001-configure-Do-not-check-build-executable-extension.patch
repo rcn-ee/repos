@@ -1,0 +1,37 @@
+From 60da8adc29a84796c9768a1a962eda1915c87332 Mon Sep 17 00:00:00 2001
+From: Jake Stiffler <j-stiffler@ti.com>
+Date: Fri, 20 Feb 2015 10:55:11 -0500
+Subject: [PATCH] configure: Do not check build executable extension.
+
+ * This seems to cause issues nativesdk and build sdk
+   architectures are the same.
+
+Signed-off-by: Jake Stiffler <j-stiffler@ti.com>
+---
+ configure                 |    3 +++
+ 1 files changed, 3 insertions(+)
+
+diff --git a/configure b/configure
+index decbc40..387c4fd 100755
+--- a/configure
++++ b/configure
+@@ -4951,6 +4951,8 @@ echo "$as_me: error: no acceptable cc found in \$PATH" >&2;}
+   rm -f conftest*
+   echo 'int main () { return 0; }' > conftest.$ac_ext
+   ac_cv_build_exeext=
++
++if false; then
+   if { (eval echo "$as_me:$LINENO: \"$ac_build_link\"") >&5
+   (eval $ac_build_link) 2>&5
+   ac_status=$?
+@@ -4967,6 +4969,7 @@ echo "$as_me: error: no acceptable cc found in \$PATH" >&2;}
+ echo "$as_me: error: installation or configuration problem: compiler cannot create executables." >&2;}
+    { (exit 1); exit 1; }; }
+   fi
++fi
+   rm -f conftest*
+   test x"${ac_cv_build_exeext}" = x && ac_cv_build_exeext=blank
+ fi
+-- 
+1.7.9.5
+
