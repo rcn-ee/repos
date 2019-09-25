@@ -11,7 +11,7 @@ package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
 git_repo="git://git.ti.com/ipc/ipcdev.git"
-git_sha="d03495a8ff4b234eb5d1e390c012712e83a81ed4"
+git_sha="7007b8adff409fd8c90757c9adafd264a3ff15e3"
 reprepro_dir="t/${package_name}"
 dl_path=""
 
