@@ -24,4 +24,4 @@ debian_diff=""
 #sed -i -e 's:4.11.00.00:4.12.00.00:g' ./debian/control
 #sed -i -e 's:4.11.00.00:4.12.00.00:g' ./debian/cmem-mod-dkms.dkms
 
-stretch_version="~stretch+20190102"
+bionic_version="~bionic+20190102"
