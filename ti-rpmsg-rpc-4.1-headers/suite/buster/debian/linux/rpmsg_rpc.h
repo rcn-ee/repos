@@ -2,7 +2,7 @@
 /*
  * Remote Processor Procedure Call Driver
  *
- * Copyright (C) 2012-2018 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2012-2019 Texas Instruments Incorporated - http://www.ti.com/
  */
 
 #ifndef _LINUX_RPMSG_RPC_H_
