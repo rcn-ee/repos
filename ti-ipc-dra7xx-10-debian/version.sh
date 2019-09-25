@@ -6,17 +6,17 @@
 
 package_name="ti-ipc-dra7xx"
 debian_pkg_name="${package_name}"
-package_version="3.50.03.04"
+package_version="3.50.03.05"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
 git_repo="git://git.ti.com/ipc/ipcdev.git"
-git_sha="f68ca6cec06ecc6296228b148b175584aa0f2c8c"
+git_sha="d03495a8ff4b234eb5d1e390c012712e83a81ed4"
 reprepro_dir="t/${package_name}"
 dl_path=""
 
-debian_version="${package_version}-r0.2rcnee0"
+debian_version="${package_version}-rcnee0"
 debian_patch=""
 debian_diff=""
 
-buster_version="~buster+20190103"
+buster_version="~buster+20190925"
