@@ -19,5 +19,4 @@ debian_version="${package_version}-r0.2rcnee0"
 debian_patch=""
 debian_diff=""
 
-stretch_version="~stretch+20190103"
-bionic_version="~bionic+20190103"
+buster_version="~buster+20190103"
