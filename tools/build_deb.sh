@@ -87,7 +87,7 @@ start_run () {
 cleanup () {
 	suite="stretch" ; cleanup_suite
 	suite="buster" ; cleanup_suite
-	suite="bullseye" ; runner
+	suite="bullseye" ; cleanup_suite
 
 	suite="xenial" ; cleanup_suite
 	suite="bionic" ; cleanup_suite

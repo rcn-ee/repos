@@ -62,15 +62,5 @@ start_run () {
 	suite="bionic" ; runner
 }
 
-cleanup () {
-	suite="stretch" ; cleanup_suite
-	suite="buster" ; cleanup_suite
-	suite="bullseye" ; runner
-
-	suite="xenial" ; cleanup_suite
-	suite="bionic" ; cleanup_suite
-}
-
 start_run
-cleanup
 #
