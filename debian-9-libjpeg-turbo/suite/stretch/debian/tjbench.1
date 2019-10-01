@@ -1,0 +1,87 @@
+.TH TJBENCH "1" "July 2014" "tjbench " "User Commands"
+.SH NAME
+tjbench \- benchmark the performance of libjpeg-turbo
+.SH USAGE
+tjbench <Inputfile (BMP|PPM)> <Quality> [options]
+.PP
+tjbench <Inputfile (JPG)> [options]
+.SH OPTIONS
+\fB\-alloc\fR
+.IP
+Dynamically allocate JPEG image buffers
+.PP
+\fB\-bmp\fR
+.IP
+Generate output images in Windows Bitmap format (default=PPM)
+.PP
+\fB\-bottomup\fR
+.IP
+Test bottom\-up compression/decompression
+.PP
+\fB\-tile\fR
+.IP
+Test performance of the codec when the image is encoded as separate tiles of varying sizes.
+.PP
+\fB\-forcemmx\fR, \fB\-forcesse\fR, \fB\-forcesse2\fR, \fB\-forcesse3\fR
+.IP
+Force MMX, SSE, SSE2, or SSE3 code paths in the underlying codec
+.PP
+\fB\-rgb\fR, \fB\-bgr\fR, \fB\-rgbx\fR, \fB\-bgrx\fR, \fB\-xbgr\fR, \fB\-xrgb\fR
+.IP
+Test the specified color conversion path in the codec (default: BGR)
+.PP
+\fB\-fastupsample\fR
+.IP
+Use the fastest chrominance upsampling algorithm available in the
+underlying codec
+.PP
+\fB\-fastdct\fR
+.IP
+Use the fastest DCT/IDCT algorithms available in the underlying codec
+.PP
+\fB\-accuratedct\fR
+.IP
+ Use the most accurate DCT/IDCT algorithms available in the underlying
+codec
+.PP
+\fB\-subsamp\fR <s>
+.IP
+When testing JPEG compression, this option specifies the level of
+chrominance subsampling to use (<s> = 444, 422, 440, 420, or GRAY).
+The default is to test Grayscale, 4:2:0, 4:2:2, and 4:4:4 in sequence.
+.PP
+\fB\-quiet\fR
+.IP
+Output results in tabular rather than verbose format
+.PP
+\fB\-yuvencode\fR
+.IP
+Encode RGB input as planar YUV rather than compressing as JPEG
+.PP
+\fB\-yuvdecode\fR
+.IP
+Decode JPEG image to planar YUV rather than RGB
+.PP
+\fB\-scale\fR M/N
+.IP
+scale down the width/height of the decompressed JPEG image by a factor
+of M/N (M/N = 2/1, 15/8, 7/4, 13/8, 3/2, 11/8, 5/4, 9/8, 1/1, 7/8,
+3/4, 5/8, 1/2, 3/8, 1/4, or 1/8)
+.PP
+\fB\-hflip\fR, \fB\-vflip\fR, \fB\-transpose\fR, \fB\-transverse\fR, \fB\-rot90\fR, \fB\-rot180\fR, \fB\-rot270\fR
+.IP
+Perform the corresponding lossless transform prior to
+decompression (these options are mutually exclusive)
+.PP
+\fB\-grayscale\fR
+.IP
+Perform lossless grayscale conversion prior to decompression test (can
+be combined with the other transforms above)
+.PP
+\fB\-benchtime\fR <t>
+.IP
+Run each benchmark for at least <t> seconds (default = 5.0) 
+.IP
+NOTE: If the quality is specified as a range (e.g. 90\-100), a
+separate test will be performed for all quality values in the range.
+.PP
