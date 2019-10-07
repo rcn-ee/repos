@@ -1,0 +1,56 @@
+From c03e3fe88a9761f34b22d2b4d4654353783e2d4f Mon Sep 17 00:00:00 2001
+From: Ondrej Kozina <okozina@redhat.com>
+Date: Tue, 26 Feb 2019 11:49:58 +0100
+Subject: Fix getting default LUKS2 keyslot encryption parameters.
+
+When information about original keyslot size is missing (no active
+keyslot assigned to default segment) we have to fallback to
+default luks2 encryption parameters even though we know default
+segment cipher and mode.
+
+Fixes: #442.
+---
+ lib/setup.c        |    3 ++-
+ tests/api-test-2.c |   19 +++++++++++++++++++
+ 2 files changed, 21 insertions(+), 1 deletion(-)
+
+--- a/lib/setup.c
++++ b/lib/setup.c
+@@ -4632,7 +4632,8 @@ const char *crypt_keyslot_get_encryption
+ 	cipher =  LUKS2_get_cipher(&cd->u.luks2.hdr, CRYPT_DEFAULT_SEGMENT);
+ 	if (!LUKS2_keyslot_cipher_incompatible(cd, cipher)) {
+ 		*key_size = crypt_get_volume_key_size(cd);
+-		return cipher;
++		if (*key_size)
++			return cipher;
+ 	}
+ 
+ 	/* Fallback to default LUKS2 keyslot encryption */
+--- a/tests/api-test-2.c
++++ b/tests/api-test-2.c
+@@ -914,6 +914,25 @@ static void AddDeviceLuks2(void)
+ 	FAIL_(crypt_activate_by_volume_key(cd, CDEVICE_1, key3, key_size, 0), "VK doesn't match any digest assigned to segment 0");
+ 	crypt_free(cd);
+ 
++	/*
++	 * Check regression in getting keyslot encryption parameters when
++	 * volume key size is unknown (no active keyslots).
++	 */
++	if (!_fips_mode) {
++		OK_(crypt_init(&cd, DMDIR L_DEVICE_1S));
++		crypt_set_iteration_time(cd, 1);
++		OK_(crypt_format(cd, CRYPT_LUKS2, cipher, cipher_mode, NULL, key, key_size, NULL));
++		EQ_(crypt_keyslot_add_by_volume_key(cd, 0, NULL, key_size, PASSPHRASE, strlen(PASSPHRASE)), 0);
++		/* drop context copy of volume key */
++		crypt_free(cd);
++		OK_(crypt_init(&cd, DMDIR L_DEVICE_1S));
++		OK_(crypt_load(cd, CRYPT_LUKS, NULL));
++		EQ_(crypt_volume_key_get(cd, CRYPT_ANY_SLOT, key, &key_size, PASSPHRASE, strlen(PASSPHRASE)), 0);
++		OK_(crypt_keyslot_destroy(cd, 0));
++		EQ_(crypt_keyslot_add_by_volume_key(cd, 0, key, key_size, PASSPHRASE, strlen(PASSPHRASE)), 0);
++		crypt_free(cd);
++	}
++
+ 	_cleanup_dmdevices();
+ }
+ 

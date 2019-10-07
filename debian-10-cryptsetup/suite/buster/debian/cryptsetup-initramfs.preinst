@@ -1,0 +1,20 @@
+#!/bin/sh
+
+set -e
+
+CONFFILE=/etc/cryptsetup-initramfs/conf-hook
+CONF_HOOK_CONTENTS=@@CONF_HOOK_CONTENTS@@
+
+if [ "$1" = "install" -o "$1" = "upgrade" ] &&
+    [ -f "$CONFFILE" ] &&
+    dpkg --compare-versions -- "${2-}" le '2:2.0.3-1~'; then
+    md5sum="$(md5sum "$CONFFILE" | sed -e 's/ .*//')"
+    old_md5sum="$(dpkg-query -W -f='${Conffiles}' cryptsetup | \
+        sed -n -e "\'^ $CONFFILE ' { s/ obsolete$//; s/.* //; p }")"
+    if [ "$md5sum" = "$old_md5sum" ]; then
+        printf '%s\n' "$CONF_HOOK_CONTENTS" >"$CONFFILE.dpkg-new"
+        mv -f "$CONFFILE.dpkg-new" "$CONFFILE"
+    fi
+fi
+
+#DEBHELPER#

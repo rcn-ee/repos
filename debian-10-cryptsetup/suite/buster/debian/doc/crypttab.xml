@@ -1,0 +1,717 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" "/usr/share/xml/docbook/schema/dtd/4.2/docbookx.dtd">
+
+<refentry id="file.crypttab">
+
+ <xi:include href="variables.xml"
+             xpointer="xpointer(/refentry/refentryinfo)"
+             xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+ <refmeta>
+  <refentrytitle>crypttab</refentrytitle>
+  <manvolnum>5</manvolnum>
+  <xi:include href="variables.xml"
+              xpointer="xpointer(/refentry/refmeta/*)"
+              xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ </refmeta>
+
+ <refnamediv>
+  <refname>crypttab</refname>
+  <refpurpose>static information about encrypted filesystems</refpurpose>
+ </refnamediv>
+
+ <refsect1 id="crypttab.description">
+  <title>DESCRIPTION</title>
+  <simpara>
+   The file <filename>/etc/crypttab</filename> contains descriptive
+   information about encrypted filesystems. <filename>crypttab</filename>
+   is only read by programs (e.g.
+   <command moreinfo="refentry">cryptdisks_start</command> and
+   <command moreinfo="refentry">cryptdisks_stop</command>),
+   and not written; it is the duty of the system
+   administrator to properly create and maintain this file. Each filesystem is
+   described on a separate line; fields on each line are separated by tabs or
+   spaces. Lines starting with <quote>#</quote> are comments, empty lines are
+   ignored. The order of records in <filename>crypttab</filename> is important
+   because the init scripts sequentially iterate through
+   <filename>crypttab</filename> doing their thing.
+  </simpara>
+  <simpara>
+   The first field, <emphasis>target</emphasis>, describes the mapped
+   device name. It must be a plain filename without any directory components.
+   A mapped device which encrypts/decrypts data to/from the <emphasis>source
+   device</emphasis> will be created at
+   <filename class="devicefile">/dev/mapper/target</filename> by
+   <command moreinfo="refentry">cryptsetup</command>.
+  </simpara>
+  <simpara>
+   The second field, <emphasis>source device</emphasis>, describes either the
+   block special device or file that contains the encrypted data. Instead of
+   giving the <emphasis>source device</emphasis> explicitly, the UUID
+   (resp. LABEL, PARTUUID and PARTLABEL) is supported as well, using <quote>UUID=&lt;uuid&gt;</quote>
+   (resp. <quote>LABEL=&lt;label&gt;</quote>, <quote>PARTUUID=&lt;partuuid&gt;</quote>
+   and <quote>PARTLABEL=&lt;partlabel&gt;</quote>).
+  </simpara>
+  <simpara>
+   The third field, <emphasis>key file</emphasis>, describes the file to use
+   as a key for decrypting the data of the <emphasis>source device</emphasis>.
+   In case of a <emphasis>keyscript</emphasis>, the value of this field is
+   given as argument to the keyscript. Values with spaces and special
+   characters need to be escaped using octal sequences, like for
+   <citerefentry><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>.
+   Note that the <emphasis>entire</emphasis> key file will be used as the
+   passphrase; the passphrase must <emphasis>not</emphasis> be followed by a
+   newline character.
+  </simpara>
+  <simpara>
+   It can also be a device name (e.g.
+   <filename class="devicefile">/dev/urandom</filename>), note however that
+   LUKS requires a persistent key and therefore does <emphasis>not</emphasis>
+   support random data keys.
+  </simpara>
+  <simpara>
+   If the <emphasis>key file</emphasis> is the string
+   <emphasis>none</emphasis>, a passphrase will be read interactively from the
+   console. In this case, the options check, checkargs and tries may be
+   useful.
+  </simpara>
+  <simpara>
+   The fourth field, <emphasis>options</emphasis>, describes the cryptsetup
+   options associated with the encryption process. At minimum, the field should
+   contain either the string <emphasis>luks</emphasis> respectively
+   <emphasis>tcrypt</emphasis> or the <emphasis>cipher</emphasis>,
+   <emphasis>hash</emphasis> and <emphasis>size</emphasis> options.
+   Some options can be changed on active devices using
+   <command>cryptsetup refresh [&lt;options&gt;] &lt;name&gt;</command>.
+   Moreover some options can be permanently written to the metada of LUKS2
+   headers using the <command>--persistent</command> option flag.
+  </simpara>
+  <simpara>
+   Options are in the format: <emphasis>key</emphasis>=<emphasis>value</emphasis>
+   [,<emphasis>key</emphasis>=<emphasis>value</emphasis> &#8230;]. The
+   supported options are described below.
+  </simpara>
+  <simpara>
+   Note that all four fields are mandatory and that a missing field will lead
+   to unspecified behaviour.
+  </simpara>
+ </refsect1>
+
+ <refsect1 id="crypttab.implementations">
+  <title>ON DIFFERENT CRYPTTAB FORMATS</title>
+  <simpara>
+   Please note that there are several independent cryptsetup wrappers with
+   their own <emphasis>crypttab</emphasis> format. This manpage covers
+   Debian's implementation for <emphasis>initramfs</emphasis> scripts and
+   <emphasis>SysVinit</emphasis> init scripts. <emphasis>systemd</emphasis>
+   brings its own <emphasis>crypttab</emphasis> implementation.
+   We try to cover the differences between the <emphasis>systemd</emphasis> and
+   our implementation in this manpage, but if in doubt, better check the
+   <emphasis>systemd</emphasis>
+   <citerefentry><refentrytitle>crypttab</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+   manpage, e.g. online at
+   <ulink url="https://www.freedesktop.org/software/systemd/man/crypttab.html"/>.
+  </simpara>
+ </refsect1>
+
+ <refsect1 id="crypttab.options">
+  <title>OPTIONS</title>
+  <variablelist>
+
+   <varlistentry>
+    <term><emphasis>cipher</emphasis>=&lt;cipher&gt;</term>
+    <listitem>
+     <simpara>
+      Encryption algorithm (ignored for LUKS and TCRYPT devices). See
+      <command>cryptsetup -c</command>.
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>size</emphasis>=&lt;size&gt;</term>
+    <listitem>
+     <simpara>
+      Encryption key size (ignored for LUKS and TCRYPT devices). See
+      <command>cryptsetup -s</command>.
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>sector-size</emphasis>=&lt;bytes&gt;</term>
+    <listitem>
+     <simpara>
+      Sector size. See
+      <citerefentry><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+      for possible values and the default value of this option.
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>hash</emphasis>=&lt;hash&gt;</term>
+    <listitem>
+     <simpara>
+      Hash algorithm (ignored for LUKS and TCRYPT devices). See
+      <command>cryptsetup -h</command>.
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>offset</emphasis>=&lt;offset&gt;</term>
+    <listitem>
+     <simpara>
+      Start offset (ignored for LUKS and TCRYPT devices). Uses
+      <emphasis role="strong">cryptsetup -o</emphasis>.
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>skip</emphasis>=&lt;skip&gt;</term>
+    <listitem>
+     <simpara>
+      Skip sectors at the beginning (ignored for LUKS and TCRYPT devices).
+      Uses <emphasis role="strong">cryptsetup -p</emphasis>.
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>keyfile-offset</emphasis>=&lt;keyfile-offset&gt;</term>
+    <listitem>
+     <simpara>
+      Specifies the number of bytes to skip at the start of the key file.
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>keyfile-size</emphasis>=&lt;keyfile-size&gt;</term>
+    <listitem>
+     <simpara>
+      Specifies the maximum number of bytes to read from the key file.
+      The default is to read the whole file up to the compiled-in maximum,
+      that can be queried with <emphasis role="strong">cryptsetup --help</emphasis>.
+      This option is ignored for plain dm-crypt devices, as the key file
+      size is then given by the encryption key size (option
+      <emphasis>size</emphasis>).
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>keyslot</emphasis>=&lt;slot&gt;, <emphasis>key-slot</emphasis>=&lt;slot&gt;</term>
+    <listitem>
+     <simpara>
+      Key slot (ignored for non-LUKS devices). See <command>cryptsetup
+      -S</command>.
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>header</emphasis>=&lt;path&gt;</term>
+    <listitem>
+     <simpara>
+      Detached header file (ignored for plain dm-crypt devices). See
+      <command>cryptsetup --header</command>.
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>verify</emphasis></term>
+    <listitem>
+     <simpara>
+      Verify password. Uses <emphasis role="strong">cryptsetup -y</emphasis>.
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>readonly</emphasis>, <emphasis>read-only</emphasis></term>
+    <listitem>
+     <simpara>Set up a read-only mapping.</simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>tries</emphasis>=&lt;num&gt;</term>
+    <listitem>
+     <simpara>Try to unlock the device &lt;num&gt; before failing. It's
+      particularly useful when using a passphrase or a
+      <emphasis>keyscript</emphasis> that asks for interactive input. If you
+      want to disable retries, pass <quote>tries=1</quote>. Default is
+      <quote>3</quote>. Setting <quote>tries=0</quote> means infinitive
+      retries.
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>discard</emphasis></term>
+    <listitem>
+     <simpara>Allow using of discards (TRIM) requests for device.</simpara>
+     <simpara>Starting with Debian 10 (Buster), this option is added per
+      default to new dm-crypt devices by the Debian Installer. If you
+      don't care about leaking access patterns (filesystem type, used
+      space) and don't have hidden truecrypt volumes inside this volume,
+      then it should be safe to enable this option. See the following
+      warning for further information.</simpara>
+     <simpara><emphasis role="strong">WARNING</emphasis>: Assess the
+      specific security risks carefully before enabling this option.
+      For example, allowing discards on encrypted devices may lead to
+      the leak of information about the ciphertext device (filesystem
+      type, used space etc.) if the discarded blocks can be located
+      easily on the device later.</simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>luks</emphasis></term>
+    <listitem>
+     <simpara>Force LUKS mode. When this mode is used, the following options
+      are ignored since they are provided by the LUKS header on the device:
+      <emphasis>cipher=</emphasis>, <emphasis>hash=</emphasis>,
+     <emphasis>size=</emphasis></simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>plain</emphasis></term>
+    <listitem>
+     <simpara>Force plain encryption mode.</simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>tcrypt</emphasis></term>
+    <listitem>
+     <simpara>Use TrueCrypt encryption mode. When this mode is used, the
+      following options are ignored since they are provided by the TrueCrypt
+      header on the device or do not apply: <emphasis>cipher=</emphasis>,
+      <emphasis>hash=</emphasis>, <emphasis>keyfile-offset=</emphasis>,
+      <emphasis>keyfile-size=</emphasis>, <emphasis>size=</emphasis></simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+       <term><emphasis>veracrypt</emphasis>, <emphasis>tcrypt-veracrypt</emphasis></term>
+    <listitem>
+     <simpara>
+      Use VeraCrypt extension to TrueCrypt device. Only useful in
+      conjunction with <emphasis>tcrypt</emphasis> option (ignored for
+      non-TrueCrypt devices).
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+       <term><emphasis>tcrypthidden</emphasis>, <emphasis>tcrypt-hidden</emphasis></term>
+    <listitem>
+     <simpara>
+       Use hidden TCRYPT header (ignored for non-TCRYPT devices).
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>swap</emphasis></term>
+    <listitem>
+     <simpara>
+      Run <command moreinfo="refentry">mkswap</command> on the created device.
+     </simpara>
+     <simpara>
+      This option is ignored for <emphasis>initramfs</emphasis> devices.
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>tmp</emphasis>=&lt;tmpfs&gt;</term>
+    <listitem>
+     <simpara>
+      Run <command moreinfo="refentry">mkfs</command> with filesystem type
+      &lt;tmpfs&gt; on the created device. Default is ext4.
+     </simpara>
+     <simpara>
+      This option is ignored for <emphasis>initramfs</emphasis> devices.
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>check</emphasis>=&lt;check&gt;</term>
+    <listitem>
+     <simpara>Check the content of the target device by a suitable program; if
+      the check fails, the device is removed. If a program is provided as an
+      argument, it is run, giving the decrypted volume (target device) as
+      first argument, and the value of the checkargs option as second argument.
+      Cryptdisks/cryptroot searches for the given program in
+      <filename class="directory">/lib/cryptsetup/checks/</filename> first, but
+      full path to program is supported as well.
+     </simpara>
+     <simpara>
+      Default is set in <filename>/etc/default/cryptdisks</filename>
+      (<filename>blkid</filename>).
+     </simpara>
+     <simpara>
+      This option is specific to the Debian <emphasis>crypttab</emphasis>
+      format. It's not supported by <emphasis>systemd</emphasis>.
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>checkargs</emphasis>=&lt;arguments&gt;</term>
+    <listitem>
+     <simpara>Give &lt;arguments&gt; as the second argument to the check
+      script. See the CHECKSCRIPTS section for more information.
+     </simpara>
+    </listitem>
+     <simpara>
+      This option is specific to the Debian <emphasis>crypttab</emphasis>
+      format. It's not supported by <emphasis>systemd</emphasis>.
+     </simpara>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>initramfs</emphasis></term>
+    <listitem>
+     <simpara>The initramfs hook processes the root device, any resume devices
+      and any devices with the <emphasis>initramfs</emphasis> option set. These
+      devices are processed within the initramfs stage of boot. As an example,
+      that allows the use of remote unlocking using dropbear.
+     </simpara>
+     <simpara>
+      This option is specific to the Debian <emphasis>crypttab</emphasis>
+      format. It's not supported by <emphasis>systemd</emphasis>.
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>noearly</emphasis></term>
+    <listitem>
+     <simpara>The cryptsetup init scripts are invoked twice during the boot
+      process - once before lvm, raid, etc. are started and once again after
+      that. Sometimes you need to start your encrypted disks in a special
+      order. With this option the device is ignored during the first invocation
+      of the cryptsetup init scripts.
+     </simpara>
+     <simpara>
+      This option is ignored for <emphasis>initramfs</emphasis> devices and
+      specific to the Debian <emphasis>crypttab</emphasis> format. It's not
+      supported by <emphasis>systemd</emphasis>.
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>noauto</emphasis></term>
+    <listitem>
+     <simpara>Entirely ignore the device at the boot process. It's still
+      possible to map the device manually using cryptdisks_start.
+     </simpara>
+     <simpara>
+      This option is ignored for <emphasis>initramfs</emphasis> devices and
+      specific to the Debian <emphasis>crypttab</emphasis> format. It's not
+      supported by <emphasis>systemd</emphasis>.
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>loud</emphasis></term>
+    <listitem>
+     <simpara>Be loud. Print warnings if a device does not exist.
+     This option overwrites the option <emphasis>loud</emphasis>.</simpara>
+     <simpara>
+      This option is ignored for <emphasis>initramfs</emphasis> devices and
+      specific to the Debian <emphasis>crypttab</emphasis> format. It's not
+      supported by <emphasis>systemd</emphasis>.
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>quiet</emphasis></term>
+    <listitem>
+     <simpara>Be quiet. Don't print warnings if a device does not exist.
+     This option overwrites the option <emphasis>loud</emphasis>.</simpara>
+     <simpara>
+      This option is ignored for <emphasis>initramfs</emphasis> devices and
+      specific to the Debian <emphasis>crypttab</emphasis> format. It's not
+      supported by <emphasis>systemd</emphasis>.
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>keyscript</emphasis>=&lt;path&gt;</term>
+    <listitem>
+     <simpara>
+      The executable at the indicated path is executed with the value of the
+      <emphasis>third field</emphasis> as only argument. The keyscript output
+      is passed to cryptsetup as decyption key.
+      When used in initramfs, the executable either needs to be self-contained
+      (i.e. does'nt rely on any external program which is not present in the
+      initramfs environment) or the dependencies have to added to the initramfs
+      image by other means.
+     </simpara>
+     <simpara>
+      LIMITATIONS: All binaries and files on which the keyscript depends must
+      be available at the time of execution. Special care needs to be taken for
+      encrypted filesystems like /usr or /var. As an example, unlocking
+      encrypted /usr must not depend on binaries from /usr/(s)bin.
+     </simpara>
+     <simpara>
+      This option is specific to the Debian <emphasis>crypttab</emphasis>
+      format. It's not supported by <emphasis>systemd</emphasis>.
+     </simpara>
+     <simpara>
+      WARNING: With systemd as init system, this option might be ignored. At
+      the time this is written (December 2016), the systemd cryptsetup helper
+      doesn't support the keyscript option to /etc/crypttab. For the time
+      being, the only option to use keyscripts along with systemd is to force
+      processing of the corresponding crypto devices in the initramfs. See the
+      'initramfs' option for further information.
+     </simpara>
+     <para>
+      All fields of the appropriate crypttab entry are available to the
+      keyscript as exported environment variables:
+      <variablelist>
+
+       <varlistentry>
+        <term>CRYPTTAB_NAME</term>
+        <listitem><para>
+         The target name
+        </para></listitem>
+       </varlistentry>
+       <varlistentry>
+        <term>CRYPTTAB_SOURCE</term>
+        <listitem><para>
+         The source device
+        </para></listitem>
+       </varlistentry>
+       <varlistentry>
+        <term>CRYPTTAB_KEY</term>
+        <listitem><para>
+         The key file
+        </para></listitem>
+       </varlistentry>
+       <varlistentry>
+        <term>CRYPTTAB_OPTIONS</term>
+        <listitem><para>
+         A list of exported crypttab options
+        </para></listitem>
+       </varlistentry>
+       <varlistentry>
+        <term>CRYPTTAB_OPTION_&lt;option&gt;</term>
+        <listitem><para>
+         The value of the appropriate crypttab option, with value set to 'yes'
+         in case the option is merely a flag.
+         For option aliases, such as 'readonly' and 'read-only', the
+         variable name refers to the first alternative listed (thus
+         'CRYPTTAB_OPTION_readonly' in that case).
+         If the crypttab option name contains '-' characters, then they
+         are replaced with '_' in the exported variable name.  For
+         instance, the value of the 'CRYPTTAB_OPTION_keyfile_offset'
+         environment variable is set to the value of the
+         'keyfile-offset' crypttab option.
+        </para></listitem>
+       </varlistentry>
+       <varlistentry>
+        <term>CRYPTTAB_TRIED</term>
+        <listitem><para>
+         Number of previous tries since start of cryptdisks (counts until
+         maximum number of tries is reached).
+        </para></listitem>
+       </varlistentry>
+
+      </variablelist>
+     </para>
+    </listitem>
+   </varlistentry>
+
+  </variablelist>
+ </refsect1>
+
+ <refsect1 id="crypttab.checkscripts">
+  <title>CHECKSCRIPTS</title>
+  <variablelist>
+
+   <varlistentry>
+    <term><emphasis>blkid</emphasis></term>
+    <listitem>
+     <simpara>Checks for any known filesystem. Supports a filesystem type as
+      argument via &lt;checkargs&gt;:
+     </simpara>
+     <itemizedlist>
+      <listitem><para>
+       no checkargs - succeeds if any valid filesystem is found on the device.
+      </para></listitem>
+      <listitem><para>
+       "none" - succeeds if no valid filesystem is found on the device.
+      </para></listitem>
+      <listitem><para>
+       "ext4" [or another filesystem type like xfs, swap, crypto_LUKS, ...] -
+       succeeds if ext4 filesystem is found on the device.
+      </para></listitem>
+     </itemizedlist>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>un_blkid</emphasis></term>
+    <listitem>
+     <simpara>Checks for no known filesystem. Supports a filesystem type as
+      argument via &lt;checkargs&gt;:
+     </simpara>
+     <itemizedlist>
+      <listitem><para>
+       no checkargs - succeeds if no valid filesystem is found on the device.
+      </para></listitem>
+      <listitem><para>
+       "ext4" [or another filesystem type like xfs, swap, crypto_LUKS, ...] -
+       succeeds if no ext4 filesystem is found on the device.
+      </para></listitem>
+     </itemizedlist>
+    </listitem>
+   </varlistentry>
+
+  </variablelist>
+ </refsect1>
+
+ <refsect1 id="crypttab.examples">
+  <title>EXAMPLES</title>
+  <para>
+   <screen>
+# Encrypted swap device
+cswap /dev/sda6 /dev/urandom cipher=aes-xts-plain64,size=256,hash=sha1,swap
+
+# Encrypted LUKS disk with interactive password, identified by its UUID, discard enabled
+cdisk0 UUID=12345678-9abc-def012345-6789abcdef01 none luks,discard
+
+# Encrypted TCRYPT disk with interactive password, discard enabled
+tdisk0 /dev/sr0 none tcrypt,discard
+
+# Encrypted ext4 disk with interactive password, discard enabled
+# - retry 5 times if the check fails
+cdisk1 /dev/sda2 none discard,cipher=aes-xts-plain64,size=256,hash=sha1,checkargs=ext4,tries=5
+
+# Encrypted disk with interactive password, discard enabled
+# - use a nondefault check script
+# - no retries
+cdisk2 /dev/sdc1 none discard,cipher=aes-xts-plain64,size=256,hash=sha1,check=customscript,tries=1
+
+# Encrypted disk with interactive password, discard enabled
+# - Twofish as the cipher, RIPEMD-160 as the hash
+cdisk3 /dev/sda3 none dscard,cipher=twofish,size=256,hash=ripemd160
+   </screen>
+  </para>
+ </refsect1>
+
+ <refsect1 id="crypttab.environment">
+  <title>ENVIRONMENT</title>
+  <variablelist>
+
+   <varlistentry>
+    <term><emphasis>CRYPTDISKS_ENABLE</emphasis></term>
+    <listitem>
+     <simpara>
+      Set to <emphasis>yes</emphasis> to run cryptdisks initscripts at startup.
+      Set to <emphasis>no</emphasis> to disable cryptdisks initscripts. Default
+      is <emphasis>yes</emphasis>.
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>CRYPTDISKS_MOUNT</emphasis></term>
+    <listitem>
+     <simpara>Specifies the mountpoints that are mounted before cryptdisks is
+      invoked. Takes mountpoints configured in /etc/fstab as arguments. Separate
+      mountpoints by space.
+      This is useful for keys on removable devices, such as cdrom, usbstick,
+      flashcard, etc. Default is unset.
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+   <varlistentry>
+    <term><emphasis>CRYPTDISKS_CHECK</emphasis></term>
+    <listitem>
+     <simpara>Specifies the default checkscript to be run against the target
+      device, after cryptdisks has been invoked. The target device is passed as
+      the first and only argument to the checkscript. Takes effect if the
+      <emphasis>check</emphasis> option is given in crypttab with no value. See
+      documentation for <emphasis>check</emphasis> option above for more
+      information.
+     </simpara>
+    </listitem>
+   </varlistentry>
+
+  </variablelist>
+ </refsect1>
+
+ <refsect1 id="crypttab.known_upgrade_issues">
+  <title>KNOWN UPGRADE ISSUES</title>
+  <simpara>
+   The upstream defaults for encryption cipher, hash and keysize have changed
+   several times in the past, and they're expected to change again in future,
+   for example if security issues arise.
+
+   On LUKS devices, the used settings are stored in the LUKS header, and thus
+   don't need to be configured in <filename>/etc/crypttab</filename>. For plain
+   dm-crypt devices, no information about used cipher, hash and keysize are
+   available at all.
+
+   Therefore we strongly suggest to configure the cipher, hash and keysize in
+   <filename>/etc/crypttab</filename> for plain dm-crypt devices, even if they
+   match the current default.
+  </simpara>
+ </refsect1>
+
+ <refsect1 id="crypttab.see_also">
+  <title>SEE ALSO</title>
+  <simplelist type="inline">
+   <member><command moreinfo="refentry">cryptsetup</command>(8)</member>
+   <member><command moreinfo="refentry">cryptdisks_start</command>(8)</member>
+   <member><command moreinfo="refentry">cryptdisks_stop</command>(8)</member>
+  </simplelist>
+ </refsect1>
+
+ <refsect1 id="crypttab.author">
+  <title>AUTHOR</title>
+  <simpara>
+   This manual page was originally written by
+   <author>
+    <firstname>Bastian</firstname>
+    <surname>Kleineidam</surname>
+   </author>
+   <email>calvin@debian.org</email>
+   for the Debian distribution of cryptsetup. It has been further improved by
+   <author>
+    <firstname>Michael</firstname>
+    <surname>Gebetsroither</surname>
+   </author>
+   <email>michael.geb@gmx.at</email>,
+   <author>
+    <firstname>David</firstname>
+    <surname>Härdeman</surname>
+   </author>
+   <email>david@hardeman.nu</email>
+   and
+   <author>
+    <firstname>Jonas</firstname>
+    <surname>Meurer</surname>
+   </author>
+   <email>jonas@freesources.org</email>.
+  </simpara>
+ </refsect1>
+
+</refentry>

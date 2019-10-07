@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" "/usr/share/xml/docbook/schema/dtd/4.2/docbookx.dtd">
+
+<refentry id="command.cryptdisks_start">
+
+ <xi:include href="variables.xml"
+	     xpointer="xpointer(/refentry/refentryinfo)"
+	     xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+ <refmeta>
+  <refentrytitle>cryptdisks_start</refentrytitle>
+  <manvolnum>8</manvolnum>
+  <xi:include href="variables.xml"
+	      xpointer="xpointer(/refentry/refmeta/*)"
+	      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ </refmeta>
+
+ <refnamediv>
+  <refname>cryptdisks_start</refname>
+  <refpurpose>wrapper around cryptsetup that parses /etc/crypttab.</refpurpose>
+ </refnamediv>
+
+ <refsynopsisdiv>
+  <simpara>
+   <emphasis role="strong">cryptdisks_start</emphasis>
+   <emphasis>&lt;name&gt;</emphasis>
+  </simpara>
+ </refsynopsisdiv>
+
+ <refsect1 id="cryptdisks_start.description">
+  <title>DESCRIPTION</title>
+  <simpara>
+   <emphasis role="strong">cryptdisks_start</emphasis> is a wrapper around
+   <emphasis role="strong">cryptsetup</emphasis> that parses
+   <emphasis role="strong">/etc/crypttab</emphasis> just like the initscript
+   /etc/init.d/cryptdisks does and starts the dm-crypt mapping that
+   corresponds to <emphasis>&lt;name&gt;</emphasis>.
+  </simpara>
+  <simpara>
+   Note that this wrapper passes <option>--key-file=-</option> to
+   <command moreinfo="refentry">cryptsetup</command>, so the passphrase
+   in any referenced key file must not be followed by a newline character.
+  </simpara>
+ </refsect1>
+
+ <refsect1 id="cryptdisks_start.see_also">
+  <title>SEE ALSO</title>
+  <simpara>
+   <emphasis>cryptdisks_stop</emphasis>(8),
+   <emphasis>cryptsetup</emphasis>(8), <emphasis>crypttab</emphasis>(5)
+  </simpara>
+ </refsect1>
+
+ <refsect1 id="cryptdisks_start.author">
+  <title>AUTHOR</title><simpara>This manual page was written by Jonas Meurer
+   &lt;mejo@debian.org&gt; in December 2007.
+  </simpara>
+ </refsect1>
+
+</refentry>

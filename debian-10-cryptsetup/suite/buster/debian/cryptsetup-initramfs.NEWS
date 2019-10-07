@@ -1,0 +1,15 @@
+cryptsetup (2:2.0.3-2) unstable; urgency=medium
+
+    In order to defeat online brute-force attacks, the initramfs boot
+    script sleeps for 1 second after each failed try.  On the other
+    hand, it no longer sleeps for a full minute after exceeding the
+    maximum number of unlocking tries.  This behavior was added in
+    2:1.7.3-2 as an attempt to mitigate CVE-2016-4484; to avoid dropping
+    to the debug shell after exceeding the maximum number of unlocking
+    tries, users need to use the 'panic' boot parameter and lock down
+    their boot loader & BIOS/UEFI.
+
+    The initramfs hook nows uses /proc/mounts instead of /etc/fstab to
+    detect the root device that is to be unlocked at initramfs stage.
+
+ -- Guilhem Moulin <guilhem@debian.org>  Fri, 15 Jun 2018 18:50:56 +0200

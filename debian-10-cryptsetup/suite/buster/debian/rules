@@ -1,0 +1,95 @@
+#!/usr/bin/make -f
+
+# Uncomment this to turn on debhelper verbose mode.
+#export DH_VERBOSE=1
+
+# Set some custom build flags
+export DEB_BUILD_MAINT_OPTIONS = hardening=+bindnow,+pie
+DEB_CFLAGS_MAINT_APPEND = -Wall
+include /usr/share/dpkg/architecture.mk
+-include /usr/share/dpkg/buildtools.mk
+
+CONFFLAGS =
+
+# Used e.g. for manpages (to build them in a reprodicible way)
+include /usr/share/dpkg/pkg-info.mk
+DEB_DATE := $(strip $(shell LC_ALL=C date -u +%F -d@$(SOURCE_DATE_EPOCH)))
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	dh_auto_configure -- $(CONFFLAGS) \
+		--libdir=/lib/$(DEB_HOST_MULTIARCH) \
+		--sbindir=/sbin \
+		--enable-libargon2 \
+		--enable-shared \
+		--enable-cryptsetup-reencrypt
+
+override_dh_auto_build:
+	dh_auto_build
+
+	# build askpass and passdev keyscripts
+	$(CC) -o debian/askpass debian/askpass.c $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -pedantic
+	$(CC) -o debian/scripts/passdev debian/scripts/passdev.c $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -pedantic
+
+	# generate manpages
+	sed 's/VERSION/$(DEB_VERSION)/;s/DATE/$(DEB_DATE)/' \
+		debian/doc/variables.xml.in >debian/doc/variables.xml
+	xsltproc --nonet --xinclude -o debian/doc/ \
+		/usr/share/xml/docbook/stylesheet/docbook-xsl/manpages/docbook.xsl \
+		debian/doc/manpages.xml
+	pod2man --section=8 --center="Administrative commands" \
+		--release="$(DEB_VERSION)" debian/scripts/luksformat \
+		debian/doc/luksformat.8
+
+	# generate gettext po files (for luksformat)
+	$(MAKE) -C debian/scripts/po all luksformat.pot
+
+override_dh_auto_install:
+	dh_auto_install
+	# install gettext po files (for luksformat)
+	$(MAKE) -C debian/scripts/po DESTDIR=$(CURDIR)/debian/cryptsetup-bin install
+
+override_dh_install:
+	dh_install
+	# install apport files when building on Ubuntu
+ifeq ($(shell dpkg-vendor --is Ubuntu && echo yes),yes)
+	mkdir -p $(CURDIR)/debian/cryptsetup-run/usr/share/apport/package-hooks
+	install -m 0644 debian/cryptsetup.apport \
+		$(CURDIR)/debian/cryptsetup-run/usr/share/apport/package-hooks/cryptsetup.py
+endif
+	mv -f $(CURDIR)/debian/cryptsetup-initramfs.preinst $(CURDIR)/debian/cryptsetup-initramfs.preinst~
+	while IFS= read -r x; do if [ "$${x#CONF_HOOK_CONTENTS=}" = "$$x" ]; then printf "%s\n" "$$x"; else printf "CONF_HOOK_CONTENTS=\"\$$(cat <<EOF\n"; cat debian/initramfs/conf-hook; printf "EOF\n)\""; fi ; done <$(CURDIR)/debian/cryptsetup-initramfs.preinst~ >$(CURDIR)/debian/cryptsetup-initramfs.preinst
+	rm -f $(CURDIR)/debian/cryptsetup-initramfs.preinst~
+
+override_dh_link:
+	dh_link
+	dh_link -plibcryptsetup-dev /lib/$(DEB_HOST_MULTIARCH)/$$(basename $$(readlink debian/tmp/lib/$(DEB_HOST_MULTIARCH)/libcryptsetup.so.12)) /usr/lib/$(DEB_HOST_MULTIARCH)/libcryptsetup.so
+
+override_dh_installinit:
+	dh_installinit -pcryptsetup-run --no-start --name=cryptdisks
+	dh_installinit -pcryptsetup-run --no-start --name=cryptdisks-early
+
+override_dh_auto_clean:
+	dh_auto_clean
+	$(MAKE) -C debian/scripts/po update clean
+
+override_dh_bugfiles:
+	dh_bugfiles -A
+
+override_dh_fixperms-arch:
+	dh_fixperms
+	chmod 0755 debian/cryptsetup-run/lib/cryptsetup/checks/*
+	chmod 0755 debian/cryptsetup-run/lib/cryptsetup/scripts/decrypt_*
+	chmod 0755 debian/cryptsetup-udeb/lib/cryptsetup/checks/*
+	chmod 0755 debian/cryptsetup-udeb/lib/cryptsetup/scripts/decrypt_*
+
+override_dh_fixperms-indep:
+	dh_fixperms
+	chmod 0755 debian/cryptsetup-initramfs/usr/share/cryptsetup/initramfs/bin/*
+	chmod 0755 debian/cryptsetup-initramfs/usr/share/initramfs-tools/hooks/*
+	chmod 0755 debian/cryptsetup-initramfs/usr/share/initramfs-tools/scripts/*/*
+
+override_dh_makeshlibs:
+	dh_makeshlibs -V --add-udeb=libcryptsetup12-udeb

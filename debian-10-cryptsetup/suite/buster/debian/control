@@ -1,0 +1,148 @@
+Source: cryptsetup
+Section: admin
+Priority: optional
+Maintainer: Debian Cryptsetup Team <pkg-cryptsetup-devel@alioth-lists.debian.net>
+Uploaders: Jonas Meurer <jonas@freesources.org>,
+           Guilhem Moulin <guilhem@debian.org>
+Build-Depends: autoconf,
+               automake (>= 1:1.12),
+               autopoint,
+               debhelper (>= 11~),
+               dh-exec,
+               dh-strip-nondeterminism,
+               docbook-xml,
+               docbook-xsl,
+               gettext,
+               libargon2-dev,
+               libblkid-dev,
+               libdevmapper-dev,
+               libjson-c-dev,
+               libpopt-dev,
+               libselinux1-dev,
+               libsepol1-dev,
+               libssl-dev,
+               libtool,
+               pkg-config,
+               po-debconf,
+               uuid-dev,
+               xsltproc
+Standards-Version: 4.3.0
+Homepage: https://gitlab.com/cryptsetup/cryptsetup
+Vcs-Browser: https://salsa.debian.org/cryptsetup-team/cryptsetup
+Vcs-Git: https://salsa.debian.org/cryptsetup-team/cryptsetup.git
+
+Package: cryptsetup-run
+Architecture: linux-any
+Depends: cryptsetup-bin (>= 2:1.6.0),
+         dmsetup,
+         ${misc:Depends},
+         ${shlibs:Depends}
+Suggests: dosfstools, keyutils, liblocale-gettext-perl
+Replaces: cryptsetup (<< 2:2.0.3-1), cryptsetup-bin (<< 2:2.0.3-2)
+Breaks: cryptsetup (<< 2:2.0.3-1), cryptsetup-bin (<< 2:2.0.3-2)
+Description: disk encryption support - startup scripts
+ Cryptsetup provides an interface for configuring encryption on block
+ devices (such as /home or swap partitions), using the Linux kernel
+ device mapper target dm-crypt. It features integrated Linux Unified Key
+ Setup (LUKS) support.
+ .
+ Cryptsetup is backwards compatible with the on-disk format of cryptoloop,
+ but also supports more secure formats. This package includes support for
+ automatically configuring encrypted devices at boot time via the config
+ file /etc/crypttab. Additional features are cryptoroot support through
+ initramfs-tools and several supported ways to read a passphrase or key.
+ .
+ This package provides the cryptdisk_start and stop wrappers and
+ luksformat.
+
+Package: cryptsetup-bin
+Architecture: linux-any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: disk encryption support - command line tools
+ Cryptsetup provides an interface for configuring encryption on block
+ devices (such as /home or swap partitions), using the Linux kernel
+ device mapper target dm-crypt. It features integrated Linux Unified Key
+ Setup (LUKS) support.
+ .
+ This package provides cryptsetup, cryptsetup-reencrypt, integritysetup
+ and veritysetup.
+
+Package: cryptsetup-initramfs
+Architecture: all
+Depends: busybox | busybox-static,
+         cryptsetup-run (>= ${source:Version}),
+         initramfs-tools (>= 0.129) | linux-initramfs-tool,
+         ${misc:Depends}
+Recommends: console-setup, kbd
+Breaks: cryptsetup (<< 2:2.0.3-1)
+Replaces: cryptsetup (<< 2:2.0.3-1)
+Description: disk encryption support - initramfs integration
+ Cryptsetup provides an interface for configuring encryption on block
+ devices (such as /home or swap partitions), using the Linux kernel
+ device mapper target dm-crypt. It features integrated Linux Unified Key
+ Setup (LUKS) support.
+ .
+ This package provides initramfs integration for cryptsetup.
+
+Package: cryptsetup
+Architecture: all
+Section: oldlibs
+Depends: cryptsetup-initramfs (>= 2:2.0.3-1),
+         cryptsetup-run (>= 2:2.0.3-1),
+         ${misc:Depends}
+Description: transitional dummy package for cryptsetup-{run,initramfs}
+ This is a transitional dummy package to get upgrading systems to install the
+ cryptsetup-run and cryptsetup-initramfs packages. It can safely be removed
+ once no other package depends on it.
+
+Package: libcryptsetup12
+Section: libs
+Architecture: linux-any
+Multi-Arch: same
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: disk encryption support - shared library
+ Cryptsetup provides an interface for configuring encryption on block
+ devices (such as /home or swap partitions), using the Linux kernel
+ device mapper target dm-crypt. It features integrated Linux Unified Key
+ Setup (LUKS) support.
+ .
+ This package provides the libcryptsetup shared library.
+
+Package: libcryptsetup-dev
+Section: libdevel
+Architecture: linux-any
+Multi-Arch: same
+Depends: libcryptsetup12 (= ${binary:Version}), ${misc:Depends}
+Description: disk encryption support - development files
+ Cryptsetup provides an interface for configuring encryption on block
+ devices (such as /home or swap partitions), using the Linux kernel
+ device mapper target dm-crypt. It features integrated Linux Unified Key
+ Setup (LUKS) support.
+ .
+ This package provides the libcryptsetup development files.
+
+Package: cryptsetup-udeb
+Section: debian-installer
+Package-Type: udeb
+Architecture: linux-any
+Depends: dmsetup-udeb, ${misc:Depends}, ${shlibs:Depends}
+Description: disk encryption support - commandline tools (udeb)
+ Cryptsetup provides an interface for configuring encryption on block
+ devices (such as /home or swap partitions), using the Linux kernel
+ device mapper target dm-crypt. It features integrated Linux Unified Key
+ Setup (LUKS) support.
+ .
+ This udeb package provides cryptsetup for the Debian Installer.
+
+Package: libcryptsetup12-udeb
+Section: debian-installer
+Package-Type: udeb
+Architecture: linux-any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: disk encryption support - shared library (udeb)
+ Cryptsetup provides an interface for configuring encryption on block
+ devices (such as /home or swap partitions), using the Linux kernel
+ device mapper target dm-crypt. It features integrated Linux Unified Key
+ Setup (LUKS) support.
+ .
+ This udeb package provides libcryptsetup for the Debian Installer.

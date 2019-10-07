@@ -1,0 +1,281 @@
+Debian Cryptsetup Initramfs integration
+=======================================
+
+1. Introduction
+---------------
+
+Kernels more recent than 2.6.12 have dropped support for devfs, which
+means that initrd-tools can no longer be used to boot into an encrypted
+root partition. Instead, a similar functionality has been developed for
+use with an initramfs-image.
+
+
+2. A fresh installation
+-----------------------
+
+If you plan to perform a completely new installation of Debian onto a
+machine and to do so using an encrypted root partition, you might want
+to consider using a version of Debian Installer with partman-crypto
+(see https://wiki.debian.org/DebianInstaller/PartmanCrypto).
+
+The installation will then take care of all the details and perform the
+necessary configuration for you, meaning that you should not have to
+read the rest of this document to get a machine with an encrypted
+root filesystem up and running.
+
+However, if you are not planning to perform a new installation from scratch,
+the following information might be useful to you.
+
+
+3. Requirements
+---------------
+
+In order to boot from an encrypted root filesystem, you need an
+initramfs-image which includes the necessary kernel modules and scripts to
+setup the root device after the kernel has been initialized, but before the
+rest of the operating system is booted.
+
+To do so, you need two partitions:
+* an unencrypted `/boot` partition
+* an encrypted `/` partition
+
+In addition, you need to have both initramfs-tools and busybox installed.
+
+NOTE: You should make sure that your swap partition is either encrypted, or
+that you are using a swap file on an encrypted partition, as crypto keys and
+other sensitive information might otherwise be written out to the swap
+partition in unencrypted form.
+
+
+4. Setup (regular dm-crypt)
+---------------------------
+
+First of all, you must edit `/etc/crypttab` and add a line describing your
+root device, for example:
+
+    cryptroot /dev/sda2 none cipher=aes-xts-plain64,size=256,hash=sha1
+
+This will allow cryptsetup to create `/dev/mapper/cryptroot` from the
+encrypted partition `/dev/sda2` during boot.
+
+In addition, you must also make sure that the root device is listed in
+`/etc/fstab`, for example:
+
+    /dev/mapper/cryptroot / ext4 defaults 0 1
+
+This will allow the initramfs support scripts to know which of the devices
+in the crypttab that is the root device.
+
+After doing these changes, you should regenerate the initramfs by running
+`update-initramfs -u`, then make sure that your boot loader is configured
+to feed the initramfs to the kernel when booting. The kernel root argument
+should also be changed to `/dev/mapper/cryptroot`.
+
+Now, reboot the machine, and if everything is correctly configured, you
+should be given a prompt to type in the passphrase for the encrypted
+root partition before the boot can continue.
+
+NOTE: In order to ensure that the crypto setup works in a consistent
+manner, you should make sure that the hash function is specified in the
+/etc/crypttab file if you are using regular dm-crypt (with LUKS the hash
+function to use is stored in the LUKS header).
+
+
+5. Setup (using LUKS)
+---------------------
+
+If you are using the LUKS feature of cryptsetup, the above setup recipe should
+still apply, but since most options can be derived from the information stored
+in the LUKS header on-disk, the line to add to `/etc/crypttab` should look
+something like this:
+
+    cryptroot /dev/sda2 none luks,discard
+
+
+6. Exotic key types
+-------------------
+
+The above examples assume that you use a regular passphrase as the key to the
+encrypted filesystem. However, if you wish to make use of more complex setups
+(such as root-key-on-usb-memory), you can create a script which does all the
+steps necessary to retrieve the key and then prints it to stdout.
+
+Then add a `keyscript=/path/to/your/script.sh` to the options (fourth column)
+in the above mentioned `/etc/crypttab` line, so that it looks something like
+this:
+
+    cryptroot /dev/sda2 none luks,discard,keyscript=/usr/local/sbin/cryptkey
+
+Next, regenerate your initramfs image. This will copy the script into the
+initramfs image under the `/lib/cryptsetup/keyscripts/` directory.
+
+NOTE: there is a limited set of tools available when the script is executing
+as part of the initramfs bootup, you have to make sure that you do not use
+any tools which are not available or your script, and therefore boot, will
+fail.
+
+
+7. "cryptopts" boot argument
+----------------------------
+
+In general, you should use the above approach with a line describing your
+root partition in `/etc/crypttab` and `/etc/fstab`. However, if for some
+reason you wish to override the settings that are derived from these files
+and stored in the initramfs image, you can use the "cryptopts" boot argument
+(this *only* works for the root partition).
+
+The format of cryptopts is:
+
+    cryptopts=<opt1>=<value1>,<opt2>=<value2>...
+
+Beside the `hash`, `size`, `cipher` and `lvm` options that correspond to the
+same options in the fourth field of /etc/crypttab, the options `target`,
+`source` and `key` are also supported. They correspond to the first, second
+and third field of /etc/crypttab, respectively. See the crypttab man page
+for further details.
+
+Several `cryptopts` boot arguments can also be specified in case more than
+one mapping needs to be setup in the initramfs stage of the boot.
+
+Example boot arguments:
+
+    root=/dev/mapper/crypt0 cryptopts=target=crypt0,source=/dev/sda1,cipher=aes-xts-plain64,size=256,hash=sha1
+
+In particular, if all `cryptopts` boot arguments have an empty value
+then no mapping is setup.  This can be used to disable the cryptsetup
+initramfs scripts for a particular boot.
+
+8. Resume device support
+------------------------
+
+The initramfs scripts will also try to automatically determine the devices,
+if any, that are used for software suspend (swsusp, suspend2 or uswsusp) and
+to set them up during the initramfs stage in order to allow suspend and resume
+in combination with encryption to keep the resume image safe from potential
+attackers.
+
+If your resume device and your root partition use two different cryptsetup
+mappings, you might want to use the `decrypt_derived` keyscript as described
+below.
+
+9. The `decrypt_derived` keyscript
+----------------------------------
+
+Assume that you have two entries in `/etc/crypttab`:
+
+    cryptroot /dev/sda1 none luks,discard
+    cryptswap /dev/sda2 none luks
+
+If cryptswap is used as your suspend/resume device, you'd normally need to
+enter two different passphrases during the boot, but the `decrypt_derived`
+script can generate the key for the second mapping using a hash of the key
+for the first mapping.
+
+In short, you'll need to do something like the following to take advantage
+of the decrypt_derived script:
+
+1. `swapoff -a`
+2. `cryptsetup luksClose cryptswap`
+3. edit `/etc/crypttab` and change the cryptswap line to e.g.:
+   `cryptswap /dev/sda2 cryptroot cipher=aes-xts-plain65,size=256,hash=sha1,keyscript=decrypt_derived,swap`
+4. `cryptdisks_start cryptswap`
+5. Make sure that `/dev/mapper/cryptswap` has been created
+6. `swapon -a`
+7. (optional) `update-initramfs -u`
+
+After you've followed the above steps, your swap device should be setup
+automatically after the root device has been setup during the boot stage.
+
+WARNING: If you use the decrypt_derived keyscript for devices with persistent
+data (i.e. not swap or temp devices), then you will lose access to that data
+permanently if something damages the LUKS header of the LUKS device you derive
+from. The same applies if you luksFormat the device, even if you use the same
+passphrase(s). A LUKS header backup, or better a backup of the data on the
+derived device may be a good idea. See the Cryptsetup FAQ on how to do this
+right.
+
+Note: The decrypt_derived keyscript won't work when the volume key of the
+device being derived from is offloaded to the kernel keyring service (thus not
+readable by userspace). That behavior is the default for LUKS2 devices (unless
+opened with the `--disable-keyring` option) since Linux 4.10. For such devices,
+an alternative is to use the same passphrase and unlock the source device using
+the `decrypt_keyctl` keyscript.
+
+Note: If you don't use suspend device support, it's better to use completely
+random keys for your encrypted swap device. See the section '2. Encrypted
+swap partition(s)' in `/usr/share/doc/cryptsetup/README.Debian` for information
+on how to setup this.
+
+10. The `passdev` keyscript
+----------------------------
+
+If you have a keyfile on a removable device (e.g. a USB-key), you can use the
+passdev keyscript. It will wait for the device to appear, mount it read-only,
+read the key and then unmount the device.
+
+The `key` part of `/etc/crypttab` will be interpreted as `<device>:<path>[:<timeout>]`,
+it is strongly recommended that you use one of the persistent device names from
+`/dev/disk/*`, e.g. `/dev/disk/by-label/myusbkey`.
+
+This is an example of a suitable line in cryptsetup:
+
+    cryptroot /dev/sda2 /dev/disk/by-label/myusbkey:/keys/root.key discard,cipher=aes-xts-plain64,size=256,hash=sha1,keyscript=passdev
+
+The above line would cause the boot to pause until `/dev/disk/by-label/myusbkey`
+appears in the fs, then mount that device and use the file `/keys/root.key`
+on the device as the key (without any hashing) as the key for the fs.
+
+The timeout option has to be in seconds.
+
+If any modules are required in order to mount the filesystem on the removable
+device, then initramfs-tools needs to be configured to add these modules to
+the initramfs. This can be done by listing the required modules in
+`/etc/initramfs-tools/modules`.
+
+11. Limitation: renaming of target name for encrypted root device
+-----------------------------------------------------------------
+
+As spotted by Adam Lee in bug report [#671037], it's not possible to simply
+rename the target name for encrypted root devices. It breaks the initramfs
+creation process. The bug report submitter found a solution to work around
+this limitation:
+
+0. enter another system (like livecd)
+1. open luks device with the new name, change the target name to the new one
+2. chroot into it (now, the current target name is the same as it in conf)
+3. `update-initramfs -u`
+4. reboot
+
+[#671037]: https://bugs.debian.org/671037
+
+12. Storing keyfiles directly in the initrd
+-------------------------------------------
+
+Normally devices using a keyfile are ignored (with a loud warning), and
+the key file itself is not included in the initrd, because the initramfs
+image typically lives on an unencrypted `/boot` partition. However in
+some cases it is desirable to include the key file in the initrd; for
+instance recent versions of GRUB support booting from encrypted block
+devices, allowing an encrypted `/boot` partition.
+
+Among the key files listed in the crypttab(5), those matching the value
+of the environment variable KEYFILE_PATTERN (interpreted as a shell
+pattern) will be included in the initramfs image. For instance if
+`/etc/crypttab` lists two key files `/etc/keys/{root,swap}.key`, you can
+add the following to `/etc/cryptsetup-initramfs/conf-hook` to add them to
+the initrd.
+
+    KEYFILE_PATTERN="/etc/keys/*.key"
+
+Furthermore if the initramfs image is to include private key material,
+you'll want to create it with a restrictive umask in order to keep
+non-privileged users at bay.  This can be achieved by adding the
+following to `/etc/initramfs-tools/initramfs.conf`.
+
+    UMASK=0077
+
+ -- David Härdeman <david@hardeman.nu>
+
+ -- Jonas Meurer <mejo@debian.org>  Thu, 01 Nov 2012 13:44:31 +0100
+
+ -- Guilhem Moulin <guilhem@debian.org>  Wed, 09 Dec 2015 04:53:41 +0100

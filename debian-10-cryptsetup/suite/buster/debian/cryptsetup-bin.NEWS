@@ -1,0 +1,200 @@
+cryptsetup (2:1.6.6-1) unstable; urgency=medium
+
+  The whirlpool hash implementation has been broken in gcrypt until version
+  1.5.3. This has been fixed in subsequent gcrypt releases. In particular,
+  the gcrypt version that is used by cryptsetup starting with this release,
+  has the bug fixed. Consequently, LUKS containers created with broken
+  whirlpool will fail to open from now on.
+
+  In the case that you're affected by the whirlpool bug, please read section
+  '8.3 Gcrypt after 1.5.3 breaks Whirlpool' of the cryptsetup FAQ at
+  https://gitlab.com/cryptsetup/cryptsetup/wikis/FrequentlyAskedQuestions
+  carefully. It explains how to open your LUKS container and reencrypt it
+  afterwards.
+
+ -- Jonas Meurer <mejo@debian.org>  Tue, 04 Mar 2014 23:17:37 +0100
+
+cryptsetup (2:1.1.3-1) unstable; urgency=low
+
+  Cryptdisks init scripts changed their behaviour for failures at starting and
+  stopping encrypted devices. Cryptdisks init script now raises a warning for
+  failures at starting encrypted devices, and cryptdisks-early warns about
+  failures at stopping encrypted devices.
+
+ -- Jonas Meurer <mejo@debian.org>  Sat, 10 Jul 2010 14:36:33 +0200
+
+cryptsetup (2:1.1.0-1) unstable; urgency=low
+
+  The default key size for LUKS was changed from 128 to 256 bits, and default
+  plain mode changed from aes-cbc-plain to aes-cbc-essiv:sha256.
+  In case that you use plain mode encryption and don't have set cipher and hash
+  in /etc/crypttab, you should do so now. The new defaults are not backwards
+  compatible. See the manpage for crypttab(5) for further information. If your
+  dm-crypt setup was done by debian-installer, you can ignore that warning.
+
+  Additionally, the keyscript decrypt_gpg, which was disabled by default up to
+  now, has been rewritten and renamed to decrypt_gnupg. If you use a customized
+  version of the decrypt_gpg keyscript, please backup it before upgrading the
+  package.
+
+ -- Jonas Meurer <mejo@debian.org>  Thu, 04 Mar 2010 17:31:40 +0100
+
+cryptsetup (2:1.1.0~rc2-1) unstable; urgency=low
+
+  The cryptroot initramfs hook script has been changed to include all
+  available crypto kernel modules in case that initramfs-tools is configured
+  with MODULES=most (default). See /etc/initramfs-tools/initramfs.conf for
+  more information.
+  If initramfs-tools is configured with MODULES=dep, the cryptroot hook script
+  still tries to detect required modules, as it did by default in the past.
+
+ -- Jonas Meurer <mejo@debian.org>  Sun, 27 Sep 2009 16:49:20 +0200
+
+cryptsetup (2:1.0.7-2) unstable; urgency=low
+
+  Checkscripts vol_id and un_vol_id have been replaced by blkid and un_blkid.
+  In case that you explicitly set keyscript=vol_id or keyscript=un_vol_id in
+  /etc/crypttab, you will need to update your /etc/crypttab manually.
+  Replacing 'vol_id' with 'blkid' and 'un_vol_id' with 'un_blkid' should work.
+  The new *blkid keyscripts are fully compatible to the old *vol_id scripts.
+
+ -- Jonas Meurer <mejo@debian.org>  Sun, 23 Aug 2009 23:32:49 +0200
+
+cryptsetup (2:1.0.6-8) unstable; urgency=low
+
+  Keyscripts inside the initramfs have been moved from /keyscripts to
+  /lib/cryptsetup/scripts. This way they're now available at the same location
+  as on the normal system.
+  In most cases no manual action is required. Only if you reference a keyscript
+  by path in some script that is included in the initramfs, then you need to
+  update that reference by updating the path.
+
+ -- Jonas Meurer <mejo@debian.org>  Tue, 23 Dec 2008 00:43:10 +0100
+
+cryptsetup (2:1.0.6-7) unstable; urgency=medium
+
+  Support for the timeout option has been removed from cryptdisks initscripts
+  in order to support splash screens and remote shells in boot process.
+  The implementation had been unclean and problematic anyway.
+  If you used the timeout option on headless systems without physical access,
+  then it's a much cleaner solution anyway, to use the 'noauto' option in
+  /etc/crypttab, and start the encrypted devices manually with
+  '/etc/init.d/cryptdisks force-start'.
+  Another approach is to start a minimal ssh-server in the initramfs and unlock
+  the encrypted devices after connecting to it. This even supports encrypted
+  root filesystems for headless server systems.
+  For more information, please see /usr/share/docs/cryptsetup/README.Debian.gz
+
+ -- Jonas Meurer <mejo@debian.org>  Tue, 16 Dec 2008 18:37:16 +0100
+
+cryptsetup (2:1.0.6-4) unstable; urgency=medium
+
+  The obsolete keyscript decrypt_old_ssl and the corresponding example script
+  gen-old-ssl-key have been removed from the package. If you're still using
+  them, either save a local backup of /lib/cryptsetup/scripts/decrypt_old_ssl
+  and put it back after the upgrade finished, or migrate your setup to use
+  keyscripts that are still supported.
+
+ -- Jonas Meurer <mejo@debian.org>  Sun, 27 Jul 2008 16:22:57 +0200
+
+cryptsetup (2:1.0.6~pre1+svn45-1) unstable; urgency=low
+
+  The default hash used by the initramfs cryptroot scripts has been changed
+  from sha256 to ripemd160 for consistency with the cryptsetup default. If you
+  have followed the recommendation to configure the hash in /etc/crypttab this
+  change will have no effect on you.
+
+  If you set up disk encryption on your system using the Debian installer
+  and/or if you use LUKS encryption, everything is already set up correctly
+  and you don't need to do anything.
+  If you did *not* use the Debian installer and if you have encrypted devices
+  which do *not* use LUKS, you must make sure that the relevant entries in
+  /etc/crypttab contain a hash=<hash> setting.
+
+ -- Jonas Meurer <mejo@debian.org>  Tue, 29 Jan 2008 11:46:57 +0100
+
+cryptsetup (2:1.0.5-2) unstable; urgency=low
+
+  The vol_id and un_vol_id check scripts no longer regard minix as a valid
+  filesystem, since random data can be mistakenly identified as a minix
+  filesystem due to an inadequate signature length.
+
+  If you use minix filesystems, you should not rely on prechecks anymore.
+
+ -- Jonas Meurer <mejo@debian.org>  Mon, 10 Sep 2007 14:39:44 +0200
+
+cryptsetup (2:1.0.4+svn16-1) unstable; urgency=high
+
+  The --key-file=- argument has changed. If a --hash parameter is passed, it
+  will now be honoured. This means that the decrypt_derived keyscript will in
+  some situations create a different key than previously meaning that any swap
+  partitions that rely on the script will have to be recreated. To emulate the
+  old behaviour, make sure that you pass "--hash=plain" to cryptsetup.
+
+ -- David Härdeman <david@hardeman.nu>  Tue, 21 Nov 2006 21:29:50 +0100
+
+cryptsetup (2:1.0.4-7) unstable; urgency=low
+
+  The cryptsetup initramfs scripts now also tries to detect swap
+  partitions used for software suspend (swsusp/suspend2/uswsusp) and
+  to set them up during the initramfs stage. See README.initramfs for
+  more details.
+
+ -- David Härdeman <david@hardeman.nu>  Mon, 13 Nov 2006 19:27:02 +0100
+
+cryptsetup (2:1.0.4-1) unstable; urgency=low
+
+   The ssl and gpg options in /etc/crypttab have been deprecated in
+   favour of the keyscripts option. The options will still work, but
+   generate warnings. You should change any lines containing these
+   options to use keyscript=/lib/cryptsetup/scripts/decrypt_old_ssl or
+   keyscript=/lib/cryptsetup/scripts/decrypt_gpg instead as support
+   will be completely removed in the future.
+
+ -- David Härdeman <david@hardeman.nu>  Mon, 16 Oct 2006 00:00:12 +0200
+
+cryptsetup (2:1.0.3-4) unstable; urgency=low
+
+   Up to now, the us keymap was loaded at the passphrase prompt in the boot
+   process and ASCII characters were always used. With this upload this is
+   fixed, meaning that the correct keymap is loaded and the keyboard is
+   (optionally) set to UTF8 mode before the passphrase prompt.
+
+   This may result in your password not working any more in the boot process.
+   In this case, you should add a new key with cryptsetup luksAddKey with your
+   correct keymap loaded.
+
+   Additionally, all four fields are now mandatory in /etc/crypttab. An entry
+   which does not contain all fields will be ignored. It is recommended to
+   set cipher, size and hash anyway, as defaults may change in the future.
+
+   If you didn't set any of these settings yet, then you should add
+       cipher=aes-cbc-plain,size=128,hash=ripemd160
+   to the the options in /etc/crypttab. See man crypttab(5) for more details.
+
+ -- David Härdeman <david@2gen.com>  Sat, 19 Aug 2006 18:08:40 +0200
+
+cryptsetup (2:1.0.2+1.0.3-rc2-2) unstable; urgency=low
+
+   The crypttab 'retry' has been renamed to 'tries' to reflect upstream's
+   functionality. Default is 3 tries now, even if the option is not given.
+   See the crypttab.5 manpage for more information.
+
+ -- Jonas Meurer <mejo@debian.org>  Fri, 28 Apr 2006 17:42:15 +0200
+
+cryptsetup (2:1.0.2+1.0.3-rc2-1) unstable; urgency=low
+
+    Since release 2:1.0.1-9, the cryptsetup package uses cryptsetup-luks as
+    upstream source. This is a enhanced version of plain cryptsetup which
+    includes support for the LUKS extension, a standard on-disk format for
+    hard disk encryption. Plain dm-crypt (as provided by the old cryptsetup
+    package) is still available, thus backwards compatibility is given.
+    Nevertheless it is recommended to update your encrypted partitions to
+    LUKS, as this implementation is more secure than the plain dm-crypt.
+
+    Another major change is the check option for crypttab. It allows to
+    configure checks that are run after cryptsetup has been invoked, and
+    prechecks to be run against the source device before cryptsetup has been
+    invoked. See man crypttab(5) or README.Debian for more information.
+
+ -- Jonas Meurer <mejo@debian.org>  Fri,  3 Feb 2006 13:41:35 +0100

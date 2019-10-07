@@ -1,0 +1,57 @@
+General maintenance
+
+    This package is maintained in Git via the Alioth pkg-cryptsetup project.
+    Alioth is used only for repository access control and mailinglist hosting,
+    not for any of its other features.
+
+    This package uses the "3.0 (quilt)" source format.
+
+Importing a new upstream release
+
+    Since upstream release 1.7.2, we use cryptographically signed Git release
+    tags as basis for the Debian cryptsetup package.
+
+    To import a new upstream release into our packaging repository, do the
+    following:
+
+    0. Ensure that you have the cryptsetup upstream Git repository available
+       as a remote in the Git repository where you're doing the packaging
+       work and it's up to date:
+
+           git remote add --tags upstream git+ssh://gitlab.com/cryptsetup/cryptsetup.git
+           git config remote.upstream.fetch master:upstream-2.0.x
+
+       Please note we tack the upstream 'master' branch in our branch
+       'upstream-2.0.x' for historical reasons.
+
+    1. Update 'upstream' remote
+
+           git fetch --tags upstream
+
+    2. Determine the release tag corresponding to the new release. At the time
+       of this writing, upstream uses tags in the form:
+
+           TAG="v$VERSION"
+
+       This convention may change, so double-check with 'git tag'.
+
+    3. Validate the gpg signature for this release tag:
+
+           git verify-tag "$TAG"
+
+       The signing key can be found in 'debian/upstream-signing-key.asc'.
+       Use `gpg -q debian/upstream-signing-key.asc` to show its
+       fingerprint.
+
+    4. Merge the upstream release tag <tag> into the master branch of your
+       packaging repository:
+
+           git checkout master
+           git merge -m "Updated version $VERSION from '$TAG'" "$TAG"
+
+    N. After development and testing, the final packages to be uploaded to
+       Debian are built and tagged in the repository as follows:
+
+           gbp buildpackage --git-tag
+
+ -- Jonas Meurer <jonas@freesources.org>  Fri, 15 Jun 2018 13:39:49 +0200

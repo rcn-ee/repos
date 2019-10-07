@@ -1,0 +1,151 @@
+From 8f8f0b3258152a260c6a40be89b485f943f81484 Mon Sep 17 00:00:00 2001
+From: Milan Broz <gmazyland@gmail.com>
+Date: Mon, 26 Aug 2019 10:01:17 +0200
+Subject: Fix mapped segments overflow on 32bit architectures.
+
+All set_segment functions must use uin64_t everywhere,
+not size_t that is platform dependent.
+
+The code later uses it correctly, it is just wrong function
+prototype definitions.
+
+Reported in
+https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=935702
+
+(TODO: add a test for other segment types.)
+---
+ lib/libdevmapper.c          |   12 ++++++------
+ lib/utils_dm.h              |   12 ++++++------
+ tests/integrity-compat-test |   26 ++++++++++++++++++++++++++
+ 3 files changed, 38 insertions(+), 12 deletions(-)
+
+--- a/lib/libdevmapper.c
++++ b/lib/libdevmapper.c
+@@ -2592,9 +2592,9 @@ int dm_is_dm_kernel_name(const char *nam
+ 	return strncmp(name, "dm-", 3) ? 0 : 1;
+ }
+ 
+-int dm_crypt_target_set(struct dm_target *tgt, size_t seg_offset, size_t seg_size,
++int dm_crypt_target_set(struct dm_target *tgt, uint64_t seg_offset, uint64_t seg_size,
+ 	struct device *data_device, struct volume_key *vk, const char *cipher,
+-	size_t iv_offset, size_t data_offset, const char *integrity, uint32_t tag_size,
++	uint64_t iv_offset, uint64_t data_offset, const char *integrity, uint32_t tag_size,
+ 	uint32_t sector_size)
+ {
+ 	int r = -EINVAL;
+@@ -2632,7 +2632,7 @@ err:
+ 	return r;
+ }
+ 
+-int dm_verity_target_set(struct dm_target *tgt, size_t seg_offset, size_t seg_size,
++int dm_verity_target_set(struct dm_target *tgt, uint64_t seg_offset, uint64_t seg_size,
+ 	struct device *data_device, struct device *hash_device, struct device *fec_device,
+ 	const char *root_hash, uint32_t root_hash_size, uint64_t hash_offset_block,
+ 	uint64_t hash_blocks, struct crypt_params_verity *vp)
+@@ -2658,7 +2658,7 @@ int dm_verity_target_set(struct dm_targe
+ 	return 0;
+ }
+ 
+-int dm_integrity_target_set(struct dm_target *tgt, size_t seg_offset, size_t seg_size,
++int dm_integrity_target_set(struct dm_target *tgt, uint64_t seg_offset, uint64_t seg_size,
+ 			struct device *meta_device,
+ 		        struct device *data_device, uint64_t tag_size, uint64_t offset,
+ 			uint32_t sector_size, struct volume_key *vk,
+@@ -2697,8 +2697,8 @@ int dm_integrity_target_set(struct dm_ta
+ 	return 0;
+ }
+ 
+-int dm_linear_target_set(struct dm_target *tgt, size_t seg_offset, size_t seg_size,
+-	struct device *data_device, size_t data_offset)
++int dm_linear_target_set(struct dm_target *tgt, uint64_t seg_offset, uint64_t seg_size,
++	struct device *data_device, uint64_t data_offset)
+ {
+ 	if (!data_device)
+ 		return -EINVAL;
+--- a/lib/utils_dm.h
++++ b/lib/utils_dm.h
+@@ -156,22 +156,22 @@ void dm_backend_exit(struct crypt_device
+ int dm_targets_allocate(struct dm_target *first, unsigned count);
+ void dm_targets_free(struct crypt_device *cd, struct crypt_dm_active_device *dmd);
+ 
+-int dm_crypt_target_set(struct dm_target *tgt, size_t seg_offset, size_t seg_size,
++int dm_crypt_target_set(struct dm_target *tgt, uint64_t seg_offset, uint64_t seg_size,
+ 	struct device *data_device, struct volume_key *vk, const char *cipher,
+-	size_t iv_offset, size_t data_offset, const char *integrity,
++	uint64_t iv_offset, uint64_t data_offset, const char *integrity,
+ 	uint32_t tag_size, uint32_t sector_size);
+-int dm_verity_target_set(struct dm_target *tgt, size_t seg_offset, size_t seg_size,
++int dm_verity_target_set(struct dm_target *tgt, uint64_t seg_offset, uint64_t seg_size,
+ 	struct device *data_device, struct device *hash_device, struct device *fec_device,
+ 	const char *root_hash, uint32_t root_hash_size, uint64_t hash_offset_block,
+ 	uint64_t hash_blocks, struct crypt_params_verity *vp);
+-int dm_integrity_target_set(struct dm_target *tgt, size_t seg_offset, size_t seg_size,
++int dm_integrity_target_set(struct dm_target *tgt, uint64_t seg_offset, uint64_t seg_size,
+ 	struct device *meta_device,
+ 	struct device *data_device, uint64_t tag_size, uint64_t offset, uint32_t sector_size,
+ 	struct volume_key *vk,
+ 	struct volume_key *journal_crypt_key, struct volume_key *journal_mac_key,
+ 	const struct crypt_params_integrity *ip);
+-int dm_linear_target_set(struct dm_target *tgt, size_t seg_offset, size_t seg_size,
+-	struct device *data_device, size_t data_offset);
++int dm_linear_target_set(struct dm_target *tgt, uint64_t seg_offset, uint64_t seg_size,
++	struct device *data_device, uint64_t data_offset);
+ 
+ int dm_remove_device(struct crypt_device *cd, const char *name, uint32_t flags);
+ int dm_status_device(struct crypt_device *cd, const char *name);
+--- a/tests/integrity-compat-test
++++ b/tests/integrity-compat-test
+@@ -7,6 +7,8 @@ INTSETUP_VALGRIND=../.libs/integritysetu
+ INTSETUP_LIB_VALGRIND=../.libs
+ 
+ DEV_NAME=dmc_test
++DEV_NAME_BIG=dmc_fake
++DEV_LOOP=""
+ DEV=test123.img
+ DEV2=test124.img
+ KEY_FILE=key.img
+@@ -18,6 +20,9 @@ dmremove() { # device
+ 
+ cleanup() {
+ 	[ -b /dev/mapper/$DEV_NAME ] && dmremove $DEV_NAME
++	[ -b /dev/mapper/$DEV_NAME_BIG ] && dmremove $DEV_NAME_BIG
++	[ -n "$DEV_LOOP" ] && losetup -d "$DEV_LOOP"
++	DEV_LOOP=""
+ 	rm -f $DEV $DEV2 $KEY_FILE >/dev/null 2>&1
+ }
+ 
+@@ -282,6 +287,7 @@ int_mode() # alg tag_size sector_size [k
+ 
+ [ $(id -u) != 0 ] && skip "WARNING: You must be root to run this test, test skipped."
+ [ ! -x "$INTSETUP" ] && skip "Cannot find $INTSETUP, test skipped."
++which blockdev >/dev/null || skip "Cannot find blockdev utility, test skipped."
+ 
+ [ -n "$VALG" ] && valgrind_setup && INTSETUP=valgrind_run
+ which hexdump >/dev/null 2>&1 || skip "WARNING: hexdump tool required."
+@@ -358,6 +364,26 @@ if [ -n "$DM_INTEGRITY_META" ] ; then
+ 	echo "[OK]"
+ else
+ 	echo "[N/A]"
++fi
++
++echo -n "Big device:"
++add_device
++DEV_LOOP=$(losetup -f $DEV --show)
++if [ -n "$DEV_LOOP" ] ; then
++dmsetup create $DEV_NAME_BIG <<EOF
++0 16284 linear $DEV_LOOP 0
++16284 80000000000 zero
++EOF
++	[ ! -b /dev/mapper/$DEV_NAME_BIG ] && fail
++	$INTSETUP format -q -s 512 --no-wipe /dev/mapper/$DEV_NAME_BIG
++	$INTSETUP open /dev/mapper/$DEV_NAME_BIG $DEV_NAME || fail
++	D_SIZE=$($INTSETUP dump /dev/mapper/$DEV_NAME_BIG | grep provided_data_sectors | sed -e 's/.*provided_data_sectors\ \+//g')
++	A_SIZE=$(blockdev --getsz /dev/mapper/$DEV_NAME)
++	# Compare strings (to avoid 64bit integers), not integers
++	[ -n "$A_SIZE" -a "$D_SIZE" != "$A_SIZE" ] && fail
++	echo "[OK]"
++else
++	echo "[N/A]"
+ fi
+ 
+ cleanup

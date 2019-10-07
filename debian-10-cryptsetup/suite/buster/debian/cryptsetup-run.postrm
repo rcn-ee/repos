@@ -1,0 +1,15 @@
+#! /bin/sh
+
+set -e
+
+case "$1" in
+    remove)
+	for file in cryptdisks_start cryptdisks_stop; do
+		if [ -L /usr/sbin/$file ]; then
+			rm /usr/sbin/$file
+		fi
+	done
+    ;;
+esac
+
+#DEBHELPER#

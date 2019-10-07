@@ -1,0 +1,53 @@
+include:
+  - https://salsa.debian.org/salsa-ci-team/pipeline/raw/master/salsa-ci.yml
+  - https://salsa.debian.org/salsa-ci-team/pipeline/raw/master/pipeline-jobs.yml
+
+variables:
+  RELEASE: 'unstable'
+
+# Disable the cryptsetup testsuite by setting DEB_BUILD_OPTIONS 'nocheck' for
+# the reprotest job for now. It fails because reprotest builds as root, which
+# triggers extra tests. Some of them require modprobe, which is missing on the
+# Salsa runners. See https://salsa.debian.org/salsa/support/issues/149 for
+# more context
+reprotest:
+  extends: .test-reprotest
+  variables:
+    REPROTEST_EXTRA_ARGS: '--no-diffoscope'
+    DEB_BUILD_OPTIONS: nocheck
+
+# Add a deploy stage for pages
+stages:
+  - build
+  - test
+  - deploy
+
+pages:
+  image: debian:9
+  script:
+    - apt update
+    - apt -y install pandoc
+    - mkdir public
+    # install CSS file
+    - cp debian/doc/pandoc/pandoc.css public/
+    # install index.html
+    - ${PANDOC} -T "Debian Cryptsetup docs" -o public/index.html
+          debian/doc/pandoc/index.md
+    # install README.*.html files
+    - for readme in Debian debug gnupg gnupg-sc initramfs keyctl opensc; do
+          ${PANDOC} --toc -T "Debian Cryptsetup docs"
+          -o public/README.$readme.html debian/README.$readme; done
+    - ${PANDOC} -o public/encrypted-boot.html debian/doc/pandoc/encrypted-boot.md
+  stage: deploy
+  artifacts:
+    paths:
+      - public
+  only:
+    # only run on master branch
+    refs:
+      - master
+    # only run when commit is tagged (to install docs on package releases only)
+    #variables:
+    #  - $CI_COMMIT_TAG
+  variables:
+    PANDOC: 'pandoc -s -c pandoc.css -f markdown -t html'

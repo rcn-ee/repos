@@ -1,0 +1,20 @@
+From fe4e1de56639f1e6851ff8e47729f703a25dece4 Mon Sep 17 00:00:00 2001
+From: Milan Broz <gmazyland@gmail.com>
+Date: Mon, 29 Jul 2019 14:32:13 +0200
+Subject: Mention limitation of crypt_get_volume_key_size().
+
+---
+ lib/libcryptsetup.h |    2 ++
+ 1 file changed, 2 insertions(+)
+
+--- a/lib/libcryptsetup.h
++++ b/lib/libcryptsetup.h
+@@ -1448,6 +1448,8 @@ uint64_t crypt_get_iv_offset(struct cryp
+  *
+  * @return volume key size
+  *
++ * @note For LUKS2, this function can be used only if there is at least
++ *       one keyslot assigned to data segment.
+  */
+ int crypt_get_volume_key_size(struct crypt_device *cd);
+ 

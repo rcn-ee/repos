@@ -1,0 +1,11 @@
+cryptsetup (2:2.0.3-2) unstable; urgency=medium
+
+    The 'decrypt_openct' keyscript has been removed, since openct itself
+    is no longer developed and was removed from Debian since Jessie.
+
+    The 'precheck' crypttab(5) option is no longer supported.  The
+    precheck for LUKS devices is still hardcoded to `cryptsetup isLuks`;
+    the script refuses to unlock non-LUKS devices (plain dm-crypt and
+    tcrypt devices) containing a known filesystem (other that swap).
+
+ -- Guilhem Moulin <guilhem@debian.org>  Fri, 15 Jun 2018 18:49:45 +0200
