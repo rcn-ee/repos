@@ -172,4 +172,8 @@ suite="eoan"
 archs="armhf source"
 setup_repo
 
+suite="focal"
+archs="armhf source"
+setup_repo
+
 #
