@@ -11,11 +11,11 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee0"
+debian_version="${package_version}-0rcnee1"
 debian_untar=""
 debian_patch=""
 
-dl_mirror="http://git.gfnd.rcn-ee.org:82/cgit/npm-package-node-red-scripts/.git/tree/deploy/buster"
+dl_mirror="http://git.gfnd.rcn-ee.org:82/cgit/npm-package-node-red-scripts/.git/plain/deploy/buster"
 
 v10="v10.15.2"
 
