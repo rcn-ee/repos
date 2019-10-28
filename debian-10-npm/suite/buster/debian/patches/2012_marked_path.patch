@@ -1,0 +1,45 @@
+Author: Diane Trout <diane@ghic.org>
+Forwarded: not-needed
+Description: Use Debian packaged marked and marked-man to build Documentation
+
+--- a/Makefile
++++ b/Makefile
+@@ -151,13 +151,15 @@
+ 
+ marked: node_modules/.bin/marked
+ 
+-node_modules/.bin/marked:
+-	node bin/npm-cli.js install marked --no-global --no-timing --no-save
++#node_modules/.bin/marked:
++#	node bin/npm-cli.js install marked --no-timing --prefer-offline
++.PHONY: node_modules/.bin/marked
+ 
+ marked-man: node_modules/.bin/marked-man
+ 
+-node_modules/.bin/marked-man:
+-	node bin/npm-cli.js install marked-man --no-global --no-timing --no-save
++#node_modules/.bin/marked-man:
++#	node bin/npm-cli.js install marked-man --no-timing --prefer-offline
++.PHONY: node_modules/.bin/marked-man
+ 
+ doc: man
+ 
+--- a/scripts/doc-build.sh
++++ b/scripts/doc-build.sh
+@@ -47,14 +47,14 @@
+ 
+ case $dest in
+   *.[1357])
+-    ./node_modules/.bin/marked-man --roff $src \
++    marked-man --roff $src \
+     | man_replace_tokens > $dest
+     exit $?
+     ;;
+   *.html)
+     url=${dest/html\//}
+     (cat html/dochead.html && \
+-     cat $src | ./node_modules/.bin/marked &&
++     cat $src | marked &&
+      cat html/docfoot.html)\
+     | html_replace_tokens $url \
+     > $dest

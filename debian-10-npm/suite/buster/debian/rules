@@ -4,36 +4,46 @@
 # Uncomment this to turn on verbose mode.
 # export DH_VERBOSE=1
 
-include /usr/share/cdbs/1/rules/utils.mk
-include /usr/share/cdbs/1/rules/debhelper.mk
+export HOME=/tmp
 
-# suppress optional build-dependencies
-CDBS_BUILD_DEPENDS_rules_utils_copyright-check =
+%:
+	dh $@ --with bash-completion
 
-# Suppress copyright-checking some binaries to not upset dpkg-source
-DEB_COPYRIGHT_CHECK_IGNORE_REGEX = ^(html/npm.*\.png|html/favicon\.ico|html/n-.*\.png|debian/(changelog|copyright(|_hints|_newhints))|node_modules/npm-registry-client/node_modules/couch-login/test/fixtures/registry\.couch)$
-
-clean::
-	make docclean
-
-build/npm::
+override_dh_auto_build:
+ifeq (,$(filter nodoc,$(DEB_BUILD_PROFILES)))
 	make doc
+endif
 
-install/npm::
-	dh_bash-completion
+override_dh_auto_clean:
+	-make clean
+	rm -f test/fixtures/config/userconfig-with-gc
 
-# Fix permissions
-# Remove LICENSE files.
-binary-fixup/npm::
+override_dh_clean:
+	dh_clean
+
+override_dh_fixperms:
 	dh_fixperms
-	chmod a+x debian/npm/usr/share/npm/node_modules/*/bin/*
-	chmod a+x debian/npm/usr/share/npm/bin/npm-cli.js
-	chmod a-x debian/npm/usr/share/npm/bin/read-package-json.js
 	chmod a-x debian/npm/usr/share/npm/lib/utils/completion.sh
 	chmod a-x debian/npm/usr/share/npm/node_modules/uid-number/get-uid-gid.js
-	sed -i -e "s|#!/usr/bin/env node|#!/usr/bin/nodejs|" \
-		debian/npm/usr/share/npm/node_modules/opener/opener.js
-	find debian/npm -name LICENSE -delete
-	find debian/npm -name LICENCE -delete
-	find debian/npm -name LICENSE.txt -delete
-	find debian/npm -name LICENSE.md -delete
+	chmod a-x debian/npm/usr/share/npm/node_modules/npm-lifecycle/node-gyp-bin/node-gyp.cmd
+	chmod a+x debian/npm/usr/share/npm/bin/npm-cli.js
+	chmod a+x debian/npm/usr/share/npm/bin/npx-cli.js
+
+override_dh_auto_install:
+	# NO OP
+
+override_dh_install:
+	dh_install
+	find debian/npm -iname LICENSE -delete
+	find debian/npm -iname LICENCE -delete
+	find debian/npm -iname LICENSE.txt -delete
+	find debian/npm -iname LICENSE.md -delete
+	find debian/npm/usr/share/npm/node_modules -name .npmignore -delete
+	find debian/npm/usr/share/npm/node_modules -name .eslintrc.json -delete
+	find debian/npm/usr/share/npm/node_modules -name .eslintrc -delete
+
+override_dh_auto_test:
+	cp debian/npmrc npmrc
+	# the tests need npm-registry-mock module to run
+	# and some of them fail by design
+	#tap --timeout 240 "test/tap/*.js"

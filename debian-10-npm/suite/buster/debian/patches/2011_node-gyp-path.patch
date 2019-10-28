@@ -1,0 +1,36 @@
+Author: Diane Trout <diane@ghic.org>
+Forwarded: not-needed
+Description: Use the Debian packaged version of node-gyp instead
+ of the convenience copy that was removed on repack.
+
+--- a/bin/node-gyp-bin/node-gyp
++++ b/bin/node-gyp-bin/node-gyp
+@@ -1,6 +1,6 @@
+ #!/usr/bin/env sh
+ if [ "x$npm_config_node_gyp" = "x" ]; then
+-  node "`dirname "$0"`/../../node_modules/node-gyp/bin/node-gyp.js" "$@"
++  /usr/bin/node-gyp "$@"
+ else
+   "$npm_config_node_gyp" "$@"
+ fi
+--- a/node_modules/npm-lifecycle/node-gyp-bin/node-gyp
++++ b/node_modules/npm-lifecycle/node-gyp-bin/node-gyp
+@@ -1,6 +1,6 @@
+ #!/usr/bin/env sh
+ if [ "x$npm_config_node_gyp" = "x" ]; then
+-  node "`dirname "$0"`/../../node_modules/node-gyp/bin/node-gyp.js" "$@"
++  /usr/bin/node-gyp "$@"
+ else
+   "$npm_config_node_gyp" "$@"
+ fi
+--- a/node_modules/npm-lifecycle/index.js
++++ b/node_modules/npm-lifecycle/index.js
+@@ -15,7 +15,7 @@
+ const byline = require('byline')
+ const resolveFrom = require('resolve-from')
+ 
+-const DEFAULT_NODE_GYP_PATH = resolveFrom(__dirname, 'node-gyp/bin/node-gyp')
++const DEFAULT_NODE_GYP_PATH = '/usr/bin/node-gyp'
+ 
+ let PATH = 'PATH'
+ 

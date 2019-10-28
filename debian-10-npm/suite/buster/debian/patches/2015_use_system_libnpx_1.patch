@@ -1,0 +1,11 @@
+--- a/Makefile
++++ b/Makefile
+@@ -101,7 +101,7 @@
+ 	@[ -d man/man1 ] || mkdir -p man/man1
+ 	scripts/doc-build.sh $< $@
+ 
+-man/man1/npx.1: node_modules/libnpx/libnpx.1
++man/man1/npx.1: /usr/lib/nodejs/libnpx/libnpx.1
+ 	cat $< | sed s/libnpx/npx/ > $@
+ 
+ man/man5/npm-json.5: man/man5/package.json.5

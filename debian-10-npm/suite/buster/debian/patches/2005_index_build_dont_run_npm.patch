@@ -3,16 +3,14 @@ Description: Do not run cli.js as it depends on many packages.
 Forwarded: https://github.com/isaacs/npm/pull/3873
 Author: Jérémy Lal <kapouer@melix.org>
 Last-Update: 2013-09-08
-Index: npm/scripts/doc-build.sh
-===================================================================
---- npm.orig/scripts/doc-build.sh
-+++ npm/scripts/doc-build.sh
-@@ -4,7 +4,7 @@ src=$1
+--- a/scripts/doc-build.sh
++++ b/scripts/doc-build.sh
+@@ -10,7 +10,7 @@
  dest=$2
  name=$(basename ${src%.*})
  date=$(date -u +'%Y-%m-%d %H:%M:%S')
--version=$(node cli.js -v)
-+version=$(nodejs -e "console.log(require('./package').version)")
+-version=$(node bin/npm-cli.js -v)
++version=$(nodejs bin/npm-cli.js -v)
  
  mkdir -p $(dirname $dest)
  

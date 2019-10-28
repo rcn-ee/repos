@@ -1,0 +1,8 @@
+Test-Command: set -ex
+ ; /usr/bin/npm outdated || true
+ ; cd "$AUTOPKGTEST_TMP"
+ ; /usr/bin/npm list
+ ; /usr/bin/npm init --yes
+ ; /usr/bin/npm install --save-prod --production -q pretty-ms
+Depends: @
+Restrictions: allow-stderr

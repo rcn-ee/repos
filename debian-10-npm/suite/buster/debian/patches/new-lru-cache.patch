@@ -1,0 +1,18 @@
+Description: call new on lru-cache, it's a class
+Forwarded: not-needed
+Last-Update: 2019-01-10
+Author: Jérémy Lal <kapouer@melix.org>
+
+--- a/lib/fetch-package-metadata.js
++++ b/lib/fetch-package-metadata.js
+@@ -25,8 +25,8 @@
+     return done(er, pkg)
+   }
+ }
+-
+-const CACHE = require('lru-cache')({
++const LRUCache = require('lru-cache')
++const CACHE = new LRUCache({
+   max: 300 * 1024 * 1024,
+   length: (p) => p._contentLength
+ })

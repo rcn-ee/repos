@@ -1,35 +1,149 @@
-npm (3.5.2-0ubuntu4rcnee0~buster+20180604) buster; urgency=low
+npm (5.8.0+ds6-4rcnee0~buster+20191028) buster; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Mon, 04 Jun 2018 15:24:54 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Mon, 28 Oct 2019 15:47:45 -0500
 
-npm (3.5.2-0ubuntu4) xenial; urgency=medium
+npm (5.8.0+ds6-4) unstable; urgency=medium
 
-  * Also make npm-cli.js executable. LP: #1523947
+  * Team upload
+  * Add upstream/metadata
+  * Declare compliance with policy 4.3.0
+  * Remove old broken bash_completion file using maintscript (Closes: #917217)
+  * Fix debian/copyright urls
 
- -- LaMont Jones <lamont.jones@canonical.com>  Mon, 07 Dec 2015 12:36:45 -0700
+ -- Xavier Guimard <yadd@debian.org>  Wed, 13 Feb 2019 23:01:53 +0100
 
-npm (3.5.2-0ubuntu3) xenial; urgency=medium
+npm (5.8.0+ds6-3) unstable; urgency=medium
 
-  * More binaries executable.
+  [ Pirate Praveen ]
+  * Update homepage to docs.npmjs.com (as given in package.json)
+    (Closes: #910250)
 
- -- LaMont Jones <lamont.jones@canonical.com>  Mon, 07 Dec 2015 11:58:48 -0700
+  [ Jérémy Lal ]
+  * Patch to fix LRUCache constructor call (Closes: #918889)
 
-npm (3.5.2-0ubuntu2) xenial; urgency=medium
+ -- Jérémy Lal <kapouer@melix.org>  Thu, 10 Jan 2019 12:19:12 +0100
 
-  * Fix bin/npm-cli.js to be executable.
+npm (5.8.0+ds6-2) unstable; urgency=medium
 
- -- Blake Rouse <blake.rouse@canonical.com>  Mon, 07 Dec 2015 12:31:18 -0400
+  * Tighten dependency versions as per package.json
 
-npm (3.5.2-0ubuntu1) xenial; urgency=medium
+ -- Pirate Praveen <praveen@debian.org>  Fri, 26 Oct 2018 12:10:25 +0530
 
-  * Imported Upstream version 3.5.2.
-  * Fix patches to applie to the new upstream version. Remove 2008 patch
-    as its already been fixed upstream. Rename 2009 and 2010 patches to stay
-    in order.
+npm (5.8.0+ds6-1) unstable; urgency=medium
 
- -- Blake Rouse <blake.rouse@canonical.com>  Thu, 03 Dec 2015 00:28:58 -0400
+  * Add set -x to autopkgtest script
+  * Remove copyright notices for chownr and errno (now uses packaged versions)
+  * Drop 2009_ansi-color-table.patch (ansicolors is embedded, ansistyles and
+    text-table packaged) (Closes: #910921)
+  * Add 'npm outdated' command to autopkgtest
+  * Drop embedded copies of libnpx and cacache (they are now packaged)
+  * Switch to new repo url in watch
+
+ -- Pirate Praveen <praveen@debian.org>  Mon, 15 Oct 2018 23:11:45 +0530
+
+npm (5.8.0+ds5-1) unstable; urgency=medium
+
+  * Remove copyright of modules no longer present in node_modules
+  * Update copyright with cme update dpkg-copyright command
+  * Fix permission of embedded node-gyp.cmd
+  * Use node-errno and chownr from system
+  * Remove node_modules/npm-lifecycle/node_modules/.bin (Closes: #909060)
+  * Remove all .bin diectories in node_modules
+
+ -- Pirate Praveen <praveen@debian.org>  Fri, 21 Sep 2018 12:19:32 +0530
+
+npm (5.8.0+ds4-1) unstable; urgency=medium
+
+  * Add init and install commands to autopkgtest
+  * Add a nodoc build profile (for faster builds)
+  * Tighten more dependency versions
+  * Use npm-package-arg and node-promzard from system
+  * Remove node_modules/.bin directory (Closes: #908985)
+  * Stop renaming of node command to nodejs (nodejs >= 6 provides it)
+  * Install npx command and fix its permission
+
+ -- Pirate Praveen <praveen@debian.org>  Mon, 17 Sep 2018 18:38:54 +0530
+
+npm (5.8.0+ds3-1) unstable; urgency=medium
+
+  * Use node-resolve-from from system
+  * Add node-gyp as dependency for npm-lifecycle
+
+ -- Pirate Praveen <praveen@debian.org>  Fri, 14 Sep 2018 15:27:07 +0530
+
+npm (5.8.0+ds2-1) unstable; urgency=medium
+
+  * Tighten all dependencies
+  * Bring back embedded ansicolors (removed by mistake)
+
+ -- Pirate Praveen <praveen@debian.org>  Fri, 14 Sep 2018 14:46:30 +0530
+
+npm (5.8.0+ds1-1) unstable; urgency=medium
+
+  * Remove readable-stream from dependencies as well
+  * Exclude more packaged modules
+
+ -- Pirate Praveen <praveen@debian.org>  Thu, 13 Sep 2018 10:48:46 +0530
+
+npm (5.8.0+ds-3) unstable; urgency=medium
+
+  * Remove dependency on node-readable-stream (not required)
+  * Bump Standards-Version to 4.2.1 (no changes needed)
+  * Bump debhelper compatibility level to 11
+
+ -- Pirate Praveen <praveen@debian.org>  Wed, 12 Sep 2018 23:15:33 +0530
+
+npm (5.8.0+ds-2) unstable; urgency=medium
+
+  * Reupload to unstable 
+
+ -- Pirate Praveen <praveen@debian.org>  Fri, 17 Aug 2018 16:23:18 +0530
+
+npm (5.8.0+ds-1) experimental; urgency=medium
+
+  [ Diane Trout ]
+  * New upstream release (Closes: #870460, #863963, #794890, #857986)
+
+  [ Jérémy Lal ]
+  * Switch to dh
+  * Section javascript
+  * Priority optional
+  * Drop Jonas from uploaders because of the move to dh
+  * Update Homepage url
+  * Update Vcs-Browser url
+  * Fix make clean
+  * Override make targets
+  * Temp workaround for failure with prefix/npmrc
+  * Build-Depends node-tacks, node-tap for running tests
+  * Build-Depends node-require-inject for tests
+  * Drop ruby-ronn from build-dependencies
+  * Actually call make clean
+  * NPMOPTS not needed because it does not have to install modules
+  * Exclude request entirely
+  * Exclude node-gyp entirely
+  * Fix install and noop for auto_install
+  * Use repacksuffix
+  * make clean can fail
+  * Disable tests for now
+  * Fix syntax error in watch
+  * repacksuffix makes uversionmangle useless
+  * Add comment for tests
+  * Ignore case to remove extra license files
+  * watch file syntax again
+  * npm need a recent node-tar
+  * Call /usr/bin/node-gyp instead of second-guess where it is
+
+  [ Pirate Praveen ]
+  * add node-fs-vacuum as dependency
+  * remove all .npmignore files
+  * drop unique-filename, already in the archive
+  * add node-unique-filename as a dependency
+  * add lintian overrides
+  * Reorganize doc-base structure
+
+ -- Pirate Praveen <praveen@debian.org>  Wed, 18 Jul 2018 21:37:49 +0530
 
 npm (1.4.21+ds-2) unstable; urgency=medium
 

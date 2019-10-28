@@ -1,6 +1,7 @@
 version=3
 opts=\
-uversionmangle=s/$/+ds/,\
+repacksuffix=+ds,\
+repack,compression=xz,\
 filenamemangle=s/.*\/v?([\d\.-]+)\.tar\.gz/npm-$1.tar.gz/,\
-dversionmangle=s/\+ds$// \
-https://github.com/isaacs/npm/tags .*/archive/v?([\d\.]+).tar.gz
+dversionmangle=s/\+ds[0-9]*$//,\
+ https://github.com/npm/cli/tags .*/archive/v?([\d\.]+).tar.gz

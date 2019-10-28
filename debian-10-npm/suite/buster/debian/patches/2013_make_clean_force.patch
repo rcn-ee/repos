@@ -1,0 +1,15 @@
+Description: npm nows chokes on cache clean unless --force is added
+Forwarded: https://github.com/npm/npm/pull/20398
+Last-Update: 2018-21-04
+Author: Jérémy Lal <kapouer@melix.org>
+--- a/Makefile
++++ b/Makefile
+@@ -67,7 +67,7 @@
+ 
+ clean: markedclean marked-manclean doc-clean
+ 	rm -rf npmrc
+-	node bin/npm-cli.js cache clean
++	node bin/npm-cli.js cache clean --force
+ 
+ uninstall:
+ 	node bin/npm-cli.js rm npm -g -f
