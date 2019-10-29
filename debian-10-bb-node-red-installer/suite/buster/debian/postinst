@@ -29,7 +29,7 @@ npm_install () {
 
 v10="v10.15.2"
 
-           node_red="node-red-1.0.2-0febcf4f"
+           node_red="node-red-1.0.2"
       node_red_gpio="node-red-contrib-gpio-0.14.0"
 node_red_mjpgcamera="node-red-contrib-mjpgcamera-1.0.4"
   node_red_particle="node-red-contrib-particle-1.1.0"
@@ -48,17 +48,17 @@ node_red_mjpgcamera="node-red-contrib-mjpgcamera-1.0.4"
 	ln -sf /usr/local/lib/node_modules/node-red/red.js /usr/local/bin/node-red
 	ln -sf /usr/local/lib/node_modules/node-red/bin/node-red-pi /usr/local/bin/node-red-pi
 
-	if [ ! -d /root/.node-red/ ] ; then
-		mkdir -p /root/.node-red/ || true
+	if [ ! -d /home/debian/.node-red/ ] ; then
+		mkdir -p /home/debian/.node-red/ || true
 	fi
-	ln -sf /usr/local/lib/node_modules/node-red/settings.js /root/.node-red/settings.js
+	ln -sf /usr/local/lib/node_modules/node-red/settings.js /home/debian/.node-red/settings.js
 
-	if [ ! -d /root/.node-red/lib/flows/ ] ; then
-		mkdir -p /root/.node-red/lib/flows/ || true
+	if [ ! -d /home/debian/.node-red/lib/flows/ ] ; then
+		mkdir -p /home/debian/.node-red/lib/flows/ || true
 	fi
 
-	if [ ! -d /root/.node-red/node_modules/ ] ; then
-		mkdir -p /root/.node-red/node_modules/ || true
+	if [ ! -d /home/debian/.node-red/node_modules/ ] ; then
+		mkdir -p /home/debian/.node-red/node_modules/ || true
 	fi
 
 	case "${node_version}" in
