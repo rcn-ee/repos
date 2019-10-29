@@ -5,7 +5,7 @@
 set -e
 
 package="bb-node-red-installer"
-service="node-red"
+service="nodered"
 
 npm_pkg_install () {
 	echo "${package}:installing:[${npm_file}]"
@@ -96,7 +96,7 @@ node_red_mjpgcamera="node-red-contrib-mjpgcamera-1.0.4"
 
 	if [ -d /etc/avahi/services/ ] ; then
 		#Annouce http server via DNS Sevice Discovery
-		wfile="/etc/avahi/services/node-red.service"
+		wfile="/etc/avahi/services/nodered.service"
 		echo "<?xml version=\"1.0\" standalone='no'?><!--*-nxml-*-->" > ${wfile}
 		echo "<!DOCTYPE service-group SYSTEM \"avahi-service.dtd\">" >> ${wfile}
 		echo "" >> ${wfile}

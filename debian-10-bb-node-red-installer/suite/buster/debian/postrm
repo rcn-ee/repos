@@ -4,7 +4,8 @@ set -e
 
 # drop the temporary mask from prerm
 if [ -d /run/systemd/system ] && [ "$1" = remove ]; then
-	systemctl unmask --runtime node-red.service
+	systemctl unmask --runtime nodered.service || true
+	systemctl unmask --runtime node-red.service || true
 fi
 
 #DEBHELPER#
