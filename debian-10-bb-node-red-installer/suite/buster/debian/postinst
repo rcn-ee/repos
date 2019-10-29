@@ -116,7 +116,8 @@ node_red_mjpgcamera="node-red-contrib-mjpgcamera-1.0.4"
 	fi
 
 	systemctl enable ${service}.socket || true
-	systemctl start ${service} || true
+	systemctl enable ${service} || true
+	#systemctl start ${service} || true
 	echo "${package}:Installed"
 }
 
