@@ -2,10 +2,11 @@
 
 package_name="gcc-pru"
 debian_pkg_name="${package_name}"
-gnupru_release="2018.03-beta-rc3"
-package_version="8.0.1.20180310"
+package_version="10-20200315"
 package_source=""
 src_dir=""
+
+newlib_version="3.3.0"
 
 git_repo=""
 git_sha=""
@@ -16,7 +17,6 @@ debian_version="${package_version}-0rcnee1"
 debian_untar=""
 debian_patch=""
 
-jessie_version="~jessie+20180425"
-stretch_version="~stretch+20180425"
-buster_version="~buster+20180425"
-bionic_version="~bionic+20180425"
+buster_version="~buster+20200318"
+bullseye_version="~bullseye+20200318"
+bionic_version="~bionic+20200318"
