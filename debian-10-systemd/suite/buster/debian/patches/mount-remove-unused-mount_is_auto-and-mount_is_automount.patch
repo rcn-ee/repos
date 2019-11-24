@@ -1,0 +1,34 @@
+From: Tom Yan <tom.ty89@gmail.com>
+Date: Thu, 10 Jan 2019 00:19:43 +0800
+Subject: mount: remove unused mount_is_auto and mount_is_automount
+
+(cherry picked from commit d0fe45cb151774827a3aca4ea5a19856dec9f600)
+---
+ src/core/mount.c | 14 --------------
+ 1 file changed, 14 deletions(-)
+
+diff --git a/src/core/mount.c b/src/core/mount.c
+index 7064fa1..8da818b 100644
+--- a/src/core/mount.c
++++ b/src/core/mount.c
+@@ -101,20 +101,6 @@ static bool mount_is_bind(const MountParameters *p) {
+         return false;
+ }
+ 
+-static bool mount_is_auto(const MountParameters *p) {
+-        assert(p);
+-
+-        return !fstab_test_option(p->options, "noauto\0");
+-}
+-
+-static bool mount_is_automount(const MountParameters *p) {
+-        assert(p);
+-
+-        return fstab_test_option(p->options,
+-                                 "comment=systemd.automount\0"
+-                                 "x-systemd.automount\0");
+-}
+-
+ static bool mount_is_bound_to_device(const Mount *m) {
+         const MountParameters *p;
+ 

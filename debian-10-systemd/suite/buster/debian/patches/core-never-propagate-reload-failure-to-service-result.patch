@@ -1,0 +1,23 @@
+From: Lennart Poettering <lennart@poettering.net>
+Date: Wed, 17 Jul 2019 19:16:33 +0200
+Subject: core: never propagate reload failure to service result
+
+Fixes: #11238
+(cherry picked from commit d611cfa748aaf600832160132774074e808c82c7)
+---
+ src/core/service.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/core/service.c b/src/core/service.c
+index 324dcf2..5f5bcb3 100644
+--- a/src/core/service.c
++++ b/src/core/service.c
+@@ -3335,7 +3335,7 @@ static void service_sigchld_event(Unit *u, pid_t pid, int code, int status) {
+                                 service_exec_command_to_string(s->control_command_id),
+                                 code, status);
+ 
+-                if (s->result == SERVICE_SUCCESS)
++                if (s->state != SERVICE_RELOAD && s->result == SERVICE_SUCCESS)
+                         s->result = f;
+ 
+                 if (s->control_command &&

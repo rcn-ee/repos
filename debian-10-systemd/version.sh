@@ -13,9 +13,9 @@ git_sha=""
 reprepro_dir="s/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-7~deb10u1"
+debian_version="${package_version}-7~deb10u2"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 local_patch="rcnee0"
 
-buster_version="~buster+20190826"
+buster_version="~buster+20191124"

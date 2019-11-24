@@ -1,8 +1,39 @@
-systemd (241-7~deb10u1rcnee0~buster+20190826) buster; urgency=low
+systemd (241-7~deb10u2rcnee0~buster+20191124) buster; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Mon, 26 Aug 2019 16:51:55 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Sun, 24 Nov 2019 11:43:40 -0600
+
+systemd (241-7~deb10u2) buster; urgency=medium
+
+  * core: never propagate reload failure to service result.
+    Fixes a regression introduced in v239 where the main process of a
+    service unit gets killed on reload if ExecReload fails. (Closes: #936032)
+  * shared/seccomp: add sync_file_range2.
+    Some architectures need the arguments to be reordered because of alignment
+    issues. Otherwise, it's the same as sync_file_range.
+    Fixes sync_file_range failures in nspawn containers on arm, ppc.
+    (Closes: #935091)
+  * core: factor root_directory application out of apply_working_directory.
+    Fixes RootDirectory not working when used in combination with User.
+    (Closes: #939408)
+  * shared/bus-util: drop trusted annotation from
+    bus_open_system_watch_bind_with_description().
+    This ensures that access controls on systemd-resolved's D-Bus interface
+    are enforced properly.
+    (CVE-2019-15718, Closes: #939353)
+  * login: add a missing error check for session_set_leader()
+    Fixes assertion due to insufficient function return check.
+    (Closes: #939998)
+  * d/e/r/73-usb-net-by-mac.rules: import net.ifnames only for network devices
+    (Closes: #934589)
+  * d/e/r/73-usb-net-by-mac.rules: skip if iface name was provided by user-space
+  * namespace: make MountFlags=shared work again (Closes: #939551)
+  * mount/generators: do not make unit wanted by its device unit.
+    Among other things, this fixes StopWhenUnneeded=true being broken for
+    mount units. (Closes: #941758)
+
+ -- Michael Biebl <biebl@debian.org>  Wed, 16 Oct 2019 15:24:54 +0200
 
 systemd (241-7~deb10u1) buster; urgency=medium
 

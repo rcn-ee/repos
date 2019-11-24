@@ -1,0 +1,89 @@
+From: Joerg Behrmann <behrmann@physik.fu-berlin.de>
+Date: Fri, 21 Jun 2019 13:51:53 +0200
+Subject: core: factor root_directory application out of
+ apply_working_directory
+
+Fixes: #12498
+(cherry picked from commit fa97f63067a05b4e793fd4e0a2b54797459b4812)
+---
+ src/core/execute.c | 38 ++++++++++++++++++++++++++++----------
+ 1 file changed, 28 insertions(+), 10 deletions(-)
+
+diff --git a/src/core/execute.c b/src/core/execute.c
+index a708231..47518f4 100644
+--- a/src/core/execute.c
++++ b/src/core/execute.c
+@@ -2480,7 +2480,6 @@ static int apply_working_directory(
+                 const ExecContext *context,
+                 const ExecParameters *params,
+                 const char *home,
+-                const bool needs_mount_ns,
+                 int *exit_status) {
+ 
+         const char *d, *wd;
+@@ -2502,15 +2501,9 @@ static int apply_working_directory(
+         else
+                 wd = "/";
+ 
+-        if (params->flags & EXEC_APPLY_CHROOT) {
+-                if (!needs_mount_ns && context->root_directory)
+-                        if (chroot(context->root_directory) < 0) {
+-                                *exit_status = EXIT_CHROOT;
+-                                return -errno;
+-                        }
+-
++        if (params->flags & EXEC_APPLY_CHROOT)
+                 d = wd;
+-        } else
++        else
+                 d = prefix_roota(context->root_directory, wd);
+ 
+         if (chdir(d) < 0 && !context->working_directory_missing_ok) {
+@@ -2521,6 +2514,26 @@ static int apply_working_directory(
+         return 0;
+ }
+ 
++static int apply_root_directory(
++                const ExecContext *context,
++                const ExecParameters *params,
++                const bool needs_mount_ns,
++                int *exit_status) {
++
++        assert(context);
++        assert(exit_status);
++
++        if (params->flags & EXEC_APPLY_CHROOT) {
++                if (!needs_mount_ns && context->root_directory)
++                        if (chroot(context->root_directory) < 0) {
++                                *exit_status = EXIT_CHROOT;
++                                return -errno;
++                        }
++        }
++
++        return 0;
++}
++
+ static int setup_keyring(
+                 const Unit *u,
+                 const ExecContext *context,
+@@ -3425,6 +3438,11 @@ static int exec_child(
+                 }
+         }
+ 
++        /* chroot to root directory first, before we lose the ability to chroot */
++        r = apply_root_directory(context, params, needs_mount_namespace, exit_status);
++        if (r < 0)
++                return log_unit_error_errno(unit, r, "Chrooting to the requested root directory failed: %m");
++
+         if (needs_setuid) {
+                 if (context->user) {
+                         r = enforce_user(context, uid);
+@@ -3457,7 +3475,7 @@ static int exec_child(
+ 
+         /* Apply working directory here, because the working directory might be on NFS and only the user running
+          * this service might have the correct privilege to change to the working directory */
+-        r = apply_working_directory(context, params, home, needs_mount_namespace, exit_status);
++        r = apply_working_directory(context, params, home, exit_status);
+         if (r < 0)
+                 return log_unit_error_errno(unit, r, "Changing to the requested working directory failed: %m");
+ 

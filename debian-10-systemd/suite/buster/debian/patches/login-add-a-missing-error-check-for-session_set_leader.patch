@@ -1,0 +1,29 @@
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Thu, 14 Feb 2019 10:59:13 +0900
+Subject: login: add a missing error check for session_set_leader()
+
+session_set_leader() may fail. If it fails, then manager_start_scope()
+will trigger assertion.
+
+This may be related to RHBZ#1663704.
+
+(cherry picked from commit fe3ab8458b9c0ead4b3e14ac25b342d8c34376fe)
+---
+ src/login/logind-dbus.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/login/logind-dbus.c b/src/login/logind-dbus.c
+index 8ab498f..b9ea370 100644
+--- a/src/login/logind-dbus.c
++++ b/src/login/logind-dbus.c
+@@ -790,7 +790,9 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
+                 goto fail;
+ 
+         session_set_user(session, user);
+-        session_set_leader(session, leader);
++        r = session_set_leader(session, leader);
++        if (r < 0)
++                goto fail;
+ 
+         session->type = t;
+         session->class = c;

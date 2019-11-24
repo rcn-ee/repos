@@ -1,0 +1,58 @@
+From: Franck Bui <fbui@suse.com>
+Date: Wed, 13 Feb 2019 18:45:36 +0100
+Subject: namespace: make MountFlags=shared work again
+
+Since commit 0722b359342d2a9f9e0d453875624387a0ba1be2, the root mountpoint is
+unconditionnally turned to slave which breaks units that are using explicitly
+MountFlags=shared (and no other options that would implicitly require a slave
+root mountpoint).
+
+Here is a test case:
+
+  $ systemctl cat test-shared-mount-flag.service
+  # /etc/systemd/system/test-shared-mount-flag.service
+  [Service]
+  Type=simple
+  ExecStartPre=/usr/bin/mkdir -p /mnt/tmp
+  ExecStart=/bin/sh -c "/usr/bin/mount -t tmpfs -o size=10M none /mnt/tmp && sleep infinity"
+  ExecStop=-/bin/sh -c "/usr/bin/umount /mnt/tmp"
+  MountFlags=shared
+
+  $ systemctl start test-shared-mount-flag.service
+  $ findmnt /mnt/tmp
+  $
+
+Mount on /mnt/tmp is not visible from the host although MountFlags=shared was
+used.
+
+This patch fixes that and turns the root mountpoint to slave when it's really
+required.
+
+(cherry picked from commit 37ed15d7edaf59a1fc7c9e3552cd93a83f3814ef)
+---
+ src/core/execute.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/core/execute.c b/src/core/execute.c
+index 47518f4..f2a4c54 100644
+--- a/src/core/execute.c
++++ b/src/core/execute.c
+@@ -1839,7 +1839,7 @@ static bool exec_needs_mount_namespace(
+         if (context->n_temporary_filesystems > 0)
+                 return true;
+ 
+-        if (context->mount_flags != 0)
++        if (!IN_SET(context->mount_flags, 0, MS_SHARED))
+                 return true;
+ 
+         if (context->private_tmp && runtime && (runtime->tmp_dir || runtime->var_tmp_dir))
+@@ -2435,6 +2435,9 @@ static int apply_mount_namespace(
+         else
+                 ns_info = (NamespaceInfo) {};
+ 
++        if (context->mount_flags == MS_SHARED)
++                log_unit_debug(u, "shared mount propagation hidden by other fs namespacing unit settings: ignoring");
++
+         r = setup_namespace(root_dir, root_image,
+                             &ns_info, context->read_write_paths,
+                             needs_sandboxing ? context->read_only_paths : NULL,

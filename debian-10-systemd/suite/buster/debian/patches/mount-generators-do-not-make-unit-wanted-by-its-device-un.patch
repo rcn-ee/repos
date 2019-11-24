@@ -1,0 +1,58 @@
+From: Tom Yan <tom.ty89@gmail.com>
+Date: Wed, 9 Jan 2019 23:35:24 +0800
+Subject: mount/generators: do not make unit wanted by its device unit
+
+As device units will be reloaded by systemd whenever the corresponding device generates a "changed" event, if the mount unit / cryptsetup service is wanted by its device unit, the former can be restarted by systemd unexpectedly after the user stopped them explicitly. It is not sensible at all and can be considered dangerous. Neither is the behaviour conventional (as `auto` in fstab should only affect behaviour on boot and `mount -a`) or ever documented at all (not even in systemd, see systemd.mount(5) and crypttab(5)).
+
+(cherry picked from commit 142b8142d7bb84f07ac33fc00527a4d48ac8ef9f)
+---
+ src/core/mount.c                      | 6 +-----
+ src/cryptsetup/cryptsetup-generator.c | 4 ----
+ 2 files changed, 1 insertion(+), 9 deletions(-)
+
+diff --git a/src/core/mount.c b/src/core/mount.c
+index c31cad6..7064fa1 100644
+--- a/src/core/mount.c
++++ b/src/core/mount.c
+@@ -338,7 +338,6 @@ static int mount_add_mount_dependencies(Mount *m) {
+ }
+ 
+ static int mount_add_device_dependencies(Mount *m) {
+-        bool device_wants_mount;
+         UnitDependencyMask mask;
+         MountParameters *p;
+         UnitDependency dep;
+@@ -368,9 +367,6 @@ static int mount_add_device_dependencies(Mount *m) {
+         if (path_equal(m->where, "/"))
+                 return 0;
+ 
+-        device_wants_mount =
+-                mount_is_auto(p) && !mount_is_automount(p) && MANAGER_IS_SYSTEM(UNIT(m)->manager);
+-
+         /* Mount units from /proc/self/mountinfo are not bound to devices
+          * by default since they're subject to races when devices are
+          * unplugged. But the user can still force this dep with an
+@@ -381,7 +377,7 @@ static int mount_add_device_dependencies(Mount *m) {
+         /* We always use 'what' from /proc/self/mountinfo if mounted */
+         mask = m->from_proc_self_mountinfo ? UNIT_DEPENDENCY_MOUNTINFO_IMPLICIT : UNIT_DEPENDENCY_FILE;
+ 
+-        r = unit_add_node_dependency(UNIT(m), p->what, device_wants_mount, dep, mask);
++        r = unit_add_node_dependency(UNIT(m), p->what, false, dep, mask);
+         if (r < 0)
+                 return r;
+ 
+diff --git a/src/cryptsetup/cryptsetup-generator.c b/src/cryptsetup/cryptsetup-generator.c
+index 8759a26..ea18e84 100644
+--- a/src/cryptsetup/cryptsetup-generator.c
++++ b/src/cryptsetup/cryptsetup-generator.c
+@@ -287,10 +287,6 @@ static int create_disk(
+                 return log_error_errno(r, "Failed to write unit file %s: %m", n);
+ 
+         if (!noauto) {
+-                r = generator_add_symlink(arg_dest, d, "wants", n);
+-                if (r < 0)
+-                        return r;
+-
+                 r = generator_add_symlink(arg_dest,
+                                           netdev ? "remote-cryptsetup.target" : "cryptsetup.target",
+                                           nofail ? "wants" : "requires", n);

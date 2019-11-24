@@ -1,0 +1,24 @@
+From: =?utf-8?q?Zbigniew_J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Mon, 19 Aug 2019 08:51:39 +0200
+Subject: shared/seccomp: add sync_file_range2
+
+Some architectures need the arguments to be reordered because of alignment
+issues. Otherwise, it's the same as sync_file_range.
+
+(cherry picked from commit a8fb09f57395613d472d7b555db6e0ce802a8c84)
+---
+ src/shared/seccomp-util.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/shared/seccomp-util.c b/src/shared/seccomp-util.c
+index cc58b3c..958128c 100644
+--- a/src/shared/seccomp-util.c
++++ b/src/shared/seccomp-util.c
+@@ -756,6 +756,7 @@ const SyscallFilterSet syscall_filter_sets[_SYSCALL_FILTER_SET_MAX] = {
+                 "msync\0"
+                 "sync\0"
+                 "sync_file_range\0"
++                "sync_file_range2\0"
+                 "syncfs\0"
+         },
+         [SYSCALL_FILTER_SET_SYSTEM_SERVICE] = {
