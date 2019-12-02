@@ -170,6 +170,7 @@ suite="bionic"
 archs="armhf source"
 setup_repo
 
+#eol: July 18, 2019
 suite="cosmic"
 archs="armhf source"
 setup_repo
