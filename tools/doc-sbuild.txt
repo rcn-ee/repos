@@ -45,6 +45,20 @@ apt update ; apt install --yes gnupg2 ; \
 apt-key adv --keyserver keyserver.ubuntu.com --recv-key D284E608A4C46402 ; \
 apt update ; apt-get clean ; echo "done..." ; exit
 
+#debian buster (exp)
+sudo sbuild-shell source:buster-armhf-exp-sbuild
+
+echo "deb http://proxy.gfnd.rcn-ee.org:3142/deb.debian.org/debian buster main" > /etc/apt/sources.list ; \
+echo "deb-src http://proxy.gfnd.rcn-ee.org:3142/deb.debian.org/debian buster main" >> /etc/apt/sources.list ; \
+echo "deb http://repos.rcn-ee.net/debian buster main" >> /etc/apt/sources.list ; \
+echo "deb-src http://repos.rcn-ee.net/debian buster main" >> /etc/apt/sources.list ; \
+echo "deb http://repos.rcn-ee.net/debian-exp buster main" >> /etc/apt/sources.list ; \
+echo "deb-src http://repos.rcn-ee.net/debian-exp buster main" >> /etc/apt/sources.list ; \
+cat /etc/apt/sources.list ; \
+apt update ; apt install --yes gnupg2 ; \
+apt-key adv --keyserver keyserver.ubuntu.com --recv-key D284E608A4C46402 ; \
+apt update ; apt-get clean ; echo "done..." ; exit
+
 #debian bullseye:
 sudo sbuild-shell source:bullseye-armhf-sbuild
 
@@ -78,7 +92,18 @@ echo "deb-src http://repos.rcn-ee.net/ubuntu bionic main" >> /etc/apt/sources.li
 cat /etc/apt/sources.list ; \
 apt update ; apt install --yes gnupg2 ; \
 apt-key adv --keyserver keyserver.ubuntu.com --recv-key D284E608A4C46402 ; \
-apt update ; apt-get --yes --allow-unauthenticated install apt-transport-https rcn-ee-archive-keyring ; \
+apt update ; apt-get clean ; echo "done..." ; exit
+
+#ubuntu focal
+sudo sbuild-shell source:focal-armhf-sbuild
+
+echo "deb http://proxy.gfnd.rcn-ee.org:3142/ports.ubuntu.com focal main universe" > /etc/apt/sources.list ; \
+echo "deb-src http://proxy.gfnd.rcn-ee.org:3142/ports.ubuntu.com focal main universe" >> /etc/apt/sources.list ; \
+echo "deb http://repos.rcn-ee.net/ubuntu focal main" >> /etc/apt/sources.list ; \
+echo "deb-src http://repos.rcn-ee.net/ubuntu focal main" >> /etc/apt/sources.list ; \
+cat /etc/apt/sources.list ; \
+apt update ; apt install --yes gnupg2 ; \
+apt-key adv --keyserver keyserver.ubuntu.com --recv-key D284E608A4C46402 ; \
 apt update ; apt-get clean ; echo "done..." ; exit
 
 #
