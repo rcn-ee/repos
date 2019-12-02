@@ -112,6 +112,16 @@ suite="stretch"
 archs="armhf source"
 setup_repo
 
+dist="debian-exp"
+suite="buster"
+archs="armhf source"
+setup_repo
+
+dist="debian-exp"
+suite="bullseye"
+archs="armhf source"
+setup_repo
+
 dist="debian-machinekit"
 suite="wheezy"
 archs="armhf source"
