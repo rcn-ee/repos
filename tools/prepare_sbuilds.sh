@@ -6,7 +6,7 @@ if ! id | grep -q root; then
 fi
 
 #proxy=""
-proxy="apt-proxy:3142/"
+proxy="proxy.gfnd.rcn-ee.org:3142/"
 
 debian_server="deb.debian.org/debian"
 ubuntu_server="ports.ubuntu.com"
@@ -61,6 +61,12 @@ arch="armhf"
 options="--exclude=debfoster"
 setup_update_sbuild
 
+dist="buster"
+flavor="-exp"
+arch="armhf"
+options="--exclude=debfoster --chroot-suffix=${flavor}-sbuild"
+setup_update_sbuild
+
 dist="bullseye"
 unset flavor
 arch="armhf"
@@ -81,4 +87,11 @@ unset flavor
 arch="armhf"
 options="--exclude=debfoster"
 setup_update_sbuild
+
+dist="focal"
+unset flavor
+arch="armhf"
+options="--exclude=debfoster"
+setup_update_sbuild
+
 #
