@@ -36,9 +36,9 @@ override_dh_auto_configure:
 	$(node_bin) --version
 	echo "npm --version"
 	$(node_bin) $(npm_bin) --version
-	env
-	PATH=/opt/node-red/bin:$PATH
-	env
+	env | grep PATH
+	PATH=/opt/node-red/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+	env | grep PATH
 	echo "Fake Install: node-red@$(node_red_version)"
 	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp node-red@$(node_red_version)
 	cp -v debian/use-systemd.diff /tmp/lib/node_modules/node-red/
