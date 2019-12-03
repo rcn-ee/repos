@@ -31,6 +31,7 @@ override_dh_auto_configure:
 	rm -rf /opt/node-red/include/node/openssl/archs/linux*-s390x/
 	rm -rf /opt/node-red/include/node/openssl/archs/solaris*/
 	rm -rf /opt/node-red/lib/node_modules/npm/changelogs/
+	export NODE_PATH=/opt/node-red/lib/node_modules
 	echo "node --version"
 	$(node_bin) --version
 	echo "npm --version"
@@ -40,8 +41,7 @@ override_dh_auto_configure:
 	cp -v debian/use-systemd.diff /tmp/lib/node_modules/node-red/
 	cd /tmp/lib/node_modules/node-red/
 	ls -lha
-	patch -p1 < ./use-systemd.diff
-	rm -rf ./use-systemd.diff
+	patch -p1 < ./debian/use-systemd.diff 
 	TERM=dumb $(node_bin) $(npm_bin) install systemd@0.3.1
 	ls -lha ./node_modules/
 	TERM=dumb $(node_bin) $(npm_bin) pack
