@@ -36,12 +36,15 @@ override_dh_auto_configure:
 	$(node_bin) --version
 	echo "npm --version"
 	$(node_bin) $(npm_bin) --version
+	env
+	PATH=/opt/node-red/bin:$PATH
+	env
 	echo "Fake Install: node-red@$(node_red_version)"
 	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp node-red@$(node_red_version)
 	cp -v debian/use-systemd.diff /tmp/lib/node_modules/node-red/
 	cd /tmp/lib/node_modules/node-red/
 	ls -lha
-	patch -p1 < ./debian/use-systemd.diff 
+	patch -p1 < /tmp/lib/node_modules/node-red/use-systemd.diff
 	TERM=dumb $(node_bin) $(npm_bin) install systemd@0.3.1
 	ls -lha ./node_modules/
 	TERM=dumb $(node_bin) $(npm_bin) pack
