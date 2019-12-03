@@ -12,4 +12,6 @@ override_dh_auto_configure:
 	wget --directory-prefix /opt/node-red/ https://nodejs.org/dist/latest-v10.x/node-v10.17.0-linux-armv7l.tar.xz
 	tar xf /opt/node-red/node-v10.17.0-linux-armv7l.tar.xz -C /opt/node-red/ --strip-components 1
 	rm -rf /opt/node-red/node-v10.17.0-linux-armv7l.tar.xz
+	mkdir -p ./tmp/opt/node-red/
+	mv -v /opt/node-red/* ./tmp/opt/node-red/
 
