@@ -7,9 +7,6 @@ export DH_VERBOSE=1
 node_bin=/opt/node-red/bin/node
 npm_bin=/opt/node-red/bin/npm
 
-npm_pre_options="--unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp"
-npm_options="--unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/node-red"
-
 nodejs=v10.17.0
 
 node_red_version=1.0.3
@@ -39,7 +36,7 @@ override_dh_auto_configure:
 	echo "npm --version"
 	$(node_bin) $(npm_bin) --version
 	echo "Fake Install: node-red@$(node_red_version)"
-	TERM=dumb $(node_bin) $(npm_bin) install -g $(npm_pre_options) node-red@$(node_red_version)
+	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp node-red@$(node_red_version)
 	cp -v debian/use-systemd.diff /tmp/lib/node_modules/node-red/
 	cd /tmp/lib/node_modules/node-red/
 	patch -p1 < /tmp/lib/node_modules/node-red/use-systemd.diff
@@ -49,7 +46,7 @@ override_dh_auto_configure:
 	TERM=dumb $(node_bin) $(npm_bin) pack
 	cd -
 	echo "Real Install: node-red@$(node_red_version)"
-	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/node-red/*.tgz $(npm_options) --no-save
+	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/node-red/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/node-red --no-save
 	echo "move /opt/node-red/ to ./tmp/opt/node-red/"
 	mkdir -p ./tmp/opt/node-red/
 	mv /opt/node-red/* ./tmp/opt/node-red/
