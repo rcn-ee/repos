@@ -4,7 +4,15 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
+node_bin=/opt/node-red/bin/node
+npm_bin=/opt/node-red/bin/npm
+
+npm_pre_options="--unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp"
+npm_options="--unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/node-red"
+
 nodejs=v10.17.0
+
+node_red_version=1.0.3
 
 %:
 	dh $@
@@ -26,7 +34,23 @@ override_dh_auto_configure:
 	rm -rf /opt/node-red/include/node/openssl/archs/linux*-s390x/
 	rm -rf /opt/node-red/include/node/openssl/archs/solaris*/
 	rm -rf /opt/node-red/lib/node_modules/npm/changelogs/
-	echo "move to ./tmp/opt/node-red/"
+	echo "node --version"
+	$(node_bin) --version
+	echo "npm --version"
+	$(node_bin) $(npm_bin) --version
+	echo "Fake Install: node-red@$(node_red_version)"
+	TERM=dumb $(node_bin) $(npm_bin) install -g $(npm_pre_options) node-red@$(node_red_version)
+	cp -v debian/use-systemd.diff /tmp/lib/node_modules/node-red/
+	cd /tmp/lib/node_modules/node-red/
+	patch -p1 < /tmp/lib/node_modules/node-red/use-systemd.diff
+	rm -rf /tmp/lib/node_modules/node-red/use-systemd.diff
+	TERM=dumb $(node_bin) $(npm_bin) install systemd@0.3.1
+	ls -lha ./node_modules/
+	TERM=dumb $(node_bin) $(npm_bin) pack
+	cd -
+	echo "Real Install: node-red@$(node_red_version)"
+	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/node-red/*.tgz $(npm_options) --no-save
+	echo "move /opt/node-red/ to ./tmp/opt/node-red/"
 	mkdir -p ./tmp/opt/node-red/
 	mv /opt/node-red/* ./tmp/opt/node-red/
 
