@@ -4,14 +4,29 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
+nodejs=v10.17.0
+
 %:
 	dh $@
 
 override_dh_auto_configure:
 	mkdir -p /opt/node-red/
-	wget --directory-prefix /opt/node-red/ https://nodejs.org/dist/latest-v10.x/node-v10.17.0-linux-armv7l.tar.xz
-	tar xf /opt/node-red/node-v10.17.0-linux-armv7l.tar.xz -C /opt/node-red/ --strip-components 1
-	rm -rf /opt/node-red/node-v10.17.0-linux-armv7l.tar.xz
+	wget --directory-prefix /opt/node-red/ https://nodejs.org/dist/latest-v10.x/node-$(nodejs)-linux-armv7l.tar.xz
+	tar xf /opt/node-red/node-$(nodejs)-linux-armv7l.tar.xz -C /opt/node-red/ --strip-components 1
+	rm -rf /opt/node-red/node-$(nodejs)-linux-armv7l.tar.xz
+	echo "cleanup"...
+	rm -rf /opt/node-red/include/node/openssl/archs/BSD-x86_64*/
+	rm -rf /opt/node-red/include/node/openssl/archs/VC-WIN*/
+	rm -rf /opt/node-red/include/node/openssl/archs/aix*/
+	rm -rf /opt/node-red/include/node/openssl/archs/darwin*/
+	rm -rf /opt/node-red/include/node/openssl/archs/linux-aarch64/
+	rm -rf /opt/node-red/include/node/openssl/archs/linux-elf/
+	rm -rf /opt/node-red/include/node/openssl/archs/linux-ppc*/
+	rm -rf /opt/node-red/include/node/openssl/archs/linux-x*/
+	rm -rf /opt/node-red/include/node/openssl/archs/linux*-s390x/
+	rm -rf /opt/node-red/include/node/openssl/archs/solaris*/
+	rm -rf /opt/node-red/lib/node_modules/npm/changelogs/
+	echo "move to ./tmp/opt/node-red/"
 	mkdir -p ./tmp/opt/node-red/
-	mv -v /opt/node-red/* ./tmp/opt/node-red/
+	mv /opt/node-red/* ./tmp/opt/node-red/
 
