@@ -4,7 +4,7 @@
 
 package_name="c9-core-installer"
 debian_pkg_name="${package_name}"
-package_version="3.1.5000.git20180223.1_really3.1.4056.git20171215"
+package_version="3.1.5000.git20180223.1~really3.1.4056.git20171215"
 package_source=""
 src_dir=""
 
