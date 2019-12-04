@@ -40,6 +40,8 @@ override_dh_auto_configure:
 	$(node_bin) --version
 	echo "npm --version"
 	$(node_bin) $(npm_bin) --version
+	echo "python2 --version"
+	/usr/bin/python2 --version
 	env | grep PATH
 	echo "Fake Install: node-red@$(node_red_version)"
 	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp node-red@$(node_red_version)
