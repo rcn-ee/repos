@@ -15,6 +15,7 @@ npm_bin=/opt/node-red/bin/npm
 nodejs=v10.17.0
 
 node_red_version=1.0.3
+node_red_dashboard_version=2.19.1
 
 %:
 	dh $@
@@ -43,16 +44,24 @@ override_dh_auto_configure:
 	echo "python2 --version"
 	/usr/bin/python2 --version
 	env | grep PATH
+	echo "node-red"
 	echo "Fake Install: node-red@$(node_red_version)"
 	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp node-red@$(node_red_version)
 	cp -v debian/use-systemd.diff /tmp/lib/node_modules/node-red/
 	cd /tmp/lib/node_modules/node-red/ ; patch -p1 < /tmp/lib/node_modules/node-red/use-systemd.diff ; rm /tmp/lib/node_modules/node-red/use-systemd.diff
 	cd /tmp/lib/node_modules/node-red/ ; TERM=dumb $(node_bin) $(npm_bin) install systemd@0.3.1
-	cd /tmp/lib/node_modules/node-red/ ; ls -lha ./node_modules/
 	cd /tmp/lib/node_modules/node-red/ ; TERM=dumb $(node_bin) $(npm_bin) pack
 	echo "Real Install: node-red@$(node_red_version)"
 	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/node-red/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/node-red --no-save
-	echo "move /opt/node-red/ to ./tmp/opt/node-red/"
+	rm -rf /tmp/lib/node_modules/node-red/
+	echo "node-red-dashboard"
+	echo "Fake Install: node-red-dashboard@$(node_red_dashboard_version)"
+	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp node-red-dashboard@$(node_red_dashboard_version)
+	cd /tmp/lib/node_modules/node-red-dashboard/ ; TERM=dumb $(node_bin) $(npm_bin) pack
+	echo "Real Install: node-red-dashboard@$(node_red_dashboard_version)"
+	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/node-red-dashboard/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/node-red --no-save
+	rm -rf /tmp/lib/node_modules/node-red/
+	echo "move /opt/node-red/ to ./tmp/opt/node-red-dashboard/"
 	mkdir -p ./tmp/opt/node-red/
 	mv /opt/node-red/* ./tmp/opt/node-red/
 
