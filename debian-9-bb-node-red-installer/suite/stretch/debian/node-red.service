@@ -2,11 +2,13 @@
 Description=Start Node-RED
 
 [Service]
-Environment=HOME=/root
-WorkingDirectory=/root
+Environment=HOME=/var/lib/node-red
+WorkingDirectory=/var/lib/node-red
 ExecStart=/usr/bin/node-red.sh
 SyslogIdentifier=Node-RED
 RemainAfterExit=yes
+User=node-red
+#Group=node-red
 
 [Install]
 WantedBy=multi-user.target
