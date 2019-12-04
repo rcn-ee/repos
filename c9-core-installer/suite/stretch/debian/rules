@@ -4,11 +4,11 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
-export NODE_PATH := /opt/cloud9/lib/node_modules
-export PATH := /opt/cloud9/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+export NODE_PATH := /opt/cloud9_bins/lib/node_modules
+export PATH := /opt/cloud9_bins/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-node_bin=/opt/cloud9/bin/node
-npm_bin=/opt/cloud9/bin/npm
+node_bin=/opt/cloud9_bins/bin/node
+npm_bin=/opt/cloud9_bins/bin/npm
 
 nodejs=v8.16.2
 
@@ -16,22 +16,22 @@ nodejs=v8.16.2
 	dh $@
 
 override_dh_auto_configure:
-	mkdir -p /opt/cloud9/
-	wget --directory-prefix /opt/cloud9/ https://nodejs.org/dist/latest-v8.x/node-$(nodejs)-linux-armv7l.tar.xz
-	tar xf /opt/cloud9/node-$(nodejs)-linux-armv7l.tar.xz -C /opt/cloud9/ --strip-components 1
-	rm -rf /opt/cloud9/node-$(nodejs)-linux-armv7l.tar.xz
+	mkdir -p /opt/cloud9_bins/
+	wget --directory-prefix /cloud9_bins/ https://nodejs.org/dist/latest-v8.x/node-$(nodejs)-linux-armv7l.tar.xz
+	tar xf /opt/cloud9_bins/node-$(nodejs)-linux-armv7l.tar.xz -C /opt/cloud9_bins/ --strip-components 1
+	rm -rf /opt/cloud9_bins/node-$(nodejs)-linux-armv7l.tar.xz
 	echo "cleanup"...
-	rm -rf /opt/cloud9/include/node/openssl/archs/BSD-x86_64*/
-	rm -rf /opt/cloud9/include/node/openssl/archs/VC-WIN*/
-	rm -rf /opt/cloud9/include/node/openssl/archs/aix*/
-	rm -rf /opt/cloud9/include/node/openssl/archs/darwin*/
-	rm -rf /opt/cloud9/include/node/openssl/archs/linux-aarch64/
-	rm -rf /opt/cloud9/include/node/openssl/archs/linux-elf/
-	rm -rf /opt/cloud9/include/node/openssl/archs/linux-ppc*/
-	rm -rf /opt/cloud9/include/node/openssl/archs/linux-x*/
-	rm -rf /opt/cloud9/include/node/openssl/archs/linux*-s390x/
-	rm -rf /opt/cloud9/include/node/openssl/archs/solaris*/
-	rm -rf /opt/cloud9/lib/node_modules/npm/changelogs/
+	rm -rf /opt/cloud9_bins/include/node/openssl/archs/BSD-x86_64*/
+	rm -rf /opt/cloud9_bins/include/node/openssl/archs/VC-WIN*/
+	rm -rf /opt/cloud9_bins/include/node/openssl/archs/aix*/
+	rm -rf /opt/cloud9_bins/include/node/openssl/archs/darwin*/
+	rm -rf /opt/cloud9_bins/include/node/openssl/archs/linux-aarch64/
+	rm -rf /opt/cloud9_bins/include/node/openssl/archs/linux-elf/
+	rm -rf /opt/cloud9_bins/include/node/openssl/archs/linux-ppc*/
+	rm -rf /opt/cloud9_bins/include/node/openssl/archs/linux-x*/
+	rm -rf /opt/cloud9_bins/include/node/openssl/archs/linux*-s390x/
+	rm -rf /opt/cloud9_bins/include/node/openssl/archs/solaris*/
+	rm -rf /opt/cloud9_bins/lib/node_modules/npm/changelogs/
 	echo "node --version"
 	$(node_bin) --version
 	echo "npm --version"
