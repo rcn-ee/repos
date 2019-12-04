@@ -12,7 +12,8 @@ export PATH := /opt/node-red/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/b
 node_bin=/opt/node-red/bin/node
 npm_bin=/opt/node-red/bin/npm
 
-nodejs=v12.13.1
+#nodejs=v12.13.1 (node-red-contrib-gpio broken)
+nodejs=v10.17.0
 
 node_red_version=1.0.3
 node_red_dashboard_version=2.19.1
@@ -28,7 +29,7 @@ beaglebone_io_version=4.0.1
 
 override_dh_auto_configure:
 	mkdir -p /opt/node-red/
-	wget --directory-prefix /opt/node-red/ https://nodejs.org/dist/latest-v12.x/node-$(nodejs)-linux-armv7l.tar.xz
+	wget --directory-prefix /opt/node-red/ https://nodejs.org/dist/latest-v10.x/node-$(nodejs)-linux-armv7l.tar.xz
 	tar xf /opt/node-red/node-$(nodejs)-linux-armv7l.tar.xz -C /opt/node-red/ --strip-components 1
 	rm -rf /opt/node-red/node-$(nodejs)-linux-armv7l.tar.xz
 	echo "cleanup"...
