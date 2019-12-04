@@ -5,111 +5,25 @@
 set -e
 
 package="bb-node-red-installer"
-service="node-red"
+service="nodered"
 
-npm_pkg_install () {
-	echo "${package}:installing:[${npm_file}]"
-	if [ ! -d /usr/local/lib/node_modules/ ] ; then
-		mkdir -p /usr/local/lib/node_modules/ || true
-	fi
-	if [ -d /usr/local/lib/node_modules/${npm_project}/ ] ; then
-		rm -rf /usr/local/lib/node_modules/${npm_project}/ || true
-	fi
+node_red_user="node-red"
+node_red_data_dir="/var/lib/node-red"
 
-	echo "${package}:updating:[/usr/local/lib/node_modules/${npm_project}/]"
-	tar xf /var/cache/${package}/${npm_file} -C /usr/local/lib/node_modules/
-}
+# Create node-red user with home in /var/lib
+echo "Creating/updating ${node_red_user} user account..."
+adduser --system --home /var/lib/node-red --gecos "${node_red_user} user" --shell /bin/sh \
+	--quiet --disabled-password --group ${node_red_user} || {
+echo "Proceeding with existing ${node_red_user} user..."
+  }
 
-npm_install () {
-	node_bin="/usr/bin/nodejs"
+# Give node_red_user ownership of node_red_data_dir
+chown ${node_red_user} ${node_red_data_dir}
 
-	unset node_version
-	node_version=$(/usr/bin/nodejs --version || true)
-	echo "${package}:nodejs:[${node_version}]"
-
-v8="v8.10.0_0.4"
-
-           node_red="node-red-0.19.6-d8b4c1e2"
-      node_red_gpio="node-red-contrib-gpio-0.14.0"
-node_red_mjpgcamera="node-red-contrib-mjpgcamera-1.0.4"
-  node_red_particle="node-red-contrib-particle-1.1.0"
- node_red_dashboard="node-red-dashboard-2.14.0"
-    node_red_serial="node-red-node-serialport-0.7.0"
-   node_red_blockly="node-red-contrib-blockly-1.1.0"
-
-	npm_project="node-red"
-	case "${node_version}" in
-	v8.*)
-		npm_file="${node_red}-${v8}.tar.xz"
-		npm_pkg_install
-		;;
-	esac
-
-	ln -sf /usr/local/lib/node_modules/node-red/red.js /usr/local/bin/node-red
-	ln -sf /usr/local/lib/node_modules/node-red/bin/node-red-pi /usr/local/bin/node-red-pi
-
-	if [ ! -d /root/.node-red/ ] ; then
-		mkdir -p /root/.node-red/ || true
-	fi
-	ln -sf /usr/local/lib/node_modules/node-red/settings.js /root/.node-red/settings.js
-
-	if [ ! -d /root/.node-red/lib/flows/ ] ; then
-		mkdir -p /root/.node-red/lib/flows/ || true
-	fi
-
-	if [ ! -d /root/.node-red/node_modules/ ] ; then
-		mkdir -p /root/.node-red/node_modules/ || true
-	fi
-
-	case "${node_version}" in
-	v8.*)
-		npm_project="node-red-contrib-gpio"
-		npm_file="${node_red_gpio}-${v8}.tar.xz"
-		npm_pkg_install
-
-		npm_project="node-red-contrib-mjpgcamera"
-		npm_file="${node_red_mjpgcamera}-${v8}.tar.xz"
-		npm_pkg_install
-
-		npm_project="node-red-contrib-particle"
-		npm_file="${node_red_particle}-${v8}.tar.xz"
-		npm_pkg_install
-
-		npm_project="node-red-dashboard"
-		npm_file="${node_red_dashboard}-${v8}.tar.xz"
-		npm_pkg_install
-
-		npm_project="node-red-node-serialport"
-		npm_file="${node_red_serial}-${v8}.tar.xz"
-		npm_pkg_install
-
-		npm_project="node-red-contrib-blockly"
-		npm_file="${node_red_blockly}-${v8}.tar.xz"
-		npm_pkg_install
-
-		;;
-	esac
-
-	if [ -d /usr/lib/node_modules/mraa ] ; then
-		ln -sf /usr/lib/node_modules/mraa /usr/local/lib/node_modules || true
-		ln -sf /usr/lib/node_modules/jsupm* /usr/local/lib/node_modules || true
-	fi
-
-	if [ -d /usr/local/lib/node_modules/node-red-node-beaglebone/ ] ; then
-		rm -rf /usr/local/lib/node_modules/node-red-node-beaglebone/ || true
-	fi
-
-	if [ -d /usr/local/lib/node_modules/node-red-node-mongodb/ ] ; then
-		rm -rf /usr/local/lib/node_modules/node-red-node-mongodb/ || true
-	fi
-
-	if [ -d /usr/local/lib/node_modules/node-red-contrib-can/ ] ; then
-		rm -rf /usr/local/lib/node_modules/node-red-contrib-can/ || true
-	fi
-
+main_install () {
 	if [ -d /etc/avahi/services/ ] ; then
 		#Annouce http server via DNS Sevice Discovery
-		wfile="/etc/avahi/services/node-red.service"
+		wfile="/etc/avahi/services/nodered.service"
 		echo "<?xml version=\"1.0\" standalone='no'?><!--*-nxml-*-->" > ${wfile}
 		echo "<!DOCTYPE service-group SYSTEM \"avahi-service.dtd\">" >> ${wfile}
 		echo "" >> ${wfile}
@@ -133,9 +47,44 @@ node_red_mjpgcamera="node-red-contrib-mjpgcamera-1.0.4"
 	echo "${package}:Installed"
 }
 
+cleanup () {
+	if [ -d /usr/local/lib/node_modules/node-red/ ] ; then
+		rm -rf /usr/local/lib/node_modules/node-red/ || true
+	fi
+
+	if [ -d /usr/local/lib/node_modules/node-red-contrib-blockly/ ] ; then
+		rm -rf /usr/local/lib/node_modules/node-red-contrib-blockly/ || true
+	fi
+
+	if [ -d /usr/local/lib/node_modules/node-red-contrib-gpio/ ] ; then
+		rm -rf /usr/local/lib/node_modules/node-red-contrib-gpio/ || true
+	fi
+
+	if [ -d /usr/local/lib/node_modules/node-red-contrib-mjpgcamera/ ] ; then
+		rm -rf /usr/local/lib/node_modules/node-red-contrib-mjpgcamera/ || true
+	fi
+
+	if [ -d /usr/local/lib/node_modules/node-red-contrib-particle/ ] ; then
+		rm -rf /usr/local/lib/node_modules/node-red-contrib-particle/ || true
+	fi
+
+	if [ -d /usr/local/lib/node_modules/node-red-dashboard/ ] ; then
+		rm -rf /usr/local/lib/node_modules/node-red-dashboard/ || true
+	fi
+
+	if [ -d /usr/local/lib/node_modules/node-red-node-serialport/ ] ; then
+		rm -rf /usr/local/lib/node_modules/node-red-node-serialport/ || true
+	fi
+
+	if [ -d /root/.node-red/ ] ; then
+		rm -rf /root/.node-red/ || true
+	fi
+}
+
 case "$1" in
     configure)
-	npm_install
+	main_install
+	cleanup
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
