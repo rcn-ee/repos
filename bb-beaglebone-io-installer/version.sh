@@ -15,12 +15,6 @@ debian_version="${package_version}-0rcnee1"
 debian_untar=""
 debian_patch=""
 
-dl_mirror="http://git.gfnd.rcn-ee.org:82/cgit/npm-package-node-red-scripts/.git/plain/deploy/buster"
-
-v10="v10.15.2"
-
-node_red_bbio="beaglebone-io-4.0.1-5427c71"
-
-debian_dl_1="${dl_mirror}/${node_red_bbio}-${v10}.tar.xz"
-
+stretch_version="~stretch+20191204"
 buster_version="~buster+20191024"
+bionic_version="~bionic+20181201"
