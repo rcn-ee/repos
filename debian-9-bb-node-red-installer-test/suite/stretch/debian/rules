@@ -18,6 +18,11 @@ node_red_version=1.0.3
 node_red_dashboard_version=2.19.1
 node_red_node_serialport_version=0.10.0
 
+node_red_contrib_blockly_version=1.1.0
+node_red_contrib_gpio_version=0.14.0
+node_red_contrib_mjpgcamera_version=1.0.4
+node_red_contrib_particle_version=1.1.0
+
 %:
 	dh $@
 
@@ -69,6 +74,34 @@ override_dh_auto_configure:
 	echo "Real Install: node-red-node-serialport@$(node_red_node_serialport_version)"
 	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/node-red-node-serialport/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/node-red --no-save
 	rm -rf /tmp/lib/node_modules/node-red-node-serialport/
+	echo "node-red-contrib-blockly"
+	echo "Fake Install: node-red-contrib-blockly@$(node_red_contrib_blockly_version)"
+	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp node-red-contrib-blockly@$(node_red_contrib_blockly_version)
+	cd /tmp/lib/node_modules/node-red-contrib-blockly/ ; TERM=dumb $(node_bin) $(npm_bin) pack
+	echo "Real Install: node-red-contrib-blockly@$(node_red_contrib_blockly_version)"
+	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/node-red-contrib-blockly/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/node-red --no-save
+	rm -rf /tmp/lib/node_modules/node-red-contrib-blockly/
+	echo "node-red-contrib-gpio"
+	echo "Fake Install: node-red-contrib-gpio@$(node_red_contrib_gpio_version)"
+	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp node-red-contrib-gpio@$(node_red_contrib_gpio_version)
+	cd /tmp/lib/node_modules/node-red-contrib-gpio/ ; TERM=dumb $(node_bin) $(npm_bin) pack
+	echo "Real Install: node-red-contrib-gpio@$(node_red_contrib_gpio_version)"
+	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/node-red-contrib-gpio/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/node-red --no-save
+	rm -rf /tmp/lib/node_modules/node-red-contrib-gpio/
+	echo "node-red-contrib-mjpgcamera"
+	echo "Fake Install: node-red-contrib-mjpgcamera@$(node_red_contrib_mjpgcamera_version)"
+	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp node-red-contrib-mjpgcamera@$(node_red_contrib_mjpgcamera_version)
+	cd /tmp/lib/node_modules/node-red-contrib-mjpgcamera/ ; TERM=dumb $(node_bin) $(npm_bin) pack
+	echo "Real Install: node-red-contrib-mjpgcamera@$(node_red_contrib_mjpgcamera_version)"
+	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/node-red-contrib-mjpgcamera/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/node-red --no-save
+	rm -rf /tmp/lib/node_modules/node-red-contrib-mjpgcamera/
+	echo "node-red-contrib-particle"
+	echo "Fake Install: node-red-contrib-particle@$(node_red_contrib_particle_version)"
+	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp node-red-contrib-particle@$(node_red_contrib_particle_version)
+	cd /tmp/lib/node_modules/node-red-contrib-particle/ ; TERM=dumb $(node_bin) $(npm_bin) pack
+	echo "Real Install: node-red-contrib-particle@$(node_red_contrib_particle_version)"
+	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/node-red-contrib-particle/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/node-red --no-save
+	rm -rf /tmp/lib/node_modules/node-red-contrib-particle/
 	echo "move /opt/node-red/ to ./tmp/opt/node-red/"
 	mkdir -p ./tmp/opt/node-red/
 	mv /opt/node-red/* ./tmp/opt/node-red/
