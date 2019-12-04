@@ -16,6 +16,7 @@ nodejs=v10.17.0
 
 node_red_version=1.0.3
 node_red_dashboard_version=2.19.1
+node_red_node_serialport_version=0.10.0
 
 %:
 	dh $@
@@ -60,8 +61,15 @@ override_dh_auto_configure:
 	cd /tmp/lib/node_modules/node-red-dashboard/ ; TERM=dumb $(node_bin) $(npm_bin) pack
 	echo "Real Install: node-red-dashboard@$(node_red_dashboard_version)"
 	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/node-red-dashboard/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/node-red --no-save
-	rm -rf /tmp/lib/node_modules/node-red/
-	echo "move /opt/node-red/ to ./tmp/opt/node-red-dashboard/"
+	rm -rf /tmp/lib/node_modules/node-red-dashboard/
+	echo "node-red-node-serialport"
+	echo "Fake Install: node-red-node-serialport@$(node_red_node_serialport_version)"
+	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp node-red-node-serialport@$(node_red_node_serialport_version)
+	cd /tmp/lib/node_modules/node-red-node-serialport/ ; TERM=dumb $(node_bin) $(npm_bin) pack
+	echo "Real Install: node-red-node-serialport@$(node_red_node_serialport_version)"
+	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/node-red-node-serialport/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/node-red --no-save
+	rm -rf /tmp/lib/node_modules/node-red-node-serialport/
+	echo "move /opt/node-red/ to ./tmp/opt/node-red/"
 	mkdir -p ./tmp/opt/node-red/
 	mv /opt/node-red/* ./tmp/opt/node-red/
 
