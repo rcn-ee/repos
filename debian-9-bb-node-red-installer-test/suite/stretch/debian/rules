@@ -4,13 +4,10 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
-#export NODE_PATH=/opt/node-red/lib/node_modules
-#export NODE_PATH
-#export PATH=/opt/node-red/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-#https://unix.stackexchange.com/questions/11530/adding-directory-to-path-through-makefile
-
 export NODE_PATH := /opt/node-red/lib/node_modules
+#PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 #export PATH := /opt/node-red/bin:$(PATH)
+export PATH := /opt/node-red/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 node_bin=/opt/node-red/bin/node
 npm_bin=/opt/node-red/bin/npm
@@ -47,12 +44,10 @@ override_dh_auto_configure:
 	echo "Fake Install: node-red@$(node_red_version)"
 	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp node-red@$(node_red_version)
 	cp -v debian/use-systemd.diff /tmp/lib/node_modules/node-red/
-	cd /tmp/lib/node_modules/node-red/ ; patch -p1 < /tmp/lib/node_modules/node-red/use-systemd.diff
-	ls -lha /tmp/lib/node_modules/node-red/
-	TERM=dumb $(node_bin) $(npm_bin) install systemd@0.3.1
-	ls -lha ./node_modules/
-	TERM=dumb $(node_bin) $(npm_bin) pack
-	cd -
+	cd /tmp/lib/node_modules/node-red/ ; patch -p1 < /tmp/lib/node_modules/node-red/use-systemd.diff ; rm /tmp/lib/node_modules/node-red/use-systemd.diff
+	cd /tmp/lib/node_modules/node-red/ ; TERM=dumb $(node_bin) $(npm_bin) install systemd@0.3.1
+	cd /tmp/lib/node_modules/node-red/ ; ls -lha ./node_modules/
+	cd /tmp/lib/node_modules/node-red/ ; TERM=dumb $(node_bin) $(npm_bin) pack
 	echo "Real Install: node-red@$(node_red_version)"
 	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/node-red/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/node-red --no-save
 	echo "move /opt/node-red/ to ./tmp/opt/node-red/"
