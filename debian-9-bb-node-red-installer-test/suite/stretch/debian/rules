@@ -4,12 +4,13 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
-export NODE_PATH=/opt/node-red/lib/node_modules
+#export NODE_PATH=/opt/node-red/lib/node_modules
+#export NODE_PATH
+#export PATH=/opt/node-red/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+#https://unix.stackexchange.com/questions/11530/adding-directory-to-path-through-makefile
 
-export NODE_PATH
-
-export PATH=/opt/node-red/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-https://unix.stackexchange.com/questions/11530/adding-directory-to-path-through-makefile
+export NODE_PATH := /opt/node-red/lib/node_modules
+export PATH := $(PATH):/opt/node-red/bin
 
 node_bin=/opt/node-red/bin/node
 npm_bin=/opt/node-red/bin/npm
@@ -42,9 +43,7 @@ override_dh_auto_configure:
 	$(node_bin) --version
 	echo "npm --version"
 	$(node_bin) $(npm_bin) --version
-	env | grep PATH
-	
-	env | grep PATH
+	env
 	echo "Fake Install: node-red@$(node_red_version)"
 	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp node-red@$(node_red_version)
 	cp -v debian/use-systemd.diff /tmp/lib/node_modules/node-red/

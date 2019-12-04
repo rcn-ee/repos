@@ -11,8 +11,8 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee11"
+debian_version="${package_version}-0rcnee12"
 debian_untar=""
 debian_patch=""
 
-stretch_version="~stretch+20191203"
+stretch_version="~stretch+20191204"
