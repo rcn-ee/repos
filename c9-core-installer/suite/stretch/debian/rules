@@ -47,9 +47,13 @@ override_dh_auto_configure:
 	echo "build: [./scripts/install-sdk.sh]"
 	echo 1 > ~/.c9/installed
 	cd /opt/cloud9/ ; ./scripts/install-sdk.sh
+	cd /opt/cloud9/ ; $(node_bin) $(npm_bin) install --arch=armhf --unsafe-perms
+	cd /opt/cloud9/ ; rm -Rf build/standalone
+	cd /opt/cloud9/ ; ./scripts/makestandalone.sh --compress
+	cd /opt/cloud9/ ; ./build/build-standalone.sh
 	echo "move /opt/cloud9/ to ./tmp/opt/cloud9/"
 	mkdir -p ./tmp/opt/cloud9_bins/
 	mkdir -p ./tmp/opt/cloud9/
-	mv /opt/cloud9_bins/* ./tmp/opt/cloud9_bins/
+	mv /opt/cloud9_support/* ./tmp/opt/cloud9_support/
 	mv /opt/cloud9/* ./tmp/opt/cloud9/
 
