@@ -31,9 +31,7 @@ beaglebone_io_version=4.0.1
 
 override_dh_auto_configure:
 	mkdir -p /opt/node-red/
-	wget --directory-prefix /opt/node-red/ https://nodejs.org/dist/latest-v10.x/node-$(nodejs_version)-linux-armv7l.tar.xz
-	tar xf /opt/node-red/node-$(nodejs_version)-linux-armv7l.tar.xz -C /opt/node-red/ --strip-components 1
-	rm -rf /opt/node-red/node-$(nodejs_version)-linux-armv7l.tar.xz
+	tar xf ./debian/node-$(nodejs_version)-linux-armv7l.tar.xz -C /opt/node-red/ --strip-components 1
 	echo "cleanup"...
 	rm -rf /opt/node-red/include/node/openssl/archs/BSD-x86_64*/
 	rm -rf /opt/node-red/include/node/openssl/archs/VC-WIN*/
