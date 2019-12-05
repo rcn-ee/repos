@@ -42,7 +42,7 @@ override_dh_auto_configure:
 	env | grep PATH
 	$(node_bin) --version
 	$(node_bin) $(npm_bin) --version
-	git clone -b 3.1.4056.git20171215 https://github.com/rcn-ee/core /opt/cloud9/
+	git clone -b 3.1.4056.git20171215 https://github.com/rcn-ee/core /opt/cloud9/ --depth=1
 	mkdir -p ~/.c9/
 	echo "build: [./scripts/install-sdk.sh]"
 	echo 1 > ~/.c9/installed
@@ -51,8 +51,13 @@ override_dh_auto_configure:
 	cd /opt/cloud9/ ; rm -Rf build/standalone
 	cd /opt/cloud9/ ; ./scripts/makestandalone.sh --compress
 	cd /opt/cloud9/ ; ./build/build-standalone.sh
+	cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install systemd --arch=armhf
+	cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install heapdump --arch=armhf --unsafe-perms
+	cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install connect-flash ua-parser-js engine.io-client simplefunc --arch=armhf --unsafe-perms
+	cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install nak --arch=armhf
+	cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install github:risacher/pty.js --arch=armhf
 	echo "move /opt/cloud9/ to ./tmp/opt/cloud9/"
-	mkdir -p ./tmp/opt/cloud9_bins/
+	mkdir -p ./tmp/opt/cloud9_support/
 	mkdir -p ./tmp/opt/cloud9/
 	mv /opt/cloud9_support/* ./tmp/opt/cloud9_support/
 	mv /opt/cloud9/* ./tmp/opt/cloud9/
