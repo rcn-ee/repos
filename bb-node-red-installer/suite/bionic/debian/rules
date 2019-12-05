@@ -55,7 +55,7 @@ override_dh_auto_configure:
 	wget --directory-prefix /opt/node-red/ https://registry.npmjs.org/npm/-/npm-$(npm_version).tgz
 	tar xf /opt/node-red/npm-$(npm_version).tgz -C /opt/node-red/
 	rm -rf /opt/node-red/npm-$(npm_version).tgz
-	cd /opt/node-red/package/ ; make link
+	cd /opt/node-red/package/ ; make install
 	rm -rf /opt/node-red/package/
 	ls -lha /opt/node-red/bin/
 	env
