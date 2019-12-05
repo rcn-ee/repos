@@ -40,8 +40,7 @@ override_dh_auto_configure:
 	tar xf ./debian/npm-$(npm_version).tgz -C /opt/cloud9_support/
 	cd /opt/cloud9_support/package/ ; make install
 	rm -rf /opt/cloud9_support/package/
-	ls -lha /opt/cloud9_support/bin/
-	env
+	env | grep PATH
 	echo "/opt/node-red/bin/node --version"
 	$(node_bin) --version
 	echo "/opt/node-red/bin/node /opt/node-red/bin/npm --version"
