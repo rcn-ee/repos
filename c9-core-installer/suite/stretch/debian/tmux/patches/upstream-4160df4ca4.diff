@@ -1,0 +1,83 @@
+commit 4160df4ca4035c8caafce7650d0fcbcccc391f80
+Author: nicm <nicm>
+Date:   Wed Oct 12 13:24:07 2016 +0000
+
+    Redraw selection in tty_draw_line, so it appears when redrawing whole
+    pane. Reported by Theo Buehler.
+
+--- a/screen-write.c
++++ b/screen-write.c
+@@ -1139,12 +1139,8 @@
+ 
+ 	/* Write to the screen. */
+ 	if (selected) {
+-		memcpy(&tmp_gc, &s->sel.cell, sizeof tmp_gc);
+-		utf8_copy(&tmp_gc.data, &gc->data);
+-		tmp_gc.attr = tmp_gc.attr & ~GRID_ATTR_CHARSET;
+-		tmp_gc.attr |= gc->attr & GRID_ATTR_CHARSET;
+-		tmp_gc.flags = gc->flags;
+ 		screen_write_flush(ctx);
++		screen_select_cell(s, &tmp_gc, gc);
+ 		ttyctx.cell = &tmp_gc;
+ 		tty_write(tty_cmd_cell, &ttyctx);
+ 		ctx->written++;
+--- a/screen.c
++++ b/screen.c
+@@ -369,6 +369,22 @@
+ 	return (1);
+ }
+ 
++/* Get selected grid cell. */
++void
++screen_select_cell(struct screen *s, struct grid_cell *dst,
++    const struct grid_cell *src)
++{
++	if (!s->sel.flag)
++		return;
++
++	memcpy(dst, &s->sel.cell, sizeof *dst);
++
++	utf8_copy(&dst->data, &src->data);
++	dst->attr = dst->attr & ~GRID_ATTR_CHARSET;
++	dst->attr |= src->attr & GRID_ATTR_CHARSET;
++	dst->flags = src->flags;
++}
++
+ /* Reflow wrapped lines. */
+ void
+ screen_reflow(struct screen *s, u_int new_x)
+--- a/tmux.h
++++ b/tmux.h
+@@ -2115,6 +2115,8 @@
+ void	 screen_clear_selection(struct screen *);
+ int	 screen_check_selection(struct screen *, u_int, u_int);
+ void	 screen_reflow(struct screen *, u_int);
++void	 screen_select_cell(struct screen *, struct grid_cell *,
++	     const struct grid_cell *);
+ 
+ /* window.c */
+ extern struct windows windows;
+--- a/tty.c
++++ b/tty.c
+@@ -650,7 +650,7 @@
+ tty_draw_line(struct tty *tty, const struct window_pane *wp,
+     struct screen *s, u_int py, u_int ox, u_int oy)
+ {
+-	struct grid_cell	 gc;
++	struct grid_cell	 gc, tmp_gc;
+ 	struct grid_line	*gl;
+ 	u_int			 i, sx;
+ 	int			 flags;
+@@ -679,7 +679,11 @@
+ 
+ 	for (i = 0; i < sx; i++) {
+ 		grid_view_get_cell(s->grid, i, py, &gc);
+-		tty_cell(tty, &gc, wp);
++		if (gc.flags & GRID_FLAG_SELECTED) {
++			screen_select_cell(s, &tmp_gc, &gc);
++			tty_cell(tty, &tmp_gc, wp);
++		} else
++			tty_cell(tty, &gc, wp);
+ 	}
+ 
+ 	if (sx < tty->sx) {

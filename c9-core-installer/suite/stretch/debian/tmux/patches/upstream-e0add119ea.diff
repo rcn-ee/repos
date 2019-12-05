@@ -1,0 +1,53 @@
+commit e0add119ea4a6c8d40905a7ad1f7bc3553d20ccc
+Author: nicm <nicm>
+Date:   Wed Oct 12 17:36:52 2016 +0000
+
+    Compare to see if pane status line has actually changed, not just size, and
+    do not draw if pane is not visible.
+
+--- a/screen-redraw.c
++++ b/screen-redraw.c
+@@ -267,8 +267,9 @@
+ 	const char		*fmt;
+ 	struct format_tree	*ft;
+ 	char			*out;
+-	size_t			 outlen, old_size = wp->status_size;
++	size_t			 outlen;
+ 	struct screen_write_ctx	 ctx;
++	struct screen		 old;
+ 
+ 	if (wp == w->active)
+ 		style_apply(&gc, w->options, "pane-active-border-style");
+@@ -280,7 +281,7 @@
+ 	ft = format_create(NULL, 0);
+ 	format_defaults(ft, c, NULL, NULL, wp);
+ 
+-	screen_free(&wp->status_screen);
++	memcpy(&old, &wp->status_screen, sizeof old);
+ 	screen_init(&wp->status_screen, wp->sx, 1, 0);
+ 	wp->status_screen.mode = 0;
+ 
+@@ -299,7 +300,13 @@
+ 	format_free(ft);
+ 
+ 	wp->status_size = outlen;
+-	return (wp->status_size != old_size);
++
++	if (grid_compare(wp->status_screen.grid, old.grid) == 0) {
++		screen_free(&old);
++		return (0);
++	}
++	screen_free(&old);
++	return (1);
+ }
+ 
+ /* Draw pane status. */
+@@ -315,6 +322,8 @@
+ 
+ 	spos = options_get_number(oo, "status-position");
+ 	TAILQ_FOREACH(wp, &w->panes, entry) {
++		if (!window_pane_visible(wp))
++			continue;
+ 		if (pane_status == CELL_STATUS_TOP)
+ 			yoff = wp->yoff - 1;
+ 		else

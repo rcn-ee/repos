@@ -2,11 +2,14 @@ Source: c9-core-installer
 Section: misc
 Priority: extra
 Maintainer: Robert Nelson <robertcnelson@gmail.com>
-Build-Depends:  debhelper (>= 9),
-		python,
-		libpng-dev,
-		git,
-		wget,
+Build-Depends: debhelper (>= 9),
+               dh-autoreconf,
+               python,
+               libpng-dev,
+               libevent-dev,
+               libncurses5-dev,
+               git,
+               wget,
 Standards-Version: 3.9.8
 Homepage: https://github.com/rcn-ee/bb.org-cloud9-core
 
@@ -14,7 +17,7 @@ Package: c9-core-installer
 Replaces: cloud9-installer
 Architecture: armhf
 Pre-Depends: ${misc:Pre-Depends}
-Depends: ${shlibs:Depends}, ${misc:Depends}, ca-certificates, tmux, adduser
+Depends: ${shlibs:Depends}, ${misc:Depends}, ca-certificates, adduser
 Description: c9-core-installer
  c9-core-installer for beagleboard.org
 

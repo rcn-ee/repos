@@ -42,6 +42,23 @@ override_dh_auto_configure:
 	env | grep PATH
 	$(node_bin) --version
 	$(node_bin) $(npm_bin) --version
+	mkdir /opt/tmux/
+	tar xf ./debian/tmux/tmux_2.3.orig.tar.gz -C /opt/tmux/
+	cd /opt/tmux/tmux-2.3/ ; patch -p1 < ./debian/tmux/patches/platform-quirks.diff
+	cd /opt/tmux/tmux-2.3/ ; patch -p1 < ./debian/tmux/patches/lintian-manpage-hyphen.diff
+	cd /opt/tmux/tmux-2.3/ ; patch -p1 < ./debian/tmux/patches/upstream-30086e504c.diff
+	cd /opt/tmux/tmux-2.3/ ; patch -p1 < ./debian/tmux/patches/upstream-44449b305b.diff
+	cd /opt/tmux/tmux-2.3/ ; patch -p1 < ./debian/tmux/patches/upstream-48dd250af1.diff
+	cd /opt/tmux/tmux-2.3/ ; patch -p1 < ./debian/tmux/patches/upstream-1db6d6fea6.diff
+	cd /opt/tmux/tmux-2.3/ ; patch -p1 < ./debian/tmux/patches/upstream-b8f2dd8237.diff
+	cd /opt/tmux/tmux-2.3/ ; patch -p1 < ./debian/tmux/patches/upstream-4160df4ca4.diff
+	cd /opt/tmux/tmux-2.3/ ; patch -p1 < ./debian/tmux/patches/upstream-e0add119ea.diff
+	cd /opt/tmux/tmux-2.3/ ; patch -p1 < ./debian/tmux/patches/upstream-c2f88373e7.diff
+	cd /opt/tmux/tmux-2.3/ ; ./configure LDFLAGS="-static-libgcc" --prefix="/opt/cloud9_support/"
+	cd /opt/tmux/tmux-2.3/ ; make
+	cd /opt/tmux/tmux-2.3/ ; make install
+	rm -rf 	cd /opt/tmux/tmux-2.3
+	tmux -V
 	git clone -b 3.1.4056.git20171215 https://github.com/rcn-ee/core /opt/cloud9/ --depth=1
 	mkdir -p ~/.c9/
 	echo "build: [./scripts/install-sdk.sh]"

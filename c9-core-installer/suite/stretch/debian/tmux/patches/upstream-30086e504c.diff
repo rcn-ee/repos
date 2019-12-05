@@ -1,0 +1,57 @@
+commit 30086e504c8a5389b96b72b81ac8dbefe19e0cf1
+Author: nicm <nicm>
+Date:   Wed Oct 5 22:00:29 2016 +0000
+
+    screen_write_copy tried to be clever and clear the line if it reached
+    the end of the source, but it was wrong and causes problems that are
+    only showing up now we are more aggressive about skipping redundant
+    screen updates. Remove the optimization entirely as more trouble than it
+    is worth to fix (and it'll have to go when BCE is done anyway).
+
+--- a/screen-write.c
++++ b/screen-write.c
+@@ -394,38 +394,18 @@
+ {
+ 	struct screen		*s = ctx->s;
+ 	struct grid		*gd = src->grid;
+-	struct grid_line	*gl;
+ 	struct grid_cell	 gc;
+-	u_int		 	 xx, yy, cx, cy, ax, bx;
++	u_int		 	 xx, yy, cx, cy;
+ 
+ 	cx = s->cx;
+ 	cy = s->cy;
++
+ 	for (yy = py; yy < py + ny; yy++) {
+-		gl = &gd->linedata[yy];
+-		if (yy < gd->hsize + gd->sy) {
+-			/*
+-			 * Find start and end position and copy between
+-			 * them. Limit to the real end of the line then use a
+-			 * clear EOL only if copying to the end, otherwise
+-			 * could overwrite whatever is there already.
+-			 */
+-			if (px > gl->cellsize)
+-				ax = gl->cellsize;
+-			else
+-				ax = px;
+-			if (px + nx == gd->sx && px + nx > gl->cellsize)
+-				bx = gl->cellsize;
+-			else
+-				bx = px + nx;
++		for (xx = px; xx < px + nx; xx++) {
++			grid_get_cell(gd, xx, yy, &gc);
++			screen_write_cell(ctx, &gc);
++		}
+ 
+-			for (xx = ax; xx < bx; xx++) {
+-				grid_get_cell(gd, xx, yy, &gc);
+-				screen_write_cell(ctx, &gc);
+-			}
+-			if (px + nx == gd->sx && px + nx > gl->cellsize)
+-				screen_write_clearendofline(ctx);
+-		} else
+-			screen_write_clearline(ctx);
+ 		cy++;
+ 		screen_write_cursormove(ctx, cx, cy);
+ 	}
