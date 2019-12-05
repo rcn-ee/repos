@@ -11,6 +11,7 @@ export PATH := /opt/node-red/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/b
 
 node_bin=/opt/node-red/bin/node
 npm_bin=/opt/node-red/bin/npm
+npm_bin_js=/opt/node-red/lib/node_modules/npm/bin/npm-cli.js
 
 nodejs_version=v10.17.0
 #nodejs_version=v12.13.1 (node-red-contrib-gpio broken)
@@ -56,7 +57,12 @@ override_dh_auto_configure:
 	rm -rf /opt/node-red/npm-$(npm_version).tgz
 	cd /opt/node-red/package/ ; make link
 	rm -rf /opt/node-red/package/
-	echo "npm --version"
+	env
+	echo "/opt/node-red/bin/node --version"
+	$(node_bin) --version
+	echo "/opt/node-red/bin/node /opt/node-red/lib/node_modules/npm/bin/npm-cli.js --version"
+	$(node_bin) $(npm_js) --version
+	echo "/opt/node-red/bin/node /opt/node-red/bin/npm --version"
 	$(node_bin) $(npm_bin) --version
 	echo "python2 --version"
 	/usr/bin/python2 --version
