@@ -12,16 +12,14 @@ npm_bin=/opt/cloud9_support/bin/npm
 npm_bin_js=/opt/cloud9_support/lib/node_modules/npm/bin/npm-cli.js
 
 nodejs_version=v6.17.1
-npm_version=6.13.2
+npm_version=4.6.1
 
 %:
 	dh $@
 
 override_dh_auto_configure:
 	mkdir -p /opt/cloud9_support/
-	wget --directory-prefix /opt/cloud9_support/ https://nodejs.org/dist/latest-v6.x/node-$(nodejs_version)-linux-armv7l.tar.xz
-	tar xf /opt/cloud9_support/node-$(nodejs_version)-linux-armv7l.tar.xz -C /opt/cloud9_support/ --strip-components 1
-	rm -rf /opt/cloud9_support/node-$(nodejs_version)-linux-armv7l.tar.xz
+	tar xf ./debian/node-$(nodejs_version)-linux-armv7l.tar.xz -C /opt/cloud9_support/ --strip-components 1
 	echo "cleanup"...
 	rm -rf /opt/cloud9_support/include/node/openssl/archs/BSD-x86_64*/
 	rm -rf /opt/cloud9_support/include/node/openssl/archs/VC-WIN*/
@@ -39,9 +37,7 @@ override_dh_auto_configure:
 	rm -rf /opt/cloud9_support/bin/npx
 	echo "node --version"
 	$(node_bin) --version
-	wget --directory-prefix /opt/node-red/ https://registry.npmjs.org/npm/-/npm-$(npm_version).tgz
-	tar xf /opt/cloud9_support/npm-$(npm_version).tgz -C /opt/cloud9_support/
-	rm -rf /opt/cloud9_support/npm-$(npm_version).tgz
+	tar xf ./debian/npm-$(npm_version).tgz -C /opt/cloud9_support/
 	cd /opt/cloud9_support/package/ ; make install
 	rm -rf /opt/cloud9_support/package/
 	ls -lha /opt/cloud9_support/bin/
