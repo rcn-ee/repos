@@ -60,6 +60,7 @@ override_dh_auto_configure:
 	cd /opt/tmux/tmux-2.3/ ; make install
 	rm -rf /opt/tmux/tmux-2.3/
 	tmux -V
+	ldd tmux
 	git clone -b 3.1.4056.git20171215 https://github.com/rcn-ee/core /opt/cloud9/ --depth=1
 	mkdir -p ~/.c9/
 	echo "build: [./scripts/install-sdk.sh]"
@@ -78,5 +79,5 @@ override_dh_auto_configure:
 	mkdir -p ./tmp/opt/cloud9_support/
 	mkdir -p ./tmp/opt/cloud9/build/standalonebuild/
 	mv /opt/cloud9_support/* ./tmp/opt/cloud9_support/
-	mv /opt/cloud9/build/standalonebuild/* ./tmp/cloud9/build/standalonebuild/
+	mv /opt/cloud9/build/standalonebuild/* ./tmp/opt/cloud9/build/standalonebuild/
 
