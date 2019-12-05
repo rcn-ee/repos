@@ -5,16 +5,15 @@
 export DH_VERBOSE=1
 
 export NODE_PATH := /opt/node-red/lib/node_modules
-#PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-#export PATH := /opt/node-red/bin:$(PATH)
 export PATH := /opt/node-red/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 node_bin=/opt/node-red/bin/node
 npm_bin=/opt/node-red/bin/npm
 
-nodejs=v10.17.0
-#nodejs=v12.13.1 (node-red-contrib-gpio broken)
-#	wget --directory-prefix /opt/node-red/ https://nodejs.org/dist/latest-v12.x/node-$(nodejs)-linux-armv7l.tar.xz
+nodejs_version=v10.17.0
+#nodejs_version=v12.13.1 (node-red-contrib-gpio broken)
+#	wget --directory-prefix /opt/node-red/ https://nodejs.org/dist/latest-v12.x/node-$(nodejs_version)-linux-armv7l.tar.xz
+npm_version=6.13.2
 
 node_red_version=1.0.3
 node_red_dashboard_version=2.19.1
@@ -30,9 +29,9 @@ beaglebone_io_version=4.0.1
 
 override_dh_auto_configure:
 	mkdir -p /opt/node-red/
-	wget --directory-prefix /opt/node-red/ https://nodejs.org/dist/latest-v10.x/node-$(nodejs)-linux-armv7l.tar.xz
-	tar xf /opt/node-red/node-$(nodejs)-linux-armv7l.tar.xz -C /opt/node-red/ --strip-components 1
-	rm -rf /opt/node-red/node-$(nodejs)-linux-armv7l.tar.xz
+	wget --directory-prefix /opt/node-red/ https://nodejs_version.org/dist/latest-v10.x/node-$(nodejs_version)-linux-armv7l.tar.xz
+	tar xf /opt/node-red/node-$(nodejs_version)-linux-armv7l.tar.xz -C /opt/node-red/ --strip-components 1
+	rm -rf /opt/node-red/node-$(nodejs_version)-linux-armv7l.tar.xz
 	echo "cleanup"...
 	rm -rf /opt/node-red/include/node/openssl/archs/BSD-x86_64*/
 	rm -rf /opt/node-red/include/node/openssl/archs/VC-WIN*/
@@ -44,9 +43,17 @@ override_dh_auto_configure:
 	rm -rf /opt/node-red/include/node/openssl/archs/linux-x*/
 	rm -rf /opt/node-red/include/node/openssl/archs/linux*-s390x/
 	rm -rf /opt/node-red/include/node/openssl/archs/solaris*/
-	rm -rf /opt/node-red/lib/node_modules/npm/changelogs/
+	echo "Remove Bundled npm"...
+	rm -rf /opt/node-red/lib/node_modules/npm
+	rm -rf /opt/node-red/bin/npm
+	rm -rf /opt/node-red/bin/npx
 	echo "node --version"
 	$(node_bin) --version
+	wget --directory-prefix /opt/node-red/ https://registry.npmjs.org/npm/-/npm-$(npm_version).tgz
+	tar xf /opt/node-red/npm-$(npm_version).tgz -C /opt/node-red/
+	rm -rf /opt/node-red/npm-$(npm_version).tgz
+	cd /opt/node-red/package/ ; make link
+	rm -rf /opt/node-red/package/
 	echo "npm --version"
 	$(node_bin) $(npm_bin) --version
 	echo "python2 --version"
