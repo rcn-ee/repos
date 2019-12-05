@@ -35,15 +35,12 @@ override_dh_auto_configure:
 	rm -rf /opt/cloud9_support/lib/node_modules/npm
 	rm -rf /opt/cloud9_support/bin/npm
 	rm -rf /opt/cloud9_support/bin/npx
-	echo "node --version"
 	$(node_bin) --version
 	tar xf ./debian/npm-$(npm_version).tgz -C /opt/cloud9_support/
 	cd /opt/cloud9_support/package/ ; make install
 	rm -rf /opt/cloud9_support/package/
 	env | grep PATH
-	echo "/opt/node-red/bin/node --version"
 	$(node_bin) --version
-	echo "/opt/node-red/bin/node /opt/node-red/bin/npm --version"
 	$(node_bin) $(npm_bin) --version
 	git clone -b 3.1.4056.git20171215 https://github.com/rcn-ee/core /opt/cloud9/
 	mkdir -p ~/.c9/
