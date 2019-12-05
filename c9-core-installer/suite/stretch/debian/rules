@@ -9,17 +9,19 @@ export PATH := /opt/cloud9_support/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:
 
 node_bin=/opt/cloud9_support/bin/node
 npm_bin=/opt/cloud9_support/bin/npm
+npm_bin_js=/opt/cloud9_support/lib/node_modules/npm/bin/npm-cli.js
 
-nodejs=v6.17.1
+nodejs_version=v6.17.1
+npm_version=6.13.2
 
 %:
 	dh $@
 
 override_dh_auto_configure:
 	mkdir -p /opt/cloud9_support/
-	wget --directory-prefix /opt/cloud9_support/ https://nodejs.org/dist/latest-v6.x/node-$(nodejs)-linux-armv7l.tar.xz
-	tar xf /opt/cloud9_support/node-$(nodejs)-linux-armv7l.tar.xz -C /opt/cloud9_support/ --strip-components 1
-	rm -rf /opt/cloud9_support/node-$(nodejs)-linux-armv7l.tar.xz
+	wget --directory-prefix /opt/cloud9_support/ https://nodejs.org/dist/latest-v6.x/node-$(nodejs_version)-linux-armv7l.tar.xz
+	tar xf /opt/cloud9_support/node-$(nodejs_version)-linux-armv7l.tar.xz -C /opt/cloud9_support/ --strip-components 1
+	rm -rf /opt/cloud9_support/node-$(nodejs_version)-linux-armv7l.tar.xz
 	echo "cleanup"...
 	rm -rf /opt/cloud9_support/include/node/openssl/archs/BSD-x86_64*/
 	rm -rf /opt/cloud9_support/include/node/openssl/archs/VC-WIN*/
@@ -31,10 +33,22 @@ override_dh_auto_configure:
 	rm -rf /opt/cloud9_support/include/node/openssl/archs/linux-x*/
 	rm -rf /opt/cloud9_support/include/node/openssl/archs/linux*-s390x/
 	rm -rf /opt/cloud9_support/include/node/openssl/archs/solaris*/
-	rm -rf /opt/cloud9_support/lib/node_modules/npm/changelogs/
+	echo "Remove Bundled npm"...
+	rm -rf /opt/cloud9_support/lib/node_modules/npm
+	rm -rf /opt/cloud9_support/bin/npm
+	rm -rf /opt/cloud9_support/bin/npx
 	echo "node --version"
 	$(node_bin) --version
-	echo "npm --version"
+	wget --directory-prefix /opt/node-red/ https://registry.npmjs.org/npm/-/npm-$(npm_version).tgz
+	tar xf /opt/cloud9_support/npm-$(npm_version).tgz -C /opt/cloud9_support/
+	rm -rf /opt/cloud9_support/npm-$(npm_version).tgz
+	cd /opt/cloud9_support/package/ ; make install
+	rm -rf /opt/cloud9_support/package/
+	ls -lha /opt/cloud9_support/bin/
+	env
+	echo "/opt/node-red/bin/node --version"
+	$(node_bin) --version
+	echo "/opt/node-red/bin/node /opt/node-red/bin/npm --version"
 	$(node_bin) $(npm_bin) --version
 	git clone -b 3.1.4056.git20171215 https://github.com/rcn-ee/core /opt/cloud9/
 	mkdir -p ~/.c9/

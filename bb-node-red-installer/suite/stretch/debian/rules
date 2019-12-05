@@ -14,7 +14,6 @@ npm_bin_js=/opt/node-red/lib/node_modules/npm/bin/npm-cli.js
 nodejs_version=v10.17.0
 #nodejs_version=v12.13.1 (node-red-contrib-gpio broken)
 #	wget --directory-prefix /opt/node-red/ https://nodejs.org/dist/latest-v12.x/node-$(nodejs_version)-linux-armv7l.tar.xz
-npm_version=6.13.2
 
 node_red_version=1.0.3
 node_red_dashboard_version=2.19.1
@@ -44,23 +43,10 @@ override_dh_auto_configure:
 	rm -rf /opt/node-red/include/node/openssl/archs/linux-x*/
 	rm -rf /opt/node-red/include/node/openssl/archs/linux*-s390x/
 	rm -rf /opt/node-red/include/node/openssl/archs/solaris*/
-	echo "Remove Bundled npm"...
-	rm -rf /opt/node-red/lib/node_modules/npm
-	rm -rf /opt/node-red/bin/npm
-	rm -rf /opt/node-red/bin/npx
 	echo "node --version"
 	$(node_bin) --version
-	wget --directory-prefix /opt/node-red/ https://registry.npmjs.org/npm/-/npm-$(npm_version).tgz
-	tar xf /opt/node-red/npm-$(npm_version).tgz -C /opt/node-red/
-	rm -rf /opt/node-red/npm-$(npm_version).tgz
-	cd /opt/node-red/package/ ; make install
-	rm -rf /opt/node-red/package/
-	ls -lha /opt/node-red/bin/
-	env
 	echo "/opt/node-red/bin/node --version"
 	$(node_bin) --version
-	echo "/opt/node-red/bin/node /opt/node-red/lib/node_modules/npm/bin/npm-cli.js --version"
-	$(node_bin) $(npm_bin_js) --version
 	echo "/opt/node-red/bin/node /opt/node-red/bin/npm --version"
 	$(node_bin) $(npm_bin) --version
 	echo "python2 --version"
