@@ -5,33 +5,33 @@
 export DH_VERBOSE=1
 
 export NODE_PATH := /opt/cloud9_bins/lib/node_modules
-export PATH := /opt/cloud9_bins/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+export PATH := /opt/cloud9_support/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-node_bin=/opt/cloud9_bins/bin/node
-npm_bin=/opt/cloud9_bins/bin/npm
+node_bin=/opt/cloud9_support/bin/node
+npm_bin=/opt/cloud9_support/bin/npm
 
-nodejs=v8.16.2
+nodejs=v6.17.1
 
 %:
 	dh $@
 
 override_dh_auto_configure:
-	mkdir -p /opt/cloud9_bins/
-	wget --directory-prefix /opt/cloud9_bins/ https://nodejs.org/dist/latest-v8.x/node-$(nodejs)-linux-armv7l.tar.xz
-	tar xf /opt/cloud9_bins/node-$(nodejs)-linux-armv7l.tar.xz -C /opt/cloud9_bins/ --strip-components 1
-	rm -rf /opt/cloud9_bins/node-$(nodejs)-linux-armv7l.tar.xz
+	mkdir -p /opt/cloud9_support/
+	wget --directory-prefix /opt/cloud9_support/ https://nodejs.org/dist/latest-v6.x/node-$(nodejs)-linux-armv7l.tar.xz
+	tar xf /opt/cloud9_support/node-$(nodejs)-linux-armv7l.tar.xz -C /opt/cloud9_support/ --strip-components 1
+	rm -rf /opt/cloud9_support/node-$(nodejs)-linux-armv7l.tar.xz
 	echo "cleanup"...
-	rm -rf /opt/cloud9_bins/include/node/openssl/archs/BSD-x86_64*/
-	rm -rf /opt/cloud9_bins/include/node/openssl/archs/VC-WIN*/
-	rm -rf /opt/cloud9_bins/include/node/openssl/archs/aix*/
-	rm -rf /opt/cloud9_bins/include/node/openssl/archs/darwin*/
-	rm -rf /opt/cloud9_bins/include/node/openssl/archs/linux-aarch64/
-	rm -rf /opt/cloud9_bins/include/node/openssl/archs/linux-elf/
-	rm -rf /opt/cloud9_bins/include/node/openssl/archs/linux-ppc*/
-	rm -rf /opt/cloud9_bins/include/node/openssl/archs/linux-x*/
-	rm -rf /opt/cloud9_bins/include/node/openssl/archs/linux*-s390x/
-	rm -rf /opt/cloud9_bins/include/node/openssl/archs/solaris*/
-	rm -rf /opt/cloud9_bins/lib/node_modules/npm/changelogs/
+	rm -rf /opt/cloud9_support/include/node/openssl/archs/BSD-x86_64*/
+	rm -rf /opt/cloud9_support/include/node/openssl/archs/VC-WIN*/
+	rm -rf /opt/cloud9_support/include/node/openssl/archs/aix*/
+	rm -rf /opt/cloud9_support/include/node/openssl/archs/darwin*/
+	rm -rf /opt/cloud9_support/include/node/openssl/archs/linux-aarch64/
+	rm -rf /opt/cloud9_support/include/node/openssl/archs/linux-elf/
+	rm -rf /opt/cloud9_support/include/node/openssl/archs/linux-ppc*/
+	rm -rf /opt/cloud9_support/include/node/openssl/archs/linux-x*/
+	rm -rf /opt/cloud9_support/include/node/openssl/archs/linux*-s390x/
+	rm -rf /opt/cloud9_support/include/node/openssl/archs/solaris*/
+	rm -rf /opt/cloud9_support/lib/node_modules/npm/changelogs/
 	echo "node --version"
 	$(node_bin) --version
 	echo "npm --version"
@@ -41,7 +41,9 @@ override_dh_auto_configure:
 	echo "build: [./scripts/install-sdk.sh]"
 	echo 1 > ~/.c9/installed
 	cd /opt/cloud9/ ; ./scripts/install-sdk.sh
-	echo "move //opt/cloud9/ to ./tmp/opt/cloud9/"
+	echo "move /opt/cloud9/ to ./tmp/opt/cloud9/"
+	mkdir -p ./tmp/opt/cloud9_bins/
 	mkdir -p ./tmp/opt/cloud9/
+	mv /opt/cloud9_bins/* ./tmp/opt/cloud9_bins/
 	mv /opt/cloud9/* ./tmp/opt/cloud9/
 
