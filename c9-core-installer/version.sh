@@ -13,11 +13,11 @@ git_sha=""
 reprepro_dir="c/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee14"
+debian_version="${package_version}-0rcnee15"
 debian_untar=""
 debian_patch=""
 
 debian_dl_1="https://nodejs.org/dist/latest-v6.x/node-v6.17.1-linux-armv7l.tar.xz"
 debian_dl_2="https://registry.npmjs.org/npm/-/npm-4.6.1.tgz"
 
-stretch_version="~stretch+20191205"
+buster_version="~buster+20191207"
