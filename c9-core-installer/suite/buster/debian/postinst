@@ -6,17 +6,6 @@ set -e
 
 package="c9-core-installer"
 
-core_version="3.1.4056.git20171215"
-v10="v10.15.2"
-datestamp="20190710"
-#c9-core_3.1.4056.git20171215-v10.15.2-20190710-build.tar.xz
-
-wfile_10_x="c9-core_${core_version}-${v10}-${datestamp}-build.tar.xz"
-
-extract_dir="/opt/cloud9/build/"
-
-export NODE_PATH=/usr/local/lib/node_modules
-
 npm_install () {
 	if [ -d /etc/avahi/ ] ; then
 		#Annouce http server via DNS Sevice Discovery
@@ -39,46 +28,17 @@ npm_install () {
 	fi
 }
 
-dl_install() {
-	unset node_version
-	node_version=$(/usr/bin/nodejs --version || true)
-	case "${node_version}" in
-	v10.*)
-		wfile=${wfile_10_x}
-		;;
-	*)
-		wfile=${wfile_10_x}
-		;;
-	esac
-
-	cd /var/cache/${package}/
-
-	systemctl daemon-reload || true
-	echo "${package}:Stopping:cloud9.service"
-	systemctl stop cloud9.service || true
-	echo "${package}:Stopping:cloud9.socket"
-	systemctl stop cloud9.socket || true
-
-	if [ ! -d ${extract_dir} ] ; then
-		mkdir -p ${extract_dir} || true
-	fi
-
-	echo "${package}:extracting:${wfile}"
-	tar xf ${wfile} -C ${extract_dir}
-	chown -R 1000:1000 ${extract_dir}
+c9_directory () {
+	#chown -R 1000:1000 /opt/cloud9/build/
 
 	if [ ! -d /var/lib/cloud9 ] ; then
 		mkdir -p /var/lib/cloud9 || true
 	fi
 
-	systemctl daemon-reload || true
-}
-
-c9_directory () {
 	if [ ! -d /opt/cloud9/.c9/node/bin/ ] ; then
 		mkdir -p /opt/cloud9/.c9/node/bin/ || true
 	fi
-	ln -sf /usr/bin/node /opt/cloud9/.c9/node/bin/node
+	ln -sf /opt/cloud9_support/bin/node /opt/cloud9/.c9/node/bin/node
 
 	chown -R 1000:1000 /opt/cloud9/.c9/ || true
 	chmod -R g+w /opt/cloud9/.c9/ || true
@@ -87,16 +47,23 @@ c9_directory () {
 	chown -R 1000:1000  /opt/cloud9/.cache/ || true
 	chmod -R g+w  /opt/cloud9/.cache/ || true
 
+	systemctl daemon-reload || true
 	systemctl enable cloud9.socket || true
 	systemctl restart cloud9.socket || true
 	echo "${package}:Installed"
 }
 
+cleanup () {
+	if [ -d /var/cache/c9-core-installer/ ] ; then
+		rm -rf /var/cache/c9-core-installer/ || true
+	fi
+}
+
 case "$1" in
     configure)
 	npm_install
-	dl_install
 	c9_directory
+	cleanup
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
