@@ -29,7 +29,6 @@ npm_install () {
 }
 
 c9_directory () {
-	#chown -R 1000:1000 /opt/cloud9/build/
 
 	if [ ! -d /var/lib/cloud9 ] ; then
 		mkdir -p /var/lib/cloud9 || true
@@ -45,7 +44,9 @@ c9_directory () {
 
 	mkdir -p /opt/cloud9/.cache/ || true
 	chown -R 1000:1000  /opt/cloud9/.cache/ || true
-	chmod -R g+w  /opt/cloud9/.cache/ || true
+	chmod -R g+w /opt/cloud9/.cache/ || true
+
+	chown -R 1000:1000 /opt/cloud9/build/
 
 	systemctl daemon-reload || true
 	systemctl enable cloud9.socket || true
