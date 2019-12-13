@@ -1,0 +1,86 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+export DH_VERBOSE=1
+
+export NODE_PATH := /opt/cloud9_bins/lib/node_modules
+export PATH := /opt/cloud9_support/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+node_bin=/opt/cloud9_support/bin/node
+npm_bin=/opt/cloud9_support/bin/npm
+npm_bin_js=/opt/cloud9_support/lib/node_modules/npm/bin/npm-cli.js
+
+nodejs_version=v8.16.2
+npm_version=4.6.1
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	mkdir -p /opt/cloud9_support/
+	tar xf ./debian/node-$(nodejs_version)-linux-armv7l.tar.xz -C /opt/cloud9_support/ --strip-components 1
+	echo "cleanup..."
+	rm -rf /opt/cloud9_support/include/node/openssl/archs/BSD-x86_64*/
+	rm -rf /opt/cloud9_support/include/node/openssl/archs/VC-WIN*/
+	rm -rf /opt/cloud9_support/include/node/openssl/archs/aix*/
+	rm -rf /opt/cloud9_support/include/node/openssl/archs/darwin*/
+	rm -rf /opt/cloud9_support/include/node/openssl/archs/linux-aarch64/
+	rm -rf /opt/cloud9_support/include/node/openssl/archs/linux-elf/
+	rm -rf /opt/cloud9_support/include/node/openssl/archs/linux-ppc*/
+	rm -rf /opt/cloud9_support/include/node/openssl/archs/linux-x*/
+	rm -rf /opt/cloud9_support/include/node/openssl/archs/linux*-s390x/
+	rm -rf /opt/cloud9_support/include/node/openssl/archs/solaris*/
+	echo "Remove Bundled npm..."
+	rm -rf /opt/cloud9_support/lib/node_modules/npm
+	rm -rf /opt/cloud9_support/bin/npm
+	rm -rf /opt/cloud9_support/bin/npx
+	$(node_bin) --version
+	tar xf ./debian/npm-$(npm_version).tgz -C /opt/cloud9_support/
+	cd /opt/cloud9_support/package/ ; make install
+	rm -rf /opt/cloud9_support/package/
+	env | grep PATH
+	$(node_bin) --version
+	$(node_bin) $(npm_bin) --version
+	mkdir /opt/tmux/
+	tar xf ./debian/tmux/tmux_2.3.orig.tar.gz -C /opt/tmux/
+	cp -v ./debian/tmux/patches/*.diff /opt/tmux/
+	cd /opt/tmux/tmux-2.3/ ; patch -p1 < /opt/tmux/platform-quirks.diff
+	cd /opt/tmux/tmux-2.3/ ; patch -p1 < /opt/tmux/lintian-manpage-hyphen.diff
+	cd /opt/tmux/tmux-2.3/ ; patch -p1 < /opt/tmux/upstream-30086e504c.diff
+	cd /opt/tmux/tmux-2.3/ ; patch -p1 < /opt/tmux/upstream-44449b305b.diff
+	cd /opt/tmux/tmux-2.3/ ; patch -p1 < /opt/tmux/upstream-48dd250af1.diff
+	cd /opt/tmux/tmux-2.3/ ; patch -p1 < /opt/tmux/upstream-1db6d6fea6.diff
+	cd /opt/tmux/tmux-2.3/ ; patch -p1 < /opt/tmux/upstream-b8f2dd8237.diff
+	cd /opt/tmux/tmux-2.3/ ; patch -p1 < /opt/tmux/upstream-4160df4ca4.diff
+	cd /opt/tmux/tmux-2.3/ ; patch -p1 < /opt/tmux/upstream-e0add119ea.diff
+	cd /opt/tmux/tmux-2.3/ ; patch -p1 < /opt/tmux/upstream-c2f88373e7.diff
+	cd /opt/tmux/tmux-2.3/ ; ./configure LDFLAGS="-static-libgcc" --prefix="/opt/cloud9_support/"
+	cd /opt/tmux/tmux-2.3/ ; make
+	cd /opt/tmux/tmux-2.3/ ; make install
+	rm -rf /opt/tmux/tmux-2.3/
+	/opt/cloud9_support/bin/tmux -V
+	ldd /opt/cloud9_support/bin/tmux
+	git clone -b 3.1.4056.git20171215 https://github.com/rcn-ee/core /opt/cloud9/ --depth=1
+	mkdir -p ~/.c9/
+	echo "build: [./scripts/install-sdk.sh]"
+	echo 1 > ~/.c9/installed
+	cd /opt/cloud9/ ; ./scripts/install-sdk.sh
+	cd /opt/cloud9/ ; $(node_bin) $(npm_bin) install --arch=armhf --unsafe-perms
+	cd /opt/cloud9/ ; rm -Rf build/standalone
+	cd /opt/cloud9/ ; ./scripts/makestandalone.sh --compress
+	cd /opt/cloud9/ ; ./build/build-standalone.sh
+	cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install systemd --arch=armhf
+	cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install heapdump --arch=armhf --unsafe-perms
+	cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install connect-flash ua-parser-js engine.io-client simplefunc --arch=armhf --unsafe-perms
+	cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install nak --arch=armhf
+	cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install github:risacher/pty.js --arch=armhf
+	echo "Remove npm..."
+	rm -rf /opt/cloud9_support/lib/node_modules/npm
+	rm -rf /opt/cloud9_support/bin/npm
+	echo "move /opt/cloud9/ to ./tmp/opt/cloud9/"
+	mkdir -p ./tmp/opt/cloud9_support/
+	mkdir -p ./tmp/opt/cloud9/build/standalonebuild/
+	mv /opt/cloud9_support/* ./tmp/opt/cloud9_support/
+	mv /opt/cloud9/build/standalonebuild/* ./tmp/opt/cloud9/build/standalonebuild/
+

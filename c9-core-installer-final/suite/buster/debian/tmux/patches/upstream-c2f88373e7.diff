@@ -1,0 +1,19 @@
+commit c2f88373e76b8c62ac2e2baed6bc1f0f20036401
+Author: nicm <nicm>
+Date:   Tue Oct 18 07:38:16 2016 +0000
+
+    Store the right size in the pipe offset for pipe-pane.
+
+diff --git a/window.c b/window.c
+index 2c221f4390..8ef54084a7 100644
+--- a/window.c
++++ b/window.c
+@@ -970,7 +970,7 @@ window_pane_read_callback(__unused struct bufferevent *bufev, void *data)
+ 
+ 	input_parse(wp);
+ 
+-	wp->pipe_off = size;
++	wp->pipe_off = EVBUFFER_LENGTH(evb);
+ }
+ 
+ static void

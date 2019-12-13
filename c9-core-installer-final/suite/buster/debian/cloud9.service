@@ -1,0 +1,13 @@
+[Unit]
+Description=Cloud9 IDE
+ConditionPathExists=|/var/lib/cloud9
+
+[Service]
+User=debian
+Group=debian
+WorkingDirectory=/opt/cloud9/build/standalonebuild
+Environment="NODE_PATH=/opt/cloud9_support/lib/node_modules"
+EnvironmentFile=/etc/default/cloud9
+ExecStartPre=/opt/cloud9/cloud9-symlink
+ExecStart=/opt/cloud9_support/bin/node server.js --packed -w /var/lib/cloud9
+SyslogIdentifier=cloud9ide

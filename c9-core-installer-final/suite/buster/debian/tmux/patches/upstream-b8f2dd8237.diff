@@ -1,0 +1,123 @@
+commit b8f2dd8237dca568308e1c273f376191f55e880e
+Author: nicm <nicm>
+Date:   Sun Oct 9 16:24:34 2016 +0000
+
+    Make the CLIENT_STATUS flag imply that pane status lines are redrawn if
+    they are enabled and break the actual screen generation code into a
+    separate function. Fixes problems reported by Romain Francoise.
+
+--- a/screen-redraw.c
++++ b/screen-redraw.c
+@@ -328,6 +328,35 @@
+ 	tty_cursor(tty, 0, 0);
+ }
+ 
++/* Update status line and change flags if unchanged. */
++void
++screen_redraw_update(struct client *c)
++{
++	struct window		*w = c->session->curw->window;
++	struct window_pane	*wp;
++	struct options		*wo = w->options;
++	int			 redraw;
++
++	if (c->message_string != NULL)
++		redraw = status_message_redraw(c);
++	else if (c->prompt_string != NULL)
++		redraw = status_prompt_redraw(c);
++	else
++		redraw = status_redraw(c);
++	if (!redraw)
++		c->flags &= ~CLIENT_STATUS;
++
++	if (options_get_number(wo, "pane-border-status") != CELL_STATUS_OFF) {
++		redraw = 0;
++		TAILQ_FOREACH(wp, &w->panes, entry) {
++			if (screen_redraw_make_pane_status(c, w, wp))
++				redraw = 1;
++		}
++		if (redraw)
++			c->flags |= CLIENT_BORDERS;
++	}
++}
++
+ /* Redraw entire screen. */
+ void
+ screen_redraw_screen(struct client *c, int draw_panes, int draw_status,
+@@ -336,7 +365,7 @@
+ 	struct options		*oo = c->session->options;
+ 	struct tty		*tty = &c->tty;
+ 	struct window		*w = c->session->curw->window;
+-	struct window_pane	*wp;
++	struct options		*wo = w->options;
+ 	u_int			 top;
+ 	int	 		 status, pane_status, spos;
+ 
+@@ -356,24 +385,17 @@
+ 	if (!status)
+ 		draw_status = 0;
+ 
+-	/* Update pane status lines. */
+-	pane_status = options_get_number(w->options, "pane-border-status");
+-	if (pane_status != CELL_STATUS_OFF && (draw_borders || draw_status)) {
+-		TAILQ_FOREACH(wp, &w->panes, entry) {
+-			if (screen_redraw_make_pane_status(c, w, wp))
+-				draw_borders = draw_status = 1;
+-		}
+-	}
+-
+ 	/* Draw the elements. */
+-	if (draw_borders)
++	if (draw_borders) {
++		pane_status = options_get_number(wo, "pane-border-status");
+ 		screen_redraw_draw_borders(c, status, pane_status, top);
++		if (pane_status != CELL_STATUS_OFF)
++			screen_redraw_draw_pane_status(c, pane_status);
++	}
+ 	if (draw_panes)
+ 		screen_redraw_draw_panes(c, top);
+ 	if (draw_status)
+ 		screen_redraw_draw_status(c, top);
+-	if (pane_status != CELL_STATUS_OFF && (draw_borders || draw_status))
+-		screen_redraw_draw_pane_status(c, pane_status);
+ 	tty_reset(tty);
+ }
+ 
+--- a/server-client.c
++++ b/server-client.c
+@@ -959,7 +959,7 @@
+ 	struct session		*s = c->session;
+ 	struct tty		*tty = &c->tty;
+ 	struct window_pane	*wp;
+-	int		 	 flags, masked, redraw;
++	int		 	 flags, masked;
+ 
+ 	if (c->flags & (CLIENT_CONTROL|CLIENT_SUSPENDED))
+ 		return;
+@@ -967,15 +967,7 @@
+ 	if (c->flags & (CLIENT_REDRAW|CLIENT_STATUS)) {
+ 		if (options_get_number(s->options, "set-titles"))
+ 			server_client_set_title(c);
+-
+-		if (c->message_string != NULL)
+-			redraw = status_message_redraw(c);
+-		else if (c->prompt_string != NULL)
+-			redraw = status_prompt_redraw(c);
+-		else
+-			redraw = status_redraw(c);
+-		if (!redraw)
+-			c->flags &= ~CLIENT_STATUS;
++		screen_redraw_update(c); /* will adjust flags */
+ 	}
+ 
+ 	flags = tty->flags & (TTY_FREEZE|TTY_NOCURSOR);
+--- a/tmux.h
++++ b/tmux.h
+@@ -2097,6 +2097,7 @@
+ void	 screen_write_rawstring(struct screen_write_ctx *, u_char *, u_int);
+ 
+ /* screen-redraw.c */
++void	 screen_redraw_update(struct client *);
+ void	 screen_redraw_screen(struct client *, int, int, int);
+ void	 screen_redraw_pane(struct client *, struct window_pane *);
+ 
