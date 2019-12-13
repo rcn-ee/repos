@@ -61,26 +61,28 @@ override_dh_auto_configure:
 	rm -rf /opt/tmux/tmux-2.3/
 	/opt/cloud9_support/bin/tmux -V
 	ldd /opt/cloud9_support/bin/tmux
-	git clone -b 3.1.4056.git20171215 https://github.com/rcn-ee/core /opt/cloud9/ --depth=1
+	git clone -b 3.1.5000.git20181017 https://github.com/rcn-ee/core /opt/cloud9/ --depth=1
 	mkdir -p ~/.c9/
 	echo "build: [./scripts/install-sdk.sh]"
 	echo 1 > ~/.c9/installed
 	cd /opt/cloud9/ ; ./scripts/install-sdk.sh
 	cd /opt/cloud9/ ; $(node_bin) $(npm_bin) install --arch=armhf --unsafe-perms
-	cd /opt/cloud9/ ; rm -Rf build/standalone
-	cd /opt/cloud9/ ; ./scripts/makestandalone.sh --compress
-	cd /opt/cloud9/ ; ./build/build-standalone.sh
-	cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install systemd --arch=armhf
-	cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install heapdump --arch=armhf --unsafe-perms
-	cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install connect-flash ua-parser-js engine.io-client simplefunc --arch=armhf --unsafe-perms
-	cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install nak --arch=armhf
-	cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install github:risacher/pty.js --arch=armhf
+	#cd /opt/cloud9/ ; rm -Rf build/standalone
+	#cd /opt/cloud9/ ; ./scripts/makestandalone.sh --compress
+	#cd /opt/cloud9/ ; ./build/build-standalone.sh
+	#cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install systemd --arch=armhf
+	#cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install heapdump --arch=armhf --unsafe-perms
+	#cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install connect-flash ua-parser-js engine.io-client simplefunc --arch=armhf --unsafe-perms
+	#cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install nak --arch=armhf
+	#cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install github:risacher/pty.js --arch=armhf
 	echo "Remove npm..."
 	rm -rf /opt/cloud9_support/lib/node_modules/npm
 	rm -rf /opt/cloud9_support/bin/npm
 	echo "move /opt/cloud9/ to ./tmp/opt/cloud9/"
 	mkdir -p ./tmp/opt/cloud9_support/
-	mkdir -p ./tmp/opt/cloud9/build/standalonebuild/
+	#mkdir -p ./tmp/opt/cloud9/build/standalonebuild/
+	mkdir -p ./tmp/opt/cloud9/
 	mv /opt/cloud9_support/* ./tmp/opt/cloud9_support/
-	mv /opt/cloud9/build/standalonebuild/* ./tmp/opt/cloud9/build/standalonebuild/
+	#mv /opt/cloud9/build/standalonebuild/* ./tmp/opt/cloud9/build/standalonebuild/
+	mv /opt/cloud9/* ./tmp/opt/cloud9/
 
