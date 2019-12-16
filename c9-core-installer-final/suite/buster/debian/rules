@@ -31,14 +31,14 @@ override_dh_auto_configure:
 	rm -rf /opt/cloud9_support/include/node/openssl/archs/linux-x*/
 	rm -rf /opt/cloud9_support/include/node/openssl/archs/linux*-s390x/
 	rm -rf /opt/cloud9_support/include/node/openssl/archs/solaris*/
-#	echo "Remove Bundled npm..."
-#	rm -rf /opt/cloud9_support/lib/node_modules/npm
-#	rm -rf /opt/cloud9_support/bin/npm
-#	rm -rf /opt/cloud9_support/bin/npx
-#	$(node_bin) --version
-#	tar xf ./debian/npm-$(npm_version).tgz -C /opt/cloud9_support/
-#	cd /opt/cloud9_support/package/ ; make install
-#	rm -rf /opt/cloud9_support/package/
+	echo "Remove Bundled npm..."
+	rm -rf /opt/cloud9_support/lib/node_modules/npm
+	rm -rf /opt/cloud9_support/bin/npm
+	rm -rf /opt/cloud9_support/bin/npx
+	$(node_bin) --version
+	tar xf ./debian/npm-$(npm_version).tgz -C /opt/cloud9_support/
+	cd /opt/cloud9_support/package/ ; make install
+	rm -rf /opt/cloud9_support/package/
 	env | grep PATH
 	$(node_bin) --version
 	$(node_bin) $(npm_bin) --version
