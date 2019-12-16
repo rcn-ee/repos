@@ -17,7 +17,6 @@ debian_version="${package_version}-0rcnee10"
 debian_untar=""
 debian_patch=""
 
-#debian_dl_1="https://nodejs.org/dist/latest-v8.x/node-v8.16.2-linux-armv7l.tar.xz"
 debian_dl_1="https://nodejs.org/dist/latest-v10.x/node-v10.17.0-linux-armv7l.tar.xz"
 debian_dl_2="https://registry.npmjs.org/npm/-/npm-4.6.1.tgz"
 

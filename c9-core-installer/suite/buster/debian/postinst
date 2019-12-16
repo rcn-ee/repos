@@ -5,8 +5,9 @@
 set -e
 
 package="c9-core-installer"
+service="cloud9"
 
-npm_install () {
+main_install () {
 	if [ -d /etc/avahi/ ] ; then
 		#Annouce http server via DNS Sevice Discovery
 		wfile="/etc/avahi/services/cloud9.service"
@@ -25,10 +26,11 @@ npm_install () {
 		echo "  </service>" >> ${wfile}
 		echo "" >> ${wfile}
 		echo "</service-group>" >> ${wfile}
+		chown -R root:root ${wfile}
 	fi
-}
 
-c9_directory () {
+	mkdir -p /opt/cloud9/.git/
+	mv /opt/cloud9_support/git/* /opt/cloud9/.git/
 
 	if [ ! -d /var/lib/cloud9 ] ; then
 		mkdir -p /var/lib/cloud9 || true
@@ -48,9 +50,8 @@ c9_directory () {
 
 	chown -R 1000:1000 /opt/cloud9/build/
 
-	systemctl daemon-reload || true
-	systemctl enable cloud9.socket || true
-	systemctl restart cloud9.socket || true
+	systemctl enable ${service}.socket || true
+	systemctl start ${service} || true
 	echo "${package}:Installed"
 }
 
@@ -62,8 +63,7 @@ cleanup () {
 
 case "$1" in
     configure)
-	npm_install
-	c9_directory
+	main_install
 	cleanup
     ;;
 
