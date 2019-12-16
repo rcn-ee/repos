@@ -63,6 +63,7 @@ override_dh_auto_configure:
 	/opt/cloud9_support/bin/tmux -V
 	ldd /opt/cloud9_support/bin/tmux
 	git clone -b 3.1.5000.git20181017 https://github.com/rcn-ee/c9_core /opt/cloud9/ --depth=1
+	mkdir /opt/cloud9_support/git/ ; cp -r /opt/cloud9/.git/ /opt/cloud9_support/git/
 	mkdir -p ~/.c9/
 	echo "build: [./scripts/install-sdk.sh]"
 	echo 1 > ~/.c9/installed
@@ -87,7 +88,6 @@ override_dh_auto_configure:
 	#mkdir -p ./tmp/opt/cloud9/build/standalonebuild/
 	mkdir -p ./tmp/opt/cloud9/
 	mv /opt/cloud9_support/* ./tmp/opt/cloud9_support/
-	mv /opt/cloud9/.git/ ./tmp/opt/cloud9_support/git/
 	#mv /opt/cloud9/build/standalonebuild/* ./tmp/opt/cloud9/build/standalonebuild/
 	mv /opt/cloud9/* ./tmp/opt/cloud9/
 
