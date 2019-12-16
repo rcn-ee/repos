@@ -67,9 +67,9 @@ override_dh_auto_configure:
 	echo 1 > ~/.c9/installed
 	cd /opt/cloud9/ ; ./scripts/install-sdk.sh
 	cd /opt/cloud9/ ; $(node_bin) $(npm_bin) install --arch=armhf --unsafe-perms
-	cd /opt/cloud9/ ; rm -Rf build/standalone
-	cd /opt/cloud9/ ; ./scripts/makestandalone.sh --compress
-	cd /opt/cloud9/ ; ./build/build-standalone.sh
+	#cd /opt/cloud9/ ; rm -Rf build/standalone
+	#cd /opt/cloud9/ ; ./scripts/makestandalone.sh --compress
+	cd /opt/cloud9/ ; ./build/build-standalone.sh --compress
 	cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install systemd --arch=armhf
 	cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install heapdump --arch=armhf --unsafe-perms
 	cd /opt/cloud9/build/standalonebuild/ ; $(node_bin) $(npm_bin) install connect-flash ua-parser-js engine.io-client simplefunc --arch=armhf --unsafe-perms
