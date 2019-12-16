@@ -29,6 +29,9 @@ main_install () {
 		chown -R root:root ${wfile}
 	fi
 
+	if [ -d /opt/cloud9/.git/ ] ; then
+		rm -rf /opt/cloud9/.git/ || true
+	fi
 	mkdir -p /opt/cloud9/.git/
 	mv /opt/cloud9_support/git/* /opt/cloud9/.git/
 
