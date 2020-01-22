@@ -1,6 +1,7 @@
 #!/bin/bash -e
 
-mirror="http://http.debian.net/debian"
+#https://snapshot.debian.org/archive/debian/20171125T160845Z/pool/main/d/debhelper/debhelper_10.10.9~bpo9%2B1.dsc
+mirror="https://snapshot.debian.org/archive/debian/20171125T160845Z"
 
 package_name="debhelper"
 debian_pkg_name="${package_name}"
