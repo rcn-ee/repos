@@ -20,7 +20,7 @@ node_red_version=1.0.3
 node_red_dashboard_version=2.19.3
 node_red_node_serialport_version=0.10.0
 
-node_red_contrib_gpio_version=0.14.0
+node_red_contrib_johnny5_version=0.50.0
 
 johnny_five_version=1.4.0
 beaglebone_io_version=4.0.1
@@ -75,13 +75,13 @@ override_dh_auto_configure:
 	echo "Real Install: node-red-node-serialport@$(node_red_node_serialport_version)"
 	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/node-red-node-serialport/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/node-red --no-save
 	rm -rf /tmp/lib/node_modules/node-red-node-serialport/
-	echo "node-red-contrib-gpio"
-	echo "Fake Install: node-red-contrib-gpio@$(node_red_contrib_gpio_version)"
-	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp node-red-contrib-gpio@$(node_red_contrib_gpio_version)
-	cd /tmp/lib/node_modules/node-red-contrib-gpio/ ; TERM=dumb $(node_bin) $(npm_bin) pack
-	echo "Real Install: node-red-contrib-gpio@$(node_red_contrib_gpio_version)"
-	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/node-red-contrib-gpio/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/node-red --no-save
-	rm -rf /tmp/lib/node_modules/node-red-contrib-gpio/
+	echo "node-red-contrib-johnny5"
+	echo "Fake Install: node-red-contrib-johnny5@$(node_red_contrib_johnny5_version)"
+	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp node-red-contrib-johnny5@$(node_red_contrib_johnny5_version)
+	cd /tmp/lib/node_modules/node-red-contrib-johnny5/ ; TERM=dumb $(node_bin) $(npm_bin) pack
+	echo "Real Install: node-red-contrib-johnny5@$(node_red_contrib_johnny5_version)"
+	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/node-red-contrib-johnny5/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/node-red --no-save
+	rm -rf /tmp/lib/node_modules/node-red-contrib-johnny5/
 	echo "johnny-five"
 	echo "Fake Install: johnny-five@$(johnny_five_version)"
 	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp johnny-five@$(johnny_five_version)
