@@ -4,7 +4,7 @@ mirror="http://http.debian.net/debian"
 
 package_name="debhelper"
 debian_pkg_name="${package_name}"
-package_version="10.10.9~bpo9+1"
+package_version="12.1.1~bpo9+1"
 
 git_repo=""
 git_sha=""
