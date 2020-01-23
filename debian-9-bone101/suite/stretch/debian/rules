@@ -20,6 +20,7 @@ override_dh_auto_configure:
 	mkdir -p /var/lib/cloud9/
 	git clone https://github.com/beagleboard/cloud9-examples /var/lib/cloud9/ --branch master --single-branch --depth 1
 	cd /var/lib/cloud9/ ; git config user.email "beagle@beagleboard.org" ; git config user.name "BeagleBoard"
+	mv /var/lib/cloud9/.c9/ /var/lib/cloud9/dotc9/
 	mv /var/lib/cloud9/.git/ /var/lib/cloud9/dotgit/
 	mv /var/lib/cloud9/.gitignore /var/lib/cloud9/dotgitignore
 	mkdir -p ./tmp/var/lib/cloud9/
