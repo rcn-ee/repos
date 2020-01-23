@@ -11,18 +11,18 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee4"
+debian_version="${package_version}-0rcnee11"
 debian_untar=""
 debian_patch=""
 
-dl_mirror="http://gitlab.gfnd.rcn-ee.org/RobertCNelson/npm-package-node-red/raw/master/deploy/buster"
+#dl_mirror="http://gitlab.gfnd.rcn-ee.org/RobertCNelson/npm-package-node-red/raw/master/deploy/buster"
 
-v10="v10.15.1"
+#v10="v10.15.1"
 
-    node_async="async-2.0.1"
+#    node_async="async-2.0.1"
 #node_sensortag="sensortag-1.3.0"
 
-debian_dl_1="${dl_mirror}/${node_async}-${v10}.tar.xz"
+#debian_dl_1="${dl_mirror}/${node_async}-${v10}.tar.xz"
 #debian_dl_2="${dl_mirror}/${node_sensortag}-${v10}.tar.xz"
 
-buster_version="~buster+20190803"
+buster_version="~buster+20200123"
