@@ -16,13 +16,12 @@
 %:
 		dh $@
 
-# debmake generated override targets
-# For example, set multiarch library install file path.  
-# See dpkg-architecture(1)
-#DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
-#override_dh_auto_configure:
-#	cmake -DCMAKE_INSTALL_PREFIX=/usr \
-#             -DLIBDIR=/usr/lib/$(DEB_HOST_MULTIARCH)
+override_dh_auto_configure:
+	mkdir -p /var/lib/cloud9/
+	git clone https://github.com/beagleboard/cloud9-examples /var/lib/cloud9/ --branch master --single-branch --depth 1
+	cd /var/lib/cloud9/ ; git config user.email "beagle@beagleboard.org" ; git config user.name "BeagleBoard"
+	mkdir -p ./tmp/var/lib/cloud9/
+	mv /var/lib/cloud9/* ./tmp/var/lib/cloud9/
 
 override_dh_auto_install:
 		dh_auto_install -- PREFIX=/usr

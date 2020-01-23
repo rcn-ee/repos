@@ -11,5 +11,5 @@ if [ ! -f ${package_name}_${package_version}.orig.tar.gz ] ; then
 	mv ${package_version}.tar.gz ${package_name}_${package_version}.orig.tar.gz
 fi
 
-git clone --bare https://github.com/beagleboard/cloud9-examples
-tar cvf ./suite/stretch/debian/cloud9-examples.git.tar cloud9-examples.git/
+#git clone --bare https://github.com/beagleboard/cloud9-examples
+#tar cvf ./suite/stretch/debian/cloud9-examples.git.tar cloud9-examples.git/
