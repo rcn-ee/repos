@@ -44,19 +44,27 @@ npm_install () {
 }
 
 npm_install
-addgroup cloud9ide --system || true
 
 echo "Setting up: /var/lib/cloud9/ permissions"
 
-chown -R root:cloud9ide /var/lib/cloud9/ || true
-chmod -R 775 /var/lib/cloud9/ || true
-if [ -d /var/lib/cloud9/examples/ ] ; then
-	cd /var/lib/cloud9/examples/
-	git init .
+if [ -d /var/lib/cloud9/ ] ; then
+	chown -R 1000:1000 /var/lib/cloud9/ || true
+	mv /var/lib/cloud9/dotc9 /var/lib/cloud9/.c9/
+	mv /var/lib/cloud9/dotgit/ /var/lib/cloud9/.git/
+	mv /var/lib/cloud9/dotgitignore /var/lib/cloud9/.gitignore
+
+	echo "Updating Cloud9 examples from: https://github.com/beagleboard/cloud9-examples"
+	cd /var/lib/cloud9/
 	git config user.email "beagle@beagleboard.org"
 	git config user.name "BeagleBoard"
-	git add . -f
-	git commit -a -m 'inital repo' --author="BeagleBoard <beagle@beagleboard.org>" --quiet
+	git reset HEAD --hard
+	git pull || true
+
+	chown -R 1000:1000 /var/lib/cloud9/ || true
+fi
+
+if [ -d /usr/share/bone101/tmp/ ] ; then
+	rm -rf /usr/share/bone101/tmp/ || true
 fi
 
 # dh_installdeb will replace this with shell code automatically
