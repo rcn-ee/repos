@@ -67,6 +67,7 @@ echo "Setting up: /var/lib/cloud9/ permissions"
 
 if [ -d /var/lib/cloud9/ ] ; then
 	chown -R 1000:1000 /var/lib/cloud9/ || true
+	mv /var/lib/cloud9/dotgit/ /var/lib/cloud9/.git/
 	###echo "Setting up Cloud9 examples from: https://github.com/beagleboard/cloud9-examples"
 	###if [ -d /var/cache/bone101/cloud9-examples.git/ ] ; then
 	###	echo "git clone --depth=1 file:///var/cache/bone101/cloud9-examples.git /var/lib/cloud9/"
