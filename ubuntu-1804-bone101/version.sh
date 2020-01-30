@@ -11,7 +11,7 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee11"
+debian_version="${package_version}-0rcnee12"
 debian_untar=""
 debian_patch=""
 
@@ -25,4 +25,4 @@ node_sensortag="sensortag-1.2.3"
 debian_dl_1="${dl_mirror}/${node_async}-${v8}.tar.xz"
 debian_dl_2="${dl_mirror}/${node_sensortag}-${v8}.tar.xz"
 
-bionic_version="~bionic+20200123"
+bionic_version="~bionic+20200130"
