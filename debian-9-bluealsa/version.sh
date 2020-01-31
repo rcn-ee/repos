@@ -4,7 +4,7 @@ mirror="https://archive.raspberrypi.org/debian"
 
 package_name="bluealsa"
 debian_pkg_name="${package_name}"
-package_version="0.10"
+package_version="0.13"
 package_source="${package_name}_${package_version}.tar.xz"
 src_dir="${package_name}"
 
@@ -18,6 +18,6 @@ debian_version="${package_version}"
 debian_patch=""
 
 jessie_version="~jessie+20190410"
-stretch_version="~stretch+20190410"
-buster_version="~buster+20190410"
-bionic_version="~bionic+20190410"
+stretch_version="~stretch+20200131"
+buster_version="~buster+20200131"
+bionic_version="~bionic+20200131"
