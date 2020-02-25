@@ -1,0 +1,42 @@
+Update the default configuration for running as a package.
+--- a/config/default.js
++++ b/config/default.js
+@@ -14,9 +14,9 @@
+ 
+ module.exports = {
+   // Expose CLI
+-  cli: true,
++  cli: false,
+ 
+-  profileDir: `${home}/.mozilla-iot`,
++  profileDir: `/etc/webthings-gateway`,
+ 
+   ports: {
+     https: 4443,
+@@ -24,7 +24,7 @@
+   },
+   // Whether the gateway is behind port forwarding and should use simplified
+   // port-free urls
+-  behindForwarding: true,
++  behindForwarding: false,
+   addonManager: {
+     listUrls: [
+       'https://api.mozilla-iot.org:8443/addons',
+@@ -40,7 +40,7 @@
+   settings: {
+     defaults: {
+       domain: {
+-        localAccess: true,
++        localAccess: false,
+         mozillaTunnelService: true,
+         localControl: {
+           mdnsServiceType: 'http',
+@@ -63,7 +63,7 @@
+     enabled: true,
+     registration_endpoint: 'https://api.mozilla-iot.org:8443',
+     domain: 'mozilla-iot.org',
+-    pagekite_cmd: path.normalize(path.join(process.cwd(), 'pagekite.py')),
++    pagekite_cmd: '/usr/bin/pagekite',
+     port: 443,
+     certemail: 'certificate@mozilla-iot.org',
+   },
