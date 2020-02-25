@@ -17,8 +17,6 @@ debian_diff=""
 
 dl_mirror="http://gitlab.gfnd.rcn-ee.org/RobertCNelson/npm-package-bonescript/raw/master/deploy/buster"
 
-v10="v10.15.2"
-
 datestamp="20190903"
 
 bonescript="bonescript-0.7.3-26c5522"
