@@ -37,6 +37,10 @@ if [ -f /etc/default/bb-wl18xx ] ; then
 	. /etc/default/bb-wl18xx
 fi
 
+if [ -f /etc/default/bb-boot ] ; then
+	. /etc/default/bb-boot
+fi
+
 if [ "x${USE_PERSONAL_SSID}" = "x" ] ; then
 	wifi_ssid="BeagleBone"
 else
@@ -114,14 +118,12 @@ connmanctl_tether_wifi_on () {
 	fi
 	sleep 1
 
-	if [ -f /opt/scripts/boot/autoconfigure_usb0.sh ] ; then
-		echo "${log} [/opt/scripts/boot/autoconfigure_usb0.sh]"
-		/opt/scripts/boot/autoconfigure_usb0.sh
-	fi
+	echo "${log} [/usr/bin/autoconfigure_usb0.sh]"
+	/usr/bin/autoconfigure_usb0.sh || true
 
-	if [ -f /opt/scripts/boot/autoconfigure_usb1.sh ] ; then
-		echo "${log} [/opt/scripts/boot/autoconfigure_usb1.sh]"
-		/opt/scripts/boot/autoconfigure_usb1.sh
+	if [ "x${USB1_ENABLE}" = "xenable" ] ; then
+		echo "${log} [/usr/bin/autoconfigure_usb1.sh]"
+		/usr/bin/autoconfigure_usb1.sh || true
 	fi
 }
 
@@ -284,47 +286,7 @@ start_dnsmasq () {
 		/etc/init.d/udhcpd stop || true
 	fi
 
-unset deb_iface_range_regex
-unset deb_usb_address
-unset deb_usb_gateway
-
-deb_iface_range_regex="/^[[:space:]]*iface[[:space:]]+usb0/,/iface/"
-
-deb_usb_address=$(sed -nr "${deb_iface_range_regex} p" /etc/network/interfaces |\
-		  sed -nr "s/^[[:space:]]*address[[:space:]]+([0-9.]+)/\1/p")
-
-deb_usb_gateway=$(sed -nr "${deb_iface_range_regex} p" /etc/network/interfaces |\
-		  sed -nr "s/^[[:space:]]*gateway[[:space:]]+([0-9.]+)/\1/p")
-
-	if [ "x${USE_GENERATED_DNSMASQ}" = "xyes" ] ; then
-		wfile="/etc/dnsmasq.d/${ap_interface}"
-		echo "interface=${ap_interface}" > ${wfile}
-		echo "interface=usb0" >> ${wfile}
-		echo "interface=usb1" >> ${wfile}
-		echo "port=53" >> ${wfile}
-		echo "dhcp-authoritative" >> ${wfile}
-		echo "domain-needed" >> ${wfile}
-		echo "bogus-priv" >> ${wfile}
-		echo "expand-hosts" >> ${wfile}
-		echo "cache-size=2048" >> ${wfile}
-		echo "dhcp-range=${ap_interface},${USE_WL18XX_IP_PREFIX}.50,${USE_WL18XX_IP_PREFIX}.150,10m" >> ${wfile}
-		###'gateway' we are giving an ip to the host that usually is the gateway to the net...
-		echo "dhcp-range=usb0,${deb_usb_gateway},${deb_usb_gateway},2m" >> ${wfile}
-		echo "dhcp-range=usb1,192.168.6.1,192.168.6.1,2m" >> ${wfile}
-		echo "listen-address=127.0.0.1" >> ${wfile}
-		echo "listen-address=${USE_WL18XX_IP_PREFIX}.1" >> ${wfile}
-		echo "listen-address=${deb_usb_address}" >> ${wfile}
-		echo "listen-address=192.168.6.2" >> ${wfile}
-		echo "dhcp-option-force=interface:${ap_interface},option:dns-server,${USE_WL18XX_IP_PREFIX}.1" >> ${wfile}
-		echo "dhcp-option-force=interface:${ap_interface},option:mtu,1500" >> ${wfile}
-		echo "dhcp-option=usb0,3" >> ${wfile}
-		echo "dhcp-option=usb0,6" >> ${wfile}
-		echo "dhcp-option=usb1,3" >> ${wfile}
-		echo "dhcp-option=usb1,6" >> ${wfile}
-#FIXME: why was this added, without connman every ip get's 172.1.8.1????
-#		echo "address=/#/172.1.8.1" >> ${wfile}
-		echo "dhcp-leasefile=/var/run/dnsmasq.leases" >> ${wfile}
-	fi
+	/usr/bin/bb_dnsmasq_config.sh || true
 
 	systemctl restart dnsmasq || true
 	touch /etc/bb-bbai-tether.dnsmasq.enable
