@@ -1,8 +1,24 @@
-systemd (241-7~deb10u2rcnee0~buster+20191124) buster; urgency=low
+systemd (241-7~deb10u3rcnee0~buster+20200226) buster; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Sun, 24 Nov 2019 11:43:40 -0600
+ -- Robert Nelson <robertcnelson@gmail.com>  Wed, 26 Feb 2020 11:09:32 -0600
+
+systemd (241-7~deb10u3) buster; urgency=medium
+
+  * core: set fs.file-max sysctl to LONG_MAX rather than ULONG_MAX.
+    Since kernel 5.2 (but also stable kernels like 4.19.53) the kernel
+    thankfully returns proper errors when we write a value out of range to
+    the sysctl. Which however breaks writing ULONG_MAX to request the
+    maximum value. Hence let's write the new maximum value instead,
+    LONG_MAX. (Closes: #945018)
+  * core: change ownership/mode of the execution directories also for static
+    users.
+    This ensures that execution directories like CacheDirectory and
+    StateDirectory are properly chowned to the user specified in User= before
+    launching the service. (Closes: #919231)
+
+ -- Michael Biebl <biebl@debian.org>  Wed, 29 Jan 2020 19:07:53 +0100
 
 systemd (241-7~deb10u2) buster; urgency=medium
 
