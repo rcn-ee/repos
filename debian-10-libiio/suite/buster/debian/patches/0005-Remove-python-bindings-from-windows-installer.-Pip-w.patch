@@ -1,0 +1,38 @@
+From 1725e420c301798b1b856b6ba9377b2db64fbd19 Mon Sep 17 00:00:00 2001
+From: "Travis F. Collins" <travis.collins@analog.com>
+Date: Fri, 14 Feb 2020 16:39:32 -0800
+Subject: [PATCH 5/9] Remove python bindings from windows installer. Pip will
+ be used instead for all platforms
+
+Signed-off-by: Travis F. Collins <travis.collins@analog.com>
+---
+ libiio.iss.cmakein | 9 ---------
+ 1 file changed, 9 deletions(-)
+
+diff --git a/libiio.iss.cmakein b/libiio.iss.cmakein
+index 73ff5df..cfd9d1a 100644
+--- a/libiio.iss.cmakein
++++ b/libiio.iss.cmakein
+@@ -44,9 +44,6 @@ Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
+ Name: "ukrainian"; MessagesFile: "compiler:Languages\Ukrainian.isl"
+ 
+ [Files]
+-Source: "C:\projects\libiio\build-win32\bindings\python\libiio-py37-win32.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall;
+-Source: "C:\projects\libiio\build-win64\bindings\python\libiio-py37-amd64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall;
+-
+ Source: "C:\projects\libiio\build-win32\Release\libiio.dll"; DestDir: "{sys}"; Flags: 32bit
+ Source: "C:\projects\libiio\build-win64\Release\libiio.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode
+ 
+@@ -71,9 +68,3 @@ Source: "C:\projects\libiio\build-win32\bindings\csharp\libiio-sharp.dll"; DestD
+ Source: "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\redist\x86\Microsoft.VC120.CRT\msvcr120.dll"; DestDir: "{sys}"; Flags: onlyifdoesntexist 32bit
+ Source: "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\redist\x64\Microsoft.VC120.CRT\msvcr120.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: onlyifdoesntexist
+ 
+-[Tasks]
+-Name:	"install_python_bindings"; Description: "Install libiio Python 3.7 bindings"
+-
+-[Run]
+-Filename: "{tmp}\libiio-py37-amd64.exe"; StatusMsg: "Installing Python bindings"; Check: Is64BitInstallMode; Tasks: install_python_bindings; Flags: skipifsilent
+-Filename: "{tmp}\libiio-py37-win32.exe"; StatusMsg: "Installing Python bindings"; Check: not Is64BitInstallMode; Tasks: install_python_bindings; Flags: skipifsilent
+-- 
+2.20.1
+

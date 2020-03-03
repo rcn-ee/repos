@@ -1,0 +1,33 @@
+From bb99e5f0a258da34b3bc6d5fcf0a356646b63b22 Mon Sep 17 00:00:00 2001
+From: Robin Getz <robin.getz@analog.com>
+Date: Wed, 19 Feb 2020 14:28:16 -0500
+Subject: [PATCH 7/9] network: errno should be already negative
+
+Don't make errno positive by accidentally flipping the sign
+
+This turns iio_strerror() from this:
+   Unable to create IIO context Unknown error -110 (110)
+into:
+   Unable to create IIO context Connection timed out (-110)
+
+Signed-off-by: Robin Getz <robin.getz@analog.com>
+---
+ network.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/network.c b/network.c
+index 3319d1f..361d84d 100644
+--- a/network.c
++++ b/network.c
+@@ -1484,7 +1484,7 @@ struct iio_context * network_create_context(const char *host)
+ 
+ 	fd = create_socket(res, DEFAULT_TIMEOUT_MS);
+ 	if (fd < 0) {
+-		errno = -fd;
++		errno = fd;
+ 		goto err_free_addrinfo;
+ 	}
+ 
+-- 
+2.20.1
+

@@ -1,0 +1,68 @@
+From 69f4d01f48e4d032cfe679813761a23e7be2d598 Mon Sep 17 00:00:00 2001
+From: Robin Getz <robin.getz@analog.com>
+Date: Wed, 19 Feb 2020 16:21:58 -0500
+Subject: [PATCH 8/9] iiod-client: errors are negative, so print them that way
+
+printf("zu") is for unsigned size_t, not ssize_t (which is signed)
+Since all error codes are negative - the current code prints out
+a unsigned version, which is wrong.
+
+This fixes that.
+
+Signed-off-by: Robin Getz <robin.getz@analog.com>
+---
+ iiod-client.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/iiod-client.c b/iiod-client.c
+index aaea669..0a11c0f 100644
+--- a/iiod-client.c
++++ b/iiod-client.c
+@@ -44,7 +44,7 @@ static ssize_t iiod_client_read_integer(struct iiod_client *client,
+ 		ret = client->ops->read_line(client->pdata,
+ 				desc, buf, sizeof(buf));
+ 		if (ret < 0) {
+-			ERROR("READ LINE: %zu\n", ret);
++			ERROR("READ LINE: %zd\n", ret);
+ 			return ret;
+ 		}
+ 
+@@ -571,7 +571,7 @@ static int iiod_client_read_mask(struct iiod_client *client,
+ 
+ 	ret = iiod_client_read_all(client, desc, buf, words * 8 + 1);
+ 	if (ret < 0) {
+-		ERROR("READ ALL: %zu\n", ret);
++		ERROR("READ ALL: %zd\n", ret);
+ 		goto out_buf_free;
+ 	} else
+ 		ret = 0;
+@@ -610,7 +610,7 @@ ssize_t iiod_client_read_unlocked(struct iiod_client *client, void *desc,
+ 
+ 	ret = iiod_client_write_all(client, desc, buf, strlen(buf));
+ 	if (ret < 0) {
+-		ERROR("WRITE ALL: %zu\n", ret);
++		ERROR("WRITE ALL: %zd\n", ret);
+ 		return ret;
+ 	}
+ 
+@@ -619,7 +619,7 @@ ssize_t iiod_client_read_unlocked(struct iiod_client *client, void *desc,
+ 
+ 		ret = iiod_client_read_integer(client, desc, &to_read);
+ 		if (ret < 0) {
+-			ERROR("READ INTEGER: %zu\n", ret);
++			ERROR("READ INTEGER: %zd\n", ret);
+ 			return ret;
+ 		}
+ 		if (to_read < 0)
+@@ -630,7 +630,7 @@ ssize_t iiod_client_read_unlocked(struct iiod_client *client, void *desc,
+ 		if (mask) {
+ 			ret = iiod_client_read_mask(client, desc, mask, words);
+ 			if (ret < 0) {
+-				ERROR("READ ALL: %zu\n", ret);
++				ERROR("READ ALL: %zd\n", ret);
+ 				return ret;
+ 			}
+ 
+-- 
+2.20.1
+

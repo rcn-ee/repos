@@ -1,0 +1,45 @@
+From 87f8f144050cfc80509c09dd3c187e75c7391ebe Mon Sep 17 00:00:00 2001
+From: Robin Getz <robin.getz@analog.com>
+Date: Fri, 14 Feb 2020 12:49:41 -0500
+Subject: [PATCH 1/9] usb: be more verbose on errors, by using iio_strerr
+
+This outputs more text, so (hopefully) end users can diagnose their own
+errors/issues.
+
+Signed-off-by: Robin Getz <robin.getz@analog.com>
+---
+ usb.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/usb.c b/usb.c
+index 49af0cc..8ea7206 100644
+--- a/usb.c
++++ b/usb.c
+@@ -859,16 +859,21 @@ struct iio_context * usb_create_context(unsigned int bus,
+ 
+ 	ret = libusb_claim_interface(hdl, interface);
+ 	if (ret) {
++		char err_str[1024];
+ 		ret = -(int) libusb_to_errno(ret);
+-		ERROR("Unable to claim interface %u:%u:%u: %i\n",
+-		      bus, address, interface, ret);
++		iio_strerror(-ret, err_str, sizeof(err_str));
++		ERROR("Unable to claim interface %u:%u:%u: %s (%i)\n",
++		      bus, address, interface, err_str, ret);
+ 		goto err_libusb_close;
+ 	}
+ 
+ 	ret = libusb_get_active_config_descriptor(usb_dev, &conf_desc);
+ 	if (ret) {
++		char err_str[1024];
+ 		ret = -(int) libusb_to_errno(ret);
+-		ERROR("Unable to get config descriptor: %i\n", ret);
++		iio_strerror(-ret, err_str, sizeof(err_str));
++		ERROR("Unable to get config descriptor: %s (%i)\n",
++				err_str, ret);
+ 		goto err_libusb_close;
+ 	}
+ 
+-- 
+2.20.1
+

@@ -1,0 +1,47 @@
+From ef797252eb1055f08f313d57a1f873d91e406798 Mon Sep 17 00:00:00 2001
+From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Date: Wed, 19 Feb 2020 10:47:52 +0200
+Subject: [PATCH 6/9] ci,build: drop xcode9 build
+
+Mathworks no longer supports macOS 10.12
+https://www.mathworks.com/support/requirements/matlab-system-requirements.html
+```
+Operating Systems
+    macOS Catalina (10.15)
+    macOS Mojave (10.14)
+    macOS High Sierra (10.13.6)
+Note:
+    macOS Sierra (10.12) is no longer supported.
+    On macOS High Sierra, version 10.13.6 is required.
+```
+
+Travis-CI's Xcode + macOS matrix lists Xcode 9.4 (only) running on macOS
+10.13 and all Xcode10 running on 10.13.
+All other XCode 9 versions only support 10.12
+  https://docs.travis-ci.com/user/reference/osx/#macos-version
+
+We can suggest that people upgrade their Xcode to version 10. It's also
+likely that most people running macOS 10.13, are running Xcode 10 already.
+
+In any case, we can start to consider dropping the Xcode9 build to reduce
+the overall build-time.
+
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+ .travis.yml | 5 -----
+ 1 file changed, 5 deletions(-)
+
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -70,11 +70,6 @@
+         - EXTRA_SSH=-oHostKeyAlgorithms=+ssh-dss
+     - compiler: "gcc"
+       os: osx
+-      osx_image: xcode9.2
+-      env:
+-        - EXTRA_SSH=-oHostKeyAlgorithms=+ssh-dss
+-    - compiler: "gcc"
+-      os: osx
+       osx_image: xcode10.1
+       env:
+         - EXTRA_SSH=-oHostKeyAlgorithms=+ssh-dss
