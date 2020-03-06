@@ -17,7 +17,8 @@ debian_version="${package_version}-0rcnee5"
 debian_untar=""
 debian_patch=""
 
-dl_mirror="http://gitlab.gfnd.rcn-ee.org/RobertCNelson/npm-package-cloud9/raw/master/deploy/stretch"
+#dl_mirror="http://gitlab.gfnd.rcn-ee.org/RobertCNelson/npm-package-cloud9/raw/master/deploy/stretch"
+dl_mirror="http://gfnd.rcn-ee.org:8400/gitlab/RobertCNelson/npm-package-cloud9/-/raw/master/deploy/stretch"
 
 v6="v6.17.0"
 
