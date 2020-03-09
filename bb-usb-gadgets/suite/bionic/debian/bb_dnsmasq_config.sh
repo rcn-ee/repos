@@ -35,6 +35,18 @@ fi
 
 if [ -f /etc/default/bb-boot ] ; then
 	. /etc/default/bb-boot
+else
+	if [ -f /opt/scripts/boot/default/bb-boot ] ; then
+		cp -v /opt/scripts/boot/default/bb-boot /etc/default/ || true
+		. /etc/default/bb-boot
+	else
+		USB0_SUBNET=192.168.7
+		USB0_NETMASK=255.255.255.252
+
+		USB1_ENABLE=enable
+		USB1_SUBNET=192.168.6
+		USB1_NETMASK=255.255.255.252
+	fi
 fi
 
 unset got_softap0
