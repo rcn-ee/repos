@@ -2,7 +2,7 @@
 
 package_name="bb-bbai-firmware"
 debian_pkg_name="${package_name}"
-package_version="1.20200226.0"
+package_version="1.20200226.1"
 package_source=""
 src_dir=""
 
@@ -15,5 +15,6 @@ debian_version="${package_version}-0rcnee0"
 debian_untar=""
 debian_patch=""
 
-stretch_version="~stretch+20200226"
-buster_version="~buster+20200226"
+stretch_version="~stretch+20200310"
+buster_version="~buster+20200310"
+bionic_version="~bionic+20200310"
