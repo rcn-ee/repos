@@ -41,11 +41,13 @@ else
 		. /etc/default/bb-boot
 	else
 		USB0_SUBNET=192.168.7
-		USB0_NETMASK=255.255.255.252
+		USB0_ADDRESS=192.168.7.2
+		USB0_NETMASK=255.255.255.0
 
 		USB1_ENABLE=enable
 		USB1_SUBNET=192.168.6
-		USB1_NETMASK=255.255.255.252
+		USB1_ADDRESS=192.168.6.2
+		USB1_NETMASK=255.255.255.0
 	fi
 fi
 
@@ -90,10 +92,10 @@ if [ "x${got_softapt0}" = "xenable" ] ; then
 	echo "listen-address=${USE_WL18XX_IP_PREFIX}.1" >> ${wfile}
 fi
 
-echo "listen-address=${USB0_SUBNET}.2" >> ${wfile}
+echo "listen-address=${USB0_ADDRESS}" >> ${wfile}
 
 if [ "x${USB1_ENABLE}" = "xenable" ] ; then
-	echo "listen-address=${USB1_SUBNET}.2" >> ${wfile}
+	echo "listen-address=${USB1_ADDRESS}" >> ${wfile}
 fi
 
 if [ "x${got_softapt0}" = "xenable" ] ; then
