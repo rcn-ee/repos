@@ -11,7 +11,7 @@ if [ -f ${DIR}/ignore/llvm/.git/config ] ; then
 	git pull
 	cd ${DIR}
 else
-	git clone https://github.com/rcn-ee/llvm ${DIR}/ignore/llvm
+	git clone git://git.ti.com/opencl/llvm.git ${DIR}/ignore/llvm
 fi
 
 if [ -f ${DIR}/ignore/clang/.git/config ] ; then
@@ -19,7 +19,7 @@ if [ -f ${DIR}/ignore/clang/.git/config ] ; then
 	git pull
 	cd ${DIR}
 else
-	git clone https://github.com/rcn-ee/clang ${DIR}/ignore/clang
+	git clone git://git.ti.com/opencl/clang.git ${DIR}/ignore/clang
 fi
 
 if [ -d ${DIR}/ti-llvm-3.6-3.6/ ] ; then
