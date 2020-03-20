@@ -3,7 +3,7 @@
 #http://www.ti.com/tool/download/C6000-CGT-8-3
 #wget -c http://software-dl.ti.com/codegen/esd/cgt_public_sw/C6000/8.3.2/ti_cgt_c6000_8.3.2_armlinuxa8hf_busybox_installer.sh
 
-package_name="ti-c6000-cgt-v8.3.x"
+package_name="ti-c6000-cgt-v8.3"
 debian_pkg_name="${package_name}"
 package_version="8.3.2"
 package_source=""

@@ -10,4 +10,4 @@ wfile="ti_cgt_c6000_8.3.2_armlinuxa8hf_busybox_installer.sh"
 	dh $@
 
 override_dh_auto_configure:
-	chmod +x ./debian/$(wfile) ; ./debian/$(wfile) --prefix ./tmp/ --temp `mktemp -d`
+	mkdir -p ./tmp/ ; chmod +x ./debian/$(wfile) ; ./debian/$(wfile) --prefix ./tmp/ --temp `mktemp -d`
