@@ -5,12 +5,12 @@
 
 package_name="ti-opencl"
 debian_pkg_name="${package_name}"
-package_version="01.02.00.02-git20191223.1"
+package_version="01.02.00.02-git20191223.2"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
 git_repo="https://github.com/rcn-ee/ti-opencl.git"
-git_sha="dfef7abddc6192638b492a6bcf096ce6653955ca"
+git_sha="55ff2125dee099ead4f6dd91f3e21d945828046c"
 reprepro_dir="c/${package_name}"
 dl_path=""
 
