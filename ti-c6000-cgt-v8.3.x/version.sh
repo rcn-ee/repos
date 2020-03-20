@@ -20,4 +20,4 @@ debian_patch=""
 
 debian_dl_1="http://software-dl.ti.com/codegen/esd/cgt_public_sw/C6000/8.3.2/ti_cgt_c6000_8.3.2_armlinuxa8hf_busybox_installer.sh"
 
-buster_version="~buster+20190102"
+buster_version="~buster+20200319"
