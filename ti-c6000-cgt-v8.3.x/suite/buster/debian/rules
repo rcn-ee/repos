@@ -1,0 +1,11 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+export DH_VERBOSE=1
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	./debian/ti_cgt_c6000_8.3.2_armlinuxa8hf_busybox_installer.sh --prefix ./tmp/ --temp `mktemp -d`
