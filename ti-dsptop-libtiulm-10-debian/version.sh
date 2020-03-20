@@ -4,7 +4,7 @@
 
 package_name="dsptop"
 debian_pkg_name="${package_name}"
-package_version="1.4.0-git20190509.0"
+package_version="1.4.0-git20190509.1"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
@@ -17,6 +17,4 @@ debian_version="${package_version}-0rcnee0"
 debian_patch=""
 debian_diff=""
 
-stretch_version="~stretch+20190925"
 buster_version="~buster+20190925"
-bionic_version="~bionic+20190925"
