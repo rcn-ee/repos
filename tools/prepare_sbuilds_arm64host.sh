@@ -5,8 +5,8 @@ if ! id | grep -q root; then
 	exit
 fi
 
-#proxy=""
-proxy="proxy.gfnd.rcn-ee.org:3142/"
+proxy=""
+#proxy="proxy.gfnd.rcn-ee.org:3142/"
 
 debian_server="deb.debian.org/debian"
 ubuntu_server="ports.ubuntu.com"
