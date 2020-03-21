@@ -6,7 +6,7 @@
 rm *.tar.bz2 || true
 
 # TODO - switch to http://ftpmirror.gnu.org/gcc once gcc-10 is released.
-wget http://www.netgull.com/gcc/releases/${package_version}/gcc-${package_version}.tar.xz
+wget http://www.netgull.com/gcc/snapshots/${package_version}/gcc-${package_version}.tar.xz
 
 wget http://sourceware.org/pub/newlib/newlib-${newlib_version}.tar.gz
 
