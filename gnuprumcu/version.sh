@@ -2,7 +2,7 @@
 
 package_name="gnuprumcu"
 debian_pkg_name="${package_name}"
-package_version="0.2.1"
+package_version="0.2.1-git20191109.0"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
