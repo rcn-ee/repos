@@ -3,7 +3,7 @@ author: Michael Gilbert <mgilbert@debian.org>
 
 --- a/third_party/blink/renderer/platform/graphics/logging_canvas.cc
 +++ b/third_party/blink/renderer/platform/graphics/logging_canvas.cc
-@@ -531,8 +531,12 @@ String StringForUTF32LEText(const void*
+@@ -528,8 +528,12 @@ String StringForUTF32LEText(const void*
    utf16 = icu::UnicodeString::fromUTF32(reinterpret_cast<const UChar32*>(text),
                                          static_cast<int32_t>(byte_length));
  #endif
@@ -28,7 +28,7 @@ author: Michael Gilbert <mgilbert@debian.org>
  import("//url/features.gni")
 --- a/components/url_formatter/idn_spoof_checker.cc
 +++ b/components/url_formatter/idn_spoof_checker.cc
-@@ -322,8 +322,8 @@ bool IDNSpoofChecker::SimilarToTopDomain
+@@ -327,8 +327,8 @@ bool IDNSpoofChecker::SimilarToTopDomain
    if ((u04cf_pos = host.indexOf(0x4CF)) != -1) {
      icu::UnicodeString host_alt(host);
      size_t length = host_alt.length();

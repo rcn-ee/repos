@@ -1,29 +1,6 @@
-description: maintain compatibility with system vpx
+description: maintain compatibility with vpx 1.7
 author: Michael Gilbert <mgilbert@debian.org>
 
---- a/third_party/webrtc/modules/video_coding/codecs/vp8/libvpx_vp8_decoder.cc
-+++ b/third_party/webrtc/modules/video_coding/codecs/vp8/libvpx_vp8_decoder.cc
-@@ -253,9 +253,6 @@ int LibvpxVp8Decoder::Decode(const Encod
- 
-   img = vpx_codec_get_frame(decoder_, &iter);
-   int qp;
--  vpx_codec_err_t vpx_ret =
--      vpx_codec_control(decoder_, VPXD_GET_LAST_QUANTIZER, &qp);
--  RTC_DCHECK_EQ(vpx_ret, VPX_CODEC_OK);
-   ret = ReturnFrame(img, input_image._timeStamp, input_image.ntp_time_ms_, qp);
-   if (ret != 0) {
-     // Reset to avoid requesting key frames too often.
-@@ -309,7 +306,9 @@ int LibvpxVp8Decoder::ReturnFrame(const
- 
-   VideoFrame decoded_image(buffer, timestamp, 0, kVideoRotation_0);
-   decoded_image.set_ntp_time_ms(ntp_time_ms);
--  decode_complete_callback_->Decoded(decoded_image, rtc::nullopt, qp);
-+  int ret = decode_complete_callback_->Decoded(decoded_image);
-+  if (ret != 0)
-+    return ret;
- 
-   return WEBRTC_VIDEO_CODEC_OK;
- }
 --- a/media/base/decode_capabilities.cc
 +++ b/media/base/decode_capabilities.cc
 @@ -12,8 +12,8 @@
@@ -37,18 +14,48 @@ author: Michael Gilbert <mgilbert@debian.org>
  #endif
  
  namespace media {
-@@ -101,7 +101,7 @@ bool IsColorSpaceSupported(const media::
- }
- 
- bool IsVp9ProfileSupported(VideoCodecProfile profile) {
--#if BUILDFLAG(ENABLE_LIBVPX)
-+#if 0
-   // High bit depth capabilities may be toggled via LibVPX config flags.
-   static bool vpx_supports_high_bit_depth =
-       (vpx_codec_get_caps(vpx_codec_vp9_dx()) & VPX_CODEC_CAP_HIGHBITDEPTH) !=
 --- a/third_party/webrtc/modules/video_coding/codecs/vp9/vp9_impl.cc
 +++ b/third_party/webrtc/modules/video_coding/codecs/vp9/vp9_impl.cc
-@@ -723,10 +723,8 @@ int VP9EncoderImpl::GetEncodedLayerFrame
+@@ -483,38 +483,6 @@ int VP9EncoderImpl::InitAndSetControlSet
+                       &svc_params_);
+   }
+ 
+-  if (num_spatial_layers_ > 1) {
+-    switch (inter_layer_pred_) {
+-      case InterLayerPredMode::kOn:
+-        vpx_codec_control(encoder_, VP9E_SET_SVC_INTER_LAYER_PRED, 0);
+-        break;
+-      case InterLayerPredMode::kOff:
+-        vpx_codec_control(encoder_, VP9E_SET_SVC_INTER_LAYER_PRED, 1);
+-        break;
+-      case InterLayerPredMode::kOnKeyPic:
+-        vpx_codec_control(encoder_, VP9E_SET_SVC_INTER_LAYER_PRED, 2);
+-        break;
+-      default:
+-        RTC_NOTREACHED();
+-    }
+-
+-    if (!is_flexible_mode_) {
+-      // In RTP non-flexible mode, frame dropping of individual layers in a
+-      // superframe leads to incorrect reference picture ID values in the
+-      // RTP header. Dropping the entire superframe if the base is dropped
+-      // or not dropping upper layers if base is not dropped mitigates
+-      // the problem.
+-      vpx_svc_frame_drop_t svc_drop_frame;
+-      svc_drop_frame.framedrop_mode = CONSTRAINED_LAYER_DROP;
+-      for (size_t i = 0; i < num_spatial_layers_; ++i) {
+-        svc_drop_frame.framedrop_thresh[i] =
+-            (i == 0) ? config_->rc_dropframe_thresh : 0;
+-      }
+-      vpx_codec_control(encoder_, VP9E_SET_SVC_FRAME_DROP_LAYER,
+-                        &svc_drop_frame);
+-    }
+-  }
+-
+   // Register callback for getting each spatial layer.
+   vpx_codec_priv_output_cx_pkt_cb_pair_t cbp = {
+       VP9EncoderImpl::EncoderOutputCodedPacketCallback,
+@@ -772,10 +740,8 @@ int VP9EncoderImpl::GetEncodedLayerFrame
    encoded_image_.content_type_ = (codec_.mode == kScreensharing)
                                       ? VideoContentType::SCREENSHARE
                                       : VideoContentType::UNSPECIFIED;

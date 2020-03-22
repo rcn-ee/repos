@@ -1,4 +1,4 @@
-description: ffmpeg before version 4.0 requires explicit initialization
+description: ffmpeg decoders before version 4.0 require explicit initialization
 author: Michael Gilbert <mgilbert@debian.org>
 origin: chromium 66 authors
 
@@ -15,7 +15,7 @@ origin: chromium 66 authors
      bound_init_cb.Run(false);
 --- a/media/cdm/library_cdm/clear_key_cdm/clear_key_cdm.cc
 +++ b/media/cdm/library_cdm/clear_key_cdm/clear_key_cdm.cc
-@@ -222,10 +222,13 @@ void ConvertCdmKeysInfo(const media::Cdm
+@@ -228,10 +228,13 @@ void ConvertCdmKeysInfo(const media::Cdm
    }
  }
  
@@ -31,7 +31,7 @@ origin: chromium 66 authors
    g_is_cdm_module_initialized = true;
 --- a/media/filters/ffmpeg_glue.cc
 +++ b/media/filters/ffmpeg_glue.cc
-@@ -63,6 +63,10 @@ static int64_t AVIOSeekOperation(void* o
+@@ -63,7 +63,13 @@ static int64_t AVIOSeekOperation(void* o
    return new_offset;
  }
  
@@ -40,8 +40,11 @@ origin: chromium 66 authors
 +}
 +
  FFmpegGlue::FFmpegGlue(FFmpegURLProtocol* protocol) {
++  InitializeFFmpeg();
++
    // Initialize an AVIOContext using our custom read and seek operations.  Don't
    // keep pointers to the buffer since FFmpeg may reallocate it on the fly.  It
+   // will be cleaned up
 --- a/media/filters/ffmpeg_glue.h
 +++ b/media/filters/ffmpeg_glue.h
 @@ -59,6 +59,8 @@ class MEDIA_EXPORT FFmpegURLProtocol {
@@ -71,7 +74,7 @@ origin: chromium 66 authors
    return avcodec_find_decoder(VideoCodecToCodecID(codec)) != nullptr;
  }
  
-@@ -252,6 +254,8 @@ void FFmpegVideoDecoder::Initialize(
+@@ -253,6 +255,8 @@ void FFmpegVideoDecoder::Initialize(
      return;
    }
  
