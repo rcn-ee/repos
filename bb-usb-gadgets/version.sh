@@ -2,7 +2,7 @@
 
 package_name="bb-usb-gadgets"
 debian_pkg_name="${package_name}"
-package_version="1.20200312.0"
+package_version="1.20200322.0"
 package_source=""
 src_dir=""
 
@@ -15,7 +15,7 @@ debian_version="${package_version}-0rcnee0"
 debian_untar=""
 debian_patch=""
 
-stretch_version="~stretch+20200312"
-buster_version="~buster+20200312"
-xenial_version="~xenial+20200312"
-bionic_version="~bionic+20200312"
+stretch_version="~stretch+20200322"
+buster_version="~buster+20200322"
+xenial_version="~xenial+20200322"
+bionic_version="~bionic+20200322"

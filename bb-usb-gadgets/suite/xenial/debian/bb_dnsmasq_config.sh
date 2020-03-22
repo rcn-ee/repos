@@ -52,8 +52,11 @@ else
 fi
 
 unset got_softap0
-if [ -d /sys/class/net/${ap_interface} ] ; then
-	got_softapt0=enable
+#Only create SoftAp0 if /etc/default/bb-wl18xx TETHER_ENABLED is set, we still need usb0/usb1 configured...
+if [ "x${TETHER_ENABLED}" = "xyes" ] ; then
+	if [ -d /sys/class/net/${ap_interface} ] ; then
+		got_softapt0=enable
+	fi
 fi
 
 wfile="/etc/dnsmasq.d/SoftAp0"
