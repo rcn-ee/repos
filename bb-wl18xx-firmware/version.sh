@@ -2,7 +2,7 @@
 
 package_name="bb-wl18xx-firmware"
 debian_pkg_name="${package_name}"
-package_version="1.20200226.1"
+package_version="1.20200322.0"
 package_source=""
 src_dir=""
 
@@ -16,7 +16,7 @@ debian_untar=""
 debian_patch=""
 
 jessie_version="~jessie+20190227"
-stretch_version="~stretch+20200226"
-buster_version="~buster+20200226"
-xenial_version="~xenial+20200226"
-bionic_version="~bionic+20200226"
+stretch_version="~stretch+20200322"
+buster_version="~buster+20200322"
+xenial_version="~xenial+20200322"
+bionic_version="~bionic+20200322"

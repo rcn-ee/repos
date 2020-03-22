@@ -192,6 +192,10 @@ start_tether () {
 	fi
 	if [ "x${TETHER_ENABLED}" = "xyes" ] ; then
 		/usr/bin/bb-wl18xx-tether || true
+	else
+		#Still need to setup usb0/usb1 dnsmasq options...
+		/usr/bin/bb_dnsmasq_config.sh || true
+		systemctl restart dnsmasq || true
 	fi
 }
 
