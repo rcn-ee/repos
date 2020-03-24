@@ -61,11 +61,11 @@ arch="armhf"
 options="--exclude=debfoster"
 setup_update_sbuild
 
-#dist="buster"
-#flavor="-exp"
-#arch="armhf"
-#options="--exclude=debfoster --chroot-suffix=${flavor}-sbuild"
-#setup_update_sbuild
+dist="buster"
+flavor="-exp"
+arch="armhf"
+options="--exclude=debfoster --chroot-suffix=${flavor}-sbuild"
+setup_update_sbuild
 
 dist="bullseye"
 unset flavor
