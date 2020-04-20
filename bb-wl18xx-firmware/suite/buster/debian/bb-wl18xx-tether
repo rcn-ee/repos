@@ -301,6 +301,9 @@ start_dnsmasq () {
 }
 
 start_hostapd () {
+	#https://wiki.gentoo.org/wiki/Hostapd
+	#http://w1.fi/hostapd/
+	#https://w1.fi/cgit/hostap/plain/hostapd/hostapd.conf
 	if [ "x${USE_GENERATED_HOSTAPD}" = "xyes" ] ; then
 		if [ ! "x${use_mac}" = "x" ] ; then
 			ssid_append=$(echo ${use_mac} | cut -b 13-17 | sed 's/://g' || true)
@@ -308,30 +311,64 @@ start_hostapd () {
 
 		wfile="/tmp/hostapd-wl18xx.conf"
 		echo "interface=${ap_interface}" > ${wfile}
+		echo "" >> ${wfile}
+
+		echo "# a simply means 5GHz" >> ${wfile}
+		echo "# g simply means 2.4GHz band" >> ${wfile}
+		echo "hw_mode=g" >> ${wfile}
+		echo "" >> ${wfile}
+
+		echo "# the channel to use" >> ${wfile}
+		echo "channel=1" >> ${wfile}
+		echo "" >> ${wfile}
+
+		if [ ! "x${USE_PERSONAL_COUNTRY}" = "x" ] ; then
+			echo "# limit the frequencies used to those allowed in the country" >> ${wfile}
+			echo "ieee80211d=1" >> ${wfile}
+			echo "# the country code" >> ${wfile}
+			echo "country_code=${USE_PERSONAL_COUNTRY}" >> ${wfile}
+			echo "" >> ${wfile}
+		else
+			echo "# limit the frequencies used to those allowed in the country" >> ${wfile}
+			echo "#ieee80211d=1" >> ${wfile}
+			echo "# the country code" >> ${wfile}
+			echo "#country_code=US" >> ${wfile}
+			echo "" >> ${wfile}
+		fi
+
+		echo "# 802.11n support" >> ${wfile}
+		echo "ieee80211n=1" >> ${wfile}
+		echo "# QoS support, also required for full speed on 802.11n/ac/ax" >> ${wfile}
+		echo "wmm_enabled=1" >> ${wfile}
+		echo "" >> ${wfile}
 
 		if [ ! "x${use_mac}" = "x" ] ; then
 			echo "ssid=${wifi_ssid}-${ssid_append}" >> ${wfile}
 		else
 			echo "ssid=${wifi_ssid}" >> ${wfile}
 		fi
+		echo "" >> ${wfile}
 
-		echo "hw_mode=g" >> ${wfile}
-		echo "channel=1" >> ${wfile}
-		echo "macaddr_acl=0" >> ${wfile}
+		echo "# 1=wpa, 2=wep, 3=both" >> ${wfile}
 		echo "auth_algs=1" >> ${wfile}
-		echo "ignore_broadcast_ssid=0" >> ${wfile}
 		echo "wpa=2" >> ${wfile}
-		echo "wpa_passphrase=${wifi_password}" >> ${wfile}
 		echo "wpa_key_mgmt=WPA-PSK" >> ${wfile}
 		echo "wpa_pairwise=TKIP" >> ${wfile}
 		echo "rsn_pairwise=CCMP" >> ${wfile}
+		echo "wpa_passphrase=${wifi_password}" >> ${wfile}
+		echo "" >> ${wfile}
+
+		echo "macaddr_acl=0" >> ${wfile}
+		echo "ignore_broadcast_ssid=0" >> ${wfile}
 
 		echo "logger_syslog=-1" >> ${wfile}
 		echo "logger_syslog_level=2" >> ${wfile}
 
+		echo "${log} /usr/sbin/hostapd -B /tmp/hostapd-wl18xx.conf"
 		/usr/sbin/hostapd -B /tmp/hostapd-wl18xx.conf
 	else
 		if [ -f /etc/hostapd.conf ] ; then
+			echo "${log} /usr/sbin/hostapd -B /etc/hostapd.conf"
 			/usr/sbin/hostapd -B /etc/hostapd.conf
 		else
 			echo "${log} error, no /etc/hostapd.conf"
