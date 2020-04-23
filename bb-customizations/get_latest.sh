@@ -5,7 +5,8 @@ dl_src () {
 		rm -rf ./src/
 	fi
 
-	git clone git@github.com:rcn-ee/customizations.git ./src/
+	#git clone git@github.com:rcn-ee/customizations.git ./src/
+	git clone -b fix-pru-firmware git@github.com:rcn-ee/customizations.git ./src/
 }
 
 copy_all () {

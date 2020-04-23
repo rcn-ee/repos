@@ -2,7 +2,7 @@
 
 package_name="bb-customizations"
 debian_pkg_name="${package_name}"
-package_version="1.20200306.0"
+package_version="1.20200423.0"
 package_source=""
 src_dir=""
 
@@ -15,7 +15,7 @@ debian_version="${package_version}-0rcnee0"
 debian_untar=""
 debian_patch=""
 
-stretch_version="~stretch+20200306"
-buster_version="~buster+20200306"
-xenial_version="~xenial+20200306"
-bionic_version="~bionic+20200306"
+stretch_version="~stretch+20200423"
+buster_version="~buster+20200423"
+xenial_version="~xenial+20200423"
+bionic_version="~bionic+20200423"
