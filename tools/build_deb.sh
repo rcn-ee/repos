@@ -80,8 +80,8 @@ start_run () {
 	suite="buster" ; runner
 	suite="bullseye" ; runner
 
-	suite="xenial" ; runner
 	suite="bionic" ; runner
+	suite="focal" ; runner
 }
 
 cleanup () {
@@ -89,8 +89,8 @@ cleanup () {
 	suite="buster" ; cleanup_suite
 	suite="bullseye" ; cleanup_suite
 
-	suite="xenial" ; cleanup_suite
 	suite="bionic" ; cleanup_suite
+	suite="focal" ; cleanup_suite
 }
 
 start_run

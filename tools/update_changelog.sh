@@ -63,19 +63,19 @@ if [ -d ${DIR}/suite/${suite}/ ] ; then
 fi
 
 dist="ubuntu"
-suite="xenial"
+suite="bionic"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
-	rcn_ee_version="${xenial_version}"
-	cat ${DIR}/version.sh | grep -v xenial_version > ${DIR}/new-version.sh
+	rcn_ee_version="${bionic_version}"
+	cat ${DIR}/version.sh | grep -v bionic_version > ${DIR}/new-version.sh
 	echo "${suite}_version=\"~${suite}+${simple_date}\"" >> ${DIR}/new-version.sh
 	mv ${DIR}/new-version.sh ${DIR}/version.sh
 	run
 fi
 
-suite="bionic"
+suite="focal"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
-	rcn_ee_version="${bionic_version}"
-	cat ${DIR}/version.sh | grep -v bionic_version > ${DIR}/new-version.sh
+	rcn_ee_version="${focal_version}"
+	cat ${DIR}/version.sh | grep -v focal_version > ${DIR}/new-version.sh
 	echo "${suite}_version=\"~${suite}+${simple_date}\"" >> ${DIR}/new-version.sh
 	mv ${DIR}/new-version.sh ${DIR}/version.sh
 	run

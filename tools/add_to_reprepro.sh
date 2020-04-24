@@ -31,8 +31,8 @@ start_run () {
 	suite="bullseye" ; runner
 
 	dist="ubuntu"
-	suite="xenial" ; runner
 	suite="bionic" ; runner
+	suite="focal" ; runner
 }
 
 start_run

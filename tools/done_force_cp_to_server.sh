@@ -58,8 +58,8 @@ start_run () {
 	suite="buster" ; runner
 	suite="bullseye" ; runner
 
-	suite="xenial" ; runner
 	suite="bionic" ; runner
+	suite="focal" ; runner
 }
 
 start_run
