@@ -1,0 +1,13 @@
+[Unit]
+Description=BBAI brcmfmac tether Service
+After=local-fs.target
+
+[Service]
+ExecStart=/usr/bin/bb-bbai-tether
+Type=forking
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
