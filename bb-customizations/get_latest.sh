@@ -10,8 +10,8 @@ dl_src () {
 }
 
 copy_all () {
-	cp -v ./src${wdir}${wfile} ./suite/xenial/debian/
 	cp -v ./src${wdir}${wfile} ./suite/bionic/debian/
+	cp -v ./src${wdir}${wfile} ./suite/focal/debian/
 	cp -v ./src${wdir}${wfile} ./suite/stretch/debian/
 	cp -v ./src${wdir}${wfile} ./suite/buster/debian/
 }
