@@ -187,4 +187,8 @@ suite="focal"
 archs="armhf source"
 setup_repo
 
+suite="groovy"
+archs="armhf source"
+setup_repo
+
 #
