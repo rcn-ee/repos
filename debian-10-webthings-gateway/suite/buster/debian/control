@@ -4,12 +4,12 @@ Section: web
 Priority: optional
 Standards-Version: 4.3.0
 Homepage: https://iot.mozilla.org/gateway/
-Build-Depends: debhelper (>= 9), nodejs (>= 8), npm, git, python, python3, python3-pip, python3-setuptools, libnanomsg-dev, libffi-dev, libpython3-dev, libpng-dev, pkg-config, zlib1g-dev
+Build-Depends: debhelper (>= 9), nodejs (>= 8), npm, git, python, python3, python3-pip, python3-setuptools, libffi-dev, libpython3-dev, libpng-dev, pkg-config,  zlib1g-dev
 
 Package: webthings-gateway
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}, nodejs (>= 10.0.0), nodejs (<< 11.0.0~~), pagekite, python3 (>= 3.7.0), python3 (<< 3.8.0~~), python3-pip, libnanomsg4 | libnanomsg5, libffi6, adduser, sudo
-Recommends: arping, avahi-daemon, ffmpeg, mosquitto, sqlite3
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}, nodejs (>= 10.0.0), nodejs (<< 11.0.0~~), python-six, lsb-release, python3 (>= 3.7.0), python3 (<< 3.8.0~~), python3-pip, libffi6, adduser, sudo
+Recommends: alsa-utils, arping, avahi-daemon, ffmpeg, mosquitto, sqlite3
 Description: WebThings Gateway by Mozilla
  Web of Things gateway, created by Mozilla, which can bridge existing
  Internet of Things (IoT) devices to the web.
