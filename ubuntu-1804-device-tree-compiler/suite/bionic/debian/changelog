@@ -1,12 +1,73 @@
-device-tree-compiler (1.4.5-3rcnee0~bionic+20200430) bionic; urgency=low
+device-tree-compiler (1.4.7-3ubuntu2rcnee0~bionic+20200430) bionic; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Thu, 30 Apr 2020 19:33:43 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Thu, 30 Apr 2020 19:38:27 -0500
+
+device-tree-compiler (1.4.7-3ubuntu2) eoan; urgency=medium
+
+  * d/control: run update maintainer that was forgotten on the former upload,
+    but required when deriving from Debian.
+
+ -- Christian Ehrhardt <christian.ehrhardt@canonical.com>  Tue, 25 Jun 2019 09:54:00 +0200
+
+device-tree-compiler (1.4.7-3ubuntu1) eoan; urgency=medium
+
+  * d/p/lp-1834143-Update-version.lds.patch: fix the lack of function exports
+    for fdt_get_max_phandle, fdt_check_full, fdt_setprop_placeholder and
+    fdt_property_placeholder to avoid users of libfdt.h to FTBFS (LP: #1834143)
+
+ -- Christian Ehrhardt <christian.ehrhardt@canonical.com>  Tue, 25 Jun 2019 08:19:06 +0200
+
+device-tree-compiler (1.4.7-3) unstable; urgency=medium
+
+  * Add Build-Depends on pkg-config, which is used to check for valgrind.
+
+ -- Vagrant Cascadian <vagrant@debian.org>  Tue, 11 Sep 2018 00:51:07 -0700
+
+device-tree-compiler (1.4.7-2) unstable; urgency=medium
+
+  * Add patch from upstream making valgrind optional.
+  * Only Build-Depend on valgrind for architectures where valgrind is
+    available.
+  * Update Standards-Version to 4.2.1, no changes needed.
+
+ -- Vagrant Cascadian <vagrant@debian.org>  Mon, 10 Sep 2018 23:11:53 -0700
+
+device-tree-compiler (1.4.7-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/control:
+    - Add Build-Depends on valgrind, used in tests.
+    - Add Rules-Requires-Root: no.
+    - Update Standards-Version to 4.2.0.
+
+ -- Vagrant Cascadian <vagrant@debian.org>  Thu, 16 Aug 2018 13:38:37 -0700
+
+device-tree-compiler (1.4.6-1) unstable; urgency=medium
+
+  [ Vagrant Cascadian ]
+  * New upstream release.
+  * Drop patches applied upstream.
+  * Update debian/watch:
+    - Use tarballs downloaded from https://www.kernel.org/pub instead of
+      generated tarballs from git tags.
+    - Check signature of downloaded tarball. Thanks to Osamu Aoki.
+  * Use debhelper compat level 11.
+  * Update to Standards-Version 4.1.4, no changes needed.
+  * Support "nodoc" in DEB_BUILD_PROFILES and DEB_BUILD_OPTIONS.
+  * Make build more verbose.
+  * Use dpkg buildflags.mk, passing CFLAGS and CPPFLAGS to build.
+
+  [ Dima Kogan ]
+  * Moved Vcs tags to point to salsa.
+
+ -- Vagrant Cascadian <vagrant@debian.org>  Thu, 26 Apr 2018 11:02:44 -0700
 
 device-tree-compiler (1.4.5-3) unstable; urgency=medium
 
-  * Add patch from upstream to fix bugs in testsuite for 32-bit arm. (Closes: #877797)
+  * Add patch from upstream to fix bugs in testsuite for 32-bit
+    arm. (Closes: #877797)
 
  -- Vagrant Cascadian <vagrant@debian.org>  Fri, 06 Oct 2017 11:51:12 -0700
 

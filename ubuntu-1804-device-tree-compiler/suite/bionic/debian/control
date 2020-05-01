@@ -1,13 +1,21 @@
 Source: device-tree-compiler
 Section: devel
 Priority: optional
-Maintainer: Héctor Orón Martínez <zumbi@debian.org>
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+XSBC-Original-Maintainer: Héctor Orón Martínez <zumbi@debian.org>
 Uploaders: Riku Voipio <riku.voipio@linaro.org>, Vagrant Cascadian <vagrant@debian.org>
-Standards-Version: 4.1.0
-Build-Depends: debhelper (>= 10), flex, bison, texlive, texlive-latex-extra
+Standards-Version: 4.2.1
+Build-Depends: debhelper (>= 10),
+ flex,
+ bison,
+ pkg-config,
+ texlive <!nodoc>,
+ texlive-latex-extra <!nodoc>,
+ valgrind [amd64 arm64 armhf i386 mips mips64el mipsel powerpc ppc64 ppc64el s390x],
+Rules-Requires-Root: no
 Homepage: https://git.kernel.org/cgit/utils/dtc/dtc.git
-Vcs-Git: https://anonscm.debian.org/git/crosstoolchain/device-tree-compiler.git
-Vcs-Browser: https://anonscm.debian.org/cgit/crosstoolchain/device-tree-compiler.git/
+Vcs-Git: https://salsa.debian.org/crosstoolchain-team/device-tree-compiler.git
+Vcs-Browser: https://salsa.debian.org/crosstoolchain-team/device-tree-compiler
 
 Package: device-tree-compiler
 Architecture: any
