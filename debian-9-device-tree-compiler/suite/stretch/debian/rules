@@ -9,6 +9,9 @@ export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 
 export CFLAGS = -Wall -g -fPIC
 
+# python library builds with warnings, temporarily disabled.
+export NO_PYTHON = 1
+
 include /usr/share/dpkg/architecture.mk
 ifeq ($(origin CC),default)
 export CC = $(DEB_HOST_GNU_TYPE)-gcc
@@ -33,3 +36,4 @@ override_dh_auto_install:
 override_dh_auto_clean:
 	dh_auto_clean
 	[ ! -f Documentation/Makefile ] || $(MAKE) -C Documentation clean
+	[ ! -d build ] || rm -rf build
