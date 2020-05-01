@@ -1,0 +1,41 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+DEB_BUILD_OPTIONS=noautodbgsym
+
+# reproducible builds: texlive needs FORCE_SOURCE_DATE set in order to
+# respect SOURCE_DATE_EPOCH.
+export FORCE_SOURCE_DATE=1
+
+export DEB_BUILD_MAINT_OPTIONS=hardening=+all
+
+export CFLAGS = -Wall -g -fPIC
+
+# python library builds with warnings, temporarily disabled.
+export NO_PYTHON = 1
+
+include /usr/share/dpkg/architecture.mk
+ifeq ($(origin CC),default)
+export CC = $(DEB_HOST_GNU_TYPE)-gcc
+endif
+
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+else
+	CFLAGS += -O2
+endif
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	dh_auto_build 
+	$(MAKE) -C Documentation
+
+override_dh_auto_install:
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp PREFIX=/usr LIBDIR=/usr/lib/$(DEB_HOST_MULTIARCH)
+
+override_dh_auto_clean:
+	dh_auto_clean
+	[ ! -f Documentation/Makefile ] || $(MAKE) -C Documentation clean
+	[ ! -d build ] || rm -rf build
