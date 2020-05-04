@@ -80,13 +80,13 @@ echo "expand-hosts" >> ${wfile}
 echo "cache-size=2048" >> ${wfile}
 
 if [ "x${got_softapt0}" = "xenable" ] ; then
-	echo "dhcp-range=${ap_interface},${USE_WL18XX_IP_PREFIX}.50,${USE_WL18XX_IP_PREFIX}.150,10m" >> ${wfile}
+	echo "dhcp-range=${ap_interface},${USE_WL18XX_IP_PREFIX}.50,${USE_WL18XX_IP_PREFIX}.150,60m" >> ${wfile}
 fi
 
-echo "dhcp-range=usb0,${USB0_SUBNET}.1,${USB0_SUBNET}.1,2m" >> ${wfile}
+echo "dhcp-range=usb0,${USB0_SUBNET}.1,${USB0_SUBNET}.1,20m" >> ${wfile}
 
 if [ "x${USB1_ENABLE}" = "xenable" ] ; then
-	echo "dhcp-range=usb1,${USB1_SUBNET}.1,${USB1_SUBNET}.1,2m" >> ${wfile}
+	echo "dhcp-range=usb1,${USB1_SUBNET}.1,${USB1_SUBNET}.1,20m" >> ${wfile}
 fi
 
 echo "listen-address=127.0.0.1" >> ${wfile}
