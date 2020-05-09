@@ -1,0 +1,36 @@
+From: Lennart Poettering <lennart@poettering.net>
+Date: Wed, 22 Jan 2020 16:53:59 +0100
+Subject: polkit: use structured initialization
+
+(cherry picked from commit f4425c72c7395ec93ae00052916a66e2f60f200b)
+(cherry picked from commit 5926f9f1723fd753a0c524ed96a13538c851395e)
+(cherry picked from commit 4d80c8f158333117dabb0e6f7592059cddb1d6d0)
+(cherry picked from commit 9131bb3d45e6384309eea42affd1aa757ef28cd7)
+---
+ src/shared/bus-polkit.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/src/shared/bus-polkit.c b/src/shared/bus-polkit.c
+index 6343dd6..c42c39a 100644
+--- a/src/shared/bus-polkit.c
++++ b/src/shared/bus-polkit.c
+@@ -343,13 +343,15 @@ int bus_verify_polkit_async(
+         if (r < 0)
+                 return r;
+ 
+-        q = new0(AsyncPolkitQuery, 1);
++        q = new(AsyncPolkitQuery, 1);
+         if (!q)
+                 return -ENOMEM;
+ 
+-        q->request = sd_bus_message_ref(call);
+-        q->callback = callback;
+-        q->userdata = userdata;
++        *q = (AsyncPolkitQuery) {
++                .request = sd_bus_message_ref(call),
++                .callback = callback,
++                .userdata = userdata,
++        };
+ 
+         q->action = strdup(action);
+         if (!q->action) {

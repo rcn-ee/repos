@@ -1,0 +1,81 @@
+From: Lennart Poettering <lennart@poettering.net>
+Date: Wed, 22 Jan 2020 16:52:10 +0100
+Subject: polkit: on async pk requests, re-validate action/details
+
+When we do an async pk request, let's store which action/details we used
+for the original request, and when we are called for the second time,
+let's compare. If the action/details changed, let's not allow the access
+to go through.
+
+(cherry picked from commit 7f56982289275ce84e20f0554475864953e6aaab)
+(cherry picked from commit 0697d0d972c8d91395eb539a8e87e4aec8b37b75)
+(cherry picked from commit 54791aff01aa93a8b621808d80ab506b54f245c8)
+(cherry picked from commit 70d0f5ea5952a0cedd84c352070613df4ba5fc8f)
+---
+ src/shared/bus-polkit.c | 30 +++++++++++++++++++++++++++---
+ 1 file changed, 27 insertions(+), 3 deletions(-)
+
+diff --git a/src/shared/bus-polkit.c b/src/shared/bus-polkit.c
+index 81193b8..6343dd6 100644
+--- a/src/shared/bus-polkit.c
++++ b/src/shared/bus-polkit.c
+@@ -155,6 +155,9 @@ int bus_test_polkit(
+ #if ENABLE_POLKIT
+ 
+ typedef struct AsyncPolkitQuery {
++        char *action;
++        char **details;
++
+         sd_bus_message *request, *reply;
+         sd_bus_message_handler_t callback;
+         void *userdata;
+@@ -175,6 +178,9 @@ static void async_polkit_query_free(AsyncPolkitQuery *q) {
+         sd_bus_message_unref(q->request);
+         sd_bus_message_unref(q->reply);
+ 
++        free(q->action);
++        strv_free(q->details);
++
+         free(q);
+ }
+ 
+@@ -239,11 +245,17 @@ int bus_verify_polkit_async(
+         if (q) {
+                 int authorized, challenge;
+ 
+-                /* This is the second invocation of this function, and
+-                 * there's already a response from polkit, let's
+-                 * process it */
++                /* This is the second invocation of this function, and there's already a response from
++                 * polkit, let's process it */
+                 assert(q->reply);
+ 
++                /* If the operation we want to authenticate changed between the first and the second time,
++                 * let's not use this authentication, it might be out of date as the object and context we
++                 * operate on might have changed. */
++                if (!streq(q->action, action) ||
++                    !strv_equal(q->details, (char**) details))
++                        return -ESTALE;
++
+                 if (sd_bus_message_is_method_error(q->reply, NULL)) {
+                         const sd_bus_error *e;
+ 
+@@ -339,6 +351,18 @@ int bus_verify_polkit_async(
+         q->callback = callback;
+         q->userdata = userdata;
+ 
++        q->action = strdup(action);
++        if (!q->action) {
++                async_polkit_query_free(q);
++                return -ENOMEM;
++        }
++
++        q->details = strv_copy((char**) details);
++        if (!q->details) {
++                async_polkit_query_free(q);
++                return -ENOMEM;
++        }
++
+         r = hashmap_put(*registry, call, q);
+         if (r < 0) {
+                 async_polkit_query_free(q);

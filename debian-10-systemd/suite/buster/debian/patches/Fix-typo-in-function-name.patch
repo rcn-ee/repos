@@ -1,0 +1,77 @@
+From: =?utf-8?q?Zbigniew_J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Tue, 4 Feb 2020 18:39:04 +0100
+Subject: Fix typo in function name
+
+(cherry picked from commit bc130b6858327b382b07b3985cf48e2aa9016b2d)
+(cherry picked from commit b4eb8848240c3540180e4768216a0b884a5ed783)
+(cherry picked from commit f14fa558ae9e139c94ee3af4a1ef1df313b2ff66)
+(cherry picked from commit dd8aa0871d9cafa60a916d4ec01dd82d64edf7ed)
+---
+ TODO                                | 2 +-
+ src/libsystemd/sd-bus/bus-message.h | 2 +-
+ src/libsystemd/sd-bus/sd-bus.c      | 8 ++++----
+ src/shared/bus-polkit.c             | 2 +-
+ 4 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/TODO b/TODO
+index 462db57..327fead 100644
+--- a/TODO
++++ b/TODO
+@@ -138,7 +138,7 @@ Features:
+ 
+ * the a-posteriori stopping of units bound to units that disappeared logic
+   should be reworked: there should be a queue of units, and we should only
+-  enqeue stop jobs from a defer event that processes queue instead of
++  enqueue stop jobs from a defer event that processes queue instead of
+   right-away when we find a unit that is bound to one that doesn't exist
+   anymore. (similar to how the stop-unneeded queue has been reworked the same
+   way)
+diff --git a/src/libsystemd/sd-bus/bus-message.h b/src/libsystemd/sd-bus/bus-message.h
+index 7fd3f11..849d638 100644
+--- a/src/libsystemd/sd-bus/bus-message.h
++++ b/src/libsystemd/sd-bus/bus-message.h
+@@ -211,4 +211,4 @@ int bus_message_remarshal(sd_bus *bus, sd_bus_message **m);
+ 
+ void bus_message_set_sender_driver(sd_bus *bus, sd_bus_message *m);
+ void bus_message_set_sender_local(sd_bus *bus, sd_bus_message *m);
+-int sd_bus_enqeue_for_read(sd_bus *bus, sd_bus_message *m);
++int sd_bus_enqueue_for_read(sd_bus *bus, sd_bus_message *m);
+diff --git a/src/libsystemd/sd-bus/sd-bus.c b/src/libsystemd/sd-bus/sd-bus.c
+index 94380af..c20adcf 100644
+--- a/src/libsystemd/sd-bus/sd-bus.c
++++ b/src/libsystemd/sd-bus/sd-bus.c
+@@ -4145,7 +4145,7 @@ _public_ int sd_bus_get_close_on_exit(sd_bus *bus) {
+         return bus->close_on_exit;
+ }
+ 
+-int sd_bus_enqeue_for_read(sd_bus *bus, sd_bus_message *m) {
++int sd_bus_enqueue_for_read(sd_bus *bus, sd_bus_message *m) {
+         int r;
+ 
+         assert_return(bus, -EINVAL);
+@@ -4157,9 +4157,9 @@ int sd_bus_enqeue_for_read(sd_bus *bus, sd_bus_message *m) {
+         if (!BUS_IS_OPEN(bus->state))
+                 return -ENOTCONN;
+ 
+-        /* Re-enqeue a message for reading. This is primarily useful for PolicyKit-style authentication,
+-         * where we want accept a message, then determine we need to interactively authenticate the user, and
+-         * when we have that process the message again. */
++        /* Re-enqueue a message for reading. This is primarily useful for PolicyKit-style authentication,
++         * where we accept a message, then determine we need to interactively authenticate the user, and then
++         * we want to process the message again. */
+ 
+         r = bus_rqueue_make_room(bus);
+         if (r < 0)
+diff --git a/src/shared/bus-polkit.c b/src/shared/bus-polkit.c
+index 02c11aa..d1d2456 100644
+--- a/src/shared/bus-polkit.c
++++ b/src/shared/bus-polkit.c
+@@ -236,7 +236,7 @@ static int async_polkit_callback(sd_bus_message *reply, void *userdata, sd_bus_e
+         if (r < 0)
+                 goto fail;
+ 
+-        r = sd_bus_enqeue_for_read(sd_bus_message_get_bus(q->request), q->request);
++        r = sd_bus_enqueue_for_read(sd_bus_message_get_bus(q->request), q->request);
+         if (r < 0)
+                 goto fail;
+ 

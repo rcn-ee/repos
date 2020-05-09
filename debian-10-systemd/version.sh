@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+#https://packages.debian.org/source/buster/systemd
+
 mirror="http://http.debian.net/debian"
 
 package_name="systemd"
@@ -13,9 +15,9 @@ git_sha=""
 reprepro_dir="s/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-7~deb10u3"
+debian_version="${package_version}-7~deb10u4"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 local_patch="rcnee0"
 
-buster_version="~buster+20200226"
+buster_version="~buster+20200509"

@@ -80,10 +80,10 @@ index aa4a89c..8f36bbe 100644
                  char *s;
  
 diff --git a/src/locale/keymap-util.c b/src/locale/keymap-util.c
-index 6b6b32a..cb63d45 100644
+index c203c7a..f4ee123 100644
 --- a/src/locale/keymap-util.c
 +++ b/src/locale/keymap-util.c
-@@ -95,6 +95,7 @@ void locale_simplify(char *locale[_VARIABLE_LC_MAX]) {
+@@ -97,6 +97,7 @@ void locale_simplify(char *locale[_VARIABLE_LC_MAX]) {
  int locale_read_data(Context *c, sd_bus_message *m) {
          struct stat st;
          int r;
@@ -91,7 +91,7 @@ index 6b6b32a..cb63d45 100644
  
          /* Do not try to re-read the file within single bus operation. */
          if (m) {
-@@ -105,7 +106,11 @@ int locale_read_data(Context *c, sd_bus_message *m) {
+@@ -107,7 +108,11 @@ int locale_read_data(Context *c, sd_bus_message *m) {
                  c->locale_cache = sd_bus_message_ref(m);
          }
  
@@ -104,7 +104,7 @@ index 6b6b32a..cb63d45 100644
          if (r < 0 && errno != ENOENT)
                  return -errno;
  
-@@ -120,7 +125,7 @@ int locale_read_data(Context *c, sd_bus_message *m) {
+@@ -122,7 +127,7 @@ int locale_read_data(Context *c, sd_bus_message *m) {
                  c->locale_mtime = t;
                  context_free_locale(c);
  
@@ -113,7 +113,7 @@ index 6b6b32a..cb63d45 100644
                                     "LANG",              &c->locale[VARIABLE_LANG],
                                     "LANGUAGE",          &c->locale[VARIABLE_LANGUAGE],
                                     "LC_CTYPE",          &c->locale[VARIABLE_LC_CTYPE],
-@@ -201,8 +206,6 @@ int vconsole_read_data(Context *c, sd_bus_message *m) {
+@@ -203,8 +208,6 @@ int vconsole_read_data(Context *c, sd_bus_message *m) {
  }
  
  int x11_read_data(Context *c, sd_bus_message *m) {
@@ -122,7 +122,7 @@ index 6b6b32a..cb63d45 100644
          struct stat st;
          usec_t t;
          int r;
-@@ -216,7 +219,7 @@ int x11_read_data(Context *c, sd_bus_message *m) {
+@@ -218,7 +221,7 @@ int x11_read_data(Context *c, sd_bus_message *m) {
                  c->x11_cache = sd_bus_message_ref(m);
          }
  
@@ -131,7 +131,7 @@ index 6b6b32a..cb63d45 100644
                  if (errno != ENOENT)
                          return -errno;
  
-@@ -233,61 +236,14 @@ int x11_read_data(Context *c, sd_bus_message *m) {
+@@ -235,61 +238,14 @@ int x11_read_data(Context *c, sd_bus_message *m) {
          c->x11_mtime = t;
          context_free_x11(c);
  
@@ -200,7 +200,7 @@ index 6b6b32a..cb63d45 100644
  
          return 0;
  }
-@@ -296,9 +252,18 @@ int locale_write_data(Context *c, char ***settings) {
+@@ -298,9 +254,18 @@ int locale_write_data(Context *c, char ***settings) {
          _cleanup_strv_free_ char **l = NULL;
          struct stat st;
          int r, p;
@@ -219,7 +219,7 @@ index 6b6b32a..cb63d45 100644
          for (p = 0; p < _VARIABLE_LC_MAX; p++) {
                  _cleanup_free_ char *t = NULL;
                  char **u;
-@@ -321,20 +286,20 @@ int locale_write_data(Context *c, char ***settings) {
+@@ -323,20 +288,20 @@ int locale_write_data(Context *c, char ***settings) {
          }
  
          if (strv_isempty(l)) {
@@ -243,7 +243,7 @@ index 6b6b32a..cb63d45 100644
                  c->locale_mtime = timespec_load(&st.st_mtim);
  
          return 0;
-@@ -402,70 +367,104 @@ int vconsole_write_data(Context *c) {
+@@ -404,70 +369,104 @@ int vconsole_write_data(Context *c) {
  }
  
  int x11_write_data(Context *c) {
@@ -392,7 +392,7 @@ index 6b6b32a..cb63d45 100644
          return r;
  }
 diff --git a/src/timedate/timedated.c b/src/timedate/timedated.c
-index 324d4a4..4d54ac3 100644
+index 398d4f4..d681d58 100644
 --- a/src/timedate/timedated.c
 +++ b/src/timedate/timedated.c
 @@ -215,6 +215,7 @@ static int context_read_data(Context *c) {

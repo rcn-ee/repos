@@ -1,0 +1,32 @@
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Fri, 12 Jul 2019 14:19:36 +0900
+Subject: resolve: fix memleak
+
+(cherry picked from commit 2400ae29a55aab8659fa778f02d1884b86a95062)
+(cherry picked from commit 7727e6c0ae1769ba7ea9959aa721236c025adbdf)
+(cherry picked from commit 9755ac0744f858cfa952033552ac6f2401e0f2d0)
+---
+ src/resolve/resolved-manager.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/resolve/resolved-manager.c b/src/resolve/resolved-manager.c
+index b3d35c8..2017b0e 100644
+--- a/src/resolve/resolved-manager.c
++++ b/src/resolve/resolved-manager.c
+@@ -11,6 +11,7 @@
+ 
+ #include "af-list.h"
+ #include "alloc-util.h"
++#include "bus-util.h"
+ #include "dirent-util.h"
+ #include "dns-domain.h"
+ #include "fd-util.h"
+@@ -689,6 +690,8 @@ Manager *manager_free(Manager *m) {
+         manager_mdns_stop(m);
+         manager_dns_stub_stop(m);
+ 
++        bus_verify_polkit_async_registry_free(m->polkit_registry);
++
+         sd_bus_flush_close_unref(m->bus);
+ 
+         sd_event_source_unref(m->sigusr1_event_source);

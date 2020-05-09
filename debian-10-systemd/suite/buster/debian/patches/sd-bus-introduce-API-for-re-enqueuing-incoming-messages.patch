@@ -1,0 +1,65 @@
+From: Lennart Poettering <lennart@poettering.net>
+Date: Wed, 22 Jan 2020 17:05:17 +0100
+Subject: sd-bus: introduce API for re-enqueuing incoming messages
+
+When authorizing via PolicyKit we want to process incoming method calls
+twice: once to process and figure out that we need PK authentication,
+and a second time after we acquired PK authentication to actually execute
+the operation. With this new call sd_bus_enqueue_for_read() we have a
+way to put an incoming message back into the read queue for this
+purpose.
+
+This might have other uses too, for example debugging.
+
+(cherry picked from commit 1068447e6954dc6ce52f099ed174c442cb89ed54)
+
+zjs: patch modified to not make the function public
+(cherry picked from commit 83bfc0d8dd026814d23e3fdfa46806394f775526)
+(cherry picked from commit 2e504c92d195d407cec3ba9ed156b195c31a5f3f)
+(cherry picked from commit 351627d4bfa39dd05f28d889967383af2372de6d)
+---
+ src/libsystemd/sd-bus/bus-message.h |  1 +
+ src/libsystemd/sd-bus/sd-bus.c      | 24 ++++++++++++++++++++++++
+ 2 files changed, 25 insertions(+)
+
+diff --git a/src/libsystemd/sd-bus/bus-message.h b/src/libsystemd/sd-bus/bus-message.h
+index 0115437..7fd3f11 100644
+--- a/src/libsystemd/sd-bus/bus-message.h
++++ b/src/libsystemd/sd-bus/bus-message.h
+@@ -211,3 +211,4 @@ int bus_message_remarshal(sd_bus *bus, sd_bus_message **m);
+ 
+ void bus_message_set_sender_driver(sd_bus *bus, sd_bus_message *m);
+ void bus_message_set_sender_local(sd_bus *bus, sd_bus_message *m);
++int sd_bus_enqeue_for_read(sd_bus *bus, sd_bus_message *m);
+diff --git a/src/libsystemd/sd-bus/sd-bus.c b/src/libsystemd/sd-bus/sd-bus.c
+index 1ff858f..94380af 100644
+--- a/src/libsystemd/sd-bus/sd-bus.c
++++ b/src/libsystemd/sd-bus/sd-bus.c
+@@ -4144,3 +4144,27 @@ _public_ int sd_bus_get_close_on_exit(sd_bus *bus) {
+ 
+         return bus->close_on_exit;
+ }
++
++int sd_bus_enqeue_for_read(sd_bus *bus, sd_bus_message *m) {
++        int r;
++
++        assert_return(bus, -EINVAL);
++        assert_return(bus = bus_resolve(bus), -ENOPKG);
++        assert_return(m, -EINVAL);
++        assert_return(m->sealed, -EINVAL);
++        assert_return(!bus_pid_changed(bus), -ECHILD);
++
++        if (!BUS_IS_OPEN(bus->state))
++                return -ENOTCONN;
++
++        /* Re-enqeue a message for reading. This is primarily useful for PolicyKit-style authentication,
++         * where we want accept a message, then determine we need to interactively authenticate the user, and
++         * when we have that process the message again. */
++
++        r = bus_rqueue_make_room(bus);
++        if (r < 0)
++                return r;
++
++        bus->rqueue[bus->rqueue_size++] = sd_bus_message_ref(m);
++        return 0;
++}

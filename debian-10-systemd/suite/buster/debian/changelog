@@ -1,8 +1,23 @@
-systemd (241-7~deb10u3rcnee0~buster+20200226) buster; urgency=low
+systemd (241-7~deb10u4rcnee0~buster+20200509) buster; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Wed, 26 Feb 2020 11:09:32 -0600
+ -- Robert Nelson <robertcnelson@gmail.com>  Sat, 09 May 2020 12:08:14 -0500
+
+systemd (241-7~deb10u4) buster; urgency=medium
+
+  * polkit: when authorizing via PolicyKit re-resolve callback/userdata
+    instead of caching it.
+    This fixes a heap use-after-free vulnerability in systemd, when
+    asynchronous PolicyKit queries are performed while handling DBus messages.
+    CVE-2020-1712 (Closes: #950732)
+  * Install 60-block.rules in udev-udeb and initramfs-tools.
+    The block device rules were split out from 60-persistent-storage.rules
+    into its own rules file in v220. Those rules ensure that change events
+    are emitted and the udev db is updated after metadata changes.
+    Thanks to Pascal Hambourg (Closes: #958397)
+
+ -- Michael Biebl <biebl@debian.org>  Mon, 27 Apr 2020 19:02:57 +0200
 
 systemd (241-7~deb10u3) buster; urgency=medium
 

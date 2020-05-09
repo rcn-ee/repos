@@ -1,0 +1,67 @@
+From: Lennart Poettering <lennart@poettering.net>
+Date: Wed, 22 Jan 2020 14:29:43 +0100
+Subject: bus-polkit: rename return error parameter to ret_error
+
+(cherry picked from commit 773b1a7916bfce3aa2a21ecf534d475032e8528e)
+(cherry picked from commit 5b2442d5c3ec1c86a3a8d1c1abe3234a570ba5e6)
+(cherry picked from commit 4441844d5889a39d9d059c30e5d94c916d9d6735)
+(cherry picked from commit 816d5e2d6dd83a3bd0ff56a352295831cb937198)
+---
+ src/shared/bus-polkit.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/src/shared/bus-polkit.c b/src/shared/bus-polkit.c
+index da4aee5..f93aa17 100644
+--- a/src/shared/bus-polkit.c
++++ b/src/shared/bus-polkit.c
+@@ -37,7 +37,7 @@ int bus_test_polkit(
+                 const char **details,
+                 uid_t good_user,
+                 bool *_challenge,
+-                sd_bus_error *e) {
++                sd_bus_error *ret_error) {
+ 
+         int r;
+ 
+@@ -102,11 +102,11 @@ int bus_test_polkit(
+                 if (r < 0)
+                         return r;
+ 
+-                r = sd_bus_call(call->bus, request, 0, e, &reply);
++                r = sd_bus_call(call->bus, request, 0, ret_error, &reply);
+                 if (r < 0) {
+                         /* Treat no PK available as access denied */
+-                        if (sd_bus_error_has_name(e, SD_BUS_ERROR_SERVICE_UNKNOWN)) {
+-                                sd_bus_error_free(e);
++                        if (sd_bus_error_has_name(ret_error, SD_BUS_ERROR_SERVICE_UNKNOWN)) {
++                                sd_bus_error_free(ret_error);
+                                 return -EACCES;
+                         }
+ 
+@@ -196,7 +196,7 @@ int bus_verify_polkit_async(
+                 bool interactive,
+                 uid_t good_user,
+                 Hashmap **registry,
+-                sd_bus_error *error) {
++                sd_bus_error *ret_error) {
+ 
+ #if ENABLE_POLKIT
+         _cleanup_(sd_bus_message_unrefp) sd_bus_message *pk = NULL;
+@@ -237,7 +237,7 @@ int bus_verify_polkit_async(
+                                 return -EACCES;
+ 
+                         /* Copy error from polkit reply */
+-                        sd_bus_error_copy(error, e);
++                        sd_bus_error_copy(ret_error, e);
+                         return -sd_bus_error_get_errno(e);
+                 }
+ 
+@@ -251,7 +251,7 @@ int bus_verify_polkit_async(
+                         return 1;
+ 
+                 if (challenge)
+-                        return sd_bus_error_set(error, SD_BUS_ERROR_INTERACTIVE_AUTHORIZATION_REQUIRED, "Interactive authentication required.");
++                        return sd_bus_error_set(ret_error, SD_BUS_ERROR_INTERACTIVE_AUTHORIZATION_REQUIRED, "Interactive authentication required.");
+ 
+                 return -EACCES;
+         }
