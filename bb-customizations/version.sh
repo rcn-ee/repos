@@ -2,7 +2,7 @@
 
 package_name="bb-customizations"
 debian_pkg_name="${package_name}"
-package_version="1.20200511.0"
+package_version="1.20200511.1"
 package_source=""
 src_dir=""
 
