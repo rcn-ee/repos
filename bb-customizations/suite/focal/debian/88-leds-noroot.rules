@@ -1,0 +1,16 @@
+# /etc/udev/rules.d/88-leds-noroot.rules
+#
+# ReWritten by: Matthijs van Duin
+# Corrects sys GPIO permissions on the BB so non-root users in the gpio group can manipulate bits
+#
+#Using "change" vs "add", as "echo timer > trigger" didn't set the permission
+#:add
+#-rw-r--r-- 1 root root 4.0K May 11 14:04 delay_off
+#-rw-r--r-- 1 root root 4.0K May 11 14:04 delay_on
+#:change
+#-rw-rw-r-- 1 root gpio 4.0K May 11 14:08 delay_off
+#-rw-rw-r-- 1 root gpio 4.0K May 11 14:08 delay_on
+#
+SUBSYSTEM=="leds", ACTION=="add", \
+        RUN+="/bin/chgrp -R gpio '/sys%p'", \
+        RUN+="/bin/chmod -R g=u '/sys%p'"

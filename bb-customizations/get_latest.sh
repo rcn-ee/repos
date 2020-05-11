@@ -5,8 +5,9 @@ dl_src () {
 		rm -rf ./src/
 	fi
 
+	git clone https://github.com/beagleboard/customizations ./src/
 	#git clone git@github.com:rcn-ee/customizations.git ./src/
-	git clone -b fix-extra-space-in-zz-uenv_txt git@github.com:rcn-ee/customizations.git ./src/
+	#git clone -b fix-extra-space-in-zz-uenv_txt git@github.com:rcn-ee/customizations.git ./src/
 }
 
 copy_all () {
@@ -33,5 +34,6 @@ wfile="85-gpio-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 wfile="86-remoteproc-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 wfile="86-rpmsg-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 wfile="87-iio-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
+wfile="88-leds-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 
 wfile="generic-board-startup.service" ; wdir="/lib/systemd/system/" ; copy_all
