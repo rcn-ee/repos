@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-mirror="http://http.debian.net/debian"
+mirror="https://deb.debian.org/debian"
 
 package_name="llvm-toolchain-8"
 debian_pkg_name="${package_name}"
