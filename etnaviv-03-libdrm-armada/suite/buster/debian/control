@@ -1,0 +1,57 @@
+Source: libdrm-armada
+Maintainer: Robert Nelson <robertcnelson@gmail.com>
+Section: libs
+Priority: optional
+Build-Depends: debhelper (>= 9),
+               dh-autoreconf,
+               pkg-config,
+               libdrm-dev,
+Standards-Version: 3.9.6
+Vcs-Browser: http://git.arm.linux.org.uk/cgit/libdrm-armada.git/
+Vcs-Git: http://git.arm.linux.org.uk/cgit/libdrm-armada.git/
+Homepage: http://git.arm.linux.org.uk/cgit/libdrm-armada.git/
+
+Package: libdrm-armada2
+Architecture: any
+Multi-Arch: same
+Depends: ${shlibs:Depends},
+         ${misc:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: Userspace interface to kernel DRM services -- runtime
+ This library implements the userspace interface to the kernel DRM
+ services.  DRM stands for "Direct Rendering Manager", which is the
+ kernelspace portion of the "Direct Rendering Infrastructure" (DRI).
+ The DRI is currently used on Linux to provide hardware-accelerated
+ OpenGL drivers.
+ .
+ This package provides the runtime environment for libdrm-armada2.
+
+Package: libdrm-armada-dev
+Architecture: any
+Section: libdevel
+Depends: ${misc:Depends},
+         libdrm-armada2 (= ${binary:Version})
+Description: Userspace interface to kernel DRM services -- development files
+ This library implements the userspace interface to the kernel DRM
+ services.  DRM stands for "Direct Rendering Manager", which is the
+ kernelspace portion of the "Direct Rendering Infrastructure" (DRI).
+ The DRI is currently used on Linux to provide hardware-accelerated
+ OpenGL drivers.
+ .
+ This package provides the development environment for libdrm-armada2.
+
+Package: libdrm-armada2-dbg
+Architecture: any
+Multi-Arch: same
+Section: debug
+Priority: extra
+Depends: ${misc:Depends},
+         libdrm-armada2 (= ${binary:Version})
+Description: Userspace interface to kernel DRM services -- debugging symbols
+ This library implements the userspace interface to the kernel DRM
+ services.  DRM stands for "Direct Rendering Manager", which is the
+ kernelspace portion of the "Direct Rendering Infrastructure" (DRI).
+ The DRI is currently used on Linux to provide hardware-accelerated
+ OpenGL drivers.
+ .
+ This package provides debugging symbols for the libdrm-armada2 package.
