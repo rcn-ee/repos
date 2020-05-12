@@ -12,7 +12,7 @@ git_sha=""
 reprepro_dir="l/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-3~bpo109+1"
+debian_version="${package_version}-3~bpo10+1"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 
