@@ -1,12 +1,12 @@
 #!/bin/bash -e
 
 #https://snapshot.debian.org/package/mesa/
-#https://snapshot.debian.org/archive/debian/20190508T162608Z/pool/main/m/mesa/mesa_19.0.3-1.diff.gz
-mirror="https://snapshot.debian.org/archive/debian/20190511T144548Z"
+#https://snapshot.debian.org/archive/debian/20190908T172415Z/pool/main/m/mesa/mesa_19.1.6-1.diff.gz
+mirror="https://snapshot.debian.org/archive/debian/20190908T172415Z"
 
 package_name="mesa"
 debian_pkg_name="${package_name}"
-package_version="19.0.3"
+package_version="19.1.6"
 package_source="${package_name}_${package_version}.orig.tar.gz"
 src_dir="${package_name}-${package_version}"
 
