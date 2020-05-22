@@ -19,7 +19,7 @@ SUBSYSTEM=="remoteproc", KERNELS=="41000000.dsp",  ENV{REMOTEPROC_NAME}="dsp2"
 
 # set permissions and create symlinks
 SUBSYSTEM=="remoteproc", ENV{REMOTEPROC_NAME}!="", ACTION=="add", \
-        RUN+="/bin/chgrp -R remoteproc '/sys%p'", \
+        RUN+="/bin/chgrp -R gpio '/sys%p'", \
         RUN+="/bin/chmod -R g=u '/sys%p'", \
         RUN+="/bin/mkdir -p /dev/remoteproc", \
         RUN+="/bin/ln -sT '/sys/class/remoteproc/%k' /dev/remoteproc/%E{REMOTEPROC_NAME}"

@@ -5,7 +5,7 @@
 # manipulate pwm along with creating a symlink under /dev/pwm/
 #
 SUBSYSTEM=="pwm", ACTION=="add", \
-        RUN+="/bin/chgrp -R pwm '/sys%p'", \
+        RUN+="/bin/chgrp -R gpio '/sys%p'", \
         RUN+="/bin/chmod -R g=u '/sys%p'"
 
 # automatically export pwm channels
