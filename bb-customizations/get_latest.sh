@@ -30,7 +30,6 @@ wfile="80-gpio-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 wfile="81-pwm-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 wfile="82-gpio-config-pin.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 wfile="83-eqep-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
-wfile="85-gpio-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 wfile="86-remoteproc-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 wfile="86-rpmsg-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 wfile="87-iio-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
