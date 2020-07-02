@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2016-2019 Robert Nelson <robertcnelson@gmail.com>
+# Copyright (c) 2016-2020 Robert Nelson <robertcnelson@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,11 @@
 # Include defaults if available
 if [ -f /etc/default/bb-wl18xx ] ; then
 	. /etc/default/bb-wl18xx
+fi
+
+#Need: USB_NETWORK_DISABLED
+if [ -f /etc/default/bb-boot ] ; then
+	. /etc/default/bb-boot
 fi
 
 cylon_leds () {
@@ -193,9 +198,11 @@ start_tether () {
 	if [ "x${TETHER_ENABLED}" = "xyes" ] ; then
 		/usr/bin/bb-wl18xx-tether || true
 	else
-		#Still need to setup usb0/usb1 dnsmasq options...
-		/usr/bin/bb_dnsmasq_config.sh || true
-		systemctl restart dnsmasq || true
+		if [ ! "x${USB_NETWORK_DISABLED}" = "xyes" ]; then
+			#Still need to setup usb0/usb1 dnsmasq options...
+			/usr/bin/bb_dnsmasq_config.sh || true
+			systemctl restart dnsmasq || true
+		fi
 	fi
 }
 
