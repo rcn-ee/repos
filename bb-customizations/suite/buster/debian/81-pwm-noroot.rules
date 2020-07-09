@@ -4,13 +4,13 @@
 # Corrects sys PWM permissions on the BB so non-root users in the pwm group can
 # manipulate pwm along with creating a symlink under /dev/pwm/
 #
-SUBSYSTEM=="pwm", ACTION=="add", \
+SUBSYSTEM=="pwm", ACTION=="change", \
         RUN+="/bin/chgrp -R gpio '/sys%p'", \
         RUN+="/bin/chmod -R g=u '/sys%p'"
 
 # automatically export pwm channels
-SUBSYSTEM=="pwm", KERNEL=="pwmchip*", ACTION=="add",  ATTR{export}="0"
-SUBSYSTEM=="pwm", KERNEL=="pwmchip*", ACTION=="add", ATTR{npwm}!="1",  ATTR{export}="1"
+# SUBSYSTEM=="pwm", KERNEL=="pwmchip*", ACTION=="add", ATTR{export}="0"
+# SUBSYSTEM=="pwm", KERNEL=="pwmchip*", ACTION=="add", ATTR{npwm}!="1",  ATTR{export}="1"
 
 # identify pwm peripherals on am335x
 SUBSYSTEM=="pwm", KERNELS=="48300100.*",  ENV{PWMCHIP_NAME}="ecap0"
