@@ -2,7 +2,7 @@
 
 package_name="bb-node-red-installer"
 debian_pkg_name="${package_name}"
-package_version="1.1.1"
+package_version="1.1.2"
 package_source=""
 src_dir=""
 
@@ -15,8 +15,8 @@ debian_version="${package_version}-0rcnee0"
 debian_untar=""
 debian_patch=""
 
-debian_dl_1="https://nodejs.org/dist/latest-v10.x/node-v10.21.0-linux-armv7l.tar.xz"
+debian_dl_1="https://nodejs.org/dist/latest-v10.x/node-v10.22.0-linux-armv7l.tar.xz"
 
-stretch_version="~stretch+20200709"
-buster_version="~buster+20200709"
-bionic_version="~bionic+20200709"
+stretch_version="~stretch+20200725"
+buster_version="~buster+20200725"
+bionic_version="~bionic+20200725"
