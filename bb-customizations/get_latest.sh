@@ -36,3 +36,6 @@ wfile="87-iio-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 wfile="88-leds-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 
 wfile="generic-board-startup.service" ; wdir="/lib/systemd/system/" ; copy_all
+
+wfile="am335x-pru0-fw.sleep" ; wdir="/src/am335x/" ; copy_all
+wfile="am335x-pru1-fw.sleep" ; wdir="/src/am335x/" ; copy_all
