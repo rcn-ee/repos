@@ -4,7 +4,7 @@
 # Corrects sys PWM permissions on the BB so non-root users in the pwm group can
 # manipulate pwm along with creating a symlink under /dev/pwm/
 #
-SUBSYSTEM=="pwm", ACTION=="change", \
+SUBSYSTEM=="pwm", ACTION=="add|change", \
         RUN+="/bin/chgrp -R gpio '/sys%p'", \
         RUN+="/bin/chmod -R g=u '/sys%p'"
 
