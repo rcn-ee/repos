@@ -17,4 +17,20 @@ if [ -d /lib/firmware/ ] ; then
             cp -a /lib/firmware/am335x-pru1-fw $DESTDIR/lib/firmware/
         fi
     fi
+    check=$(ls /lib/firmware/ | grep am57xx-pru | head -n 1)
+    if [ ! "x${check}" = "x" ] ; then
+        mkdir -p $DESTDIR/lib/firmware/
+        if [ -f /lib/firmware/am57xx-pru1_0-fw ] ; then
+            cp -a /lib/firmware/am57xx-pru1_0-fw $DESTDIR/lib/firmware/
+        fi
+        if [ -f /lib/firmware/am57xx-pru1_0-fw ] ; then
+            cp -a /lib/firmware/am57xx-pru1_0-fw $DESTDIR/lib/firmware/
+        fi
+        if [ -f /lib/firmware/am57xx-pru2_0-fw ] ; then
+            cp -a /lib/firmware/am57xx-pru2_0-fw $DESTDIR/lib/firmware/
+        fi
+        if [ -f /lib/firmware/am57xx-pru2_0-fw ] ; then
+            cp -a /lib/firmware/am57xx-pru2_0-fw $DESTDIR/lib/firmware/
+        fi
+    fi
 fi

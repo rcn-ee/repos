@@ -37,5 +37,13 @@ wfile="88-leds-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 
 wfile="generic-board-startup.service" ; wdir="/lib/systemd/system/" ; copy_all
 
+wfile="ti_pru_firmware" ; wdir="/usr/share/initramfs-tools/hooks/" ; copy_all
+
 wfile="am335x-pru0-fw.sleep" ; wdir="/src/am335x/" ; copy_all
 wfile="am335x-pru1-fw.sleep" ; wdir="/src/am335x/" ; copy_all
+
+wfile="am57xx-pru1_0-fw.sleep" ; wdir="/src/am57xx/" ; copy_all
+wfile="am57xx-pru1_1-fw.sleep" ; wdir="/src/am57xx/" ; copy_all
+
+wfile="am57xx-pru2_0-fw.sleep" ; wdir="/src/am57xx/" ; copy_all
+wfile="am57xx-pru2_1-fw.sleep" ; wdir="/src/am57xx/" ; copy_all
