@@ -437,7 +437,7 @@ just_softap () {
 
 board=$(cat /proc/device-tree/model | sed "s/ /_/g" | tr -d '\000')
 case "${board}" in
-TI_AM335x_BeagleBone_Green_Wireless)
+TI_AM335x_BeagleBone_Green_Wireless|SeeedStudio_BeagleBone_Green_Gateway)
 	wait_for_ssh
 	wait_for_mac
 	if [ "x${USE_APPENDED_SSID}" = "xyes" ] ; then
