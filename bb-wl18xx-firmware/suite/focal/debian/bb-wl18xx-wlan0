@@ -226,6 +226,19 @@ TI_AM335x_BeagleBone_Green_Wireless)
 	fi
 	start_tether
 	;;
+SeeedStudio_BeagleBone_Green_Gateway)
+	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
+	if [ "x${USE_INTERNAL_WL18XX_MAC_ADDRESS}" = "xyes" ] ; then
+		set_wlan_0_mac_from_wl18xx
+	else
+		if [ "x${USE_WL18XX_MAC_ADDRESS}" = "x" ] ; then
+			set_wlan_0_mac_from_cpsw_0
+		else
+			set_wlan_0_mac_from_bb_wl18xx
+		fi
+	fi
+	start_tether
+	;;
 TI_AM335x_BeagleBone_Black_Wireless)
 	firmware="/lib/firmware/ti-connectivity/wl1271-nvs.bin"
 	if [ "x${USE_INTERNAL_WL18XX_MAC_ADDRESS}" = "xyes" ] ; then
