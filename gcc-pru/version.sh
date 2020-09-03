@@ -2,7 +2,7 @@
 
 package_name="gcc-pru"
 debian_pkg_name="${package_name}"
-package_version="10-20200315"
+package_version="10.1.0"
 package_source=""
 src_dir=""
 
