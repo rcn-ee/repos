@@ -20,6 +20,9 @@ echo "Proceeding with existing ${node_red_user} user..."
 # Give node_red_user ownership of node_red_data_dir
 chown ${node_red_user} ${node_red_data_dir}
 
+echo "Updating ${node_red_user} user to group gpio"
+usermod -a -G gpio ${node_red_user}
+
 main_install () {
 	if [ -d /etc/avahi/services/ ] ; then
 		#Annouce http server via DNS Sevice Discovery
