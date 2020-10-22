@@ -54,7 +54,7 @@ override_dh_auto_configure:
 	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp node-red@$(node_red_version)
 	cp -v debian/use-systemd.diff /tmp/lib/node_modules/node-red/
 	cd /tmp/lib/node_modules/node-red/ ; patch -p1 < /tmp/lib/node_modules/node-red/use-systemd.diff ; rm /tmp/lib/node_modules/node-red/use-systemd.diff
-	cd /tmp/lib/node_modules/node-red/ ; TERM=dumb $(node_bin) $(npm_bin) install systemd@0.3.1
+	cd /tmp/lib/node_modules/node-red/ ; TERM=dumb $(node_bin) $(npm_bin) install systemd@0.4.0
 	cd /tmp/lib/node_modules/node-red/ ; TERM=dumb $(node_bin) $(npm_bin) pack
 	echo "Real Install: node-red@$(node_red_version)"
 	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/node-red/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/node-red --no-save
