@@ -2,7 +2,7 @@
 
 package_name="bb-customizations"
 debian_pkg_name="${package_name}"
-package_version="1.20200826.0"
+package_version="1.20201105.0"
 package_source=""
 src_dir=""
 
@@ -15,7 +15,7 @@ debian_version="${package_version}-0"
 debian_untar=""
 debian_patch=""
 
-stretch_version="~stretch+20200826"
-buster_version="~buster+20200826"
-bionic_version="~bionic+20200826"
-focal_version="~focal+20200826"
+stretch_version="~stretch+20201110"
+buster_version="~buster+20201110"
+bionic_version="~bionic+20201110"
+focal_version="~focal+20201110"

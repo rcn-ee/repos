@@ -27,6 +27,7 @@ wfile="10-of-symlink.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 wfile="60-omap-tty.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 wfile="80-eeprom-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 wfile="80-gpio-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
+wfile="80-i2c-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 wfile="81-pwm-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 wfile="82-gpio-config-pin.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 wfile="83-eqep-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
