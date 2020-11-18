@@ -1,0 +1,22 @@
+Source: ca-certificates-java
+Section: java
+Priority: optional
+Maintainer: Debian Java Maintainers <pkg-java-maintainers@lists.alioth.debian.org>
+Uploaders: Matthias Klose <doko@ubuntu.com>,
+           James Page <james.page@ubuntu.com>
+Build-Depends: debhelper (>= 11), default-jdk, javahelper, junit4
+Standards-Version: 4.3.0
+Vcs-Git: https://salsa.debian.org/java-team/ca-certificates-java.git
+Vcs-Browser: https://salsa.debian.org/java-team/ca-certificates-java
+
+Package: ca-certificates-java
+Architecture: all
+Multi-Arch: foreign
+Depends: ca-certificates (>= 20121114),
+         default-jre-headless | java8-runtime-headless,
+         ${misc:Depends},
+         ${nss:Depends}
+# We need a versioned Depends due to multiarch changes (bug #635571).
+Description: Common CA certificates (JKS keystore)
+ This package uses the hooks of the ca-certificates package to update the
+ cacerts JKS keystore used for many java runtimes.

@@ -1,0 +1,15 @@
+ca-certificates-java for Debian
+-------------------------------
+
+This package uses the hooks of the ca-certificates package to update the JKS
+keystore /etc/ssl/certs/java/cacerts used for many java runtimes. The alias used
+to store the certificate is the basename prefixed with 'debian:'. It will import
+all *.pem files found in /etc/ssl/certs during its first installation.
+
+ca-certificates-java doesn't automagically handle local certificates,
+although these are not overwritten on updates.
+
+A full re-import can be triggered with the command 'update-ca-certificates -f'
+if needed.
+
+ -- Torsten Werner <twerner@debian.org>  Mon, 25 Apr 2011 15:18:22 +0200

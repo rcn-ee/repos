@@ -1,0 +1,94 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+ifeq ($(shell dpkg-vendor --derives-from Ubuntu && echo yes),yes)
+	SUBSTVARS = -Vnss:Depends="libnss3 (>= 3.12.9+ckbi-1.82-0ubuntu3~)" \
+				-Vjre:Depends="openjdk-11-jre-headless"
+	nss_lib = libnss3
+else
+	SUBSTVARS = -Vnss:Depends="libnss3 (>= 3.12.10-2~)" \
+				-Vjre:Depends="openjdk-8-jre-headless"
+	nss_lib = libnss3
+endif
+
+JAVA_HOME := /usr/lib/jvm/default-java
+export JAVA_HOME
+OPTS := --no-javadoc --main=org.debian.security.UpdateCertificates --javacopts="-source 1.7 -target 1.7"
+CLASSPATH := /usr/share/java/junit4.jar
+export CLASSPATH
+
+do_junit = $(if $(findstring nocheck,$(DEB_BUILD_OPTIONS)),,yes)
+
+d = debian/ca-certificates-java
+
+build-arch: build
+build-indep: build
+build: build-stamp
+build-stamp:
+	dh_testdir
+	mkdir target
+	jh_build $(OPTS) target/ca-certificates-java.jar src/main/java
+ifeq ($(do_junit),yes)
+	jh_build --no-javadoc --javacopts="-source 1.7 -target 1.7 -cp target/ca-certificates-java.jar:${CLASSPATH}" \
+	         target/ca-certificates-java-tests.jar src/test/java
+	mkdir target/test-classes
+	cp -R src/test/resources/* target/test-classes
+	$(JAVA_HOME)/bin/java -cp /usr/share/java/junit4.jar:target/ca-certificates-java.jar:target/ca-certificates-java-tests.jar \
+	org.junit.runner.JUnitCore \
+	org.debian.security.UpdateCertificatesTest org.debian.security.KeyStoreHandlerTest
+endif
+	touch $@
+
+clean:
+	dh_testdir
+	dh_testroot
+	jh_build --clean
+	$(RM) -R build-stamp target
+	dh_clean
+	for f in debian/*.in; do \
+	  f2=$$(echo $$f | sed ';s/\.in$$//'); \
+	  rm -f $$f2; \
+	done
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_prep
+	dh_installdirs \
+		usr/share/ca-certificates-java \
+		etc/default \
+		etc/ssl/certs/java \
+		etc/ca-certificates/update.d
+	for f in debian/*.in; do \
+	  f2=$$(echo $$f | sed 's/\.in$$//'); \
+	  sed -e 's/@NSS_LIB@/$(nss_lib)/g' \
+	    $$f > $$f2; \
+	done
+	install -m755 debian/jks-keystore.hook \
+		$(d)/etc/ca-certificates/update.d/jks-keystore
+	install -m600 debian/default \
+		$(d)/etc/default/cacerts
+	dh_install target/ca-certificates-java.jar /usr/share/ca-certificates-java/
+
+# Build architecture-independent files here.
+binary-indep: build install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs 
+	dh_installdocs
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol -- $(SUBSTVARS)
+	dh_md5sums
+	dh_builddeb
+
+# Build architecture-dependent files here.
+binary-arch: build install
+# We have nothing to do by default.
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install

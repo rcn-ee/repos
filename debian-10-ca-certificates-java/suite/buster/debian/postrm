@@ -1,0 +1,23 @@
+#!/bin/sh
+
+set -e
+
+case "$1" in
+    purge)
+	rm -f /etc/ca-certificates/update.d/jks-keystore
+	rm -rf /etc/ssl/certs/java
+	rmdir /etc/ssl/certs 2>/dev/null || true
+	;;
+    remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+    	;;
+    *)
+        echo "postrm called with unknown argument \`$1'" >&2
+        exit 1
+	;;
+esac
+
+#DEBHELPER#
+
+exit 0
+
+

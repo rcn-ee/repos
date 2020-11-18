@@ -1,0 +1,165 @@
+#!/bin/bash
+set -e
+
+# use the locale C.UTF-8
+unset LC_ALL
+LC_CTYPE=C.UTF-8
+export LC_CTYPE
+
+storepass='changeit'
+if [ -f /etc/default/cacerts ]; then
+    . /etc/default/cacerts
+fi
+
+arch=`dpkg --print-architecture`
+JAR=/usr/share/ca-certificates-java/ca-certificates-java.jar
+
+nsslib_name()
+{
+    if dpkg --assert-multi-arch 2>/dev/null; then
+        echo "@NSS_LIB@:${arch}"
+    else
+        echo "@NSS_LIB@"
+    fi
+}
+
+setup_path()
+{
+    for jvm in java-7-openjdk-$arch java-7-openjdk \
+               oracle-java7-jre-$arch oracle-java7-server-jre-$arch oracle-java7-jdk-$arch \
+               java-8-openjdk-$arch java-8-openjdk \
+               oracle-java8-jre-$arch oracle-java8-server-jre-$arch oracle-java8-jdk-$arch \
+               java-9-openjdk-$arch java-9-openjdk \
+               oracle-java9-jre-$arch oracle-java9-server-jre-$arch oracle-java9-jdk-$arch \
+               java-10-openjdk-$arch java-10-openjdk \
+               oracle-java10-jre-$arch oracle-java10-server-jre-$arch oracle-java10-jdk-$arch \
+               java-11-openjdk-$arch java-11-openjdk \
+               oracle-java11-jre-$arch oracle-java11-server-jre-$arch oracle-java11-jdk-$arch \
+               java-12-openjdk-$arch java-12-openjdk \
+               oracle-java12-jre-$arch oracle-java12-server-jre-$arch oracle-java12-jdk-$arch \
+               java-13-openjdk-$arch java-13-openjdk \
+               oracle-java13-jre-$arch oracle-java13-server-jre-$arch oracle-java13-jdk-$arch \
+               java-14-openjdk-$arch java-14-openjdk \
+               oracle-java14-jre-$arch oracle-java14-server-jre-$arch oracle-java14-jdk-$arch \
+               java-15-openjdk-$arch java-15-openjdk \
+               oracle-java15-jre-$arch oracle-java15-server-jre-$arch oracle-java15-jdk-$arch \
+               java-16-openjdk-$arch java-16-openjdk \
+               oracle-java16-jre-$arch oracle-java16-server-jre-$arch oracle-java16-jdk-$arch \
+               java-17-openjdk-$arch java-17-openjdk \
+               oracle-java17-jre-$arch oracle-java17-server-jre-$arch oracle-java17-jdk-$arch; do
+        if [ -x /usr/lib/jvm/$jvm/bin/java ]; then
+            export JAVA_HOME=/usr/lib/jvm/$jvm
+            PATH=$JAVA_HOME/bin:$PATH
+            break
+        fi
+    done
+}
+
+check_proc()
+{
+    if ! mountpoint -q /proc; then
+        echo >&2 "the keytool command requires a mounted proc fs (/proc)."
+        exit 1
+    fi
+}
+
+convert_pkcs12_keystore_to_jks()
+{
+    if ! keytool -importkeystore \
+                 -srckeystore /etc/ssl/certs/java/cacerts \
+                 -destkeystore /etc/ssl/certs/java/cacerts.dpkg-new \
+                 -srcstoretype PKCS12 \
+                 -deststoretype JKS \
+                 -srcstorepass "$storepass" \
+                 -deststorepass "$storepass" \
+                 -noprompt; then
+        echo "failed to convert PKCS12 keystore to JKS" >&2
+        exit 1
+    fi
+
+    # only update if /etc/default/cacerts allows
+    if [ "$cacerts_updates" = "yes" ]; then
+        mv -f /etc/ssl/certs/java/cacerts /etc/ssl/certs/java/cacerts.dpkg-old
+        mv -f /etc/ssl/certs/java/cacerts.dpkg-new /etc/ssl/certs/java/cacerts
+    fi
+}
+
+first_install()
+{
+    if which dpkg-query >/dev/null; then
+        nsspkg=$(dpkg-query -L "$(nsslib_name)" | sed -n 's,\(.*\)/libnss3\.so$,\1,p'|head -n 1)
+        nsscfg=/etc/${jvm%-$arch}/security/nss.cfg
+        nssjdk=$(test ! -f $nsscfg || sed -n '/nssLibraryDirectory/s/.*= *\(.*\)/\1/p' $nsscfg)
+        if [ -n "$nsspkg" ] && [ -n "$nssjdk" ] && [ "$nsspkg" != "$nssjdk" ]; then
+            ln -sf $nsspkg/libnss3.so $nssjdk/libnss3.so
+        fi
+    fi
+
+    # Forcibly remove diginotar cert (LP: #920758)
+    if [ -n "$FIXOLD" ]; then
+        echo -e "-diginotar_root_ca\n-diginotar_root_ca_pem" | \
+        java -Xmx64m -XX:-AssumeMP -jar $JAR -storepass "$storepass"
+    fi
+
+    find /etc/ssl/certs -name \*.pem | \
+    while read filename; do
+        alias=$(basename $filename .pem | tr A-Z a-z | tr -cs a-z0-9 _)
+        alias=${alias%*_}
+        if [ -n "$FIXOLD" ]; then
+            echo "-${alias}"
+            echo "-${alias}_pem"
+        fi
+        echo "+${filename}"
+    done | \
+    java -Xmx64m -XX:-AssumeMP -jar $JAR -storepass "$storepass"
+    echo "done."
+}
+
+do_cleanup()
+{
+    [ -z "$temp_jvm_cfg" ] || rm -f $temp_jvm_cfg
+    if [ -n "$nsspkg" ] && [ -n "$nssjdk" ] && [ "$nsspkg" != "$nssjdk" ]
+    then
+        rm -f $nssjdk/libnss3.so
+    fi
+}
+
+case "$1" in
+    configure)
+        if dpkg --compare-versions "$2" lt "20110912ubuntu6"; then
+            FIXOLD="true"
+            if [ -e /etc/ssl/certs/java/cacerts ]; then
+                cp -f /etc/ssl/certs/java/cacerts /etc/ssl/certs/java/cacerts.dpkg-old
+            fi
+        fi
+
+        setup_path
+
+        if dpkg --compare-versions "$2" lt "20180516"; then
+            if [ -e /etc/ssl/certs/java/cacerts \
+                 -a "$(head -c4 /etc/ssl/certs/java/cacerts)" != "$(echo -en '\xfe\xed\xfe\xed')" ]; then
+                check_proc
+                convert_pkcs12_keystore_to_jks
+            fi
+        fi
+
+        if [ -z "$2" -o -n "$FIXOLD" ]; then
+            check_proc
+            trap do_cleanup EXIT
+            first_install
+        fi
+        chmod 600 /etc/default/cacerts || true
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0
