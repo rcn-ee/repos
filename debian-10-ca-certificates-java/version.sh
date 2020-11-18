@@ -18,6 +18,6 @@ dl_path="pool/main/${reprepro_dir}/"
 debian_version="${package_version}"
 debian_untar=""
 debian_patch=""
-local_patch="rcnee0"
+local_patch="rcnee1"
 
 buster_version="~buster+20201118"
