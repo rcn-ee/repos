@@ -189,8 +189,15 @@ wait_for_mac () {
 	mac_address="/proc/device-tree/ocp/ethernet@48484000/slave@48480200/mac-address"
 	if [ -f ${mac_address} ] ; then
 		cpsw_0_mac=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address} | sed 's/.$//')
-	else
-		cpsw_0_mac="1C:BA:8C:A2:ED:68"
+	fi
+
+	if [ "x${mac_address}" = "x00:00:00:00:00:00" ] ; then
+		echo "${log} [ethernet@48484000/slave@48480200/mac-address returned 00 mac]"
+		if [ -f /etc/cpsw_0_mac ] ; then
+			cpsw_0_mac=$(cat /etc/cpsw_0_mac)
+		else
+			cpsw_0_mac="1C:BA:8C:A2:ED:68"
+		fi
 	fi
 }
 
