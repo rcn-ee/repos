@@ -191,7 +191,7 @@ wait_for_mac () {
 		cpsw_0_mac=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address} | sed 's/.$//')
 	fi
 
-	if [ "x${mac_address}" = "x00:00:00:00:00:00" ] ; then
+	if [ "x${cpsw_0_mac}" = "x00:00:00:00:00:00" ] ; then
 		echo "${log} [ethernet@48484000/slave@48480200/mac-address returned 00 mac]"
 		if [ -f /etc/cpsw_0_mac ] ; then
 			cpsw_0_mac=$(cat /etc/cpsw_0_mac)
