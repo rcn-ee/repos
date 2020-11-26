@@ -191,4 +191,8 @@ suite="groovy"
 archs="armhf source"
 setup_repo
 
+suite="hirsute"
+archs="armhf source"
+setup_repo
+
 #
