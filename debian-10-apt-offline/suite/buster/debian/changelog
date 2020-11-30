@@ -1,0 +1,369 @@
+apt-offline (1.8.2-1~bpo10+1rcnee0~buster+20201130) buster; urgency=low
+
+  * Rebuild for repos.rcn-ee.com
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Mon, 30 Nov 2020 09:48:10 -0600
+
+apt-offline (1.8.2-1~bpo10+1) buster-backports; urgency=medium
+
+  * Rebuild for buster-backports.
+
+ -- Paul Wise <pabs@debian.org>  Tue, 25 Feb 2020 09:58:18 +0800
+
+apt-offline (1.8.2-1) unstable; urgency=medium
+
+  [ Matthias Blümel ]
+  * support https client-authentication
+  * extend manpage and bash-completion parameters for https
+    client-authentication
+  * implement option to disable https server certificate checks
+
+  [ Paul Wise ]
+  * Remove generated files from git and create them at build time.
+
+  [ Ritesh Raj Sarraf ]
+  * New Release version 1.8.2 (Closes: #871656)
+  * Add warning for missing lzma module (Closes: #880985)
+  * Fix new testing-security repository name.
+    Thanks to Paul Wise (Closes: #931517)
+  * Drop some python2 based recommends.
+    Thanks to Sandro Tosi (Closes: #945628)
+  * Update Vcs Entry and also update Build Dependencies
+  * Call make for actual build
+  * Update debhelper compatibility to 12
+  * Drop obsolete X-Python3-Version field
+  * Update Standards Version to 4.4.1
+  * Add field Rules-Requires-Root: no
+  * Enhance policykit integration
+  * Install the apt-offline-gui-pkexec script to usr/bin/
+  * Demote --simulate from global option to sub-option for install and set commands
+    (Closes: #871664)
+  * Do not touch apt system files in simulate mode
+  * Also update the manpage about demotion of the simulate option
+  * Switch to 3.0 (quilt) source format
+  * Update debian/gbp.conf about switch to 3.0 (quilt) source format
+
+  [ Patryk Wychowaniec ]
+  * Properly parse the command and its output.
+    Thanks to Patryk Wychowaniec
+
+  [ Rafael Leira Osuna ]
+  * added http-basic support
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Fri, 07 Feb 2020 18:46:29 +0530
+
+apt-offline (1.8.1) unstable; urgency=medium
+
+  * Switch setuptools to invoke py3
+  * No more argparse needed on py3
+  * Fix genui.sh based on comments from pyqt mailing list
+  * Bump version number to 1.8.1
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Sat, 01 Jul 2017 21:39:24 +0545
+
+apt-offline (1.8.0.1) unstable; urgency=medium
+
+  * Switch to pybuild buildsystem to avoid needing pyversions.
+    Thanks to Logan Rosen (Closes: #865292)
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Mon, 26 Jun 2017 21:38:29 +0545
+
+apt-offline (1.8.0) unstable; urgency=medium
+
+  * New Major Release. Port to Python 3 and Py3Qt5
+  * Update manapge to make the sequence of execution more obvious.
+    Thanks to Sylvain Pelissier
+  * Add python-debianbts to Recommends
+  * Close MIME file handle and conserve precious memory
+  * Point Vcs fields back to Alioth. Lots of debian tools use these
+    fields and thus it is better to keep it within the Debian
+    infrastructure
+  * Update Homepage feild to Github
+  * Add mailmap file to map old email addresses to correct new ones.
+    Thanks to Paul Wise
+  * Bump version to 1.8.0
+  * Switch dependencies to Python 3
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Mon, 22 May 2017 10:57:10 +0545
+
+apt-offline (1.7.2) unstable; urgency=medium
+
+  * New Upstream Release
+  * [e13def1] Fix manpage to make the example more explicit.
+    Thanks to Daniel Thibault (Closes: #764248)
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Thu, 10 Nov 2016 23:08:34 +0530
+
+apt-offline (1.7.1.2) unstable; urgency=medium
+
+  * [9ce8961] Use dpkg-maintscript-helper to handle obsolete conf files.
+    Thanks to Paul Wise (Closes: 805518)
+  * [30818a8] Update Standards Version to 3.9.8
+  * [0d6956d] Bump debhelper compatibility to 9
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Sun, 25 Sep 2016 17:30:06 +0530
+
+apt-offline (1.7.1.1) unstable; urgency=medium
+
+  * Add QT_X11_NO_MISHM=1 to workaround this Qt bug on Debian
+    Hence, minor bump in version.
+  * New Upstream Release
+    (Closes: #815227, #784066, #784067, #787730, #787736)
+    - Integration with PolicyKit
+    - Better integration with apt gpg keyring
+    - Resilient to failures when a sub-task errors out
+    - New Feature: --changelog
+      + This release adds the ability to deal with package changelogs
+        ('set' command option: --generate-changelog) based on what is
+        installed, extract changelog (Currently support with python-apt
+        only) from downloaded packages and display them during
+        installation ('install' command opiton: --skip-changelog, if
+        you want to skip display of changelog)
+    - New Option: --apt-backend
+      + Users can now opt to choose an apt backend of their choice.
+        Currently support: apt, apt-get (default) and python-apt
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Mon, 12 Sep 2016 16:50:27 +0530
+
+apt-offline (1.7) unstable; urgency=medium
+
+  * [7aacb1e] Don't abuse exception handlers.
+    Thanks to R-Sommer
+  * [d97a677] MIME type for a deb package.
+    Thanks to R-Sommer
+  * [77b6b46] Also include debian-archive-keyring.
+    Thanks to Hans-Christoph Steiner (Closes: #748082)
+  * [e2e40b2] Update MIME type for .gpg
+  * [d02c881] Cycle through possible apt keyrings.
+    Thanks to Paul Wise (Closes: #747163)
+  * [bce9015] Port is data type integer.
+    Thanks to Roland Sommer
+  * [2a60f1c] autodetect release name
+  * [165e3a4] Disable python-apt support
+  * [c95e719] Handle scenarios where underneath file system is read-only
+    (Closes: #776035)
+  * [59264c3] Update progressbar for cachedir findings
+  * [bd98544] Check if trusted.gpg is available
+  * [dbf522d] promote magic to Depends
+  * [5f881b9] Add .desktop file
+  * [3b72482] Install .desktop file
+  * [8134918] Use subprocess for gpg related tasks
+  * [22ef65b] Improve __ExecSystemCmd to use subprocess
+    Thanks to Bernd Dietzel
+  * [366e7ce] Add xz to supported formats
+  * [87258c0] Add dependency on python-lzma. Needed for compression
+    type xz, which many archives are now supporting
+  * [4f6d64e] Source package handling broke. This commit fixes it
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Wed, 11 Nov 2015 17:35:26 +0530
+
+apt-offline (1.6.1) unstable; urgency=medium
+
+  * Upload to unstable
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Wed, 29 Apr 2015 13:24:51 +0530
+
+apt-offline (1.6) experimental; urgency=medium
+
+  * [2a4a7f1] Don't abuse exception handlers.
+    Thanks to R-Sommer
+  * [afc51b3] MIME type for a deb package.
+    Thanks to R-Sommer
+  * [ec2d539] Also include debian-archive-keyring.
+    Thanks to Hans-Christoph Steiner (Closes: #748082)
+  * [dc602ac] Update MIME type for .gpg
+  * [c4f9b71] Cycle through possible apt keyrings.
+    Thanks to Paul Wise (Closes: #747163)
+  * [de0fe4d] Clarify manpage for install
+  * [b5e1075] Update manpage with some doc about argparse positional
+    values to arguments
+  * [c22d64d] Port is data type integer.
+    Thanks to Roland Sommer
+  * [67edebe] autodetect release name
+  * [5803141] Disable python-apt support
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Wed, 14 Jan 2015 15:34:45 +0530
+
+apt-offline (1.5) unstable; urgency=medium
+
+  * New Major Release
+  * [9b15df2] Add the new DebianBTS module based on SOAP interface
+  * [b628801] Check if simulate is enabled before acquiring locks
+  * [353519c] Common code for bug display list
+  * [6ebe117] Add support for LZMA compression
+  * [b9db6bc] Add Recommends for python-magic and python-soappy
+  * [d9e8b28] Update copyright with new licenses
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Tue, 16 Sep 2014 00:11:36 +0530
+
+apt-offline (1.4) unstable; urgency=medium
+
+  [ Ritesh Raj Sarraf ]
+  * [320714a] Hard code the license in case it is not found by us
+  * [e513eac] Provide ReleaseType to Upgrade() when requesting for
+    upgradable packages (Closes: #700703)
+  * [948d2b3] apt's commandline parser is more stricted now
+  * [458d808] Update manpage.
+    Thanks to Dev Rana
+
+  [ Hans-Christoph Steiner ]
+  * [1ad1073] bash completion script for apt-offline
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Sun, 31 Aug 2014 15:54:05 +0530
+
+apt-offline (1.3.1) unstable; urgency=low
+
+  * Upload to unstable
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Sun, 16 Jun 2013 14:12:34 +0530
+
+apt-offline (1.3) experimental; urgency=low
+
+  * New GUI Feature Release
+  * [320714a] Hard code the license in case it is not found by us
+  * [2a0be56] Add GUI Window support to browse through bug reports
+  * [8eadbd9] Add support for downloads to directory also
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Sat, 12 Jan 2013 12:25:25 +0530
+
+apt-offline (1.2) unstable; urgency=low
+
+  * New Bugfix Release
+  * [6b6c051] Remove non-existent unlink.
+    Thanks to Michael Druckenmiller
+  * [d98bd6b] Update manpage and correct argument positions.
+    Thanks to Pawel Sadkowski (Closes: #647214)
+  * [035a0b6] Fix gpg signature verfication (Closes: #664654)
+  * [c42b435] Bump Standards Version to 3.9.3. No changes required.
+  * [cb9140d] Fix typos in package description.
+    Thanks to Erik Esterer (Closes: #644487)
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Wed, 25 Apr 2012 19:05:58 +0530
+
+apt-offline (1.1.1) unstable; urgency=low
+
+  * [ad257b7] Switch to dh_python2.
+    Thanks to Julian Taylor (Closes: 631419)
+  * [c09d819] Manpage spell-check fixes.
+    Thanks to A. Costa (Closes: 624745)
+  * [d871f89] Update Standards Version to 3.9.2. No changes required.
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Mon, 01 Aug 2011 14:41:15 +0530
+
+apt-offline (1.1) unstable; urgency=low
+
+  * New Bugfix Release (Closes: #593690, #615976)
+    + Adds new feature for basic proxy support
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Fri, 08 Apr 2011 16:47:12 +0530
+
+apt-offline (1.0.2) unstable; urgency=low
+
+  * cherry pick b35ef11d1d4b282f (Closes: #613617)
+    Thanks to Julian Taylor for the report
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Tue, 08 Mar 2011 14:14:17 +0530
+
+apt-offline (1.0.1) unstable; urgency=low
+
+  * Reupload to sid
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Thu, 10 Feb 2011 12:14:56 +0530
+
+apt-offline (1.0) experimental; urgency=low
+
+  * New Feature Release
+    + This release bring a new GUI tool for apt-offline. Kudos to
+      Abhishek Mishra and Manish Sinha
+  * Introduce the new apt-offline-gui package
+  * Bump Standards Version to 3.9.1 (No changes required)
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Sun, 07 Nov 2010 22:08:54 +0530
+
+apt-offline (0.9.9squeeze3) unstable; urgency=low
+
+  * Fix checksum error for MD5 checksums
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Tue, 19 Oct 2010 19:16:13 +0530
+
+apt-offline (0.9.9squeeze2) unstable; urgency=low
+
+  * Clean up the cruft that got carried into the source file
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Fri, 03 Sep 2010 22:48:21 +0530
+
+apt-offline (0.9.9squeeze1) unstable; urgency=low
+
+  * Add less to Depends because we depend on `less` to display the
+    bug reports
+  * Check if argument is a directory. (Closes: #588908)
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Fri, 20 Aug 2010 17:27:02 +0530
+
+apt-offline (0.9.9) unstable; urgency=low
+
+  * New Feature Release
+    + Add support to cycle through all supported Packages.extension types
+      (Closes: #583502)
+    + Fix exception which downloading bug reports (Closes: #584427)
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Sat, 19 Jun 2010 12:18:20 +0530
+
+apt-offline (0.9.8) unstable; urgency=low
+
+  * New Bug Fix Release
+  * Change address to my official Debian address and remove the DMUA flag
+  * Switch to 3.0 (native) source format
+
+ -- Ritesh Raj Sarraf <rrs@debian.org>  Mon, 10 May 2010 21:49:35 +0530
+
+apt-offline (0.9.7) unstable; urgency=low
+
+  * New Bug Fix Release
+    + Allow release type to be specified when in the set operation, for
+      an upgrade. (This is the equivalent of `apt-get -t unstable upgrade`)
+    + Add new option --simulate (which replaces the old --test-windows option)
+    + Do a check to ensure that the argument to the 'get' operation is a file
+    + Fix APT/GPG security issues. When just running the 'set' operation, the
+      apt gpg database gets invalid. Currently, fixed with a workaround. For
+      more details, see DBTS: 565918
+      Many thanks to Paul Nijjar for reporting the bug
+  * Update Standards Version to 3.8.4 (No changes required)
+
+ -- Ritesh Raj Sarraf <rrs@researchut.com>  Wed, 17 Mar 2010 17:10:41 +0530
+
+apt-offline (0.9.6.1) unstable; urgency=low
+
+  [ Ritesh Raj Sarraf ]
+  * New Bug Fix Release
+    + Show bug numbers correctly
+    + Don't hardcode checksum type during checks
+    + Check for APT's partial directory
+    + Carefully update APT's Package cache data
+    + Discard damaged downloads
+    + Fix ZipFile.read()
+    + Don't report download failure for Release.gpg files
+    + Add html doc for the man page
+  * Add DM-Upload field
+
+  [ Y Giridhar Appaji Nag ]
+  * Change Debian package version to 0.9.6.1 for Dm-Upload-Allowed: yes
+
+ -- Y Giridhar Appaji Nag <appaji@debian.org>  Mon, 01 Mar 2010 16:05:40 +0530
+
+apt-offline (0.9.5) unstable; urgency=low
+
+  * New Feature Release
+    + Add support for source packages along with their Build Dependencies
+    + Correct display count of remaining items to be downloaded
+    + Many more bugfixes
+  * Update package description. Thanks to Imran Ebrahim. (Closes: #550939)
+
+ -- Ritesh Raj Sarraf <rrs@researchut.com>  Fri, 30 Oct 2009 12:54:59 +0530
+
+apt-offline (0.9.4) unstable; urgency=low
+
+  * Initial release (Closes: #531699)
+  * Dedicated to my father Santosh Kumar Sarraf. We miss you Dad.
+
+ -- Ritesh Raj Sarraf <rrs@researchut.com>  Tue, 13 Oct 2009 16:19:21 +0530

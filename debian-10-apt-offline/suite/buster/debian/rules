@@ -1,0 +1,11 @@
+#!/usr/bin/make -f
+%:
+	dh $@ --with python3 --buildsystem=pybuild
+
+
+override_dh_auto_build:
+	make
+
+override_dh_install:
+	dh_install
+	dh_install -papt-offline-gui apt-offline-gui-pkexec usr/bin/
