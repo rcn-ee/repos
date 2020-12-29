@@ -11,12 +11,12 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee3"
+debian_version="${package_version}-0rcnee4"
 debian_untar=""
 debian_patch=""
 
 debian_dl_1="https://nodejs.org/dist/latest-v10.x/node-v10.23.0-linux-armv7l.tar.xz"
 
-stretch_version="~stretch+20201221"
-buster_version="~buster+20201221"
-bionic_version="~bionic+20201221"
+stretch_version="~stretch+20201229"
+buster_version="~buster+20201229"
+bionic_version="~bionic+20201229"
