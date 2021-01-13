@@ -13,7 +13,8 @@ setup_repo () {
 	echo "Architectures: ${archs}" >> ${apache_dir}/${dist}/conf/distributions
 	echo "Components: main" >> ${apache_dir}/${dist}/conf/distributions
 	echo "UDebComponents: main" >> ${apache_dir}/${dist}/conf/distributions
-	echo "Description: Apt repository for rcn-ee.net" >> ${apache_dir}/${dist}/conf/distributions
+#	echo "Description: Apt repository for rcn-ee.net" >> ${apache_dir}/${dist}/conf/distributions
+	echo "Description: Apt repository for debian.beagleboard.org" >> ${apache_dir}/${dist}/conf/distributions
 	echo "SignWith: ${key}" >> ${apache_dir}/${dist}/conf/distributions
 	echo "Log: ${apache_dir}/${dist}/log/${suite}.log" >> ${apache_dir}/${dist}/conf/distributions
 	echo "" >> ${apache_dir}/${dist}/conf/distributions
@@ -193,6 +194,11 @@ setup_repo
 
 suite="hirsute"
 archs="armhf source"
+setup_repo
+
+dist="debian-riscv64"
+suite="sid"
+archs="riscv64"
 setup_repo
 
 #
