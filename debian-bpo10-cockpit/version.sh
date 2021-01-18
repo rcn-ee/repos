@@ -4,7 +4,7 @@ mirror="http://http.debian.net/debian"
 
 package_name="cockpit"
 debian_pkg_name="${package_name}"
-package_version="235-1"
+package_version="235"
 
 git_repo=""
 git_sha=""
