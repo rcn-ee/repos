@@ -10,11 +10,11 @@ export PATH := /opt/node-red/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/b
 node_bin=/opt/node-red/bin/node
 npm_bin=/opt/node-red/bin/npm
 
-nodejs_version=v10.23.1
+nodejs_version=v10.23.2
 #nodejs_version=v12.13.1 (node-red-contrib-gpio broken)
 #	wget --directory-prefix /opt/node-red/ https://nodejs.org/dist/latest-v12.x/node-$(nodejs_version)-linux-armv7l.tar.xz
 
-node_red_version=1.2.7
+node_red_version=1.2.9
 node_red_dashboard_version=2.27.0
 node_red_node_serialport_version=0.11.1
 
@@ -70,7 +70,7 @@ override_dh_auto_configure:
 	echo "Fake Install: node-red@$(node_red_version)"
 	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp node-red@$(node_red_version)
 	cp -v debian/use-systemd.diff /tmp/lib/node_modules/node-red/
-	cd /tmp/lib/node_modules/node-red/ ; patch -p1 < /tmp/lib/node_modules/node-red/use-systemd.diff ; rm /tmp/lib/node_modules/node-red/use-systemd.diff
+	cd /tmp/lib/node_modules/node-red/ ; patch -p1 < /tmp/lib/node_modules/node-red/use-systemd.diff ; cat ./package.json ; rm /tmp/lib/node_modules/node-red/use-systemd.diff
 	cd /tmp/lib/node_modules/node-red/ ; TERM=dumb $(node_bin) $(npm_bin) install systemd@0.4.0
 	cd /tmp/lib/node_modules/node-red/ ; TERM=dumb $(node_bin) $(npm_bin) pack
 	echo "Real Install: node-red@$(node_red_version)"
