@@ -51,7 +51,7 @@ override_dh_auto_configure:
 	echo "code-server"
 	echo "Fake Install: yarn"
 	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp yarn
-	cd /tmp/lib/node_modules/code-server/ ; TERM=dumb $(node_bin) $(npm_bin) pack
+	cd /tmp/lib/node_modules/yarn/ ; TERM=dumb $(node_bin) $(npm_bin) pack
 	echo "Real Install: yarn"
 	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/yarn/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/code-server --no-save
 	rm -rf /tmp/lib/node_modules/yarn/
