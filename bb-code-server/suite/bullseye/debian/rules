@@ -6,6 +6,8 @@ export DH_VERBOSE=1
 
 export NODE_PATH := /opt/code-server/lib/node_modules
 export PATH := /opt/code-server/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+#export PATH=/opt/code-server/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
+#export PATH := /usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
 
 node_bin=/opt/code-server/bin/node
 npm_bin=/opt/code-server/bin/npm
@@ -13,6 +15,14 @@ npm_bin=/opt/code-server/bin/npm
 nodejs_version=v12.20.1
 
 code_server_version=3.8.1
+
+
+#	echo "Fake Install: code-server@$(code_server_version)"
+#	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp code-server@$(code_server_version)
+#	cd /tmp/lib/node_modules/code-server/ ; TERM=dumb $(node_bin) $(npm_bin) pack
+#	echo "Real Install: code-server@$(code_server_version)"
+#	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/code-server/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/code-server --no-save
+#	rm -rf /tmp/lib/node_modules/code-server/
 
 override_dh_strip:
 	# Just disable for now...
@@ -39,12 +49,12 @@ override_dh_auto_configure:
 	$(node_bin) $(npm_bin) --version
 	env | grep PATH
 	echo "code-server"
-	echo "Fake Install: code-server@$(code_server_version)"
-	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp code-server@$(code_server_version)
+	echo "Fake Install: yarn"
+	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp yarn
 	cd /tmp/lib/node_modules/code-server/ ; TERM=dumb $(node_bin) $(npm_bin) pack
-	echo "Real Install: code-server@$(code_server_version)"
-	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/code-server/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/code-server --no-save
-	rm -rf /tmp/lib/node_modules/code-server/
+	echo "Real Install: yarn"
+	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/yarn/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/code-server --no-save
+	rm -rf /tmp/lib/node_modules/yarn/
 	echo "move /opt/code-server/ to ./tmp/opt/code-server/"
 	mkdir -p ./tmp/opt/code-server/
 	mv /opt/code-server/* ./tmp/opt/code-server/
