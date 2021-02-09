@@ -14,8 +14,8 @@ nodejs_version=v12.20.1
 
 code_server_version=3.8.1
 
-%:
-	dh $@
+override_dh_strip:
+	# Just disable for now...
 
 override_dh_auto_configure:
 	mkdir -p /opt/code-server/
@@ -49,6 +49,5 @@ override_dh_auto_configure:
 	mkdir -p ./tmp/opt/code-server/
 	mv /opt/code-server/* ./tmp/opt/code-server/
 
-override_dh_strip:
-	dh_strip --no-automatic-dbgsym
-
+%:
+	dh $@
