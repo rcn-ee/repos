@@ -1,0 +1,51 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+export DH_VERBOSE=1
+
+export NODE_PATH := /opt/code-server/lib/node_modules
+export PATH := /opt/code-server/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+node_bin=/opt/code-server/bin/node
+npm_bin=/opt/code-server/bin/npm
+
+nodejs_version=v12.20.1
+
+code_server_version=3.8.1
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	mkdir -p /opt/code-server/
+	tar xf ./debian/node-$(nodejs_version)-linux-armv7l.tar.xz -C /opt/code-server/ --strip-components 1
+	echo "cleanup..."
+	rm -rf /opt/code-server/include/node/openssl/archs/BSD-x86_64*/
+	rm -rf /opt/code-server/include/node/openssl/archs/VC-WIN*/
+	rm -rf /opt/code-server/include/node/openssl/archs/aix*/
+	rm -rf /opt/code-server/include/node/openssl/archs/darwin*/
+	rm -rf /opt/code-server/include/node/openssl/archs/linux-aarch64/
+	rm -rf /opt/code-server/include/node/openssl/archs/linux-elf/
+	rm -rf /opt/code-server/include/node/openssl/archs/linux-ppc*/
+	rm -rf /opt/code-server/include/node/openssl/archs/linux-x*/
+	rm -rf /opt/code-server/include/node/openssl/archs/linux*-s390x/
+	rm -rf /opt/code-server/include/node/openssl/archs/solaris*/
+	echo "node --version"
+	$(node_bin) --version
+	echo "/opt/code-server/bin/node --version"
+	$(node_bin) --version
+	echo "/opt/code-server/bin/node /opt/code-server/bin/npm --version"
+	$(node_bin) $(npm_bin) --version
+	env | grep PATH
+	echo "code-server"
+	echo "Fake Install: code-server@$(code_server_version)"
+	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp code-server@$(code_server_version)
+	cd /tmp/lib/node_modules/code-server/ ; TERM=dumb $(node_bin) $(npm_bin) pack
+	echo "Real Install: code-server@$(code_server_version)"
+	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/code-server/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/code-server --no-save
+	rm -rf /tmp/lib/node_modules/code-server/
+	echo "move /opt/code-server/ to ./tmp/opt/code-server/"
+	mkdir -p ./tmp/opt/code-server/
+	mv /opt/code-server/* ./tmp/opt/code-server/
+
