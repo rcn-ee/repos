@@ -34,10 +34,10 @@ override_dh_auto_configure:
 	ln -s /usr/bin/yarnpkg /usr/bin/yarn
 	echo "/usr/bin/yarn --version"
 	/usr/bin/yarn --version
-	echo "/bin/bash ./debian/install.sh --dry-run --version $(code_server_version) --method standalone --prefix /opt/code-server/"
-	/bin/bash ./debian/install.sh --dry-run --version $(code_server_version) --method standalone --prefix /opt/code-server/
-	echo "/bin/bash ./debian/install.sh --dry-run --version $(code_server_version) --method standalone --prefix /opt/code-server/"
-	/bin/bash ./debian/install.sh --version $(code_server_version) --method standalone --prefix /opt/code-server/
+	echo "/bin/bash ./debian/install.sh --dry-run --version $(code_server_version) --prefix /opt/code-server/"
+	/bin/bash ./debian/install.sh --dry-run --version $(code_server_version) --prefix /opt/code-server/
+	echo "/bin/bash ./debian/install.sh --dry-run --version $(code_server_version) --prefix /opt/code-server/"
+	/bin/bash ./debian/install.sh --version $(code_server_version) --prefix /opt/code-server/
 	echo "move /opt/code-server/ to ./tmp/opt/code-server/"
 	mkdir -p ./tmp/opt/code-server/
 	mv /opt/code-server/* ./tmp/opt/code-server/
