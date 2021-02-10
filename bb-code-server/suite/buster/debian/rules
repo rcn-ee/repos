@@ -49,16 +49,13 @@ override_dh_auto_configure:
 	echo "python2 --version"
 	/usr/bin/python2 --version
 	env | grep PATH
-	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm yarn@$(yarn_version)
+	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /usr/local/ yarn@$(yarn_version)
 	echo "/opt/code-server/bin/node /opt/code-server/bin/yarn --version"
 	$(node_bin) $(yarn_bin) --version
 	echo "yarn --version"
 	yarn --version
 	echo "yarn"
 	yarn
-	rm -rf /opt/code-server/CHANGELOG.md
-	rm -rf /opt/code-server/LICENSE
-	rm -rf /opt/code-server/README.md
 	echo "move /opt/code-server/ to ./tmp/opt/code-server/"
 	mkdir -p ./tmp/opt/code-server/
 	mv /opt/code-server/* ./tmp/opt/code-server/
