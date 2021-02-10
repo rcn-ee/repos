@@ -7,23 +7,23 @@ set -e
 package="bb-node-red-installer"
 service="nodered"
 
-node_red_user="node-red"
-node_red_data_dir="/var/lib/node-red"
+pkg_user="node-red"
+pkg_data_dir="/var/lib/node-red"
 
 # Create node-red user with home in /var/lib
-echo "Creating/updating ${node_red_user} user account..."
-adduser --system --home /var/lib/node-red --gecos "${node_red_user} user" --shell /bin/sh \
-	--quiet --disabled-password --group ${node_red_user} || {
-echo "Proceeding with existing ${node_red_user} user..."
+echo "Creating/updating ${pkg_user} user account..."
+adduser --system --home /var/lib/node-red --gecos "${pkg_user} user" --shell /bin/sh \
+	--quiet --disabled-password --group ${pkg_user} || {
+echo "Proceeding with existing ${pkg_user} user..."
   }
 
 # Give node_red_user ownership of node_red_data_dir
-chown ${node_red_user} ${node_red_data_dir}
+chown ${pkg_user} ${pkg_data_dir}
 
 groupadd gpio --system || true
 
-echo "Updating ${node_red_user} user to group gpio"
-usermod -a -G gpio ${node_red_user}
+echo "Updating ${pkg_user} user to group gpio"
+usermod -a -G gpio ${pkg_user}
 
 main_install () {
 	if [ -d /etc/avahi/services/ ] ; then

@@ -6,6 +6,19 @@ set -e
 
 package="code-server"
 
+pkg_user="code-server"
+pkg_data_dir="/var/lib/code-server"
+
+# Create node-red user with home in /var/lib
+echo "Creating/updating ${pkg_user} user account..."
+adduser --system --home ${pkg_data_dir} --gecos "${pkg_user} user" --shell /bin/sh \
+	--quiet --disabled-password --group ${pkg_user} || {
+echo "Proceeding with existing ${pkg_user} user..."
+  }
+
+# Give node_red_user ownership of node_red_data_dir
+chown ${pkg_user} ${pkg_data_dir}
+
 main_install () {
 	echo "${package}:Installed"
 }
