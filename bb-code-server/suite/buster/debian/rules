@@ -4,7 +4,7 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
-project_dir=/opt/code-server
+project_dir=/opt/code-server/deps
 
 export NODE_PATH := $(project_dir)/lib/node_modules
 export PATH := $(project_dir)/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
@@ -18,18 +18,12 @@ yarn_version=1.22.5
 
 code_server_version=3.8.1
 
-#	echo "Fake Install: code-server@$(code_server_version)"
-#	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp code-server@$(code_server_version)
-#	cd /tmp/lib/node_modules/code-server/ ; TERM=dumb $(node_bin) $(npm_bin) pack
-#	echo "Real Install: code-server@$(code_server_version)"
-#	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/code-server/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix $(project_dir) --no-save
-#	rm -rf /tmp/lib/node_modules/code-server/
-
 override_dh_strip:
 	# Just disable for now...
 
 override_dh_auto_configure:
 	mkdir -p $(project_dir)/
+	mkdir -p $(project_dir)/../app/
 	tar xf ./debian/node-$(nodejs_version)-linux-armv7l.tar.xz -C $(project_dir)/ --strip-components 1
 	echo "*************************************************************"
 	echo "cleanup..."
@@ -53,47 +47,36 @@ override_dh_auto_configure:
 	echo "$(project_dir)/bin/node $(project_dir)/bin/npm --version"
 	$(node_bin) $(npm_bin) --version
 	echo "*************************************************************"
-	echo "python2 --version"
 	/usr/bin/python2 --version
 	env | grep PATH
 	echo "*************************************************************"
 	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /usr/local/ yarn@$(yarn_version)
-	echo "$(project_dir)/bin/node $(project_dir)/bin/yarn --version"
 	echo "*************************************************************"
 	$(node_bin) $(yarn_bin) --version
-	echo "yarn --version"
+	echo "*************************************************************"
 	yarn --version
 	echo "*************************************************************"
-	echo "uname -m"
 	uname -m
 	echo "*************************************************************"
-	echo "yarn"
 	yarn
 	echo "*************************************************************"
-	echo "yarn build"
 	yarn build
 	echo "*************************************************************"
-	echo "yarn build:vscode"
 	yarn build:vscode
 	echo "*************************************************************"
-	echo "yarn release"
 	yarn release
 	echo "*************************************************************"
-	echo "yarn release:standalone"
 	yarn release:standalone
 	ls -lha ./release-standalone/
 	echo "*************************************************************"
-	echo "yarn package"
 	yarn package
 	ls -lha ./release-packages/
 	echo "*************************************************************"
-	rm -rf $(project_dir)/CHANGELOG.md
-	rm -rf $(project_dir)/LICENSE
-	rm -rf $(project_dir)/README.md
 	echo "move $(project_dir)/ to ./tmp$(project_dir)/"
 	mkdir -p ./tmp$(project_dir)/
+	mkdir -p ./tmp$(project_dir)/../app/
 	mv $(project_dir)/* ./tmp$(project_dir)/
-	cp -v ./release-packages/code-server*.tar.gz /tmp$(project_dir)/
+	cp -v ./release-packages/code-server*.tar.gz /tmp$(project_dir)/../app/
 
 %:
 	dh $@
