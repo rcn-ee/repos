@@ -4,11 +4,13 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
-export NODE_PATH := /opt/code-server/lib/node_modules
-export PATH := /opt/code-server/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+project_dir=/opt/code-server
 
-node_bin=/opt/code-server/bin/node
-npm_bin=/opt/code-server/bin/npm
+export NODE_PATH := $(project_dir)/lib/node_modules
+export PATH := $(project_dir)/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+node_bin=$(project_dir)/bin/node
+npm_bin=$(project_dir)/bin/npm
 yarn_bin=/usr/local/bin/yarn
 
 nodejs_version=v12.20.1
@@ -20,35 +22,35 @@ code_server_version=3.8.1
 #	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp code-server@$(code_server_version)
 #	cd /tmp/lib/node_modules/code-server/ ; TERM=dumb $(node_bin) $(npm_bin) pack
 #	echo "Real Install: code-server@$(code_server_version)"
-#	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/code-server/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix /opt/code-server --no-save
+#	TERM=dumb $(node_bin) $(npm_bin) install -g /tmp/lib/node_modules/code-server/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix $(project_dir) --no-save
 #	rm -rf /tmp/lib/node_modules/code-server/
 
 override_dh_strip:
 	# Just disable for now...
 
 override_dh_auto_configure:
-	mkdir -p /opt/code-server/
-	tar xf ./debian/node-$(nodejs_version)-linux-armv7l.tar.xz -C /opt/code-server/ --strip-components 1
+	mkdir -p $(project_dir)/
+	tar xf ./debian/node-$(nodejs_version)-linux-armv7l.tar.xz -C $(project_dir)/ --strip-components 1
 	echo "*************************************************************"
 	echo "cleanup..."
-	rm -rf /opt/code-server/include/node/openssl/archs/BSD-x86_64*/
-	rm -rf /opt/code-server/include/node/openssl/archs/VC-WIN*/
-	rm -rf /opt/code-server/include/node/openssl/archs/aix*/
-	rm -rf /opt/code-server/include/node/openssl/archs/darwin*/
-	rm -rf /opt/code-server/include/node/openssl/archs/linux-aarch64/
-	rm -rf /opt/code-server/include/node/openssl/archs/linux-elf/
-	rm -rf /opt/code-server/include/node/openssl/archs/linux-ppc*/
-	rm -rf /opt/code-server/include/node/openssl/archs/linux-x*/
-	rm -rf /opt/code-server/include/node/openssl/archs/linux*-s390x/
-	rm -rf /opt/code-server/include/node/openssl/archs/solaris*/
+	rm -rf $(project_dir)/include/node/openssl/archs/BSD-x86_64*/
+	rm -rf $(project_dir)/include/node/openssl/archs/VC-WIN*/
+	rm -rf $(project_dir)/include/node/openssl/archs/aix*/
+	rm -rf $(project_dir)/include/node/openssl/archs/darwin*/
+	rm -rf $(project_dir)/include/node/openssl/archs/linux-aarch64/
+	rm -rf $(project_dir)/include/node/openssl/archs/linux-elf/
+	rm -rf $(project_dir)/include/node/openssl/archs/linux-ppc*/
+	rm -rf $(project_dir)/include/node/openssl/archs/linux-x*/
+	rm -rf $(project_dir)/include/node/openssl/archs/linux*-s390x/
+	rm -rf $(project_dir)/include/node/openssl/archs/solaris*/
 	echo "*************************************************************"
 	echo "node --version"
 	$(node_bin) --version
 	echo "*************************************************************"
-	echo "/opt/code-server/bin/node --version"
+	echo "$(project_dir)/bin/node --version"
 	$(node_bin) --version
 	echo "*************************************************************"
-	echo "/opt/code-server/bin/node /opt/code-server/bin/npm --version"
+	echo "$(project_dir)/bin/node $(project_dir)/bin/npm --version"
 	$(node_bin) $(npm_bin) --version
 	echo "*************************************************************"
 	echo "python2 --version"
@@ -56,7 +58,7 @@ override_dh_auto_configure:
 	env | grep PATH
 	echo "*************************************************************"
 	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /usr/local/ yarn@$(yarn_version)
-	echo "/opt/code-server/bin/node /opt/code-server/bin/yarn --version"
+	echo "$(project_dir)/bin/node $(project_dir)/bin/yarn --version"
 	echo "*************************************************************"
 	$(node_bin) $(yarn_bin) --version
 	echo "yarn --version"
@@ -77,16 +79,21 @@ override_dh_auto_configure:
 	echo "yarn release"
 	yarn release
 	echo "*************************************************************"
-	echo "yarn release:standalone --verbose"
-	yarn release:standalone --verbose
-	ls -lha
+	echo "yarn release:standalone"
+	yarn release:standalone
+	ls -lha ./release-standalone/
 	echo "*************************************************************"
-	rm -rf /opt/code-server/CHANGELOG.md
-	rm -rf /opt/code-server/LICENSE
-	rm -rf /opt/code-server/README.md
-	echo "move /opt/code-server/ to ./tmp/opt/code-server/"
-	mkdir -p ./tmp/opt/code-server/
-	mv /opt/code-server/* ./tmp/opt/code-server/
+	echo "yarn package"
+	yarn package
+	ls -lha ./release-packages/
+	echo "*************************************************************"
+	rm -rf $(project_dir)/CHANGELOG.md
+	rm -rf $(project_dir)/LICENSE
+	rm -rf $(project_dir)/README.md
+	echo "move $(project_dir)/ to ./tmp$(project_dir)/"
+	mkdir -p ./tmp$(project_dir)/
+	mv $(project_dir)/* ./tmp$(project_dir)/
+	cp -v ./release-packages/code-server*.tar.gz /tmp$(project_dir)/
 
 %:
 	dh $@
