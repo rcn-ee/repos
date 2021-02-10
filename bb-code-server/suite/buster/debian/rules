@@ -68,15 +68,18 @@ override_dh_auto_configure:
 	echo "yarn"
 	yarn
 	echo "*************************************************************"
-	echo "yarn build --verbose"
-	yarn build --verbose
+	echo "yarn build"
+	yarn build
 	echo "*************************************************************"
-	echo "yarn build:vscode --verbose"
-	yarn build:vscode --verbose
+	echo "yarn build:vscode"
+	yarn build:vscode
 	echo "*************************************************************"
 	echo "yarn release --verbose"
 	yarn release --verbose
 	echo "*************************************************************"
+	rm -rf /opt/code-server/CHANGELOG.md
+	rm -rf /opt/code-server/LICENSE
+	rm -rf /opt/code-server/README.md
 	echo "move /opt/code-server/ to ./tmp/opt/code-server/"
 	mkdir -p ./tmp/opt/code-server/
 	mv /opt/code-server/* ./tmp/opt/code-server/
