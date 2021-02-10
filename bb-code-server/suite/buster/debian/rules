@@ -54,8 +54,10 @@ override_dh_auto_configure:
 	$(node_bin) $(yarn_bin) --version
 	echo "yarn --version"
 	yarn --version
-	echo "yarn"
-	yarn
+	echo "yarn --verbose"
+	yarn --verbose
+	echo "yarn build --verbose"
+	yarn build --verbose
 	echo "move /opt/code-server/ to ./tmp/opt/code-server/"
 	mkdir -p ./tmp/opt/code-server/
 	mv /opt/code-server/* ./tmp/opt/code-server/
