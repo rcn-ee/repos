@@ -73,4 +73,19 @@ arch="armhf"
 options="--exclude=debfoster"
 setup_update_sbuild
 
+mirror="http://${proxy}${ubuntu_server}"
+deboot="gutsy"
+
+dist="bionic"
+unset flavor
+arch="armhf"
+options="--exclude=debfoster"
+setup_update_sbuild
+
+dist="focal"
+unset flavor
+arch="armhf"
+options="--exclude=debfoster"
+setup_update_sbuild
+
 #
