@@ -9,7 +9,6 @@ export PATH := /opt/code-server/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/us
 
 node_bin=/opt/code-server/bin/node
 npm_bin=/opt/code-server/bin/npm
-yarn_bin=/usr/bin/yarnpkg
 
 nodejs_version=v12.20.1
 yarn_version=1.22.5
@@ -27,24 +26,24 @@ override_dh_strip:
 	# Just disable for now...
 
 override_dh_auto_configure:
-	mkdir -p /opt/node-red/
-	tar xf ./debian/node-$(nodejs_version)-linux-armv7l.tar.xz -C /opt/node-red/ --strip-components 1
+	mkdir -p /opt/code-server/
+	tar xf ./debian/node-$(nodejs_version)-linux-armv7l.tar.xz -C /opt/code-server/ --strip-components 1
 	echo "cleanup..."
-	rm -rf /opt/node-red/include/node/openssl/archs/BSD-x86_64*/
-	rm -rf /opt/node-red/include/node/openssl/archs/VC-WIN*/
-	rm -rf /opt/node-red/include/node/openssl/archs/aix*/
-	rm -rf /opt/node-red/include/node/openssl/archs/darwin*/
-	rm -rf /opt/node-red/include/node/openssl/archs/linux-aarch64/
-	rm -rf /opt/node-red/include/node/openssl/archs/linux-elf/
-	rm -rf /opt/node-red/include/node/openssl/archs/linux-ppc*/
-	rm -rf /opt/node-red/include/node/openssl/archs/linux-x*/
-	rm -rf /opt/node-red/include/node/openssl/archs/linux*-s390x/
-	rm -rf /opt/node-red/include/node/openssl/archs/solaris*/
+	rm -rf /opt/code-server/include/node/openssl/archs/BSD-x86_64*/
+	rm -rf /opt/code-server/include/node/openssl/archs/VC-WIN*/
+	rm -rf /opt/code-server/include/node/openssl/archs/aix*/
+	rm -rf /opt/code-server/include/node/openssl/archs/darwin*/
+	rm -rf /opt/code-server/include/node/openssl/archs/linux-aarch64/
+	rm -rf /opt/code-server/include/node/openssl/archs/linux-elf/
+	rm -rf /opt/code-server/include/node/openssl/archs/linux-ppc*/
+	rm -rf /opt/code-server/include/node/openssl/archs/linux-x*/
+	rm -rf /opt/code-server/include/node/openssl/archs/linux*-s390x/
+	rm -rf /opt/code-server/include/node/openssl/archs/solaris*/
 	echo "node --version"
 	$(node_bin) --version
-	echo "/opt/node-red/bin/node --version"
+	echo "/opt/code-server/bin/node --version"
 	$(node_bin) --version
-	echo "/opt/node-red/bin/node /opt/node-red/bin/npm --version"
+	echo "/opt/code-server/bin/node /opt/code-server/bin/npm --version"
 	$(node_bin) $(npm_bin) --version
 	echo "python2 --version"
 	/usr/bin/python2 --version
