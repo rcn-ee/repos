@@ -74,8 +74,12 @@ override_dh_auto_configure:
 	echo "yarn build:vscode"
 	yarn build:vscode
 	echo "*************************************************************"
-	echo "yarn release --verbose"
-	yarn release --verbose
+	echo "yarn release"
+	yarn release
+	echo "*************************************************************"
+	echo "yarn release:standalone --verbose"
+	yarn release:standalone --verbose
+	ls -lha
 	echo "*************************************************************"
 	rm -rf /opt/code-server/CHANGELOG.md
 	rm -rf /opt/code-server/LICENSE
