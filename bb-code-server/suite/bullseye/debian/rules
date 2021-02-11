@@ -1,0 +1,77 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+export DH_VERBOSE=1
+
+project_deps_dir=/opt/code-server/deps
+project_app_dir=/opt/code-server/app
+
+export NODE_PATH := $(project_deps_dir)/lib/node_modules
+export PATH := $(project_deps_dir)/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+node_bin=$(project_deps_dir)/bin/node
+npm_bin=$(project_deps_dir)/bin/npm
+yarn_bin=/usr/local/bin/yarn
+
+nodejs_version=v12.20.2
+yarn_version=1.22.5
+
+code_server_version=3.8.1
+
+override_dh_strip:
+	# Just disable for now...
+
+override_dh_auto_configure:
+	mkdir -p $(project_deps_dir)/
+	mkdir -p $(project_app_dir)/
+	tar xf ./debian/node-$(nodejs_version)-linux-armv7l.tar.xz -C $(project_deps_dir)/ --strip-components 1
+	echo "*************************************************************"
+	echo "cleanup..."
+	rm -rf $(project_deps_dir)/include/node/openssl/archs/BSD-x86_64*/
+	rm -rf $(project_deps_dir)/include/node/openssl/archs/VC-WIN*/
+	rm -rf $(project_deps_dir)/include/node/openssl/archs/aix*/
+	rm -rf $(project_deps_dir)/include/node/openssl/archs/darwin*/
+	rm -rf $(project_deps_dir)/include/node/openssl/archs/linux-aarch64/
+	rm -rf $(project_deps_dir)/include/node/openssl/archs/linux-elf/
+	rm -rf $(project_deps_dir)/include/node/openssl/archs/linux-ppc*/
+	rm -rf $(project_deps_dir)/include/node/openssl/archs/linux-x*/
+	rm -rf $(project_deps_dir)/include/node/openssl/archs/linux*-s390x/
+	rm -rf $(project_deps_dir)/include/node/openssl/archs/solaris*/
+	echo "*************************************************************"
+	$(node_bin) --version
+	echo "*************************************************************"
+	$(node_bin) $(npm_bin) --version
+	echo "*************************************************************"
+	/usr/bin/python2 --version
+	env | grep PATH
+	echo "*************************************************************"
+	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /usr/local/ yarn@$(yarn_version)
+	echo "*************************************************************"
+	yarn --version
+	echo "*************************************************************"
+	uname -m
+	echo "*************************************************************"
+	yarn
+	echo "*************************************************************"
+	yarn build
+	echo "*************************************************************"
+	yarn build:vscode
+	echo "*************************************************************"
+	yarn release
+	echo "*************************************************************"
+	yarn release:standalone
+	ls -lha ./release-standalone/
+	echo "*************************************************************"
+	yarn package
+	ls -lha ./release-packages/
+	echo "*************************************************************"
+	echo "move $(project_deps_dir)/ to ./tmp$(project_deps_dir)/"
+	mkdir -p ./tmp$(project_deps_dir)/
+	mv $(project_deps_dir)/* ./tmp$(project_deps_dir)/
+	mkdir -p ./tmp$(project_app_dir)/
+	tar xf ./release-packages/code-server-$(code_server_version)-linux-armhf.tar.gz -C ./tmp$(project_app_dir)/ --strip-components 1
+
+%:
+	dh $@
+
