@@ -6,6 +6,7 @@ export DH_VERBOSE=1
 
 project_deps_dir=/opt/code-server/deps
 project_app_dir=/opt/code-server/app
+project_examples=/opt/code-server/examples
 
 export NODE_PATH := $(project_deps_dir)/lib/node_modules
 export PATH := $(project_deps_dir)/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
@@ -69,6 +70,7 @@ override_dh_auto_configure:
 	echo "move $(project_app_dir)/ to ./tmp$(project_app_dir)/"
 	mkdir -p ./tmp$(project_app_dir)/
 	tar xf ./release-packages/code-server-$(code_server_version)-linux-armhf.tar.gz -C ./tmp$(project_app_dir)/ --strip-components 1
+	mkdir -p ./tmp$(project_examples)/ ; mv ./debian/bb-code-server ./tmp$(project_examples)/ ; mv ./debian/bb-code-server.socket ./tmp$(project_examples)/ ; mv ./debian/bb-code-server.service ./tmp$(project_examples)/
 
 %:
 	dh $@
