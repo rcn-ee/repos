@@ -66,9 +66,7 @@ override_dh_auto_configure:
 	yarn package
 	ls -lha ./release-packages/
 	echo "*************************************************************"
-	echo "move $(project_deps_dir)/ to ./tmp$(project_deps_dir)/"
-	mkdir -p ./tmp$(project_deps_dir)/
-	mv $(project_deps_dir)/* ./tmp$(project_deps_dir)/
+	echo "move $(project_app_dir)/ to ./tmp$(project_app_dir)/"
 	mkdir -p ./tmp$(project_app_dir)/
 	tar xf ./release-packages/code-server-$(code_server_version)-linux-armhf.tar.gz -C ./tmp$(project_app_dir)/ --strip-components 1
 

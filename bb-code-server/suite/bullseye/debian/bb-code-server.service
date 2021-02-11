@@ -1,0 +1,16 @@
+[Unit]
+Description=bb-code-server
+Wants=network.target
+Documentation=https://github.com/cdr/code-server
+After=multi-user.target
+
+[Service]
+Type=simple
+
+RestartSec=250
+ExecStart=/opt/code-server/app/bin/code-server --auth none --bind-addr 0.0.0.0:3000
+Restart=on-failure
+SyslogIdentifier=bb-code-server
+
+[Install]
+WantedBy=multi-user.target

@@ -11,11 +11,11 @@ git_sha="47576df67fa9ddfefca4800e8127432eb3e7035e"
 reprepro_dir="b/${package_name}"
 dl_path=""
 
-debian_version="${package_version}-0rcnee4"
+debian_version="${package_version}-0rcnee5"
 debian_untar=""
 debian_patch=""
 
 debian_dl_1="https://nodejs.org/dist/latest-v12.x/node-v12.20.2-linux-armv7l.tar.xz"
 
-buster_version="~buster+20210210"
-bullseye_version="~bullseye+20210210"
+buster_version="~buster+20210211"
+bullseye_version="~bullseye+20210211"
