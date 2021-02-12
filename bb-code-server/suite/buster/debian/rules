@@ -4,15 +4,13 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
-project_deps_dir=/opt/code-server/deps
-project_app_dir=/opt/code-server/app
-project_examples=/opt/code-server/examples
+project_dir=/opt/code-server
 
-export NODE_PATH := $(project_deps_dir)/lib/node_modules
-export PATH := $(project_deps_dir)/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+export NODE_PATH := $(project_dir)/deps/lib/node_modules
+export PATH := $(project_dir)/deps/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-node_bin=$(project_deps_dir)/bin/node
-npm_bin=$(project_deps_dir)/bin/npm
+node_bin=$(project_dir)/deps/bin/node
+npm_bin=$(project_dir)/deps/bin/npm
 yarn_bin=/usr/local/bin/yarn
 
 nodejs_version=v12.20.2
@@ -24,21 +22,21 @@ override_dh_strip:
 	# Just disable for now...
 
 override_dh_auto_configure:
-	mkdir -p $(project_deps_dir)/
-	mkdir -p $(project_app_dir)/
-	tar xf ./debian/node-$(nodejs_version)-linux-armv7l.tar.xz -C $(project_deps_dir)/ --strip-components 1
+	mkdir -p $(project_dir)/deps/
+	mkdir -p $(project_dir)/app/
+	tar xf ./debian/node-$(nodejs_version)-linux-armv7l.tar.xz -C $(project_dir)/deps/ --strip-components 1
 	echo "*************************************************************"
 	echo "cleanup..."
-	rm -rf $(project_deps_dir)/include/node/openssl/archs/BSD-x86_64*/
-	rm -rf $(project_deps_dir)/include/node/openssl/archs/VC-WIN*/
-	rm -rf $(project_deps_dir)/include/node/openssl/archs/aix*/
-	rm -rf $(project_deps_dir)/include/node/openssl/archs/darwin*/
-	rm -rf $(project_deps_dir)/include/node/openssl/archs/linux-aarch64/
-	rm -rf $(project_deps_dir)/include/node/openssl/archs/linux-elf/
-	rm -rf $(project_deps_dir)/include/node/openssl/archs/linux-ppc*/
-	rm -rf $(project_deps_dir)/include/node/openssl/archs/linux-x*/
-	rm -rf $(project_deps_dir)/include/node/openssl/archs/linux*-s390x/
-	rm -rf $(project_deps_dir)/include/node/openssl/archs/solaris*/
+	rm -rf $(project_dir)/deps/include/node/openssl/archs/BSD-x86_64*/
+	rm -rf $(project_dir)/deps/include/node/openssl/archs/VC-WIN*/
+	rm -rf $(project_dir)/deps/include/node/openssl/archs/aix*/
+	rm -rf $(project_dir)/deps/include/node/openssl/archs/darwin*/
+	rm -rf $(project_dir)/deps/include/node/openssl/archs/linux-aarch64/
+	rm -rf $(project_dir)/deps/include/node/openssl/archs/linux-elf/
+	rm -rf $(project_dir)/deps/include/node/openssl/archs/linux-ppc*/
+	rm -rf $(project_dir)/deps/include/node/openssl/archs/linux-x*/
+	rm -rf $(project_dir)/deps/include/node/openssl/archs/linux*-s390x/
+	rm -rf $(project_dir)/deps/include/node/openssl/archs/solaris*/
 	echo "*************************************************************"
 	$(node_bin) --version
 	echo "*************************************************************"
@@ -67,10 +65,10 @@ override_dh_auto_configure:
 	yarn package
 	ls -lha ./release-packages/
 	echo "*************************************************************"
-	echo "move $(project_app_dir)/ to ./tmp$(project_app_dir)/"
-	mkdir -p ./tmp$(project_app_dir)/
-	tar xf ./release-packages/code-server-$(code_server_version)-linux-armhf.tar.gz -C ./tmp$(project_app_dir)/ --strip-components 1
-	mkdir -p ./tmp$(project_examples)/ ; mv ./debian/bb-code-server ./tmp$(project_examples)/ ; mv ./debian/bb-code-server.socket ./tmp$(project_examples)/ ; mv ./debian/bb-code-server.service ./tmp$(project_examples)/
+	echo "move $(project_dir)/app/ to ./tmp$(project_dir)/app/"
+	mkdir -p ./tmp$(project_dir)/app/
+	tar xf ./release-packages/code-server-$(code_server_version)-linux-armhf.tar.gz -C ./tmp$(project_dir)/app/ --strip-components 1
+	mkdir -p ./tmp$(project_dir)/examples/ ; mv ./debian/bb-code-server ./tmp$(project_dir)/examples/
 
 %:
 	dh $@

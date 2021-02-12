@@ -4,9 +4,11 @@
 
 set -e
 
-package="code-server"
+package="bb-code-server"
 
 main_install () {
+	systemctl enable ${service}.socket || true
+	systemctl start ${service} || true
 	echo "${package}:Installed"
 }
 

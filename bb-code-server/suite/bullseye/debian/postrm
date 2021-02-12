@@ -2,6 +2,13 @@
 
 set -e
 
+package="bb-code-server"
+
+# drop the temporary mask from prerm
+if [ -d /run/systemd/system ] && [ "$1" = remove ]; then
+	systemctl unmask --runtime ${package}.service || true
+fi
+
 #DEBHELPER#
 
 exit 0
