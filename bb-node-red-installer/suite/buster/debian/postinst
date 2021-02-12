@@ -25,6 +25,9 @@ groupadd gpio --system || true
 echo "Updating ${pkg_user} user to group gpio"
 usermod -a -G gpio ${pkg_user}
 
+echo "Updating ${pkg_user} user to group dialout"
+usermod -a -G dialout ${pkg_user}
+
 main_install () {
 	if [ -d /etc/avahi/services/ ] ; then
 		#Annouce http server via DNS Sevice Discovery
