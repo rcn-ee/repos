@@ -4,14 +4,14 @@
 
 set -e
 
-package="bb-code-server"
+service="bb-code-server"
 
 # avoid cancelling of "stop" via socket or D-Bus activation
 if [ -d /run/systemd/system ] && [ "$1" = remove ]; then
-	systemctl mask --runtime ${package}.service || true
+	systemctl mask --runtime ${service}.service || true
 	# stop ${service}.service manually since invoke-rc.d currently doesn't
 	# deal with masked services (see Bug #717109)
-	systemctl stop ${package}.service || true
+	systemctl stop ${service}.service || true
 fi
 
 # dh_installdeb will replace this with shell code automatically
