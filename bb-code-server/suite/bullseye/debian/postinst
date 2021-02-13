@@ -8,8 +8,10 @@ package="bb-code-server"
 service="bb-code-server"
 
 main_install () {
-	systemctl enable ${service}.socket || true
-	systemctl start ${service} || true
+	systemctl disable ${service}.socket || true
+	systemctl disable ${service} || true
+	#systemctl enable ${service}.socket || true
+	#systemctl start ${service} || true
 	echo "${package}:Installed"
 }
 

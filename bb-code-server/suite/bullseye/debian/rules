@@ -42,7 +42,9 @@ override_dh_auto_configure:
 	echo "*************************************************************"
 	$(node_bin) $(npm_bin) --version
 	echo "*************************************************************"
-	/usr/bin/python2 --version
+	$(node_bin) $(npm_bin) config set python python2
+	echo "*************************************************************"
+	/usr/bin/python3 --version
 	env | grep PATH
 	echo "*************************************************************"
 	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /usr/local/ yarn@$(yarn_version)
