@@ -17,7 +17,7 @@ nodejs_version=v10.23.3
 #nodejs_version=v12.20.2
 
 node_red_version=1.2.9
-node_red_dashboard_version=2.28.0
+node_red_dashboard_version=2.28.1
 node_red_node_serialport_version=0.11.1
 
 node_red_contrib_gpio=0.51.0
@@ -48,7 +48,9 @@ override_dh_auto_configure:
 	echo "*************************************************************"
 	$(node_bin) $(npm_bin) --version
 	echo "*************************************************************"
-	/usr/bin/python2 --version
+	$(node_bin) $(npm_bin) config set python python3
+	echo "*************************************************************"
+	/usr/bin/python3 --version
 	env | grep PATH
 	echo "*************************************************************"
 	echo "node-red"
