@@ -1,0 +1,24 @@
+From: Susant Sahani <ssahani@gmail.com>
+Date: Tue, 14 May 2019 11:45:23 +0200
+Subject: networkd: do not generate MAC for bridge device.
+
+closes https://github.com/systemd/systemd/issues/12558
+
+(cherry picked from commit deb2cfa4c6885d448eb1f17e5ef1b139106b7e86)
+---
+ src/network/netdev/netdev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/network/netdev/netdev.c b/src/network/netdev/netdev.c
+index ecd6cf4..6ef1631 100644
+--- a/src/network/netdev/netdev.c
++++ b/src/network/netdev/netdev.c
+@@ -720,7 +720,7 @@ int netdev_load_one(Manager *manager, const char *filename) {
+         if (!netdev->filename)
+                 return log_oom();
+ 
+-        if (!netdev->mac && netdev->kind != NETDEV_KIND_VLAN) {
++        if (!netdev->mac && !IN_SET(netdev->kind, NETDEV_KIND_VLAN, NETDEV_KIND_BRIDGE)) {
+                 r = netdev_get_mac(netdev->ifname, &netdev->mac);
+                 if (r < 0)
+                         return log_error_errno(r, "Failed to generate predictable MAC address for %s: %m", netdev->ifname);

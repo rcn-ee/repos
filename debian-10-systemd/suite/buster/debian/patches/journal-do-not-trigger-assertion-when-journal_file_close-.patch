@@ -1,0 +1,46 @@
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Tue, 28 May 2019 12:40:17 +0900
+Subject: journal: do not trigger assertion when journal_file_close() get NULL
+
+We generally expect destructors to not complain if a NULL argument is passed.
+
+Closes #12400.
+
+(cherry picked from commit c377a6f3ad3d9bed4ce7e873e8e9ec6b1650c57d)
+---
+ src/journal/journal-file.c    | 3 ++-
+ src/journal/journald-server.c | 7 ++-----
+ 2 files changed, 4 insertions(+), 6 deletions(-)
+
+diff --git a/src/journal/journal-file.c b/src/journal/journal-file.c
+index 56827f9..04cf1ef 100644
+--- a/src/journal/journal-file.c
++++ b/src/journal/journal-file.c
+@@ -335,7 +335,8 @@ bool journal_file_is_offlining(JournalFile *f) {
+ }
+ 
+ JournalFile* journal_file_close(JournalFile *f) {
+-        assert(f);
++        if (!f)
++                return NULL;
+ 
+ #if HAVE_GCRYPT
+         /* Write the final tag */
+diff --git a/src/journal/journald-server.c b/src/journal/journald-server.c
+index 2a960eb..ba0b35d 100644
+--- a/src/journal/journald-server.c
++++ b/src/journal/journald-server.c
+@@ -2037,11 +2037,8 @@ void server_done(Server *s) {
+ 
+         client_context_flush_all(s);
+ 
+-        if (s->system_journal)
+-                (void) journal_file_close(s->system_journal);
+-
+-        if (s->runtime_journal)
+-                (void) journal_file_close(s->runtime_journal);
++        (void) journal_file_close(s->system_journal);
++        (void) journal_file_close(s->runtime_journal);
+ 
+         ordered_hashmap_free_with_destructor(s->user_journals, journal_file_close);
+ 

@@ -1,0 +1,87 @@
+From: =?utf-8?q?Zbigniew_J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Thu, 9 Jul 2020 23:15:47 +0200
+Subject: basic/cap-list: parse/print numerical capabilities
+
+We would refuse to print capabilities which were didn't have a name
+for. The kernel adds new capabilities from time to time, most recently
+cap_bpf. 'systmectl show -p CapabilityBoundingSet ...' would fail with
+"Failed to parse bus message: Invalid argument" because
+capability_set_to_string_alloc() would fail with -EINVAL. So let's
+print such capabilities in hexadecimal:
+
+CapabilityBoundingSet=cap_chown cap_dac_override cap_dac_read_search
+  cap_fowner cap_fsetid cap_kill cap_setgid cap_setuid cap_setpcap
+  cap_linux_immutable cap_net_bind_service cap_net_broadcast cap_net_admin
+  cap_net_raw cap_ipc_lock cap_ipc_owner 0x10 0x11 0x12 0x13 0x14 0x15 0x16
+  0x17 0x18 0x19 0x1a ...
+
+For symmetry, also allow capabilities that we don't know to be specified.
+
+Fixes https://bugzilla.redhat.com/show_bug.cgi?id=1853736.
+
+(cherry picked from commit 417770f3033c426ca848b158d0bf057cd8ad1329)
+---
+ src/basic/cap-list.c     | 10 +++++++---
+ src/test/test-cap-list.c |  4 +++-
+ 2 files changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/src/basic/cap-list.c b/src/basic/cap-list.c
+index 29a17d9..b72b037 100644
+--- a/src/basic/cap-list.c
++++ b/src/basic/cap-list.c
+@@ -10,6 +10,7 @@
+ #include "macro.h"
+ #include "missing.h"
+ #include "parse-util.h"
++#include "stdio-util.h"
+ #include "util.h"
+ 
+ static const struct capability_name* lookup_capability(register const char *str, register GPERF_LEN_TYPE len);
+@@ -37,7 +38,7 @@ int capability_from_name(const char *name) {
+         /* Try to parse numeric capability */
+         r = safe_atoi(name, &i);
+         if (r >= 0) {
+-                if (i >= 0 && (size_t) i < ELEMENTSOF(capability_names))
++                if (i >= 0 && i < 64)
+                         return i;
+                 else
+                         return -EINVAL;
+@@ -65,11 +66,14 @@ int capability_set_to_string_alloc(uint64_t set, char **s) {
+         for (i = 0; i < cap_last_cap(); i++)
+                 if (set & (UINT64_C(1) << i)) {
+                         const char *p;
++                        char buf[2 + 16 + 1];
+                         size_t add;
+ 
+                         p = capability_to_name(i);
+-                        if (!p)
+-                                return -EINVAL;
++                        if (!p) {
++                                xsprintf(buf, "0x%lx", i);
++                                p = buf;
++                        }
+ 
+                         add = strlen(p);
+ 
+diff --git a/src/test/test-cap-list.c b/src/test/test-cap-list.c
+index de5fa72..84bbb7b 100644
+--- a/src/test/test-cap-list.c
++++ b/src/test/test-cap-list.c
+@@ -30,6 +30,8 @@ static void test_cap_list(void) {
+         assert_se(capability_from_name("cAp_aUdIt_rEAd") == CAP_AUDIT_READ);
+         assert_se(capability_from_name("0") == 0);
+         assert_se(capability_from_name("15") == 15);
++        assert_se(capability_from_name("63") == 63);
++        assert_se(capability_from_name("64") == -EINVAL);
+         assert_se(capability_from_name("-1") == -EINVAL);
+ 
+         for (i = 0; i < capability_list_length(); i++) {
+@@ -64,7 +66,7 @@ static void test_capability_set_one(uint64_t c, const char *t) {
+ 
+         free(t1);
+         assert_se(t1 = strjoin("'cap_chown cap_dac_override' \"cap_setgid cap_setuid\"", t,
+-                               " hogehoge foobar 12345 3.14 -3 ", t));
++                               " hogehoge foobar 18446744073709551616 3.14 -3 ", t));
+         assert_se(capability_set_from_string(t1, &c1) == 0);
+         assert_se(c1 == c_masked);
+ }

@@ -1,8 +1,33 @@
-systemd (241-7~deb10u4rcnee0~buster+20200509) buster; urgency=low
+systemd (241-7~deb10u6rcnee0~buster+20210216) buster; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Sat, 09 May 2020 12:08:14 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Tue, 16 Feb 2021 17:09:08 -0600
+
+systemd (241-7~deb10u6) buster; urgency=medium
+
+  * journal: do not trigger assertion when journal_file_close() get NULL
+    (Closes: #975561)
+  * test-bpf: skip test when run inside containers.
+    The test reliably fails inside LXC and Docker when run on a new enough
+    kernel. It's unclear whether this is a kernel, LXC/Docker or systemd
+    issue and apparently there is no real interest to get this fixed, so
+    let's skip this test.
+  * autopkgtest: mark networkd-test.py as flaky.
+    See https://github.com/systemd/systemd/issues/18357
+    and https://github.com/systemd/systemd/issues/18196
+
+ -- Michael Biebl <biebl@debian.org>  Fri, 29 Jan 2021 15:16:06 +0100
+
+systemd (241-7~deb10u5) buster; urgency=medium
+
+  * basic/cap-list: parse/print numerical capabilities (Closes: #964926)
+  * missing: add new Linux capabilities.
+    Linux kernel v5.8 adds two new capabilities. Make sure we can recognize
+    them even when built with an older kernel.
+  * networkd: do not generate MAC for bridge device (Closes: #963488)
+
+ -- Michael Biebl <biebl@debian.org>  Sat, 24 Oct 2020 20:44:48 +0200
 
 systemd (241-7~deb10u4) buster; urgency=medium
 

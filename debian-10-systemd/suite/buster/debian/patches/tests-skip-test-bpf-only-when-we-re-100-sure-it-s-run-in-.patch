@@ -1,0 +1,25 @@
+From: Evgeny Vereshchagin <evvers@ya.ru>
+Date: Thu, 30 May 2019 03:29:50 +0200
+Subject: tests: skip test-bpf only when we're 100% sure it's run in
+ containers
+
+This is just a follow-up to https://github.com/systemd/systemd/pull/12617.
+
+(cherry picked from commit 6bd1457afe396864cc4b9884157a6126027ed85e)
+---
+ src/test/test-bpf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/test/test-bpf.c b/src/test/test-bpf.c
+index eb1d8d7..9252c60 100644
+--- a/src/test/test-bpf.c
++++ b/src/test/test-bpf.c
+@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
+ 
+         test_setup_logging(LOG_DEBUG);
+ 
+-        if (detect_container())
++        if (detect_container() > 0)
+                 return log_tests_skipped("test-bpf fails inside LXC and Docker containers: https://github.com/systemd/systemd/issues/9666");
+ 
+         assert_se(getrlimit(RLIMIT_MEMLOCK, &rl) >= 0);

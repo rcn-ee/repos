@@ -1,0 +1,41 @@
+From: Michael Biebl <biebl@debian.org>
+Date: Sun, 19 May 2019 20:57:07 +0200
+Subject: test-bpf: skip test when run inside containers
+
+The test reliably fails inside LXC and Docker when run on a new enough
+kernel. It's unclear whether this is a kernel, LXC/Docker or systemd
+issue and apparently there is no real interest to get this fixed, so
+let's skip this test.
+As this also covers Travis CI, there is no need for this additional
+check anymore.
+
+See https://github.com/systemd/systemd/issues/9666
+
+(cherry picked from commit 98a3c188a1511caae422b2c891f3cc016824eb81)
+---
+ src/test/test-bpf.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/src/test/test-bpf.c b/src/test/test-bpf.c
+index cd8d68f..eb1d8d7 100644
+--- a/src/test/test-bpf.c
++++ b/src/test/test-bpf.c
+@@ -14,6 +14,7 @@
+ #include "test-helper.h"
+ #include "tests.h"
+ #include "unit.h"
++#include "virt.h"
+ 
+ /* We use the same limit here that PID 1 bumps RLIMIT_MEMLOCK to if it can */
+ #define CAN_MEMLOCK_SIZE (64U*1024U*1024U)
+@@ -56,8 +57,8 @@ int main(int argc, char *argv[]) {
+ 
+         test_setup_logging(LOG_DEBUG);
+ 
+-        if (is_run_on_travis_ci())
+-                return log_tests_skipped("test-bpf fails on Travis CI: https://github.com/systemd/systemd/issues/9666");
++        if (detect_container())
++                return log_tests_skipped("test-bpf fails inside LXC and Docker containers: https://github.com/systemd/systemd/issues/9666");
+ 
+         assert_se(getrlimit(RLIMIT_MEMLOCK, &rl) >= 0);
+         rl.rlim_cur = rl.rlim_max = MAX3(rl.rlim_cur, rl.rlim_max, CAN_MEMLOCK_SIZE);
