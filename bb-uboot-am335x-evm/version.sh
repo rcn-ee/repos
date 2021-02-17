@@ -4,7 +4,7 @@
 
 package_name="bb-uboot-am335x-evm"
 debian_pkg_name="${package_name}"
-package_version="2020.01.20210217.1"
+package_version="2020.01.20210217.2"
 package_source=""
 src_dir=""
 
