@@ -2,9 +2,9 @@
 
 #https://github.com/beagleboard/u-boot/commits/v2021.01-bb.org-am335x-am57xx
 
-package_name="bb-uboot-am335x-evm"
+package_name="bb-u-boot-am335x-evm"
 debian_pkg_name="${package_name}"
-package_version="2020.01.20210217.6"
+package_version="2020.01.20210217.7"
 package_source=""
 src_dir=""
 
