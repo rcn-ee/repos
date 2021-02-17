@@ -10,6 +10,7 @@ override_dh_strip:
 override_dh_auto_configure:
 	git clone -b v2021.01-bb.org-am335x-am57xx https://github.com/beagleboard/u-boot --depth=1
 	cd ./u-boot/
+	ls -lha ./
 	make ARCH=arm CROSS_COMPILE= am335x_evm_defconfig
 	make ARCH=arm CROSS_COMPILE=
 	ls -lha ./
