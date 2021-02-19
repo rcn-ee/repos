@@ -1,0 +1,21 @@
+# From: https://github.com/s-light/pocketbeagle_python_tests/blob/master/80-eeprom-noroot.rules
+#
+# /etc/udev/rules.d/80-eeprom-noroot.rules
+#
+# allow i2c group to read of eeprom
+# based on:
+# https://martin-jones.com/2016/08/12/making-beaglebone-black-serial-number-available-to-user-applications/
+# extended by: Stefan Krüger
+#
+# allows both locations to be read by the i2c group:
+# /sys/bus/i2c/devices/0-0050/eeprom
+# /sys/bus/nvmem/devices/0-00500/nvmem
+#
+# check result:
+# ls -l /sys/bus/i2c/devices/0-0050/eeprom /sys/bus/nvmem/devices/0-00500/nvmem
+# both should be readable. similar to this
+# -rw-r----- 1 root i2c 0 XXXXXXXXX
+#
+
+SUBSYSTEM=="i2c", DEVPATH=="*0-0050", RUN+="/bin/chown root:gpio /sys$env{DEVPATH}/eeprom", RUN+="/bin/chmod 0640 /sys$env{DEVPATH}/eeprom"
+SUBSYSTEM=="nvmem", DEVPATH=="*0-00500", RUN+="/bin/chown root:gpio /sys$env{DEVPATH}/nvmem", RUN+="/bin/chmod 0640 /sys$env{DEVPATH}/nvmem"

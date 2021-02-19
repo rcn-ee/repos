@@ -1,0 +1,6 @@
+# /etc/udev/rules.d/80-i2c-noroot.rules
+#
+SUBSYSTEM=="i2c", GROUP="i2c"
+DRIVER=="*", ACTION=="add", \
+	RUN+="/bin/chgrp -R gpio '/sys%p'", \
+	RUN+="/bin/chmod -R g=u '/sys%p'"                                                                                                                                    

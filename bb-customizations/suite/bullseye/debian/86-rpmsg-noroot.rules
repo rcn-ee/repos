@@ -1,0 +1,9 @@
+# /etc/udev/rules.d/86-remoteproc-noroot.rules
+#
+# ReWritten by: Mark A. Yoder
+# Corrects sys rpmsg_pru permissions on the BB so non-root users in the remoteproc 
+# group can write to /dev/rpmsg* without sudo'ing
+#
+SUBSYSTEM=="rpmsg_pru", ACTION=="add", \
+        RUN+="/bin/chgrp -R gpio '/dev/$name'", \
+        RUN+="/bin/chmod -R g=u '/dev/$name'"

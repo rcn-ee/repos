@@ -15,6 +15,7 @@ copy_all () {
 	cp -v ./src${wdir}${wfile} ./suite/focal/debian/
 	cp -v ./src${wdir}${wfile} ./suite/stretch/debian/
 	cp -v ./src${wdir}${wfile} ./suite/buster/debian/
+	cp -v ./src${wdir}${wfile} ./suite/bullseye/debian/
 }
 
 dl_src

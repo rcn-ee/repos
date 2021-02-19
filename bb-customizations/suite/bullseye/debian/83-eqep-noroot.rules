@@ -1,0 +1,9 @@
+# /etc/udev/rules.d/83-eqep-noroot.rules
+#
+# ReWritten by: Matthijs van Duin
+# Corrects sys eQEP permissions on the Beaglebone so non-root users in the eqep
+# group can access the Quadrature Encoder Pulse modules
+#
+SUBSYSTEM=="platform", DRIVER=="eqep", ACTION=="add", \
+        RUN+="/bin/chgrp -R gpio '/sys%p'", \
+        RUN+="/bin/chmod -R g=u '/sys%p'"

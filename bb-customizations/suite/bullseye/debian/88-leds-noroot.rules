@@ -1,0 +1,8 @@
+# /etc/udev/rules.d/88-leds-noroot.rules
+#
+# ReWritten by: Matthijs van Duin
+# Corrects sys GPIO permissions on the BB so non-root users in the gpio group can manipulate bits
+#
+SUBSYSTEM=="leds", ACTION=="add|change", \
+        RUN+="/bin/chgrp -R gpio '/sys%p'", \
+        RUN+="/bin/chmod -R g=u '/sys%p'"

@@ -1,0 +1,6 @@
+# /etc/udev/rules.d/87-iio-noroot.rules
+#
+KERNEL=="iio:device[0-9]*", SUBSYSTEM=="iio", GROUP="iio"
+DRIVER=="*", ACTION=="add", \
+        RUN+="/bin/chgrp -R gpio '/sys%p'", \
+        RUN+="/bin/chmod -R g=u '/sys%p'"
