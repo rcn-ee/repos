@@ -18,6 +18,8 @@ yarn_version=1.22.5
 
 code_server_version=3.9.0
 
+#/opt/code-server/app/bin/code-server --auth none --user-data-dir $(project_dir)/data/ --extensions-dir $(project_dir)/extensions/ --config $(project_dir)/config/config.yaml
+
 override_dh_strip:
 	# Just disable for now...
 
@@ -67,10 +69,8 @@ override_dh_auto_configure:
 	yarn package
 	ls -lha ./release-packages/
 	echo "*************************************************************"
-	echo "move $(project_dir)/app/ to ./tmp$(project_dir)/app/"
-	mkdir -p ./tmp$(project_dir)/app/
-	tar xf ./release-packages/code-server-$(code_server_version)-linux-armhf.tar.gz -C ./tmp$(project_dir)/app/ --strip-components 1
-	mkdir -p ./tmp$(project_dir)/examples/ ; mv ./debian/bb-code-server ./tmp$(project_dir)/examples/
+	tar xf ./release-packages/code-server-$(code_server_version)-linux-armhf.tar.gz -C $(project_dir)/app/ --strip-components 1
+	/opt/code-server/app/bin/code-server --extensions-dir $(project_dir)/extensions/ --install-extension formulahendry.code-runner
 
 %:
 	dh $@
