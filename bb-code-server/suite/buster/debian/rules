@@ -71,6 +71,12 @@ override_dh_auto_configure:
 	echo "*************************************************************"
 	tar xf ./release-packages/code-server-$(code_server_version)-linux-armhf.tar.gz -C $(project_dir)/app/ --strip-components 1
 	/opt/code-server/app/bin/code-server --extensions-dir $(project_dir)/extensions/ --install-extension formulahendry.code-runner
+	echo "move $(project_dir)/app/ to ./tmp$(project_dir)/app/"
+	mkdir -p ./tmp$(project_dir)/app/
+	mv $(project_dir)/app/ ./tmp$(project_dir)/app/
+	echo "move $(project_dir)/extensions/ to ./tmp$(project_dir)/extensions/"
+	mkdir -p ./tmp$(project_dir)/extensions/
+	mv $(project_dir)/extensions/ ./tmp$(project_dir)/extensions/
 
 %:
 	dh $@
