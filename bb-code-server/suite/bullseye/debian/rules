@@ -77,6 +77,7 @@ override_dh_auto_configure:
 	echo "move $(project_dir)/extensions/ to ./tmp$(project_dir)/extensions/"
 	mkdir -p ./tmp$(project_dir)/extensions/
 	mv $(project_dir)/extensions/ ./tmp$(project_dir)/extensions/
+	mkdir -p ./tmp$(project_dir)/examples/ ; mv ./debian/bb-code-server ./tmp$(project_dir)/examples/
 
 %:
 	dh $@
