@@ -6,21 +6,22 @@ set -e
 
 package="bb-code-server"
 service="bb-code-server"
+wdir="/var/lib/bb-code-server"
 
 main_install () {
-	mkdir -p /var/lib/bb-code-server/config/
-	mkdir -p /var/lib/bb-code-server/extensions/
+	mkdir -p ${wdir}/config/
+	mkdir -p ${wdir}/extensions/
 
-	/opt/bb-code-server/app/bin/code-server --config /var/lib/bb-code-server/config/config.yaml --extensions-dir /var/lib/code-server/extensions/ --list-extensions
-	/opt/bb-code-server/app/bin/code-server --config /var/lib/bb-code-server/config/config.yaml --extensions-dir /var/lib/code-server/extensions/ --install-extension formulahendry.code-runner
-	/opt/bb-code-server/app/bin/code-server --config /var/lib/bb-code-server/config/config.yaml --extensions-dir /var/lib/code-server/extensions/ --install-extension donjayamanne.githistory
-	/opt/bb-code-server/app/bin/code-server --config /var/lib/bb-code-server/config/config.yaml --extensions-dir /var/lib/code-server/extensions/ --list-extensions
+	/opt/bb-code-server/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --list-extensions
+	/opt/bb-code-server/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --install-extension formulahendry.code-runner --force
+	/opt/bb-code-server/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --install-extension donjayamanne.githistory --force
+	/opt/bb-code-server/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --list-extensions
 
-	chown -R 1000:1000 /var/lib/bb-code-server/config/
-	chown -R 1000:1000 /var/lib/bb-code-server/extensions/
+	chown -R 1000:1000 ${wdir}/config/
+	chown -R 1000:1000 ${wdir}/extensions/
 
 	echo "#!/bin/bash" > /opt/code-server/start.sh
-	echo "/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config /var/lib/bb-code-server/config/config.yaml --extensions-dir /var/lib/bb-code-server/extensions/ --bind-addr 0.0.0.0:3000" >> /opt/bb-code-server/start.sh
+	echo "/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --bind-addr 0.0.0.0:3000" >> /opt/bb-code-server/start.sh
 	chmod +x /opt/bb-code-server/start.sh
 
 	systemctl disable ${service}.socket || true
