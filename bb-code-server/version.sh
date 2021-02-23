@@ -15,7 +15,7 @@ debian_version="${package_version}-0rcnee7"
 debian_untar=""
 debian_patch=""
 
-debian_dl_1="https://nodejs.org/dist/latest-v12.x/node-v12.20.2-linux-armv7l.tar.xz"
+debian_dl_1="https://nodejs.org/dist/latest-v12.x/node-v12.21.0-linux-armv7l.tar.xz"
 
 buster_version="~buster+20210223"
 bullseye_version="~bullseye+20210223"
