@@ -4,7 +4,7 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
-project_dir=/opt/code-server
+project_dir=/opt/bb-code-server
 
 export NODE_PATH := $(project_dir)/deps/lib/node_modules
 export PATH := $(project_dir)/deps/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
@@ -13,12 +13,10 @@ node_bin=$(project_dir)/deps/bin/node
 npm_bin=$(project_dir)/deps/bin/npm
 yarn_bin=/usr/local/bin/yarn
 
-nodejs_version=v12.20.2
+nodejs_version=v12.21.0
 yarn_version=1.22.5
 
 code_server_version=3.9.0
-
-#/opt/code-server/app/bin/code-server --auth none --user-data-dir $(project_dir)/data/ --extensions-dir $(project_dir)/extensions/ --config $(project_dir)/config/config.yaml
 
 override_dh_strip:
 	# Just disable for now...
@@ -70,12 +68,9 @@ override_dh_auto_configure:
 	ls -lha ./release-packages/
 	echo "*************************************************************"
 	tar xf ./release-packages/code-server-$(code_server_version)-linux-armhf.tar.gz -C $(project_dir)/app/ --strip-components 1
-	/opt/code-server/app/bin/code-server --extensions-dir $(project_dir)/extensions/ --install-extension formulahendry.code-runner
 	echo "move $(project_dir)/app/ to ./tmp$(project_dir)/"
 	mkdir -p ./tmp$(project_dir)/
 	mv $(project_dir)/app/ ./tmp$(project_dir)/
-	echo "move $(project_dir)/extensions/ to ./tmp$(project_dir)/"
-	mv $(project_dir)/extensions/ ./tmp$(project_dir)/
 	mkdir -p ./tmp$(project_dir)/examples/ ; mv ./debian/bb-code-server ./tmp$(project_dir)/examples/
 
 %:
