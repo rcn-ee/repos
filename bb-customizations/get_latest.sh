@@ -36,6 +36,7 @@ wfile="86-remoteproc-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 wfile="86-rpmsg-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 wfile="87-iio-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 wfile="88-leds-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
+wfile="89-uio-noroot.rules" ; wdir="/etc/udev/rules.d/" ; copy_all
 
 wfile="generic-board-startup.service" ; wdir="/lib/systemd/system/" ; copy_all
 
