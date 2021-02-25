@@ -7,6 +7,7 @@ set -e
 package="bb-code-server"
 service="bb-code-server"
 wdir="/var/lib/bb-code-server"
+wfile="/opt/bb-code-server/start.sh"
 
 main_install () {
 	mkdir -p ${wdir}/config/
@@ -20,9 +21,9 @@ main_install () {
 	chown -R 1000:1000 ${wdir}/config/
 	chown -R 1000:1000 ${wdir}/extensions/
 
-	echo "#!/bin/bash" > /opt/code-server/start.sh
-	echo "/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --bind-addr 0.0.0.0:3000" >> /opt/bb-code-server/start.sh
-	chmod +x /opt/bb-code-server/start.sh
+	echo "#!/bin/bash" > ${wfile}
+	echo "/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --bind-addr 0.0.0.0:3000" >> ${wfile}
+	chmod +x ${wfile}
 
 	systemctl disable ${service}.socket || true
 	systemctl disable ${service} || true
