@@ -16,8 +16,9 @@ main_install () {
 	/opt/bb-code-server/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --list-extensions
 	/opt/bb-code-server/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --install-extension formulahendry.code-runner --force
 	/opt/bb-code-server/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --install-extension donjayamanne.githistory --force
-	/opt/bb-code-server/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --install-extension ms-vscode.cpptools --force
-	/opt/bb-code-server/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --install-extension platformio.platformio-ide --force
+#platformio.platformio-ide doesn't seem to actually work in the vscode browser..
+#	/opt/bb-code-server/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --install-extension ms-vscode.cpptools --force
+#	/opt/bb-code-server/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --install-extension platformio.platformio-ide --force
 	/opt/bb-code-server/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --list-extensions
 
 	chown -R 1000:1000 ${wdir}/config/
