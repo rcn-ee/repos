@@ -15,10 +15,14 @@ main_install () {
 
 	/opt/bb-code-server/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --list-extensions
 
+	#Git
 	/opt/bb-code-server/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --install-extension donjayamanne.githistory --force
 
+	#Code Runner
 	/opt/bb-code-server/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --install-extension formulahendry.code-runner --force
 
+	#Python
+	/opt/bb-code-server/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --install-extension ms-toolsai.jupyter --force
 	/opt/bb-code-server/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --install-extension ms-python.python --force
 
 	#bug: https://github.com/cdr/code-server/issues/1448
