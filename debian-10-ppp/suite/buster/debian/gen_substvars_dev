@@ -1,0 +1,17 @@
+#!/bin/sh
+
+if [ $# -ne 2 ]; then
+	echo "Usage: $0 <upstream> <abi>" >&2
+	exit 1
+fi
+
+UPSTREAM=$1
+ABI=$2
+ABI_NEXT=$(($ABI + 1))
+PKG="ppp"
+
+cat <<EOF
+${PKG}:Depends=${PKG} (>= ${UPSTREAM}-${ABI}+~), ${PKG} (<< ${UPSTREAM}-${ABI_NEXT}~)
+${PKG}:Breaks=${PKG} (<< ${UPSTREAM}-${ABI}+~), ${PKG} (>= ${UPSTREAM}-${ABI_NEXT}~)
+${PKG}:PluginDir=/usr/lib/pppd/${UPSTREAM}
+EOF

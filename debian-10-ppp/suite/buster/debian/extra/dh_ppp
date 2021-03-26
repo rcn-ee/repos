@@ -1,0 +1,194 @@
+#!/usr/bin/perl -w
+
+=head1 NAME
+
+dh_ppp - calculate ppp dependencies
+
+=cut
+
+use strict;
+use warnings;
+use Debian::Debhelper::Dh_Lib;
+use Dpkg::Shlibs::Objdump;
+use File::Find;
+
+=head1 SYNOPSIS
+
+B<dh_ppp> [S<I<debhelper options>>] [B<--breaks>] [B<--force>] [B<--plugin-dir>]
+
+=head1 DESCRIPTION
+
+B<dh_ppp> is a debhelper program that adds appropriate ppp dependencies on
+packages that build pppd plugins.
+
+By default, some entries are added to B<misc:Depends> that ensure that
+packages which contain plugins that are loaded into pppd depend on an
+appropriate version of the ppp package.
+
+You may prefer to use a B<Breaks> relationship instead, for example if your
+package supplies a pppd plugin but does not require it for normal operation. In
+that case you should supply the B<--breaks> option and B<misc:Breaks> will be
+populated instead of B<misc:Depends>.
+
+Substvars entries are only added if a pppd plugin is detected in the build
+products, unless B<--force> is specified. Plugins are detected by searching a
+package's build products for libraries with a symbol named B<plugin_init>.
+
+A warning is emitted if a plugin is found that does not also contain a
+B<pppd_version> symbol.
+
+Please note there is a B<dh> addon named B<ppp> which can be used to
+automatically invoke B<dh_ppp> for you.
+
+=head1 FILES
+
+=over 4
+
+=item /usr/share/ppp-dev/substvars
+
+Template substitution variables. The values in this file are used when
+populating the B<misc:Depends> or B<misc:Breaks> substition variables, or they
+may be manually copied into a package's substvars if one wishes not to use
+B<dh_ppp>.
+
+=back
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<--breaks>
+
+Rather than populating B<misc:Depends> to ensure an appropriate version of
+B<ppp> is used, populate B<misc:Breaks> such that a inappropriate version of
+B<ppp> may not be used.
+
+=item B<--force>
+
+Do not try to detect pppd plugins in the package, and always assume that a
+plugin is present. This will cause B<misc:Depends> (or B<misc:Breaks>) to
+always be populated.
+
+=item B<--plugin-dir>
+
+Simply outputs the path to the pppd plugins directory for the current ABI
+version. When this flag is specified, B<dh_ppp> makes no attempt to detect any
+plugins nor does it update any substitution variables.
+
+=back
+
+=head1 NOTES
+
+Note that this command is not idempotent. L<dh_prep(1)> should be called
+between invocations of this command (with the same arguments). Otherwise, it
+may cause multiple instances of the same text to be added to the substition
+variables.
+
+Note that B<dh_ppp> should be run before B<dh_gencontrol>. The B<ppp> sequence
+addon for B<dh> does the right thing, this note is only relevant when you are
+calling B<dh_ppp> manually.
+
+=cut
+
+init(options => {
+	"breaks" => \$dh{BREAKS},
+	"force" => \$dh{FORCE},
+	"plugin-dir" => \$dh{PLUGIN_DIR},
+});
+
+sub detect_plugins {
+	my $package = shift;
+	my $tmpdir = tmpdir($package);
+	my @shared_objects;
+	my @plugins;
+
+	find({
+		wanted => sub {
+			my $name = $File::Find::name;
+			return unless -f $name;
+			return unless $name =~ m,^$tmpdir/usr/lib/.*\.so$,;
+			push @shared_objects, $name;
+		},
+		no_chdir => 1,
+	}, $tmpdir);
+
+	my $od = new Dpkg::Shlibs::Objdump();
+
+	for my $so (@shared_objects) {
+		verbose_print("Scanning $so for symbol information");
+
+		my $objid = $od->analyze($so);
+		unless (defined($objid) && $objid) {
+			warning("Dpkg::Shlibs::Objdump couldn't parse $so");
+			next;
+		}
+
+		my $object = $od->get_object($objid);
+
+		my $init = $object->get_symbol("plugin_init");
+		if (!defined($init)) {
+			verbose_print("File $so does not look like a pppd " .
+				"plugin. Ignoring.");
+			next;
+		}
+
+		push @plugins, $so;
+
+		my $ver = $object->get_symbol("pppd_version");
+		if (!defined($ver)) {
+			warning("File $so looks like a pppd plugin but " .
+				"lacks a pppd_version symbol!");
+		}
+	}
+
+	return @plugins;
+}
+
+my %substvars;
+sub load_substvars {
+	return if %substvars;
+
+	open(VARS, '<', '/usr/share/ppp-dev/substvars') or
+		error("Failed to load template substvars");
+	while (<VARS>) {
+		chomp;
+		my ($var, $value) = split /=/, $_, 2;
+		my @pkgs = split /, /, $value;
+		$substvars{$var} = \@pkgs;
+	}
+	close(VARS);
+
+	for my $var (qw(ppp:Depends ppp:Breaks)) {
+		error("$var not defined in substvars template")
+			unless defined($substvars{$var});
+	}
+}
+
+if ($dh{PLUGIN_DIR}) {
+	inhibit_log();
+	load_substvars();
+
+	print join(', ', @{$substvars{'ppp:PluginDir'}}) . "\n";
+	exit 0;
+}
+
+foreach my $package (@{$dh{DOPACKAGES}}) {
+	next unless $dh{FORCE} or detect_plugins($package);
+
+	load_substvars();
+
+	my $var = $dh{BREAKS} ? 'Breaks' : 'Depends';
+	for my $pkg (@{$substvars{"ppp:$var"}}) {
+		addsubstvar($package, "misc:$var", $pkg);
+	}
+}
+
+=head1 SEE ALSO
+
+L<debhelper(7)>
+
+=head1 AUTHORS
+
+Chris Boot <bootc@debian.org>
+
+=cut

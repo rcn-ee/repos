@@ -1,0 +1,54 @@
+README.Debian for ppp-dev
+=========================
+
+ppp-dev provides dh_ppp(1p), a debhelper(7) helper program that adds
+appropriate substitution variables for packages that build pppd plugins. This
+essentially adds the right incantations to a package's Depends or Breaks
+control file field(s).
+
+If you are using ppp-dev so that your package may build a plugin that is
+intended to be loaded into pppd, you should use one of the three provided
+mechanisms to generate correct Depends or Breaks.
+
+The Problem
+-----------
+
+pppd is a program that loads plugins into itself using dlopen(). Much like with
+shared libraries, plugins depend on a particular ABI within the host in order
+to interact with it. If this ABI changes, plugins built against the old ABI may
+break or misbehave. Unlike with shared libraries there is currently no standard
+way to track the ABI automatically, such as with symbols files and SONAMEs, so
+pppd must improvise. This allows us to ensure that dpkg/apt know about the
+change and the change can be tracked using standard Debian infrastructure
+tools.
+
+Debhelper Sequencer
+-------------------
+
+If your package that builds ppp plugins uses the debhelper(7) sequencer, you
+can simply add '--with ppp' to your "dh $@" line. This will cause dh_ppp(1p) to
+be automatically invoked for your package with default arguments.
+
+If you wish to provide additional arguments to dh_ppp(1p), you may override it
+in the standard way, for example::
+
+  override_dh_ppp:
+      dh_ppp --breaks
+
+Please see the dh_ppp(1p) man page for more information on its arguments and
+how it works.
+
+dh_ppp(1p) helper
+-----------------
+
+If you are not using the dh sequencer, you may invoke dh_ppp(1p) manually.
+Please see its man page for further information about its arguments and how it
+works.
+
+Raw substvars manipulation
+--------------------------
+
+If you don't wish to use either of the above mechanism, there are generated
+substvars in /usr/share/ppp-dev/substvars (in the ppp-dev package) that can be
+incorporated into your own debian/[package.]substvars file. Just use either the
+ppp:Depends or ppp:Breaks as you find most appropriate for your package.

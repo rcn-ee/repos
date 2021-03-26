@@ -1,0 +1,16 @@
+#!/bin/sh -e
+# Configure ppp for the target system
+# Note: netcfg takes care of general networking configuration files
+
+# We can only do this after ppp has been installed to ensure correct permissions
+apt-install ppp || true
+
+if [ ! -d /target/etc/ppp/peers ]; then
+	logger -t ppp-udeb "Error: directory /target/etc/ppp/peers does not exist"
+	logger -t ppp-udeb "There may have been an error installing ppp"
+	exit 1
+fi
+
+# We copy over already existing files, so permissions are preserved
+cp /etc/ppp/*-secrets /target/etc/ppp/
+cp /etc/ppp/peers/provider /target/etc/ppp/peers/

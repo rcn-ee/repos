@@ -1,0 +1,30 @@
+From 234edab99a6bb250cc9ecd384cca27b0c8b475ce Mon Sep 17 00:00:00 2001
+From: Sylvain Rochet <gradator@gradator.net>
+Date: Wed, 25 Mar 2015 00:25:18 +0100
+Subject: [PATCH 08/16] pppd: Fix ccp_options.mppe type
+
+This corrects the type of ccp_options.mppe; it is actually a bitfield of
+MPPE_OPT_* and not a boolean.
+
+Signed-off-by: Sylvain Rochet <gradator@gradator.net>
+Signed-off-by: Paul Mackerras <paulus@samba.org>
+---
+ pppd/ccp.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/pppd/ccp.h b/pppd/ccp.h
+index 6f4a2fee0a2c..76446db007c0 100644
+--- a/pppd/ccp.h
++++ b/pppd/ccp.h
+@@ -37,7 +37,7 @@ typedef struct ccp_options {
+     bool predictor_2;		/* do Predictor-2? */
+     bool deflate_correct;	/* use correct code for deflate? */
+     bool deflate_draft;		/* use draft RFC code for deflate? */
+-    bool mppe;			/* do MPPE? */
++    u_char mppe;		/* MPPE bitfield */
+     u_short bsd_bits;		/* # bits/code for BSD Compress */
+     u_short deflate_size;	/* lg(window size) for Deflate */
+     short method;		/* code for chosen compression method */
+-- 
+2.15.1
+

@@ -1,0 +1,106 @@
+README.source for ppp
+=====================
+
+This is a pretty standard 3.0 (quilt) format package, using debhelper 9. There
+are, however, some gotchas that people considring NMUs or other changes must
+take into account:
+
+- The package's version number must follow a particular format. See *Version
+  Number* below.
+
+- There is a symbols file used for tracking the pppd binary's ABI. See *Symbols
+  File* for more information. The build process is strict about checking the
+  ABI using the symbols file.
+
+- There are several packages that use ppp-dev to build plugins that may be
+  loaded into pppd. When adding patches you must be very careful about not
+  breaking ABI compatibility unnecessarily.
+
+- If you must break ABI compatibility without uploading a new upstream release,
+  you must bump the ABI tag. See *Version Number* below.
+
+- If you are uploading a new upstream release *or* changing the ABI tag in the
+  version number, you will effectively trigger a transition. A number of
+  depending packages will need to be rebuilt and the transition will need to be
+  managed properly.
+
+Version Number
+--------------
+
+Debian Policy §5.6.12 states that there are three parts to a version number of
+a package: epoch, upstream_version and debian_revision. For the ppp package the
+epoch is currently unused and the upstream_version matches the upstream ppp
+package version as you would expect. The debian_revision, however, is special.
+
+Upstream ppp packages cause deliberate ABI breaks with every minor release.
+This happens both because the default path which plugins are loaded from
+contains the pppd version number, and because plugins should contain a
+pppd_version string that matches the pppd version number (which pppd checks at
+plugin load). Patches added to ppp in Debian may also silently change the ABI
+that plugins expect (e.g. by changing function signatures or names, or changing
+structure elements), so we need some additional means to track this.
+
+In order to handle this in as graceful a way as possible, the debian_revision
+incorporates an ABI revision field. This field is used to generate Depends or
+Breaks entries for packages that build plugins for pppd, and must be present
+or the build will fail.
+
+There is currently no automatic tracking of the ABI, so manual care and
+attention is required when making changes.
+
+The version of the ppp package looks like::
+
+  2.4.7-1+1
+  +-+-+ | |
+    |   | +--> Usual debian revision field
+    |   +----> ABI version field
+    +--------> Usual upstream version field
+
+Essentially the debian_revision field is followed immediately by the ABI
+revision number, then a plus (+), then what would normally be included in the
+debian_revision in any other package.
+
+The ABI revision number must be an integer. Its value starts at one (1) and
+must be incremented if the ABI changes without the upstream_version changing.
+If the upstream_version field changes, the ABI version should be reset to 1.
+
+If you are uploading an NMU and are confident you are not changing the ABI,
+simply add your tag to the end of the version number as usual. The same applies
+for security/stable updates and backports, too.
+
+Symbols File
+------------
+
+In order to help keep track of the ABI offered to external plugins, this
+package uses a symbols file. This is very unconvential for an executable but is
+normally considered a requirement for shared libraries. The symbols file is not
+currently used beyond the ppp package itself (e.g. plugins have no way of using
+the symbols file to generate dependencies at the moment).
+
+This is consulted during the build process and if there are any changes in the
+symbols in the binary compared to the symbols file the build will fail. This is
+deliberate and helps to indicate that the ABI has changed and an ABI bump is
+probably required.
+
+Note that just because there are no changes compared to the symbol file this
+does not mean an ABI change has not happened: a patch may well change things
+that cannot be tracked using dpkg-gensymbols, for example a C struct may have
+members changed which would also change the ABI.
+
+The symbols file is generated using standard unmodified Debian tools. There are
+two changes required in order for this to work, though:
+
+1. The pppd binary is built with -Wl,-soname,pppd.so.$(VERSION) to add the
+   SONAME field to the ELF headers. This is done by patching the Makefile in
+   debian/patches/pppd-soname-hack.patch.
+
+2. dh_makeshlibs is overridden in debian/rules to force dpkg-gensymbols to
+   inspect pppd: it normally only looks at files ending ``.so``. The ``-c2``
+   option is also added to ensure that any added/removed symbols cause the
+   build to fail.
+
+If the build fails due to changed symbols, you will most likely need to update
+the symbols file and bump the ABI revision (see *Version Number*), thus leading
+to a transition and rebuilds of any packages that build ppp plugins.
+
+# vim: ft=rst

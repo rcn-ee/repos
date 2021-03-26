@@ -1,0 +1,1214 @@
+ppp (2.4.7-2+4.1+deb10u1rcnee0~buster+20210326) buster; urgency=low
+
+  * Rebuild for repos.rcn-ee.com
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Fri, 26 Mar 2021 13:53:50 -0500
+
+ppp (2.4.7-2+4.1+deb10u1) buster-security; urgency=high
+
+  * Non-maintainer upload by the Security Team.
+  * pppd: Fix bounds check in EAP code (CVE-2020-8597) (Closes: #950618)
+
+ -- Salvatore Bonaccorso <carnil@debian.org>  Thu, 20 Feb 2020 22:47:29 +0100
+
+ppp (2.4.7-2+4.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Apply upstream patch from
+    <https://github.com/paulusmack/ppp/commit/3c7b86229f7bd2600d74db14b1fe5b3896be3875>
+    to fix FTBFS with glibc 2.28. (Closes: #916163)
+
+ -- Chris Lamb <lamby@debian.org>  Sat, 09 Mar 2019 14:48:25 +0000
+
+ppp (2.4.7-2+4) unstable; urgency=medium
+
+  * Update EAP-TLS patch to version 1.102. (Closes: #912822)
+
+ -- Chris Boot <bootc@debian.org>  Sun, 04 Nov 2018 12:56:54 +0000
+
+ppp (2.4.7-2+3) unstable; urgency=high
+
+  * Update EAP-TLS patch to version 1.101. (CVE-2018-11574)
+  * Set urgency=high due to security fix.
+
+ -- Chris Boot <bootc@debian.org>  Sat, 09 Jun 2018 14:20:01 +0100
+
+ppp (2.4.7-2+2) unstable; urgency=medium
+
+  * Correct a bug in MS-CHAP authentication introduced in 2.4.7-2+1~exp1 which
+    prevented such authentication from working altogether. (Closes: #891413)
+
+ -- Chris Boot <bootc@debian.org>  Sun, 25 Feb 2018 22:28:25 +0000
+
+ppp (2.4.7-2+1) unstable; urgency=medium
+
+  [ Алексей Шилин ]
+  * debian-installer udeb: use /bin/ip instead of /sbin/ifconfig in the
+    interfaces configuration for the installed system. (Closes: #889295)
+
+  [ Chris Boot ]
+  * Upload to unstable.
+
+ -- Chris Boot <bootc@debian.org>  Sat, 17 Feb 2018 10:19:58 +0000
+
+ppp (2.4.7-2+1~exp1) experimental; urgency=medium
+
+  * Switch to debhelper compat level 11.
+    - Set debian/compat to 11.
+    - Bump Build-Depends on debhelper to >= 11~.
+    - Remove Build-Depends on dh-systemd.
+    - Remove implicit --with systemd from debian/rules.
+    - Switch to dh_installsystemd helper.
+  * Update Standards-Version to 4.1.3:
+    - Remove Priority extra from ppp-dev.
+  * debian/rules: use dpkg helpers for parsing debian/changelog.
+  * Incorporate the EAP-TLS patch for pppd: (Closes: #602503)
+    - debian/patches/eaptls-mppe.patch: add ppp-2.4.7-eaptls-mppe-0.999.patch.
+    - debian/control: add libssl-dev to Build-Depends.
+    - debian/changelog: bump the ABI revision number to account for removed
+      symbols (MD5 now comes from OpenSSL).
+    - debian/rules: don't include EAP-TLS support in the udeb build.
+  * debian/changelog: remove trailing whitepace.
+  * Switch to OpenSSL implementations of MD4, MD5 and SHA1: (Closes: #826625)
+    - debian/patches/replace-vendored-hash-functions.patch: remove embedded
+      crypto code copies, unconditionally link with libcrypto, update
+      includes, amend call sites as required.
+    - debian/ppp.symbols: remove dropped symbols.
+  * Import patches added to upstream Git since the 2.4.7 upstream release,
+    correcting numerous minor bugs. Of note:
+    - 0002-pppd-add-support-for-defaultroute-metric-option.patch: this patch
+      is NOT currently applied due to conflicts with the cifdefroute.dif
+      patch, which adds the replacedefaultroute and noreplacedefaultroute
+      options.
+    - 0013-pppd-allow-use-of-arbitrary-interface-names.patch: upstream import
+      of our ppp-2.4.2-ifname.diff patch.
+    - 0016-pppoe-include-netinet-in.h-before-linux-in.h.patch: upstream patch
+      that replaces our fix-rp-pppoe-ftbfs.patch.
+    - Refreshed 018_ip-up_option.diff and makefiles_cleanup on top of the new
+      patches.
+  * Tweak pon and poff bash-completions files for new versions of
+    bash-completion. (Closes: #882199)
+  * debian/ppp-udeb.postinst: consider interface names using udev predictable
+    interface naming. (Closes: #873391)
+  * d/control: declare that the build requires root.
+  * Move packaging from Alioth to Salsa.
+  * Upload to experimental.
+
+ -- Chris Boot <bootc@debian.org>  Sun, 11 Feb 2018 19:17:06 +0000
+
+ppp (2.4.7-1+4) unstable; urgency=medium
+
+  [ Helmut Grohne ]
+  * Mark ppp-dev Multi-Arch: foreign (Closes: #842890)
+
+  [ Chris Boot ]
+  * Run wrap-and-sort.
+  * ppp: add lsb-base to Depends for pppd-dns init script.
+  * Fix FTBFS in rp-pppoe with linux 4.8 headers.
+
+ -- Chris Boot <bootc@debian.org>  Fri, 11 Nov 2016 15:03:42 +0000
+
+ppp (2.4.7-1+3) unstable; urgency=medium
+
+  * PPPoE: permit setting an arbitrary Host-Uniq field value:
+    add patch pr-28-pppoe-custom-host-uniq-tag.patch (Closes: #828968)
+  * Update Standards-Version to 3.9.8 (no changes required).
+  * Update Vcs-Browser and Vcs-Git to use https:// URLs.
+  * Fix a typo in README.Debian.
+
+ -- Chris Boot <bootc@debian.org>  Mon, 29 Aug 2016 00:15:43 +0100
+
+ppp (2.4.7-1+2) unstable; urgency=medium
+
+  * Replace my email address for my debian.org address.
+  * Upload to unstable.
+
+ -- Chris Boot <bootc@debian.org>  Wed, 27 Jan 2016 08:48:40 +0000
+
+ppp (2.4.7-1+2~exp3) experimental; urgency=medium
+
+  * Remove obsolete conffile /etc/bash_completion.d/pon. (Closes: #807238)
+  * Remove redundant full stop in pppd-dns.service systemd unit file.
+    (Closes: #794348)
+  * Ignore $global$ symbol which appears only on hppa.
+
+ -- Chris Boot <bootc@debian.org>  Wed, 30 Dec 2015 18:16:20 +0000
+
+ppp (2.4.7-1+2~exp2) experimental; urgency=medium
+
+  * Update symbols file to ignore "private" symbols (starting with an
+    underscore) which invariably come from static glibc libraries, along with
+    any symbols with a "version" starting GLIBC_. These don't come from pppd
+    and vary between architectures and glibc versions. Fixes FTBFS on i386 and
+    x32.
+
+ -- Chris Boot <debian@bootc.net>  Sun, 06 Dec 2015 15:43:58 +0000
+
+ppp (2.4.7-1+2~exp1) experimental; urgency=medium
+
+  * Enable "pie" hardening flag.
+  * Add a symbols file for ppp and validate it during builds.
+    - debian/patches/pppd-soname-hack.patch: add a SONAME to pppd so that
+      dpkg-gensymbols will inspect it.
+    - debian/rules: override dh_makeshlibs to inspect pppd and fail hard if
+      the symbols change compared to the symbols file.
+    - debian/ppp.symbols: symbols generated for this version of pppd (on
+      amd64).
+    - debian/README.source: document this unusual setup.
+  * Upload to experimental.
+
+ -- Chris Boot <debian@bootc.net>  Sat, 05 Dec 2015 13:35:51 +0000
+
+ppp (2.4.7-1+1) unstable; urgency=medium
+
+  * Upload to unstable.
+
+ -- Chris Boot <debian@bootc.net>  Fri, 04 Dec 2015 08:18:14 +0000
+
+ppp (2.4.7-1+1~exp2) experimental; urgency=medium
+
+  * Add a --plugin-dir option to dh_ppp that can be used to obtain the path to
+    the ppp plugin directory.
+
+ -- Chris Boot <debian@bootc.net>  Thu, 19 Nov 2015 13:59:17 +0000
+
+ppp (2.4.7-1+1~exp1) experimental; urgency=medium
+
+  * New upstream release.
+  * Remove all of the patches cherry-picked from 2.4.7 upstream.
+  * Update lintian overrides to account for changed plugin path.
+  * Promote myself to the Maintainer field with Marco's approval. Move Marco
+    to the Uploaders field. Thank you for many years spent maintaining this
+    package!
+  * Correct lintian warning maintainer-script-without-set-e in all maintainer
+    scripts.
+  * Switch to debhelper 9, including the command sequencer:
+    - Set debian/compat to 9.
+    - Bump Build-Depends on debhelper to >= 9~.
+    - Rewrite debian/rules.
+    - Use ppp.manpages rather than overriding dh_installman.
+    - Use *.install files rather than copying files; move files around in
+      debian/extra to make this clearer.
+    - Use ppp.examples rather than calling dh_installexamples ourselves.
+  * Remove some very old unused patches from debian/extra/PATCHES.
+  * Update debian/watch (new upstream download URL) and debian/rules
+    get-orig-source target.
+  * Introduce ABI tracking to help packages that build plugins:
+    - Introduce a new ABI version field to the package version number.
+    - Document the version numbering scheme in README.source.
+    - Add dh_ppp script, 'ppp' debhelper addon and /usr/share/ppp-dev/substvars
+      file to help generate Depends or Breaks lines.
+    - Document the debhelper tools in ppp-dev's README.Debian.
+    - At build time, make sure the package's upstream version matches the
+      version in pppd/patchlevel.h, and make sure there is an ABI revision in
+      the package version.
+  * Install pon/poff bash_completion file to
+    /usr/share/bash-completion/completions.
+  * Upload to experimental.
+
+ -- Chris Boot <debian@bootc.net>  Fri, 06 Nov 2015 15:32:25 +0000
+
+ppp (2.4.6-3.1) unstable; urgency=high
+
+  * Non-maintainer upload.
+  * Urgency high due to fix for DoS vulnerability.
+  * Fix buffer overflow in rc_mksid().
+    The function converts the PID of pppd to hex to generate a pseudo-unique
+    string. If the process id is bigger than 65535 (FFFF), its hex
+    representation will be longer than 4 characters, resulting in a buffer
+    overflow. This bug can be exploited to cause a remote DoS.
+    (Closes: #782450)
+
+ -- Emanuele Rocca <ema@debian.org>  Tue, 14 Apr 2015 08:18:06 +0200
+
+ppp (2.4.6-3) unstable; urgency=high
+
+  * Urgency high due to fix for CVE-2014-3158.
+  * Cherry-pick patches from 2.4.7 upstream release. These are 9 of 11 patches
+    in the 2.4.7 upstream release of PPP, including the fix for CVE-2014-3158.
+    The two patches left out were not imported in order to preserve ABI
+    stability. (Closes: #762789)
+    - ppp-2.4.7-001-pppd-Separate-IPv6-handling-for-sifup-sifdown.patch
+    - ppp-2.4.7-002-pppol2tp-Connect-up-down-events-to-notifiers-and-add.patch
+    - ppp-2.4.7-003-pppd-Add-declarations-to-eliminate-compile-warnings.patch
+    - ppp-2.4.7-004-pppd-Eliminate-some-unnecessary-ifdefs.patch
+    - ppp-2.4.7-005-radius-Fix-realms-config-file-option.patch
+    - ppp-2.4.7-006-pppd-Eliminate-potential-integer-overflow-in-option-.patch
+    - ppp-2.4.7-007-pppd-Eliminate-memory-leak-with-multiple-instances-o.patch
+    - ppp-2.4.7-008-pppd-Fix-a-stack-variable-overflow-in-MSCHAP-v2.patch
+    - ppp-2.4.7-009-winbind-plugin-Add-DMPPE-1-to-eliminate-compiler-war.patch
+  * Refresh debian/patches/cifdefroute.dif
+  * Update Standards-Version to 3.9.6 (no changes required).
+
+ -- Chris Boot <debian@bootc.net>  Sun, 19 Oct 2014 10:47:59 +0100
+
+ppp (2.4.6-2) unstable; urgency=medium
+
+  * d/rules: Fix ppp-udeb module path by using a shell expression for PPPDDIR.
+  * Update Breaks for network-manager to (<< 0.9.8.8-7~). (Closes: #744814)
+  * Update Breaks for network-manager-pptp and pppdcapiplugin.
+  * Update lintian overrides to account for changed plugin path.
+
+ -- Chris Boot <debian@bootc.net>  Thu, 17 Apr 2014 22:19:23 +0100
+
+ppp (2.4.6-1) unstable; urgency=medium
+
+  * New upstream release. (Closes: #718873)
+  * Enable GPG signature checking for uscan:
+    - Add pgpsigurlmangle option to debian/watch
+    - Add debian/upstream/signing-key.asc
+    - Remove linitian override for debian-watch-may-check-gpg-signature
+
+ -- Chris Boot <debian@bootc.net>  Sun, 13 Apr 2014 23:22:19 +0100
+
+ppp (2.4.5+git20130610-4) unstable; urgency=medium
+
+  * Remove obsolete --update-rcd-params from dh_installinit. (Closes: #727162)
+  * Remove obsolete Build-Depends on quilt.
+  * Add systemd service file for ppp-dns: (Closes: #716864)
+    - Build-Depend on dh-systemd
+    - Use dh_installinit --name instead of --init-script
+    - Add dh_systemd_enable and dh_systemd_start to debian/rules
+    Thanks to Shawn Landden for providing a patch.
+  * Add LSB Description header to init script.
+  * Make init script source /lib/lsb/init-functions for systemd compatibility.
+  * Override a number of lintian tags:
+    - init.d-script-does-not-implement-optional-option etc/init.d/pppd-dns
+        status
+    - non-standard-dir-perm etc/chatscripts/ and etc/ppp/peers/
+    - package-contains-readme-for-other-platform-or-distro
+        usr/share/doc/ppp/README.win9x
+    - setuid-binary usr/sbin/pppd
+    - debian-watch-may-check-gpg-signature
+    See the lintian overrides files for reasoning.
+  * Add support for arbitrary interface naming: (Closes: #458646)
+    - Add debian/patches/ppp-2.4.2-ifname.diff based on openSUSE patch.
+  * Fix a potential buffer overflow in the radius plugin:
+    - Add debian/patches/ppp-2.4.4-strncatfix.patch from openSUSE.
+  * Update debian/copyright:
+    - Add myself to the list of maintainers
+    - Change reference to GPL symlink license to GPL-2
+  * Update Standards-Version to 3.9.5 (no changes required).
+  * Refresh debian/patches/cifdefroute.dif from OpenSUSE (Closes: #425163) and
+    add patch header.
+
+ -- Chris Boot <debian@bootc.net>  Mon, 27 Jan 2014 22:17:11 +0000
+
+ppp (2.4.5+git20130610-3) unstable; urgency=medium
+
+  * Revisit debian/rules and Makefile patches due to build breakage exposed by
+    the addition of hardening build flags. (Closes: #734458)
+    - Update debian/rules to pass COPTS/LDOPTS instead of CFLAGS/LDFLAGS.
+    - Overhaul makefiles_cleanup patch. This now makes far fewer changes to the
+      upstream Makefiles than previously.
+    - Refresh no_crypt_hack, pppdump_use_zlib, pppoatm_resolver_light and
+      zzz_config patches due to significant Makefile changes.
+    Thanks to Marco d'Itri for the bulk of the Makefile work.
+
+ -- Chris Boot <debian@bootc.net>  Tue, 07 Jan 2014 17:54:08 +0000
+
+ppp (2.4.5+git20130610-2) unstable; urgency=low
+
+  [ David Prévot ]
+  * Add missing prepending underscore in templates. Closes: #686255
+
+  [ Debconf translation updates ]
+  * Chinese — China, Zhi Li.
+  * Chinese — Taiwan, Ｖ字龍.
+  * French, David Prévot.
+  * Turkish, Deniz Bahadır GÜR.
+  * Vietnamese, Nguyễn Vũ Hưng.
+  * Slovak, Slavko (Closes: #686273)
+  * Danish, Joe Hansen (Closes: #686289)
+  * Russian, Yuri Kozlov (Closes: #686354)
+  * Basque, Dooteo (Closes: #686415)
+  * Swedish, Martin Bagge. (Closes: #686443)
+  * Romanian, Andrei Popescu. (Closes: #686556)
+  * Polish, Michał Kułach. (Closes: #686603)
+  * German, Chris Leick. (Closes: #686609)
+  * Dutch, Jeroen Schot. (Closes: #686660)
+  * Portuguese, Carlos Lisboa. (Closes: #686700)
+  * Brazilian Portuguese, J. S. Júnior. (Closes: #686713)
+  * Japanese, victory. (Closes: #686721)
+  * Spanish, Rafael Ernesto Rivas, Javier Fernandez-Sanguino Peña.
+    (Closes: #686722, #686769)
+  * Czech, Michal Šimůnek. (Closes: #687183)
+
+  [ Chris Boot ]
+  * Incorporate David Prévot's debconf translation updates patch from #686255.
+  * Fix lintian warnings:
+    - debian-rules-missing-recommended-target build-arch
+    - debian-rules-missing-recommended-target build-indep
+    - package-would-benefit-from-build-arch-targets
+  * Add radius-config.c-unkown-typo patch to fix spelling-error-in-binary
+    lintian warning.
+  * Add secure-card-interpreter-fix patch to fix
+    example-wrong-path-for-interpreter lintian warning.
+  * Remove always_setsid patch. (Closes: #598551)
+  * Add Vcs-Browser and Vcs-Git fields pointing to collab-maint/pkg-ppp.git.
+  * Enable hardening build flags. (Closes: #658181)
+  * Add dh_lintian to debian/rules so we can use overrides.
+
+ -- Chris Boot <debian@bootc.net>  Mon, 06 Jan 2014 22:05:51 +0000
+
+ppp (2.4.5+git20130610-1) unstable; urgency=low
+
+  * New upstream git snapshot (8d69424). (Closes: #615666, #674207, #684164)
+  * Move extra/ directory into debian/ directory.
+  * Remove patches applied upstream:
+    - git-20100307 (e753795..cab5861)
+    - pppoatm_no_modprobe (52cd43a)
+    - use_system_logwtmp (fixed differently in 9617a7e)
+    - dont-exit-pado-timeout (fixed differently in 225361d)
+    - fix_warnings (fixed in 0b61182)
+    - man_syntax_errors (fixed in d16a398 and a7c3489)
+    - documentation_typos (fixed in 8dea1b9, 9e05a25 and b5b8898)
+    - fix_null_pppdb (3747616)
+    - radius_enanchements (fixed in 2f581cd)
+    - remove-old-version-of-Linux-if_pppol2tp-h.patch (c41092d)
+  * Refresh or edit patches to remove fuzz:
+    - 018_ip-up_option.diff
+    - cifdefroute.dif
+    - no_crypt_hack
+    - setenv_call_file
+    - zzz_config
+  * Remove patches that were disabled in 2.4.5-1:
+    - pppoatm_fix_mtu
+    - pppoe_fixinclude
+  * Add inactive patch to series file added in 2.4.5-1:
+    - ipv6-accept-remote
+  * Switch to dpkg-source 3.0 (quilt) format.
+  * Add Homepage field to debian/control.
+  * Add myself to Uploaders.
+  * Fix lintian warnings:
+    - xc-package-type-in-debian-control line 25
+    - binary-control-field-duplicates-source field "section" in package ppp
+
+ -- Chris Boot <debian@bootc.net>  Mon, 21 Oct 2013 22:49:34 +0100
+
+ppp (2.4.5-5.2) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Replace patch update_if_pppol2tp with
+    remove-old-version-of-Linux-if_pppol2tp-h.patch to fix build failures with
+    kernels since wheezy. (Closes: #707538)
+
+ -- Chris Boot <bootc@bootc.net>  Tue, 28 May 2013 15:56:31 +0100
+
+ppp (2.4.5-5.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Set Architecture to linux-any.  (Closes: #648345)
+
+ -- Robert Millan <rmh@debian.org>  Sun, 22 Apr 2012 16:25:45 +0200
+
+ppp (2.4.5-5) unstable; urgency=medium
+
+  * Updated debconf translation: da. (Closes: #601791)
+
+ -- Marco d'Itri <md@linux.it>  Wed, 19 Jan 2011 23:24:16 +0100
+
+ppp (2.4.5-4) unstable; urgency=low
+
+  * Make sure to actually rebuild pppd for the udeb instead of using the
+    just-built normal binary. (Closes: #591703)
+  * Removed support for IPX from the udeb.
+  * Added patch adaptive_echos: support sending LCP echo requests only if
+    the link is idle. (Closes: #14331)
+  * Updated debconf translation: pt_BR. (Closes: #592155)
+  * Removed the suspend/resume script for the obsolete apmd.
+
+ -- Marco d'Itri <md@linux.it>  Mon, 09 Aug 2010 02:41:04 +0200
+
+ppp (2.4.5-3) unstable; urgency=low
+
+  * Added a Breaks directive to force upgrading the older versions of
+    network-manager, network-manager-pptp and pppdcapiplugin.
+    (Closes: #590087)
+  * Removed patch use_244_plugins because it does not work (pppd also
+    checks the internal plugin version number).
+  * Added patch pppoatm_no_modprobe: nowadays the pppoatm driver can be
+    autoloaded on demand.
+
+ -- Marco d'Itri <md@linux.it>  Sun, 25 Jul 2010 01:50:16 +0200
+
+ppp (2.4.5-2) unstable; urgency=low
+
+  * Refactored again the makefiles to allow overriding CFLAGS/LDFLAGS
+    in the environment. (Closes: #589664)
+  * Added patch use_244_plugins: check for the plugins in
+    /usr/lib/pppd/2.4.4/ too.
+
+ -- Marco d'Itri <md@linux.it>  Tue, 20 Jul 2010 01:40:37 +0200
+
+ppp (2.4.5-1) unstable; urgency=low
+
+  * New upstream release. (Closes: #515590)
+    + Fix authentication on second time around with multilink and persist.
+      (Closes: #377670)
+    + Increase default IPCP Conf-Nak limit. (Closes: #445711, #445951)
+  * Added patch git-20100307 with the upstream changes since the release.
+  * Removed the following patches which have been merged upstream:
+    pppoe_cleanup, pppoe_fixinclude, fix_close_fd0, fix_mschapv2_ppp.
+  * Removed patch pppoatm_fix_mtu since the affected code has been removed.
+  * Added patch radius_enanchements.
+  * Added patch always_setsid: always create a new process group.
+  * Added patch ipv6-accept-remote from Fedora.
+  * Added patch dont-exit-pado-timeout to prevent pppd persist from
+    exiting in the event of a PPPoE PADO timeout. (Closes: #377987)
+  * Added patch update_if_pppol2tp: update include/linux/if_pppol2tp.h to
+    match current kernel definitions, from Ubuntu. (LP: #600947)
+  * Added a simple example configuration for mobile connectsions.
+  * proxyarp is now disabled by default in /etc/ppp/options. (Closes: #388712)
+  * Use $@ instead of $* in the link scripts. (Closes: #437339)
+  * Correctly restart pppoe-discovery in the udeb. (Patch by alexander
+    barakin.) (Closes: #582035)
+  * Backup resolv.conf with interface-specific file names to better support
+    multilink. (Patch by alex samad). (Closes: #584318)
+  * Allow the nostrip option to work. (Closes: #437789)
+  * Updated debconf translation: pt_BR, tr. (Closes: #577799, #509200)
+  * Packaging converted to quilt. (Closes: #482699)
+
+ -- Marco d'Itri <md@linux.it>  Mon, 19 Jul 2010 01:00:53 +0200
+
+ppp (2.4.4rel-10.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Fix pending l10n issues. Debconf translations:
+    - Traditional Chinese. Closes: #505952
+    - Catalan. Closes: #506336
+    - Swedish. Closes: #491421
+    - Japanese. Closes: #489333
+    - Polish. Closes: #506852
+    - Belarusian. Closes: #506927
+
+ -- Christian Perrier <bubulle@debian.org>  Fri, 28 Nov 2008 18:36:26 +0100
+
+ppp (2.4.4rel-10) unstable; urgency=low
+
+   * ppp-udeb: allow for preseeding of the netcfg/get_hostname template.
+     Closes: #455366.
+   * ppp-udeb: also ask for a domain name to be used in /etc/hosts.
+     Closes: #475032.
+   * ppp-udeb: switch from using 'ifconfig' to 'ip' because the former is no
+     longer included in busybox-udeb. Closes: #451446.
+   * Handle the setting of fallback DNS in ppp-udeb. Those are set by
+     preseeding netcfg/get_nameservers. Thanks to Jérémy Bobbio for the patch.
+     Closes: #473782.
+   * Add new translation for Belarussian. Closes: #447116.
+   * Fix LSB header in init.d script. Closes: #466273.
+   * Add myself as uploader with Marco's blessing.
+
+   [ Christian Perrier ]
+   * Debconf templates and debian/control reviewed by the debian-l10n-english
+     team as part of the Smith review project. Closes: #447329
+
+   [Debconf translation updates]
+   * Vietnamese. Closes: #447847, #426870
+   * German. Closes: #447902
+   * Galician. Closes: #447917
+   * Romanian. Closes: #447918
+   * Basque. Closes: #447994
+   * Finnish. Closes: #448301
+   * Spanish. Closes: #448542
+   * Dutch. Closes: #449022
+   * Czech. Closes: #449261
+   * Russian. Closes: #450517
+   * Portuguese. Closes: #450544
+   * French. Closes: #450702
+   * Norwegian Bokmål; Bokmål, Norwegian. Closes: #450724
+
+ -- Frans Pop <fjp@debian.org>  Tue, 08 Apr 2008 16:53:04 +0200
+
+ppp (2.4.4rel-9) unstable; urgency=low
+
+  * ppp-udeb: quote username and password in pap/chap secrets since they
+    might contain special characters. (Closes: #418284)
+  * ppp-udeb: multiply by 100 the XB-Installer-Menu-Item due to renumbering in
+    Debian Installer
+
+ -- Eddy Petrișor <eddy.petrisor@gmail.com>  Tue, 10 Apr 2007 23:11:10 +0300
+
+ppp (2.4.4rel-8) unstable; urgency=high
+
+  * urgency high since fixes an RC bug
+  * make sure the /etc/resolv.conf file is world readable (Closes: #415077)
+
+ -- Eddy Petrișor <eddy.petrisor@gmail.com>  Sat, 17 Mar 2007 22:31:45 +0200
+
+ppp (2.4.4rel-7) unstable; urgency=high
+
+  * urgency set to high to catch the RC2 release
+  * Updated translations: pt_BR  (Closes: #411544)
+
+ -- Eddy Petrișor <eddy.petrisor@gmail.com>  Sun,  4 Mar 2007 17:59:00 +0200
+
+ppp (2.4.4rel-6) unstable; urgency=low
+
+  * Updated translations: da, it, es
+    (Closes: #409479, #410326)
+  * New translations:
+    - Basque, thanks to Piarres Beobide <pi@beobide.net>
+    - Catalan, thanks to Jordà Polo <jorda@ettin.org> (closes: 410215)
+
+ -- Eddy Petrișor <eddy.petrisor@gmail.com>  Mon, 12 Feb 2007 17:36:46 +0200
+
+ppp (2.4.4rel-5) unstable; urgency=low
+
+  [ Eddy Petrișor ]
+  * added ${misc:Depends} to ppp-udeb
+  * removed debconf as a dependency of ppp-udeb since such a package does not
+    exist in d-i environment
+  * ppp-udeb: the interface is now brought up in the installed system
+    (Closes: #402450, #406231)
+  * ppp-udeb: loopback interface snippet is added too, to make sure we have it
+    in the installed system
+  * ppp-udeb: added error handling if the wrong login info is sent or other
+    error is returned while calling the provider
+  * ppp-udeb: after triggering the connection wait to see if the connection is
+    actually done, don't assume everything went fine
+  * make a PID file in /var/run/ppp-udeb.pid to be able to kill the right
+    process later (pppd creates one only after a succesful installation)
+  * Added myself to Uploaders with maintainer's consent.
+  * Updated po-debconf translations: sv, ru, cs, de, ro, fr, nl, ja, pt
+    (Closes: #406993, #408004, #407684)
+  * Added po-debconf translations:
+    - Tamil (ta), thanks to Tirumurti Vasudevan
+    - Norwegian Bokmål (nb), thanks to Hans F. Nordhaug
+    - Galician (gl), thanks to Jacobo Tarrio (Closes: #407893)
+  * ppp-udeb: use "|| exit 10" for password and username as suggested by Frans
+  * ppp-udeb: add the possibility to go back to menu (thanks to Frans for the
+    hint)
+  * added a new template for the progress bar while waiting to connect;
+    imported entirely (including translations) from partman
+  * updated ppp-udeb.todo (only integration with netcfg remains)
+  * s/Type: progress/Type: text/ in ppp-udeb.templates, it seems I was on some
+    kind of crack when I said the type is progress
+
+  [ Frans Pop ]
+  * ppp-udeb: general review resulting in some corrections and restructuring
+  * ppp-udeb: set up loopback interface in installer environment
+  * ppp-udeb: ask for hostname and check validity (using netcfg template)
+  * ppp-udeb: create /etc/hostname and basic /etc/hosts files
+
+ -- Eddy Petrișor <eddy.petrisor@gmail.com>  Mon, 29 Jan 2007 16:58:03 +0200
+
+ppp (2.4.4rel-4.1) unstable; urgency=low
+
+  * Non-maintainer upload with maintainer's consent.
+  * New patch fix_mschapv2_ppp which makes ppp works with mschapv2. Thanks
+    to Guillaume Knispel <gknispel@proformatique.com>. Closes: #381420.
+  * Add hints section to README.pppoe (pppoe_readme patch) and iptables to
+    Suggests. Thanks to Joerg Dorchain <joerg@dorchain.net>. Closes: #251918.
+  * Improve the chat manpage concerning timeout (chap_man patch).
+    Closes: #320494.
+
+ -- Arnaud Fontaine <arnaud@andesi.org>  Thu, 14 Dec 2006 21:31:55 +0100
+
+ppp (2.4.4rel-4) unstable; urgency=low
+
+  [ Eddy Petrișor ]
+  * Using provider as the pppoe profile name in ppp-udeb so that the
+    connection starts after reboot and to integrate better with ppp helpers.
+  * Implemented idempotency in ppp-udeb by following the pid file generated
+    by pppd and bringing down interfaces which were rised by ppp-udeb.
+  * Improved some conditions which were problematic in concentrator detection.
+  * Deal elegantly with resolv.conf when using peer dns in ppp-udeb.
+  * Really detect if the interfaces were raised before ppp-udeb probed.
+  * Added a ppp-udeb.dirs file.
+  * Revert the gratuitous type change to "note" for ppp/detect_progress.
+    (Closes: #395197)
+  * Fix some mistakes in ppp-udeb.postinst which could have caused some of the
+    strange issues seen during early tests. (Closes: #395187)
+  * Updated debconf translation: ro.
+
+  [ Marco d'Itri ]
+  * Pass the command line arguments to the ip*-{up,down} scripts.
+    (Closes: #378810)
+  * Updated debconf translations: de, ru. (Closes: #396035, #397169)
+  * Improved bash completion. (Closes: #397037)
+
+ -- Marco d'Itri <md@linux.it>  Tue, 14 Nov 2006 12:52:29 +0100
+
+ppp (2.4.4rel-3) unstable; urgency=medium
+
+  [ Luk Claes ]
+  * Add a Provides entry in the LSB type header (Closes: #386387).
+  * Updated debconf translations: ro, fr, es, cs, nl, sv, ja.
+    (Closes: #377672, #384191, #378636, #380529, #384875, #386769)
+    (Closes: #387028, #390489).
+  * Fix PPPDIR (Closes: #384121, #392858).
+
+  [ Eddy Petrişor ]
+  * Sanitise debconf output for udeb (Closes: #385150).
+    - don't use db_stop in ppp-udeb.postinst.
+    - give ppp-udeb priority 17 in the menu so it runs before netcfg.
+    - don't fail when ppp is queued for installation (by apt-install).
+
+  [ Marco d'Itri ]
+  * Stop linking pppdump with zlib since it's not used.
+
+ -- Marco d'Itri <md@linux.it>  Sun, 22 Oct 2006 23:16:56 +0200
+
+ppp (2.4.4rel-2) unstable; urgency=high
+
+  * Make postinst not fail if /dev/MAKEDEV does not exist yet.
+    (Closes: #325650)
+  * Update debconf translation: da. (Closes: #377672)
+
+ -- Marco d'Itri <md@linux.it>  Wed, 12 Jul 2006 18:26:01 +0200
+
+ppp (2.4.4rel-1) unstable; urgency=high
+
+  * New upstream release. Fixes:
+    + privilege escalation in the winbind plugin (CVE-2006-2194).
+    + SHA-1 on some architectures. (Closes: #368419)
+  * Merged many ppp-udeb improvements and fixes by Eddy Petrişor.
+  * Updated patch pppoatm_cleanup: added T2A_WILDCARD. (Closes: #376990)
+  * Added the pppoe-discovery(8) man page, contributed by Ben Hutchings.
+    (Closes: #333144)
+  * Added new debconf translations: it, ro. (Closes: #358162)
+  * Conflict on old makedev versions instead of depending on recent ones.
+  * Finally remove the deprecated /etc/init.d/ppp script.
+
+ -- Marco d'Itri <md@linux.it>  Sun,  9 Jul 2006 18:38:54 +0200
+
+ppp (2.4.4b1-1) unstable; urgency=low
+
+  * New upstream release. Fixes:
+    + pass-filter configuration option. (Closes: #309214)
+    + LCP FSM bugs causing reconnection problems.
+      (Closes: #298657, #312118, #313205)
+    + pty fd leaks. (Closes: #276550, #310292, #310293, #325705, #330444)
+  * Removed the following patches which have been merged upstream:
+    060_mppe-negotiation-fix, fix_winbind_base64, man_clarify_call,
+    multicast_pado, pcap, pcap_fixactive, proc_net_ipx.
+  * Updated cifdefroute.dif for the new code, hopefully it still works.
+  * Document that pon -q is only available to root. (Closes: #337431)
+  * Removed the patch pppdump-no-deflate to enable again deflate support
+    in pppdump. (See #144368 for details.)
+  * Added patch pppoe_all_if (SuSE patch ppp-2.4.3-all-ethernet.diff) to
+    accept any interface name in the PPPoE plugin. (Closes: #310672)
+  * Added new debconf translations: vi, sv, pt_PT.
+    (Closes: #317127, #331580, #336934)
+  * Added patch fix_null_pppdb to prevent a segfault when the call option
+    is used more than once, by Martin Lottermoser. (Closes: #308136)
+  * Added patch fix_close_fd0 to prevent closing fd 0, by Alan Curry.
+    (Closes: #298582)
+  * Added patch readable_connerrs to make ppp-connect-errors world
+    readable. (Closes: #341853)
+  * Fixes typos in pap-secrets and options.ttyXX. (Closes: #332659)
+  * Copy all the headers in ppp-dev. (Closes: #325815)
+
+ -- Marco d'Itri <md@linux.it>  Sun,  4 Dec 2005 15:22:23 +0100
+
+ppp (2.4.3-20050321+2) unstable; urgency=high
+
+  * Added patch close_dev_ppp to fix pppd spinning on select() and using
+    all file descriptors. By Simon Peter. (Closes: #306261)
+  * Added patch pppoatm_fix_mtu to fix the mtu option when used with the
+    pppoatm plugin. From the Red Hat package.
+  * Added patch fix_winbind_base64 to fix login names incorrectly encoded
+    by the winbind plugin.
+  * Added patch zzz_man_typos to fix some typos in man pages. By A. Costa.
+    (Closes: #301928, #302674)
+  * Removed patch pppoatm-no-modprobe to not diverge from other distributions.
+  * Log the arguments to ip-up and ip-down. (Closes: #305473)
+
+ -- Marco d'Itri <md@linux.it>  Wed,  4 May 2005 02:00:04 +0200
+
+ppp (2.4.3-20050321+1) unstable; urgency=high
+
+  * New upstream snapshot, with a fix for the persist configuration option.
+    (Closes: #298657, #301018)
+  * Removed redundant options from the example peers files.
+
+ -- Marco d'Itri <md@linux.it>  Thu, 24 Mar 2005 12:37:55 +0100
+
+ppp (2.4.3-20041231+3) unstable; urgency=medium
+
+  * Added patch pppoatm_cleanup: removes some debug messages.
+  * Added patch pppoe_cleanup: big error handling cleanup for the pppoe
+    plugin. (Closes: #297515)
+  * Added patch pcap_fixactive to fix the active-filter option, by
+    Michael Guntsche. (Closes: #299668)
+  * Fixed the #287861 fix of the bash completion script. (Closes: #297209)
+  * Updated the peers-pppoa example file. (Closes: #278823)
+  * Added an example interfaces(5) file.
+  * Updated README.Debian and changed the default peers file to use PAP.
+
+ -- Marco d'Itri <md@linux.it>  Sat, 19 Mar 2005 17:34:50 +0100
+
+ppp (2.4.3-20041231+2) unstable; urgency=low
+
+  * Build-Depend on zlib1g-dev.
+
+ -- Marco d'Itri <md@linux.it>  Sat, 26 Feb 2005 21:14:07 +0100
+
+ppp (2.4.3-20041231+1) unstable; urgency=low
+
+  * New upstream release and fixes from CVS. (Closes: #282737, #294232)
+  * Removed patch 057_pppoe-interface-change which was refused by the
+    upstream maintainer. Now users must arrange for the ethernet
+    interface used for PPPoE to be up. (Closes: #279135)
+  * Removed the following patches which have been merged upstream:
+    040_pppoatm.diff fail_on_ipcp_addr_confnak mppe_unaligned
+    041_pppoatm-disconnection fix_closed_fds pppoe_discovery
+    042_pppoatm-libatm-workaround fix_holdoff zz_fix_nroff_hypens
+    close_devfd fix_man_email.
+  * Do not print an error message on package removal if no pppd process
+    running. (Closes: #295561)
+  * Improved the bash completions script. (Closes: #287861)
+  * New patch multicast_pado makes the pppoe plugin accept PADO packets
+    sent from multicast addresses. (See #293811.)
+  * New patch mppe-negotiation-fix fixes unencrypted MPPE connections.
+    (Closes: #294232)
+  * New patch pppdump_use_zlib properly compiles pppdump and makes it
+    use the system zlib.
+  * Removed patch use_openssl because it's not needed anymore.
+  * New patch atm_resolver_light disables some code not commonly used
+    in the built-in ATM names resolver library of the pppoatm plugin.
+    Linking with libatm has been disabled and the plugin has been added
+    to ppp-udeb.
+  * Build the RADIUS plugins. (Closes: #214053)
+  * Updated the copyright file.
+  * Added an example PPPoA peers file.
+
+ -- Marco d'Itri <md@linux.it>  Thu, 24 Feb 2005 23:51:54 +0100
+
+ppp (2.4.2+20040428-6) unstable; urgency=medium
+
+  * Removed references to nscd from the 0000usepeerdns scripts.
+    If you use it for DNS caching (don't!) you will have to manually
+    arrange for it to be restarted or use resolvconf. (Closes: #281359)
+  * Updated patch proc_net_ipx: fixed IPX support for 2.4 kernels.
+    (Spotted by Steve Langasek, Closes: #278082)
+  * New patch fix_linkpidfile fixes the option linkpidfile, by Herbert Xu.
+    (Closes: #284382)
+  * New patch fix_man_email fixes paulus' email address in pppd(8).
+    (Closes: #285380)
+  * Made the init script print a big warning about being deprecated.
+  * New patch resolv.conf_no_log: do not log an error if resolv.conf is
+    not writeable, because the usepeerdns option is needed anyway to
+    request the DNS addresses. (Closes: #281438)
+
+ -- Marco d'Itri <md@linux.it>  Thu, 30 Dec 2004 17:21:22 +0100
+
+ppp (2.4.2+20040428-5) unstable; urgency=medium
+
+  * Removed patch pty_command_timeout. (Closes: #279929)
+  * New patch man_clarify_call clarifies pppd.8. (Closes: #279947)
+  * New patch fix_nroff_hypens correctly escapes or unescapes hyphens in
+    man pages.
+
+ -- Marco d'Itri <md@linux.it>  Mon,  8 Nov 2004 12:47:01 +0100
+
+ppp (2.4.2+20040428-4) unstable; urgency=medium
+
+  * Updated patch pty_command_timeout, which broke the pty command.
+    [A reminder for people still using the pppoe package: you should
+    switch to the kernel driver and use the rp-pppoe.so pppd plugin.]
+    (Closes: #279125)
+
+ -- Marco d'Itri <md@linux.it>  Tue,  2 Nov 2004 16:20:17 +0100
+
+ppp (2.4.2+20040428-3) unstable; urgency=low
+
+  * New patch partial-20041018.diff merges some bug fixes from CVS.
+    Fixes possible overflows in the CBCP code. (Closes: #278649)
+  * Removed patch auth_hook_segfault, merged upstream.
+  * New patch proc_net_ipx fixes the path of /proc/net/ipx/interface,
+    by Christian Homagk. (Closes: #278082)
+  * New patch mppe_unaligned fixes unaligned accesses in the MPPE code,
+    by Holger Hans Peter Freyther. (Closes: #273828)
+  * New patch fix_holdoff lets holdoff work when the pty option is
+    present, by Herbert Xu. (Closes: #265166)
+  * New patch fail_on_ipcp_addr_confnak makes pppd shut down the session
+    if the peers cannot agree on the IP addresses to be used, by Herbert Xu.
+    (Closes: #167691, #264959)
+  * Added to README.Debian a reminder about /etc/ppp/ppp_on_boot for the
+    benefit of lusers who configure pppd to start two times. (Closes: #269824)
+  * Added to README.Debian notes about MSS clamping and PPPoE interface names.
+    (Closes: #278014)
+  * Set the $PPP_* variables in ipv6-{up,down} too. (Closes: #274040)
+  * New patch pty_command_timeout kills the pty command when the session
+    is closed, by Pedro Zorzenon Neto. (Closes: #227899)
+
+ -- Marco d'Itri <md@linux.it>  Sun, 31 Oct 2004 16:02:19 +0100
+
+ppp (2.4.2+20040428-2) unstable; urgency=medium
+
+  * Temporarily removed patch ppp-2.4.2-libpcap.diff: switch back to
+    libpcap0.7-dev, because 0.8 is not in base and will not be before
+    the release. (Closes: #259643)
+  * New patch pppoe_discovery adds the pppoe-discovery program.
+
+ -- Marco d'Itri <md@linux.it>  Fri, 16 Jul 2004 19:28:09 +0200
+
+ppp (2.4.2+20040428-1) unstable; urgency=medium
+
+  * Updated patch use_openssl to fix MD4. (Closes: #259192)
+  * New debconf translation: da.po (Closes: #259397)
+  * New source upload to have a correct diff.
+
+ -- Marco d'Itri <md@linux.it>  Wed, 14 Jul 2004 16:47:37 +0200
+
+ppp (2.4.2+20040427-1) unstable; urgency=medium
+
+  * Updated patch 018_ip-up_option.diff to fix the default ip-down path.
+    (Closes: #258199)
+  * New patch use_openssl: use OpenSSL instead of the built-in SHA1/MD4/MD5
+    implementations, because SHA1 is broken on 64 bit systems.
+  * New patch ppp-2.4.2-libpcap.diff: API changes needed by libpcap 0.8,
+    from the SuSE package.
+  * New patch auth_hook_segfault, by Michael Tokarev.
+  * New patch close_devfd: do not pass the connection fd to childs.
+  * New debconf translations: cs, de, pt_BR, es.
+    (Closes: #244365, #252573, #254111, #254562)
+  * Removed pam cleanups from preinst, upgrading from versions < 2.3.11-1.1
+    is not supported anymore.
+
+ -- Marco d'Itri <md@linux.it>  Mon, 12 Jul 2004 15:48:20 +0200
+
+ppp (2.4.2+20040202-3) unstable; urgency=medium
+
+  * Fixed the dependencies of ppp-udeb/ppp-dev. (Closes: #243774)
+  * New debconf translation: tr. (Closes: #243684)
+  * Added ipv6-{up,down} scripts. (Closes: #243330)
+
+ -- Marco d'Itri <md@linux.it>  Thu, 15 Apr 2004 19:53:16 +0200
+
+ppp (2.4.2+20040202-2) unstable; urgency=medium
+
+  * Enabled the postinst script in ppp-udeb, now it should be almost
+    useful.
+  * Add a workaround to the 0000usepeerdns scripts to not fail if
+    /etc/resolv.conf does not exist. (Closes: #235583)
+  * Added new debconf translations: fr, nl, ja.
+    (Closes: #236726, #239458, #237176)
+  * Fixed *again* the $PID regexp in poff, to be compatible with mawk.
+    (Closes: #238667, #239766)
+
+ -- Marco d'Itri <md@linux.it>  Sun, 11 Apr 2004 16:22:24 +0200
+
+ppp (2.4.2+20040202-1) unstable; urgency=medium
+
+  * New upstream release, with updates from CVS. (Closes: #102876)
+  * Patches removed because they have been merged upstream:
+    009_SETUP.diff 012_secure-card.diff 053_pppoe-fix-persist
+    054_pppoe-no-dead-code 055_pppoe-update-3.5 056_pppoe-nas-tap
+    devnam_path disable_evil_slprintf_r makefiles_use_copts
+    parisc_eagain_fix peerdns-env-always ppp-2.4.0-ttyperms.dif
+    pppd.8-filters warning_ipv6cp.
+  * Removed patch 005_fsm.c.diff, the upstream author thinks it violates
+    RFC1661.
+  * Removed patch 006_ipcp.c.diff, it appears to be useless.
+  * Fixed the $PID regexp in poff. (Closes: #219442, #225443)
+  * Use mv -f in 0000usepeerdns. (Closes: #225792)
+  * Added debian/po/. (Closes: #233758)
+  * New patch fix_closed_fds: make sure that fd numbers 0, 1 and 2 are not
+    used for a socket. (Closes: #235192)
+
+ -- Marco d'Itri <md@linux.it>  Sun, 29 Feb 2004 18:54:34 +0100
+
+ppp (2.4.2+20031127-2) unstable; urgency=medium
+
+  * New upstream snapshot, only documentation changes.
+  * New patch pppoe-nas-tap: make the pppoe plugin accept nas and tap
+    devices too, from Carlos Fonseca. (Closes: #221759)
+  * New patch pppoe-interface-up: make the pppoe plugin set the interface up.
+    (Closes: #222558)
+  * Do not make 0000usepeerdns-up fail if resolv.conf is empty.
+    (Closes: #221121)
+  * Removed patch use_system_logwtmp: it breaks utmp updates.
+    (Closes: #222261)
+  * Resurrected ppp.udeb.
+  * Removed patch: ppp-2.4.1-MSCHAPv2-fix.patch (was applied to dead code).
+  * New patch: ppp-2.4.2-stripMSdomain (I ported the old patch to the new
+    CHAP code).
+  * New patch: no_crypt_hack, because the d-i libc does not have crypt(3).
+  * Clean up the APM script. (Closes: #222008, #222436)
+  * New patch: parisc_eagain_fix to fix the EAGAIN != EWOULDBLOCK bug on
+    parisc, by James Bottomley. (Closes: #224982)
+
+ -- Marco d'Itri <md@linux.it>  Thu,  4 Dec 2003 11:54:35 +0100
+
+ppp (2.4.2+20031002-4) unstable; urgency=medium
+
+  * Deprecate /etc/ppp/ppp_on_boot in favour of ifupdown.
+  * Added /etc/apm/event.d/ppp to support APM. (Closes: #217821)
+  * Remove the logrotate entry for ppp.log, as syslog daemons manage
+    logging by themselves. (Closes: #216786, #217190)
+  * Add documentation about setting the default route. (Closes: #85426)
+
+ -- Marco d'Itri <md@linux.it>  Thu, 30 Oct 2003 21:04:15 +0100
+
+ppp (2.4.2+20031002-3) unstable; urgency=medium
+
+  * New patch 043_pppoatm-no-modprobe: do not run modprobe inside pppd.
+  * Removed the run-parts --report option from ip-{up,down} because it
+    caused it to wait for childs. (Closes: #214473)
+  * Suggests: libatm1. (Closes: #215874)
+  * Allow / in the poff parameter. (Closes: #215972)
+  * New example file per-linkname, from Eyal Rozenberg.
+
+ -- Marco d'Itri <md@linux.it>  Sat, 18 Oct 2003 12:34:26 +0200
+
+ppp (2.4.2+20031002-2) unstable; urgency=medium
+
+  * Fixed poff regexp. (Closes: #214051)
+
+ -- Marco d'Itri <md@linux.it>  Mon,  6 Oct 2003 20:21:10 +0200
+
+ppp (2.4.2+20031002-1) unstable; urgency=low
+
+  * Fresh CVS checkout.
+  * Removed the part of 040_pppoatm.diff which added a remove_option
+    member to struct protent in pppd.h. This has no apparent meaning
+    and breaks many other users of protent, like IPCP.
+    Debugged by Benjamin Heuer. (Closes: #213352)
+  * Conflict with incompatible versions of pppdcapiplugin. (Closes: #213217)
+
+ -- Marco d'Itri <md@linux.it>  Tue, 30 Sep 2003 23:06:12 +0200
+
+ppp (2.4.2+20030811-6) unstable; urgency=low
+
+  * Fix run-parts call in ip-{up,down}. (Closes: #213059)
+  * Removed ppp.udeb because it's apparently useless.
+  * New patch 042_pppoatm-libatm-workaround: work around a bug in
+    libatm1-dev which caused libatm.a to be statically linked (see #213146).
+    Now libatm1 needs to be installed if this plugin is used.
+  * Some obsolete information has been removed from README.Debian.
+
+ -- Marco d'Itri <md@linux.it>  Sun, 28 Sep 2003 19:48:32 +0200
+
+ppp (2.4.2+20030811-5) unstable; urgency=low
+
+  * Fix usage of ps in poff. (Closes: #58896)
+  * Add an example configuration file for the pppoe plugin.
+  * New patch pppoe-no-dead-code: disable some dead code in the pppoe plugin.
+  * Close the bugs fixed in the releases uploaded to experimental.
+    (Closes: #101616, #157214, #173546, #183221, #197489, #61717, #155668)
+    (Closes: #148156, #133809, #137964, #52913, #81511, #100665, #171137)
+    (Closes: #75797, #211485, #162163, #209146)
+
+ -- Marco d'Itri <md@linux.it>  Sat, 27 Sep 2003 16:05:49 +0200
+
+ppp (2.4.2+20030811-4) experimental; urgency=low
+
+  * New patch peerdns-env-always: always set $DNS1 and $DNS2 if name
+    server addresses are received with IPCP. (Closes: #209146)
+  * New patch pppoe-fix-persist: fixes the persist option, but watch
+    for side effects.
+  * Improved the parsing of the device name when / is a ramdisk.
+    (Closes: #162163)
+  * Build-Depend on a newer debhelper. (Closes: #211485)
+  * Renamed the pppoatm* patches because DBS is sensible to $LC_COLLATE.
+  * Updated the pppoe plugin with a fix from rp-pppoe 3.5.
+
+ -- Marco d'Itri <md@linux.it>  Sat, 20 Sep 2003 18:00:44 +0200
+
+ppp (2.4.2+20030811-3) experimental; urgency=low
+
+  * Add --report and $@ to the run-parts command line in ip-{up,down}.
+    (Suggestions from Dan Jacobson, Closes: #209133)
+  * Move /etc/ppp/options.ttyXX to /usr/share/doc/ppp/, it's documentation.
+    (Closes: #209275)
+  * Remove from postinst some compatibility code introduced in 2.3b3-2,
+    2.3.5-2 and 2.3.6-1.
+  * Change the serial device permissions only when really needed.
+    Patch ppp-2.4.0-ttyperms.dif from the SuSE package.
+    (Closes: #22284, #36789, #51974, #62567, #74789)
+  * Use the system logwtmp() function. From the Red Hat and SuSE packages.
+  * Add the pppoatm-disconnection patch. From the Mandrake package.
+  * Add an example active-filter from the SuSE package.
+  * Add ppp-2.4.1-stripMSdomain.patch and ppp-2.4.1-MSCHAPv2-fix.patch
+    from the SuSE package. They say that these patches are described at
+    http://www.heise.de/ct/Redaktion/ps/pptp.html, but I don't know german.
+    I also don't use MSCHAP or MPPE, so I do not know if they will work.
+    Please report any success or insuccess of MPPE and related features.
+  * Add ppp-2.3.11-oedod.dif from the SuSE package to fix dial on demand
+    with sync PPP. (Closes: #75797)
+
+ -- Marco d'Itri <md@linux.it>  Sun, 14 Sep 2003 12:48:02 +0200
+
+ppp (2.4.2+20030811-2) experimental; urgency=low
+
+  * I'm the new maintainer.
+  * Fix FTBFS bug on S/390.
+  * Add a copy of chap-secrets to install. (#207417)
+  * Fix a little pon bug. (#207442)
+  * Clarify the active-filter description in pppd(8). (#207023)
+  * Make some files readable again by group dip. (#207407)
+  * Link pppoatm.so with libresolv. PPP over ATM has been reported to work.
+
+ -- Marco d'Itri <md@linux.it>  Wed, 27 Aug 2003 15:30:16 +0200
+
+ppp (2.4.2+20030811-1) experimental; urgency=low
+
+  * New CVS snapshot. (Closes: #171137)
+    New features:
+    - MPPE (Closes: #52913, #81511, #100665)
+    - kernel space PPPoE (Closes: #133809, #137964)
+    - CBCP (Closes: #148156)
+    - CHAP hooks for plugins (Closes: #155668)
+    - misc fixes (Closes: #61717)
+  * The following patches have been merged upstream:
+    002_chat.c.diff 003_cbcp.diff 004_auth.c.diff 016_chat_manpage.diff
+    017_memory_management.diff 020_IPPROTO_TCP_undefine.diff
+    021_setipaddr.diff 022_lockfile-fix.diff 023_lcp-max-termintate.diff
+    024_pppd.8-persist-maxfail.diff 025_packet_count.diff
+    026_pppd.8-active-filter.diff 027_child_debugging.diff
+    028_options_segv.diff 029_chap_plugin.diff 030_more_minor_warnings.diff
+    031_ipv6cp-use-persistent.diff 032_flush_fd.diff etc_networks pppd.8
+    pppiocdetach (?) reset-sigpipe (?)
+  * Added the PPP over ATM patch from
+    http://linux-usb.sourceforge.net/SpeedTouch/. Untested!
+    (Closes: #101616, #157214, #173546, #183221, #197489)
+
+ -- Marco d'Itri <md@linux.it>  Sun, 24 Aug 2003 13:40:16 +0200
+
+ppp (2.4.1.uus2-3) unstable; urgency=low
+
+  * Fix error in postinst. (Closes: #206978)
+
+ -- Marco d'Itri <md@linux.it>  Sun, 24 Aug 2003 13:23:01 +0200
+
+ppp (2.4.1.uus2-2) unstable; urgency=low
+
+  * New co-maintainer. (Closes: #180720)
+  * Switch to DBS.
+  * PAM configuration updated to the new style.
+  * Stop deleting /etc/ppp/* on purge, this is evil. (Closes: #202680)
+  * Kill pppd at K86 instead of K14. (Closes: #200639)
+  * Add a generic chatscript for PAP/CHAP sites. (Closes: #182107)
+  * Add a newline at the end of /etc/pam.d/ppp. (Closes: #182103)
+  * Add two ip-{up,down} scripts to support usepeerdns and the resolvconf
+    package. (Closes: #187756, #203243)
+  * Add a patch from Herbert Xu to fix the PPPIOCDETACH bug. This is
+    not the same bug of "Inappropriate ioctl for device(25)".
+    (Closes: #172317, #175480)
+  * 2.0 kernels are not supported by debian, remove kernel.fix-2.0.30-2.
+    (Closes: #171200)
+  * Add bash completion script. (Closes: #170771)
+  * Restore SIGPIPE for childs (Herbert Xu). (Closes: #169697)
+  * Fix the holdoff option (Herbert Xu). (Closes: #128875, #169694)
+  * Add a logrotate file. (Closes: #162895)
+  * Make pon print an error message if the user is not in the dip group.
+    (Closes: #156672)
+  * Improve the ability of poff of finding the right process.
+    (Closes: #160169)
+  * Remove deflate support from pppdump, just to be sure. (Closes: #144368)
+  * Use poff -a at shutdown time. (Closes: #140587)
+  * Add the popp example script from Tomas Pospisek. (Closes: #130716)
+  * Clarify pon(1). (Closes: #126656)
+  * Fix the code which reads /etc/networks/ (Closes: #125697)
+  * Add support for /var/log/ppp-ipupdown.log. (Closes: #152398)
+  * Add support for /etc/ppp/ip-{up,down}.local. (Closes: #85173, #119878)
+  * Create a new ppp-dev package for headers. (Closes: #101618)
+  * Add an example script from Brian May which implements exponential
+    redialing retries. (Closes: #56963, #140587, #205046)
+  * Add example scripts to support per-user ip-{up,down}.d directories.
+    (Closes: #46896, #60250)
+  * Export the call options as an environment variable. (Closes: #51880)
+  * Restore support for the 'quick' argument to pon.
+  * Add the cifdefroute.dif patch (from the SuSE ppp package).
+    (Closes: #93936)
+
+ -- Marco d'Itri <md@linux.it>  Thu, 21 Aug 2003 17:33:21 +0200
+
+ppp (2.4.1.uus-5) unstable; urgency=low
+
+  * Officially taking over the package.
+
+  * Applied patch to stop pppd hanging on exit.
+    Closes: #33997
+
+  * Made the appropriate copyright notice change regarding the new BSD license.
+    Closes: #123831
+
+  * Fixed the download location in the copyright file.
+    Closes: #144348, #160116
+
+  * Added documentation for unit parameter for pppd.8.
+    Closes: #169385
+
+  * Change permissions on /etc/ppp to 0755.
+    Closes: #169258, #169259
+
+  * Check for /dev/.devfsd before checking for /dev/ppp
+
+ -- Russell Coker <russell@coker.com.au>  Sun, 24 Nov 2002 12:58:00 +0100
+
+ppp (2.4.1.uus-4.3) unstable; urgency=low
+
+  * NMU with permission.
+  * Fix for numeric out of bounds giving a SEGV.
+    Closes: #34180
+  * Back-port some plugin interfaces from ppp 2.4.2 for Portslave.
+
+ -- Russell Coker <russell@coker.com.au>  Sat, 14 Sep 2002 08:46:00 +0200
+
+ppp (2.4.1.uus-4.2) unstable; urgency=low
+
+  * NMU
+  * Simple rebuild to deal with libpcap0->libpcap0.7 transition.
+    Closes: #156183
+
+ -- LaMont Jones <lamont@debian.org>  Wed, 14 Aug 2002 21:45:43 -0600
+
+ppp (2.4.1.uus-4.1) unstable; urgency=low
+
+  * Non maintainer upload
+  * Rebuilt with new libpcap to remove dependency on libpcap0, which I
+    got removed from unstable by accident. Sorry about this...
+
+ -- Torsten Landschoff <torsten@debian.org>  Sat, 10 Aug 2002 11:37:27 +0200
+
+ppp (2.4.1.uus-4) unstable; urgency=low
+
+  * Use MAKEDEV in postinst, not mknod. (Closes: #122574)
+
+ -- Michael Beattie <mjb@debian.org>  Tue, 11 Dec 2001 00:24:05 +1300
+
+ppp (2.4.1.uus-3) unstable; urgency=low
+
+  * Enhanced init script for restarting connection.
+  * removed debconf note, the specifics are in README.Debian,
+    which should be read by users anyway. (Closes: #118871)
+  * Removed postinst question about very very old and obsolete
+    /etc/ppp/ppp-connect
+  * Removed debian/suid
+  * Updated README.Debian with info about ppp packet filtering,
+    and ipv6 support
+  * Added "active-filter" with a description to /etc/ppp/options
+
+ -- Michael Beattie <mjb@debian.org>  Mon, 12 Nov 2001 19:15:08 +1300
+
+ppp (2.4.1.uus-2) unstable; urgency=low
+
+  * Added versioned build dependency on debhelper (Closes: #117497)
+  * Enabled IPV6 support (Closes: #117727)
+  * Changed /etc/init.d/ppp to fully stop and restart pppd.
+    Not just signal a redial. (Closes: #117220)
+  * Corrected pppd(8) with respects to the active-filter option.
+    (Closes: #116809)
+  * Applied patch from Russell Coker to add extra debugging info for
+    child processes
+
+ -- Michael Beattie <mjb@debian.org>  Wed,  7 Nov 2001 20:53:26 +1300
+
+ppp (2.4.1.uus-1) unstable; urgency=low
+
+  * The Lets-get-rid-of-dbs release. Now using perl's patching method.
+    "uus" in upstream version to allow replacement of current 2.4.1 source
+    package. (unadulterated upstream source)
+  * Fixes to memory management patch (Closes: #113323, #106913, #111052)
+  * Removed kernel mode pppoe patch. Breaks demand dialling. Upstream
+    is planning on native pppoe support for 2.4.2 (Closes: #103843)
+  * Enabled PPP packet filtering. (Closes: #111522)
+  * Added Russian debconf template. (Closes: #112654)
+  * Completely remove /etc/ppp and /etc/chatscripts on purge, instead of
+    just removing selected files within. (Closes: #107910)
+
+ -- Michael Beattie <mjb@debian.org>  Sat, 29 Sep 2001 23:15:44 +1200

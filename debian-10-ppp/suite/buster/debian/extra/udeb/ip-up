@@ -1,0 +1,13 @@
+#!/bin/sh
+# adds the DNS servers got via ppp to the global resolv.conf
+# License: GPL
+# Copyright Eddy Petrișor <eddy.petrisor@gmail.com> 2006
+
+umask 0022 # normally ran by pppd with 0077
+: >> /etc/resolv.conf
+MARK='added by D-I (pppd)'
+cp /etc/resolv.conf /tmp/resolv.conf.tmp
+sed "/#$MARK/d" /tmp/resolv.conf.tmp > /etc/resolv.conf
+rm -f /tmp/resolv.conf.tmp
+[ "$DNS1" ] && echo "nameserver $DNS1 #$MARK" >> /etc/resolv.conf
+[ "$DNS2" ] && echo "nameserver $DNS2 #$MARK" >> /etc/resolv.conf

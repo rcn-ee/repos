@@ -1,0 +1,346 @@
+#!/bin/sh
+set -e
+
+. /usr/share/debconf/confmodule
+
+INTERFACES=$(grep : /proc/net/dev | cut -d':' -f1 | sort | sed -e 's/ *//' | grep -E '^(en|eth|nas|tap|nic-)')
+db_get ppp/interface
+PPPOE="$RET"
+db_capb backup
+
+log() {
+	logger -t DEBUG:ppp-udeb $*
+}
+
+fail() {
+	logger -t FAIL:ppp-udeb $*
+}
+
+ppp_concentrator_on() {
+	db_subst ppp/detect_progress IFACE "${1}" || true
+	if [ -z "$(ip link show $1 up)" ]; then
+		log "$1 was not configured. ppp-udeb will bring it up"
+		PPPUP=yes
+		ip link set $1 up
+	else
+		log "$1 was already up"
+		PPPUP=no
+	fi
+	MAXWAIT=20; IW=5; TOTWAIT=$(($MAXWAIT + $MAXWAIT + $IW))
+	R=0
+	db_progress START 0 $TOTWAIT ppp/detect_progress
+	for P in "" "-U" ; do
+		rm -f /tmp/probe-finished /tmp/ppp-errors
+		( R=$(/usr/sbin/pppoe-discovery -A $P -I $1 2>/tmp/ppp-errors | \
+			grep AC | wc -l)
+		  echo $R > /tmp/probe-finished ) &
+		WAIT=0
+		TO=0
+
+		while [ ! -f /tmp/probe-finished ]; do
+			log "Timeout detected $TO"
+			sleep 1
+			db_progress STEP 1
+			WAIT=$(($WAIT + 1))
+			if [ $WAIT -ge $MAXWAIT ]; then
+				touch /tmp/probe-finished
+			fi
+			TO=$(grep Timeout /tmp/ppp-errors 2>/dev/null | wc -l || true)
+			if [ $TO -eq 1 ]; then
+				touch /tmp/probe-finished
+				break
+			fi
+			log "pppoe probe output size: $(cat /tmp/probe-finished 2> /dev/null)"
+		done
+		R=$(cat /tmp/probe-finished 2>/dev/null || true)
+		if [ -n "$R" -a 1$R -ne 10 ]; then
+			break
+		fi
+		if [ -z "$P" ]; then
+			sleep $IW
+			db_progress STEP $IW
+		fi
+	done
+
+	PROCESS=$(ps -A | grep pppoe-discovery | sed s:^[[:space:]]::g | \
+		  cut -f1 -d' ' || true)
+	if [ $TO -ne 1 -a "$PROCESS" ]; then
+		kill $PROCESS
+	fi
+	rm -f /tmp/probe-finished /tmp/ppp-errors
+	db_progress STOP
+
+	if [ -n "$R" -a 1$R -ne 10 ]; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+reset_if_needed() {
+	# Bring down an earlier pppoe connection, if there is one
+	if [ -e $PIDF ]
+	then
+		PID=$(cat $PIDF)
+		log "found PID file $PIDF which refers to process $PID; searching for the pppd process"
+		if [ -z "$(ps | grep "^\s*$PID" | sed "s/^\s*$PID\s.*$/$PID/")" ]
+		then
+			log "$PID not found; removing pid file"
+		else
+			log "$PID found; killing it and removing pid file"
+			kill $PID || true
+		fi
+		rm -f $PIDF
+	fi
+
+	# Bring down previously raised interface
+	if [ "$PPPOE" != "_" ]; then
+		ip link set "$PPPOE" down
+		db_set ppp/interface "_"
+	fi
+}
+
+valid_hostname() {
+	if [ $(echo -n "$1" | wc -c) -lt 2 ] ||
+	   [ $(echo -n "$1" | wc -c) -gt 63 ] ||
+	   [ "$(echo -n "$1" | sed 's/[^-\.[:alnum:]]//g')" != "$1" ] ||
+	   [ "$(echo -n "$1" | grep "\(^-\|-$\)")" ]; then
+		return 1
+	fi
+	return 0
+}
+
+# Sanity check: we rely on some netcfg functionality but cannot depend on it;
+# netcfg should always be present, but bail out if it is not
+if [ ! -e /bin/netcfg ]; then
+	fail "required package netcfg is not installed"
+	exit 1
+fi
+
+# Bring up the loopback interface
+if [ -z "$(ip link show lo up)" ]; then
+	ip link set lo up
+	ip addr flush dev lo
+	ip addr add 127.0.0.1/8 dev lo
+fi
+
+if [ -z "$INTERFACES" ]; then
+	fail "no Ethernet interfaces detected"
+	db_input critical ppp/detect_failed || true
+	db_go || true
+	exit 1
+fi
+
+PIDF=/var/run/ppp-udeb.pid
+reset_if_needed
+
+# Test each of the interfaces for a concentrator; stop when one is found
+for IFACE in $INTERFACES; do
+	if ppp_concentrator_on $IFACE; then
+		log "setting pppoe connection on $IFACE"
+		db_set ppp/interface $IFACE
+		break
+	else
+		if [ "$PPPUP" = yes ]; then
+			log "no concentrator found on $IFACE; will bring the interface back down"
+			ip link set $IFACE down
+		else
+			log "ppp-udeb no concentrator found on $IFACE"
+		fi
+		IFACE=''
+	fi
+done
+
+if [ -z "$IFACE" ]; then
+	fail "no concentrators detected"
+	db_input critical ppp/no_concentrators || true
+	db_go || true
+	exit 1
+fi
+
+db_input high ppp/username || true
+db_go || exit 10
+db_get ppp/username
+USERNAME="$RET"
+
+db_input high ppp/password || true
+db_go || exit 10
+db_get ppp/password
+PASSWORD="$RET"
+
+# Clear answers in case the script is run a second time
+db_unregister ppp/password
+db_unregister ppp/username
+
+
+# Ask for the hostname and domainname to use for the system
+# (using the netcfg templates!)
+while true; do
+	db_input high netcfg/get_hostname || [ $? -eq 30 ]
+	db_input high netcfg/get_domain || [ $? -eq 30 ]
+	db_go || exit 10
+	db_get netcfg/get_hostname
+	HOSTNAME="$RET"
+	if valid_hostname "$HOSTNAME"; then
+		db_get netcfg/get_domain
+		DOMAINNAME="$RET"
+		break
+	else
+		db_input high netcfg/invalid_hostname || true
+		db_fset netcfg/get_hostname seen false
+	fi
+done
+
+
+# FIXME: lo snippet should not be ppp-udeb's job
+cat > /etc/network/interfaces <<EOF
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# PPPoE connection
+auto provider
+iface provider inet ppp
+	pre-up /bin/ip link set $IFACE up
+	provider provider
+EOF
+
+# Set hostname and create a basic /etc/hosts file
+echo -e "127.0.0.1\tlocalhost" > /etc/hosts
+
+if [ "$HOSTNAME" ]; then
+	echo "$HOSTNAME" >/etc/hostname
+
+	if [ "$DOMAINNAME" ]; then
+		echo -e "127.0.1.1\t$HOSTNAME.$DOMAINNAME\t$HOSTNAME" >> /etc/hosts
+	else
+		echo -e "127.0.1.1\t$HOSTNAME" >> /etc/hosts
+	fi
+fi
+
+cat >> /etc/hosts <<EOF
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+EOF
+
+
+cat <<EOF > /etc/ppp/peers/provider
+# kernel space PPPoE driver configuration
+#
+# See the manual page pppd(8) for information on all the options.
+
+# MUST CHANGE: Uncomment the following line, replacing the user@provider.net
+# by the DSL user name given to your by your DSL provider.
+# There should be a matching entry with the password in /etc/ppp/pap-secrets
+# and/or /etc/ppp/chap-secrets.
+#user "myusername@myprovider.net"
+user "$USERNAME"
+
+#linkname provider
+#debug
+
+# Load the pppoe plugin. Change the ethernet interface name if needed.
+plugin rp-pppoe.so
+$IFACE
+
+# Assumes that your IP address is allocated dynamically by the ISP.
+noipdefault
+# Try to get the name server addresses from the ISP.
+usepeerdns
+# Use this connection as the default route.
+# Comment out if you already have the correct default route installed.
+defaultroute
+
+# Make sure that sensitive data does not get into the logs
+hide-password
+
+# Peer should be alive
+lcp-echo-interval 20
+lcp-echo-failure 3
+
+# Makes pppd "dial again" when the connection is lost.
+persist
+
+# Do not ask the remote to authenticate.
+noauth
+
+# RFC 2516, paragraph 7 mandates that the following options MUST NOT be
+# requested and MUST be rejected if requested by the peer:
+# Address-and-Control-Field-Compression (ACFC)
+noaccomp
+# Asynchronous-Control-Character-Map (ACCM)
+default-asyncmap
+
+# Do not try to negotiate other kinds of compression.
+nopcomp
+noccp
+novj
+EOF
+
+: > /etc/ppp/pap-secrets
+chmod 600 /etc/ppp/pap-secrets
+cat <<EOF > /etc/ppp/pap-secrets
+#GENERATED-BY-DEBIAN-INSTALLER#
+"$USERNAME"	*	"$PASSWORD"
+EOF
+cp /etc/ppp/pap-secrets /etc/ppp/chap-secrets
+
+log-output -t depmod
+log-output -t ppp-udeb modprobe pppoe
+
+log-output -t ppp-udeb pppd call provider
+sleep 1 # allow forking
+PID=`ps | grep 'call provider' | grep pppd | sed 's:\s*\([0-9]*\).*$:\1:g'`
+echo $PID > $PIDF
+
+STEP=0
+db_progress START 0 31 ppp/please_wait
+log "Waiting for message from pppd[$PID]"
+while [ "$STEP" -lt 30 ]
+do
+	ANSWER=$(grep -E "pppd\[$PID\]:.(PAP|CHAP)\ authentication\ (failed|succeeded)" /var/log/syslog | tail -n 1 | sed -e 's:^.*\(failed\).*$:\1:g' -e 's:^.*\(succeeded\).*$:\1:g')
+	if [ "$ANSWER" = "succeeded" ] || [ "$ANSWER" = "failed" ]
+	then
+		STEP=30
+		log "got result: authentication $ANSWER"
+	else
+		log "Answer unknown"
+	fi
+	sleep 1
+	STEP=$(expr $STEP + 1)
+	db_progress STEP 1
+done
+db_progress STOP
+
+if [ "$ANSWER" = "failed" ]; then
+	fail "authentication failed"
+	(rm -f $PIDF && kill $PID) || true 2> /dev/null
+	db_input critical ppp/wrong_login || true
+	db_go || true
+	exit 1
+elif [ -z "$ANSWER" ] && [ "$STEP" -ge 30 ]; then
+	fail "unhandled error detected"
+	(rm -f $PIDF && kill $PID) || true 2>/dev/null
+	db_input critical ppp/unhandled || true
+	db_go || true
+	exit 1
+else
+	# Handle a fallback DNS
+	if ! [ -s /etc/resolv.conf ] && db_get netcfg/get_nameservers; then
+		for nameserver in $RET; do
+			echo "nameserver $nameserver" >>/etc/resolv.conf
+		done
+	fi
+fi
+
+#DEBHELPER#
+
+exit 0

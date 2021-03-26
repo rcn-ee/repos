@@ -1,0 +1,1185 @@
+Description: Replace vendored hash functions with libcrypto
+Bug-Debian: https://bugs.debian.org/826625
+Forwarded: no
+Author: Chris Boot <bootc@debian.org>
+Last-Update: 2017-12-17
+
+This patch switches ppp's use of the embedded implementations of MD4, MD5 and
+SHA1 for those found in OpenSSL's libcrypto. This is inspired by the patch to
+switch to the libmd versions of these functions, but using libcrypto is
+preferable both due to the patch being slightly less invasive and also because
+of our use of the EAP-TLS patch which requires OpenSSL.
+
+--- a/pppd/Makefile.linux
++++ b/pppd/Makefile.linux
+@@ -11,16 +11,16 @@
+ 
+ TARGETS = pppd
+ 
+-PPPDSRCS = main.c magic.c fsm.c lcp.c ipcp.c upap.c chap-new.c md5.c ccp.c \
+-	   ecp.c ipxcp.c auth.c options.c sys-linux.c md4.c chap_ms.c \
++PPPDSRCS = main.c magic.c fsm.c lcp.c ipcp.c upap.c chap-new.c ccp.c \
++	   ecp.c ipxcp.c auth.c options.c sys-linux.c chap_ms.c \
+ 	   demand.c utils.c tty.c eap.c chap-md5.c session.c
+ 
+ HEADERS = ccp.h session.h chap-new.h ecp.h fsm.h ipcp.h \
+-	ipxcp.h lcp.h magic.h md5.h patchlevel.h pathnames.h pppd.h \
++	ipxcp.h lcp.h magic.h patchlevel.h pathnames.h pppd.h \
+ 	upap.h eap.h
+ 
+ MANPAGES = pppd.8
+-PPPDOBJS = main.o magic.o fsm.o lcp.o ipcp.o upap.o chap-new.o md5.o ccp.o \
++PPPDOBJS = main.o magic.o fsm.o lcp.o ipcp.o upap.o chap-new.o ccp.o \
+ 	   ecp.o auth.o options.o demand.o utils.o sys-linux.o ipxcp.o tty.o \
+ 	   eap.o chap-md5.o session.o
+ 
+@@ -33,7 +33,7 @@
+ # CC = gcc
+ #
+ COPTS = -O2 -pipe -Wall -g
+-LIBS =
++LIBS = -lcrypto
+ 
+ # Uncomment the next 2 lines to include support for Microsoft's
+ # MS-CHAP authentication protocol.  Also, edit plugins/radius/Makefile.linux.
+@@ -91,8 +91,8 @@
+ ifdef CHAPMS
+ CFLAGS   += -DCHAPMS=1
+ NEEDDES=y
+-PPPDOBJS += md4.o chap_ms.o
+-HEADERS	+= md4.h chap_ms.h
++PPPDOBJS += chap_ms.o
++HEADERS	+= chap_ms.h
+ ifdef MSLANMAN
+ CFLAGS   += -DMSLANMAN=1
+ endif
+@@ -104,25 +104,18 @@
+ # EAP SRP-SHA1
+ ifdef USE_SRP
+ CFLAGS	+= -DUSE_SRP -DOPENSSL -I/usr/local/ssl/include
+-LIBS	+= -lsrp -L/usr/local/ssl/lib -lcrypto
++LIBS	+= -lsrp -L/usr/local/ssl/lib
+ TARGETS	+= srp-entry
+ EXTRAINSTALL = $(INSTALL) -c -m 555 srp-entry $(BINDIR)/srp-entry
+ MANPAGES += srp-entry.8
+ EXTRACLEAN += srp-entry.o
+ NEEDDES=y
+-else
+-# OpenSSL has an integrated version of SHA-1, and its implementation
+-# is incompatible with this local SHA-1 implementation.  We must use
+-# one or the other, not both.
+-PPPDSRCS += sha1.c
+-HEADERS += sha1.h
+-PPPDOBJS += sha1.o
+ endif
+ 
+ # EAP-TLS
+ ifdef USE_EAPTLS
+ CFLAGS += -DUSE_EAPTLS=1 -I/usr/kerberos/include
+-LIBS += -lssl -lcrypto
++LIBS += -lssl
+ PPPDSRC += eap-tls.c
+ HEADERS += eap-tls.h
+ PPPDOBJS += eap-tls.o
+--- a/pppd/chap-md5.c
++++ b/pppd/chap-md5.c
+@@ -39,7 +39,7 @@
+ #ifdef USE_EAPTLS
+ #include "eap-tls.h"
+ #else
+-#include "md5.h"
++#include <openssl/md5.h>
+ #endif /* USE_EAPTLS */
+ 
+ #define MD5_HASH_SIZE		16
+--- a/pppd/chap_ms.c
++++ b/pppd/chap_ms.c
+@@ -89,8 +89,8 @@
+ #include "pppd.h"
+ #include "chap-new.h"
+ #include "chap_ms.h"
+-#include "md4.h"
+-#include "sha1.h"
++#include <openssl/md4.h>
++#include <openssl/sha.h>
+ #include "pppcrypt.h"
+ #include "magic.h"
+ 
+@@ -535,8 +535,8 @@
+ 	      char *username, u_char Challenge[8])
+     
+ {
+-    SHA1_CTX	sha1Context;
+-    u_char	sha1Hash[SHA1_SIGNATURE_SIZE];
++    SHA_CTX	sha1Context;
++    u_char	sha1Hash[SHA_DIGEST_LENGTH];
+     char	*user;
+ 
+     /* remove domain from "domain\username" */
+@@ -574,23 +574,11 @@
+ static void
+ NTPasswordHash(u_char *secret, int secret_len, u_char hash[MD4_SIGNATURE_SIZE])
+ {
+-#ifdef __NetBSD__
+-    /* NetBSD uses the libc md4 routines which take bytes instead of bits */
+-    int			mdlen = secret_len;
+-#else
+-    int			mdlen = secret_len * 8;
+-#endif
+     MD4_CTX		md4Context;
+ 
+-    MD4Init(&md4Context);
+-    /* MD4Update can take at most 64 bytes at a time */
+-    while (mdlen > 512) {
+-	MD4Update(&md4Context, secret, 512);
+-	secret += 64;
+-	mdlen -= 512;
+-    }
+-    MD4Update(&md4Context, secret, mdlen);
+-    MD4Final(hash, &md4Context);
++    MD4_Init(&md4Context);
++    MD4_Update(&md4Context, secret, secret_len);
++    MD4_Final(hash, &md4Context);
+ 
+ }
+ 
+@@ -671,8 +659,8 @@
+ 	  0x6E };
+ 
+     int		i;
+-    SHA1_CTX	sha1Context;
+-    u_char	Digest[SHA1_SIGNATURE_SIZE];
++    SHA_CTX	sha1Context;
++    u_char	Digest[SHA_DIGEST_LENGTH];
+     u_char	Challenge[8];
+ 
+     SHA1_Init(&sha1Context);
+@@ -725,8 +713,8 @@
+ void
+ mppe_set_keys(u_char *rchallenge, u_char PasswordHashHash[MD4_SIGNATURE_SIZE])
+ {
+-    SHA1_CTX	sha1Context;
+-    u_char	Digest[SHA1_SIGNATURE_SIZE];	/* >= MPPE_MAX_KEY_LEN */
++    SHA_CTX	sha1Context;
++    u_char	Digest[SHA_DIGEST_LENGTH];	/* >= MPPE_MAX_KEY_LEN */
+ 
+     SHA1_Init(&sha1Context);
+     SHA1_Update(&sha1Context, PasswordHashHash, MD4_SIGNATURE_SIZE);
+@@ -769,9 +757,9 @@
+ mppe_set_keys2(u_char PasswordHashHash[MD4_SIGNATURE_SIZE],
+ 	       u_char NTResponse[24], int IsServer)
+ {
+-    SHA1_CTX	sha1Context;
+-    u_char	MasterKey[SHA1_SIGNATURE_SIZE];	/* >= MPPE_MAX_KEY_LEN */
+-    u_char	Digest[SHA1_SIGNATURE_SIZE];	/* >= MPPE_MAX_KEY_LEN */
++    SHA_CTX	sha1Context;
++    u_char	MasterKey[SHA_DIGEST_LENGTH];	/* >= MPPE_MAX_KEY_LEN */
++    u_char	Digest[SHA_DIGEST_LENGTH];	/* >= MPPE_MAX_KEY_LEN */
+ 
+     u_char SHApad1[40] =
+ 	{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+--- a/pppd/eap.c
++++ b/pppd/eap.c
+@@ -71,7 +71,7 @@
+ #ifdef USE_EAPTLS
+ #include "eap-tls.h"
+ #else
+-#include "md5.h"
++#include <openssl/md5.h>
+ #endif /* USE_EAPTLS */
+ 
+ #ifdef USE_SRP
+--- a/pppd/md4.c
++++ /dev/null
+@@ -1,299 +0,0 @@
+-/*
+-** ********************************************************************
+-** md4.c -- Implementation of MD4 Message Digest Algorithm           **
+-** Updated: 2/16/90 by Ronald L. Rivest                              **
+-** (C) 1990 RSA Data Security, Inc.                                  **
+-** ********************************************************************
+-*/
+-
+-/*
+-** To use MD4:
+-**   -- Include md4.h in your program
+-**   -- Declare an MDstruct MD to hold the state of the digest
+-**          computation.
+-**   -- Initialize MD using MDbegin(&MD)
+-**   -- For each full block (64 bytes) X you wish to process, call
+-**          MD4Update(&MD,X,512)
+-**      (512 is the number of bits in a full block.)
+-**   -- For the last block (less than 64 bytes) you wish to process,
+-**          MD4Update(&MD,X,n)
+-**      where n is the number of bits in the partial block. A partial
+-**      block terminates the computation, so every MD computation
+-**      should terminate by processing a partial block, even if it
+-**      has n = 0.
+-**   -- The message digest is available in MD.buffer[0] ...
+-**      MD.buffer[3].  (Least-significant byte of each word
+-**      should be output first.)
+-**   -- You can print out the digest using MDprint(&MD)
+-*/
+-
+-/* Implementation notes:
+-** This implementation assumes that ints are 32-bit quantities.
+-*/
+-
+-#define TRUE  1
+-#define FALSE 0
+-
+-/* Compile-time includes
+-*/
+-#include <stdio.h>
+-#include "md4.h"
+-#include "pppd.h"
+-
+-/* Compile-time declarations of MD4 "magic constants".
+-*/
+-#define I0  0x67452301       /* Initial values for MD buffer */
+-#define I1  0xefcdab89
+-#define I2  0x98badcfe
+-#define I3  0x10325476
+-#define C2  013240474631     /* round 2 constant = sqrt(2) in octal */
+-#define C3  015666365641     /* round 3 constant = sqrt(3) in octal */
+-/* C2 and C3 are from Knuth, The Art of Programming, Volume 2
+-** (Seminumerical Algorithms), Second Edition (1981), Addison-Wesley.
+-** Table 2, page 660.
+-*/
+-
+-#define fs1  3               /* round 1 shift amounts */
+-#define fs2  7
+-#define fs3 11
+-#define fs4 19
+-#define gs1  3               /* round 2 shift amounts */
+-#define gs2  5
+-#define gs3  9
+-#define gs4 13
+-#define hs1  3               /* round 3 shift amounts */
+-#define hs2  9
+-#define hs3 11
+-#define hs4 15
+-
+-/* Compile-time macro declarations for MD4.
+-** Note: The "rot" operator uses the variable "tmp".
+-** It assumes tmp is declared as unsigned int, so that the >>
+-** operator will shift in zeros rather than extending the sign bit.
+-*/
+-#define f(X,Y,Z)             ((X&Y) | ((~X)&Z))
+-#define g(X,Y,Z)             ((X&Y) | (X&Z) | (Y&Z))
+-#define h(X,Y,Z)             (X^Y^Z)
+-#define rot(X,S)             (tmp=X,(tmp<<S) | (tmp>>(32-S)))
+-#define ff(A,B,C,D,i,s)      A = rot((A + f(B,C,D) + X[i]),s)
+-#define gg(A,B,C,D,i,s)      A = rot((A + g(B,C,D) + X[i] + C2),s)
+-#define hh(A,B,C,D,i,s)      A = rot((A + h(B,C,D) + X[i] + C3),s)
+-
+-/* MD4print(MDp)
+-** Print message digest buffer MDp as 32 hexadecimal digits.
+-** Order is from low-order byte of buffer[0] to high-order byte of
+-** buffer[3].
+-** Each byte is printed with high-order hexadecimal digit first.
+-** This is a user-callable routine.
+-*/
+-void
+-MD4Print(MDp)
+-MD4_CTX *MDp;
+-{
+-  int i,j;
+-  for (i=0;i<4;i++)
+-    for (j=0;j<32;j=j+8)
+-      printf("%02x",(MDp->buffer[i]>>j) & 0xFF);
+-}
+-
+-/* MD4Init(MDp)
+-** Initialize message digest buffer MDp.
+-** This is a user-callable routine.
+-*/
+-void
+-MD4Init(MDp)
+-MD4_CTX *MDp;
+-{
+-  int i;
+-  MDp->buffer[0] = I0;
+-  MDp->buffer[1] = I1;
+-  MDp->buffer[2] = I2;
+-  MDp->buffer[3] = I3;
+-  for (i=0;i<8;i++) MDp->count[i] = 0;
+-  MDp->done = 0;
+-}
+-
+-/* MDblock(MDp,X)
+-** Update message digest buffer MDp->buffer using 16-word data block X.
+-** Assumes all 16 words of X are full of data.
+-** Does not update MDp->count.
+-** This routine is not user-callable.
+-*/
+-static void
+-MDblock(MDp,Xb)
+-MD4_CTX *MDp;
+-unsigned char *Xb;
+-{
+-  register unsigned int tmp, A, B, C, D;
+-  unsigned int X[16];
+-  int i;
+-
+-  for (i = 0; i < 16; ++i) {
+-    X[i] = Xb[0] + (Xb[1] << 8) + (Xb[2] << 16) + (Xb[3] << 24);
+-    Xb += 4;
+-  }
+-
+-  A = MDp->buffer[0];
+-  B = MDp->buffer[1];
+-  C = MDp->buffer[2];
+-  D = MDp->buffer[3];
+-  /* Update the message digest buffer */
+-  ff(A , B , C , D ,  0 , fs1); /* Round 1 */
+-  ff(D , A , B , C ,  1 , fs2);
+-  ff(C , D , A , B ,  2 , fs3);
+-  ff(B , C , D , A ,  3 , fs4);
+-  ff(A , B , C , D ,  4 , fs1);
+-  ff(D , A , B , C ,  5 , fs2);
+-  ff(C , D , A , B ,  6 , fs3);
+-  ff(B , C , D , A ,  7 , fs4);
+-  ff(A , B , C , D ,  8 , fs1);
+-  ff(D , A , B , C ,  9 , fs2);
+-  ff(C , D , A , B , 10 , fs3);
+-  ff(B , C , D , A , 11 , fs4);
+-  ff(A , B , C , D , 12 , fs1);
+-  ff(D , A , B , C , 13 , fs2);
+-  ff(C , D , A , B , 14 , fs3);
+-  ff(B , C , D , A , 15 , fs4);
+-  gg(A , B , C , D ,  0 , gs1); /* Round 2 */
+-  gg(D , A , B , C ,  4 , gs2);
+-  gg(C , D , A , B ,  8 , gs3);
+-  gg(B , C , D , A , 12 , gs4);
+-  gg(A , B , C , D ,  1 , gs1);
+-  gg(D , A , B , C ,  5 , gs2);
+-  gg(C , D , A , B ,  9 , gs3);
+-  gg(B , C , D , A , 13 , gs4);
+-  gg(A , B , C , D ,  2 , gs1);
+-  gg(D , A , B , C ,  6 , gs2);
+-  gg(C , D , A , B , 10 , gs3);
+-  gg(B , C , D , A , 14 , gs4);
+-  gg(A , B , C , D ,  3 , gs1);
+-  gg(D , A , B , C ,  7 , gs2);
+-  gg(C , D , A , B , 11 , gs3);
+-  gg(B , C , D , A , 15 , gs4);
+-  hh(A , B , C , D ,  0 , hs1); /* Round 3 */
+-  hh(D , A , B , C ,  8 , hs2);
+-  hh(C , D , A , B ,  4 , hs3);
+-  hh(B , C , D , A , 12 , hs4);
+-  hh(A , B , C , D ,  2 , hs1);
+-  hh(D , A , B , C , 10 , hs2);
+-  hh(C , D , A , B ,  6 , hs3);
+-  hh(B , C , D , A , 14 , hs4);
+-  hh(A , B , C , D ,  1 , hs1);
+-  hh(D , A , B , C ,  9 , hs2);
+-  hh(C , D , A , B ,  5 , hs3);
+-  hh(B , C , D , A , 13 , hs4);
+-  hh(A , B , C , D ,  3 , hs1);
+-  hh(D , A , B , C , 11 , hs2);
+-  hh(C , D , A , B ,  7 , hs3);
+-  hh(B , C , D , A , 15 , hs4);
+-  MDp->buffer[0] += A;
+-  MDp->buffer[1] += B;
+-  MDp->buffer[2] += C;
+-  MDp->buffer[3] += D;
+-}
+-
+-/* MD4Update(MDp,X,count)
+-** Input: X -- a pointer to an array of unsigned characters.
+-**        count -- the number of bits of X to use.
+-**          (if not a multiple of 8, uses high bits of last byte.)
+-** Update MDp using the number of bits of X given by count.
+-** This is the basic input routine for an MD4 user.
+-** The routine completes the MD computation when count < 512, so
+-** every MD computation should end with one call to MD4Update with a
+-** count less than 512.  A call with count 0 will be ignored if the
+-** MD has already been terminated (done != 0), so an extra call with
+-** count 0 can be given as a "courtesy close" to force termination
+-** if desired.
+-*/
+-void
+-MD4Update(MDp,X,count)
+-MD4_CTX *MDp;
+-unsigned char *X;
+-unsigned int count;
+-{
+-  unsigned int i, tmp, bit, byte, mask;
+-  unsigned char XX[64];
+-  unsigned char *p;
+-
+-  /* return with no error if this is a courtesy close with count
+-  ** zero and MDp->done is true.
+-  */
+-  if (count == 0 && MDp->done) return;
+-  /* check to see if MD is already done and report error */
+-  if (MDp->done)
+-  { printf("\nError: MD4Update MD already done."); return; }
+-
+-  /* Add count to MDp->count */
+-  tmp = count;
+-  p = MDp->count;
+-  while (tmp)
+-  { tmp += *p;
+-  *p++ = tmp;
+-  tmp = tmp >> 8;
+-  }
+-
+-  /* Process data */
+-  if (count == 512)
+-  { /* Full block of data to handle */
+-    MDblock(MDp,X);
+-  }
+-  else if (count > 512) /* Check for count too large */
+-  {
+-    printf("\nError: MD4Update called with illegal count value %d.",
+-	   count);
+-    return;
+-  }
+-  else /* partial block -- must be last block so finish up */
+-  {
+-    /* Find out how many bytes and residual bits there are */
+-    byte = count >> 3;
+-    bit =  count & 7;
+-    /* Copy X into XX since we need to modify it */
+-    if (count)
+-      for (i=0;i<=byte;i++) XX[i] = X[i];
+-    for (i=byte+1;i<64;i++) XX[i] = 0;
+-    /* Add padding '1' bit and low-order zeros in last byte */
+-    mask = 1 << (7 - bit);
+-    XX[byte] = (XX[byte] | mask) & ~( mask - 1);
+-    /* If room for bit count, finish up with this block */
+-    if (byte <= 55)
+-    {
+-      for (i=0;i<8;i++) XX[56+i] = MDp->count[i];
+-      MDblock(MDp,XX);
+-    }
+-    else /* need to do two blocks to finish up */
+-    {
+-      MDblock(MDp,XX);
+-      for (i=0;i<56;i++) XX[i] = 0;
+-      for (i=0;i<8;i++)  XX[56+i] = MDp->count[i];
+-      MDblock(MDp,XX);
+-    }
+-    /* Set flag saying we're done with MD computation */
+-    MDp->done = 1;
+-  }
+-}
+-
+-/*
+-** Finish up MD4 computation and return message digest.
+-*/
+-void
+-MD4Final(buf, MD)
+-unsigned char *buf;
+-MD4_CTX *MD;
+-{
+-  int i, j;
+-  unsigned int w;
+-
+-  MD4Update(MD, NULL, 0);
+-  for (i = 0; i < 4; ++i) {
+-    w = MD->buffer[i];
+-    for (j = 0; j < 4; ++j) {
+-      *buf++ = w;
+-      w >>= 8;
+-    }
+-  }
+-}
+-
+-/*
+-** End of md4.c
+-****************************(cut)***********************************/
+--- a/pppd/md4.h
++++ /dev/null
+@@ -1,64 +0,0 @@
+-
+-/*
+-** ********************************************************************
+-** md4.h -- Header file for implementation of                        **
+-** MD4 Message Digest Algorithm                                      **
+-** Updated: 2/13/90 by Ronald L. Rivest                              **
+-** (C) 1990 RSA Data Security, Inc.                                  **
+-** ********************************************************************
+-*/
+-
+-#ifndef __P
+-# if defined(__STDC__) || defined(__GNUC__)
+-#  define __P(x) x
+-# else
+-#  define __P(x) ()
+-# endif
+-#endif
+-
+-
+-/* MDstruct is the data structure for a message digest computation.
+-*/
+-typedef struct {
+-	unsigned int buffer[4]; /* Holds 4-word result of MD computation */
+-	unsigned char count[8]; /* Number of bits processed so far */
+-	unsigned int done;      /* Nonzero means MD computation finished */
+-} MD4_CTX;
+-
+-/* MD4Init(MD4_CTX *)
+-** Initialize the MD4_CTX prepatory to doing a message digest
+-** computation.
+-*/
+-extern void MD4Init __P((MD4_CTX *MD));
+-
+-/* MD4Update(MD,X,count)
+-** Input: X -- a pointer to an array of unsigned characters.
+-**        count -- the number of bits of X to use (an unsigned int).
+-** Updates MD using the first "count" bits of X.
+-** The array pointed to by X is not modified.
+-** If count is not a multiple of 8, MD4Update uses high bits of
+-** last byte.
+-** This is the basic input routine for a user.
+-** The routine terminates the MD computation when count < 512, so
+-** every MD computation should end with one call to MD4Update with a
+-** count less than 512.  Zero is OK for a count.
+-*/
+-extern void MD4Update __P((MD4_CTX *MD, unsigned char *X, unsigned int count));
+-
+-/* MD4Print(MD)
+-** Prints message digest buffer MD as 32 hexadecimal digits.
+-** Order is from low-order byte of buffer[0] to high-order byte
+-** of buffer[3].
+-** Each byte is printed with high-order hexadecimal digit first.
+-*/
+-extern void MD4Print __P((MD4_CTX *));
+-
+-/* MD4Final(buf, MD)
+-** Returns message digest from MD and terminates the message
+-** digest computation.
+-*/
+-extern void MD4Final __P((unsigned char *, MD4_CTX *));
+-
+-/*
+-** End of md4.h
+-****************************(cut)***********************************/
+--- a/pppd/md5.c
++++ /dev/null
+@@ -1,311 +0,0 @@
+-
+-
+-/*
+- ***********************************************************************
+- ** md5.c -- the source code for MD5 routines                         **
+- ** RSA Data Security, Inc. MD5 Message-Digest Algorithm              **
+- ** Created: 2/17/90 RLR                                              **
+- ** Revised: 1/91 SRD,AJ,BSK,JT Reference C ver., 7/10 constant corr. **
+- ***********************************************************************
+- */
+-
+-/*
+- ***********************************************************************
+- ** Copyright (C) 1990, RSA Data Security, Inc. All rights reserved.  **
+- **                                                                   **
+- ** License to copy and use this software is granted provided that    **
+- ** it is identified as the "RSA Data Security, Inc. MD5 Message-     **
+- ** Digest Algorithm" in all material mentioning or referencing this  **
+- ** software or this function.                                        **
+- **                                                                   **
+- ** License is also granted to make and use derivative works          **
+- ** provided that such works are identified as "derived from the RSA  **
+- ** Data Security, Inc. MD5 Message-Digest Algorithm" in all          **
+- ** material mentioning or referencing the derived work.              **
+- **                                                                   **
+- ** RSA Data Security, Inc. makes no representations concerning       **
+- ** either the merchantability of this software or the suitability    **
+- ** of this software for any particular purpose.  It is provided "as  **
+- ** is" without express or implied warranty of any kind.              **
+- **                                                                   **
+- ** These notices must be retained in any copies of any part of this  **
+- ** documentation and/or software.                                    **
+- ***********************************************************************
+- */
+-
+-#ifndef USE_EAPTLS
+-
+-#include <string.h>
+-#include "md5.h"
+-
+-/*
+- ***********************************************************************
+- **  Message-digest routines:                                         **
+- **  To form the message digest for a message M                       **
+- **    (1) Initialize a context buffer mdContext using MD5_Init       **
+- **    (2) Call MD5_Update on mdContext and M                         **
+- **    (3) Call MD5_Final on mdContext                                **
+- **  The message digest is now in mdContext->digest[0...15]           **
+- ***********************************************************************
+- */
+-
+-/* forward declaration */
+-static void Transform (UINT4 *buf, UINT4 *in);
+-
+-static unsigned char PADDING[64] = {
+-  0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+-};
+-
+-/* F, G, H and I are basic MD5 functions */
+-#define F(x, y, z) (((x) & (y)) | ((~x) & (z)))
+-#define G(x, y, z) (((x) & (z)) | ((y) & (~z)))
+-#define H(x, y, z) ((x) ^ (y) ^ (z))
+-#define I(x, y, z) ((y) ^ ((x) | (~z)))
+-
+-/* ROTATE_LEFT rotates x left n bits */
+-#define ROTATE_LEFT(x, n) (((x) << (n)) | ((x) >> (32-(n))))
+-
+-/* FF, GG, HH, and II transformations for rounds 1, 2, 3, and 4 */
+-/* Rotation is separate from addition to prevent recomputation */
+-#define FF(a, b, c, d, x, s, ac) \
+-  {(a) += F ((b), (c), (d)) + (x) + (UINT4)(ac); \
+-   (a) = ROTATE_LEFT ((a), (s)); \
+-   (a) += (b); \
+-  }
+-#define GG(a, b, c, d, x, s, ac) \
+-  {(a) += G ((b), (c), (d)) + (x) + (UINT4)(ac); \
+-   (a) = ROTATE_LEFT ((a), (s)); \
+-   (a) += (b); \
+-  }
+-#define HH(a, b, c, d, x, s, ac) \
+-  {(a) += H ((b), (c), (d)) + (x) + (UINT4)(ac); \
+-   (a) = ROTATE_LEFT ((a), (s)); \
+-   (a) += (b); \
+-  }
+-#define II(a, b, c, d, x, s, ac) \
+-  {(a) += I ((b), (c), (d)) + (x) + (UINT4)(ac); \
+-   (a) = ROTATE_LEFT ((a), (s)); \
+-   (a) += (b); \
+-  }
+-
+-#ifdef __STDC__
+-#define UL(x)	x##U
+-#else
+-#define UL(x)	x
+-#endif
+-
+-/* The routine MD5_Init initializes the message-digest context
+-   mdContext. All fields are set to zero.
+- */
+-void MD5_Init (mdContext)
+-MD5_CTX *mdContext;
+-{
+-  mdContext->i[0] = mdContext->i[1] = (UINT4)0;
+-
+-  /* Load magic initialization constants.
+-   */
+-  mdContext->buf[0] = (UINT4)0x67452301;
+-  mdContext->buf[1] = (UINT4)0xefcdab89;
+-  mdContext->buf[2] = (UINT4)0x98badcfe;
+-  mdContext->buf[3] = (UINT4)0x10325476;
+-}
+-
+-/* The routine MD5Update updates the message-digest context to
+-   account for the presence of each of the characters inBuf[0..inLen-1]
+-   in the message whose digest is being computed.
+- */
+-void MD5_Update (mdContext, inBuf, inLen)
+-MD5_CTX *mdContext;
+-unsigned char *inBuf;
+-unsigned int inLen;
+-{
+-  UINT4 in[16];
+-  int mdi;
+-  unsigned int i, ii;
+-
+-  /* compute number of bytes mod 64 */
+-  mdi = (int)((mdContext->i[0] >> 3) & 0x3F);
+-
+-  /* update number of bits */
+-  if ((mdContext->i[0] + ((UINT4)inLen << 3)) < mdContext->i[0])
+-    mdContext->i[1]++;
+-  mdContext->i[0] += ((UINT4)inLen << 3);
+-  mdContext->i[1] += ((UINT4)inLen >> 29);
+-
+-  while (inLen--) {
+-    /* add new character to buffer, increment mdi */
+-    mdContext->in[mdi++] = *inBuf++;
+-
+-    /* transform if necessary */
+-    if (mdi == 0x40) {
+-      for (i = 0, ii = 0; i < 16; i++, ii += 4)
+-        in[i] = (((UINT4)mdContext->in[ii+3]) << 24) |
+-                (((UINT4)mdContext->in[ii+2]) << 16) |
+-                (((UINT4)mdContext->in[ii+1]) << 8) |
+-                ((UINT4)mdContext->in[ii]);
+-      Transform (mdContext->buf, in);
+-      mdi = 0;
+-    }
+-  }
+-}
+-
+-/* The routine MD5Final terminates the message-digest computation and
+-   ends with the desired message digest in mdContext->digest[0...15].
+- */
+-void MD5_Final (hash, mdContext)
+-unsigned char hash[];
+-MD5_CTX *mdContext;
+-{
+-  UINT4 in[16];
+-  int mdi;
+-  unsigned int i, ii;
+-  unsigned int padLen;
+-
+-  /* save number of bits */
+-  in[14] = mdContext->i[0];
+-  in[15] = mdContext->i[1];
+-
+-  /* compute number of bytes mod 64 */
+-  mdi = (int)((mdContext->i[0] >> 3) & 0x3F);
+-
+-  /* pad out to 56 mod 64 */
+-  padLen = (mdi < 56) ? (56 - mdi) : (120 - mdi);
+-  MD5_Update (mdContext, PADDING, padLen);
+-
+-  /* append length in bits and transform */
+-  for (i = 0, ii = 0; i < 14; i++, ii += 4)
+-    in[i] = (((UINT4)mdContext->in[ii+3]) << 24) |
+-            (((UINT4)mdContext->in[ii+2]) << 16) |
+-            (((UINT4)mdContext->in[ii+1]) << 8) |
+-            ((UINT4)mdContext->in[ii]);
+-  Transform (mdContext->buf, in);
+-
+-  /* store buffer in digest */
+-  for (i = 0, ii = 0; i < 4; i++, ii += 4) {
+-    mdContext->digest[ii] = (unsigned char)(mdContext->buf[i] & 0xFF);
+-    mdContext->digest[ii+1] =
+-      (unsigned char)((mdContext->buf[i] >> 8) & 0xFF);
+-    mdContext->digest[ii+2] =
+-      (unsigned char)((mdContext->buf[i] >> 16) & 0xFF);
+-    mdContext->digest[ii+3] =
+-      (unsigned char)((mdContext->buf[i] >> 24) & 0xFF);
+-  }
+-  memcpy(hash, mdContext->digest, 16);
+-}
+-
+-/* Basic MD5 step. Transforms buf based on in.
+- */
+-static void Transform (buf, in)
+-UINT4 *buf;
+-UINT4 *in;
+-{
+-  UINT4 a = buf[0], b = buf[1], c = buf[2], d = buf[3];
+-
+-  /* Round 1 */
+-#define S11 7
+-#define S12 12
+-#define S13 17
+-#define S14 22
+-  FF ( a, b, c, d, in[ 0], S11, UL(3614090360)); /* 1 */
+-  FF ( d, a, b, c, in[ 1], S12, UL(3905402710)); /* 2 */
+-  FF ( c, d, a, b, in[ 2], S13, UL( 606105819)); /* 3 */
+-  FF ( b, c, d, a, in[ 3], S14, UL(3250441966)); /* 4 */
+-  FF ( a, b, c, d, in[ 4], S11, UL(4118548399)); /* 5 */
+-  FF ( d, a, b, c, in[ 5], S12, UL(1200080426)); /* 6 */
+-  FF ( c, d, a, b, in[ 6], S13, UL(2821735955)); /* 7 */
+-  FF ( b, c, d, a, in[ 7], S14, UL(4249261313)); /* 8 */
+-  FF ( a, b, c, d, in[ 8], S11, UL(1770035416)); /* 9 */
+-  FF ( d, a, b, c, in[ 9], S12, UL(2336552879)); /* 10 */
+-  FF ( c, d, a, b, in[10], S13, UL(4294925233)); /* 11 */
+-  FF ( b, c, d, a, in[11], S14, UL(2304563134)); /* 12 */
+-  FF ( a, b, c, d, in[12], S11, UL(1804603682)); /* 13 */
+-  FF ( d, a, b, c, in[13], S12, UL(4254626195)); /* 14 */
+-  FF ( c, d, a, b, in[14], S13, UL(2792965006)); /* 15 */
+-  FF ( b, c, d, a, in[15], S14, UL(1236535329)); /* 16 */
+-
+-  /* Round 2 */
+-#define S21 5
+-#define S22 9
+-#define S23 14
+-#define S24 20
+-  GG ( a, b, c, d, in[ 1], S21, UL(4129170786)); /* 17 */
+-  GG ( d, a, b, c, in[ 6], S22, UL(3225465664)); /* 18 */
+-  GG ( c, d, a, b, in[11], S23, UL( 643717713)); /* 19 */
+-  GG ( b, c, d, a, in[ 0], S24, UL(3921069994)); /* 20 */
+-  GG ( a, b, c, d, in[ 5], S21, UL(3593408605)); /* 21 */
+-  GG ( d, a, b, c, in[10], S22, UL(  38016083)); /* 22 */
+-  GG ( c, d, a, b, in[15], S23, UL(3634488961)); /* 23 */
+-  GG ( b, c, d, a, in[ 4], S24, UL(3889429448)); /* 24 */
+-  GG ( a, b, c, d, in[ 9], S21, UL( 568446438)); /* 25 */
+-  GG ( d, a, b, c, in[14], S22, UL(3275163606)); /* 26 */
+-  GG ( c, d, a, b, in[ 3], S23, UL(4107603335)); /* 27 */
+-  GG ( b, c, d, a, in[ 8], S24, UL(1163531501)); /* 28 */
+-  GG ( a, b, c, d, in[13], S21, UL(2850285829)); /* 29 */
+-  GG ( d, a, b, c, in[ 2], S22, UL(4243563512)); /* 30 */
+-  GG ( c, d, a, b, in[ 7], S23, UL(1735328473)); /* 31 */
+-  GG ( b, c, d, a, in[12], S24, UL(2368359562)); /* 32 */
+-
+-  /* Round 3 */
+-#define S31 4
+-#define S32 11
+-#define S33 16
+-#define S34 23
+-  HH ( a, b, c, d, in[ 5], S31, UL(4294588738)); /* 33 */
+-  HH ( d, a, b, c, in[ 8], S32, UL(2272392833)); /* 34 */
+-  HH ( c, d, a, b, in[11], S33, UL(1839030562)); /* 35 */
+-  HH ( b, c, d, a, in[14], S34, UL(4259657740)); /* 36 */
+-  HH ( a, b, c, d, in[ 1], S31, UL(2763975236)); /* 37 */
+-  HH ( d, a, b, c, in[ 4], S32, UL(1272893353)); /* 38 */
+-  HH ( c, d, a, b, in[ 7], S33, UL(4139469664)); /* 39 */
+-  HH ( b, c, d, a, in[10], S34, UL(3200236656)); /* 40 */
+-  HH ( a, b, c, d, in[13], S31, UL( 681279174)); /* 41 */
+-  HH ( d, a, b, c, in[ 0], S32, UL(3936430074)); /* 42 */
+-  HH ( c, d, a, b, in[ 3], S33, UL(3572445317)); /* 43 */
+-  HH ( b, c, d, a, in[ 6], S34, UL(  76029189)); /* 44 */
+-  HH ( a, b, c, d, in[ 9], S31, UL(3654602809)); /* 45 */
+-  HH ( d, a, b, c, in[12], S32, UL(3873151461)); /* 46 */
+-  HH ( c, d, a, b, in[15], S33, UL( 530742520)); /* 47 */
+-  HH ( b, c, d, a, in[ 2], S34, UL(3299628645)); /* 48 */
+-
+-  /* Round 4 */
+-#define S41 6
+-#define S42 10
+-#define S43 15
+-#define S44 21
+-  II ( a, b, c, d, in[ 0], S41, UL(4096336452)); /* 49 */
+-  II ( d, a, b, c, in[ 7], S42, UL(1126891415)); /* 50 */
+-  II ( c, d, a, b, in[14], S43, UL(2878612391)); /* 51 */
+-  II ( b, c, d, a, in[ 5], S44, UL(4237533241)); /* 52 */
+-  II ( a, b, c, d, in[12], S41, UL(1700485571)); /* 53 */
+-  II ( d, a, b, c, in[ 3], S42, UL(2399980690)); /* 54 */
+-  II ( c, d, a, b, in[10], S43, UL(4293915773)); /* 55 */
+-  II ( b, c, d, a, in[ 1], S44, UL(2240044497)); /* 56 */
+-  II ( a, b, c, d, in[ 8], S41, UL(1873313359)); /* 57 */
+-  II ( d, a, b, c, in[15], S42, UL(4264355552)); /* 58 */
+-  II ( c, d, a, b, in[ 6], S43, UL(2734768916)); /* 59 */
+-  II ( b, c, d, a, in[13], S44, UL(1309151649)); /* 60 */
+-  II ( a, b, c, d, in[ 4], S41, UL(4149444226)); /* 61 */
+-  II ( d, a, b, c, in[11], S42, UL(3174756917)); /* 62 */
+-  II ( c, d, a, b, in[ 2], S43, UL( 718787259)); /* 63 */
+-  II ( b, c, d, a, in[ 9], S44, UL(3951481745)); /* 64 */
+-
+-  buf[0] += a;
+-  buf[1] += b;
+-  buf[2] += c;
+-  buf[3] += d;
+-}
+-
+-/*
+- ***********************************************************************
+- ** End of md5.c                                                      **
+- ******************************** (cut) ********************************
+- */
+-#endif /* USE_EAPTLS */
+-
+--- a/pppd/md5.h
++++ /dev/null
+@@ -1,68 +0,0 @@
+-/*
+- ***********************************************************************
+- ** md5.h -- header file for implementation of MD5                    **
+- ** RSA Data Security, Inc. MD5 Message-Digest Algorithm              **
+- ** Created: 2/17/90 RLR                                              **
+- ** Revised: 12/27/90 SRD,AJ,BSK,JT Reference C version               **
+- ** Revised (for MD5): RLR 4/27/91                                    **
+- **   -- G modified to have y&~z instead of y&z                       **
+- **   -- FF, GG, HH modified to add in last register done             **
+- **   -- Access pattern: round 2 works mod 5, round 3 works mod 3     **
+- **   -- distinct additive constant for each step                     **
+- **   -- round 4 added, working mod 7                                 **
+- ***********************************************************************
+- */
+-
+-/*
+- ***********************************************************************
+- ** Copyright (C) 1990, RSA Data Security, Inc. All rights reserved.  **
+- **                                                                   **
+- ** License to copy and use this software is granted provided that    **
+- ** it is identified as the "RSA Data Security, Inc. MD5 Message-     **
+- ** Digest Algorithm" in all material mentioning or referencing this  **
+- ** software or this function.                                        **
+- **                                                                   **
+- ** License is also granted to make and use derivative works          **
+- ** provided that such works are identified as "derived from the RSA  **
+- ** Data Security, Inc. MD5 Message-Digest Algorithm" in all          **
+- ** material mentioning or referencing the derived work.              **
+- **                                                                   **
+- ** RSA Data Security, Inc. makes no representations concerning       **
+- ** either the merchantability of this software or the suitability    **
+- ** of this software for any particular purpose.  It is provided "as  **
+- ** is" without express or implied warranty of any kind.              **
+- **                                                                   **
+- ** These notices must be retained in any copies of any part of this  **
+- ** documentation and/or software.                                    **
+- ***********************************************************************
+- */
+-#ifndef USE_EAPTLS
+-
+-#ifndef __MD5_INCLUDE__
+-
+-/* typedef a 32-bit type */
+-#ifdef _LP64
+-typedef unsigned int UINT4;
+-typedef int          INT4;
+-#else
+-typedef unsigned long UINT4;
+-typedef long          INT4;
+-#endif
+-#define _UINT4_T
+-
+-/* Data structure for MD5 (Message-Digest) computation */
+-typedef struct {
+-  UINT4 i[2];                   /* number of _bits_ handled mod 2^64 */
+-  UINT4 buf[4];                                    /* scratch buffer */
+-  unsigned char in[64];                              /* input buffer */
+-  unsigned char digest[16];     /* actual digest after MD5Final call */
+-} MD5_CTX;
+-
+-void MD5_Init (MD5_CTX *mdContext);
+-void MD5_Update (MD5_CTX *mdContext, unsigned char *inBuf, unsigned int inLen);
+-void MD5_Final (unsigned char hash[], MD5_CTX *mdContext);
+-
+-#define __MD5_INCLUDE__
+-#endif /* __MD5_INCLUDE__ */
+-
+-#endif /* USE_EAPTLS */
+--- a/pppd/plugins/radius/md5.c
++++ b/pppd/plugins/radius/md5.c
+@@ -1,7 +1,7 @@
+ /*
+  * $Id: md5.c,v 1.1 2004/11/14 07:26:26 paulus Exp $
+  */
+-#include "md5.h"
++#include <openssl/md5.h>
+ 
+ void rc_md5_calc (unsigned char *output, unsigned char *input, unsigned int inlen)
+ {
+--- a/pppd/plugins/radius/radius.c
++++ b/pppd/plugins/radius/radius.c
+@@ -31,7 +31,7 @@
+ #ifdef CHAPMS
+ #include "chap_ms.h"
+ #ifdef MPPE
+-#include "md5.h"
++#include <openssl/md5.h>
+ #endif
+ #endif
+ #include "radiusclient.h"
+--- a/pppd/plugins/winbind.c
++++ b/pppd/plugins/winbind.c
+@@ -38,7 +38,7 @@
+ #include "chap-new.h"
+ #include "chap_ms.h"
+ #ifdef MPPE
+-#include "md5.h"
++#include <openssl/md5.h>
+ #endif
+ #include "fsm.h"
+ #include "ipcp.h"
+--- a/pppd/sha1.c
++++ /dev/null
+@@ -1,170 +0,0 @@
+-/*
+- * ftp://ftp.funet.fi/pub/crypt/hash/sha/sha1.c
+- * 
+- * SHA-1 in C
+- * By Steve Reid <steve@edmweb.com>
+- * 100% Public Domain
+- * 
+- * Test Vectors (from FIPS PUB 180-1)
+- * "abc"
+- * A9993E36 4706816A BA3E2571 7850C26C 9CD0D89D
+- * "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"
+- * 84983E44 1C3BD26E BAAE4AA1 F95129E5 E54670F1
+- * A million repetitions of "a"
+- * 34AA973C D4C4DAA4 F61EEB2B DBAD2731 6534016F
+- */
+-
+-/* #define SHA1HANDSOFF * Copies data before messing with it. */
+-
+-#include <string.h>
+-#include <netinet/in.h>	/* htonl() */
+-#include <net/ppp_defs.h>
+-#include "sha1.h"
+-
+-static void
+-SHA1_Transform(u_int32_t[5], const unsigned char[64]);
+-
+-#define rol(value, bits) (((value) << (bits)) | ((value) >> (32 - (bits))))
+-
+-/* blk0() and blk() perform the initial expand. */
+-/* I got the idea of expanding during the round function from SSLeay */
+-#define blk0(i) (block->l[i] = htonl(block->l[i]))
+-#define blk(i) (block->l[i&15] = rol(block->l[(i+13)&15]^block->l[(i+8)&15] \
+-    ^block->l[(i+2)&15]^block->l[i&15],1))
+-
+-/* (R0+R1), R2, R3, R4 are the different operations used in SHA1 */
+-#define R0(v,w,x,y,z,i) z+=((w&(x^y))^y)+blk0(i)+0x5A827999+rol(v,5);w=rol(w,30);
+-#define R1(v,w,x,y,z,i) z+=((w&(x^y))^y)+blk(i)+0x5A827999+rol(v,5);w=rol(w,30);
+-#define R2(v,w,x,y,z,i) z+=(w^x^y)+blk(i)+0x6ED9EBA1+rol(v,5);w=rol(w,30);
+-#define R3(v,w,x,y,z,i) z+=(((w|x)&y)|(w&x))+blk(i)+0x8F1BBCDC+rol(v,5);w=rol(w,30);
+-#define R4(v,w,x,y,z,i) z+=(w^x^y)+blk(i)+0xCA62C1D6+rol(v,5);w=rol(w,30);
+-
+-
+-/* Hash a single 512-bit block. This is the core of the algorithm. */
+-
+-static void
+-SHA1_Transform(u_int32_t state[5], const unsigned char buffer[64])
+-{
+-    u_int32_t a, b, c, d, e;
+-    typedef union {
+-	unsigned char c[64];
+-	u_int32_t l[16];
+-    } CHAR64LONG16;
+-    CHAR64LONG16 *block;
+-
+-#ifdef SHA1HANDSOFF
+-    static unsigned char workspace[64];
+-    block = (CHAR64LONG16 *) workspace;
+-    memcpy(block, buffer, 64);
+-#else
+-    block = (CHAR64LONG16 *) buffer;
+-#endif
+-    /* Copy context->state[] to working vars */
+-    a = state[0];
+-    b = state[1];
+-    c = state[2];
+-    d = state[3];
+-    e = state[4];
+-    /* 4 rounds of 20 operations each. Loop unrolled. */
+-    R0(a,b,c,d,e, 0); R0(e,a,b,c,d, 1); R0(d,e,a,b,c, 2); R0(c,d,e,a,b, 3);
+-    R0(b,c,d,e,a, 4); R0(a,b,c,d,e, 5); R0(e,a,b,c,d, 6); R0(d,e,a,b,c, 7);
+-    R0(c,d,e,a,b, 8); R0(b,c,d,e,a, 9); R0(a,b,c,d,e,10); R0(e,a,b,c,d,11);
+-    R0(d,e,a,b,c,12); R0(c,d,e,a,b,13); R0(b,c,d,e,a,14); R0(a,b,c,d,e,15);
+-    R1(e,a,b,c,d,16); R1(d,e,a,b,c,17); R1(c,d,e,a,b,18); R1(b,c,d,e,a,19);
+-    R2(a,b,c,d,e,20); R2(e,a,b,c,d,21); R2(d,e,a,b,c,22); R2(c,d,e,a,b,23);
+-    R2(b,c,d,e,a,24); R2(a,b,c,d,e,25); R2(e,a,b,c,d,26); R2(d,e,a,b,c,27);
+-    R2(c,d,e,a,b,28); R2(b,c,d,e,a,29); R2(a,b,c,d,e,30); R2(e,a,b,c,d,31);
+-    R2(d,e,a,b,c,32); R2(c,d,e,a,b,33); R2(b,c,d,e,a,34); R2(a,b,c,d,e,35);
+-    R2(e,a,b,c,d,36); R2(d,e,a,b,c,37); R2(c,d,e,a,b,38); R2(b,c,d,e,a,39);
+-    R3(a,b,c,d,e,40); R3(e,a,b,c,d,41); R3(d,e,a,b,c,42); R3(c,d,e,a,b,43);
+-    R3(b,c,d,e,a,44); R3(a,b,c,d,e,45); R3(e,a,b,c,d,46); R3(d,e,a,b,c,47);
+-    R3(c,d,e,a,b,48); R3(b,c,d,e,a,49); R3(a,b,c,d,e,50); R3(e,a,b,c,d,51);
+-    R3(d,e,a,b,c,52); R3(c,d,e,a,b,53); R3(b,c,d,e,a,54); R3(a,b,c,d,e,55);
+-    R3(e,a,b,c,d,56); R3(d,e,a,b,c,57); R3(c,d,e,a,b,58); R3(b,c,d,e,a,59);
+-    R4(a,b,c,d,e,60); R4(e,a,b,c,d,61); R4(d,e,a,b,c,62); R4(c,d,e,a,b,63);
+-    R4(b,c,d,e,a,64); R4(a,b,c,d,e,65); R4(e,a,b,c,d,66); R4(d,e,a,b,c,67);
+-    R4(c,d,e,a,b,68); R4(b,c,d,e,a,69); R4(a,b,c,d,e,70); R4(e,a,b,c,d,71);
+-    R4(d,e,a,b,c,72); R4(c,d,e,a,b,73); R4(b,c,d,e,a,74); R4(a,b,c,d,e,75);
+-    R4(e,a,b,c,d,76); R4(d,e,a,b,c,77); R4(c,d,e,a,b,78); R4(b,c,d,e,a,79);
+-    /* Add the working vars back into context.state[] */
+-    state[0] += a;
+-    state[1] += b;
+-    state[2] += c;
+-    state[3] += d;
+-    state[4] += e;
+-    /* Wipe variables */
+-    a = b = c = d = e = 0;
+-}
+-
+-
+-/* SHA1Init - Initialize new context */
+-
+-void
+-SHA1_Init(SHA1_CTX *context)
+-{
+-    /* SHA1 initialization constants */
+-    context->state[0] = 0x67452301;
+-    context->state[1] = 0xEFCDAB89;
+-    context->state[2] = 0x98BADCFE;
+-    context->state[3] = 0x10325476;
+-    context->state[4] = 0xC3D2E1F0;
+-    context->count[0] = context->count[1] = 0;
+-}
+-
+-
+-/* Run your data through this. */
+-
+-void
+-SHA1_Update(SHA1_CTX *context, const unsigned char *data, unsigned int len)
+-{
+-    unsigned int i, j;
+-
+-    j = (context->count[0] >> 3) & 63;
+-    if ((context->count[0] += len << 3) < (len << 3)) context->count[1]++;
+-    context->count[1] += (len >> 29);
+-    i = 64 - j;
+-    while (len >= i) {
+-	memcpy(&context->buffer[j], data, i);
+-	SHA1_Transform(context->state, context->buffer);
+-	data += i;
+-	len -= i;
+-	i = 64;
+-	j = 0;
+-    }
+-
+-    memcpy(&context->buffer[j], data, len);
+-}
+-
+-
+-/* Add padding and return the message digest. */
+-
+-void
+-SHA1_Final(unsigned char digest[20], SHA1_CTX *context)
+-{
+-    u_int32_t i, j;
+-    unsigned char finalcount[8];
+-
+-    for (i = 0; i < 8; i++) {
+-        finalcount[i] = (unsigned char)((context->count[(i >= 4 ? 0 : 1)]
+-         >> ((3-(i & 3)) * 8) ) & 255);  /* Endian independent */
+-    }
+-    SHA1_Update(context, (unsigned char *) "\200", 1);
+-    while ((context->count[0] & 504) != 448) {
+-	SHA1_Update(context, (unsigned char *) "\0", 1);
+-    }
+-    SHA1_Update(context, finalcount, 8);  /* Should cause a SHA1Transform() */
+-    for (i = 0; i < 20; i++) {
+-	digest[i] = (unsigned char)
+-		     ((context->state[i>>2] >> ((3-(i & 3)) * 8) ) & 255);
+-    }
+-    /* Wipe variables */
+-    i = j = 0;
+-    memset(context->buffer, 0, 64);
+-    memset(context->state, 0, 20);
+-    memset(context->count, 0, 8);
+-    memset(&finalcount, 0, 8);
+-#ifdef SHA1HANDSOFF  /* make SHA1Transform overwrite it's own static vars */
+-    SHA1Transform(context->state, context->buffer);
+-#endif
+-}
+-
+--- a/pppd/sha1.h
++++ /dev/null
+@@ -1,31 +0,0 @@
+-/* sha1.h */
+-
+-/* If OpenSSL is in use, then use that version of SHA-1 */
+-#ifdef OPENSSL
+-#include <t_sha.h>
+-#define __SHA1_INCLUDE_
+-#endif
+-
+-#ifndef __SHA1_INCLUDE_
+-
+-#ifndef SHA1_SIGNATURE_SIZE
+-#ifdef SHA_DIGESTSIZE
+-#define SHA1_SIGNATURE_SIZE SHA_DIGESTSIZE
+-#else
+-#define SHA1_SIGNATURE_SIZE 20
+-#endif
+-#endif
+-
+-typedef struct {
+-    u_int32_t state[5];
+-    u_int32_t count[2];
+-    unsigned char buffer[64];
+-} SHA1_CTX;
+-
+-extern void SHA1_Init(SHA1_CTX *);
+-extern void SHA1_Update(SHA1_CTX *, const unsigned char *, unsigned int);
+-extern void SHA1_Final(unsigned char[SHA1_SIGNATURE_SIZE], SHA1_CTX *);
+-
+-#define __SHA1_INCLUDE_
+-#endif /* __SHA1_INCLUDE_ */
+-

@@ -1,0 +1,38 @@
+#!/bin/sh
+set -e
+
+delete_etc_files() {
+    rm -f /etc/ppp/pap-secrets /etc/ppp/chap-secrets /etc/ppp/resolv.conf \
+	/etc/ppp/peers/provider /etc/chatscripts/provider
+    rmdir --ignore-fail-on-non-empty /etc/ppp/peers/ /etc/ppp/ \
+	/etc/ppp/ip-up.d/ /etc/ppp/ip-down.d/ \
+	/etc/chatscripts/
+}
+
+delete_var_files() {
+    rm -f /var/log/ppp.log /var/log/ppp-connect-errors \
+	/var/log/ppp-ipupdown.log
+}
+
+case "$1" in
+    remove)
+    ;;
+
+    purge)
+    delete_etc_files
+    delete_var_files
+    ;;
+
+    upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+    ;;
+
+    *)
+    echo "postrm called with unknown argument '$1'" >&2
+    exit 1
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0
+

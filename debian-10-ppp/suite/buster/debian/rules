@@ -1,0 +1,154 @@
+#!/usr/bin/make -f
+# -*- mode: makefile; coding: utf-8 -*-
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# Activate full hardening build flags
+export DEB_BUILD_MAINT_OPTIONS := hardening=+all
+
+PKD := $(abspath $(dir $(MAKEFILE_LIST)))
+
+include /usr/share/dpkg/default.mk
+
+DIR_PPP := $(CURDIR)/debian/ppp
+DIR_PPP_DEV := $(CURDIR)/debian/ppp-dev
+
+TMP_PPP := $(CURDIR)/debian/tmp-ppp
+TMP_UDEB := $(CURDIR)/debian/tmp-udeb
+
+PPP_PLUGIN_ABI := $(shell awk -F '"' '/VERSION/ { print $$2; }' \
+	$(CURDIR)/pppd/patchlevel.h)
+VERSION_DEBIAN := $(shell echo '$(DEB_VERSION)' | \
+	perl -ne 'print $$1 if m{^(?:\d+:)?(?:\d.*)\-(\d+.*)$$};')
+VERSION_ABI_PART := $(shell echo "$(VERSION_DEBIAN)" | \
+	perl -ne 'print $$1 if m{^(^\d+)\+};')
+
+UDEB_MAKEOPTS := \
+	CHAPMS= USE_CRYPT= NO_CRYPT_HACK=1 MPPE= FILTER= HAVE_MULTILINK= \
+	USE_TDB= HAS_SHADOW= USE_PAM= HAVE_INET6= CBCP= USE_SRP= MAXOCTETS= \
+	USE_BUILTIN_CRYPTO=1 USE_EAPTLS=
+UDEB_PLUGIN_DIRS := pppoatm rp-pppoe
+
+##############################################################################
+%:
+	dh $@
+
+override_dh_testdir:
+	dh_testdir
+	if [ "$(PPP_PLUGIN_ABI)" != "$(DEB_VERSION_UPSTREAM)" ]; then \
+	  echo; echo "**********"; \
+	  echo "VERSION in pppd/patchlevel.h must match upstream version."; \
+	  echo "Upstream version is '$(DEB_VERSION_UPSTREAM)'"; \
+	  echo "VERSION is '$(PPP_PLUGIN_ABI)'"; \
+	  echo "Aborting the build."; \
+	  echo "**********"; echo; \
+	  exit 1; \
+	fi
+	if [ -z "$(VERSION_ABI_PART)" ]; then \
+	  echo; echo "**********"; \
+	  echo "No ABI component found in the Debian revision field."; \
+	  echo "Please see debian/README.source for more information."; \
+	  echo "Aborting the build."; \
+	  echo "**********"; echo; \
+	  exit 1; \
+	fi
+
+override_dh_auto_clean:
+	rm -rf pppd-udeb changelog-from-README $(TMP_PPP) $(TMP_UDEB) \
+		debian/extra/dh_ppp.1p
+	[ ! -f Makefile ] || $(MAKE) dist-clean
+
+override_dh_auto_configure:
+	./configure --prefix=/usr
+	if [ ! -d pppd-udeb/ ]; then \
+		mkdir pppd-udeb/ && \
+		cp -ldpR pppd/* pppd-udeb/; \
+	fi
+	cd pppd-udeb/ && make clean
+	cd pppd-udeb/plugins/ && make clean
+	perl -i -pe 's/ -DIPX_CHANGE\b//' pppd-udeb/Makefile
+
+changelog-from-README:
+	{ \
+	  sed -e "/^What's new in ppp-/,/^. New hooks have been added./!d" README ; \
+	  echo ; \
+	  echo ; \
+	  cat Changes-2.3 ; \
+	} > changelog-from-README
+
+override_dh_auto_build-arch: changelog-from-README
+	dh_auto_build -- \
+		COPTS="$(CFLAGS) $(CPPFLAGS)" LDOPTS="$(LDFLAGS)"
+	dh_auto_build -Dpppd-udeb/ -- \
+		COPTS="$(CFLAGS) $(CPPFLAGS) -Os -fomit-frame-pointer" \
+		LDOPTS="$(LDFLAGS)" \
+		$(UDEB_MAKEOPTS)
+	dh_auto_build -Dpppd-udeb/plugins -- \
+		COPTS="$(CFLAGS) $(CPPFLAGS) -Os -fomit-frame-pointer" \
+		LDOPTS="$(LDFLAGS)" \
+		SUBDIRS="$(UDEB_PLUGIN_DIRS)" PLUGINS=
+
+override_dh_auto_build-indep: changelog-from-README
+	pod2man --section=1p --utf8 debian/extra/dh_ppp \
+		debian/extra/dh_ppp.1p
+
+override_dh_auto_install-arch:
+	dh_auto_install --destdir=$(TMP_PPP)/usr/
+	dh_auto_install -Dpppd-udeb/ --destdir=$(TMP_UDEB)/usr/ -- \
+		$(UDEB_MAKEOPTS)
+
+	for DIR in $(UDEB_PLUGIN_DIRS); do \
+		dh_auto_install -Dpppd-udeb/plugins/$$DIR \
+			--destdir=$(TMP_UDEB)/usr/; \
+	done
+
+override_dh_auto_install-indep:
+	$(MAKE) install-devel DESTDIR=$(DIR_PPP_DEV)/usr/
+	mkdir -p $(DIR_PPP_DEV)/usr/share/ppp-dev
+	$(PKD)/gen_substvars_dev $(DEB_VERSION_UPSTREAM) $(VERSION_ABI_PART) \
+	  > $(DIR_PPP_DEV)/usr/share/ppp-dev/substvars
+
+override_dh_installchangelogs:
+	dh_installchangelogs changelog-from-README
+
+override_dh_installexamples-arch:
+	dh_installexamples
+
+	# use our own version, not the upstream one
+	mv $(DIR_PPP)/usr/share/doc/ppp/examples/autopppd \
+		$(DIR_PPP)/usr/share/doc/ppp/examples/scripts/
+
+override_dh_installinit:
+	dh_installinit --name=pppd-dns --no-stop-on-upgrade --no-start
+
+override_dh_installsystemd:
+	dh_installsystemd --name=pppd-dns --no-stop-on-upgrade --no-start
+
+override_dh_perl:
+	dh_perl -d --package=ppp-dev
+	dh_perl --no-package=ppp-dev
+
+override_dh_fixperms-arch:
+	dh_fixperms
+	chown root:dip \
+		$(DIR_PPP)/etc/chatscripts/ \
+		$(DIR_PPP)/etc/ppp/ \
+		$(DIR_PPP)/etc/ppp/peers/ \
+		$(DIR_PPP)/usr/sbin/pppd
+	chmod 4754 $(DIR_PPP)/usr/sbin/pppd
+	chmod 2750 $(DIR_PPP)/etc/ppp/peers/ $(DIR_PPP)/etc/chatscripts/
+
+# Force dpkg-gensymbols to inspect pppd (it doesn't end .so) so that the
+# symbols file is generated. This needs the SONAME hack that gets applied in
+# debian/patches/pppd-soname-hack.patch to work. The -c2 below makes sure that
+# the build fails if there are any discrepancies in the symbols file in order
+# to catch ABI changes.
+override_dh_makeshlibs:
+	dh_makeshlibs --package=ppp -- -c2 -edebian/ppp/usr/sbin/pppd -V
+	dh_makeshlibs --no-package=ppp
+
+## http://wiki.debian.org/onlyjob/get-orig-source
+get-orig-source: $(info I: $(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM))
+	@echo "# Downloading..."
+	uscan --noconf --verbose --rename --destdir=$(CURDIR) --check-dirname-level=0 --force-download --download-version $(DEB_VERSION_UPSTREAM) $(PKD)

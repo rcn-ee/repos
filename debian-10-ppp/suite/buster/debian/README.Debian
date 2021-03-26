@@ -1,0 +1,143 @@
+Debian PPP package notes
+========================
+
+Table of contents: 
+
+  + Provided user space scripts
+  + Permissions
+  + Outbound dialing setup
+  + Inbound setup combined with mgetty
+  + Syslog facility level
+  + Logging of ip-up and ip-down
+  + DSL connections
+  + MSS clamping
+  + Naming of PPPoE interfaces
+
+ -- Christoph Lameter <clameter@debian.org>, 22 July 1997
+    Phil Hands <phil@hands.com>
+    Josip Rodin <jrodin@jagor.srce.hr>, 27 November 1999.
+    Marco d'Itri <md@linux.it>
+
+
+Provided user space scripts
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Since release 2.3.1, the ppp package provides scripts to conveniently
+control PPP from user space. Note that the scripts only work with the
+proper setup in /etc/ppp. Edit the configuration files and test the
+operation of your link in superuser mode first.
+
+pon		Bring link up. Executes pppd (you may specify the ISP name
+		on the command line), and will immediately return the
+		command prompt while still dialing.
+
+plog 		Shows the last lines of the pppd log. Basically, does
+		tail ppp.log.
+
+poff		Bring link down. Terminates connection by killing pppd.
+
+Please read the manual page pon(1) for specific descriptions of these
+commands.
+
+
+Permissions
+~~~~~~~~~~~
+Access to pppd is controlled via the membership in the "dip" group.
+
+
+Outbound dialing setup
+~~~~~~~~~~~~~~~~~~~~~~
+Edit the file /etc/ppp/peers/provider and put all options in it that you need
+to connect to your server. The most common options are already provided for
+you, and you should only need to set the login name and telephone number.
+
+Edit the file /etc/ppp/pap-secrets and put your password into the designated
+location.
+
+You should then be able to start the PPP connection with pon.
+
+You should never need to modify /etc/ppp/options.
+
+If you want to have PPP started at boot time then add something like this
+to /etc/network/interfaces:
+
+auto myisp
+iface myisp inet ppp
+        provider dsl-provider
+
+
+Inbound setup combined with mgetty
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Note: for this to work you need to have mgetty version >= 0.99 with its
+AutoPPP feature turned on.
+
+Edit the /etc/ppp/options file and uncomment the nameserver lines. Provide
+the IP addresses that you want the users to use for their name services.
+
+To have one options file for each serial port you run mgetty on, use
+the files /etc/ppp/options.ttyXX. Give each serial port an IP address
+in those files. That way that port is locked into using that IP number.
+Think what consequences that assignment might have for outbound use...
+
+That should be enough for dial-up from a Win9x or NT Server. The
+username/password on those system is used for a PAP authentication.
+The /etc/ppp/pap-secrets is already set up for such a situation. Mgetty is
+preconfigured to call pppd with parameters so that the PAP verification will
+be done through the /etc/passwd file.
+
+All your users should now be able to establish PPP connections by just
+specifying phone number, username, and password from Win9x.
+
+Inbound dial-up using dial-up scripts:
+A PPP session can be established from the regular Linux prompt by executing
+/usr/sbin/pppd. The user is limited to use the assigned IP address in
+/etc/ppp/options.ttyname and will not be able to override it.
+
+Note: there is support for callback, it can be done through scripts
+(see /usr/share/doc/ppp/examples/scripts/*callback), and with mgetty's
+`callback' program (see callback(8) manual page).
+
+
+Syslog facility level
+~~~~~~~~~~~~~~~~~~~~~
+The default level of LOG_DAEMON has been overridden (as described in the
+pppd(8) man page), to be LOG_LOCAL2.  The intent being that local2 be sent
+to /var/log/ppp.log for use by plog, if you add the following line to your
+/etc/syslog.conf file:
+
+local2.*		-/var/log/ppp.log
+
+
+Logging of ip-up and ip-down
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+If you want to enable logging of the ip-up and ip-down scripts output,
+then create the file /var/log/ppp-ipupdown.log .
+
+
+DSL connections
+~~~~~~~~~~~~~~~
+The files peers-pppoa, peers-pppoe and interfaces from
+/usr/share/doc/ppp/examples/ contain complete configuration examples
+for the protocols commonly used for DSL connections.
+Beware: the pppoatm kernel driver currently is not autoloaded, so PPPoA
+users probably want to add it to /proc/modules.
+The same applies to PPPoE users who need the br2684 module.
+
+
+MSS clamping
+~~~~~~~~~~~~
+If the computer running pppd acts as a router for other machines, you
+probably want to make it reduce the MSS field of outgoing packets, to
+avoid fragmentation and problems caused by path MTU blackholing.
+You may add something like this to /etc/ppp/ip-up.d/local:
+
+iptables --insert FORWARD 1 --proto tcp --tcp-flags SYN,RST SYN \
+	--out-interface $PPP_IFACE --match tcpmss --mss 1400:1536 \
+	--jump TCPMSS --clamp-mss-to-pmtu
+
+
+Naming of PPPoE interfaces
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+The rp-pppoe plugin usually accepts only eth*, nas* or tap* as interface
+names. Different names can be specified by adding the "nic-" prefix,
+which will be removed by the program.
+
