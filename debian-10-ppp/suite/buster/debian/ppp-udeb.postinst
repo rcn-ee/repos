@@ -197,9 +197,16 @@ cat > /etc/network/interfaces <<EOF
 # This file describes the network interfaces available on your system
 # and how to activate them. For more information, see interfaces(5).
 
+source /etc/network/interfaces.d/*
+
 # The loopback network interface
 auto lo
 iface lo inet loopback
+
+# This configuration stanza prevents ifupdown-aware network daemons
+# like NetworkManager from managing the interface which is used for
+# the PPPoE connection
+iface $IFACE inet manual
 
 # PPPoE connection
 auto provider

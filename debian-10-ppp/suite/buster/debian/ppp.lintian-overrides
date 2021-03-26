@@ -1,9 +1,5 @@
-
 # false positive; radrealms.c verified to build with -D_FORTIFY_SOURCE=2
-ppp binary: hardening-no-fortify-functions usr/lib/pppd/2.4.7/radrealms.so
-
-# pppd-dns is a one-shot init script; status doesn't make sense
-ppp binary: init.d-script-does-not-implement-optional-option etc/init.d/pppd-dns status
+ppp binary: hardening-no-fortify-functions usr/lib/pppd/2.4.8/radrealms.so
 
 # makes new files owned by group dip so that world read can be safely removed
 ppp binary: non-standard-dir-perm etc/chatscripts/ 2750 != 0755
@@ -15,3 +11,5 @@ ppp binary: package-contains-readme-for-other-platform-or-distro usr/share/doc/p
 # setuid root required to allow non-root (members of dip) to run ppp
 ppp binary: setuid-binary usr/sbin/pppd 4754 root/dip
 
+# minconn.so has no dependencies outside pppd itself
+ppp binary: shared-lib-without-dependency-information usr/lib/pppd/2.4.8/minconn.so

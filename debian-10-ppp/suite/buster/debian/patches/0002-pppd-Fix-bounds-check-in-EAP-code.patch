@@ -1,9 +1,7 @@
+From 8d7970b8f3db727fe798b65f3377fe6787575426 Mon Sep 17 00:00:00 2001
 From: Paul Mackerras <paulus@ozlabs.org>
 Date: Mon, 3 Feb 2020 15:53:28 +1100
-Subject: pppd: Fix bounds check in EAP code
-Origin: https://github.com/paulusmack/ppp/commit/8d7970b8f3db727fe798b65f3377fe6787575426
-Bug-Debian-Security: https://security-tracker.debian.org/tracker/CVE-2020-8597
-Bug-Debian: https://bugs.debian.org/950618
+Subject: [PATCH 2/3] pppd: Fix bounds check in EAP code
 
 Given that we have just checked vallen < len, it can never be the case
 that vallen >= len + sizeof(rhostname).  This fixes the check so we
@@ -38,5 +36,5 @@ index 94407f56a336..1b93db01aebd 100644
  			BCOPY(inp + vallen, rhostname, sizeof (rhostname) - 1);
  			rhostname[sizeof (rhostname) - 1] = '\0';
 -- 
-2.20.1
+2.24.1
 

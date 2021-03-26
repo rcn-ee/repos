@@ -4,7 +4,7 @@ for dialout.
 
 --- a/pppd/auth.c
 +++ b/pppd/auth.c
-@@ -1442,8 +1442,10 @@ check_passwd(unit, auser, userlen, apass
+@@ -1456,8 +1456,10 @@
  	    if (secret[0] != 0 && !login_secret) {
  		/* password given in pap-secrets - must match */
  		if (cryptpap || strcmp(passwd, secret) != 0) {
@@ -17,14 +17,14 @@ for dialout.
  	    }
 --- a/pppd/Makefile.linux
 +++ b/pppd/Makefile.linux
-@@ -121,10 +121,14 @@ CFLAGS   += -DHAS_SHADOW
+@@ -125,10 +125,14 @@
  #LIBS     += -lshadow $(LIBS)
  endif
  
 +ifdef NO_CRYPT_HACK
 +CFLAGS += -DNO_CRYPT_HACK
 +else
- ifneq ($(wildcard /usr/include/crypt.h),)
+ ifneq ($(wildcard $(shell $(CC) --print-sysroot)/usr/include/crypt.h),)
  CFLAGS  += -DHAVE_CRYPT_H=1
  LIBS	+= -lcrypt
  endif
@@ -34,7 +34,7 @@ for dialout.
  CFLAGS	+= -DHAVE_LOGWTMP=1
 --- a/pppd/session.c
 +++ b/pppd/session.c
-@@ -351,8 +351,10 @@ session_start(flags, user, passwd, ttyNa
+@@ -351,8 +351,10 @@
  	 */
          if (pw->pw_passwd == NULL || strlen(pw->pw_passwd) < 2)
              return SESSION_FAILED;

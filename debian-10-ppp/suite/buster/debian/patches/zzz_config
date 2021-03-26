@@ -2,8 +2,12 @@ Debian-specific changes.
 
 --- a/pppd/Makefile.linux
 +++ b/pppd/Makefile.linux
-@@ -61,14 +61,14 @@ HAVE_MULTILINK=y
- USE_TDB=y
+@@ -63,17 +63,17 @@
+ # Uncomment the next line to enable Type=notify services in systemd
+ # If enabled, and the user sets the up_sdnotify option, then
+ # pppd will not detach and will notify systemd when up.
+-#SYSTEMD=y
++SYSTEMD=y
  
  HAS_SHADOW=y
 -#USE_PAM=y
@@ -19,7 +23,7 @@ Debian-specific changes.
  
  # Enable EAP SRP-SHA1 authentication (requires libsrp)
  #USE_SRP=y
-@@ -182,11 +182,9 @@ LIBS	+= -ldl
+@@ -192,11 +192,9 @@
  endif
  
  ifdef FILTER
@@ -31,20 +35,6 @@ Debian-specific changes.
  
  ifdef HAVE_INET6
       PPPDSRCS += ipv6cp.c eui64.c
---- a/pppdump/Makefile.linux
-+++ b/pppdump/Makefile.linux
-@@ -2,9 +2,9 @@ DESTDIR = $(INSTROOT)@DESTDIR@
- BINDIR = $(DESTDIR)/sbin
- MANDIR = $(DESTDIR)/share/man/man8
- 
--DO_DEFLATE=y
-+#DO_DEFLATE=y
- DO_BSD_COMPRESS=y
--HAVE_ZLIB=n
-+HAVE_ZLIB=y
- 
- COPTS=-O2 -g
- CFLAGS= $(COPTS) -I../include/net
 --- a/pppd/pathnames.h
 +++ b/pppd/pathnames.h
 @@ -28,7 +28,7 @@
@@ -58,7 +48,7 @@ Debian-specific changes.
  
 --- a/pppd/pppd.h
 +++ b/pppd/pppd.h
-@@ -852,7 +852,7 @@ extern void (*snoop_send_hook) __P((unsi
+@@ -881,7 +881,7 @@
    || defined(DEBUGCHAP) || defined(DEBUG) || defined(DEBUGIPV6CP)
  #define LOG_PPP LOG_LOCAL2
  #else
@@ -67,3 +57,17 @@ Debian-specific changes.
  #endif
  #endif /* LOG_PPP */
  
+--- a/pppdump/Makefile.linux
++++ b/pppdump/Makefile.linux
+@@ -2,9 +2,9 @@
+ BINDIR = $(DESTDIR)/sbin
+ MANDIR = $(DESTDIR)/share/man/man8
+ 
+-DO_DEFLATE=y
++#DO_DEFLATE=y
+ DO_BSD_COMPRESS=y
+-HAVE_ZLIB=n
++HAVE_ZLIB=y
+ 
+ CFLAGS ?= -O
+ CFLAGS += -I../include/net

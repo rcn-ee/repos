@@ -40,9 +40,9 @@ of our use of the EAP-TLS patch which requires OpenSSL.
 -LIBS =
 +LIBS = -lcrypto
  
- # Uncomment the next 2 lines to include support for Microsoft's
+ # Uncomment the next line to include support for Microsoft's
  # MS-CHAP authentication protocol.  Also, edit plugins/radius/Makefile.linux.
-@@ -91,8 +91,8 @@
+@@ -95,8 +95,8 @@
  ifdef CHAPMS
  CFLAGS   += -DCHAPMS=1
  NEEDDES=y
@@ -53,7 +53,7 @@ of our use of the EAP-TLS patch which requires OpenSSL.
  ifdef MSLANMAN
  CFLAGS   += -DMSLANMAN=1
  endif
-@@ -104,25 +104,18 @@
+@@ -108,25 +108,18 @@
  # EAP SRP-SHA1
  ifdef USE_SRP
  CFLAGS	+= -DUSE_SRP -DOPENSSL -I/usr/local/ssl/include
@@ -105,7 +105,7 @@ of our use of the EAP-TLS patch which requires OpenSSL.
  #include "pppcrypt.h"
  #include "magic.h"
  
-@@ -535,8 +535,8 @@
+@@ -534,8 +534,8 @@
  	      char *username, u_char Challenge[8])
      
  {
@@ -116,7 +116,7 @@ of our use of the EAP-TLS patch which requires OpenSSL.
      char	*user;
  
      /* remove domain from "domain\username" */
-@@ -574,23 +574,11 @@
+@@ -573,23 +573,11 @@
  static void
  NTPasswordHash(u_char *secret, int secret_len, u_char hash[MD4_SIGNATURE_SIZE])
  {
@@ -143,7 +143,7 @@ of our use of the EAP-TLS patch which requires OpenSSL.
  
  }
  
-@@ -671,8 +659,8 @@
+@@ -670,8 +658,8 @@
  	  0x6E };
  
      int		i;
@@ -154,7 +154,7 @@ of our use of the EAP-TLS patch which requires OpenSSL.
      u_char	Challenge[8];
  
      SHA1_Init(&sha1Context);
-@@ -725,8 +713,8 @@
+@@ -724,8 +712,8 @@
  void
  mppe_set_keys(u_char *rchallenge, u_char PasswordHashHash[MD4_SIGNATURE_SIZE])
  {
@@ -165,7 +165,7 @@ of our use of the EAP-TLS patch which requires OpenSSL.
  
      SHA1_Init(&sha1Context);
      SHA1_Update(&sha1Context, PasswordHashHash, MD4_SIGNATURE_SIZE);
-@@ -769,9 +757,9 @@
+@@ -768,9 +756,9 @@
  mppe_set_keys2(u_char PasswordHashHash[MD4_SIGNATURE_SIZE],
  	       u_char NTResponse[24], int IsServer)
  {
@@ -978,7 +978,7 @@ of our use of the EAP-TLS patch which requires OpenSSL.
  #include "ipcp.h"
 --- a/pppd/sha1.c
 +++ /dev/null
-@@ -1,170 +0,0 @@
+@@ -1,171 +0,0 @@
 -/*
 - * ftp://ftp.funet.fi/pub/crypt/hash/sha/sha1.c
 - * 
@@ -998,6 +998,7 @@ of our use of the EAP-TLS patch which requires OpenSSL.
 -/* #define SHA1HANDSOFF * Copies data before messing with it. */
 -
 -#include <string.h>
+-#include <time.h>
 -#include <netinet/in.h>	/* htonl() */
 -#include <net/ppp_defs.h>
 -#include "sha1.h"

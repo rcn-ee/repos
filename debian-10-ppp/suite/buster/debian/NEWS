@@ -1,0 +1,15 @@
+ppp (2.4.8-1+1~exp1) experimental; urgency=medium
+
+  The pppd-dns init script and systemd unit have been removed. These were
+  intended to restore /etc/resolv.conf to how it was before pppd modified it,
+  for example when booting a system after a crash while pppd was running while
+  using the 'usepeerdns' option without resolvconf. This functionality has not
+  worked in a stable release since Debian Squeeze, released in July 2014.
+
+  If you use 'usepeerdns' I strongly recommend using it with resolvconf, or
+  managing pppd with a tool such as NetworkManager instead.
+
+  The usepeerdns functionality has *not* been removed, only the fallback
+  mechanism during boot which restores resolv.conf.
+
+ -- Chris Boot <bootc@debian.org>  Mon, 03 Feb 2020 12:05:07 +0100

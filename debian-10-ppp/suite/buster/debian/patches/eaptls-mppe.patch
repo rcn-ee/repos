@@ -374,7 +374,7 @@ changes:
  	$(INSTALL) -d -m 755 $@
 --- a/pppd/Makefile.linux
 +++ b/pppd/Makefile.linux
-@@ -76,6 +76,9 @@
+@@ -81,6 +81,9 @@
  # Use libutil
  USE_LIBUTIL=y
  
@@ -384,7 +384,7 @@ changes:
  MAXOCTETS=y
  
  INCLUDE_DIRS= -I../include
-@@ -116,6 +119,15 @@
+@@ -120,6 +123,15 @@
  PPPDOBJS += sha1.o
  endif
  
@@ -402,7 +402,7 @@ changes:
  #LIBS     += -lshadow $(LIBS)
 --- a/pppd/auth.c
 +++ b/pppd/auth.c
-@@ -109,6 +109,9 @@
+@@ -113,6 +113,9 @@
  #include "upap.h"
  #include "chap-new.h"
  #include "eap.h"
@@ -412,7 +412,7 @@ changes:
  #ifdef CBCP_SUPPORT
  #include "cbcp.h"
  #endif
-@@ -183,6 +186,11 @@
+@@ -186,6 +189,11 @@
  /* Hook for a plugin to get the CHAP password for authenticating us */
  int (*chap_passwd_hook) __P((char *user, char *passwd)) = NULL;
  
@@ -424,7 +424,7 @@ changes:
  /* Hook for a plugin to say whether it is OK if the peer
     refuses to authenticate. */
  int (*null_auth_hook) __P((struct wordlist **paddrs,
-@@ -238,6 +246,14 @@
+@@ -241,6 +249,14 @@
  bool explicit_user = 0;		/* Set if "user" option supplied */
  bool explicit_passwd = 0;	/* Set if "password" option supplied */
  char remote_name[MAXNAMELEN];	/* Peer's name for authentication */
@@ -439,7 +439,7 @@ changes:
  
  static char *uafname;		/* name of most recent +ua file */
  
-@@ -254,6 +270,19 @@
+@@ -257,6 +273,19 @@
  static int  have_chap_secret __P((char *, char *, int, int *));
  static int  have_srp_secret __P((char *client, char *server, int need_ip,
      int *lacks_ipp));
@@ -459,7 +459,7 @@ changes:
  static int  ip_addr_check __P((u_int32_t, struct permitted_ip *));
  static int  scan_authfile __P((FILE *, char *, char *, char *,
  			       struct wordlist **, struct wordlist **,
-@@ -401,6 +430,15 @@
+@@ -404,6 +433,15 @@
        "Set telephone number(s) which are allowed to connect",
        OPT_PRIV | OPT_A2LIST },
  
@@ -475,7 +475,7 @@ changes:
      { NULL }
  };
  
-@@ -730,6 +768,9 @@
+@@ -737,6 +775,9 @@
      lcp_options *wo = &lcp_wantoptions[unit];
      lcp_options *go = &lcp_gotoptions[unit];
      lcp_options *ho = &lcp_hisoptions[unit];
@@ -485,7 +485,7 @@ changes:
      int i;
      struct protent *protp;
  
-@@ -764,6 +805,22 @@
+@@ -771,6 +812,22 @@
  	}
      }
  
@@ -508,7 +508,7 @@ changes:
      new_phase(PHASE_AUTHENTICATE);
      auth = 0;
      if (go->neg_eap) {
-@@ -1277,6 +1334,15 @@
+@@ -1291,6 +1348,15 @@
  				    our_name, 1, &lacks_ip);
      }
  
@@ -524,7 +524,7 @@ changes:
      if (auth_required && !can_auth && noauth_addrs == NULL) {
  	if (default_auth) {
  	    option_error(
-@@ -1331,7 +1397,11 @@
+@@ -1345,7 +1411,11 @@
  	passwd[0] != 0 ||
  	(hadchap == 1 || (hadchap == -1 && have_chap_secret(user,
  	    (explicit_remote? remote_name: NULL), 0, NULL))) ||
@@ -537,7 +537,7 @@ changes:
  
      hadchap = -1;
      if (go->neg_upap && !uselogin && !have_pap_secret(NULL))
-@@ -1346,8 +1416,14 @@
+@@ -1360,8 +1430,14 @@
  	    !have_chap_secret((explicit_remote? remote_name: NULL), our_name,
  		1, NULL))) &&
  	!have_srp_secret((explicit_remote? remote_name: NULL), our_name, 1,
@@ -553,7 +553,7 @@ changes:
  }
  
  
-@@ -1709,6 +1785,7 @@
+@@ -1723,6 +1799,7 @@
  }
  
  
@@ -561,7 +561,7 @@ changes:
  /*
   * get_secret - open the CHAP secret file and return the secret
   * for authenticating the given client on the given server.
-@@ -2361,3 +2438,335 @@
+@@ -2375,3 +2452,335 @@
  
      auth_script_pid = run_program(script, argv, 0, auth_script_done, NULL, 0);
  }
@@ -899,7 +899,7 @@ changes:
 +
 --- a/pppd/ccp.c
 +++ b/pppd/ccp.c
-@@ -540,6 +540,9 @@
+@@ -539,6 +539,9 @@
      if (go->mppe) {
  	ccp_options *ao = &ccp_allowoptions[f->unit];
  	int auth_mschap_bits = auth_done[f->unit];
@@ -909,7 +909,7 @@ changes:
  	int numbits;
  
  	/*
-@@ -567,8 +570,23 @@
+@@ -566,8 +569,23 @@
  	    lcp_close(f->unit, "MPPE required but not available");
  	    return;
  	}
@@ -2472,7 +2472,7 @@ changes:
  
  #ifdef USE_SRP
  #include <t_pwd.h>
-@@ -209,6 +218,9 @@
+@@ -208,6 +217,9 @@
  	esp->es_server.ea_id = (u_char)(drand48() * 0x100);
  	esp->es_client.ea_timeout = EAP_DEFREQTIME;
  	esp->es_client.ea_maxrequests = EAP_DEFALLOWREQ;
@@ -2482,7 +2482,7 @@ changes:
  }
  
  /*
-@@ -436,8 +448,16 @@
+@@ -435,8 +447,16 @@
  	u_char vals[2];
  	struct b64state bs;
  #endif /* USE_SRP */
@@ -2499,7 +2499,7 @@ changes:
  	switch (esp->es_server.ea_state) {
  	case eapBadAuth:
  		return;
-@@ -562,9 +582,79 @@
+@@ -561,9 +581,79 @@
  			break;
  		}
  #endif /* USE_SRP */
@@ -2579,7 +2579,7 @@ changes:
  	case eapSRP1:
  #ifdef USE_SRP
  		ts = (struct t_server *)esp->es_server.ea_session;
-@@ -718,6 +808,30 @@
+@@ -717,6 +807,30 @@
  		INCPTR(esp->es_server.ea_namelen, outp);
  		break;
  
@@ -2610,7 +2610,7 @@ changes:
  #ifdef USE_SRP
  	case eapSRP1:
  		PUTCHAR(EAPT_SRP, outp);
-@@ -904,11 +1018,57 @@
+@@ -903,11 +1017,57 @@
  eap_server_timeout(arg)
  void *arg;
  {
@@ -2668,7 +2668,7 @@ changes:
  	/* EAP ID number must not change on timeout. */
  	eap_send_request(esp);
  }
-@@ -1166,6 +1326,81 @@
+@@ -1165,6 +1325,81 @@
  }
  #endif /* USE_SRP */
  
@@ -2750,7 +2750,7 @@ changes:
  static void
  eap_send_nak(esp, id, type)
  eap_state *esp;
-@@ -1320,6 +1555,11 @@
+@@ -1319,6 +1554,11 @@
  	char rhostname[256];
  	MD5_CTX mdContext;
  	u_char hash[MD5_SIGNATURE_SIZE];
@@ -2762,7 +2762,7 @@ changes:
  #ifdef USE_SRP
  	struct t_client *tc;
  	struct t_num sval, gval, Nval, *Ap, Bval;
-@@ -1456,6 +1696,100 @@
+@@ -1461,6 +1701,100 @@
  		    esp->es_client.ea_namelen);
  		break;
  
@@ -2863,9 +2863,9 @@ changes:
  #ifdef USE_SRP
  	case EAPT_SRP:
  		if (len < 1) {
-@@ -1737,6 +2071,11 @@
- 	u_char dig[SHA_DIGESTSIZE];
- #endif /* USE_SRP */
+@@ -1748,6 +2082,11 @@
+ 	if (esp->es_server.ea_state <= eapClosed)
+ 		return;
  
 +#ifdef USE_EAPTLS
 +	struct eaptls_session *ets;
@@ -2875,7 +2875,7 @@ changes:
  	if (esp->es_server.ea_id != id) {
  		dbglog("EAP: discarding Response %d; expected ID %d", id,
  		    esp->es_server.ea_id);
-@@ -1776,6 +2115,64 @@
+@@ -1787,6 +2126,64 @@
  		eap_figure_next_state(esp, 0);
  		break;
  
@@ -2940,7 +2940,7 @@ changes:
  	case EAPT_NOTIFICATION:
  		dbglog("EAP unexpected Notification; response discarded");
  		break;
-@@ -1807,6 +2204,13 @@
+@@ -1818,6 +2215,13 @@
  			esp->es_server.ea_state = eapMD5Chall;
  			break;
  
@@ -2954,7 +2954,7 @@ changes:
  		default:
  			dbglog("EAP: peer requesting unknown Type %d", vallen);
  			switch (esp->es_server.ea_state) {
-@@ -2018,13 +2422,27 @@
+@@ -2029,13 +2433,27 @@
  int id;
  int len;
  {
@@ -2983,7 +2983,7 @@ changes:
  	if (esp->es_client.ea_timeout > 0) {
  		UNTIMEOUT(eap_client_timeout, (void *)esp);
  	}
-@@ -2150,6 +2568,9 @@
+@@ -2167,6 +2585,9 @@
  	int code, id, len, rtype, vallen;
  	u_char *pstart;
  	u_int32_t uval;
@@ -2993,7 +2993,7 @@ changes:
  
  	if (inlen < EAP_HEADERLEN)
  		return (0);
-@@ -2214,6 +2635,24 @@
+@@ -2231,6 +2652,24 @@
  			}
  			break;
  
@@ -3018,7 +3018,7 @@ changes:
  		case EAPT_SRP:
  			if (len < 3)
  				goto truncated;
-@@ -2325,6 +2764,25 @@
+@@ -2342,6 +2781,25 @@
  			}
  			break;
  
@@ -3044,7 +3044,7 @@ changes:
  		case EAPT_NAK:
  			if (len <= 0) {
  				printer(arg, " <missing hint>");
-@@ -2426,3 +2884,4 @@
+@@ -2443,3 +2901,4 @@
  
  	return (inp - pstart);
  }
@@ -3171,7 +3171,7 @@ changes:
 --- a/pppd/plugins/Makefile.linux
 +++ b/pppd/plugins/Makefile.linux
 @@ -4,6 +4,9 @@
- LDFLAGS	= $(LDOPTS)
+ LDFLAGS_SHARED	= -shared
  INSTALL	= install
  
 +# EAP-TLS
@@ -3203,7 +3203,7 @@ changes:
  }
 --- a/pppd/pppd.8
 +++ b/pppd/pppd.8
-@@ -253,6 +253,12 @@
+@@ -265,6 +265,12 @@
  compression in the corresponding direction.  Use \fInobsdcomp\fR or
  \fIbsdcomp 0\fR to disable BSD-Compress compression entirely.
  .TP
@@ -3216,7 +3216,7 @@ changes:
  .B cdtrcts
  Use a non-standard hardware flow control (i.e. DTR/CTS) to control
  the flow of data on the serial port.  If neither the \fIcrtscts\fR,
-@@ -264,6 +270,12 @@
+@@ -276,6 +282,12 @@
  bi-directional flow control. The sacrifice is that this flow
  control mode does not permit using DTR as a modem control line.
  .TP
@@ -3229,7 +3229,7 @@ changes:
  .B chap\-interval \fIn
  If this option is given, pppd will rechallenge the peer every \fIn\fR
  seconds.
-@@ -292,6 +304,18 @@
+@@ -304,6 +316,18 @@
  1000 (1 second).  This wait period only applies if the \fBconnect\fR
  or \fBpty\fR option is used.
  .TP
@@ -3248,7 +3248,7 @@ changes:
  .B debug
  Enables connection debugging facilities.
  If this option is given, pppd will log the contents of all
-@@ -561,6 +585,12 @@
+@@ -573,6 +597,12 @@
  the kernel are logged by syslog(1) to a file as directed in the
  /etc/syslog.conf configuration file.
  .TP
@@ -3261,7 +3261,7 @@ changes:
  .B ktune
  Enables pppd to alter kernel settings as appropriate.  Under Linux,
  pppd will enable IP forwarding (i.e. set /proc/sys/net/ipv4/ip_forward
-@@ -724,6 +754,9 @@
+@@ -736,6 +766,9 @@
  Disable Address/Control compression in both directions (send and
  receive).
  .TP
@@ -3273,7 +3273,7 @@ changes:
  privileged.
 --- a/pppd/pppd.h
 +++ b/pppd/pppd.h
-@@ -338,6 +338,11 @@
+@@ -343,6 +343,11 @@
  extern bool	dryrun;		/* check everything, print options, exit */
  extern int	child_wait;	/* # seconds to wait for children at end */
  
@@ -3285,7 +3285,7 @@ changes:
  #ifdef MAXOCTETS
  extern unsigned int maxoctets;	     /* Maximum octetes per session (in bytes) */
  extern int       maxoctets_dir;      /* Direction :
-@@ -758,6 +763,10 @@
+@@ -769,6 +774,10 @@
  extern int (*chap_passwd_hook) __P((char *user, char *passwd));
  extern void (*multilink_join_hook) __P((void));
  

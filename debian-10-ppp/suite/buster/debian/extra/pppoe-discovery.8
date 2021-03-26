@@ -1,7 +1,7 @@
 .\" pppoe-discovery.8 written by
 .\" Ben Hutchings <ben@decadentplace.org.uk>, based on pppoe.8.
 .\" Licenced under the GPL version 2 or later.
-.TH PPPOE-DISCOVERY 8 "22 January 2006"
+.TH PPPOE-DISCOVERY 8 "12 January 2019"
 .SH NAME
 pppoe\-discovery \- perform PPPoE discovery
 .SH SYNOPSIS
@@ -39,12 +39,26 @@ This is intended for debugging only.
 .B \-U
 .RS
 Causes \fBpppoe\-discovery\fR to use the Host-Uniq tag in its discovery
-packets.
+packets. The value of the tag is derived from the process's PID number.
 This lets you run multiple instances of \fBpppoe\-discovery\fR and/or
-\fBpppoe\fR without having their discovery packets interfere with one
+\fBpppd\fR without having their discovery packets interfere with one
 another.
 You must supply this option to \fIall\fR instances that you intend to
 run simultaneously.
+This option is mutually exclusive with \fB\-W\fR.
+.RE
+.TP
+.BI \-W " value"
+.RS
+Causes \fBpppoe\-discovery\fR to use the Host-Uniq tag in its discovery
+packets. The value of the tag is taken from the option argument,
+encoded as a string of hexadecimal digits.
+This lets you run multiple instances of \fBpppoe\-discovery\fR and/or
+\fBpppd\fR without having their discovery packets interfere with one
+another.
+You must supply this option to \fIall\fR instances that you intend to
+run simultaneously.
+This option is mutually exclusive with \fB\-U\fR.
 .RE
 .TP
 .BI \-S " service_name"
@@ -68,10 +82,26 @@ If both the \fB\-S\fR and \fB\-C\fR options are specified, they must
 \fIboth\fR match.
 .RE
 .TP
-.B \-A
+.B \-Q
 .RS
-This option is accepted for compatibility with \fBpppoe\fR, but has no
-effect.
+Causes \fBpppoe\-discovery\fR to avoid printing discovered access
+concentrator names.
+This can be useful in scripts, which can use the exit code of the
+program to determine whether any matching access concentrators were
+discovered.
+.RE
+.TP
+.BI \-t " timeout"
+.RS
+Changes the discovery timeout for PADI requests, in seconds.
+The default value is 5 seconds.
+.RE
+.TP
+.BI \-a " attempts"
+.RS
+Changes the number of PADI discovery attempts made.
+By default, 3 attempts are made to discover access concentrators before
+giving up.
 .RE
 .TP
 .BR \-V " | " \-h

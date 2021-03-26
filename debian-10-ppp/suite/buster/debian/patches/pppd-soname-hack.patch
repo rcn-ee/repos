@@ -7,9 +7,9 @@ Author: Chris Boot <bootc@debian.org>
 Forwarded: not-needed
 Last-Update: 2015-12-05
 
---- ppp-2.4.7.orig/pppd/Makefile.linux
-+++ ppp-2.4.7/pppd/Makefile.linux
-@@ -206,6 +206,8 @@ endif
+--- a/pppd/Makefile.linux
++++ b/pppd/Makefile.linux
+@@ -216,6 +216,8 @@
  
  INSTALL= install
  
@@ -18,12 +18,12 @@ Last-Update: 2015-12-05
  all: $(TARGETS)
  
  install: pppd
-@@ -217,7 +219,8 @@ install: pppd
+@@ -227,7 +229,8 @@
  	$(INSTALL) -c -m 444 pppd.8 $(MANDIR)
  
  pppd: $(PPPDOBJS)
--	$(CC) $(LDFLAGS) -o pppd $(PPPDOBJS) $(LIBS)
-+	$(CC) $(LDFLAGS) -o pppd $(PPPDOBJS) $(LIBS) \
+-	$(CC) $(CFLAGS) $(LDFLAGS) $(LDFLAGS_PLUGIN) -o pppd $(PPPDOBJS) $(LIBS)
++	$(CC) $(CFLAGS) $(LDFLAGS) $(LDFLAGS_PLUGIN) -o pppd $(PPPDOBJS) $(LIBS) \
 +		-Wl,-soname,pppd.so.$(VERSION)
  
  srp-entry:	srp-entry.c

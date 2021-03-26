@@ -1,6 +1,6 @@
 --- a/pppd/ipcp.c
 +++ b/pppd/ipcp.c
-@@ -1984,7 +1984,7 @@
+@@ -1983,7 +1983,7 @@
       */
      if (ipcp_script_state == s_down && ipcp_script_pid == 0) {
  	ipcp_script_state = s_up;
@@ -9,7 +9,7 @@
      }
  }
  
-@@ -2034,7 +2034,7 @@
+@@ -2033,7 +2033,7 @@
      /* Execute the ip-down script */
      if (ipcp_script_state == s_up && ipcp_script_pid == 0) {
  	ipcp_script_state = s_down;
@@ -18,7 +18,7 @@
      }
  }
  
-@@ -2097,13 +2097,13 @@
+@@ -2096,13 +2096,13 @@
      case s_up:
  	if (ipcp_fsm[0].state != OPENED) {
  	    ipcp_script_state = s_down;
@@ -36,7 +36,7 @@
      }
 --- a/pppd/main.c
 +++ b/pppd/main.c
-@@ -308,6 +308,9 @@
+@@ -306,6 +306,9 @@
      struct protent *protp;
      char numbuf[16];
  
@@ -48,7 +48,7 @@
  
 --- a/pppd/options.c
 +++ b/pppd/options.c
-@@ -114,6 +114,8 @@
+@@ -116,6 +116,8 @@
  bool	tune_kernel;		/* may alter kernel settings */
  int	connect_delay = 1000;	/* wait this many ms after connect script */
  int	req_unit = -1;		/* requested interface unit */
@@ -57,9 +57,9 @@
  char	req_ifname[MAXIFNAMELEN];	/* requested interface name */
  bool	multilink = 0;		/* Enable multilink operation */
  char	*bundle_name = NULL;	/* bundle name for multilink */
-@@ -304,6 +306,13 @@
-       "Unset user environment variable",
-       OPT_A2PRINTER | OPT_NOPRINT, (void *)user_unsetprint },
+@@ -316,6 +318,13 @@
+       "Metric to use for the default route (Linux only; -1 for default behavior)",
+       OPT_PRIV|OPT_LLIMIT|OPT_INITONLY, NULL, 0, -1 },
  
 +    { "ip-up-script", o_string, path_ipup,
 +      "Set pathname of ip-up script",
@@ -73,7 +73,7 @@
        "Enable multilink operation", OPT_PRIO | 1 },
 --- a/pppd/pppd.h
 +++ b/pppd/pppd.h
-@@ -328,6 +328,8 @@
+@@ -333,6 +333,8 @@
  extern int	connect_delay;	/* Time to delay after connect script */
  extern int	max_data_rate;	/* max bytes/sec through charshunt */
  extern int	req_unit;	/* interface unit number to use */

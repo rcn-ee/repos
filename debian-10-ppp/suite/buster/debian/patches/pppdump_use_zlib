@@ -2,7 +2,7 @@ support building pppdump with the system zlib
 
 --- a/pppdump/Makefile.linux
 +++ b/pppdump/Makefile.linux
-@@ -2,18 +2,42 @@ DESTDIR = $(INSTROOT)@DESTDIR@
+@@ -2,16 +2,40 @@
  BINDIR = $(DESTDIR)/sbin
  MANDIR = $(DESTDIR)/share/man/man8
  
@@ -10,10 +10,8 @@ support building pppdump with the system zlib
 +DO_BSD_COMPRESS=y
 +HAVE_ZLIB=n
 +
- COPTS=-O2 -g
- CFLAGS= $(COPTS) -I../include/net
- LDFLAGS=$(LDOPTS)
- 
+ CFLAGS ?= -O
+ CFLAGS += -I../include/net
 -OBJS = pppdump.o bsd-comp.o deflate.o zlib.o
 +OBJS = pppdump.o
 +LIBS =

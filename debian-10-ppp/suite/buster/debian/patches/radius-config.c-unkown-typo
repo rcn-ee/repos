@@ -2,18 +2,18 @@ Description: Correct unkown => unknown typo
 Author: Chris Boot <bootc@debian.org>
 Last-Update: 2013-09-09
 
---- ppp-2.4.5+git20130610.orig/pppd/plugins/radius/config.c
-+++ ppp-2.4.5+git20130610/pppd/plugins/radius/config.c
-@@ -271,7 +271,7 @@ char *rc_conf_str(char *optname)
+--- a/pppd/plugins/radius/config.c
++++ b/pppd/plugins/radius/config.c
+@@ -273,7 +273,7 @@
  	option = find_option(optname, OT_STR);
  
  	if (option == NULL)
 -		fatal("rc_conf_str: unkown config option requested: %s", optname);
 +		fatal("rc_conf_str: unknown config option requested: %s", optname);
- 		return (char *)option->val;
+ 	return (char *)option->val;
  }
  
-@@ -282,7 +282,7 @@ int rc_conf_int(char *optname)
+@@ -284,7 +284,7 @@
  	option = find_option(optname, OT_INT|OT_AUO);
  
  	if (option == NULL)
@@ -22,7 +22,7 @@ Last-Update: 2013-09-09
  	return *((int *)option->val);
  }
  
-@@ -293,7 +293,7 @@ SERVER *rc_conf_srv(char *optname)
+@@ -295,7 +295,7 @@
  	option = find_option(optname, OT_SRV);
  
  	if (option == NULL)

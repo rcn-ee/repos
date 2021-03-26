@@ -1,0 +1,22 @@
+Description: Use a compile test to detect crypt.h
+Bug-Debian: https://bugs.debian.org/911359
+Forwarded: no
+Author: Helmut Grohne <helmut@subdivi.de>
+Reviewed-by: Chris Boot <bootc@debian.org>
+Last-Update: 2020-02-08
+
+ppp checks header for existence of crypt.h looking it up in /usr/include.
+That's incompatible with non-glibcs or a glibc with multiarch headers
+(#798955). This patch replaces the file existence test with a compile test.
+
+--- a/pppd/Makefile.linux
++++ b/pppd/Makefile.linux
+@@ -133,7 +133,7 @@
+ ifdef NO_CRYPT_HACK
+ CFLAGS += -DNO_CRYPT_HACK
+ else
+-ifneq ($(wildcard $(shell $(CC) --print-sysroot)/usr/include/crypt.h),)
++ifeq ($(shell echo '\#include <crypt.h>' | $(CC) -E - >/dev/null 2>&1 && echo yes),yes)
+ CFLAGS  += -DHAVE_CRYPT_H=1
+ LIBS	+= -lcrypt
+ endif
