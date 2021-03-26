@@ -9,7 +9,7 @@ package_name="ppp"
 debian_pkg_name="${package_name}"
 package_version="2.4.8"
 package_source="${debian_pkg_name}_${package_version}.orig.tar.gz"
-src_dir="${package_name}-${package_version}"
+src_dir="ppp-${package_name}-${package_version}"
 
 git_repo=""
 git_sha=""
