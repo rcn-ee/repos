@@ -198,11 +198,11 @@ setup_repo
 
 dist="debian-arm64"
 suite="bullseye"
-archs="armhf"
+archs="arm64 source"
 setup_repo
 
 suite="sid"
-archs="armhf"
+archs="arm64"
 setup_repo
 
 dist="debian-riscv64"
