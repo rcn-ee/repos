@@ -196,6 +196,15 @@ suite="hirsute"
 archs="armhf source"
 setup_repo
 
+dist="debian-arm64"
+suite="bullseye"
+archs="armhf"
+setup_repo
+
+suite="sid"
+archs="armhf"
+setup_repo
+
 dist="debian-riscv64"
 suite="sid"
 archs="riscv64"
