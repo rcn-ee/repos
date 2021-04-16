@@ -4,7 +4,7 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
-branch=v2021.01-bb.org-am335x-am57xx
+branch=v2021.04-bbb.io-am335x-am57xx
 config=am57xx_evm_defconfig
 
 override_dh_strip:
@@ -12,7 +12,7 @@ override_dh_strip:
 
 override_dh_auto_configure:
 	git clone -b $(branch) https://github.com/beagleboard/u-boot --depth=1
-	cd ./u-boot/ ; 	make ARCH=arm CROSS_COMPILE= distclean ; make ARCH=arm CROSS_COMPILE= $(config) ; make ARCH=arm CROSS_COMPILE=
+	cd ./u-boot/ ; make ARCH=arm CROSS_COMPILE= distclean ; make ARCH=arm CROSS_COMPILE= $(config) ; make ARCH=arm CROSS_COMPILE=
 
 %:
 	dh $@
