@@ -1,10 +1,13 @@
 #!/bin/bash -e
 
-#https://github.com/beagleboard/u-boot/commits/v2021.04-bbb.io-am335x-am57xx
+#https://github.com/beagleboard/u-boot/commits/v2021.07-rc1-bbb.io-am335x-am57xx
+#
+#git checkout v2021.07-rc1 -b v2021.07-rc1-bbb.io-am335x-am57xx
+#git push origin v2021.07-rc1-bbb.io-am335x-am57xx
 
 package_name="bb-u-boot-am335x-evm-exp"
 debian_pkg_name="${package_name}"
-package_version="2021.04.20210405.0"
+package_version="2021.07.20210426.0"
 package_source=""
 src_dir=""
 
@@ -17,5 +20,5 @@ debian_version="${package_version}-0"
 debian_untar=""
 debian_patch=""
 
-buster_version="~buster+20210416"
-bullseye_version="~bullseye+20210416"
+buster_version="~buster+20210427"
+bullseye_version="~bullseye+20210427"
