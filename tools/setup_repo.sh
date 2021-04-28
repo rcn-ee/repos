@@ -196,6 +196,10 @@ suite="hirsute"
 archs="armhf source"
 setup_repo
 
+suite="impish"
+archs="armhf source"
+setup_repo
+
 dist="debian-arm64"
 suite="bullseye"
 archs="arm64 source"
