@@ -13,9 +13,9 @@ git_sha=""
 reprepro_dir="c/${package_name}"
 dl_path="pool/universe/${reprepro_dir}/"
 
-debian_version="${package_version}-1"
+debian_version="${package_version}-2build1"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
-local_patch="rcnee3"
+local_patch="rcnee0"
 
-bionic_version="~bionic+20180517"
+bionic_version="~bionic+20210505"
