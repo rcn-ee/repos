@@ -40,7 +40,7 @@ echo_default () {
 	echo "# USE_PERSONAL_SSID: set custom ssid" >> /etc/default/bb-wl18xx
 	echo "USE_PERSONAL_SSID=\"BeagleBone\"" >> /etc/default/bb-wl18xx
 	echo "" >> /etc/default/bb-wl18xx
-	echo "# USE_PERSONAL_PASSWORD: set ssid password" >> /etc/default/bb-wl18xx
+	echo "# USE_PERSONAL_PASSWORD: set ssid password (8 character minimum)" >> /etc/default/bb-wl18xx
 	echo "USE_PERSONAL_PASSWORD=\"BeagleBone\"" >> /etc/default/bb-wl18xx
 	echo "" >> /etc/default/bb-wl18xx
 	echo "# USE_GENERATED_DNSMASQ: use generated version of /etc/dnsmasq.d/SoftAp0; set to no so user can modify /etc/dnsmasq.d/SoftAp0" >> /etc/default/bb-wl18xx
@@ -222,10 +222,20 @@ if [ ! -f /var/lib/connman/settings ] ; then
 	echo "Tethering=false" >> /var/lib/connman/settings
 fi
 
+if [ -f /lib/firmware/ti-connectivity/wl18xx-fw-4.bin ] ; then
+	rm -f /lib/firmware/ti-connectivity/wl18xx-fw-4.bin || true
+	cp -v /lib/firmware/ti-connectivity/git/wl18xx-fw-4.bin /lib/firmware/ti-connectivity/wl18xx-fw-4.bin
+else
+	cp -v /lib/firmware/ti-connectivity/git/wl18xx-fw-4.bin /lib/firmware/ti-connectivity/wl18xx-fw-4.bin
+fi
+
 case "$1" in
 	configure)
 		systemctl enable bb-wl18xx-bluetooth.service || true
 		systemctl enable bb-wl18xx-wlan0.service || true
+		if [ -x /usr/sbin/update-initramfs -a -e /etc/initramfs-tools/initramfs.conf ] ; then
+			update-initramfs -u
+		fi
 	;;
 
 	abort-upgrade|abort-remove|abort-deconfigure)

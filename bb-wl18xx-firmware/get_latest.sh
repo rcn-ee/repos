@@ -13,6 +13,7 @@ copy_all () {
 	cp -v ./src${wdir}${wfile} ./suite/focal/debian/
 	cp -v ./src${wdir}${wfile} ./suite/stretch/debian/
 	cp -v ./src${wdir}${wfile} ./suite/buster/debian/
+	cp -v ./src${wdir}${wfile} ./suite/bullseye/debian/
 }
 
 dl_src
@@ -33,4 +34,4 @@ wfile="rules" ; wdir="/debian/" ; copy_all
 wfile="TIInit_11.8.32.bts" ; wdir="/debian/" ; copy_all
 wfile="wl18xx.conf" ; wdir="/debian/" ; copy_all
 wfile="wl18xx-conf.bin" ; wdir="/debian/" ; copy_all
-
+wfile="wl18xx-fw-4.bin" ; wdir="/debian/" ; copy_all
