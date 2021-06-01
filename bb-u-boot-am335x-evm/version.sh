@@ -4,7 +4,7 @@
 
 package_name="bb-u-boot-am335x-evm"
 debian_pkg_name="${package_name}"
-package_version="2019.04.20210218.1"
+package_version="2019.04.20210601.0"
 package_source=""
 src_dir=""
 
@@ -17,8 +17,8 @@ debian_version="${package_version}-0"
 debian_untar=""
 debian_patch=""
 
-stretch_version="~stretch+20210219"
-buster_version="~buster+20210219"
-bullseye_version="~bullseye+20210219"
-bionic_version="~bionic+20210219"
-focal_version="~focal+20210219"
+stretch_version="~stretch+20210601"
+buster_version="~buster+20210601"
+bullseye_version="~bullseye+20210601"
+bionic_version="~bionic+20210601"
+focal_version="~focal+20210601"
