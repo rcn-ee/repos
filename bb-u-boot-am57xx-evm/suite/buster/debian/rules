@@ -5,7 +5,7 @@
 export DH_VERBOSE=1
 
 #Branch:
-branch=v2020.10-bbb.io-am57xx
+branch=v2020.10-rc4-bbb.io-am57xx
 #Config:
 config=am57xx_evm_defconfig
 
@@ -14,7 +14,7 @@ override_dh_strip:
 
 override_dh_auto_configure:
 	git clone -b $(branch) https://github.com/beagleboard/u-boot --depth=1
-	cd ./u-boot/ ; make ARCH=arm CROSS_COMPILE= distclean ; make ARCH=arm CROSS_COMPILE= $(config) ; make ARCH=arm CROSS_COMPILE=
+	cd ./u-boot/ ; make ARCH=arm CROSS_COMPILE= distclean ; make ARCH=arm CROSS_COMPILE= $(config) ; make -j2 ARCH=arm CROSS_COMPILE=
 
 %:
 	dh $@

@@ -1,10 +1,10 @@
 #!/bin/bash -e
 
-#https://github.com/beagleboard/u-boot/tree/v2020.10-bbb.io-am57xx
+#https://github.com/beagleboard/u-boot/tree/v2020.10-rc4-bbb.io-am57xx
 
 package_name="bb-u-boot-am57xx-evm"
 debian_pkg_name="${package_name}"
-package_version="2020.10.20210624.0"
+package_version="2020.10.20210624.1"
 package_source=""
 src_dir=""
 
