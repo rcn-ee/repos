@@ -1,10 +1,10 @@
 #!/bin/bash -e
 
-#https://github.com/beagleboard/u-boot/commits/v2021.01-bb.org-am335x-am57xx
+#https://github.com/beagleboard/u-boot/tree/v2020.10-bbb.io-am57xx
 
 package_name="bb-u-boot-am57xx-evm"
 debian_pkg_name="${package_name}"
-package_version="2020.10.20210218.2"
+package_version="2020.10.20201005.0"
 package_source=""
 src_dir=""
 
