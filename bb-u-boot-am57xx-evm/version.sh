@@ -4,7 +4,7 @@
 
 package_name="bb-u-boot-am57xx-evm"
 debian_pkg_name="${package_name}"
-package_version="2021.01.20210625.0"
+package_version="2021.04.20210625.0"
 package_source=""
 src_dir=""
 
