@@ -1,11 +1,12 @@
 # /etc/udev/rules.d/80-gpio-noroot.rules
 #
-# Stolen from Pi: https://github.com/RPi-Distro/raspberrypi-sys-mods/blob/master/etc.armhf/udev/rules.d/99-com.rules#L9-L14
+# ReWritten by: Matthijs van Duin
+# Corrects sys GPIO permissions on the BB so non-root users in the gpio group can manipulate bits
 #
-SUBSYSTEM=="gpio", GROUP="gpio", MODE="0660"
-SUBSYSTEM=="gpio*", PROGRAM="/bin/sh -c '\
-	chown -R root:gpio /sys/class/gpio && chmod -R 770 /sys/class/gpio;\
-	chown -R root:gpio /sys/class/gpio/*export && chmod -R 220 /sys/class/gpio/*export;\
-	chown -R root:gpio /sys/devices/virtual/gpio && chmod -R 770 /sys/devices/virtual/gpio;\
-	chown -R root:gpio /sys$devpath && chmod -R 770 /sys$devpath\
-'"
+SUBSYSTEM=="gpio", ACTION=="add", \
+	RUN+="/bin/chgrp -R gpio '/sys%p'", \
+	RUN+="/bin/chmod -R g=u '/sys%p'"
+
+SUBSYSTEM=="subsystem", KERNEL=="gpio", ACTION=="add", \
+	RUN+="/bin/chgrp gpio '/sys/class/gpio/export' '/sys/class/gpio/unexport'", \
+	RUN+="/bin/chmod g=u '/sys/class/gpio/export' '/sys/class/gpio/unexport'"
