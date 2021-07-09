@@ -1,0 +1,20 @@
+# /etc/udev/rules.d/85-gpio-noroot.rules
+#
+# Corrects sys GPIO permissions on the BB so non-root users in the gpio group can manipulate bits
+#
+
+###needed for gpioinfo and friends...
+###Before
+###debian@bbb-pwr01-ser09:~$ ls -lha /dev/gpiochip*
+###crw-rw---- 1 root root 254, 0 Jul  9 00:01 /dev/gpiochip0
+###crw-rw---- 1 root root 254, 1 Jul  9 00:01 /dev/gpiochip1
+###crw-rw---- 1 root root 254, 2 Jul  9 00:01 /dev/gpiochip2
+###crw-rw---- 1 root root 254, 3 Jul  9 00:01 /dev/gpiochip3
+###After
+###debian@bbb-pwr01-ser09:~$ ls -lha /dev/gpiochip*
+###crw-rw---- 1 root gpio 254, 0 Jul  9 00:01 /dev/gpiochip0
+###crw-rw---- 1 root gpio 254, 1 Jul  9 00:01 /dev/gpiochip1
+###crw-rw---- 1 root gpio 254, 2 Jul  9 00:01 /dev/gpiochip2
+###crw-rw---- 1 root gpio 254, 3 Jul  9 00:01 /dev/gpiochip3
+
+SUBSYSTEM=="gpio", GROUP="gpio", MODE="0660"
