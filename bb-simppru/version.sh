@@ -4,7 +4,7 @@
 
 package_name="bb-simppru"
 debian_pkg_name="${package_name}"
-package_version="1.4.20210728.4"
+package_version="1.4.20210728.5"
 package_source=""
 src_dir=""
 

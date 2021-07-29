@@ -3,13 +3,15 @@
 
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
-export CMAKE_INSTALL_PREFIX=../../debian/tmp/
+
 override_dh_strip:
 	# Just disable for now...
 
 override_dh_auto_configure:
 	git clone https://github.com/VedantParanjape/simpPRU --depth=1
 	mkdir -p ./simpPRU/build ; cd ./simpPRU/build ; cmake .. ; make ; make install
+	ls -lha ./debian/*
+	ls -lha ./simpPRU/*
 
 %:
 	dh $@
