@@ -4,7 +4,7 @@
 
 package_name="bb-beagle-config"
 debian_pkg_name="${package_name}"
-package_version="0.0.0.20210728.2"
+package_version="0.0.0.20210729.0"
 package_source=""
 src_dir=""
 
@@ -17,6 +17,6 @@ debian_version="${package_version}-0"
 debian_untar=""
 debian_patch=""
 
-buster_version="~buster+20210728"
-bullseye_version="~bullseye+20210728"
-focal_version="~focal+20210728"
+buster_version="~buster+20210729"
+bullseye_version="~bullseye+20210729"
+focal_version="~focal+20210729"
