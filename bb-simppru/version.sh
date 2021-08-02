@@ -4,7 +4,7 @@
 
 package_name="bb-simppru"
 debian_pkg_name="${package_name}"
-package_version="1.4.20210728.9"
+package_version="1.4.20210801.0"
 package_source=""
 src_dir=""
 
@@ -17,4 +17,4 @@ debian_version="${package_version}-0"
 debian_untar=""
 debian_patch=""
 
-buster_version="~buster+20210729"
+buster_version="~buster+20210802"
