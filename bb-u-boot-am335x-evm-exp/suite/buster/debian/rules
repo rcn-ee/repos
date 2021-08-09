@@ -4,17 +4,16 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
-#Branch:
-branch=v2021.07-rc3-bbb.io-am335x-am57xx
-#Config:
-config=am335x_evm_defconfig
+#U-Boot
+UB_TAG=v2021.10-rc1
+UB_CONFIG=am335x_evm_defconfig
 
 override_dh_strip:
 	# Just disable for now...
 
 override_dh_auto_configure:
-	git clone -b $(branch) https://github.com/beagleboard/u-boot --depth=1
-	cd ./u-boot/ ; make ARCH=arm CROSS_COMPILE= distclean ; make ARCH=arm CROSS_COMPILE= $(config) ; make ARCH=arm CROSS_COMPILE=
+	git clone -b $(UB_TAG) https://github.com/beagleboard/u-boot --depth=1
+	cd ./u-boot/ ; make ARCH=arm CROSS_COMPILE= distclean ; make ARCH=arm CROSS_COMPILE= $(UB_CONFIG) ; make ARCH=arm CROSS_COMPILE=
 
 %:
 	dh $@
