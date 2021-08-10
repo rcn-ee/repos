@@ -51,3 +51,5 @@ wfile="am57xx-pru1_1-fw.sleep" ; wdir="/src/am57xx/" ; copy_all
 
 wfile="am57xx-pru2_0-fw.sleep" ; wdir="/src/am57xx/" ; copy_all
 wfile="am57xx-pru2_1-fw.sleep" ; wdir="/src/am57xx/" ; copy_all
+
+wfile="beagle-version" ; wdir="/usr/bin/" ; copy_all
