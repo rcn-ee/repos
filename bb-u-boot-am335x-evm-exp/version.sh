@@ -1,10 +1,10 @@
 #!/bin/bash -e
 
-#https://github.com/beagleboard/u-boot/tree/v2019.04-bbb.io-am335x
+#https://github.com/beagleboard/u-boot/tree/v2021.10-rc1-bbb.io-am335x-am57xx
 
 package_name="bb-u-boot-am335x-evm-exp"
 debian_pkg_name="${package_name}"
-package_version="2021.10.20210726.2"
+package_version="2021.10.20210811.0"
 package_source=""
 src_dir=""
 
