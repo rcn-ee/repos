@@ -7,7 +7,7 @@
 
 package_name="bb-u-boot-omap3-beagle"
 debian_pkg_name="${package_name}"
-package_version="2021.07.20210524.0"
+package_version="2021.10.20210726.1"
 package_source=""
 src_dir=""
 
@@ -20,5 +20,5 @@ debian_version="${package_version}-0"
 debian_untar=""
 debian_patch=""
 
-buster_version="~buster+20210526"
-bullseye_version="~bullseye+20210526"
+buster_version="~buster+20210811"
+bullseye_version="~bullseye+20210811"
