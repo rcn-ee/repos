@@ -7,7 +7,7 @@
 
 package_name="bb-u-boot-omap3-beagle"
 debian_pkg_name="${package_name}"
-package_version="2021.10.20210726.1"
+package_version="2021.10.20210811.0"
 package_source=""
 src_dir=""
 
