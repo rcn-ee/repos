@@ -13,7 +13,7 @@ override_dh_strip:
 
 override_dh_auto_configure:
 	git clone -b $(UB_TAG) https://github.com/beagleboard/u-boot --depth=1
-	cd ./u-boot/ ; make ARCH=arm CROSS_COMPILE= distclean ; make ARCH=arm CROSS_COMPILE= $(UB_CONFIG) ; make ARCH=arm CROSS_COMPILE=
+	cd ./u-boot/ ; make ARCH=arm CROSS_COMPILE= distclean ; make ARCH=arm CROSS_COMPILE= $(UB_CONFIG) ; make -j2 ARCH=arm CROSS_COMPILE=
 
 %:
 	dh $@
