@@ -4,7 +4,7 @@
 
 package_name="gt"
 debian_pkg_name="${package_name}"
-package_version="0.0.0-git20210712.0"
+package_version="0.0.0-git20210712.1"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
