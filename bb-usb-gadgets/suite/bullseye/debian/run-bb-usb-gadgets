@@ -1,4 +1,23 @@
 #!/bin/bash
 
-/sbin/modprobe libcomposite
-/usr/bin/gadget-acm-ecm
+log="run-bb-usb-gadgets"
+
+run_libcomposite () {
+	echo "${log} /usr/bin/gadget-acm-ecm"
+	/usr/bin/gadget-acm-ecm
+}
+
+use_libcomposite () {
+	echo "${log} modprobe libcomposite"
+	modprobe libcomposite || true
+	if [ -d /sys/module/libcomposite ] ; then
+		run_libcomposite
+	else
+		if [ -f /sbin/depmod ] ; then
+			/sbin/depmod -a
+		fi
+		echo "${log} ERROR: [libcomposite didn't load]"
+	fi
+fi
+
+use_libcomposite
