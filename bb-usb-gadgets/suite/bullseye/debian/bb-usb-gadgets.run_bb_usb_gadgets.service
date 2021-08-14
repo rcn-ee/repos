@@ -1,0 +1,11 @@
+[Unit]
+Description=Run USB gadgets
+Before=console-setup.service
+ConditionFileIsExecutable=/usr/bin/run-bb-usb-gadgets
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/run-bb-usb-gadgets
+
+[Install]
+WantedBy=multi-user.target
