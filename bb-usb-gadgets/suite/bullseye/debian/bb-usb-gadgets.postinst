@@ -3,7 +3,6 @@
 set -e
 
 if [ ! -f /etc/systemd/system/getty.target.wants/serial-getty@ttyGS0.service ] ; then
-	cp -v /lib/systemd/system/serial-getty@.service /etc/systemd/system/getty.target.wants/serial-getty@ttyGS0.service
 	systemctl enable serial-getty@ttyGS0.service
 fi
 

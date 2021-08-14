@@ -11,10 +11,10 @@ include /usr/share/dpkg/default.mk
 	dh $@ --with systemd
 	
 override_dh_installinit:
-	dh_installinit --name=run_bb_usb_gadgets --no-stop-on-upgrade --no-start
+	dh_installinit --name=bb-usb-gadgets --no-stop-on-upgrade --no-start
 
 override_dh_systemd_enable:
-	dh_systemd_enable --name=run_bb_usb_gadgets --no-enable
+	dh_systemd_enable --name=bb-usb-gadgets --no-enable
 
 override_dh_systemd_start:
-	dh_systemd_start --name=run_bb_usb_gadgets --no-start
+	dh_systemd_start --name=bb-usb-gadgets --no-start
