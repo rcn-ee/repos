@@ -1,0 +1,96 @@
+Source: cloud-initramfs-tools
+Section: admin
+Priority: optional
+Maintainer: Scott Moser <smoser@ubuntu.com>
+Build-Depends: debhelper (>= 11), quilt
+Standards-Version: 4.1.5
+Homepage: http://launchpad.net/cloud-initramfs-tools
+Vcs-Git: https://git.launchpad.net/cloud-initramfs-tools
+
+Package: cloud-initramfs-rescuevol
+Architecture: all
+Depends: initramfs-tools, ${misc:Depends}, ${shlibs:Depends}
+Description: boot off a rescue volume rather than root filesystem
+ This package adds functionality to an initramfs built by initramfs-tools.
+ When installed the initramfs will check to see if any partitions
+ with a label of 'RESCUE_VOL' are attached.  If such a volume is attached,
+ it will boot off that volume rather than the root volume.
+ .
+ This is useful in a cloud environment, when the user is able to attach
+ and detach volumes to a running system, but has no other mechanism
+ for interrupting of fixing a failed boot.  It is analogous to inserting
+ a rescue CD into a system to recover from failure.
+
+Package: cloud-initramfs-growroot
+Architecture: all
+Depends: cloud-utils (>= 0.21ubuntu1) | cloud-guest-utils,
+         initramfs-tools,
+         util-linux (>= 2.17.2),
+         ${misc:Depends},
+         ${shlibs:Depends}
+Description: automatically resize the root partition on first boot
+ This package adds functionality to an initramfs built by initramfs-tools.
+ When installed, the initramfs will repartition a disk to make the
+ root volume consume all space that follows it.
+ .
+ You most likely do not want this package unless you know what you are
+ doing.  It is primarily interesting in a virtualized environment when
+ a disk can provisioned with a size larger than its original size.
+ In this case, with this package installed, you can automatically use
+ the new space without requiring a reboot to re-read the partition table.
+
+Package: overlayroot
+Architecture: all
+Depends: cryptsetup,
+         cryptsetup-bin,
+         initramfs-tools,
+         ${misc:Depends},
+         ${shlibs:Depends}
+Suggests: haveged
+Description: use an overlayfs on top of a read-only root filesystem
+ This package adds functionality to an initramfs built by initramfs-tools.
+ When installed and configured, the initramfs will mount an overlayfs
+ filesystem on top of a read-only root volume.
+ .
+ The changes can be written to a in-memory temporary filesystem, a
+ filesystem on an existing block device, or a dmcrypt encrypted block
+ device.
+
+Package: cloud-initramfs-dyn-netconf
+Architecture: all
+Depends: initramfs-tools, ${misc:Depends}, ${shlibs:Depends}
+Description: write a network interface file in /run for BOOTIF
+ This package provides an initramfs module that will write a simple
+ network interfaces formatted file to /run/network/interfaces with
+ entries for any devices that were configured during initramfs.
+
+Package: cloud-initramfs-copymods
+Architecture: all
+Depends: initramfs-tools,
+         ${misc:Depends},
+         ${shlibs:Depends}
+Description: copy initramfs modules into root filesystem for later use
+ When booting with an external-to-root kernel and initramfs, you need
+ to ensure that /lib/modules contains any necessary modules not already
+ loaded.
+ .
+ This package arranges for the modules in the initramfs to be placed
+ into /lib/modules after the switchroot is done.
+
+Package: cloud-initramfs-rooturl
+Architecture: all
+Depends: initramfs-tools,
+         ${misc:Depends},
+         ${shlibs:Depends}
+Description: use a tarball or squashfs image in a url as the root filesystem
+ Allows user to pass in root=http://example.com/your.tar.gz
+ Root filesystem will be tmpfs from that url.
+
+Package: cloud-initramfs-updateroot
+Architecture: all
+Depends: initramfs-tools,
+         ${misc:Depends},
+         ${shlibs:Depends}
+Description: extract a tarball over root filesystem before pivot
+ Allows kernel command line updateroot=http://your.tar.gz
+ And then tarball will be pulled and extracted over the root.
