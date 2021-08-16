@@ -109,6 +109,10 @@ suite="bullseye"
 archs="armhf source"
 setup_repo
 
+suite="bookworm"
+archs="armhf source"
+setup_repo
+
 suite="sid"
 archs="armhf source"
 setup_repo
@@ -215,8 +219,12 @@ suite="bullseye"
 archs="arm64 source"
 setup_repo
 
+suite="bookworm"
+archs="arm64 source"
+setup_repo
+
 suite="sid"
-archs="arm64"
+archs="arm64 source"
 setup_repo
 
 dist="debian-riscv64"
