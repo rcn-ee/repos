@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ -f /etc/default/generic-sys-mods ] ; then
+	. /etc/default/generic-sys-mods
+fi
+
+unset is_btrfs
+is_btrfs=$(cat /proc/cmdline | grep btrfs || true)
+
+if [ "x${is_btrfs}" = "x" ] ; then
+	if [ ! "x${ROOT_DRIVE}" = "x" ] ; then
+		if [ ! "x${ROOT_PARTITION}" = "x" ] ; then
+			echo "resize2fs ${ROOT_DRIVE}p${ROOT_PARTITION}"
+			resize2fs ${ROOT_DRIVE}p${ROOT_PARTITION}
+		fi
+	fi
+else
+	echo "btrfs filesystem resize max /"
+	btrfs filesystem resize max /
+fi
