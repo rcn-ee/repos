@@ -228,7 +228,7 @@ archs="arm64 source"
 setup_repo
 
 dist="debian-riscv64"
-suite="sid"
+suite="sid source"
 archs="riscv64"
 setup_repo
 
