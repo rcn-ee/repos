@@ -4,7 +4,7 @@
 
 package_name="bb-u-boot-am335x-evm-beta"
 debian_pkg_name="${package_name}"
-package_version="2019.07.20210818.0"
+package_version="2019.10.20210819.0"
 package_source=""
 src_dir=""
 
@@ -17,5 +17,5 @@ debian_version="${package_version}-0"
 debian_untar=""
 debian_patch=""
 
-buster_version="~buster+20210818"
-bullseye_version="~bullseye+20210818"
+buster_version="~buster+20210819"
+bullseye_version="~bullseye+20210819"
