@@ -4,7 +4,7 @@
 
 package_name="bb-beagle-config"
 debian_pkg_name="${package_name}"
-package_version="0.0.0.20210821.0"
+package_version="0.1.0.20210821.0"
 package_source=""
 src_dir=""
 
