@@ -1,10 +1,10 @@
 #!/bin/bash -e
 
-#https://github.com/beagleboard/u-boot/tree/v2020.10-bbb.io-am335x
+#https://github.com/beagleboard/u-boot/tree/v2021.10-rc2-bbb.io-am335x
 
 package_name="bb-u-boot-am335x-evm-beta"
 debian_pkg_name="${package_name}"
-package_version="2020.10.20210819.0"
+package_version="2021.10.20210823.0"
 package_source=""
 src_dir=""
 
@@ -17,5 +17,5 @@ debian_version="${package_version}-0"
 debian_untar=""
 debian_patch=""
 
-buster_version="~buster+20210819"
-bullseye_version="~bullseye+20210819"
+buster_version="~buster+20210823"
+bullseye_version="~bullseye+20210823"
