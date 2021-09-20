@@ -6,4 +6,48 @@ if [ ! -f /etc/systemd/system/getty.target.wants/serial-getty@ttyGS0.service ] ;
 	systemctl enable serial-getty@ttyGS0.service
 fi
 
+if [ ! -f /etc/systemd/network/usb0.network ] ; then
+	echo "[Match]" > /etc/systemd/network/usb0.network
+	echo "Name=usb0" >> /etc/systemd/network/usb0.network
+	echo " " >> /etc/systemd/network/usb0.network
+	echo "[Link]" >> /etc/systemd/network/usb0.network
+	echo "RequiredForOnline=no" >> /etc/systemd/network/usb0.network
+	echo "#MACAddress=" >> /etc/systemd/network/usb0.network
+	echo " " >> /etc/systemd/network/usb0.network
+	echo "[Network]" >> /etc/systemd/network/usb0.network
+	echo "DHCP=no" >> /etc/systemd/network/usb0.network
+	echo "Address=192.168.7.2/24" >> /etc/systemd/network/usb0.network
+	echo "DHCPServer=on" >> /etc/systemd/network/usb0.network
+	echo " " >> /etc/systemd/network/usb0.network
+	echo "[DHCPServer]" >> /etc/systemd/network/usb0.network
+	echo "EmitDNS=no" >> /etc/systemd/network/usb0.network
+	echo "EmitRouter=no" >> /etc/systemd/network/usb0.network
+	echo "EmitTimezone=no" >> /etc/systemd/network/usb0.network
+	echo "# compat with usb networking config on default image:" >> /etc/systemd/network/usb0.network
+	echo "MaxLeaseTimeSec=2min" >> /etc/systemd/network/usb0.network
+	echo "PoolSize=1" >> /etc/systemd/network/usb0.network
+fi
+
+if [ ! -f /etc/systemd/network/usb1.network ] ; then
+	echo "[Match]" > /etc/systemd/network/usb1.network
+	echo "Name=usb1" >> /etc/systemd/network/usb1.network
+	echo " " >> /etc/systemd/network/usb1.network
+	echo "[Link]" >> /etc/systemd/network/usb1.network
+	echo "RequiredForOnline=no" >> /etc/systemd/network/usb1.network
+	echo "#MACAddress=" >> /etc/systemd/network/usb1.network
+	echo " " >> /etc/systemd/network/usb1.network
+	echo "[Network]" >> /etc/systemd/network/usb1.network
+	echo "DHCP=no" >> /etc/systemd/network/usb1.network
+	echo "Address=192.168.6.2/24" >> /etc/systemd/network/usb1.network
+	echo "DHCPServer=on" >> /etc/systemd/network/usb1.network
+	echo " " >> /etc/systemd/network/usb1.network
+	echo "[DHCPServer]" >> /etc/systemd/network/usb1.network
+	echo "EmitDNS=no" >> /etc/systemd/network/usb1.network
+	echo "EmitRouter=no" >> /etc/systemd/network/usb1.network
+	echo "EmitTimezone=no" >> /etc/systemd/network/usb1.network
+	echo "# compat with usb networking config on default image:" >> /etc/systemd/network/usb1.network
+	echo "MaxLeaseTimeSec=2min" >> /etc/systemd/network/usb1.network
+	echo "PoolSize=1" >> /etc/systemd/network/usb1.network
+fi
+
 #DEBHELPER#
