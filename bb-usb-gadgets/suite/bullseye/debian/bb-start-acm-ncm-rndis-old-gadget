@@ -105,23 +105,11 @@ run_libcomposite () {
 		mkdir -p functions/rndis.usb0/os_desc/interface.rndis/Label
 		echo 1 > functions/rndis.usb0/os_desc/interface.rndis/Label/type
 		echo "BeagleBone USB Ethernet" > functions/rndis.usb0/os_desc/interface.rndis/Label/data
-
-		ln -s functions/rndis.usb0 configs/c.1/
-
-		ln -s configs/c.1 os_desc
-		mkdir functions/rndis.usb0/os_desc/interface.rndis/Icons
-		echo 2 > functions/rndis.usb0/os_desc/interface.rndis/Icons/type
-		echo "%SystemRoot%\\system32\\shell32.dll,-233" > functions/rndis.usb0/os_desc/interface.rndis/Icons/data
-		mkdir functions/rndis.usb0/os_desc/interface.rndis/Label
-		echo 1 > functions/rndis.usb0/os_desc/interface.rndis/Label/type
-		echo "BeagleBone USB Ethernet" > functions/rndis.usb0/os_desc/interface.rndis/Label/data
-
 		ln -s functions/rndis.usb0 configs/c.1/
 
 		mkdir -p functions/ncm.usb0
 		#echo ${cpsw_4_mac} > functions/ncm.usb0/host_addr
 		#echo ${cpsw_5_mac} > functions/ncm.usb0/dev_addr
-
 		ln -s functions/ncm.usb0 configs/c.1/
 
 		mkdir -p functions/acm.usb0
