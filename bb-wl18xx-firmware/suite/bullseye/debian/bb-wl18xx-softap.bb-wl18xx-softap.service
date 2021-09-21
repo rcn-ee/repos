@@ -1,0 +1,15 @@
+[Unit]
+Description=BeagleBoard.org wl18xx SoftAp0 Service
+After=usb-gadget.target
+ConditionFileIsExecutable=/usr/bin/bb-wl18xx-softap
+
+[Service]
+Type=oneshot
+ExecStartPre=/sbin/modprobe wlcore
+ExecStartPre=/sbin/modprobe wlcore_sdio
+ExecStartPre=/sbin/modprobe wl18xx
+ExecStart=/usr/bin/bb-wl18xx-softap
+Type=forking
+
+[Install]
+WantedBy=multi-user.target
