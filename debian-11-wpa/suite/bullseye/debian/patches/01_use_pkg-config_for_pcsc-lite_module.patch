@@ -1,0 +1,23 @@
+From: Reinhard Tartler <siretart@tauware.de>
+Date: Mon, 2 Feb 2009 06:57:36 +1000
+Subject: Use pkg-config for libpcsclite linkage flags
+
+At least in debian, we can rely on pkg-config being available and
+returning more accurate ldflags.
+---
+ wpa_supplicant/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/wpa_supplicant/Makefile b/wpa_supplicant/Makefile
+index f1384d5..98ac987 100644
+--- a/wpa_supplicant/Makefile
++++ b/wpa_supplicant/Makefile
+@@ -1017,7 +1017,7 @@ else
+ ifdef CONFIG_OSX
+ LIBS += -framework PCSC
+ else
+-LIBS += -lpcsclite -lpthread
++LIBS += $(shell $(PKG_CONFIG) --libs libpcsclite)
+ endif
+ endif
+ endif

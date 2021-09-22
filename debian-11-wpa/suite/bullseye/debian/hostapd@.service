@@ -1,0 +1,16 @@
+[Unit]
+Description=Access point and authentication server for Wi-Fi and Ethernet (%I)
+Documentation=man:hostapd(8)
+After=network.target
+BindsTo=sys-subsystem-net-devices-%i.device
+
+[Service]
+Type=forking
+PIDFile=/run/hostapd.%i.pid
+Restart=on-failure
+RestartSec=2
+EnvironmentFile=-/etc/default/hostapd
+ExecStart=/usr/sbin/hostapd -B -P /run/hostapd.%i.pid $DAEMON_OPTS /etc/hostapd/%i.conf
+
+[Install]
+WantedBy=multi-user.target sys-subsystem-net-devices-%i.device

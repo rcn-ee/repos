@@ -1,0 +1,50 @@
+From 41a2d75d6770812fe4ef42049f3d469a57d035fc Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Wed, 22 Sep 2021 16:54:28 -0500
+Subject: [PATCH] wpa_supplicant: bind to wlan0
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ wpa_supplicant/systemd/wpa_supplicant-nl80211.service.arg.in | 4 ++--
+ wpa_supplicant/systemd/wpa_supplicant.service.arg.in         | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/wpa_supplicant/systemd/wpa_supplicant-nl80211.service.arg.in b/wpa_supplicant/systemd/wpa_supplicant-nl80211.service.arg.in
+index 03ac507..e1258d1 100644
+--- a/wpa_supplicant/systemd/wpa_supplicant-nl80211.service.arg.in
++++ b/wpa_supplicant/systemd/wpa_supplicant-nl80211.service.arg.in
+@@ -1,6 +1,6 @@
+ [Unit]
+ Description=WPA supplicant daemon (interface- and nl80211 driver-specific version)
+-Requires=sys-subsystem-net-devices-%i.device
++BindsTo=sys-subsystem-net-devices-%i.device
+ After=sys-subsystem-net-devices-%i.device
+ Before=network.target
+ Wants=network.target
+@@ -12,4 +12,4 @@ Type=simple
+ ExecStart=@BINDIR@/wpa_supplicant -c/etc/wpa_supplicant/wpa_supplicant-nl80211-%I.conf -Dnl80211 -i%I
+ 
+ [Install]
+-Alias=multi-user.target.wants/wpa_supplicant-nl80211@%i.service
++WantedBy=sys-subsystem-net-devices-%i.device
+diff --git a/wpa_supplicant/systemd/wpa_supplicant.service.arg.in b/wpa_supplicant/systemd/wpa_supplicant.service.arg.in
+index cff0b6d..7a8909e 100644
+--- a/wpa_supplicant/systemd/wpa_supplicant.service.arg.in
++++ b/wpa_supplicant/systemd/wpa_supplicant.service.arg.in
+@@ -1,6 +1,6 @@
+ [Unit]
+ Description=WPA supplicant daemon (interface-specific version)
+-Requires=sys-subsystem-net-devices-%i.device
++BindsTo=sys-subsystem-net-devices-%i.device
+ After=sys-subsystem-net-devices-%i.device
+ Before=network.target
+ Wants=network.target
+@@ -12,4 +12,4 @@ Type=simple
+ ExecStart=@BINDIR@/wpa_supplicant -c/etc/wpa_supplicant/wpa_supplicant-%I.conf -Dnl80211,wext -i%I
+ 
+ [Install]
+-Alias=multi-user.target.wants/wpa_supplicant@%i.service
++WantedBy=sys-subsystem-net-devices-%i.device
+-- 
+2.30.2
+
