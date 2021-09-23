@@ -86,6 +86,11 @@ write_default_bb_mac_addr () {
 	echo "USB1_DEV_ADDR=${usb1_dev_addr}" >> /etc/default/bb-mac-addr
 }
 
+update_default_hostapd () {
+	ssid_append=$(echo ${mac_addr0} | cut -b 13-17 | sed 's/://g' || true)
+	sed -i -e "s:BeagleBone-WXYZ:BeagleBone-$ssid_append:g" /etc/hostapd/hostapd.conf
+}
+
 get_mac_addr
 process_base
 generate_usb0_host_addr
@@ -93,3 +98,4 @@ generate_usb0_dev_addr
 generate_usb1_host_addr
 generate_usb1_dev_addr
 write_default_bb_mac_addr
+update_default_hostapd
