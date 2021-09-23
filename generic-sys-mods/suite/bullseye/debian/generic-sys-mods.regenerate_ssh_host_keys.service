@@ -5,6 +5,7 @@ ConditionFileIsExecutable=/usr/bin/ssh-keygen
 
 [Service]
 Type=oneshot
+ExecStartPre=-/usr/bin/bb-setup-mac-address
 ExecStartPre=-/bin/dd if=/dev/hwrng of=/dev/urandom count=1 bs=4096
 ExecStartPre=-/bin/sh -c "/bin/rm -f -v /etc/ssh/ssh_host_*_key*"
 ExecStart=/usr/bin/ssh-keygen -A -v
