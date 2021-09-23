@@ -23,7 +23,11 @@
 #Based off:
 #https://github.com/beagleboard/meta-beagleboard/blob/master/meta-beagleboard-extras/recipes-support/usb-gadget/gadget-init/g-ether-load.sh
 
-log="am335x_evm:"
+if [ -f /etc/default/bb-mac-addr ] ; then
+	. /etc/default/bb-mac-addr
+fi
+
+log="usb_gadget:"
 
 usb_gadget="/sys/kernel/config/usb_gadget"
 
@@ -75,9 +79,10 @@ run_libcomposite () {
 		echo 500 > configs/c.1/MaxPower
 
 		mkdir -p functions/rndis.usb0
-		# first byte of address must be even
-		#echo ${cpsw_2_mac} > functions/rndis.usb0/host_addr
-		#echo ${cpsw_1_mac} > functions/rndis.usb0/dev_addr
+		if [ ! "x${USB0_HOST_ADDR}" = "x" ] ; then
+			echo ${USB0_HOST_ADDR} > functions/rndis.usb0/host_addr
+			echo ${USB0_DEV_ADDR} > functions/rndis.usb0/dev_addr
+		fi
 
 		# Starting with kernel 4.14, we can do this to match Microsoft's built-in RNDIS driver.
 		# Earlier kernels require the patch below as a work-around instead:
@@ -108,8 +113,10 @@ run_libcomposite () {
 		ln -s functions/rndis.usb0 configs/c.1/
 
 		mkdir -p functions/ncm.usb0
-		#echo ${cpsw_4_mac} > functions/ncm.usb0/host_addr
-		#echo ${cpsw_5_mac} > functions/ncm.usb0/dev_addr
+		if [ ! "x${USB1_HOST_ADDR}" = "x" ] ; then
+			echo ${USB1_HOST_ADDR} > functions/ncm.usb0/host_addr
+			echo ${USB1_DEV_ADDR} > functions/ncm.usb0/dev_addr
+		fi
 		ln -s functions/ncm.usb0 configs/c.1/
 
 		mkdir -p functions/acm.usb0
