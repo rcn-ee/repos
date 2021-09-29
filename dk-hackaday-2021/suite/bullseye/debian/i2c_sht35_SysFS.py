@@ -19,5 +19,5 @@ hwmon_hum_rh = (hwmon_hum_value /1000)
 hwmon_hum.seek(0)
 hwmon_hum.close()
 
-print("metric:id=%s,n=Reading,vd=%0.1f,u=F" % (devID, hwmon_temp_f))
+print("metric:id=%s,n=Temperature,vd=%0.1f,u=F" % (devID, hwmon_temp_f))
 print("metric:id=%s,n=Humidity,vd=%0.2f,u=%%" % (devID, hwmon_hum_rh))
