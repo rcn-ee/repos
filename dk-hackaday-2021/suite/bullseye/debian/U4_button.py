@@ -27,8 +27,8 @@ def main():
     d = BUTTON()
     for event in d.read_loop():
         if event.type == evdev.ecodes.EV_KEY:
-            print(d.GetKeyStatus())
-            print(evdev.categorize(event))
+            #print(d.GetKeyStatus())
+            #print(evdev.categorize(event))
             c = evdev.categorize(event)
             if c.keystate == c.key_down:
                 print("metric:id=%s,n=State,vb=1,u=S" % (devID))
