@@ -1,8 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 
-import time
 import os
+import time
 import evdev
+
+devID = "U4_Button"
 
 class BUTTON:
     def __init__(self):
@@ -27,5 +29,11 @@ def main():
         if event.type == evdev.ecodes.EV_KEY:
             print(d.GetKeyStatus())
             print(evdev.categorize(event))
+            c = evdev.categorize(event)
+            if c.keystate == c.key_down:
+                print("metric:id=%s,n=State,vd=1,u=S" % (devID))
+            elif c.keystate == c.key_up:
+                print("metric:id=%s,n=State,vd=0,u=S" % (devID))
+
 if __name__ == "__main__":
     main()
