@@ -2,7 +2,7 @@
 
 package_name="dk-hackaday-2021"
 debian_pkg_name="${package_name}"
-package_version="1.20210929.5"
+package_version="1.20210929.6"
 package_source=""
 src_dir=""
 
