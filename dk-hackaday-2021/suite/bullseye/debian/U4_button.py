@@ -3,6 +3,7 @@
 import os
 import time
 import evdev
+import sys
 
 devID = "U4_Button"
 
@@ -32,8 +33,10 @@ def main():
             c = evdev.categorize(event)
             if c.keystate == c.key_down:
                 print("metric:id=%s,n=State,vb=1,u=S" % (devID))
+                sys.stdout.flush()
             elif c.keystate == c.key_up:
                 print("metric:id=%s,n=State,vb=0,u=S" % (devID))
+                sys.stdout.flush()
 
 if __name__ == "__main__":
     main()
