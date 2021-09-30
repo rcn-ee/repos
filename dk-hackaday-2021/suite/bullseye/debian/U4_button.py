@@ -31,9 +31,9 @@ def main():
             print(evdev.categorize(event))
             c = evdev.categorize(event)
             if c.keystate == c.key_down:
-                print("metric:id=%s,n=State,vd=1,u=S" % (devID))
+                print("metric:id=%s,n=State,vb=1,u=S" % (devID))
             elif c.keystate == c.key_up:
-                print("metric:id=%s,n=State,vd=0,u=S" % (devID))
+                print("metric:id=%s,n=State,vb=0,u=S" % (devID))
 
 if __name__ == "__main__":
     main()
