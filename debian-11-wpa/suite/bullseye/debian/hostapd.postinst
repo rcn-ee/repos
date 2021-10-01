@@ -6,7 +6,7 @@ set -e
 
 #DEBHELPER#
 
-if [ -d /run/systemd/system ] && [ "$1" = configure ] && [ -z "$DPKG_ROOT" ]
+if [ -d /run/systemd/system ] && [ -x /bin/systemctl ] && [ "$1" = configure ] && [ -z "$DPKG_ROOT" ]
 then
     DAEMON_CONF=
     . /etc/default/hostapd
