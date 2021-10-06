@@ -1,0 +1,21 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+export DH_VERBOSE=1
+
+DEB_BUILD_OPTIONS=noautodbgsym
+
+wfile="ti_cgt_pru_2.3.3_armlinuxa8hf_busybox_installer.sh"
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	mkdir -p ./tmp/ ; chmod +x ./debian/$(wfile) ; ./debian/$(wfile) --prefix ./tmp/ --temp `mktemp -d`
+
+# Disable dh_strip_nondeterminism
+override_dh_strip_nondeterminism:
+
+# Disable dh_strip
+override_dh_strip:
