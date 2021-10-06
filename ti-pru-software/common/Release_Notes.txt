@@ -1,0 +1,157 @@
+==========================================
+PRU SOFTWARE SUPPORT PACKAGE RELEASE NOTES
+==========================================
+
+The PRU Software Support Package (PSSP) is not updated on a set schedule.
+However, when TI updates the PSSP, we group commits by tag. Specific tags of
+the PSSP are available for download here:
+https://git.ti.com/cgit/pru-software-support-package/pru-software-support-package/
+
+Release Notes for each tag are below.
+
+
+v5.9.0
+------
+Released 2021-09-07
+
+This is the last PSSP release that supports the Linux kernel 5.4 version of the
+RemoteProc driver.
+
+Add Release_Notes.txt
+
+
+v5.8.0
+------
+Released 2021-03-31
+
+Updated the linker command files so that there is proper alignment for
+processors with 64 bit ARM cores (AM65x and j7es, examples & labs).
+
+Updated AM65x Hands_on_Labs cmd files to integrate previous cmd linker file
+changes.
+
+Define DCFLAGS in the makefiles that use it (am65x & j7es).
+
+
+v5.7.0
+------
+Released 2020-05-01
+
+AM65x examples: replace SUBSYS with more descriptive SLICE in makefiles &
+command linker files
+
+Updated AM65x code for AM65x Silicon Revision 2.0 (examples and labs)
+
+Updated software manifest & code to remove GPL-2.0 license
+
+Update header files:
+ * Use standard integer types in pru_virtio_ring.h
+ * Remove types.h (unused)
+
+READMEs: add link to TRMs
+
+
+v5.6.0
+------
+Released 2019-12-16
+
+Updated manifest file from v5.0 --> v6.0 (numbering unrelated to verson number
+of PRU Software Support Package)
+
+Added Getting Started Labs
+ * Getting Started Labs are for AM335x, AM437x, AM57xx, and AM65xx
+ * update labs folder makefiles
+
+Several improvements to examples
+ * PRU_gpioToggle toggles all GPO signals by default
+ * AM65x examples, add ReadMe file
+
+
+v5.5.0
+------
+Released 2019-09-18
+
+Add support for Linux 4.19 with:
+vring da field updates: (impacts resource table)
+ * Add definition of FW_RSC_ADDR_ANY
+ * Update labs & examples to use FW_RSC_ADDR_ANY
+
+add support for j721E by:
+	adding a header file for J721E ICSSG INTC
+	adding RPMsg examples for J721E PRU & RTU cores
+	adding Halt examples for J721E PRU, RTU, & TX_PRU cores
+
+Add clarifying comments to examples:
+ * No longer supported: PRU_ARMtoPRU_Interrupt, PRU_PRUtoARM_Interrupt
+ * PRU_Hardware_UART: clarify how loopback works
+ * ReadMe.txt updated to add new examples & documentation
+
+
+v5.4.0
+------
+Released 2018-11-27
+
+examples/am335x/PRU_ADC_onChip did not work out of the box in tag v5.3.0.
+Implemented bug fixes.
+
+
+v5.3.0
+------
+Released 2018-09-10
+
+Add compatibility w/ Linux Kernel 4.14:
+update all resource tables in examples and labs
+
+Expanded hands-on labs:
+Expand Linux examples to all supported PRU processors with the introduction of
+Lab_0 and the expansion of Lab_5.
+
+AM65x:
+* Add ICSSG header files
+  - update RPMsg examples to reference header files
+* Add examples PRU_Halt, RTU_Halt, PRU_MAC_Multiply_Accum, RTU_MAC_Multiply_Accum
+* Fixed typos in linker command files
+
+RPMsg bug fix:
+added RPMSG_MESSAGE_SIZE to prevent PRU from sending messages that are too long.
+Updated all RPMsg instances in examples and labs.
+
+Rename PRU_ADC to PRU_ADC_onChip
+
+
+v5.2.1
+------
+Released 2018-07-24
+
+* Add PRU_ADC example to examples/am335x/PRU_ADC
+* bug fixes
+  - update RPMsg payload message length from 512 --> 496
+  - fix EMCR address in PRU_edmaConfig
+  - Update DDR len in Linkr Cmd Files from 0x100 --> 0x10000
+
+
+v5.2.0
+------
+Released 2018-07-24
+
+* Add ICSSG INTC resource structure (affects resource table)
+* Add AM65x RPMsg examples
+* sync up with TI 4.14 kernels
+  (updates resource table definitions in include/rsc_types)
+* update AM572x SR2.0 PRU UART header file
+
+
+v5.1.0
+------
+Released 2016-11-15
+
+*Fixed an incorrect pin mux in the PRU cape dtsi files
+  -The PRU UART RTS pin had an incorrect offset which
+   caused a conflict with i2c0
+  -Reported-by: Gary Thomas <gary@mlbassoc.com>
+*Further updated the PRU cape dtsi files to remove pin mux
+ conflicts with nodes added in the latest Linux Processor
+ SDK
+*Fixed an ECAP interrupt issue in the TempSensor Lab/Demo
+*Added a Linux demo that allows users to select which PRU
+ firmwares they would like to load and run from the console
