@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -e
+
+#ti-pru-software looks for /usr/share/ti/cgt-pru/bin/clpru
+if [ -d /usr/share/ti/cgt-pru/bin/ ] ; then
+	rm -rf /usr/share/ti/cgt-pru/bin/
+fi
+mkdir /usr/share/ti/cgt-pru/bin/
+ln -s /usr/bin/clpru /usr/share/ti/cgt-pru/bin/
+
+#DEBHELPER#
