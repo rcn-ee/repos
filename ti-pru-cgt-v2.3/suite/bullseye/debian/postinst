@@ -4,10 +4,29 @@ set -e
 
 #ti-pru-software looks for /usr/share/ti/cgt-pru/bin/clpru
 if [ -d /usr/share/ti/cgt-pru/bin/ ] ; then
-	rm -rf /usr/share/ti/cgt-pru/bin/
+	rm -rf /usr/share/ti/cgt-pru/bin/ || true
 fi
-mkdir /usr/share/ti/cgt-pru/bin/
+
+mkdir -p /usr/share/ti/cgt-pru/bin/
+
+ln -s /usr/bin/abspru /usr/share/ti/cgt-pru/bin/
+ln -s /usr/bin/acpiapru /usr/share/ti/cgt-pru/bin/
+ln -s /usr/bin/arpru /usr/share/ti/cgt-pru/bin/
+ln -s /usr/bin/asmpru /usr/share/ti/cgt-pru/bin/
+ln -s /usr/bin/cgpru /usr/share/ti/cgt-pru/bin/
+ln -s /usr/bin/clistpru /usr/share/ti/cgt-pru/bin/
 ln -s /usr/bin/clpru /usr/share/ti/cgt-pru/bin/
+ln -s /usr/bin/dempru /usr/share/ti/cgt-pru/bin/
+ln -s /usr/bin/dispru /usr/share/ti/cgt-pru/bin/
+ln -s /usr/bin/embedpru /usr/share/ti/cgt-pru/bin/
 ln -s /usr/bin/hexpru /usr/share/ti/cgt-pru/bin/
+ln -s /usr/bin/ilkpru /usr/share/ti/cgt-pru/bin/
+ln -s /usr/bin/libinfopru /usr/share/ti/cgt-pru/bin/
+ln -s /usr/bin/lnkpru /usr/share/ti/cgt-pru/bin/
+ln -s /usr/bin/nmpru /usr/share/ti/cgt-pru/bin/
+ln -s /usr/bin/ofdpru /usr/share/ti/cgt-pru/bin/
+ln -s /usr/bin/optpru /usr/share/ti/cgt-pru/bin/
+ln -s /usr/bin/strippru /usr/share/ti/cgt-pru/bin/
+ln -s /usr/bin/xrefpru /usr/share/ti/cgt-pru/bin/
 
 #DEBHELPER#
