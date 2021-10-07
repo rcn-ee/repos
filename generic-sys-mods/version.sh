@@ -4,7 +4,7 @@
 
 package_name="generic-sys-mods"
 debian_pkg_name="${package_name}"
-package_version="1.20210923.5"
+package_version="1.20210923.6"
 package_source=""
 src_dir=""
 
@@ -17,4 +17,5 @@ debian_version="${package_version}-0"
 debian_untar=""
 debian_patch=""
 
-bullseye_version="~bullseye+20210923"
+bullseye_version="~bullseye+20211007"
+focal_version="~focal+20211007"
