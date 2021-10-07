@@ -1,0 +1,30 @@
+From: Andrej Shadura <andrew.shadura@collabora.co.uk>
+Date: Tue, 25 Feb 2020 17:05:11 +0100
+Subject: common: Provide the BIT() macro locally
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+
+wpa_ctrl.h can be installed separately with libwpa_client, so
+utils/common.h won’t be available to its users.
+
+Signed-off-by: Andrej Shadura <andrew.shadura@collabora.co.uk>
+---
+ src/common/wpa_ctrl.h | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/common/wpa_ctrl.h b/src/common/wpa_ctrl.h
+index b24ae63..b60859f 100644
+--- a/src/common/wpa_ctrl.h
++++ b/src/common/wpa_ctrl.h
+@@ -375,6 +375,10 @@ extern "C" {
+ #define WDS_STA_INTERFACE_ADDED "WDS-STA-INTERFACE-ADDED "
+ #define WDS_STA_INTERFACE_REMOVED "WDS-STA-INTERFACE-REMOVED "
+ 
++#ifndef BIT
++#define BIT(x) (1U << (x))
++#endif
++
+ /* BSS command information masks */
+ 
+ #define WPA_BSS_MASK_ALL		0xFFFDFFFF

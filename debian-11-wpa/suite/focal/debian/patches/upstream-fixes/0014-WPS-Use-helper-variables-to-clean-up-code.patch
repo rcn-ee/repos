@@ -1,0 +1,54 @@
+From 2fd90eb095e18ce1c505bb6acaccff76072aeebe Mon Sep 17 00:00:00 2001
+From: Raphaël Mélotte <raphael.melotte@mind.be>
+Date: Thu, 4 Feb 2021 16:36:13 +0100
+Subject: WPS: Use helper variables to clean up code
+
+This is in preparation of larger changes in hostapd_update_wps() to keep
+the commits more readable.
+
+Signed-off-by: Raphaël Mélotte <raphael.melotte@mind.be>
+---
+ src/ap/wps_hostapd.c | 23 +++++++++++++----------
+ 1 file changed, 13 insertions(+), 10 deletions(-)
+
+diff --git a/src/ap/wps_hostapd.c b/src/ap/wps_hostapd.c
+index dc8aa8f65..867e55a0f 100644
+--- a/src/ap/wps_hostapd.c
++++ b/src/ap/wps_hostapd.c
+@@ -1307,21 +1307,24 @@ void hostapd_deinit_wps(struct hostapd_data *hapd)
+ 
+ void hostapd_update_wps(struct hostapd_data *hapd)
+ {
+-	if (hapd->wps == NULL)
++	struct wps_context *wps = hapd->wps;
++	struct hostapd_bss_config *conf = hapd->conf;
++
++	if (!wps)
+ 		return;
+ 
+ #ifdef CONFIG_WPS_UPNP
+-	hapd->wps->friendly_name = hapd->conf->friendly_name;
+-	hapd->wps->manufacturer_url = hapd->conf->manufacturer_url;
+-	hapd->wps->model_description = hapd->conf->model_description;
+-	hapd->wps->model_url = hapd->conf->model_url;
+-	hapd->wps->upc = hapd->conf->upc;
++	wps->friendly_name = conf->friendly_name;
++	wps->manufacturer_url = conf->manufacturer_url;
++	wps->model_description = conf->model_description;
++	wps->model_url = conf->model_url;
++	wps->upc = conf->upc;
+ #endif /* CONFIG_WPS_UPNP */
+ 
+-	hostapd_wps_set_vendor_ext(hapd, hapd->wps);
++	hostapd_wps_set_vendor_ext(hapd, wps);
+ 
+-	if (hapd->conf->wps_state)
+-		wps_registrar_update_ie(hapd->wps->registrar);
++	if (conf->wps_state)
++		wps_registrar_update_ie(wps->registrar);
+ 	else
+ 		hostapd_deinit_wps(hapd);
+ }
+-- 
+2.29.2
+

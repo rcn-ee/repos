@@ -1,0 +1,29 @@
+wpa (2:2.7-3) unstable; urgency=medium
+
+  Starting from this version, the init script of hostapd will display
+  a warning if DAEMON_CONF is set to a value different from
+  /etc/hostapd/hostapd.conf. A future upload will also attempt
+  to migrate the configuration file to the new location.
+
+ -- Andrej Shadura <andrewsh@debian.org>  Thu, 10 Jan 2019 21:29:31 +0100
+
+wpa (2:2.6-10) unstable; urgency=medium
+
+  The hostapd .service file is now automatically masked every time the
+  package is upgraded with no valid configuration.
+
+  The plan is to deprecate /etc/default/hostapd at some point, making
+  /etc/hostapd/hostapd.conf the standard location for the configuration
+  file.
+
+ -- Andrew Shadura <andrewsh@debian.org>  Tue, 28 Nov 2017 12:29:21 +0100
+
+wpa (2:2.6-8) unstable; urgency=medium
+
+  Since 2:2.6-6, hostapd ships a systemd .service file. As hostapd comes
+  with /etc/default/hostapd file, which by default doesn't specify any
+  config file, to prevent installation or boot failures, the package's
+  postinst script masks the hostapd.service unit on the first install.
+  After editing the default file, users need to unmask it themselves.
+
+ -- Andrew Shadura <andrewsh@debian.org>  Sun, 26 Nov 2017 19:25:50 +0000

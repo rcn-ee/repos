@@ -1,0 +1,33 @@
+From: Jouni Malinen <j@w1.fi>
+Date: Sat, 16 May 2020 12:16:34 +0300
+Subject: Ignore Management frames while AP interface is not fully enabled
+
+It is possible for drivers to report received Management frames while AP
+is going through initial setup (e.g., during ACS or DFS CAC). hostapd
+and the driver is not yet ready for actually sending out responses to
+such frames at this point and as such, it is better to explicitly ignore
+such received frames rather than try to process them and have the
+response (e.g., a Probe Response frame) getting dropped by the driver as
+an invalid or getting out with some incorrect information.
+
+Signed-off-by: Jouni Malinen <j@w1.fi>
+---
+ src/ap/ieee802_11.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/src/ap/ieee802_11.c b/src/ap/ieee802_11.c
+index e706537..29311b8 100644
+--- a/src/ap/ieee802_11.c
++++ b/src/ap/ieee802_11.c
+@@ -4658,6 +4658,11 @@ int ieee802_11_mgmt(struct hostapd_data *hapd, const u8 *buf, size_t len,
+ 		return 0;
+ 	}
+ 
++	if (hapd->iface->state != HAPD_IFACE_ENABLED) {
++		wpa_printf(MSG_DEBUG, "MGMT: Ignore management frame while interface is not enabled (SA=" MACSTR " DA=" MACSTR " subtype=%u)",
++			   MAC2STR(mgmt->sa), MAC2STR(mgmt->da), stype);
++		return 1;
++	}
+ 
+ 	if (stype == WLAN_FC_STYPE_PROBE_REQ) {
+ 		handle_probe_req(hapd, mgmt, len, ssi_signal);

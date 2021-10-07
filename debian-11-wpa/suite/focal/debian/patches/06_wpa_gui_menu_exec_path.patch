@@ -1,0 +1,23 @@
+From: Kel Modderman <kel@otaku42.de>
+Date: Thu, 25 Sep 2008 07:52:06 +1000
+Subject: Use full executable path into wpa_gui.desktop
+
+Debian specific patch to desktop menu entry, so that we may exec
+wpa_gui which being in /usr/sbin may not be in the PATH
+---
+ wpa_supplicant/wpa_gui-qt4/wpa_gui.desktop | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/wpa_supplicant/wpa_gui-qt4/wpa_gui.desktop b/wpa_supplicant/wpa_gui-qt4/wpa_gui.desktop
+index ccc7d87..e560f3d 100644
+--- a/wpa_supplicant/wpa_gui-qt4/wpa_gui.desktop
++++ b/wpa_supplicant/wpa_gui-qt4/wpa_gui.desktop
+@@ -2,7 +2,7 @@
+ Version=1.0
+ Name=wpa_gui
+ Comment=Graphical user interface for wpa_supplicant
+-Exec=wpa_gui
++Exec=/usr/sbin/wpa_gui
+ Icon=wpa_gui
+ GenericName=wpa_supplicant user interface
+ Terminal=false

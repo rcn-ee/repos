@@ -1,0 +1,33 @@
+From 52a1b28345123c374fd0127cbce623c41a760730 Mon Sep 17 00:00:00 2001
+From: Thomas Pedersen <thomas@adapt-ip.com>
+Date: Thu, 27 Aug 2020 15:59:40 -0700
+Subject: nl80211: Unbreak mode processing due to presence of S1G band
+
+If kernel advertises a band with channels < 2.4 GHz
+hostapd/wpa_supplicant gets confused and assumes this is an IEEE
+802.11b, corrupting the real IEEE 802.11b band info.
+
+Signed-off-by: Thomas Pedersen <thomas@adapt-ip.com>
+---
+ src/drivers/driver_nl80211_capa.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/drivers/driver_nl80211_capa.c b/src/drivers/driver_nl80211_capa.c
+index 46f61fdbf..625fe5d0b 100644
+--- a/src/drivers/driver_nl80211_capa.c
++++ b/src/drivers/driver_nl80211_capa.c
+@@ -1763,7 +1763,10 @@ wpa_driver_nl80211_postprocess_modes(struct hostapd_hw_modes *modes,
+ 	for (m = 0; m < *num_modes; m++) {
+ 		if (!modes[m].num_channels)
+ 			continue;
+-		if (modes[m].channels[0].freq < 4000) {
++		if (modes[m].channels[0].freq < 2000) {
++			modes[m].num_channels = 0;
++			continue;
++		} else if (modes[m].channels[0].freq < 4000) {
+ 			modes[m].mode = HOSTAPD_MODE_IEEE80211B;
+ 			for (i = 0; i < modes[m].num_rates; i++) {
+ 				if (modes[m].rates[i] > 200) {
+-- 
+2.29.2
+

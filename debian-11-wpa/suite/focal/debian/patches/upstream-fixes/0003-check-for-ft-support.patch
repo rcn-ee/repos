@@ -1,0 +1,82 @@
+From: Matthew Wang <matthewmwang@chromium.org>
+Date: Mon, 3 Feb 2020 17:12:05 -0800
+Subject: Check for FT support when selecting FT suites
+
+A driver supports FT if it either supports SME or the
+NL80211_CMD_UPDATE_FT_IES command. When selecting AKM suites,
+wpa_supplicant currently doesn't take into account whether or not either
+of those conditions are met. This can cause association failures, e.g.,
+when an AP supports both WPA-EAP and FT-EAP but the driver doesn't
+support FT (wpa_supplicant will decide to do FT-EAP since it is unaware
+the driver doesn't support it). This change allows an FT suite to be
+selected only when the driver also supports FT.
+
+Signed-off-by: Matthew Wang <matthewmwang@chromium.org>
+Reviewed-by: Brian Norris <briannorris@chromium.org>
+---
+ src/drivers/driver.h              | 2 ++
+ src/drivers/driver_nl80211_capa.c | 7 +++++++
+ wpa_supplicant/wpa_supplicant.c   | 5 +++++
+ 3 files changed, 14 insertions(+)
+
+diff --git a/src/drivers/driver.h b/src/drivers/driver.h
+index 2a8459a..db2eb89 100644
+--- a/src/drivers/driver.h
++++ b/src/drivers/driver.h
+@@ -1659,6 +1659,8 @@ struct wpa_driver_capa {
+ #define WPA_DRIVER_FLAGS_FTM_RESPONDER		0x0100000000000000ULL
+ /** Driver support 4-way handshake offload for WPA-Personal */
+ #define WPA_DRIVER_FLAGS_4WAY_HANDSHAKE_PSK	0x0200000000000000ULL
++/** Driver supports UPDATE_FT_IES command */
++#define WPA_DRIVER_FLAGS_UPDATE_FT_IES		0x1000000000000000ULL
+ 	u64 flags;
+ 
+ #define FULL_AP_CLIENT_STATE_SUPP(drv_flags) \
+diff --git a/src/drivers/driver_nl80211_capa.c b/src/drivers/driver_nl80211_capa.c
+index 8318b10..2137b29 100644
+--- a/src/drivers/driver_nl80211_capa.c
++++ b/src/drivers/driver_nl80211_capa.c
+@@ -78,6 +78,7 @@ struct wiphy_info_data {
+ 	unsigned int wmm_ac_supported:1;
+ 	unsigned int mac_addr_rand_scan_supported:1;
+ 	unsigned int mac_addr_rand_sched_scan_supported:1;
++	unsigned int update_ft_ies_supported:1;
+ };
+ 
+ 
+@@ -243,6 +244,9 @@ static void wiphy_info_supp_cmds(struct wiphy_info_data *info,
+ 		case NL80211_CMD_SET_QOS_MAP:
+ 			info->set_qos_map_supported = 1;
+ 			break;
++		case NL80211_CMD_UPDATE_FT_IES:
++			info->update_ft_ies_supported = 1;
++			break;
+ 		}
+ 	}
+ }
+@@ -901,6 +905,9 @@ static int wpa_driver_nl80211_get_info(struct wpa_driver_nl80211_data *drv,
+ 		drv->capa.max_sched_scan_plan_iterations = 0;
+ 	}
+ 
++	if (info->update_ft_ies_supported)
++		drv->capa.flags |= WPA_DRIVER_FLAGS_UPDATE_FT_IES;
++
+ 	return 0;
+ }
+ 
+diff --git a/wpa_supplicant/wpa_supplicant.c b/wpa_supplicant/wpa_supplicant.c
+index 911d79d..4ab56c3 100644
+--- a/wpa_supplicant/wpa_supplicant.c
++++ b/wpa_supplicant/wpa_supplicant.c
+@@ -1410,6 +1410,11 @@ int wpa_supplicant_set_suites(struct wpa_supplicant *wpa_s,
+ 	if (!(wpa_s->drv_flags & WPA_DRIVER_FLAGS_SAE))
+ 		sel &= ~(WPA_KEY_MGMT_SAE | WPA_KEY_MGMT_FT_SAE);
+ #endif /* CONFIG_SAE */
++#ifdef CONFIG_IEEE80211R
++	if (!(wpa_s->drv_flags & (WPA_DRIVER_FLAGS_SME |
++				  WPA_DRIVER_FLAGS_UPDATE_FT_IES)))
++		sel &= ~WPA_KEY_MGMT_FT;
++#endif /* CONFIG_IEEE80211R */
+ 	if (0) {
+ #ifdef CONFIG_IEEE80211R
+ #ifdef CONFIG_SHA384

@@ -1,0 +1,29 @@
+From: Alexander Wetzel <alexander@wetzel-home.de>
+Date: Fri, 20 Dec 2019 20:21:26 +0100
+Subject: wpa_supplicant: Do not try to detect PSK mismatch during PTK
+ rekeying
+
+When a PTK rekey fails it can't be caused by a PSK mismatch. Report a
+possible PSK mismatch only during the initial 4-way handshake to avoid
+incorrect reports.
+
+Signed-off-by: Alexander Wetzel <alexander@wetzel-home.de>
+---
+ wpa_supplicant/events.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/wpa_supplicant/events.c b/wpa_supplicant/events.c
+index 87dad08..fb6231c 100644
+--- a/wpa_supplicant/events.c
++++ b/wpa_supplicant/events.c
+@@ -2999,8 +2999,9 @@ static int could_be_psk_mismatch(struct wpa_supplicant *wpa_s, u16 reason_code,
+ 				 int locally_generated)
+ {
+ 	if (wpa_s->wpa_state != WPA_4WAY_HANDSHAKE ||
++	    !wpa_s->new_connection ||
+ 	    !wpa_key_mgmt_wpa_psk(wpa_s->key_mgmt))
+-		return 0; /* Not in 4-way handshake with PSK */
++		return 0; /* Not in initial 4-way handshake with PSK */
+ 
+ 	/*
+ 	 * It looks like connection was lost while trying to go through PSK

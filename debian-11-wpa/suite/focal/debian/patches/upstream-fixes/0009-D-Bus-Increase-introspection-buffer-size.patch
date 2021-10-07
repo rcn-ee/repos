@@ -1,0 +1,26 @@
+From: Jouni Malinen <j@w1.fi>
+Date: Sat, 16 May 2020 21:46:24 +0300
+Subject: D-Bus: Increase introspection buffer size
+
+It was apparently possible to hit the 20000 octet limit in some cases,
+so increase the limit to avoid process termination due to insufficient
+room for preparing a response to Introspect calls.
+
+Signed-off-by: Jouni Malinen <j@w1.fi>
+---
+ wpa_supplicant/dbus/dbus_new_introspect.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/wpa_supplicant/dbus/dbus_new_introspect.c b/wpa_supplicant/dbus/dbus_new_introspect.c
+index aee105b..6c721bf 100644
+--- a/wpa_supplicant/dbus/dbus_new_introspect.c
++++ b/wpa_supplicant/dbus/dbus_new_introspect.c
+@@ -257,7 +257,7 @@ DBusMessage * wpa_dbus_introspect(DBusMessage *message,
+ 	DBusMessage *reply;
+ 	struct wpabuf *xml;
+ 
+-	xml = wpabuf_alloc(20000);
++	xml = wpabuf_alloc(30000);
+ 	if (xml == NULL)
+ 		return NULL;
+ 

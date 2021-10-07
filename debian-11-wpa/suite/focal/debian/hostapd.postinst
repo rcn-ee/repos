@@ -1,0 +1,19 @@
+#!/bin/sh
+
+set -e
+
+: ${DPKG_ROOT=}
+
+#DEBHELPER#
+
+if [ -d /run/systemd/system ] && [ -x /bin/systemctl ] && [ "$1" = configure ] && [ -z "$DPKG_ROOT" ]
+then
+    DAEMON_CONF=
+    . /etc/default/hostapd
+    if [ -z "$DAEMON_CONF" ] && [ ! -r /etc/hostapd/hostapd.conf ] && ! systemctl --quiet is-active hostapd.service
+    then
+	    systemctl mask hostapd.service
+    fi
+fi
+
+exit 0
