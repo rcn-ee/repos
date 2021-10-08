@@ -1,0 +1,15 @@
+#!/usr/bin/make -f
+export DH_VERBOSE=1
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+DEB_BUILD_OPTIONS=noautodbgsym
+
+%:
+	dh $@
+
+override_dh_installsystemd:
+	dh_installsystemd --no-start --no-enable --no-stop-on-upgrade
+
+override_dh_auto_install:
+	dh_auto_install
+	install -D -m 0755 conf/umtprd-ffs.sh $(CURDIR)/debian/umtp-responder/usr/sbin/umtprd-ffs
