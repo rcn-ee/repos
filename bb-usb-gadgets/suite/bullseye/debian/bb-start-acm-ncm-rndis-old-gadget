@@ -127,6 +127,15 @@ run_libcomposite () {
 		#echo /dev/nbd0 > functions/mass_storage.usb0/lun.0/file
 		#ln -s functions/mass_storage.usb0 configs/c.1/
 
+		if [ -f /usr/bin/umtprd ] ;
+			mkdir -p functions/ffs.mtp
+			ln -s functions/ffs.mtp configs/c.1
+
+			mkdir /dev/ffs-mtp
+			mount -t functionfs mtp /dev/ffs-mtp
+			/usr/bin/umtprd &
+			sleep 1
+		fi
 	fi
 
 	ls /sys/class/udc/ > UDC
