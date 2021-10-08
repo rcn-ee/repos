@@ -2,7 +2,7 @@
 
 package_name="bb-wlan0-defaults"
 debian_pkg_name="${package_name}"
-package_version="1.20211006.0"
+package_version="1.20211006.1"
 package_source=""
 src_dir=""
 
@@ -15,4 +15,5 @@ debian_version="${package_version}-0"
 debian_untar=""
 debian_patch=""
 
-bullseye_version="~bullseye+20211006"
+bullseye_version="~bullseye+20211007"
+focal_version="~focal+20211007"
