@@ -2,7 +2,7 @@
 
 package_name="bb-code-server-next"
 debian_pkg_name="${package_name}"
-package_version="3.12.0.4"
+package_version="3.12.0.5"
 package_source=""
 src_dir=""
 

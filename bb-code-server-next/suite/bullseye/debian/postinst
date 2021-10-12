@@ -25,10 +25,6 @@ main_install () {
 	chown -R 1000:1000 ${wdir}/config/
 	chown -R 1000:1000 ${wdir}/extensions/
 
-	echo "#!/bin/bash" > ${wfile}
-	echo "/opt/bb-code-server-next/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --bind-addr 0.0.0.0:3000" >> ${wfile}
-	chmod +x ${wfile}
-
 	echo "${package}:Installed"
 }
 
