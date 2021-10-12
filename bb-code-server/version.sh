@@ -2,7 +2,7 @@
 
 package_name="bb-code-server"
 debian_pkg_name="${package_name}"
-package_version="3.12.0.1"
+package_version="3.12.0.2"
 package_source=""
 src_dir=""
 
