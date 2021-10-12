@@ -4,75 +4,31 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
-project_dir=/opt/bb-code-server
+project_dir=/opt/bb-code-server/app
 
-export NODE_PATH := $(project_dir)/deps/lib/node_modules
-export PATH := $(project_dir)/deps/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+code_server_version=3.12.0
 
-node_bin=$(project_dir)/deps/bin/node
-npm_bin=$(project_dir)/deps/bin/npm
-yarn_bin=/usr/local/bin/yarn
-
-nodejs_version=v14.17.4
-yarn_version=1.22.5
-
-code_server_version=3.11.1
+override_dh_link:
+	# Just disable for now...
 
 override_dh_strip:
 	# Just disable for now...
 
+override_dh_strip_nondeterminism:
+	# Just disable for now...
+
 override_dh_auto_configure:
-	mkdir -p $(project_dir)/deps/
-	mkdir -p $(project_dir)/app/
-	tar xf ./debian/node-$(nodejs_version)-linux-armv7l.tar.xz -C $(project_dir)/deps/ --strip-components 1
-	echo "*************************************************************"
-	echo "cleanup..."
-	rm -rf $(project_dir)/deps/include/node/openssl/archs/BSD-x86_64*/
-	rm -rf $(project_dir)/deps/include/node/openssl/archs/VC-WIN*/
-	rm -rf $(project_dir)/deps/include/node/openssl/archs/aix*/
-	rm -rf $(project_dir)/deps/include/node/openssl/archs/darwin*/
-	rm -rf $(project_dir)/deps/include/node/openssl/archs/linux-aarch64/
-	rm -rf $(project_dir)/deps/include/node/openssl/archs/linux-elf/
-	rm -rf $(project_dir)/deps/include/node/openssl/archs/linux-ppc*/
-	rm -rf $(project_dir)/deps/include/node/openssl/archs/linux-x*/
-	rm -rf $(project_dir)/deps/include/node/openssl/archs/linux*-s390x/
-	rm -rf $(project_dir)/deps/include/node/openssl/archs/solaris*/
-	echo "*************************************************************"
-	$(node_bin) --version
-	echo "*************************************************************"
-	$(node_bin) $(npm_bin) --version
-	echo "*************************************************************"
-	$(node_bin) $(npm_bin) config set python python3
-	echo "*************************************************************"
-	/usr/bin/python3 --version
-	env | grep PATH
-	echo "*************************************************************"
-	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /usr/local/ yarn@$(yarn_version)
-	echo "*************************************************************"
-	yarn --version
-	echo "*************************************************************"
-	uname -m
-	echo "*************************************************************"
-	yarn
-	echo "*************************************************************"
-	yarn build
-	echo "*************************************************************"
-	yarn build:vscode
-	echo "*************************************************************"
-	yarn release
-	echo "*************************************************************"
-	yarn release:standalone
-	ls -lha ./release-standalone/
-	echo "*************************************************************"
-	yarn package
-	ls -lha ./release-packages/
-	echo "*************************************************************"
-	tar xf ./release-packages/code-server-$(code_server_version)-linux-armhf.tar.gz -C $(project_dir)/app/ --strip-components 1
-	echo "move $(project_dir)/app/ to ./tmp$(project_dir)/"
 	mkdir -p ./tmp$(project_dir)/
-	mv $(project_dir)/app/ ./tmp$(project_dir)/
-	mkdir -p ./tmp$(project_dir)/examples/ ; mv ./debian/bb-code-server ./tmp$(project_dir)/examples/
+	tar xf debian/code-server-$(code_server_version)-linux-armv7l.tar.gz -C ./tmp$(project_dir)/ --strip-components 1
 
 %:
-	dh $@
+	dh $@ --with systemd
 
+override_dh_installinit:
+	dh_installinit --name=bb-code-server --no-stop-on-upgrade --no-start
+
+override_dh_systemd_enable:
+	dh_systemd_enable --name=bb-code-server --no-enable
+
+override_dh_systemd_start:
+	dh_systemd_start --name=bb-code-server --no-start

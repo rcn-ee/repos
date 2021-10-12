@@ -2,20 +2,21 @@
 
 package_name="bb-code-server"
 debian_pkg_name="${package_name}"
-package_version="3.11.1.20210810.0"
-package_source="${package_name}_${package_version}.orig.tar.xz"
-src_dir="${package_name}_${package_version}"
+package_version="3.12.0.0"
+package_source=""
+src_dir=""
 
-git_repo="https://github.com/rcn-ee/code-server"
-git_sha="65ebc265bf98848c3a14740f4a84b7d05ae19200"
+git_repo=""
+git_sha=""
 reprepro_dir="b/${package_name}"
-dl_path=""
+dl_path="pool/main/${reprepro_dir}/"
 
 debian_version="${package_version}-0"
 debian_untar=""
 debian_patch=""
 
-debian_dl_1="https://nodejs.org/dist/latest-v14.x/node-v14.17.4-linux-armv7l.tar.xz"
+debian_dl_1="https://github.com/cdr/code-server/releases/download/v3.12.0/code-server-3.12.0-linux-armv7l.tar.gz"
+#debian_dl_1="https://github.com/cdr/code-server/releases/download/v3.12.0/code-server-3.12.0-linux-arm64.tar.gz"
 
-buster_version="~buster+20210810"
-bullseye_version="~bullseye+20210810"
+buster_version="~buster+20211012"
+bullseye_version="~bullseye+20211012"
