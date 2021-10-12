@@ -1,0 +1,21 @@
+#!/bin/bash -e
+
+package_name="bb-code-server-next"
+debian_pkg_name="${package_name}"
+package_version="3.12.0.0"
+package_source="${package_name}_${package_version}.orig.tar.xz"
+src_dir="${package_name}_${package_version}"
+
+#git_repo="https://github.com/rcn-ee/code-server"
+#git_sha="65ebc265bf98848c3a14740f4a84b7d05ae19200"
+reprepro_dir="b/${package_name}"
+dl_path=""
+
+debian_version="${package_version}-0"
+debian_untar=""
+debian_patch=""
+
+debian_dl_1="https://github.com/cdr/code-server/releases/download/v3.12.0/code-server-3.12.0-linux-armv7l.tar.gz"
+#debian_dl_1="https://github.com/cdr/code-server/releases/download/v3.12.0/code-server-3.12.0-linux-arm64.tar.gz"
+
+bullseye_version="~bullseye+20211012"
