@@ -5,7 +5,7 @@
 set -e
 
 package="bb-code-server-next"
-wdir="/opt/bb-code-server-next/"
+wdir="/opt/bb-code-server-next"
 wfile="/opt/bb-code-server-next/start.sh"
 
 main_install () {
@@ -17,13 +17,16 @@ main_install () {
 	#Git
 	/opt/bb-code-server-next/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --install-extension donjayamanne.githistory --force
 
+	#Code Runner
+	/opt/bb-code-server-next/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --install-extension formulahendry.code-runner --force
+
 	/opt/bb-code-server-next/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --list-extensions
 
 	chown -R 1000:1000 ${wdir}/config/
 	chown -R 1000:1000 ${wdir}/extensions/
 
 	echo "#!/bin/bash" > ${wfile}
-	echo "/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --bind-addr 0.0.0.0:3000" >> ${wfile}
+	echo "/opt/bb-code-server-next/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --bind-addr 0.0.0.0:3000" >> ${wfile}
 	chmod +x ${wfile}
 
 	echo "${package}:Installed"

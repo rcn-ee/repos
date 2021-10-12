@@ -22,5 +22,13 @@ override_dh_auto_configure:
 	tar xf debian/code-server-$(code_server_version)-linux-armv7l.tar.gz -C ./tmp$(project_dir)/ --strip-components 1
 
 %:
-	dh $@
+	dh $@ --with systemd
 
+override_dh_installinit:
+	dh_installinit --name=bb-code-server-next --no-stop-on-upgrade --no-start
+
+override_dh_systemd_enable:
+	dh_systemd_enable --name=bb-code-server-next --no-enable
+
+override_dh_systemd_start:
+	dh_systemd_start --name=bb-code-server-next --no-start
