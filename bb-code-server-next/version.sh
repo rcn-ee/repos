@@ -2,14 +2,14 @@
 
 package_name="bb-code-server-next"
 debian_pkg_name="${package_name}"
-package_version="3.12.0.0"
-package_source="${package_name}_${package_version}.orig.tar.xz"
-src_dir="${package_name}_${package_version}"
+package_version="3.12.0.1"
+package_source=""
+src_dir=""
 
-#git_repo="https://github.com/rcn-ee/code-server"
-#git_sha="65ebc265bf98848c3a14740f4a84b7d05ae19200"
+git_repo=""
+git_sha=""
 reprepro_dir="b/${package_name}"
-dl_path=""
+dl_path="pool/main/${reprepro_dir}/"
 
 debian_version="${package_version}-0"
 debian_untar=""
