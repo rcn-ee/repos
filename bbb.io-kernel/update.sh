@@ -17,7 +17,7 @@ generate_header () {
 	echo "Section: misc" >> ./suite/${dist}/debian/${wfile}
 	echo "Priority: optional" >> ./suite/${dist}/debian/${wfile}
 	echo "Maintainer: Robert Nelson <robertcnelson@gmail.com>" >> ./suite/${dist}/debian/${wfile}
-	echo "Build-Depends: debhelper-compat (= 13)" >> ./suite/${dist}/debian/${wfile}
+	echo "Build-Depends: debhelper-compat (= ${debhelper})" >> ./suite/${dist}/debian/${wfile}
 	echo "Build-Depends-Indep: blends-dev" >> ./suite/${dist}/debian/${wfile}
 	echo "Standards-Version: 4.5.0" >> ./suite/${dist}/debian/${wfile}
 	echo "Rules-Requires-Root: no" >> ./suite/${dist}/debian/${wfile}
@@ -52,6 +52,7 @@ generate_kernel_ti () {
 	if [ "x${sgxti335x}" = "xenabled" ] ; then
 		echo "            ti-sgx-ti335x-modules-${latest_kernel}," >> ./suite/${dist}/debian/${wfile}
 	fi
+	echo "            bb-u-boot-am335x-evm" >> ./suite/${dist}/debian/${wfile}
 	echo "Description: BeagleBoard.org ${msg} for am335x" >> ./suite/${dist}/debian/${wfile}
 	echo " This metapackage will install linux-image-${msg} for am335x in Debian." >> ./suite/${dist}/debian/${wfile}
 
@@ -66,6 +67,7 @@ generate_kernel_ti () {
 	if [ "x${sgxjacinto6evm}" = "xenabled" ] ; then
 		echo "            ti-sgx-jacinto6evm-modules-${latest_kernel}," >> ./suite/${dist}/debian/${wfile}
 	fi
+	echo "            bb-u-boot-am57xx-evm" >> ./suite/${dist}/debian/${wfile}
 	echo "Description: BeagleBoard.org ${msg} for am57xx" >> ./suite/${dist}/debian/${wfile}
 	echo " This metapackage will install linux-image-${msg} for am57xx in Debian." >> ./suite/${dist}/debian/${wfile}
 }
@@ -73,6 +75,7 @@ generate_kernel_ti () {
 do_buster () {
 	arch="armhf"
 	dist="buster"
+	debhelper="12"
 	wfile="control"
 	generate_header
 
@@ -92,6 +95,7 @@ do_buster () {
 do_bullseye () {
 	arch="armhf"
 	dist="bullseye"
+	debhelper="13"
 	wfile="control"
 	generate_header
 
