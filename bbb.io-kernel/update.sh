@@ -18,7 +18,6 @@ generate_header () {
 	echo "Priority: optional" >> ./suite/${dist}/debian/${wfile}
 	echo "Maintainer: Robert Nelson <robertcnelson@gmail.com>" >> ./suite/${dist}/debian/${wfile}
 	echo "Build-Depends: debhelper-compat (= ${debhelper})" >> ./suite/${dist}/debian/${wfile}
-	echo "Build-Depends-Indep: blends-dev" >> ./suite/${dist}/debian/${wfile}
 	echo "Standards-Version: 4.5.0" >> ./suite/${dist}/debian/${wfile}
 	echo "Rules-Requires-Root: no" >> ./suite/${dist}/debian/${wfile}
 	echo "" >> ./suite/${dist}/debian/${wfile}
