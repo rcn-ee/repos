@@ -11,7 +11,7 @@ build () {
 		echo "sbuild ${options} http://192.168.1.3/farm/incoming/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}/${dsc_file}"
 		echo "-----------------"
 		sudo sbuild ${options} http://192.168.1.3/farm/incoming/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}/${dsc_file}
-#		sbuild ${options} http://192.168.1.3/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}/${dsc_file}
+#		sbuild ${options} http://192.168.1.3/farm/incoming/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}/${dsc_file}
 
 		if [ -f *.changes ] ; then
 			sudo chown -R 1000:1000 ./*
@@ -51,7 +51,7 @@ run () {
 			mkdir ./${suite}
 			cd ./${suite}
 
-			dsc_file=$(ls ${localdir}/incoming/${suite}/${debian_pkg_name}_${debian_version}/ | grep dsc)
+			dsc_file=$(ls ${localdir}/incoming/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}/ | grep dsc)
 			if [ "x${sbuild_chroot}" = "x" ] ; then
 				options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite} --no-run-lintian"
 			else
