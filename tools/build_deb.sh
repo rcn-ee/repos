@@ -6,11 +6,11 @@ localdir="/mnt/farm"
 builder=`cat /etc/hostname`
 
 build () {
-	if [ -f ${localdir}/incoming/${suite}/${debian_pkg_name}_${debian_version}/${dsc_file} ] ; then
+	if [ -f ${localdir}/incoming/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}/${dsc_file} ] ; then
 		echo "-----------------"
-		echo "sbuild ${options} http://192.168.1.3/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}/${dsc_file}"
+		echo "sbuild ${options} http://192.168.1.3/farm/incoming/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}/${dsc_file}"
 		echo "-----------------"
-		sudo sbuild ${options} http://192.168.1.3/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}/${dsc_file}
+		sudo sbuild ${options} http://192.168.1.3/farm/incoming/${suite}/${deb_arch}/${debian_pkg_name}_${debian_version}/${dsc_file}
 #		sbuild ${options} http://192.168.1.3/farm/incoming/${suite}/${debian_pkg_name}_${debian_version}/${dsc_file}
 
 		if [ -f *.changes ] ; then
