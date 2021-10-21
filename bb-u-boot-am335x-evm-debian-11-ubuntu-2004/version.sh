@@ -17,4 +17,5 @@ debian_version="${package_version}-0"
 debian_untar=""
 debian_patch=""
 
+bullseye_version="~bullseye+20210923"
 focal_version="~focal+20211007"
