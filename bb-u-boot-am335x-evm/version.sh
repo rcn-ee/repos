@@ -17,8 +17,6 @@ debian_version="${package_version}-0"
 debian_untar=""
 debian_patch=""
 
-bullseye_version="~bullseye+20210831"
 stretch_version="~stretch+20211021"
 buster_version="~buster+20211021"
 bionic_version="~bionic+20211021"
-focal_version="~focal+20211021"
