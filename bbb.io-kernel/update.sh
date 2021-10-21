@@ -76,8 +76,8 @@ generate_kernel_mainline_bone () {
 	echo "Pre-Depends: linux-image-${latest_kernel}," >> ./suite/${dist}/debian/${wfile}
 	echo "Depends: \${misc:Depends}, bbb.io-kernel-tasks (= \${source:Version})" >> ./suite/${dist}/debian/${wfile}
 	echo "Recommends: libpruio-modules-${latest_kernel}," >> ./suite/${dist}/debian/${wfile}
-	echo "Description: BeagleBoard.org ${msg} for am335x/am57xx" >> ./suite/${dist}/debian/${wfile}
-	echo " This metapackage will install linux-image-${msg} for am335x/am57xx in Debian." >> ./suite/${dist}/debian/${wfile}
+	echo "Description: BeagleBoard.org ${msg} for am335x" >> ./suite/${dist}/debian/${wfile}
+	echo " This metapackage will install linux-image-${msg} for am335x in Debian." >> ./suite/${dist}/debian/${wfile}
 }
 
 generate_kernel_mainline_armv7 () {
