@@ -1,8 +1,29 @@
-systemd (241-7~deb10u6rcnee0~buster+20210216) buster; urgency=low
+systemd (241-7~deb10u8rcnee0~buster+20211022) buster; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Tue, 16 Feb 2021 17:09:08 -0600
+ -- Robert Nelson <robertcnelson@gmail.com>  Fri, 22 Oct 2021 09:06:20 -0500
+
+systemd (241-7~deb10u8) buster-security; urgency=high
+
+  * Non-maintainer upload by the Security Team.
+  * basic/unit-name: do not use strdupa() on a path (CVE-2021-33910)
+
+ -- Salvatore Bonaccorso <carnil@debian.org>  Thu, 08 Jul 2021 15:03:45 +0200
+
+systemd (241-7~deb10u7) buster; urgency=medium
+
+  * core: make sure to restore the control command id, too.
+    Fixes a segfault in systemd that can be triggered when both
+    daemon-reload and a service restart happen concurrently. (Closes: #984495)
+  * seccomp: allow turning off of seccomp filtering via env var.
+    Since glibc 2.33 faccessat() is implemented via faccessat2(), which
+    is breaking running containers that use such a version of glibc under
+    systemd-nspawn in Buster.
+    Turning off seccomp filtering via the SYSTEMD_SECCOMP env var makes it
+    possible to run such new containers. (Closes: #984573)
+
+ -- Michael Biebl <biebl@debian.org>  Thu, 18 Mar 2021 20:59:14 +0100
 
 systemd (241-7~deb10u6) buster; urgency=medium
 

@@ -1,0 +1,79 @@
+From: Lennart Poettering <lennart@poettering.net>
+Date: Mon, 2 Nov 2020 14:51:10 +0100
+Subject: seccomp: allow turning off of seccomp filtering via env var
+
+Fixes: #17504
+
+Also suggested in: https://github.com/systemd/systemd/issues/17245#issuecomment-704773603
+
+(cherry picked from commit ce8f6d478e3f6c6a313fb19615aa5029bb18f86d)
+---
+ docs/ENVIRONMENT.md         |  3 +++
+ src/nspawn/nspawn-seccomp.c |  2 +-
+ src/shared/seccomp-util.c   | 19 +++++++++++++++----
+ 3 files changed, 19 insertions(+), 5 deletions(-)
+
+diff --git a/docs/ENVIRONMENT.md b/docs/ENVIRONMENT.md
+index 99b5b03..286a5e2 100644
+--- a/docs/ENVIRONMENT.md
++++ b/docs/ENVIRONMENT.md
+@@ -58,6 +58,9 @@ All tools:
+   this only controls use of Unicode emoji glyphs, and has no effect on other
+   Unicode glyphs.
+ 
++* `$SYSTEMD_SECCOMP=0` – if set, seccomp filters will not be enforced, even if
++  support for it is compiled in and available in the kernel.
++
+ systemctl:
+ 
+ * `$SYSTEMCTL_FORCE_BUS=1` — if set, do not connect to PID1's private D-Bus
+diff --git a/src/nspawn/nspawn-seccomp.c b/src/nspawn/nspawn-seccomp.c
+index e7ef80f..17abfce 100644
+--- a/src/nspawn/nspawn-seccomp.c
++++ b/src/nspawn/nspawn-seccomp.c
+@@ -168,7 +168,7 @@ int setup_seccomp(uint64_t cap_list_retain, char **syscall_whitelist, char **sys
+         int r;
+ 
+         if (!is_seccomp_available()) {
+-                log_debug("SECCOMP features not detected in the kernel, disabling SECCOMP filterering");
++                log_debug("SECCOMP features not detected in the kernel or disabled at runtime, disabling SECCOMP filtering");
+                 return 0;
+         }
+ 
+diff --git a/src/shared/seccomp-util.c b/src/shared/seccomp-util.c
+index 958128c..cbab63c 100644
+--- a/src/shared/seccomp-util.c
++++ b/src/shared/seccomp-util.c
+@@ -19,6 +19,7 @@
+ #include "strv.h"
+ #include "util.h"
+ #include "errno-list.h"
++#include "env-util.h"
+ 
+ const uint32_t seccomp_local_archs[] = {
+ 
+@@ -242,10 +243,20 @@ static bool is_seccomp_filter_available(void) {
+ bool is_seccomp_available(void) {
+         static int cached_enabled = -1;
+ 
+-        if (cached_enabled < 0)
+-                cached_enabled =
+-                        is_basic_seccomp_available() &&
+-                        is_seccomp_filter_available();
++        if (cached_enabled < 0) {
++                int b;
++
++                b = getenv_bool_secure("SYSTEMD_SECCOMP");
++                if (b != 0) {
++                        if (b < 0 && b != -ENXIO) /* ENXIO: env var unset */
++                                log_debug_errno(b, "Failed to parse $SYSTEMD_SECCOMP value, ignoring.");
++
++                        cached_enabled =
++                                is_basic_seccomp_available() &&
++                                is_seccomp_filter_available();
++                } else
++                        cached_enabled = false;
++        }
+ 
+         return cached_enabled;
+ }
