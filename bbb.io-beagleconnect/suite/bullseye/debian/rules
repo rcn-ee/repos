@@ -11,7 +11,7 @@ override_dh_auto_configure:
 	git clone https://github.com/jadonk/greybus.git
 	cd greybus ; git checkout f7fe50f8c0ab4545a0850e0552b99ad7522287b8 -b tmp ; cd ../
 	git clone https://github.com/jadonk/gbridge.git
-	cd gbridge ; git checkout 8ba7f56f04191d74b28346dcd5a22f01608f65df -b tmp ; autoreconf -vfi ; GBNETLINKDIR=../greybus ./configure --enable-uart --enable-tcpip --disable-gbsim --enable-netlink --disable-bluetooth ; make -j2 ; make install
+	cd gbridge ; git checkout 8ba7f56f04191d74b28346dcd5a22f01608f65df -b tmp ; autoreconf -vfi ; GBNETLINKDIR=../greybus ./configure --enable-uart --enable-tcpip --disable-gbsim --enable-netlink --disable-bluetooth ; make -j2
 
 %:
 	dh $@
