@@ -127,6 +127,7 @@ do_buster () {
 	msg="5.4-bone"  ; var="omap-psp" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.10-bone" ; var="omap-psp" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.14-bone" ; var="omap-psp" ; ver="V514X" ; current_kernel ; generate_kernel_mainline_bone
+	msg="5.15-bone" ; var="omap-psp" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_bone
 
 	msg="4.19-bone-rt" ; var="bone-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.4-bone-rt"  ; var="bone-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_bone
@@ -135,6 +136,7 @@ do_buster () {
 	msg="4.19-armv7" ; var="armv7" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_armv7
 	msg="5.4-armv7"  ; var="armv7" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_armv7
 	msg="5.10-armv7" ; var="armv7" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_armv7
+	msg="5.15-armv7" ; var="armv7" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_armv7
 
 	msg="4.19-armv7-rt" ; var="armv7-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_armv7
 	msg="5.4-armv7-rt"  ; var="armv7-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_armv7
@@ -143,6 +145,7 @@ do_buster () {
 	msg="4.19-armv7-lpae" ; var="armv7-lpae" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_armv7_lpae
 	msg="5.4-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
 	msg="5.10-armv7-lpae" ; var="armv7-lpae" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_armv7_lpae
+	msg="5.15-armv7-lpae" ; var="armv7-lpae" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_armv7_lpae
 }
 
 do_bullseye () {
@@ -168,6 +171,7 @@ do_bullseye () {
 	msg="5.4-bone"  ; var="omap-psp" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.10-bone" ; var="omap-psp" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.14-bone" ; var="omap-psp" ; ver="V514X" ; current_kernel ; generate_kernel_mainline_bone
+	msg="5.15-bone" ; var="omap-psp" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_bone
 
 	msg="4.19-bone-rt" ; var="bone-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.4-bone-rt"  ; var="bone-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_bone
@@ -176,6 +180,7 @@ do_bullseye () {
 	msg="4.19-armv7" ; var="armv7" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_armv7
 	msg="5.4-armv7"  ; var="armv7" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_armv7
 	msg="5.10-armv7" ; var="armv7" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_armv7
+	msg="5.15-armv7" ; var="armv7" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_armv7
 
 	msg="4.19-armv7-rt" ; var="armv7-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_armv7
 	msg="5.4-armv7-rt"  ; var="armv7-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_armv7
@@ -184,6 +189,7 @@ do_bullseye () {
 	msg="4.19-armv7-lpae" ; var="armv7-lpae" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_armv7_lpae
 	msg="5.4-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
 	msg="5.10-armv7-lpae" ; var="armv7-lpae" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_armv7_lpae
+	msg="5.15-armv7-lpae" ; var="armv7-lpae" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_armv7_lpae
 }
 
 do_buster
