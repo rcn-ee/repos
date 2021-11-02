@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if ! id | grep -q root; then
+	echo "beagleconnect-start-gateway must be run as root:"
+	echo "sudo beagleconnect-start-gateway"
+	exit
+fi
+
 rm -rf /var/log/gbridge.log
 
 IEEE_802154_CHANNEL=26
