@@ -2,7 +2,7 @@
 
 package_name="beagleconnect"
 debian_pkg_name="${package_name}"
-package_version="1.20211029.6"
+package_version="1.20211102.0"
 package_source=""
 src_dir=""
 
@@ -15,5 +15,5 @@ debian_version="${package_version}-0"
 debian_untar=""
 debian_patch=""
 
-buster_version="~buster+20211029"
-bullseye_version="~bullseye+20211029"
+buster_version="~buster+20211102"
+bullseye_version="~bullseye+20211102"
