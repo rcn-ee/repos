@@ -25,4 +25,9 @@ ping6 -I lowpan0 2001:db8::1 -c 5
 sleep 1
 gbridge > /var/log/gbride.log 2>&1 &
 sleep 5
-while true; do gpioset 4 18=1; gpioset 4 18=0; sleep 1; done &
+
+keep_alive () {
+  while true; do gpioset 4 18=1; gpioset 4 18=0; sleep 1; done
+}
+
+keep_alive > /dev/null 2>&1 &
