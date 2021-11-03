@@ -116,12 +116,12 @@ do_buster () {
 
 	msg="4.19-ti"    ; var="ti"    ; ver="LTS419" ; current_kernel ; generate_kernel_ti
 	msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_ti
-	unset sgxjacinto6evm
-	unset sgxti335x
 	msg="5.4-ti"     ; var="ti"    ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
 	msg="5.4-ti-rt"  ; var="ti-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
 	msg="5.10-ti"    ; var="ti"    ; ver="LTS510" ; current_kernel ; generate_kernel_ti
 	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_ti
+	unset sgxjacinto6evm
+	unset sgxti335x
 
 	msg="4.19-bone" ; var="omap-psp" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.4-bone"  ; var="omap-psp" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_bone
@@ -160,12 +160,12 @@ do_bullseye () {
 
 	msg="4.19-ti"    ; var="ti"    ; ver="LTS419" ; current_kernel ; generate_kernel_ti
 	msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_ti
-	unset sgxjacinto6evm
-	unset sgxti335x
 	msg="5.4-ti"     ; var="ti"    ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
 	msg="5.4-ti-rt"  ; var="ti-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
 	msg="5.10-ti"    ; var="ti"    ; ver="LTS510" ; current_kernel ; generate_kernel_ti
 	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_ti
+	unset sgxjacinto6evm
+	unset sgxti335x
 
 	msg="4.19-bone" ; var="omap-psp" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.4-bone"  ; var="omap-psp" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_bone
