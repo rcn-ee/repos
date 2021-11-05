@@ -1,0 +1,38 @@
+# systemd service file to start Node-RED
+# From: https://github.com/node-red/linux-installers/blob/master/resources/nodered.service
+
+[Unit]
+Description=Node-RED graphical event wiring tool
+Wants=network.target
+Documentation=https://nodered.org/docs/
+After=multi-user.target
+
+[Service]
+Type=simple
+# Run as normal pi user - change to the user name you wish to run Node-RED as
+User=node-red
+Group=node-red
+WorkingDirectory=/var/lib/node-red
+
+#Nice=5
+RestartSec=250
+Environment="NODE_PATH=/opt/node-red/lib/node_modules"
+Environment="NODE_OPTIONS=--max_old_space_size=256"
+Environment="HOME=/var/lib/node-red"
+# uncomment and edit next line if you need an http proxy
+#Environment="HTTP_PROXY=my.httpproxy.server.address"
+# uncomment the next line for a more verbose log output
+#Environment="NODE_RED_OPTIONS=-v"
+WorkingDirectory=/var/lib/node-red
+#ExecStart=/usr/bin/env node $NODE_OPTIONS red.js $NODE_RED_OPTIONS
+ExecStart=/usr/bin/env /opt/node-red/bin/node $NODE_OPTIONS /opt/node-red/lib/node_modules/node-red/red.js $NODE_RED_OPTIONS
+# Use SIGINT to stop
+KillSignal=SIGINT
+# Auto restart on crash
+Restart=on-failure
+# Tag things in the log
+SyslogIdentifier=Node-RED
+#StandardOutput=syslog
+
+[Install]
+WantedBy=multi-user.target
