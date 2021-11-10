@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2018-2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,8 +32,6 @@
  */
 
 #include <stdint.h>
-#include "resource_table_empty.h"
-
 
 int main(void)
 {

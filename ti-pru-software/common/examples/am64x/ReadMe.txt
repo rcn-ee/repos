@@ -32,7 +32,8 @@ WHAT EXAMPLES ARE INCLUDED?
 	PRU_Halt
 	RTU_Halt
 	TX_PRU_Halt
-		Halt examples are a basic empty ICSS/ICSSG projects
+		Halt examples are basic empty ICSS/ICSSG projects.
+		The core gets initialized, and then does nothing.
 
 	PRU_Direct_Connect0
 	PRU_Direct_Connect1
@@ -43,8 +44,9 @@ WHAT EXAMPLES ARE INCLUDED?
 	PRU_MAC_Multiply_Accum
 	RTU_MAC_Multiply_Accum
 		MAC_Multiply_Accum examples demonstrate how to:
-		 * Adjust Data RAM size
-		 * Use the multiply with accumulate (MAC) module
+		 * Adjust Data RAM size (RTU_MAC_Multiply_Accum only)
+		 * Use the multiply with accumulate (MAC) module. See TRM for
+		   more information.
 
 	PRU_RPMsg_Echo_Interrupt0
 	PRU_RPMsg_Echo_Interrupt1

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2015-2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,6 @@
 #include <stdint.h>
 #include <pru_cfg.h>
 #include <pru_ctrl.h>
-#include "resource_table_empty.h"
 
 /* Mapping Constant Table (CT) registers to variables */
 volatile far uint8_t CT_MCSPI0 __attribute__((cregister("MCSPI0", near), peripheral));

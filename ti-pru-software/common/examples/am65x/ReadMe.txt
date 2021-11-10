@@ -32,21 +32,35 @@ WHAT EXAMPLES ARE INCLUDED?
 	PRU_Halt
 	RTU_Halt
 	TX_PRU_Halt
-		This is the basic example. The core gets initialized, and then
-		does nothing.
+		Halt examples are basic empty ICSS/ICSSG projects.
+		The core gets initialized, and then does nothing.
+
+	PRU_Direct_Connect0
+	PRU_Direct_Connect1
+		Direct_Connect examples demonstrate how to:
+		 * Pass INTC configuration to Linux RemoteProc driver
+		 * Pass interrupts and data between PRU cores
 
 	PRU_MAC_Multiply_Accum
-		This show the Multiplier with Accumulation (see TRM for more)
+	RTU_MAC_Multiply_Accum
+		MAC_Multiply_Accum examples demonstrate how to:
+		 * Adjust Data RAM size (RTU_MAC_Multiply_Accum only)
+		 * Use the multiply with accumulate (MAC) module. See TRM for
+		   more.
 
 	PRU_RPMsg_Echo_Interrupt0
 	PRU_RPMsg_Echo_Interrupt1
 	RTU_RPMsg_Echo_Interrupt0
 	RTU_RPMsg_Echo_Interrupt1
-		RPMsg examples demonstrate the RemoteProc RPMsg protocl to
+		RPMsg examples demonstrate the RemoteProc RPMsg protocol to
 		communicate between the ARM and the PRU. RPMsg is not the best
 		inter-processor communication method for every design, but it is
 		useful for initial debugging and demonstrations.
 
+		NOTE! As of AM64x/AM65x TI Processor Linux SDK 8.0, Linux PRU
+		RPMsg is NOT supported. The RPMsg projects have been ported to
+		be compatible with Linux 5.10 RemoteProc driver in order to
+		enable future PRU RPMsg development.
 
 AM65x SR1.0 vs SR2.0 USAGE
 
@@ -79,4 +93,3 @@ ADDITIONAL RESOURCES
 	PRU Evaluation Hardware  - http://www.ti.com/tool/PRUCAPE
 	AM65x TRM                - https://www.ti.com/lit/pdf/spruid7
 	Support                  - http://e2e.ti.com
-

@@ -81,26 +81,6 @@ struct pru_irq_rsc {
 };
 
 /**
- * struct ch_map - sysevts-to-channel mapping
- *
- * @evt: the number of the sysevt
- * @ch: channel number assigned to a given @sysevt
- *
- * PRU system events are mapped to channels, and these channels are mapped to
- * hosts. Events can be mapped to channels in a one-to-one or many-to-one ratio
- * (multiple events per channel), and channels can be mapped to hosts in a
- * one-to-one or many-to-one ratio (multiple events per channel).
- *
- * @evt is the number of the sysevt, and @ch is the number of the channel to be
- * mapped.
- */
-
-struct ch_map {
-	uint8_t evt;
-	uint8_t ch;
-};
-
-/**
  * struct fw_rsc_custom_ints - custom resource to define PRU interrupts
  * @reserved: reserved field, value should be 0 for backward compatibility
  * @channel_host: assignment of PRU channels to hosts

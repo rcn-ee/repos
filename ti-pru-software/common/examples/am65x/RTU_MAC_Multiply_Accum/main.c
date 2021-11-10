@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2018-2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,6 @@
 // ***************************************
 
 #include <stdint.h>
-#include "resource_table_empty.h"
 
 /* R31 is used to generate the "I'm done" back to the ARM */
 volatile register uint8_t __R31;
@@ -50,6 +49,25 @@ typedef struct {
 
 #define NUMMACS 256
 
+/*
+ * Structure buf is pretty big: uint32 * 2 * 256 = 2kB, or 0x800 memory.
+ * Make sure to allocate enough Data RAM for your program. This example
+ * allocates space for buf in .bss (uninitialized near data section).
+ * After you build the example, you can verify the amount of Data RAM the
+ * example needs by inspecting the .map file in the outputs folder.
+ * The .map file for the unmodified MAC example tells us:
+ * MEMORY CONFIGURATION --> RTUx_DMEMx: 0x900 memory is used
+ * SECTION ALLOCATION MAP: .bss uses 0x800 (this is buf), .stack uses 0x100
+ *
+ * To modify the total Data RAM allocated for your program, edit the linker
+ * command file (.cmd file).
+ *
+ * To modify the size of the stack, edit Makefile > STACK_SIZE.
+ *
+ * Reference "PRU Optimizing C/C++ Compiler User's Guide", section "Dynamic
+ * Memory Allocation" if you want to allocate large arrays from the heap instead
+ * of the .bss section.
+ */
 operands buf[NUMMACS];
 
 /* Need to create a while loop inside main to wait for interrupt from host.

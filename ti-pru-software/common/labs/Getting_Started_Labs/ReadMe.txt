@@ -8,8 +8,8 @@ For documentation on the Getting Started Labs, please reference
 the Processor SDK Linux documentation, section "PRU-ICSS / PRU_ICSSG"
 http://software-dl.ti.com/processor-sdk-linux/esd/docs/latest/linux/Foundational_Components_PRU-ICSS_PRU_ICSSG.html
 
-The PRU Getting Started Labs apply to the PRU on AM335x, AM437x, AM57xx, and
-AM65xx.
+The PRU Getting Started Labs apply to the PRU on AM335x, AM437x, AM57xx, AM64x,
+and AM65xx.
 
 The Getting Started Labs demonstrate how to compile PRU firmware that is written
 in C, assembly, or mixed C and assembly. Steps are provided for compiling the

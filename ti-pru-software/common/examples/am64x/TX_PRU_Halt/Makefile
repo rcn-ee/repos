@@ -29,7 +29,7 @@ CURRENT_DIR := $(notdir $(patsubst %/,%,$(dir $(MKFILE_PATH))))
 PROJ_NAME=$(CURRENT_DIR)
 LINKER_COMMAND_FILE ?= ./AM64x_TX_PRU0.cmd
 LIBS= #No libraries in this project. See RPMsg_Echo_Interrupt for example usage
-INCLUDE=--include_path=../../../include --include_path=../../../include/j721e
+INCLUDE=--include_path=../../../include --include_path=../../../include/am64x
 STACK_SIZE=0x100
 HEAP_SIZE=0x100
 GEN_DIR=gen/TX_PRU$(SLICE)

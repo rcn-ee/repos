@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2015-2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@
 #include <pru_cfg.h>
 /*TODO: Include intc.h */
 #include <pru_intc.h>
-#include "resource_table_0.h"
+#include "intc_map_0.h"
 
 // PRU Core 1
 #define PRU1

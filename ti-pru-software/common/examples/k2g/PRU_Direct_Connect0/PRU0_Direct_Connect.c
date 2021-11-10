@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2018 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2016-2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@
 
 #include <stdint.h>
 #include <pru_intc.h>
-#include "resource_table_0.h"
+#include "intc_map_0.h"
 
 #define PRU0
 
@@ -51,9 +51,9 @@ typedef struct {
 
 bufferData dmemBuf;
 
-/* PRU-to-ARM interrupt */
-#define PRU1_PRU0_INTERRUPT (18)
-#define PRU0_ARM_INTERRUPT (19+16)
+/* Define interrupts */
+#define PRU1_TO_PRU0_INTERRUPT (18)
+#define PRU0_TO_PRU1_INTERRUPT (19)
 
 void main(void)
 {
@@ -64,7 +64,7 @@ void main(void)
 	CT_INTC.SECR1 = 0xFFFFFFFF;
 
 	/* Load the buffer with default values to transfer */
-	dmemBuf.reg5 = 0xDEADBEEF;
+	dmemBuf.reg5 = 0xABABABAB;
 	dmemBuf.reg6 = 0xAAAAAAAA;
 	dmemBuf.reg7 = 0x12345678;
 	dmemBuf.reg8 = 0xBBBBBBBB;
@@ -79,12 +79,32 @@ void main(void)
 	while ((__R31 & (1<<30)) == 0) {
 	}
 
+	/*
+	 * For more on passing broadside data between ICSS cores, reference the
+	 * Technical Reference Manual (TRM). In particular,
+	 * - table "Hardware Module Broadside ID Mapping"
+	 * - section "Scratch Pad Memory"
+	 */
+
 	/* XFR registers R5-R10 from PRU0 to PRU1 */
 	/* 14 is the device_id that signifies a PRU to PRU transfer */
 	__xout(14, 5, 0, buf);
 
 	/* Clear the status of the interrupt */
-	CT_INTC.SICR = PRU1_PRU0_INTERRUPT;
+	CT_INTC.SICR = PRU1_TO_PRU0_INTERRUPT;
+
+	/*
+	 * Trigger System Events (sysevt) 16 - 31 by writing to r31:
+	 *   pru<n>_r31_vec_valid + pru<n>_r31_vec[3:0]
+	 *   = (1 << 5) + vector output
+	 *   = 32 + (sysevt - 16)
+	 *   = 16 + sysevt
+	 * Reference TRM section for more:
+	 * "Real-Time Status Interface Mapping (R31): Interrupt Events Input"
+	 */
+
+	/* Let PRU1 know that R5-R10 have been loaded into the scratchpad. */
+	__R31 = PRU0_TO_PRU1_INTERRUPT+16;
 
 	/* Halt the PRU core */
 	__halt();

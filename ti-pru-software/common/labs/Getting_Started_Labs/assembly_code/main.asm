@@ -1,4 +1,4 @@
-; Copyright (C) 2018-2019 Texas Instruments Incorporated - http://www.ti.com/
+; Copyright (C) 2018-2021 Texas Instruments Incorporated - http://www.ti.com/
 ;
 ; Redistribution and use in source and binary forms, with or without
 ; modification, are permitted provided that the following conditions
@@ -28,19 +28,6 @@
 ; (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 ; OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-; Resource table needed for remoteproc Linux driver
-	.global	||pru_remoteproc_ResourceTable||
-	.sect	".resource_table:retain", RW
-	.retain
-	.align	1
-	.elfsym	||pru_remoteproc_ResourceTable||,SYM_SIZE(20)
-||pru_remoteproc_ResourceTable||:
-	.bits	1,32			; pru_remoteproc_ResourceTable.base.ver @ 0
-	.bits	0,32			; pru_remoteproc_ResourceTable.base.num @ 32
-	.bits	0,32			; pru_remoteproc_ResourceTable.base.reserved[0] @ 64
-	.bits	0,32			; pru_remoteproc_ResourceTable.base.reserved[1] @ 96
-	.bits	0,32			; pru_remoteproc_ResourceTable.offset[0] @ 128
 
 
 ;*****************************************************************************

@@ -33,7 +33,7 @@ INCLUDE=--include_path=../../../include --include_path=../../../include/am64x
 STACK_SIZE=0x100
 HEAP_SIZE=0x100
 GEN_DIR=gen/icssg$(ICSSG)
-TARG_NAME=$(PROJ_NAME:0=$(ICSSG)_0)
+TARG_NAME=$(PROJ_NAME:1=$(ICSSG)_1)
 
 #Common compiler and linker flags (Defined in 'PRU Optimizing C/C++ Compiler User's Guide)
 CFLAGS=-v3 -O2 --display_error_number --endian=little --hardware_mac=on --obj_directory=$(GEN_DIR) --pp_directory=$(GEN_DIR) -ppd -ppa

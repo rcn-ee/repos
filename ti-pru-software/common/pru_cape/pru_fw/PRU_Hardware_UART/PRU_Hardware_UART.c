@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2015-2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,6 @@
 
 #include <stdint.h>
 #include <pru_uart.h>
-#include "resource_table_empty.h"
 
 /* Commented out to prevent internal Loopback */
 //#define HWLOOPBACK
@@ -65,12 +64,12 @@ void PrintMessageOut(volatile char* Message)
 		/* Wait until the TX FIFO and the TX SR are completely empty */
 		while (!CT_UART.LSR_bit.TEMT);
 
-		while (Message[index] != NULL && cnt < MAX_CHARS) {
+		while (Message[index] != "" && cnt < MAX_CHARS) {
 			CT_UART.THR = Message[index];
 			index++;
 			cnt++;
 		}
-		if (Message[index] == NULL)
+		if (Message[index] == "")
 			break;
 
 	}
@@ -99,7 +98,7 @@ void main(void)
 	volatile uint32_t not_done = 1;
 
 	char rxBuffer[6];
-	rxBuffer[5] = NULL; // null terminate the string
+	rxBuffer[5] = ""; // null terminate the string
 
 	/*** INITIALIZATION ***/
 

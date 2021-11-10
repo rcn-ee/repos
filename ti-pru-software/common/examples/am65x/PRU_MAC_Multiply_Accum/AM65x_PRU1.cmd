@@ -53,12 +53,12 @@ MEMORY
 	 * RTU0 and Tx_PRU0; do not use for any Slice1 cores */
 	PRU1_DMEM_0	: org = 0x00002000 len = 0x00001000	CREGISTER=25
 	/* NOTE: Custom split of the second 4 KB of ICSS Data RAMs 0 and 1
-	 * split assymetrically between the corresponding RTU (3 KB) and
-	 * Tx_PRU (1 KB) cores in each slice */
-	RTU1_DMEM_1	: org = 0x00001000 len = 0x00000c00
-	TX_PRU1_DMEM_1	: org = 0x00001c00 len = 0x00000400
-	RTU1_DMEM_0	: org = 0x00003000 len = 0x00000c00
-	TX_PRU1_DMEM_0	: org = 0x00003c00 len = 0x00000400
+	 * split equally between the corresponding RTU and Tx_PRU cores in
+	 * each slice */
+	RTU1_DMEM_1	: org = 0x00001000 len = 0x00000800
+	TX_PRU1_DMEM_1	: org = 0x00001800 len = 0x00000800
+	RTU1_DMEM_0	: org = 0x00003000 len = 0x00000800
+	TX_PRU1_DMEM_0	: org = 0x00003800 len = 0x00000800
 
       PAGE 2:
 	/* C28 needs to be programmed to point to SHAREDMEM, default is 0 */
@@ -127,8 +127,4 @@ SECTIONS {
 	.rofardata	>  PRU1_DMEM_1, PAGE 1
 	.farbss		>  PRU1_DMEM_1, PAGE 1
 	.fardata	>  PRU1_DMEM_1, PAGE 1
-
-	/* Ensure resource_table section is aligned on 8-byte address for
-	   ARMv8 (64-bit) kernel */
-	.resource_table : ALIGN (8) >  PRU1_DMEM_1, PAGE 1
 }

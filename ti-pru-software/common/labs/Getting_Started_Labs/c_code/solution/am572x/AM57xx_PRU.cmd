@@ -1,6 +1,6 @@
 /****************************************************************************/
 /*  AM57xx_PRU.cmd                                                          */
-/*  Copyright (c) 2015  Texas Instruments Incorporated                      */
+/*  Copyright (c) 2015-2021  Texas Instruments Incorporated                 */
 /*                                                                          */
 /*    Description: This file is a linker command file that can be used for  */
 /*                 linking PRU programs built with the C compiler and       */
@@ -80,6 +80,4 @@ SECTIONS {
 	.rofardata	>  PRU_DMEM_0_1, PAGE 1
 	.farbss		>  PRU_DMEM_0_1, PAGE 1
 	.fardata	>  PRU_DMEM_0_1, PAGE 1
-
-	.resource_table > PRU_DMEM_0_1, PAGE 1
 }

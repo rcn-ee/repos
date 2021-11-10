@@ -1,24 +1,22 @@
-# PRU_CGT environment variable must point to the TI PRU code gen tools directory. E.g.:
-#(Desktop Linux) export PRU_CGT=/path/to/pru/code/gen/tools/ti-cgt-pru_2.3.2
-#(Windows) set PRU_CGT=C:/path/to/pru/code/gen/tools/ti-cgt-pru_2.3.2
-#(ARM Linux*) export PRU_CGT=/usr/share/ti/cgt-pru
-#
-# *ARM Linux also needs to create a symbolic link to the /usr/bin/ directory in
-# order to use the same Makefile
-#(ARM Linux) ln -s /usr/bin/ /usr/share/ti/cgt-pru/bin
+# PRU_CGT environment variable must point to the TI PRU code gen tools directory.
+# The latest PRU CGT can be found at https://www.ti.com/tool/PRU-CGT or in Code
+# Composer Studio (CCS) App Center.
 
 ifndef PRU_CGT
 define ERROR_BODY
 
 *******************************************************************************
-PRU_CGT environment variable is not set. Examples given:
-(Desktop Linux) export PRU_CGT=/path/to/pru/code/gen/tools/ti-cgt-pru_2.3.2
-(Windows) set PRU_CGT=C:/path/to/pru/code/gen/tools/ti-cgt-pru_2.3.2
+PRU_CGT environment variable is not set. For example:
+(Desktop Linux) export PRU_CGT=/path/to/pru/code/gen/tools/ti-cgt-pru_2.3.3
+(Windows) set PRU_CGT=C:/path/to/pru/code/gen/tools/ti-cgt-pru_2.3.3
 (ARM Linux*) export PRU_CGT=/usr/share/ti/cgt-pru
 
 *ARM Linux also needs to create a symbolic link to the /usr/bin/ directory in
 order to use the same Makefile
 (ARM Linux) ln -s /usr/bin/ /usr/share/ti/cgt-pru/bin
+
+The latest PRU CGT can be found at https://www.ti.com/tool/PRU-CGT or in Code
+Composer Studio (CCS) App Center.
 *******************************************************************************
 
 endef
@@ -30,7 +28,8 @@ MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_DIR := $(notdir $(patsubst %/,%,$(dir $(MKFILE_PATH))))
 PROJ_NAME=$(CURRENT_DIR)
 LINKER_COMMAND_FILE ?= ./AM65x_TX_PRU0.cmd
-INCLUDE=--include_path=../../../include --include_path=../../../include/j721e
+LIBS= #No libraries in this project. See RPMsg_Echo_Interrupt for example usage
+INCLUDE=--include_path=../../../include --include_path=../../../include/am65x
 STACK_SIZE=0x100
 HEAP_SIZE=0x100
 GEN_DIR=gen/TX_PRU$(SLICE)
@@ -41,6 +40,7 @@ CFLAGS=-v3 -O2 --display_error_number --endian=little --hardware_mac=on --obj_di
 LFLAGS=--reread_libs --warn_sections --stack_size=$(STACK_SIZE) --heap_size=$(HEAP_SIZE)
 
 #DCFLAGS pass instance specific defines to the program (see --define in 'PRU Optimizing C/C++ Compiler User's Guide')
+DCFLAGS= #No DCFLAGS in this project. See RPMsg_Echo_Interrupt for example usage
 
 TARGET=$(GEN_DIR)/$(PROJ_NAME)_$(SLICE).out
 MAP=$(GEN_DIR)/$(PROJ_NAME)_$(SLICE).map

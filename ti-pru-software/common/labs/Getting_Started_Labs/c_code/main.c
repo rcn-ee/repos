@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2018-2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,12 +31,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <stdint.h>
-#include "resource_table_empty.h"
 
 /* TODO: define c */
 /* a, b, and c are stored in a defined location in PRU memory */
-#define a  (*((volatile unsigned int *)0x100))
-#define b  (*((volatile unsigned int *)0x104))
+#define a  (*((volatile unsigned int *)0x110))
+#define b  (*((volatile unsigned int *)0x114))
 
 /*
  * main.c

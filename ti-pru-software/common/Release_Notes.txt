@@ -7,7 +7,56 @@ However, when TI updates the PSSP, we group commits by tag. Specific tags of
 the PSSP are available for download here:
 https://git.ti.com/cgit/pru-software-support-package/pru-software-support-package/
 
-Release Notes for each tag are below.
+Release Notes for each tag are below. For additional details, reference the
+individual commit messages.
+e.g.,
+$ git log --oneline
+copy the git hash of the commit you are interested in
+$ git show gitHash
+
+
+v6.0.0
+------
+Released 2021-10-17
+
+This release supports Linux kernel 5.10 RemoteProc driver:
+ * Port include/pru_types to be Linux kernel 5.10 compatible. Breaks kernel 5.4
+     compatibility. Use PSSP v5.9.0 or earlier for Linux kernel 5.4.
+ * Port existing projects in examples/ and labs/ to be compatible with
+     Linux kernel 5.10. Applies to AM335x, AM437x, AM57xx, AM65x, K2G, J7ES1.
+
+Add AM64x support. AM64x PRU is compatible with Linux kernel 5.10 and later.
+ * include/am64x (header files)
+ * examples/am64x (Halt, Direct_Connect, MAC_Multiply_Accum, RPMsg)
+ * labs/Getting_Started_Labs & labs/Hands_on_Labs/lab_5
+
+J721E PRU development is not supported by TI at the time of this tag. J721E
+projects were ported to Linux 5.10 to enable community members who want to
+develop J721E PRU without TI support.
+
+K2G PRU development is only supported by TI up through the latest K2G Processor
+SDK release (SDK 6.3, Linux kernel 4.19 at the time of this tag). Thus, K2G was
+removed from the labs in v6.0.0. Other K2G projects were ported to Linux 5.10 to
+enable community members who want to develop K2G PRU without TI support.
+
+Update Direct_Connect examples:
+ * Show how to pass INTC configuration to the Linux 5.10 RemoteProc driver
+ * Add additional comments for how to pass interrupts and data between PRU cores
+ * Add ReadMe.txt with FAQs about testing the example in Linux and loading the
+   example from CCS or a non-Linux core.
+ * Update am335x, am437x, am572x, k2g projects
+ * Add projects for am64x, am65x
+
+Other changes:
+ * examples/<processor>/ReadMe.txt: add descriptions of each example
+ * all Makefiles: new comments, remove RPMsg library from non-RPMsg projects
+ * am65x: Add TX_PRU_CTRL to cmd files
+ * TX_PRU_Halt: fix Makefile include_path
+ * examples: Remove PRU_ARMtoPRU_Interrupt & PRU_PRUtoARM_Interrupt projects
+ * examples/am437x: remove patches folder
+ * examples/am65x: fixed date in RTU_Halt
+ * labs/Getting_Started_Labs: Remove compiler optimization to make compiled
+   firmware disassembly easier to read
 
 
 v5.9.0

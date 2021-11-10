@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2015-2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,6 @@
 #include <pru_cfg.h>
 /*TODO: Include intc.h */
 #include <pru_intc.h>
-#include "resource_table_1.h"
 
 volatile register uint32_t __R30;
 volatile register uint32_t __R31;

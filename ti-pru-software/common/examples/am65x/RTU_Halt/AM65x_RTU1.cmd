@@ -127,8 +127,4 @@ SECTIONS {
 	.rofardata	>  RTU1_DMEM_1, PAGE 1
 	.farbss		>  RTU1_DMEM_1, PAGE 1
 	.fardata	>  RTU1_DMEM_1, PAGE 1
-
-	/* Ensure resource_table section is aligned on 8-byte address for
-	   ARMv8 (64-bit) kernel */
-	.resource_table : ALIGN (8) >  RTU1_DMEM_1, PAGE 1
 }

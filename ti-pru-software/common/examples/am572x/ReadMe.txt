@@ -19,14 +19,34 @@ WHAT EXAMPLES ARE INCLUDED?
 
 	EXAMPLE
 	---------
+	PRU_Halt
+		Halt examples are basic empty ICSS projects.
+		The core gets initialized, and then does nothing.
+
 	PRU_Direct_Connect0
 	PRU_Direct_Connect1
-	PRU_Halt
+		Direct_Connect examples demonstrate how to:
+		 * Pass INTC configuration to Linux RemoteProc driver
+		 * Pass interrupts and data between PRU cores
+
 	PRU_MAC_Multiply_Accum
+		MAC_Multiply_Accum examples demonstrate how to:
+		 * Use the multiply with accumulate (MAC) module. See TRM for
+		   more.
+
 	PRU_RPMsg_Echo_Interrupt1_0
 	PRU_RPMsg_Echo_Interrupt1_1
 	PRU_RPMsg_Echo_Interrupt2_0
 	PRU_RPMsg_Echo_Interrupt2_1
+		RPMsg examples demonstrate the RemoteProc RPMsg protocol to
+		communicate between the ARM and the PRU. RPMsg is not the best
+		inter-processor communication method for every design, but it is
+		useful for initial debugging and demonstrations.
+
+		NOTE! As of AM64x/AM65x TI Processor Linux SDK 8.0, Linux PRU
+		RPMsg is NOT supported. The RPMsg projects have been ported to
+		be compatible with Linux 5.10 RemoteProc driver in order to
+		enable future PRU RPMsg development.
 
 
 

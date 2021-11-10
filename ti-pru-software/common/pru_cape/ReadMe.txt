@@ -7,32 +7,37 @@ Programmable Real-time Unit (PRU) Software Support Package
 DESCRIPTION
 
    This directory includes demo software that is intended to run on the
-   BeagleBone / BeagleBone Black PRU Cape.
+   BeagleBone / BeagleBone Black PRU Cape. The demo software in this folder
+   is no longer tested on a regular basis. Any bugs can be reported on the
+   TI forums, e2e.ti.com.
 
-   CCS/StarterWare
-   -----------
-   Pre-built CCS/StarterWare binaries that can be run from an SD card or through
-   CCS are available in the "bin/app/", "bin/CCS/", and "bin/MLO/" directories.
 
-   The "pru_demo/StarterWare/" directory includes AM335x StarterWare-based ARM
-   code to load and run the PRU firmware demos.  This code provides an example
-   of how to enable the PRU using a non-Linux OS.  However, Linux or CCS can
-   also be used to run the PRU demos.
+   Pinmux Settings
+   ---------------
+   The PRU will not be able to communicate with the PRU Cape unless the AM335x
+   pinmux is set appropriately.
 
-   Linux
-   -----
-   The "pru_demo/Linux/" directory inludes a script (pru_demo.sh) that can be
-   copied to the BeagleBone or BeagleBone Black and be used to run the PRU demos
-   that are in the "pru_fw" directory.
+   LINUX:
+   AM335x running Linux on the ARM core performs pinmuxing based on settings in
+   the Linux device tree. The am335x-xxx-prucape.dtsi files may be included in
+   the am335x-boneblack.dts and am335x-bone.dts device tree files (depending on
+   whether BeagleBone Black board or BeagleBone board is used). Make sure that
+   the prucape.dtsi files are placed BELOW the other #include
+   statements in the am335x-boneblack.dts/am335x-bone.dts.dts file. This ensures
+   that the prucape.dtsi files correctly overwrite the settings in the
+   other .dtsi files.
 
-   The "bin/Linux" directory contains everything that you need to copy over to
-   the BeagleBone or BeagleBone Black in order to run the console demo while
-   running Linux as the host operating system (you will still need to update
-   the dtb file using the provided .dtsi files).
+   CCS:
+   CCS connected directly to the PRU cores performs pinmuxing based on gel
+   scripts. Reference the PRU Hands-on Labs, Lab 1 for steps to set pinmuxing
+   with the PRU_CAPE.gel file.
+
 
    PRU Firmwares
    -------------
-   The "pru_fw" directory includes the PRU demo firmwares.
+   The "pru_fw" directory includes firmware demos specifically designed for
+   use with the PRU Cape. Additional PRU firmware projects can be found in
+   the examples/ and the labs/ folders.
 
    For more details about the PRU Cape and the demos included in this package,
    visit:
