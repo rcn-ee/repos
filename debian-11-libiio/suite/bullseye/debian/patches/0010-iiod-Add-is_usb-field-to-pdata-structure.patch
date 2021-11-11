@@ -1,0 +1,100 @@
+From 5595f1b32eb81310ed326f3126681a2590916159 Mon Sep 17 00:00:00 2001
+From: Paul Cercueil <paul@crapouillou.net>
+Date: Fri, 24 Sep 2021 14:19:35 +0100
+Subject: [PATCH 10/19] iiod: Add 'is_usb' field to pdata structure
+
+This field will then be used in the readfd() and/or writefd() callbacks
+as USB communication has to be handled slightly differently.
+
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ iiod/iiod.c | 5 +++--
+ iiod/ops.c  | 6 ++++--
+ iiod/ops.h  | 3 ++-
+ iiod/usbd.c | 2 +-
+ 4 files changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/iiod/iiod.c b/iiod/iiod.c
+index 178558b9..78131e69 100644
+--- a/iiod/iiod.c
++++ b/iiod/iiod.c
+@@ -109,7 +109,7 @@ static void client_thd(struct thread_pool *pool, void *d)
+ 	struct client_data *cdata = d;
+ 
+ 	interpreter(cdata->ctx, cdata->fd, cdata->fd, cdata->debug,
+-			true, false, pool,
++			true, false, false, pool,
+ 			cdata->xml_zstd, cdata->xml_zstd_len);
+ 
+ 	IIO_INFO("Client exited\n");
+@@ -158,7 +158,8 @@ static int main_interactive(struct iio_context *ctx, bool verbose, bool use_aio,
+ 	}
+ 
+ 	interpreter(ctx, STDIN_FILENO, STDOUT_FILENO, verbose,
+-			false, use_aio, main_thread_pool, xml_zstd, xml_zstd_len);
++			false, false, use_aio, main_thread_pool,
++			xml_zstd, xml_zstd_len);
+ 	return EXIT_SUCCESS;
+ }
+ 
+diff --git a/iiod/ops.c b/iiod/ops.c
+index 5fc8c918..38e2fbbc 100644
+--- a/iiod/ops.c
++++ b/iiod/ops.c
+@@ -1459,8 +1459,9 @@ ssize_t read_line(struct parser_pdata *pdata, char *buf, size_t len)
+ }
+ 
+ void interpreter(struct iio_context *ctx, int fd_in, int fd_out, bool verbose,
+-		 bool is_socket, bool use_aio, struct thread_pool *pool,
+-		 const void *xml_zstd, size_t xml_zstd_len)
++		 bool is_socket, bool is_usb, bool use_aio,
++		 struct thread_pool *pool, const void *xml_zstd,
++		 size_t xml_zstd_len)
+ {
+ 	yyscan_t scanner;
+ 	struct parser_pdata pdata;
+@@ -1479,6 +1480,7 @@ void interpreter(struct iio_context *ctx, int fd_in, int fd_out, bool verbose,
+ 
+ 	pdata.fd_in_is_socket = is_socket;
+ 	pdata.fd_out_is_socket = is_socket;
++	pdata.is_usb = is_usb;
+ 
+ 	SLIST_INIT(&pdata.thdlist_head);
+ 
+diff --git a/iiod/ops.h b/iiod/ops.h
+index 07bad939..0da5ca48 100644
+--- a/iiod/ops.h
++++ b/iiod/ops.h
+@@ -66,6 +66,7 @@ struct parser_pdata {
+ 	struct iio_channel *chn;
+ 	bool channel_is_output;
+ 	bool fd_in_is_socket, fd_out_is_socket;
++	bool is_usb;
+ #if WITH_AIO
+ 	io_context_t aio_ctx;
+ 	int aio_eventfd;
+@@ -88,7 +89,7 @@ static inline void *zalloc(size_t size)
+ }
+ 
+ void interpreter(struct iio_context *ctx, int fd_in, int fd_out, bool verbose,
+-		 bool is_socket, bool use_aio, struct thread_pool *pool,
++		 bool is_socket, bool is_usb, bool use_aio, struct thread_pool *pool,
+ 		 const void *xml_zstd, size_t xml_zstd_len);
+ 
+ int start_usb_daemon(struct iio_context *ctx, const char *ffs,
+diff --git a/iiod/usbd.c b/iiod/usbd.c
+index 22ad7197..3385f5b5 100644
+--- a/iiod/usbd.c
++++ b/iiod/usbd.c
+@@ -71,7 +71,7 @@ static void usbd_client_thread(struct thread_pool *pool, void *d)
+ 	struct usbd_client_pdata *pdata = d;
+ 
+ 	interpreter(pdata->pdata->ctx, pdata->ep_in, pdata->ep_out,
+-			pdata->pdata->debug, false,
++			pdata->pdata->debug, false, true,
+ 			pdata->pdata->use_aio, pool,
+ 			pdata->pdata->xml_zstd, pdata->pdata->xml_zstd_len);
+ 
+-- 
+2.30.2
+

@@ -1,0 +1,17 @@
+Description: Having SOVERSION in rules file name eases Debian upgrades
+Author: "A. Maitland Bottoms" <bottoms@debian.org>
+Last-Update: 2020-09-12
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -612,8 +612,8 @@
+ 	if (INSTALL_UDEV_RULE)
+ 		set(UDEV_RULES_INSTALL_DIR /lib/udev/rules.d CACHE PATH "default install path for udev rules")
+ 
+-		configure_file(libiio.rules.cmakein ${CMAKE_CURRENT_BINARY_DIR}/90-libiio.rules @ONLY)
+-		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/90-libiio.rules DESTINATION ${UDEV_RULES_INSTALL_DIR})
++		configure_file(libiio.rules.cmakein ${CMAKE_CURRENT_BINARY_DIR}/90-libiio${LIBIIO_VERSION_MAJOR}.rules @ONLY)
++		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/90-libiio${LIBIIO_VERSION_MAJOR}.rules DESTINATION ${UDEV_RULES_INSTALL_DIR})
+ 	endif()
+ endif()
+ 

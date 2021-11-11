@@ -1,0 +1,85 @@
+From aad53e37e40a0c4ff48a8e7cf3cf2b4e0495ec21 Mon Sep 17 00:00:00 2001
+From: Paul Cercueil <paul@crapouillou.net>
+Date: Fri, 24 Sep 2021 14:20:42 +0100
+Subject: [PATCH 11/19] iiod: Update read_line() to work with UART
+
+Previously, in the non-socket case, read_line() would read as much data
+as possible in one read() call. As it was used almost exclusively for
+USB, the amount of data returned always corresponded to the size of the bulk
+data sent by the client, aka. a full line and nothing more.
+
+With UART though, if we try reading as much data as possible, we might
+get just that, and end up reading much more data than we need,
+disrupting the protocol.
+
+Fix this by reading character by character until the \n is found in the
+non-socket, non-USB case.
+
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ iiod/ops.c | 34 ++++++++++++++++++++++++++--------
+ 1 file changed, 26 insertions(+), 8 deletions(-)
+
+diff --git a/iiod/ops.c b/iiod/ops.c
+index 38e2fbbc..d1c1cdae 100644
+--- a/iiod/ops.c
++++ b/iiod/ops.c
+@@ -1397,12 +1397,12 @@ err_print_value:
+ 
+ ssize_t read_line(struct parser_pdata *pdata, char *buf, size_t len)
+ {
++	size_t bytes_read = 0;
+ 	ssize_t ret;
++	bool found;
+ 
+ 	if (pdata->fd_in_is_socket) {
+ 		struct pollfd pfd[2];
+-		bool found;
+-		size_t bytes_read = 0;
+ 
+ 		pfd[0].fd = pdata->fd_in;
+ 		pfd[0].events = POLLIN | POLLRDHUP;
+@@ -1445,16 +1445,34 @@ ssize_t read_line(struct parser_pdata *pdata, char *buf, size_t len)
+ 
+ 			bytes_read += to_trunc;
+ 		} while (!found && len);
++	} else if (pdata->is_usb) {
++		ret = pdata->readfd(pdata, buf, len);
+ 
+-		/* No \n found? Just garbage data */
+-		if (!found)
+-			ret = -EIO;
+-		else
+-			ret = bytes_read;
++		found = buf[ret - 1] == '\n';
+ 	} else {
+-		ret = pdata->readfd(pdata, buf, len);
++		while (len) {
++			ret = pdata->readfd(pdata, buf, 1);
++			if (ret < 0)
++			      return ret;
++
++			bytes_read++;
++
++			if (*buf == '\n')
++			      break;
++
++			len--;
++			buf++;
++		}
++
++		found = !!len;
+ 	}
+ 
++	/* No \n found? Just garbage data */
++	if (!found)
++		ret = -EIO;
++	else
++		ret = bytes_read;
++
+ 	return ret;
+ }
+ 
+-- 
+2.30.2
+

@@ -1,0 +1,35 @@
+From 1e253132cc8de98df191a8da80d26b19f7437b40 Mon Sep 17 00:00:00 2001
+From: Matt Thomas <332011+mattypiper@users.noreply.github.com>
+Date: Thu, 26 Aug 2021 13:20:48 -0400
+Subject: [PATCH 01/19] bindings/python: fix ctypes null pointer check
+
+Signed-off-by: Matt Thomas <mattypiper@gmail.com>
+---
+ bindings/python/iio.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/bindings/python/iio.py b/bindings/python/iio.py
+index 76a7e33b..5b03cf97 100644
+--- a/bindings/python/iio.py
++++ b/bindings/python/iio.py
+@@ -1195,7 +1195,7 @@ class _DeviceOrTrigger(object):
+             The IIO Device
+         """
+         chn = _d_find_channel(self._device, name_or_id.encode("ascii"), is_output)
+-        return None if chn is None else Channel(self, chn)
++        return None if bool(chn) is False else Channel(self, chn)
+ 
+     def set_kernel_buffers_count(self, count):
+         """
+@@ -1411,7 +1411,7 @@ class Context(object):
+             The IIO Device
+         """
+         dev = _find_device(self._context, name_or_id_or_label.encode("ascii"))
+-        return None if dev is None else Trigger(self, dev) if _d_is_trigger(dev) else Device(self, dev)
++        return None if bool(dev) is False else Trigger(self, dev) if _d_is_trigger(dev) else Device(self, dev)
+ 
+     name = property(
+         lambda self: self._name, None, None, "Name of this IIO context.\n\ttype=str"
+-- 
+2.30.2
+

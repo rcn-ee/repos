@@ -1,0 +1,26 @@
+From 2f6c96fbaf6e7a6e98e3585e1dac65002a4db4fe Mon Sep 17 00:00:00 2001
+From: Raluca Chis <raluca.chis@analog.com>
+Date: Fri, 8 Oct 2021 11:27:28 +0300
+Subject: [PATCH 17/19] CI: disable debug on the artifact deploy
+
+Signed-off-by: Raluca Chis <raluca.chis@analog.com>
+---
+ azure-pipelines.yml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/azure-pipelines.yml b/azure-pipelines.yml
+index b0cbb1c5..2b5559ac 100644
+--- a/azure-pipelines.yml
++++ b/azure-pipelines.yml
+@@ -234,7 +234,7 @@ stages:
+         displayName: 'Download rsa key'
+         inputs:
+           secureFile: 'id_rsa'
+-      - bash: chmod 600 $(key.secureFilePath) ; scp -2 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o HostKeyAlgorithms=+ssh-dss -vv -i $(key.secureFilePath) -r /home/vsts/work/1/a/* $MAPPED_VAR
++      - bash: chmod 600 $(key.secureFilePath) ; scp -2 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o HostKeyAlgorithms=+ssh-dss -i $(key.secureFilePath) -r /home/vsts/work/1/a/* $MAPPED_VAR
+         env:
+           MAPPED_VAR: $(SERVER_ADDRESS)
+         displayName: "Push artifacts to SW Downloads"
+-- 
+2.30.2
+

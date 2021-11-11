@@ -1,0 +1,417 @@
+From 2d3cae005f364742b3a9e7234d15b2fd2cbac664 Mon Sep 17 00:00:00 2001
+From: Paul Cercueil <paul@crapouillou.net>
+Date: Wed, 7 Apr 2021 14:27:39 +0100
+Subject: [PATCH 13/19] iiod: Support running on UART
+
+Add a -s option to serve IIO over UART. This option requires the UART
+dev node and optionally the baud/parity/bits/stop bits/flow settings
+to be specified as the parameter.
+
+For instance, this will run IIOD on the /dev/ttyS2 UART, at 57600 bps,
+no parity, 8 bits per datum, 1 stop bit and RTS/CTS flow control:
+
+iiod -s /dev/ttyS2,57600,8n1r
+
+Fixes #560.
+
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ iio-config.h.cmakein |   1 +
+ iiod/CMakeLists.txt  |   5 +
+ iiod/iiod.c          |  26 ++++-
+ iiod/ops.h           |   3 +
+ iiod/serial.c        | 270 +++++++++++++++++++++++++++++++++++++++++++
+ 5 files changed, 304 insertions(+), 1 deletion(-)
+ create mode 100644 iiod/serial.c
+
+diff --git a/iio-config.h.cmakein b/iio-config.h.cmakein
+index 781bfb6c..1854f47b 100644
+--- a/iio-config.h.cmakein
++++ b/iio-config.h.cmakein
+@@ -16,6 +16,7 @@
+ #cmakedefine WITH_NETWORK_GET_BUFFER
+ #cmakedefine01 WITH_NETWORK_EVENTFD
+ #cmakedefine01 WITH_IIOD_USBD
++#cmakedefine01 WITH_IIOD_SERIAL
+ #cmakedefine01 WITH_LOCAL_CONFIG
+ #cmakedefine01 WITH_AIO
+ #cmakedefine01 HAVE_DNS_SD
+diff --git a/iiod/CMakeLists.txt b/iiod/CMakeLists.txt
+index b91f0014..39b644c9 100644
+--- a/iiod/CMakeLists.txt
++++ b/iiod/CMakeLists.txt
+@@ -55,6 +55,11 @@ if (WITH_AIO)
+ 	endif()
+ endif()
+ 
++option(WITH_IIOD_SERIAL "Add serial (UART) support" ON)
++if (WITH_IIOD_SERIAL)
++	set(IIOD_CFILES ${IIOD_CFILES} serial.c)
++endif()
++
+ add_executable(iiod ${IIOD_CFILES})
+ set_target_properties(iiod PROPERTIES
+ 	C_STANDARD 99
+diff --git a/iiod/iiod.c b/iiod/iiod.c
+index 78131e69..ebcecb56 100644
+--- a/iiod/iiod.c
++++ b/iiod/iiod.c
+@@ -79,6 +79,7 @@ static const struct option options[] = {
+ 	  {"aio", no_argument, 0, 'a'},
+ 	  {"ffs", required_argument, 0, 'F'},
+ 	  {"nb-pipes", required_argument, 0, 'n'},
++	  {"serial", required_argument, 0, 's'},
+ 	  {0, 0, 0, 0},
+ };
+ 
+@@ -91,6 +92,7 @@ static const char *options_descriptions[] = {
+ 	"Use asynchronous I/O.",
+ 	"Use the given FunctionFS mountpoint to serve over USB",
+ 	"Specify the number of USB pipes (ep couples) to use",
++	"Run " MY_NAME " on the specified UART.",
+ };
+ 
+ static void usage(void)
+@@ -356,12 +358,13 @@ int main(int argc, char **argv)
+ 	struct iio_context *ctx;
+ 	int c, option_index = 0;
+ 	char *ffs_mountpoint = NULL;
++	char *uart_params = NULL;
+ 	char err_str[1024];
+ 	void *xml_zstd;
+ 	size_t xml_zstd_len = 0;
+ 	int ret;
+ 
+-	while ((c = getopt_long(argc, argv, "+hVdDiaF:n:",
++	while ((c = getopt_long(argc, argv, "+hVdDiaF:n:s:",
+ 					options, &option_index)) != -1) {
+ 		switch (c) {
+ 		case 'd':
+@@ -402,6 +405,15 @@ int main(int argc, char **argv)
+ 				return EXIT_FAILURE;
+ 			}
+ 			break;
++		case 's':
++			if (!WITH_IIOD_SERIAL) {
++				IIO_ERROR("IIOD was not compiled with serial support.\n");
++				return EXIT_FAILURE;
++
++			}
++
++			uart_params = optarg;
++			break;
+ 		case 'h':
+ 			usage();
+ 			return EXIT_SUCCESS;
+@@ -450,6 +462,18 @@ int main(int argc, char **argv)
+ 		}
+ 	}
+ 
++	if (WITH_IIOD_SERIAL && uart_params) {
++		ret = start_serial_daemon(ctx, uart_params,
++					  debug, main_thread_pool,
++					  xml_zstd, xml_zstd_len);
++		if (ret) {
++			iio_strerror(-ret, err_str, sizeof(err_str));
++			IIO_ERROR("Unable to start serial daemon: %s\n", err_str);
++			ret = EXIT_FAILURE;
++			goto out_destroy_thread_pool;
++		}
++	}
++
+ 	if (interactive)
+ 		ret = main_interactive(ctx, debug, use_aio, xml_zstd, xml_zstd_len);
+ 	else
+diff --git a/iiod/ops.h b/iiod/ops.h
+index 0da5ca48..add7437b 100644
+--- a/iiod/ops.h
++++ b/iiod/ops.h
+@@ -96,6 +96,9 @@ int start_usb_daemon(struct iio_context *ctx, const char *ffs,
+ 		bool debug, bool use_aio, unsigned int nb_pipes,
+ 		struct thread_pool *pool,
+ 		const void *xml_zstd, size_t xml_zstd_len);
++int start_serial_daemon(struct iio_context *ctx, const char *uart_params,
++			bool debug, struct thread_pool *pool,
++			const void *xml_zstd, size_t xml_zstd_len);
+ 
+ int open_dev(struct parser_pdata *pdata, struct iio_device *dev,
+ 		size_t samples_count, const char *mask, bool cyclic);
+diff --git a/iiod/serial.c b/iiod/serial.c
+new file mode 100644
+index 00000000..544f053d
+--- /dev/null
++++ b/iiod/serial.c
+@@ -0,0 +1,270 @@
++// SPDX-License-Identifier: LGPL-2.1-or-later
++/*
++ * libiio - Library for interfacing industrial I/O (IIO) devices
++ *
++ * Copyright (C) 2021 Analog Devices, Inc.
++ * Author: Paul Cercueil <paul.cercueil@analog.com>
++ */
++
++#include "../debug.h"
++#include "ops.h"
++#include "thread-pool.h"
++
++#include <errno.h>
++#include <fcntl.h>
++#include <linux/serial.h>
++#include <stdio.h>
++#include <string.h>
++#include <stdlib.h>
++#include <sys/ioctl.h>
++#include <termios.h>
++
++struct serial_pdata {
++	struct iio_context *ctx;
++	bool debug;
++	int fd;
++	const void *xml_zstd;
++	size_t xml_zstd_len;
++};
++
++static char *get_uart_params(const char *str,
++			     unsigned int *bps, unsigned int *bits,
++			     char *parity, unsigned int *stop, char *flow)
++{
++	const char *ptr;
++	char *dev_name;
++
++	/* Default values when unspecified */
++	*bps = 57600;
++	*bits = 8;
++	*parity = 'n';
++	*stop = 1;
++	*flow = '\0';
++
++	ptr = strchr(str, ',');
++	if (!ptr) {
++		dev_name = strdup(str);
++	} else {
++		dev_name = strndup(str, ptr - str);
++		sscanf(ptr, ",%u,%u%c%u%c", bps, bits, parity, stop, flow);
++	}
++
++	return dev_name;
++}
++
++static void serial_main(struct thread_pool *pool, void *d)
++{
++	struct serial_pdata *pdata = d;
++
++	do {
++		interpreter(pdata->ctx, pdata->fd, pdata->fd, pdata->debug,
++			    false, false, false, pool,
++			    pdata->xml_zstd, pdata->xml_zstd_len);
++	} while (!thread_pool_is_stopped(pool));
++
++	close(pdata->fd);
++	free(pdata);
++}
++
++static int serial_configure(int fd, unsigned int uart_bps,
++			    unsigned int uart_bits,
++			    char uart_parity,
++			    unsigned int uart_stop,
++			    char uart_flow)
++{
++	struct termios tty_attrs;
++	int err;
++
++	err = tcgetattr(fd, &tty_attrs);
++	if (err == -1) {
++		IIO_ERROR("tcgetattr failed\n");
++		return -errno;
++	}
++
++	tty_attrs.c_lflag &= ~(ISIG | ICANON | ECHO | IEXTEN);
++	tty_attrs.c_oflag &= ~(OPOST | ONLCR | OCRNL | ONOCR | ONLRET);
++
++	tty_attrs.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR |
++				IGNCR | ICRNL | IMAXBEL | IXON | IXOFF);
++
++	tty_attrs.c_cflag |= CLOCAL | CREAD | PARENB;
++	tty_attrs.c_cflag &= ~(CSIZE | CBAUD | CRTSCTS);
++#ifdef CMSPAR
++	tty_attrs.c_cflag &= ~CMSPAR;
++#endif
++
++	tty_attrs.c_cc[VMIN] = 1;
++	tty_attrs.c_cc[VTIME] = 0;
++
++#define CASE_BPS(bps, attr) case bps: (attr)->c_cflag |= B##bps; break
++	switch (uart_bps) {
++	CASE_BPS(50, &tty_attrs);
++	CASE_BPS(75, &tty_attrs);
++	CASE_BPS(110, &tty_attrs);
++	CASE_BPS(134, &tty_attrs);
++	CASE_BPS(150, &tty_attrs);
++	CASE_BPS(200, &tty_attrs);
++	CASE_BPS(300, &tty_attrs);
++	CASE_BPS(600, &tty_attrs);
++	CASE_BPS(1200, &tty_attrs);
++	CASE_BPS(1800, &tty_attrs);
++	CASE_BPS(2400, &tty_attrs);
++	CASE_BPS(4800, &tty_attrs);
++	CASE_BPS(9600, &tty_attrs);
++	CASE_BPS(19200, &tty_attrs);
++	CASE_BPS(38400, &tty_attrs);
++	CASE_BPS(57600, &tty_attrs);
++	CASE_BPS(115200, &tty_attrs);
++	CASE_BPS(230400, &tty_attrs);
++	CASE_BPS(460800, &tty_attrs);
++	CASE_BPS(500000, &tty_attrs);
++	CASE_BPS(576000, &tty_attrs);
++	CASE_BPS(921600, &tty_attrs);
++	CASE_BPS(1000000, &tty_attrs);
++	CASE_BPS(1152000, &tty_attrs);
++	CASE_BPS(1500000, &tty_attrs);
++	CASE_BPS(2000000, &tty_attrs);
++	CASE_BPS(2500000, &tty_attrs);
++	CASE_BPS(3000000, &tty_attrs);
++	CASE_BPS(3500000, &tty_attrs);
++	CASE_BPS(4000000, &tty_attrs);
++	default:
++		IIO_ERROR("Invalid baud rate\n");
++		return -EINVAL;
++	}
++
++	switch (uart_bits) {
++	case 5:
++		tty_attrs.c_cflag |= CS5;
++		break;
++	case 6:
++		tty_attrs.c_cflag |= CS6;
++		break;
++	case 7:
++		tty_attrs.c_cflag |= CS7;
++		break;
++	case 8:
++		tty_attrs.c_cflag |= CS8;
++		break;
++	default:
++		IIO_ERROR("Invalid serial configuration\n");
++		return -EINVAL;
++	}
++
++	switch (uart_parity) {
++	case 'n':
++		tty_attrs.c_cflag &= ~PARENB;
++		break;
++	case 'm':
++#ifndef CMSPAR
++		IIO_ERROR("\"mark\" parity not supported on this system.\n");
++		return -EINVAL;
++#else
++		tty_attrs.c_cflag |= CMSPAR;
++#endif
++		/* falls through */
++	case 'o':
++		tty_attrs.c_cflag |= PARODD;
++		break;
++	case 's':
++#ifndef CMSPAR
++		IIO_ERROR("\"space\" parity not supported on this system.\n");
++		return -EINVAL;
++#else
++		tty_attrs.c_cflag |= CMSPAR;
++#endif
++		/* falls through */
++	case 'e':
++		tty_attrs.c_cflag &= ~PARODD;
++		break;
++	default:
++		IIO_ERROR("Invalid serial configuration\n");
++		return -EINVAL;
++	}
++
++	switch (uart_stop) {
++	case 1:
++		tty_attrs.c_cflag &= ~CSTOPB;
++		break;
++	case 2:
++		tty_attrs.c_cflag |= CSTOPB;
++		break;
++	default:
++		IIO_ERROR("Invalid serial configuration\n");
++		return -EINVAL;
++	}
++
++	switch (uart_flow) {
++	case '\0':
++		break;
++	case 'x':
++		tty_attrs.c_iflag |= IXON | IXOFF;
++		break;
++	case 'r':
++		tty_attrs.c_cflag |= CRTSCTS;
++		break;
++	case 'd':
++		IIO_ERROR("DTR/SDR is unsupported\n");
++		return -EINVAL;
++	default:
++		IIO_ERROR("Invalid serial configuration\n");
++		return -EINVAL;
++	}
++
++	err = tcsetattr(fd, TCSANOW, &tty_attrs);
++	if (err == -1) {
++		IIO_ERROR("Unable to apply serial settings\n");
++		return -errno;
++	}
++
++	return 0;
++}
++
++int start_serial_daemon(struct iio_context *ctx, const char *uart_params,
++			bool debug, struct thread_pool *pool,
++			const void *xml_zstd, size_t xml_zstd_len)
++{
++	struct serial_pdata *pdata;
++	char *dev, uart_parity, uart_flow;
++	unsigned int uart_bps, uart_bits, uart_stop;
++	int fd, err = -ENOMEM;
++
++	dev = get_uart_params(uart_params, &uart_bps, &uart_bits,
++			      &uart_parity, &uart_stop, &uart_flow);
++	if (!dev)
++		return -ENOMEM;
++
++	pdata = zalloc(sizeof(*pdata));
++	if (!pdata)
++		goto err_free_dev;
++
++	fd = open(dev, O_RDWR | O_CLOEXEC);
++	if (fd == -1) {
++		err = -errno;
++		goto err_free_pdata;
++	}
++
++	err = serial_configure(fd, uart_bps, uart_bits,
++			       uart_parity, uart_stop, uart_flow);
++	if (err)
++		goto err_close_fd;
++
++	pdata->ctx = ctx;
++	pdata->debug = debug;
++	pdata->fd = fd;
++	pdata->xml_zstd = xml_zstd;
++	pdata->xml_zstd_len = xml_zstd_len;
++
++	IIO_DEBUG("Serving over UART on %s at %u bps, %u bits\n",
++		  dev, uart_bps, uart_bits);
++
++	return thread_pool_add_thread(pool, serial_main, pdata, "iiod_serial_thd");
++
++err_close_fd:
++	close(fd);
++err_free_pdata:
++	free(pdata);
++err_free_dev:
++	free(dev);
++	return err;
++}
+-- 
+2.30.2
+

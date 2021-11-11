@@ -1,0 +1,14 @@
+Description: Avoid failing check while building Debian packages
+Author: "A. Maitland Bottoms" <bottoms@debian.org>
+
+--- a/bindings/python/setup.py.cmakein
++++ b/bindings/python/setup.py.cmakein
+@@ -40,7 +40,7 @@
+     libiio library is actually installed"""
+ 
+     def run(self):
+-        self._check_libiio_installed()
++        #self._check_libiio_installed()
+         # Run the standard PyPi copy
+         install.run(self)
+ 

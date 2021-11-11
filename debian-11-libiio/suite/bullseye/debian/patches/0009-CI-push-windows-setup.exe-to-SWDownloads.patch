@@ -1,0 +1,25 @@
+From 8c06bd4be1fe0fcc4910272dd70b5008b2a58793 Mon Sep 17 00:00:00 2001
+From: Raluca Chis <raluca.chis@analog.com>
+Date: Thu, 30 Sep 2021 16:50:37 +0300
+Subject: [PATCH 09/19] CI: push windows setup.exe to SWDownloads
+
+Signed-off-by: Raluca Chis <raluca.chis@analog.com>
+---
+ azure-pipelines.yml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/azure-pipelines.yml b/azure-pipelines.yml
+index 138993af..b0cbb1c5 100644
+--- a/azure-pipelines.yml
++++ b/azure-pipelines.yml
+@@ -221,6 +221,7 @@ stages:
+           targetPath: '$(Build.ArtifactStagingDirectory)'
+           artifactName: 'Libiio-Setup-Exe'
+   - job: PushToSWDownloads
++    dependsOn: GenerateSetupExe
+     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+     pool:
+       vmImage: 'ubuntu-latest'
+-- 
+2.30.2
+

@@ -1,0 +1,256 @@
+From 1c31e8ba7e245ceb5e65d41df5560671c31e69aa Mon Sep 17 00:00:00 2001
+From: Raluca Chis <raluca.chis@analog.com>
+Date: Thu, 2 Sep 2021 09:58:19 +0300
+Subject: [PATCH 03/19] CI:reconfigure Azure Pipelines artifacts
+
+- macOS: remove an extra line.
+- macOS: change the name of .pkg and .tar.gz files to be different for
+	 each macOS build.
+- macOS: publish .tar.gz file as an Azure Pipeline artifact.
+- linux: add ARTIFACTNAME to be availabla as an common env-var.
+- linux: set CPACK_HELP to FLAGS in order to have different name for
+	 artifacts in each linux build.
+- windows: separe comands in build_win.ps1 for win32 and x64 architecture
+- windows: generate .tar.gz file (using python 3.9).
+- windows: add publish_deps.ps1 script which collects all .dll dependencies
+	   to publish them as artifacts.
+- windows: add some tasks to azure_pipelines.yml in order to publish
+	   following files: iio.h header, .exe files, libiio-sharp.dll,
+	   .tar.gz files, .dll dependencies.
+
+Signed-off-by: Raluca Chis <raluca.chis@analog.com>
+---
+ CI/build_win.ps1      | 34 ++++++++++++++++++++++++++++++----
+ CI/publish_deps.ps1   | 27 +++++++++++++++++++++++++++
+ CI/travis/lib.sh      |  2 +-
+ CI/travis/make_darwin | 11 +++++++++--
+ CI/travis/make_linux  |  5 +++--
+ azure-pipelines.yml   | 33 ++++++++++++++++++++++++++++++++-
+ 6 files changed, 102 insertions(+), 10 deletions(-)
+ create mode 100644 CI/publish_deps.ps1
+
+diff --git a/CI/build_win.ps1 b/CI/build_win.ps1
+index 56f74527..5ec3cb04 100644
+--- a/CI/build_win.ps1
++++ b/CI/build_win.ps1
+@@ -4,8 +4,34 @@ $ARCH=$Env:ARCH
+ 
+ $src_dir=$pwd
+ 
+-mkdir build
+-cd build
++if ($ARCH -eq "Win32") {
++	echo "Running cmake for $COMPILER on 32 bit..."
++	mkdir build-win32
++	cp .\libiio.iss.cmakein .\build-win32
++	cd build-win32
+ 
+-cmake -G "$COMPILER" -A "$ARCH" -DENABLE_IPV6=OFF -DWITH_USB_BACKEND=OFF -DWITH_SERIAL_BACKEND=OFF -DPYTHON_BINDINGS=ON -DLIBXML2_LIBRARIES="$src_dir\deps\lib\libxml2.dll.a" ..
+-cmake --build . --config Release
++	cmake -G "$COMPILER" -A "$ARCH" -DENABLE_IPV6=OFF -DWITH_USB_BACKEND=OFF -DWITH_SERIAL_BACKEND=OFF -DPYTHON_BINDINGS=ON -DCSHARP_BINDINGS:BOOL=ON -DLIBXML2_LIBRARIES="$src_dir\deps\lib\libxml2.dll.a" ..
++	cmake --build . --config Release
++	cp .\libiio.iss $env:BUILD_ARTIFACTSTAGINGDIRECTORY
++
++	cd ../bindings/python
++	python.exe setup.py.cmakein sdist
++	Get-ChildItem dist\pylibiio-*.tar.gz | Rename-Item -NewName "libiio-py39-win32.tar.gz"
++	mv .\dist\*.gz .
++	rm .\dist\*.gz
++}else {
++        echo "Running cmake for $COMPILER on 64 bit..."
++        mkdir build-x64
++	cp .\libiio.iss.cmakein .\build-x64
++        cd build-x64
++
++        cmake -G "$COMPILER" -A "$ARCH" -DENABLE_IPV6=OFF -DWITH_USB_BACKEND=OFF -DWITH_SERIAL_BACKEND=OFF -DPYTHON_BINDINGS=ON -DCSHARP_BINDINGS:BOOL=ON -DLIBXML2_LIBRARIES="$src_dir\deps\lib\libxml2.dll.a" ..
++        cmake --build . --config Release
++	cp .\libiio.iss $env:BUILD_ARTIFACTSTAGINGDIRECTORY
++
++	cd ../bindings/python
++        python.exe setup.py.cmakein sdist
++        Get-ChildItem dist\pylibiio-*.tar.gz | Rename-Item -NewName "libiio-py39-amd64.tar.gz"
++        mv .\dist\*.gz .
++        rm .\dist\*.gz
++}
+diff --git a/CI/publish_deps.ps1 b/CI/publish_deps.ps1
+new file mode 100644
+index 00000000..1520ee4a
+--- /dev/null
++++ b/CI/publish_deps.ps1
+@@ -0,0 +1,27 @@
++
++$src_dir=$pwd
++
++cd 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Redist\MSVC\14.29.30133'
++if ($ARCH -eq "Win32") {
++	echo "$PWD"
++	mv .\x86\Microsoft.VC142.CRT\msvcp140.dll $env:BUILD_ARTIFACTSTAGINGDIRECTORY
++}else {
++	echo "$PWD"
++        mv .\x64\Microsoft.VC142.CRT\msvcp140.dll $env:BUILD_ARTIFACTSTAGINGDIRECTORY
++}
++
++cd $src_dir
++mkdir dependencies
++cd dependencies
++wget http://swdownloads.analog.com/cse/build/libiio-win-deps.zip -OutFile "libiio-win-deps.zip"
++7z x -y "libiio-win-deps.zip"
++
++if ($ARCH -eq "Win32") {
++	mv .\libs\32\libxml2.dll $env:BUILD_ARTIFACTSTAGINGDIRECTORY
++	mv .\libs\32\libserialport-0.dll $env:BUILD_ARTIFACTSTAGINGDIRECTORY
++	mv .\libs\32\libusb-1.0.dll $env:BUILD_ARTIFACTSTAGINGDIRECTORY
++}else {
++	mv .\libs\64\libxml2.dll $env:BUILD_ARTIFACTSTAGINGDIRECTORY
++        mv .\libs\64\libserialport-0.dll $env:BUILD_ARTIFACTSTAGINGDIRECTORY
++        mv .\libs\64\libusb-1.0.dll $env:BUILD_ARTIFACTSTAGINGDIRECTORY
++}
+diff --git a/CI/travis/lib.sh b/CI/travis/lib.sh
+index 15c2c058..bfea28e5 100644
+--- a/CI/travis/lib.sh
++++ b/CI/travis/lib.sh
+@@ -26,7 +26,7 @@ INSIDE_DOCKER_BUILD_DIR=/docker_build_dir
+ #
+ # If these nothing should be passed, then clear or
+ #'unset INSIDE_DOCKER_TRAVIS_CI_ENV' after this script is included
+-INSIDE_DOCKER_TRAVIS_CI_ENV="TRAVIS TRAVIS_COMMIT TRAVIS_PULL_REQUEST OS_TYPE OS_VERSION"
++INSIDE_DOCKER_TRAVIS_CI_ENV="TRAVIS TRAVIS_COMMIT TRAVIS_PULL_REQUEST OS_TYPE OS_VERSION ARTIFACTNAME"
+ 
+ COMMON_SCRIPTS="inside_docker.sh"
+ 
+diff --git a/CI/travis/make_darwin b/CI/travis/make_darwin
+index 52902598..c27fd505 100755
+--- a/CI/travis/make_darwin
++++ b/CI/travis/make_darwin
+@@ -4,7 +4,6 @@ LIBIIO_BUILD_CONF="-DWITH_SERIAL_BACKEND=OFF -DWITH_ZSTD=ON"
+ 
+ if [ "x${COVERITY_SCAN_PROJECT_NAME}" != "x" ] ; then exit 0; fi
+ 
+-
+ build_osx() {
+ 	FLAGS=$1
+ 	echo "### cmake ${FLAGS}"
+@@ -17,16 +16,24 @@ build_osx() {
+ 	ls
+ }
+ 
++change_artefact_name() {
++	old_name=`find . -name '*.pkg' | cut -b 3-26`
++	name=`echo ${old_name} | cut -b 1-20`
++	new_name="${name}-${ARTIFACTNAME}.pkg"
++	mv ./${old_name} ./${new_name}
++}
++
+ mkdir -p build
+ 
+ cd build
+ build_osx "-DOSX_PACKAGE=ON -DPYTHON_BINDINGS=ON -DWITH_EXAMPLES=ON ${LIBIIO_BUILD_CONF}"
++change_artefact_name
+ 
+ cd ..
+ 
+ mkdir -p build_tar
+ cd build_tar
+-build_osx "-DOSX_PACKAGE=OFF -DENABLE_PACKAGING=ON -DPYTHON_BINDINGS=ON ${LIBIIO_BUILD_CONF}"
++build_osx "-DOSX_PACKAGE=OFF -DENABLE_PACKAGING=ON -DPYTHON_BINDINGS=ON -DCPACK_SYSTEM_NAME=${ARTIFACTNAME} ${LIBIIO_BUILD_CONF}"
+ echo "### make package"
+ make package
+ echo "### files are"
+diff --git a/CI/travis/make_linux b/CI/travis/make_linux
+index 019fc077..27e0234b 100755
+--- a/CI/travis/make_linux
++++ b/CI/travis/make_linux
+@@ -5,6 +5,7 @@ if [ "x${COVERITY_SCAN_PROJECT_NAME}" != "x" ] ; then exit 0; fi
+ . CI/travis/lib.sh
+ 
+ INSIDE_DOCKER_TRAVIS_CI_ENV="$INSIDE_DOCKER_TRAVIS_CI_ENV CHECK_AGAINST_KERNEL_HEADER CI_BUILD_SPHINX_DOCS"
++CPACK_HELP="-DCPACK_SYSTEM_NAME=${ARTIFACTNAME}"
+ 
+ handle_default() {
+ 	echo "### making build dir"
+@@ -42,7 +43,7 @@ handle_default() {
+ 		MAN_HELP="-DWITH_MAN=ON"
+ 	fi
+ 
+-	FLAGS="-DENABLE_PACKAGING=ON -DDEB_DETECT_DEPENDENCIES=ON -DWITH_EXAMPLES=ON ${PYTHON_HELP} ${DOC_HELP} ${MAN_HELP}"
++	FLAGS="-DENABLE_PACKAGING=ON -DDEB_DETECT_DEPENDENCIES=ON -DWITH_EXAMPLES=ON ${PYTHON_HELP} ${DOC_HELP} ${MAN_HELP} ${CPACK_HELP}"
+ 
+ 	# Ubuntu Xenial's libserialport and libzstd are too old
+ 	if [ "${OS_VERSION}" = xenial ] ; then
+@@ -111,7 +112,7 @@ handle_centos() {
+ 	mkdir -p build
+ 	cd build
+ 
+-	FLAGS="-DENABLE_PACKAGING=ON -DPYTHON_BINDINGS=ON -DWITH_SERIAL_BACKEND=OFF -DWITH_ZSTD=ON"
++	FLAGS="-DENABLE_PACKAGING=ON -DPYTHON_BINDINGS=ON -DWITH_SERIAL_BACKEND=OFF -DWITH_ZSTD=ON ${CPACK_HELP}"
+ 
+ 	# CentOS 7's kernel headers are too old for USB support in IIOD
+ 	[ "${OS_VERSION}" = centos7 ] && FLAGS="${FLAGS} -DWITH_IIOD_USBD=OFF"
+diff --git a/azure-pipelines.yml b/azure-pipelines.yml
+index 77e0861d..fb248d4c 100644
+--- a/azure-pipelines.yml
++++ b/azure-pipelines.yml
+@@ -110,6 +110,11 @@ stages:
+         sourceFolder: '$(Agent.BuildDirectory)/s/build/'
+         contents: '$(Agent.BuildDirectory)/s/build/?(*.pkg)'
+         targetFolder: '$(Build.ArtifactStagingDirectory)'
++    - task: CopyFiles@2
++      inputs:
++        sourceFolder: '$(Agent.BuildDirectory)/s/build_tar/'
++        contents: '$(Agent.BuildDirectory)/s/build_tar/?(*.gz)'
++        targetFolder: '$(Build.ArtifactStagingDirectory)'
+     - task: PublishPipelineArtifact@1
+       condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+       inputs:
+@@ -135,6 +140,9 @@ stages:
+     - checkout: self
+       fetchDepth: 1
+       clean: true
++    - task: UsePythonVersion@0
++      inputs:
++        versionSpec: '3.9'
+     - task: PowerShell@2
+       inputs:
+         targetType: 'filePath'
+@@ -148,7 +156,7 @@ stages:
+     - task: CopyFiles@2
+       displayName: 'Copy libraries'
+       inputs:
+-        sourceFolder: '$(Agent.BuildDirectory)/s/build/Release'
++        sourceFolder: '$(Agent.BuildDirectory)/s/build-$(ARCH)/Release'
+         targetFolder: '$(Build.ArtifactStagingDirectory)'
+     - task: CopyFiles@2
+       displayName: 'Copy iio.h header'
+@@ -156,6 +164,29 @@ stages:
+         sourceFolder: '$(Agent.BuildDirectory)/s/'
+         contents: 'iio.h'
+         targetFolder: '$(Build.ArtifactStagingDirectory)'
++    - task: CopyFiles@2
++      displayName: 'Copy .exe files'
++      inputs:
++        sourceFolder: '$(Agent.BuildDirectory)/s/build-$(ARCH)/tests/Release'
++        contents: '*.exe'
++        targetFolder: '$(Build.ArtifactStagingDirectory)'
++    - task: CopyFiles@2
++      displayName: 'Copy .tar.gz files'
++      inputs:
++        sourceFolder: '$(Agent.BuildDirectory)/s/bindings/python'
++        contents: '*.gz'
++        targetFolder: '$(Build.ArtifactStagingDirectory)'
++    - task: CopyFiles@2
++      displayName: 'Copy libiio-sharp.dll file'
++      inputs:
++        sourceFolder: '$(Agent.BuildDirectory)/s/build-$(ARCH)/bindings/csharp'
++        contents: 'libiio-sharp.dll'
++        targetFolder: '$(Build.ArtifactStagingDirectory)'
++    - task: PowerShell@2
++      displayName: 'Copy dependencies'
++      inputs:
++        targetType: 'filePath'
++        filePath: .\CI\publish_deps.ps1
+     - task: PublishPipelineArtifact@1
+       condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+       inputs:
+-- 
+2.30.2
+

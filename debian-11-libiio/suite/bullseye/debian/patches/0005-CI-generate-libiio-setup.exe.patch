@@ -1,0 +1,163 @@
+From c14a0f8b38e9f1ecee147324b0864b8bcf22e15b Mon Sep 17 00:00:00 2001
+From: Raluca Chis <raluca.chis@analog.com>
+Date: Fri, 3 Sep 2021 16:29:24 +0300
+Subject: [PATCH 05/19] CI: generate libiio-setup.exe
+
+- remove unavailable languages.
+- change the paths to dependent files in libiio.iss.cmakein
+- "pf32" and "cf" has been renamed to "commonpf32", respectively
+  "commoncf".
+- add script generate_exe.ps1 in order to generate libiio-setup.exe.
+- add a windows job to manage generate_exe.ps1 script.
+- libiio-setup.exe will be generated only for releases and modifications
+  on master
+
+Signed-off-by: Raluca Chis <raluca.chis@analog.com>
+---
+ CI/build_win.ps1    |  4 ++--
+ CI/generate_exe.ps1 |  5 +++++
+ azure-pipelines.yml | 18 ++++++++++++++++++
+ libiio.iss.cmakein  | 39 +++++++++++++++++----------------------
+ 4 files changed, 42 insertions(+), 24 deletions(-)
+ create mode 100644 CI/generate_exe.ps1
+
+diff --git a/CI/build_win.ps1 b/CI/build_win.ps1
+index 5ec3cb04..4b6110a8 100644
+--- a/CI/build_win.ps1
++++ b/CI/build_win.ps1
+@@ -10,7 +10,7 @@ if ($ARCH -eq "Win32") {
+ 	cp .\libiio.iss.cmakein .\build-win32
+ 	cd build-win32
+ 
+-	cmake -G "$COMPILER" -A "$ARCH" -DENABLE_IPV6=OFF -DWITH_USB_BACKEND=OFF -DWITH_SERIAL_BACKEND=OFF -DPYTHON_BINDINGS=ON -DCSHARP_BINDINGS:BOOL=ON -DLIBXML2_LIBRARIES="$src_dir\deps\lib\libxml2.dll.a" ..
++	cmake -G "$COMPILER" -A "$ARCH" -DCMAKE_SYSTEM_PREFIX_PATH="C:" -DENABLE_IPV6=OFF -DWITH_USB_BACKEND=ON -DWITH_SERIAL_BACKEND=ON -DPYTHON_BINDINGS=ON -DCSHARP_BINDINGS:BOOL=ON -DLIBXML2_LIBRARIES="C:\\libs\\32\\libxml2.lib" -DLIBUSB_LIBRARIES="C:\\libs\\32\\libusb-1.0.lib" -DLIBSERIALPORT_LIBRARIES="C:\\libs\\32\\libserialport.dll.a" ..
+ 	cmake --build . --config Release
+ 	cp .\libiio.iss $env:BUILD_ARTIFACTSTAGINGDIRECTORY
+ 
+@@ -25,7 +25,7 @@ if ($ARCH -eq "Win32") {
+ 	cp .\libiio.iss.cmakein .\build-x64
+         cd build-x64
+ 
+-        cmake -G "$COMPILER" -A "$ARCH" -DENABLE_IPV6=OFF -DWITH_USB_BACKEND=OFF -DWITH_SERIAL_BACKEND=OFF -DPYTHON_BINDINGS=ON -DCSHARP_BINDINGS:BOOL=ON -DLIBXML2_LIBRARIES="$src_dir\deps\lib\libxml2.dll.a" ..
++        cmake -G "$COMPILER" -A "$ARCH" -DCMAKE_SYSTEM_PREFIX_PATH="C:" -DENABLE_IPV6=OFF -DWITH_USB_BACKEND=ON -DWITH_SERIAL_BACKEND=ON -DPYTHON_BINDINGS=ON -DCSHARP_BINDINGS:BOOL=ON -DLIBXML2_LIBRARIES="C:\\libs\\64\\libxml2.lib" -DLIBUSB_LIBRARIES="C:\\libs\\64\\libusb-1.0.lib" -DLIBSERIALPORT_LIBRARIES="C:\\libs\\64\\libserialport.dll.a" ..
+         cmake --build . --config Release
+ 	cp .\libiio.iss $env:BUILD_ARTIFACTSTAGINGDIRECTORY
+ 
+diff --git a/CI/generate_exe.ps1 b/CI/generate_exe.ps1
+new file mode 100644
+index 00000000..c68b2eba
+--- /dev/null
++++ b/CI/generate_exe.ps1
+@@ -0,0 +1,5 @@
++SET PATH=packages\Tools.InnoSetup.5.6.1\tools
++iscc $env:BUILD_ARTIFACTSTAGINGDIRECTORY\Windows-VS-16-2019-Win32\libiio.iss
++
++Get-ChildItem $env:BUILD_ARTIFACTSTAGINGDIRECTORY -Force -Recurse | Remove-Item -Force -Recurse
++cp C:\libiio-setup.exe $env:BUILD_ARTIFACTSTAGINGDIRECTORY
+diff --git a/azure-pipelines.yml b/azure-pipelines.yml
+index 447f3a4b..a3fcbe98 100644
+--- a/azure-pipelines.yml
++++ b/azure-pipelines.yml
+@@ -196,6 +196,24 @@ stages:
+ - stage: PushArtifacts
+   dependsOn: Builds
+   jobs:
++  - job: GenerateSetupExe
++    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v')))
++    pool:
++      vmImage: 'windows-2019'
++    steps:
++      - task: DownloadPipelineArtifact@2
++        inputs:
++          path: '$(Build.ArtifactStagingDirectory)'
++      - task: PowerShell@2
++        inputs:
++          targetType: 'filePath'
++          filePath: .\CI\generate_exe.ps1
++        displayName: "Generate libiio-setup.exe"
++      - task: PublishPipelineArtifact@1
++        condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
++        inputs:
++          targetPath: '$(Build.ArtifactStagingDirectory)'
++          artifactName: 'Libiio-Setup-Exe'
+   - job: PushToSWDownloads
+     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+     pool:
+diff --git a/libiio.iss.cmakein b/libiio.iss.cmakein
+index 8ad44285..fc8de59a 100644
+--- a/libiio.iss.cmakein
++++ b/libiio.iss.cmakein
+@@ -8,7 +8,7 @@ AppSupportURL="http://www.analog.com"
+ AppUpdatesURL="http://www.analog.com"
+ AppCopyright="Copyright 2015-@BUILD_YEAR@ ADI and other contributors"
+ CreateAppDir=no
+-LicenseFile="C:\projects\libiio\COPYING.txt"
++LicenseFile="D:\a\1\s\COPYING.txt"
+ OutputBaseFilename=libiio-setup
+ OutputDir="C:\"
+ Compression=lzma
+@@ -26,45 +26,40 @@ Name: "dutch"; MessagesFile: "compiler:Languages\Dutch.isl"
+ Name: "finnish"; MessagesFile: "compiler:Languages\Finnish.isl"
+ Name: "french"; MessagesFile: "compiler:Languages\French.isl"
+ Name: "german"; MessagesFile: "compiler:Languages\German.isl"
+-Name: "greek"; MessagesFile: "compiler:Languages\Greek.isl"
+ Name: "hebrew"; MessagesFile: "compiler:Languages\Hebrew.isl"
+-Name: "hungarian"; MessagesFile: "compiler:Languages\Hungarian.isl"
+ Name: "italian"; MessagesFile: "compiler:Languages\Italian.isl"
+ Name: "japanese"; MessagesFile: "compiler:Languages\Japanese.isl"
+ Name: "norwegian"; MessagesFile: "compiler:Languages\Norwegian.isl"
+ Name: "polish"; MessagesFile: "compiler:Languages\Polish.isl"
+ Name: "portuguese"; MessagesFile: "compiler:Languages\Portuguese.isl"
+ Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
+-Name: "scottishgaelic"; MessagesFile: "compiler:Languages\ScottishGaelic.isl"
+-Name: "serbiancyrillic"; MessagesFile: "compiler:Languages\SerbianCyrillic.isl"
+-Name: "serbianlatin"; MessagesFile: "compiler:Languages\SerbianLatin.isl"
+ Name: "slovenian"; MessagesFile: "compiler:Languages\Slovenian.isl"
+ Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
+ Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
+ Name: "ukrainian"; MessagesFile: "compiler:Languages\Ukrainian.isl"
+ 
+ [Files]
+-Source: "C:\projects\libiio\build-win32\Release\libiio.dll"; DestDir: "{sys}"; Flags: 32bit replacesameversion
+-Source: "C:\projects\libiio\build-win64\Release\libiio.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: replacesameversion
++Source: "D:\a\1\a\Windows-VS-16-2019-Win32\libiio.dll"; DestDir: "{sys}"; Flags: 32bit replacesameversion
++Source: "D:\a\1\a\Windows-VS-16-2019-x64\libiio.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: replacesameversion
+ 
+-Source: "C:\projects\libiio\build-win32\tests\Release\*.exe"; DestDir: "{sys}"; Check: not Is64BitInstallMode; Flags: replacesameversion
+-Source: "C:\projects\libiio\build-win64\tests\Release\*.exe"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: replacesameversion
++Source: "D:\a\1\a\Windows-VS-16-2019-Win32\*.exe"; DestDir: "{sys}"; Check: not Is64BitInstallMode; Flags: replacesameversion
++Source: "D:\a\1\a\Windows-VS-16-2019-x64\*.exe"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: replacesameversion
+ 
+-Source: "C:\projects\libiio\build-win32\Release\libiio.lib"; DestDir: "{pf32}\Microsoft Visual Studio 12.0\VC\lib"; Check: not Is64BitInstallMode
+-Source: "C:\projects\libiio\build-win64\Release\libiio.lib"; DestDir: "{pf32}\Microsoft Visual Studio 12.0\VC\lib\amd64"; Check: Is64BitInstallMode
+-Source: "C:\projects\libiio\iio.h"; DestDir: "{pf32}\Microsoft Visual Studio 12.0\VC\include"
++Source: "D:\a\1\a\Windows-VS-16-2019-Win32\libiio.lib"; DestDir: "{commonpf32}\Microsoft Visual Studio 12.0\VC\lib"; Check: not Is64BitInstallMode
++Source: "D:\a\1\a\Windows-VS-16-2019-x64\libiio.lib"; DestDir: "{commonpf32}\Microsoft Visual Studio 12.0\VC\lib\amd64"; Check: Is64BitInstallMode
++Source: "D:\a\1\a\Windows-VS-16-2019-Win32\iio.h"; DestDir: "{commonpf32}\Microsoft Visual Studio 12.0\VC\include"
+ 
+-Source: "C:\libs\32\libxml2.dll"; DestDir: "{sys}"; Flags: onlyifdoesntexist 32bit
+-Source: "C:\libs\64\libxml2.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: onlyifdoesntexist
++Source: "D:\a\1\a\Windows-VS-16-2019-Win32\libxml2.dll"; DestDir: "{sys}"; Flags: onlyifdoesntexist 32bit
++Source: "D:\a\1\a\Windows-VS-16-2019-x64\libxml2.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: onlyifdoesntexist
+ 
+-Source: "C:\libs\32\libusb-1.0.dll"; DestDir: "{sys}"; Flags: onlyifdoesntexist 32bit
+-Source: "C:\libs\64\libusb-1.0.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: onlyifdoesntexist
++Source: "D:\a\1\a\Windows-VS-16-2019-Win32\libusb-1.0.dll"; DestDir: "{sys}"; Flags: onlyifdoesntexist 32bit
++Source: "D:\a\1\a\Windows-VS-16-2019-x64\libusb-1.0.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: onlyifdoesntexist
+ 
+-Source: "C:\libs\32\libserialport-0.dll"; DestDir: "{sys}"; Flags: onlyifdoesntexist 32bit
+-Source: "C:\libs\64\libserialport-0.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: onlyifdoesntexist
++Source: "D:\a\1\a\Windows-VS-16-2019-Win32\libserialport-0.dll"; DestDir: "{sys}"; Flags: onlyifdoesntexist 32bit
++Source: "D:\a\1\a\Windows-VS-16-2019-x64\libserialport-0.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: onlyifdoesntexist
+ 
+-Source: "C:\projects\libiio\build-win32\bindings\csharp\libiio-sharp.dll"; DestDir: "{cf}\libiio"; Flags: replacesameversion
++Source: "D:\a\1\a\Windows-VS-16-2019-Win32\libiio-sharp.dll"; DestDir: "{commoncf}\libiio"; Flags: replacesameversion
+ 
+-Source: "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\redist\x86\Microsoft.VC120.CRT\msvcr120.dll"; DestDir: "{sys}"; Flags: onlyifdoesntexist 32bit
+-Source: "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\redist\x64\Microsoft.VC120.CRT\msvcr120.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: onlyifdoesntexist
++Source: "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Redist\MSVC\14.29.30133\x86\Microsoft.VC142.CRT\msvcp140.dll"; DestDir: "{sys}"; Flags: onlyifdoesntexist 32bit
++Source: "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Redist\MSVC\14.29.30133\x64\Microsoft.VC142.CRT\msvcp140.dll"; DestDir: "{sys}"; Check: Is64BitInstallMode; Flags: onlyifdoesntexist
+ 
+-- 
+2.30.2
+

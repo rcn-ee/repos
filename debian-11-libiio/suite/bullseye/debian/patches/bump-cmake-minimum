@@ -1,0 +1,52 @@
+Description: modern CMake needs > 2.8.12
+Author: "A. Maitland Bottoms" <bottoms@debian.org>
+
+--- a/examples/CMakeLists.txt
++++ b/examples/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.8.7)
++cmake_minimum_required(VERSION 3.10.2)
+ 
+ project(ad9361-iiostream C)
+ project(ad9371-iiostream C)
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,5 +1,5 @@
+ message(STATUS "cmake version: ${CMAKE_VERSION}")
+-cmake_minimum_required(VERSION 2.8.7)
++cmake_minimum_required(VERSION 3.10.2)
+ project(libiio C)
+ 
+ if (MINGW)
+--- a/bindings/python/CMakeLists.txt
++++ b/bindings/python/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.8.7)
++cmake_minimum_required(VERSION 3.10.2)
+ project(libiio-py NONE)
+ 
+ if(${CMAKE_VERSION} VERSION_LESS "3.12.0") 
+--- a/bindings/csharp/CMakeLists.txt
++++ b/bindings/csharp/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.8.7)
++cmake_minimum_required(VERSION 3.10.2)
+ project(libiio-sharp NONE)
+ 
+ if (WIN32)
+--- a/iiod/CMakeLists.txt
++++ b/iiod/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.8.7)
++cmake_minimum_required(VERSION 3.10.2)
+ project(iiod C)
+ 
+ include(FindBISON)
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.8.7)
++cmake_minimum_required(VERSION 3.10.2)
+ 
+ project(iio_genxml  C)
+ project(iio_info    C)

@@ -1,0 +1,143 @@
+From acd93b9f996c38262bc91718ccda5491dbb14528 Mon Sep 17 00:00:00 2001
+From: Raluca Chis <raluca.chis@analog.com>
+Date: Thu, 2 Sep 2021 13:50:08 +0300
+Subject: [PATCH 04/19] CI: edit Github release
+
+- change the name of the release
+- add prepare_assets.sh script that will copy or archive the artifacts
+  for release, depending on each build.
+- archive_artifacts.sh will be removed because that functions will be
+  included in prepare_assets.sh.
+
+Signed-off-by: Raluca Chis <raluca.chis@analog.com>
+---
+ CI/travis/archive_artifacts.sh | 36 --------------------------
+ CI/travis/prepare_assets.sh    | 46 ++++++++++++++++++++++++++++++++++
+ azure-pipelines.yml            |  8 +++---
+ 3 files changed, 49 insertions(+), 41 deletions(-)
+ delete mode 100755 CI/travis/archive_artifacts.sh
+ create mode 100644 CI/travis/prepare_assets.sh
+
+diff --git a/CI/travis/archive_artifacts.sh b/CI/travis/archive_artifacts.sh
+deleted file mode 100755
+index 9c0645ce..00000000
+--- a/CI/travis/archive_artifacts.sh
++++ /dev/null
+@@ -1,36 +0,0 @@
+-#!/bin/bash -e
+-
+-archive_linux() {
+-	local linux_dist='CentOS-7-x86_64 CentOS-8-x86_64 Ubuntu-16.04-x86_64
+-		Ubuntu-18.04-x86_64 Ubuntu-20.04-x86_64 Debian-Buster-ARM Debian-Buster-ARM64'
+-
+-	cd "${SOURCE_DIRECTORY}"
+-	for distribution in $linux_dist; do
+-		tar -zcvf Linux-"${distribution}".tar.gz Linux-"${distribution}"
+-		rm -r Linux-"${distribution}"
+-	done
+-}
+-
+-archive_macOS() {
+-        local macOS_dist='10.14 10.15'
+-
+-        cd "${SOURCE_DIRECTORY}"
+-        for distribution in $macOS_dist; do
+-		tar -zcvf macOS-"${distribution}".tar.gz macOS-"${distribution}"
+-		rm -r macOS-"${distribution}"
+-        done
+-}
+-
+-archive_windows() {
+-        local windows_dist='Win32 x64'
+-
+-        cd "${SOURCE_DIRECTORY}"
+-        for distribution in $windows_dist; do
+-		zip -r Windows-VS-16-2019-"${distribution}".zip Windows-VS-16-2019-"${distribution}"
+-		rm -r Windows-VS-16-2019-"${distribution}"
+-        done
+-}
+-
+-archive_linux
+-archive_macOS
+-archive_windows
+diff --git a/CI/travis/prepare_assets.sh b/CI/travis/prepare_assets.sh
+new file mode 100644
+index 00000000..4fd6f8c4
+--- /dev/null
++++ b/CI/travis/prepare_assets.sh
+@@ -0,0 +1,46 @@
++#!/bin/bash -e
++
++move_artifacts() {
++	local rpm_assets='CentOS-7-x86_64 CentOS-8-x86_64'
++	cd "${BUILD_ARTIFACTSTAGINGDIRECTORY}"
++	for i in $rpm_assets; do
++		cd "${i}"
++		find . -name '*.rpm' -exec mv {} ../ ";"
++		cd ../
++		rm -r "${i}"
++	done
++
++        local deb_assets='Ubuntu-16.04-x86_64 Ubuntu-18.04-x86_64
++				Ubuntu-20.04-x86_64 Debian-Buster-ARM
++				Debian-Buster-ARM64'
++        cd "${BUILD_ARTIFACTSTAGINGDIRECTORY}"
++        for i in $deb_assets; do
++                cd "${i}"
++                find . -name '*.deb' -exec mv {} ../ ";"
++                cd ../
++                rm -r "${i}"
++        done
++
++	local pkg_assets='macOS-10.14 macOS-10.15'
++        cd "${BUILD_ARTIFACTSTAGINGDIRECTORY}"
++        for i in $pkg_assets; do
++                cd "${i}"
++                find . -name '*.pkg' -exec mv {} ../ ";"
++		find . -name '*.gz' -exec mv {} ../ ";"
++                cd ../
++                rm -r "${i}"
++        done
++}
++
++archive_windows() {
++        local windows_dist='Win32 x64'
++
++        cd "${BUILD_ARTIFACTSTAGINGDIRECTORY}"
++        for distribution in $windows_dist; do
++		zip -r Windows-VS-16-2019-"${distribution}".zip Windows-VS-16-2019-"${distribution}"
++		rm -r Windows-VS-16-2019-"${distribution}"
++        done
++}
++
++move_artifacts
++archive_windows
+diff --git a/azure-pipelines.yml b/azure-pipelines.yml
+index fb248d4c..447f3a4b 100644
+--- a/azure-pipelines.yml
++++ b/azure-pipelines.yml
+@@ -221,10 +221,8 @@ stages:
+       - task: DownloadPipelineArtifact@2
+         inputs:
+           path: '$(Build.ArtifactStagingDirectory)'
+-      - bash: ./CI/travis/archive_artifacts.sh
+-        env:
+-          SOURCE_DIRECTORY: $(Build.ArtifactStagingDirectory)
+-        displayName: "Archive artifacts"
++      - bash: ./CI/travis/prepare_assets.sh
++        displayName: "Prepare assets for release"
+       - task: GithubRelease@0
+         displayName: 'Attach artifacts to GitHub Release'
+         inputs:
+@@ -233,7 +231,7 @@ stages:
+           action: create
+           target: $(Build.SourceVersion)
+           tag: $(Build.SourceBranchName)
+-          title: "$(Build.SourceBranchName): Version <edit>"
++          title: "Libiio release $(Build.SourceBranchName)"
+           assets: $(Build.ArtifactStagingDirectory)/*
+           addChangeLog: true
+           isDraft: true
+-- 
+2.30.2
+

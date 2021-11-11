@@ -1,0 +1,80 @@
+From d97a476f45fb7ac00664779a1826da491e0ba882 Mon Sep 17 00:00:00 2001
+From: Paul Cercueil <paul@crapouillou.net>
+Date: Thu, 15 Apr 2021 15:10:39 +0100
+Subject: [PATCH 12/19] iiod: thread-pool: Add function thread_pool_is_stopped
+
+This function can be used to know whether or not thread_pool_stop() was
+called on a thread pool.
+
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ iiod/thread-pool.c | 10 ++++++++++
+ iiod/thread-pool.h |  3 +++
+ 2 files changed, 13 insertions(+)
+
+diff --git a/iiod/thread-pool.c b/iiod/thread-pool.c
+index d8fa6b83..2fd30825 100644
+--- a/iiod/thread-pool.c
++++ b/iiod/thread-pool.c
+@@ -31,6 +31,7 @@ struct thread_pool {
+ 	pthread_cond_t thread_count_cond;
+ 	unsigned int thread_count;
+ 	int stop_fd;
++	bool stop;
+ };
+ 
+ struct thread_body_data {
+@@ -130,6 +131,8 @@ struct thread_pool * thread_pool_new(void)
+ 		return NULL;
+ 	}
+ 
++	pool->stop = false;
++
+ 	pthread_mutex_init(&pool->thread_count_lock, NULL);
+ 	pthread_cond_init(&pool->thread_count_cond, NULL);
+ 	pool->thread_count = 0;
+@@ -147,6 +150,8 @@ void thread_pool_stop(struct thread_pool *pool)
+ 	uint64_t e = 1;
+ 	int ret;
+ 
++	pool->stop = true;
++
+ 	do {
+ 		ret = write(pool->stop_fd, &e, sizeof(e));
+ 	} while (ret == -1 && errno == EINTR);
+@@ -170,6 +175,11 @@ void thread_pool_stop_and_wait(struct thread_pool *pool)
+ 	} while (ret != -1 || errno == EINTR);
+ }
+ 
++bool thread_pool_is_stopped(const struct thread_pool *pool)
++{
++	return pool->stop;
++}
++
+ void thread_pool_destroy(struct thread_pool *pool)
+ {
+ 	pthread_mutex_destroy(&pool->thread_count_lock);
+diff --git a/iiod/thread-pool.h b/iiod/thread-pool.h
+index 3b83d569..b4e8bf0b 100644
+--- a/iiod/thread-pool.h
++++ b/iiod/thread-pool.h
+@@ -9,6 +9,8 @@
+ #ifndef __THREAD_POOL_H__
+ #define __THREAD_POOL_H__
+ 
++#include <stdbool.h>
++
+ struct thread_pool;
+ 
+ struct thread_pool * thread_pool_new(void);
+@@ -16,6 +18,7 @@ struct thread_pool * thread_pool_new(void);
+ int thread_pool_get_poll_fd(const struct thread_pool *pool);
+ void thread_pool_stop(struct thread_pool *pool);
+ void thread_pool_stop_and_wait(struct thread_pool *pool);
++bool thread_pool_is_stopped(const struct thread_pool *pool);
+ 
+ void thread_pool_destroy(struct thread_pool *pool);
+ 
+-- 
+2.30.2
+

@@ -1,0 +1,68 @@
+From 8402b80b1ba566a561f767f8dac860629c0290d6 Mon Sep 17 00:00:00 2001
+From: Alexandra Trifan <Alexandra.Trifan@analog.com>
+Date: Thu, 30 Sep 2021 16:17:55 +0300
+Subject: [PATCH 18/19] azure-pipelines: Update libusb and libxml2 version for
+ Windows builds.
+
+Old libusb and libxml2 were linking to a Visual Studio DLL from 2013 which
+is no longer available on CI images. The new archive contains the latest
+versions for both libusb and libxml2 and are now built using MSVC 2019.
+
+Signed-off-by: Alexandra Trifan <Alexandra.Trifan@analog.com>
+---
+ CI/build_win.ps1        | 4 ++--
+ CI/install_deps_win.ps1 | 2 +-
+ CI/publish_deps.ps1     | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/CI/build_win.ps1 b/CI/build_win.ps1
+index 4b6110a8..08048e22 100644
+--- a/CI/build_win.ps1
++++ b/CI/build_win.ps1
+@@ -10,7 +10,7 @@ if ($ARCH -eq "Win32") {
+ 	cp .\libiio.iss.cmakein .\build-win32
+ 	cd build-win32
+ 
+-	cmake -G "$COMPILER" -A "$ARCH" -DCMAKE_SYSTEM_PREFIX_PATH="C:" -DENABLE_IPV6=OFF -DWITH_USB_BACKEND=ON -DWITH_SERIAL_BACKEND=ON -DPYTHON_BINDINGS=ON -DCSHARP_BINDINGS:BOOL=ON -DLIBXML2_LIBRARIES="C:\\libs\\32\\libxml2.lib" -DLIBUSB_LIBRARIES="C:\\libs\\32\\libusb-1.0.lib" -DLIBSERIALPORT_LIBRARIES="C:\\libs\\32\\libserialport.dll.a" ..
++	cmake -G "$COMPILER" -A "$ARCH" -DCMAKE_SYSTEM_PREFIX_PATH="C:" -DENABLE_IPV6=OFF -DWITH_USB_BACKEND=ON -DWITH_SERIAL_BACKEND=ON -DPYTHON_BINDINGS=ON -DCSHARP_BINDINGS:BOOL=ON -DLIBXML2_LIBRARIES="C:\\libs\\32\\libxml2.lib" -DLIBUSB_LIBRARIES="C:\\libs\\32\\libusb-1.0.lib" -DLIBSERIALPORT_LIBRARIES="C:\\libs\\32\\libserialport.dll.a" -DLIBUSB_INCLUDE_DIR="C:\\include\\libusb-1.0" -DLIBXML2_INCLUDE_DIR="C:\\include\\libxml2" ..
+ 	cmake --build . --config Release
+ 	cp .\libiio.iss $env:BUILD_ARTIFACTSTAGINGDIRECTORY
+ 
+@@ -25,7 +25,7 @@ if ($ARCH -eq "Win32") {
+ 	cp .\libiio.iss.cmakein .\build-x64
+         cd build-x64
+ 
+-        cmake -G "$COMPILER" -A "$ARCH" -DCMAKE_SYSTEM_PREFIX_PATH="C:" -DENABLE_IPV6=OFF -DWITH_USB_BACKEND=ON -DWITH_SERIAL_BACKEND=ON -DPYTHON_BINDINGS=ON -DCSHARP_BINDINGS:BOOL=ON -DLIBXML2_LIBRARIES="C:\\libs\\64\\libxml2.lib" -DLIBUSB_LIBRARIES="C:\\libs\\64\\libusb-1.0.lib" -DLIBSERIALPORT_LIBRARIES="C:\\libs\\64\\libserialport.dll.a" ..
++        cmake -G "$COMPILER" -A "$ARCH" -DCMAKE_SYSTEM_PREFIX_PATH="C:" -DENABLE_IPV6=OFF -DWITH_USB_BACKEND=ON -DWITH_SERIAL_BACKEND=ON -DPYTHON_BINDINGS=ON -DCSHARP_BINDINGS:BOOL=ON -DLIBXML2_LIBRARIES="C:\\libs\\64\\libxml2.lib" -DLIBUSB_LIBRARIES="C:\\libs\\64\\libusb-1.0.lib" -DLIBSERIALPORT_LIBRARIES="C:\\libs\\64\\libserialport.dll.a" -DLIBUSB_INCLUDE_DIR="C:\\include\\libusb-1.0" -DLIBXML2_INCLUDE_DIR="C:\\include\\libxml2" ..
+         cmake --build . --config Release
+ 	cp .\libiio.iss $env:BUILD_ARTIFACTSTAGINGDIRECTORY
+ 
+diff --git a/CI/install_deps_win.ps1 b/CI/install_deps_win.ps1
+index af3f0513..53fd02b4 100644
+--- a/CI/install_deps_win.ps1
++++ b/CI/install_deps_win.ps1
+@@ -20,7 +20,7 @@ rm libxml.7z
+ 
+ echo "Downloading deps..."
+ cd C:\
+-wget http://swdownloads.analog.com/cse/build/libiio-win-deps.zip -OutFile "libiio-win-deps.zip"
++wget http://swdownloads.analog.com/cse/build/libiio-win-deps-libusb1.0.24.zip -OutFile "libiio-win-deps.zip"
+ 7z x -y "C:\libiio-win-deps.zip"
+ 
+ # Note: InnoSetup is already installed on Azure images; so don't run this step
+diff --git a/CI/publish_deps.ps1 b/CI/publish_deps.ps1
+index 1520ee4a..dc0cd46a 100644
+--- a/CI/publish_deps.ps1
++++ b/CI/publish_deps.ps1
+@@ -13,7 +13,7 @@ if ($ARCH -eq "Win32") {
+ cd $src_dir
+ mkdir dependencies
+ cd dependencies
+-wget http://swdownloads.analog.com/cse/build/libiio-win-deps.zip -OutFile "libiio-win-deps.zip"
++wget http://swdownloads.analog.com/cse/build/libiio-win-deps-libusb1.0.24.zip -OutFile "libiio-win-deps.zip"
+ 7z x -y "libiio-win-deps.zip"
+ 
+ if ($ARCH -eq "Win32") {
+-- 
+2.30.2
+

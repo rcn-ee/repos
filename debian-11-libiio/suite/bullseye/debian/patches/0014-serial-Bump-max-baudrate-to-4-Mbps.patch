@@ -1,0 +1,30 @@
+From 5c5461325e752a6aaeb61571423d34ec22fc00c5 Mon Sep 17 00:00:00 2001
+From: Paul Cercueil <paul@crapouillou.net>
+Date: Fri, 24 Sep 2021 14:12:45 +0100
+Subject: [PATCH 14/19] serial: Bump max baudrate to 4 Mbps
+
+This is a completely artificial limit, to ensure that a valid value is
+passed. The previous limit of 1 Mbps was too low since most UART
+controllers can achieve at least 1.5 Mbps.
+
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ serial.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/serial.c b/serial.c
+index 451b03f0..99966c3c 100644
+--- a/serial.c
++++ b/serial.c
+@@ -549,7 +549,7 @@ static int serial_parse_params(const char *params,
+ 		return -EINVAL;
+ 
+ 	/* 110 baud to 1,000,000 baud */
+-	if (params == end || *baud_rate < 110 || *baud_rate > 1000001) {
++	if (params == end || *baud_rate < 110 || *baud_rate > 4000000) {
+ 		IIO_ERROR("Invalid baud rate\n");
+ 		return -EINVAL;
+ 	}
+-- 
+2.30.2
+
