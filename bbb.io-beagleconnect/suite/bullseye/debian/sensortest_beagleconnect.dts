@@ -1,0 +1,234 @@
+/dts-v1/;
+
+/ {
+	#address-cells = < 0x1 >;
+	#size-cells = < 0x1 >;
+	model = "BeagleConnect Freedom";
+	compatible = "beagle,beagleconnect-freedom";
+	chosen {
+		zephyr,entropy = &trng;
+		zephyr,sram = &sram0;
+		zephyr,console = &uart0;
+		zephyr,shell-uart = &uart0;
+		zephyr,flash = &flash0;
+	};
+	aliases {
+		sw0 = &user_button_0;
+		sensor0 = &light;
+		sensor1 = &accel;
+		sensor2 = &humidity;
+	};
+	soc {
+		#address-cells = < 0x1 >;
+		#size-cells = < 0x1 >;
+		compatible = "simple-bus";
+		interrupt-parent = < &nvic >;
+		ranges;
+		nvic: interrupt-controller@e000e100 {
+			compatible = "arm,v7m-nvic";
+			reg = < 0xe000e100 0xc00 >;
+			interrupt-controller;
+			#interrupt-cells = < 0x2 >;
+			arm,num-irq-priority-bits = < 0x3 >;
+			phandle = < 0x1 >;
+		};
+		systick: timer@e000e010 {
+			compatible = "arm,armv7m-systick";
+			reg = < 0xe000e010 0x10 >;
+			status = "disabled";
+		};
+		pinmux: pinmux@40081000 {
+			compatible = "ti,cc13xx-cc26xx-pinmux";
+			reg = < 0x40081000 0x1000 >;
+			label = "PINMUX";
+		};
+		gpio0: gpio@40022000 {
+			compatible = "ti,cc13xx-cc26xx-gpio";
+			reg = < 0x40022000 0x400 >;
+			interrupts = < 0x0 0x0 >;
+			status = "okay";
+			label = "GPIO_0";
+			gpio-controller;
+			#gpio-cells = < 0x2 >;
+			phandle = < 0x3 >;
+		};
+		trng: random@40028000 {
+			compatible = "ti,cc13xx-cc26xx-trng";
+			reg = < 0x40028000 0x2000 >;
+			interrupts = < 0x21 0x0 >;
+			status = "okay";
+			label = "TRNG";
+		};
+		uart0: uart@40001000 {
+			compatible = "ti,cc13xx-cc26xx-uart";
+			reg = < 0x40001000 0x1000 >;
+			interrupts = < 0x5 0x0 >;
+			clocks = < &sysclk >;
+			status = "okay";
+			label = "UART_0";
+			current-speed = < 0x1c200 >;
+			tx-pin = < 0xd 0x10 >;
+			rx-pin = < 0xc 0xf >;
+		};
+		uart1: uart@4000b000 {
+			compatible = "ti,cc13xx-cc26xx-uart";
+			reg = < 0x4000b000 0x1000 >;
+			interrupts = < 0x24 0x0 >;
+			clocks = < &sysclk >;
+			status = "okay";
+			label = "UART_1";
+			current-speed = < 0x1c200 >;
+			tx-pin = < 0x15 0x14 >;
+			rx-pin = < 0x16 0x13 >;
+		};
+		i2c0: i2c@40002000 {
+			compatible = "ti,cc13xx-cc26xx-i2c";
+			#address-cells = < 0x1 >;
+			#size-cells = < 0x0 >;
+			reg = < 0x40002000 0x1000 >;
+			interrupts = < 0x1 0x0 >;
+			clock-frequency = < 0x61a80 >;
+			status = "okay";
+			label = "I2C_0";
+			scl-pin = < 0x19 >;
+			sda-pin = < 0x1a >;
+			accel: lis2dh12-accel@18 {
+				compatible = "st,lis2dh12", "st,lis2dh", "st,lis2de12";
+				reg = < 0x18 >;
+				label = "LIS2DE12-ACCEL";
+			};
+			light: opt3001-light@44 {
+				compatible = "ti,opt3001";
+				reg = < 0x44 >;
+				label = "OPT3001-LIGHT";
+			};
+			humidity: hdc2010-humidity@40 {
+				compatible = "ti,hdc20x0";
+				reg = < 0x40 >;
+				label = "HDC2010-HUMIDITY";
+			};
+			environment: bme680@76 {
+				compatible = "bosch,bme680";
+				reg = < 0x76 >;
+				label = "BME680-ENVIRONMENT";
+			};
+			airquality: sgp30@58 {
+				compatible = "sensiron,sgp30";
+				reg = < 0x58 >;
+				label = "SGP30-AIRQUALITY";
+			};
+			particulate: hm3301@40 {
+				compatible = "seeed,hm3301";
+				reg = < 0x40 >;
+				label = "HM3301-PARTICULATE";
+			};
+			adc0: ads1115_0@48 {
+				compatible = "ti,ads1115";
+				reg = < 0x48 >;
+				label = "ADS-ADC0";
+			};
+			adc1: ads1115_1@49 {
+				compatible = "ti,ads1115";
+				reg = < 0x49 >;
+				label = "ADS-ADC1";
+			};
+			adc2: ads1115_2@4b {
+				compatible = "ti,ads1115";
+				reg = < 0x4b >;
+				label = "ADS-ADC2";
+			};
+		};
+		spi0: spi@40000000 {
+			compatible = "ti,cc13xx-cc26xx-spi";
+			#address-cells = < 0x1 >;
+			#size-cells = < 0x0 >;
+			reg = < 0x40000000 0x1000 >;
+			interrupts = < 0x7 0x0 >;
+			status = "okay";
+			label = "SPI_0";
+			sck-pin = < 0xa >;
+			mosi-pin = < 0x9 >;
+			miso-pin = < 0xb >;
+			cs-gpios = < &gpio0 0x8 0x1 >, < &gpio0 0x1c 0x1 >, < &gpio0 0x1b 0x1 >;
+			nor_flash: gd25q16c@0 {
+				compatible = "jedec,spi-nor";
+				label = "GD25Q16C";
+				reg = < 0x0 >;
+				spi-max-frequency = < 0x1e8480 >;
+				size = < 0x200000 >;
+				has-dpd;
+				t-enter-dpd = < 0x4e20 >;
+				t-exit-dpd = < 0x186a0 >;
+				jedec-id = [ C8 40 15 ];
+			};
+		};
+		spi1: spi@40008000 {
+			compatible = "ti,cc13xx-cc26xx-spi";
+			#address-cells = < 0x1 >;
+			#size-cells = < 0x0 >;
+			reg = < 0x40008000 0x1000 >;
+			interrupts = < 0x8 0x0 >;
+			status = "disabled";
+			label = "SPI_1";
+		};
+		rtc: rtc@40092000 {
+			compatible = "ti,cc13xx-cc26xx-rtc";
+			reg = < 0x40092000 0x1000 >;
+			interrupts = < 0x4 0x0 >;
+			status = "okay";
+			label = "RTC";
+		};
+	};
+	cpus {
+		#address-cells = < 0x1 >;
+		#size-cells = < 0x0 >;
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,cortex-m4";
+			reg = < 0x0 >;
+			clock-frequency = < 0x2dc6c00 >;
+		};
+	};
+	sram0: memory@20000000 {
+		compatible = "mmio-sram";
+		reg = < 0x20000000 0x14000 >;
+	};
+	sram1: memory@11000000 {
+		compatible = "mmio-sram";
+		reg = < 0x11000000 0x2000 >;
+	};
+	sysclk: system-clock {
+		compatible = "fixed-clock";
+		clock-frequency = < 0x2dc6c00 >;
+		#clock-cells = < 0x0 >;
+		phandle = < 0x2 >;
+	};
+	flash_controller: flash-controller@400fd000 {
+		compatible = "ti,stellaris-flash-controller";
+		reg = < 0x400fd000 0x1000 >;
+		#address-cells = < 0x1 >;
+		#size-cells = < 0x1 >;
+		label = "FLASH_CTRL";
+		flash0: serial-flash@0 {
+			reg = < 0x0 0x58000 >;
+		};
+	};
+	gpio_keys {
+		compatible = "gpio-keys";
+		user_button_0: button_0 {
+			label = "User Button";
+			gpios = < &gpio0 0xf 0x1 >;
+		};
+	};
+	gpio_leds {
+		compatible = "gpio-leds";
+		i2c_ctrl: i2c_ctrl {
+			label = "I2C_CTRL";
+			gpios = < &gpio0 0xe 0x0 >;
+		};
+		rf_sw: rf_sw {
+			label = "RF_SW";
+			gpios = < &gpio0 0x1d 0x0 >, < &gpio0 0x1e 0x0 >, < &gpio0 0x12 0x0 >;
+		};
+	};
+};
