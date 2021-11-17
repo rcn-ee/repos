@@ -1,0 +1,44 @@
+#!/bin/bash
+
+#From: https://github.com/RIOT-Makers/wpan-raspbian/blob/master/usr/local/sbin/create_monitor
+
+if [[ $EUID -ne 0 ]]; then
+  echo "You must be a root user" 2>&1
+  exit 1
+fi
+
+[ -z "$1" ] && {
+  echo "Missing channel!"
+  echo "USAGE: $0 <CHANNEL>"
+  exit 1
+}
+CHANNEL=$1
+
+# check for lowpan0
+ip link show lowpan0 1> /dev/null 2>&1
+[ $? == '0' ] && {
+    echo ". delete lowpan0"
+    ip link set lowpan0 down
+    ip link del lowpan0 type lowpan
+    sleep 1
+}
+# check for wpan0
+ip link show wpan0 1> /dev/null 2>&1
+if [[ $? == '0' ]] ; then
+    echo ". taking wpan0 down"
+    ip link set wpan0 down
+else
+    echo "! no wpan device found, exit!"
+    exit 1
+fi
+# check for monitor0
+ip link show monitor0 1> /dev/null 2>&1
+if [[ $? == '0' ]]; then
+    echo ". monitor0 exists"
+    ip link set monitor0 down
+else
+    iwpan phy phy0 interface add monitor%d type monitor
+fi
+# set channel and activate monitor
+iwpan phy phy0 set channel 0 $CHANNEL
+ip link set monitor0 up

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+#From: https://github.com/RIOT-Makers/wpan-raspbian/blob/master/usr/local/sbin/delete_monitor
+
+if [[ $EUID -ne 0 ]]; then
+  echo "You must be a root user" 2>&1
+  exit 1
+fi
+
+# check for wpan0
+ip link show wpan0 1> /dev/null 2>&1
+if [[ $? == '0' ]] ; then
+    echo ". taking wpan0 down"
+    ip link set wpan0 down
+else
+    echo "! no wpan device found, exit!"
+    exit 1
+fi
+# check for monitor0
+ip link show monitor0 1> /dev/null 2>&1
+[ $? == '0' ] && {
+    echo ". delete monitor0"
+    iwpan dev monitor0 del
+}
+ip link set wpan0 up

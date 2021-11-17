@@ -1,0 +1,68 @@
+#!/bin/bash
+
+#From: https://github.com/RIOT-Makers/wpan-raspbian/blob/master/usr/local/sbin/create_lowpan
+
+if [[ $EUID -ne 0 ]]; then
+  echo "You must be a root user" 2>&1
+  exit 1
+fi
+
+[ -z "$1" ] && {
+  echo "Missing channel!"
+  echo "USAGE: $0 <CHANNEL> <PAN ID>"
+  exit 1
+}
+
+[ -z "$2" ] && {
+  echo "Missing PAN ID!"
+  echo "USAGE: $0 <CHANNEL> <PAN ID>"
+  exit 1
+}
+
+CHANNEL=$1
+PANID=$2
+LLADDR=$3
+IPADDR=$4
+ACKREQ=$5
+
+# check for wpan0
+ip link show wpan0 1> /dev/null 2>&1
+if [[ $? == '0' ]] ; then
+    echo ". taking wpan0 down"
+    ip link set dev wpan0 down
+else
+    echo "! no wpan device found, exit!"
+    exit 1
+fi
+if [ ! -z "$LLADDR" -a "$LLADDR" != " " ]; then
+    echo ". setting wpan0 LLADDR to $LLADDR"
+    ip link set dev wpan0 address $LLADDR
+fi
+
+# check for monitor0
+ip link show monitor0 1> /dev/null 2>&1
+[ $? == '0' ] && {f
+    echo ". delete monitor0"
+    iwpan dev monitor0 del
+}
+# check for lowpan0
+ip link show lowpan0 1> /dev/null 2>&1
+if [[ $? == '0' ]]; then
+    echo ". lowpan0 exists"
+    ip link set lowpan0 down
+else
+    echo ". create lowpan0"
+    ip link add link wpan0 name lowpan0 type lowpan
+fi
+#set channel and activate device
+iwpan phy phy0 set channel 0 $CHANNEL
+iwpan dev wpan0 set ackreq_default $ACKREQ
+iwpan dev wpan0 set pan_id $PANID
+ip link set wpan0 up
+ip link set lowpan0 up
+# add IPv6 address
+if [ ! -z "$IPADDR" -a "$IPADDR" != " " ]; then
+    sleep 1
+    echo ". adding IPv6 address $IPADDR to lowpan0"
+    ip addr add $IPADDR dev lowpan0
+fi

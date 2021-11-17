@@ -1,0 +1,15 @@
+[Unit]
+Description=Create 6lowpan (IEEE802.15.4) network device
+After=network.target
+Conflicts=lowpan_monitor
+
+[Service]
+EnvironmentFile=/etc/default/lowpan
+Type=oneshot
+User=root
+ExecStart=/usr/sbin/create_lowpan $CHN $PAN $MAC $IP6 $ACKREQ
+ExecStop=/usr/sbin/delete_lowpan
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

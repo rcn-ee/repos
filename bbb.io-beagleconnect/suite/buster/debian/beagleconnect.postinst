@@ -1,0 +1,35 @@
+#!/bin/sh
+#
+# see: dh_installdeb(1)
+
+set -e
+
+if [ -f /etc/default/lowpan ] ; then
+	. /etc/default/lowpan
+else
+	CHN="26"
+	PAN="0xabcd"
+	IP6="2001:db8::2/64"
+	ACKREQ=0
+fi
+
+echo "CHN=\"${CHN}\"" > /etc/default/lowpan
+echo "PAN=\"${PAN}\"" >> /etc/default/lowpan
+echo "# set IP6 to \"\" if not required; note: set a prefix length" >> /etc/default/lowpan
+echo "IP6=\"${IP6}\"" >> /etc/default/lowpan
+echo "# Set ack requests (Only enable if all devices on your PAN support acks)" >> /etc/default/lowpan
+echo "ACKREQ=0" >> /etc/default/lowpan
+
+
+if [ -f /etc/default/lowpan_monitor ] ; then
+	. /etc/default/lowpan_monitor
+else
+	CHN="26"
+fi
+
+echo "CHN=\"${CHN}\"" > /etc/default/lowpan_monitor
+
+#DEBHELPER#
+
+exit 0
+

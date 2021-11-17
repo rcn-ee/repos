@@ -1,0 +1,12 @@
+[Unit]
+Description=Create lowpan (IEEE802.15.4) monitor device
+After=network.target
+Conflicts=lowpan
+
+[Service]
+EnvironmentFile=/etc/default/lowpan_monitor
+Type=oneshot
+User=root
+ExecStart=/usr/sbin/create_monitor $CHN
+ExecStop=/usr/sbin/delete_monitor
+RemainAfterExit=yes
