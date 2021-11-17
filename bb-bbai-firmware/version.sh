@@ -2,7 +2,7 @@
 
 package_name="bb-bbai-firmware"
 debian_pkg_name="${package_name}"
-package_version="1.20211117.0"
+package_version="1.20211117.1"
 package_source=""
 src_dir=""
 
