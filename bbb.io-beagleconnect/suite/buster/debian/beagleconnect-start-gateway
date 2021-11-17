@@ -37,7 +37,7 @@ gbridge > /var/log/gbride.log 2>&1 &
 sleep 5
 
 keep_alive () {
-  while true; do gpioset 4 18=1; sleep 1; gpioset 4 18=0; sleep 1; done
+  while true; do gpioset 4 18=1; gpioset 4 18=0; sleep 1; done
 }
 
 keep_alive > /dev/null 2>&1 &
