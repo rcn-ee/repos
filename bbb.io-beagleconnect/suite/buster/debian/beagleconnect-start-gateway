@@ -18,6 +18,8 @@ else
 fi
 
 IFLP=`ifconfig | grep lowpan`
+
+###FIXME: Convert this to a udev rule...
 ip link set wpan0 down
 iwpan phy phy0 set channel 0 $IEEE_802154_CHANNEL
 iwpan dev wpan0 set pan_id 0xabcd
@@ -29,11 +31,13 @@ sleep 1
 
 ping6 -I lowpan0 2001:db8::1 -c 5
 sleep 1
+
+###FIXME: Need to convert this to a systemd service..
 gbridge > /var/log/gbride.log 2>&1 &
 sleep 5
 
 keep_alive () {
-  while true; do gpioset 4 18=1; gpioset 4 18=0; sleep 1; done
+  while true; do gpioset 4 18=1; sleep 1; gpioset 4 18=0; sleep 1; done
 }
 
 keep_alive > /dev/null 2>&1 &
