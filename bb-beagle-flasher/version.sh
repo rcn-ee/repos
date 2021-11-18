@@ -1,8 +1,8 @@
 #!/bin/bash -e
 
-package_name="beagle-flasher"
+package_name="bb-beagle-flasher"
 debian_pkg_name="${package_name}"
-package_version="1.20211118.1"
+package_version="1.20211118.0"
 package_source=""
 src_dir=""
 
