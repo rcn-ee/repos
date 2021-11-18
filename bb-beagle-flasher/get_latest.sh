@@ -15,5 +15,6 @@ copy_all () {
 dl_src
 
 wfile="beagle-flasher" ; copy_all
+wfile="init-beagle-flasher" ; copy_all
 wfile="templates/beaglebone-black-emmc-to-microsd" ; copy_all
 wfile="templates/beaglebone-black-microsd-to-emmc" ; copy_all
