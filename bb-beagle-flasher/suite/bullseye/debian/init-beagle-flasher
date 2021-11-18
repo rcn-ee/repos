@@ -265,14 +265,14 @@ copy_rootfs () {
 	message="--------------------------------------------------------------------------------" ; broadcast
 	flush_cache
 
+	message="INFO: [umount /tmp/rootfs/ || umount -l /tmp/rootfs/ || write_failure]"           ; broadcast
+	umount /tmp/rootfs/ || umount -l /tmp/rootfs/ || write_failure
+	message="--------------------------------------------------------------------------------" ; broadcast
+
 	message="INFO: [umount /tmp || true]"                                                      ; broadcast
 	umount /tmp || true
 	message="--------------------------------------------------------------------------------" ; broadcast
 	flush_cache
-
-	message="INFO: [umount /tmp/rootfs/ || umount -l /tmp/rootfs/ || write_failure]"           ; broadcast
-	umount /tmp/rootfs/ || umount -l /tmp/rootfs/ || write_failure
-	message="--------------------------------------------------------------------------------" ; broadcast
 
 	message="INFO: Force writeback of eMMC buffers by Syncing: ${destination}"                 ; broadcast
 	message="INFO: [dd if=${destination} of=/dev/null count=100000 status=progress]"           ; broadcast
