@@ -5,7 +5,7 @@ if ! id | grep -q root; then
 	exit
 fi
 
-version_message="20211118.0: ReWrite from Scratch..."
+version_message="1.20211118.1: add flash_back microSD->eMMC->microSD..."
 
 #mke2fs -c
 #Check the device for bad blocks before creating the file system.
@@ -153,6 +153,14 @@ copy_rootfs () {
 	message="INFO: [cat /tmp/rootfs/etc/fstab]"                                                ; broadcast
 	message="`cat /tmp/rootfs/etc/fstab`"                                                      ; broadcast
 	message="--------------------------------------------------------------------------------" ; broadcast
+
+	if [ "x${flash_back}" != "x" ] ; then
+		if [ -f /etc/beagle-flasher/${flash_back} ] ; then
+			message="INFO: [cp -v /etc/beagle-flasher/${flash_back} /tmp/rootfs/etc/default/beagle-flasher]" ; broadcast
+			cp -v /etc/beagle-flasher/${flash_back} /tmp/rootfs/etc/default/beagle-flasher
+			message="--------------------------------------------------------------------------------" ; broadcast
+		fi
+	fi
 
 	message="Copying: ${source}p${media_rootfs} -> ${destination}p${media_rootfs} complete"    ; broadcast
 	message="--------------------------------------------------------------------------------" ; broadcast
