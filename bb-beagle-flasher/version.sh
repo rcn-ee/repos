@@ -2,7 +2,7 @@
 
 package_name="bb-beagle-flasher"
 debian_pkg_name="${package_name}"
-package_version="1.20211118.3"
+package_version="1.20211118.4"
 package_source=""
 src_dir=""
 

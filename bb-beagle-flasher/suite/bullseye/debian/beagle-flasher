@@ -16,6 +16,79 @@ mkfs_options=""
 #mkfs_options="-c"
 #mkfs_options="-cc"
 
+cylon_leds() {
+	local leds_base=/sys/class/leds/beaglebone\:green\:usr
+	if [ -e ${leds_base}0/trigger ] ; then
+		echo none > ${leds_base}0/trigger
+		echo none > ${leds_base}1/trigger
+		echo none > ${leds_base}2/trigger
+		echo none > ${leds_base}3/trigger
+
+		STATE=1
+		while : ; do
+		case $STATE in
+			1)
+				echo 1 > ${leds_base}0/brightness
+				echo 0 > ${leds_base}1/brightness
+				STATE=2
+				;;
+			2)
+				echo 1 > ${leds_base}1/brightness
+				echo 0 > ${leds_base}0/brightness
+				STATE=3
+				;;
+			3)
+				echo 1 > ${leds_base}2/brightness
+				echo 0 > ${leds_base}1/brightness
+				STATE=4
+				;;
+			4)
+				echo 1 > ${leds_base}3/brightness
+				echo 0 > ${leds_base}2/brightness
+				STATE=5
+				;;
+			5)
+				echo 1 > ${leds_base}2/brightness
+				echo 0 > ${leds_base}3/brightness
+				STATE=6
+				;;
+			6)
+				echo 1 > ${leds_base}1/brightness
+				echo 0 > ${leds_base}2/brightness
+				STATE=1
+				;;
+			*)
+			echo 1 > ${leds_base}0/brightness
+			echo 0 > ${leds_base}1/brightness
+			STATE=2
+			;;
+		esac
+		sleep 0.1
+		done
+	fi
+}
+
+reset_leds() {
+	if [ "x${is_bbb}" = "xenable" ] ; then
+		if [ -e /proc/$CYLON_PID ]; then
+			kill $CYLON_PID > /dev/null 2>&1
+		fi
+
+		leds_pattern0=${leds_pattern0:-"heartbeat"}
+		leds_pattern1=${leds_pattern1:-"mmc0"}
+		leds_pattern2=${leds_pattern2:-"cpu0"}
+		leds_pattern3=${leds_pattern3:-"mmc1"}
+		leds_base=/sys/class/leds/beaglebone\:green\:usr
+
+		if [ -e ${leds_base}0/trigger ] ; then
+			echo ${leds_pattern0} > ${leds_base}0/trigger
+			echo ${leds_pattern1} > ${leds_base}1/trigger
+			echo ${leds_pattern2} > ${leds_base}2/trigger
+			echo ${leds_pattern3} > ${leds_base}3/trigger
+		fi
+	fi
+}
+
 flush_cache () {
 	sync
 	if [ "x${destination}" != "x" ] ; then
@@ -66,6 +139,15 @@ write_failure () {
 }
 
 check_running_system () {
+	is_bbb="enable"
+	machine=$(cat /proc/device-tree/model | sed "s/ /_/g" | tr -d '\000')
+
+	case "${machine}" in
+		TI_AM5728_BeagleBoard*)
+			unset is_bbb
+			;;
+	esac
+
 	if [ -f /proc/sys/vm/min_free_kbytes ] ; then
 		message="INFO: Preparing sysctl"                                                           ; broadcast
 		value_min_free_kbytes=$(sysctl -n vm.min_free_kbytes)
@@ -73,6 +155,10 @@ check_running_system () {
 		message="INFO: [sysctl: setting: [sysctl -w vm.min_free_kbytes=16384]"                     ; broadcast
 		sysctl -w vm.min_free_kbytes=16384
 		message="--------------------------------------------------------------------------------" ; broadcast
+	fi
+
+	if [ "x${is_bbb}" = "xenable" ] ; then
+		cylon_leds & CYLON_PID=$!
 	fi
 
 	if [ "x${source}" != "x" ] && [ "x${destination}" != "x" ] ; then
@@ -187,6 +273,10 @@ copy_rootfs () {
 	dd if=${destination} of=/dev/null count=100000 status=progress
 	message="--------------------------------------------------------------------------------" ; broadcast
 	flush_cache
+
+	if [ "x${is_bbb}" = "xenable" ] ; then
+		reset_leds
+	fi
 }
 
 partition_drive () {
