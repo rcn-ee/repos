@@ -9,7 +9,6 @@ fi
 if [ -f /etc/default/beagle-flasher ] ; then
 	sed -i -e 's:#cmdline=init:cmdline=init:g' /boot/uEnv.txt
 	systemctl enable beagle-flasher-init-shutdown.service || true
-	systemctl disable resize_filesystem.service || true
 else
 	echo "Please setup /etc/default/beagle-flasher, for the BBB or BBAI:"
 	echo "#BBB: sudo cp -v /etc/beagle-flasher/beaglebone-black-microsd-to-emmc /etc/default/beagle-flasher"

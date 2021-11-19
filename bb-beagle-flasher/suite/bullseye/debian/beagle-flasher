@@ -263,6 +263,19 @@ copy_rootfs () {
 		fi
 	fi
 
+	if [ -f /tmp/rootfs/etc/default/generic-sys-mods ] ; then
+		. /tmp/rootfs/etc/default/generic-sys-mods
+
+		echo "#This file is sourced by /usb/bin/bb-growpart" > /tmp/rootfs/etc/default/generic-sys-mods
+		echo "ROOT_DRIVE=${destination}" >> /tmp/rootfs/etc/default/generic-sys-mods
+		echo "ROOT_PARTITION=${ROOT_PARTITION}" >> /tmp/rootfs/etc/default/generic-sys-mods
+		echo "ARCH_SOC_MODULES=${ARCH_SOC_MODULES}" >> /tmp/rootfs/etc/default/generic-sys-mods
+
+		message="INFO: [cat /tmp/rootfs/etc/default/generic-sys-mods]"                             ; broadcast
+		message="`cat /tmp/rootfs/etc/default/generic-sys-mods`"                                   ; broadcast
+		message="--------------------------------------------------------------------------------" ; broadcast
+	fi
+
 	message="Copying: ${source}p${media_rootfs} -> ${destination}p${media_rootfs} complete"    ; broadcast
 	message="--------------------------------------------------------------------------------" ; broadcast
 	flush_cache
