@@ -17,6 +17,10 @@ else
 	cp -v /lib/firmware/brcm/brcmfmac43455-sdio_am5729-beagleboneai.bin /lib/firmware/brcm/brcmfmac43455.bin
 fi
 
+if [ ! -d /lib/firmware/cypress/ ] ; then
+	mkdir -p /lib/firmware/cypress/
+fi
+
 if [ -f /lib/firmware/cypress/cyfmac43455-sdio.txt ] ; then
 	rm -f /lib/firmware/cypress/cyfmac43455-sdio.txt || true
 	cp -v /lib/firmware/brcm/brcmfmac43455-sdio.beagleboard.org,am5729-beagleboneai.txt /lib/firmware/cypress/cyfmac43455-sdio.txt
