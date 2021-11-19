@@ -1,6 +1,6 @@
-From 41a2d75d6770812fe4ef42049f3d469a57d035fc Mon Sep 17 00:00:00 2001
+From 8a910c4e23f1d7d7dc813a6f8ec517d07a7790d6 Mon Sep 17 00:00:00 2001
 From: Robert Nelson <robertcnelson@gmail.com>
-Date: Wed, 22 Sep 2021 16:54:28 -0500
+Date: Fri, 19 Nov 2021 13:24:25 -0600
 Subject: [PATCH] wpa_supplicant: bind to wlan0
 
 Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
@@ -28,7 +28,7 @@ index 03ac507..e1258d1 100644
 -Alias=multi-user.target.wants/wpa_supplicant-nl80211@%i.service
 +WantedBy=sys-subsystem-net-devices-%i.device
 diff --git a/wpa_supplicant/systemd/wpa_supplicant.service.arg.in b/wpa_supplicant/systemd/wpa_supplicant.service.arg.in
-index cff0b6d..7a8909e 100644
+index 7788b38..ca17dff 100644
 --- a/wpa_supplicant/systemd/wpa_supplicant.service.arg.in
 +++ b/wpa_supplicant/systemd/wpa_supplicant.service.arg.in
 @@ -1,6 +1,6 @@
@@ -40,7 +40,7 @@ index cff0b6d..7a8909e 100644
  Before=network.target
  Wants=network.target
 @@ -12,4 +12,4 @@ Type=simple
- ExecStart=@BINDIR@/wpa_supplicant -c/etc/wpa_supplicant/wpa_supplicant-%I.conf -Dnl80211,wext -i%I
+ ExecStart=@BINDIR@/wpa_supplicant -c/etc/wpa_supplicant/wpa_supplicant-%I.conf -i%I
  
  [Install]
 -Alias=multi-user.target.wants/wpa_supplicant@%i.service
