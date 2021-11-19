@@ -1,0 +1,41 @@
+From: Kees Cook <kees@ubuntu.com>
+Date: Tue, 12 Oct 2021 11:28:31 -0700
+Subject: wpa_supplicant: Try all drivers by default
+
+Some distros carry patches to specify driver fallback, but only in
+specific conditions (e.g. the systemd service definition[1]). This leaves
+other wpa_supplicant instances needing to define fallback themselves,
+which leads to places where wpa_supplicant thinks it can't find a
+driver[2]. Instead, when -D is not specified, have wpa_supplicant try
+all the drivers it was built with in an attempt to find a working one
+instead of just giving up if the first doesn't work.
+
+[1] https://salsa.debian.org/debian/wpa/-/blob/debian/unstable/debian/patches/networkd-driver-fallback.patch
+[2] https://bugs.launchpad.net/netplan/+bug/1814012
+
+Signed-off-by: Kees Cook <kees@ubuntu.com>
+Signed-off-by: Andrej Shadura <andrew.shadura@collabora.co.uk>
+---
+ wpa_supplicant/wpa_supplicant.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/wpa_supplicant/wpa_supplicant.c b/wpa_supplicant/wpa_supplicant.c
+index 2d10239..d6dc48a 100644
+--- a/wpa_supplicant/wpa_supplicant.c
++++ b/wpa_supplicant/wpa_supplicant.c
+@@ -4131,8 +4131,13 @@ static int wpa_supplicant_set_driver(struct wpa_supplicant *wpa_s,
+ 	}
+ 
+ 	if (name == NULL) {
+-		/* default to first driver in the list */
+-		return select_driver(wpa_s, 0);
++		/* Default to first successful driver in the list */
++		for (i = 0; wpa_drivers[i]; i++) {
++			if (select_driver(wpa_s, i) == 0)
++				return 0;
++		}
++		/* Drivers have each reported failure, so no wpa_msg() here. */
++		return -1;
+ 	}
+ 
+ 	do {
