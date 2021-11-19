@@ -15,6 +15,7 @@ copy_all () {
 dl_src
 
 wfile="beagle-flasher" ; copy_all
+wfile="enable-beagle-flasher" ; copy_all
 wfile="init-beagle-flasher" ; copy_all
 wfile="init-shutdown-beagle-flasher" ; copy_all
 wfile="bb-beagle-flasher.beagle-flasher-init-shutdown.service" ; copy_all
