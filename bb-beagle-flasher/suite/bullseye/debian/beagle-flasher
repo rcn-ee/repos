@@ -5,7 +5,7 @@ if ! id | grep -q root; then
 	exit
 fi
 
-version_message="1.20211118.2: sysctl force vm.min_free_kbytes=16384..."
+version_message="1.20211119.0: add BBAI bits..."
 
 #mke2fs -c
 #Check the device for bad blocks before creating the file system.
@@ -17,6 +17,8 @@ mkfs_options=""
 #mkfs_options="-cc"
 
 cylon_leds() {
+	#ls /sys/class/leds/beaglebone\:green\:usr*
+	#cat /sys/class/leds/beaglebone\:green\:usr*/trigger
 	local leds_base=/sys/class/leds/beaglebone\:green\:usr
 	if [ -e ${leds_base}0/trigger ] ; then
 		echo none > ${leds_base}0/trigger
@@ -58,10 +60,10 @@ cylon_leds() {
 				STATE=1
 				;;
 			*)
-			echo 1 > ${leds_base}0/brightness
-			echo 0 > ${leds_base}1/brightness
-			STATE=2
-			;;
+				echo 1 > ${leds_base}0/brightness
+				echo 0 > ${leds_base}1/brightness
+				STATE=2
+				;;
 		esac
 		sleep 0.1
 		done
@@ -69,7 +71,7 @@ cylon_leds() {
 }
 
 reset_leds() {
-	if [ "x${is_bbb}" = "xenable" ] ; then
+	if [ "x${has_usr_leds}" = "xenable" ] ; then
 		if [ -e /proc/$CYLON_PID ]; then
 			kill $CYLON_PID > /dev/null 2>&1
 		fi
@@ -139,12 +141,12 @@ write_failure () {
 }
 
 check_running_system () {
-	is_bbb="enable"
+	has_usr_leds="enable"
 	machine=$(cat /proc/device-tree/model | sed "s/ /_/g" | tr -d '\000')
 
 	case "${machine}" in
 		TI_AM5728_BeagleBoard*)
-			unset is_bbb
+			unset has_usr_leds
 			;;
 	esac
 
@@ -157,7 +159,7 @@ check_running_system () {
 		message="--------------------------------------------------------------------------------" ; broadcast
 	fi
 
-	if [ "x${is_bbb}" = "xenable" ] ; then
+	if [ "x${has_usr_leds}" = "xenable" ] ; then
 		cylon_leds & CYLON_PID=$!
 	fi
 
@@ -274,7 +276,7 @@ copy_rootfs () {
 	message="--------------------------------------------------------------------------------" ; broadcast
 	flush_cache
 
-	if [ "x${is_bbb}" = "xenable" ] ; then
+	if [ "x${has_usr_leds}" = "xenable" ] ; then
 		reset_leds
 	fi
 }
