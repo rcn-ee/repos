@@ -16,6 +16,8 @@ dl_src
 
 wfile="beagle-flasher" ; copy_all
 wfile="init-beagle-flasher" ; copy_all
+wfile="init-shutdown-beagle-flasher" ; copy_all
+wfile="bb-beagle-flasher.beagle-flasher-init-shutdown.service" ; copy_all
 wfile="templates/bbai-emmc-to-microsd" ; copy_all
 wfile="templates/bbai-microsd-to-emmc" ; copy_all
 wfile="templates/beaglebone-black-emmc-to-microsd" ; copy_all
