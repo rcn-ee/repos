@@ -2,7 +2,7 @@
 
 package_name="beagleconnect"
 debian_pkg_name="${package_name}"
-package_version="1.20211123.0"
+package_version="1.20211123.1"
 package_source=""
 src_dir=""
 
