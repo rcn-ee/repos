@@ -25,6 +25,7 @@
 		interrupt-parent = < &nvic >;
 		ranges;
 		nvic: interrupt-controller@e000e100 {
+			#address-cells = < 0x1 >;
 			compatible = "arm,v7m-nvic";
 			reg = < 0xe000e100 0xc00 >;
 			interrupt-controller;
@@ -40,7 +41,6 @@
 		pinmux: pinmux@40081000 {
 			compatible = "ti,cc13xx-cc26xx-pinmux";
 			reg = < 0x40081000 0x1000 >;
-			label = "PINMUX";
 		};
 		gpio0: gpio@40022000 {
 			compatible = "ti,cc13xx-cc26xx-gpio";
@@ -92,20 +92,11 @@
 			label = "I2C_0";
 			scl-pin = < 0x19 >;
 			sda-pin = < 0x1a >;
-			accel: lis2dh12-accel@18 {
-				compatible = "st,lis2dh12", "st,lis2dh", "st,lis2de12";
-				reg = < 0x18 >;
-				label = "LIS2DE12-ACCEL";
-			};
-			light: opt3001-light@44 {
-				compatible = "ti,opt3001";
-				reg = < 0x44 >;
-				label = "OPT3001-LIGHT";
-			};
-			humidity: hdc2010-humidity@40 {
-				compatible = "ti,hdc20x0";
-				reg = < 0x40 >;
-				label = "HDC2010-HUMIDITY";
+			phandle = < 0x4 >;
+			mcu: msp430-usbbridge@4 {
+				compatible = "beagle,usbbridge";
+				reg = < 0x4 >;
+				label = "MSP430-USBBRIDGE";
 			};
 			environment: bme680@76 {
 				compatible = "bosch,bme680";
@@ -113,7 +104,7 @@
 				label = "BME680-ENVIRONMENT";
 			};
 			airquality: sgp30@58 {
-				compatible = "sensiron,sgp30";
+				compatible = "sensirion,sgp30";
 				reg = < 0x58 >;
 				label = "SGP30-AIRQUALITY";
 			};
@@ -122,20 +113,13 @@
 				reg = < 0x40 >;
 				label = "HM3301-PARTICULATE";
 			};
-			adc0: ads1115_0@48 {
+			adsadc0: ads1115_0@48 {
 				compatible = "ti,ads1115";
+				#io-channel-cells = < 0x1 >;
 				reg = < 0x48 >;
-				label = "ADS-ADC0";
-			};
-			adc1: ads1115_1@49 {
-				compatible = "ti,ads1115";
-				reg = < 0x49 >;
-				label = "ADS-ADC1";
-			};
-			adc2: ads1115_2@4b {
-				compatible = "ti,ads1115";
-				reg = < 0x4b >;
-				label = "ADS-ADC2";
+				continuous_mode = < 0x0 >;
+				label = "ADS1115-ADC0";
+				phandle = < 0x5 >;
 			};
 		};
 		spi0: spi@40000000 {
@@ -197,21 +181,24 @@
 		compatible = "mmio-sram";
 		reg = < 0x11000000 0x2000 >;
 	};
+	flash0: serial-flash@0 {
+		compatible = "serial-flash";
+		reg = < 0x0 0x58000 >;
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = < 0x1 >;
+			#size-cells = < 0x1 >;
+			ti_ccfg_partition: partition@57fa8 {
+				label = "ti_ccfg";
+				reg = < 0x57fa8 0x58 >;
+			};
+		};
+	};
 	sysclk: system-clock {
 		compatible = "fixed-clock";
 		clock-frequency = < 0x2dc6c00 >;
 		#clock-cells = < 0x0 >;
 		phandle = < 0x2 >;
-	};
-	flash_controller: flash-controller@400fd000 {
-		compatible = "ti,stellaris-flash-controller";
-		reg = < 0x400fd000 0x1000 >;
-		#address-cells = < 0x1 >;
-		#size-cells = < 0x1 >;
-		label = "FLASH_CTRL";
-		flash0: serial-flash@0 {
-			reg = < 0x0 0x58000 >;
-		};
 	};
 	gpio_keys {
 		compatible = "gpio-keys";
@@ -222,13 +209,36 @@
 	};
 	gpio_leds {
 		compatible = "gpio-leds";
-		i2c_ctrl: i2c_ctrl {
-			label = "I2C_CTRL";
-			gpios = < &gpio0 0xe 0x0 >;
-		};
 		rf_sw: rf_sw {
 			label = "RF_SW";
 			gpios = < &gpio0 0x1d 0x0 >, < &gpio0 0x1e 0x0 >, < &gpio0 0x12 0x0 >;
 		};
+	};
+	sens_i2c: sensor-switch {
+		compatible = "ti,ts5a2066";
+		#address-cells = < 0x1 >;
+		#size-cells = < 0x0 >;
+		controller = < &i2c0 >;
+		gpios = < &gpio0 0xe 0x0 >;
+		label = "I2C_0S";
+		accel: lis2dh12-accel@18 {
+			compatible = "st,lis2dh12", "st,lis2dh", "st,lis2de12";
+			reg = < 0x18 >;
+			label = "LIS2DE12-ACCEL";
+		};
+		light: opt3001-light@44 {
+			compatible = "ti,opt3001";
+			reg = < 0x44 >;
+			label = "OPT3001-LIGHT";
+		};
+		humidity: hdc2010-humidity@41 {
+			compatible = "ti,hdc2010";
+			reg = < 0x41 >;
+			label = "HDC2010-HUMIDITY";
+		};
+	};
+	zephyr,user {
+		io-channels = < &adsadc0 0x0 >;
+		io-channel-names = "AIN1";
 	};
 };
