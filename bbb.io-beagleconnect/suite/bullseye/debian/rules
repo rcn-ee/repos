@@ -18,12 +18,9 @@ override_dh_auto_configure:
 
 override_dh_installinit:
 	dh_installinit --name=lowpan --no-stop-on-upgrade --no-start
-	dh_installinit --name=lowpan_monitor --no-stop-on-upgrade --no-start
 
 override_dh_systemd_enable:
 	dh_systemd_enable --name=lowpan --no-enable
-	dh_systemd_enable --name=lowpan_monitor --no-enable
 
 override_dh_systemd_start:
 	dh_systemd_start --name=lowpan --no-start
-	dh_systemd_start --name=lowpan_monitor --no-start
