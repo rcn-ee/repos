@@ -18,6 +18,11 @@ remove_dir () {
 
 remove_all () {
 	wfile="/etc/udev/rules.d/uio.rules" ; remove_file
+	if [ -f /lib/systemd/system/generic-board-startup.service ] ; then
+		systemctl stop generic-board-startup.service || true
+		systemctl disable generic-board-startup.service || true
+		wfile="/lib/systemd/system/generic-board-startup.service" ; remove_file
+	fi
 }
 
 case "$1" in
