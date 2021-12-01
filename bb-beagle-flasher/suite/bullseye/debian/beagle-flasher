@@ -216,11 +216,41 @@ check_running_system () {
 	flush_cache
 }
 
+format_boot () {
+	message="/sbin/mkfs.vfat -F 16 ${destination}p1 -n ${boot_label}"                          ; broadcast
+	LC_ALL=C /sbin/mkfs.vfat -F 16 ${destination}p1 -n ${boot_label}
+	message="--------------------------------------------------------------------------------" ; broadcast
+	flush_cache
+}
+
+format_root () {
+	message="/sbin/mkfs.ext4 ${ext4_options} ${destination}p2 -L ${rootfs_label}"              ; broadcast
+	LC_ALL=C /sbin/mkfs.ext4 ${ext4_options} ${destination}p2 -L ${rootfs_label}
+	message="--------------------------------------------------------------------------------" ; broadcast
+	flush_cache
+}
+
 format_single_root () {
 	message="/sbin/mkfs.ext4 ${mkfs_options} ${destination}p1 -L ${single_root_label}"         ; broadcast
 	LC_ALL=C /sbin/mkfs.ext4 ${mkfs_options} ${destination}p1 -L ${single_root_label}
 	message="--------------------------------------------------------------------------------" ; broadcast
 	flush_cache
+}
+
+copy_boot () {
+	message="Copying: ${source}p1 -> ${destination}p1" ; broadcast
+	mkdir -p /tmp/boot/ || true
+
+	mount ${destination}p1 /tmp/boot/ -o sync
+
+	message="rsync: /boot/firmware/ -> /tmp/boot/" ; broadcast
+	rsync -aAx /boot/firmware/ /tmp/boot/ || write_failure
+	flush_cache
+
+	flush_cache
+	umount /tmp/boot/ || umount -l /tmp/boot/ || write_failure
+	flush_cache
+	umount /boot/firmware || umount -l /boot/firmware || true
 }
 
 copy_rootfs () {
@@ -245,7 +275,10 @@ copy_rootfs () {
 	message="INFO: Generating: /etc/fstab"                                                     ;  broadcast
 	echo "# /etc/fstab: static file system information." > /tmp/rootfs/etc/fstab
 	echo "#" >> /tmp/rootfs/etc/fstab
-	echo "${destination}p1  /  ext4  noatime,errors=remount-ro  0  1" >> /tmp/rootfs/etc/fstab
+	echo "${destination}p${media_rootfs}  /  ext4  noatime,errors=remount-ro  0  1" >> /tmp/rootfs/etc/fstab
+	if [ "x${media_rootfs}" = "x2" ] ; then
+		echo "${destination}p1  /boot/firmware vfat defaults 0 0" >> /tmp/rootfs/etc/fstab
+	fi
 	echo "debugfs  /sys/kernel/debug  debugfs  mode=755,uid=root,gid=gpio,defaults  0  0" >> /tmp/rootfs/etc/fstab
 	message="INFO: [cat /tmp/rootfs/etc/fstab]"                                                ; broadcast
 	message="`cat /tmp/rootfs/etc/fstab`"                                                      ; broadcast
@@ -327,16 +360,15 @@ partition_drive () {
 		single_root_label=${single_root_label:-"rootfs"}
 
 		sfdisk_options="--force"
-		sfdisk_boot_startmb="${rfs_rootfs_startmb}M"
 
 		message="INFO: Partitioning: ${destination}"                                               ; broadcast
 		message="INFO: /sbin/sfdisk: [$(LC_ALL=C /sbin/sfdisk --version)]"                         ; broadcast
 		message="INFO: /sbin/sfdisk: [/sbin/sfdisk ${sfdisk_options} ${destination}]"              ; broadcast
-		message="INFO: /sbin/sfdisk: [${sfdisk_boot_startmb},,${sfdisk_fstype},*]"                 ; broadcast
+		message="INFO: /sbin/sfdisk: [${sfdisk_boot_startmb}M,,${sfdisk_fstype},*]"                 ; broadcast
 		message="--------------------------------------------------------------------------------" ; broadcast
 
 		LC_ALL=C /sbin/sfdisk ${sfdisk_options} "${destination}" <<-__EOF__
-			${sfdisk_boot_startmb},,${sfdisk_fstype},*
+			${sfdisk_boot_startmb}M,,${sfdisk_fstype},*
 		__EOF__
 
 		flush_cache
@@ -346,6 +378,40 @@ partition_drive () {
 		message="--------------------------------------------------------------------------------" ; broadcast
 
 		media_rootfs="1"
+		copy_rootfs
+	elif [ "x${rfs_partition}" = "xdual" ] ; then
+		rfs_boot_startmb=${rfs_boot_startmb:-"1"}
+		rfs_boot_size_mb=${rfs_boot_size_mb:-"64"}
+		rfs_sfdisk_fstype=${rfs_sfdisk_fstype:-"0xc"}
+
+		sfdisk_rootfs_startmb=$(($rfs_boot_startmb + $rfs_boot_size_mb))
+
+		boot_label=${boot_label:-"FIRMWARE"}
+		rootfs_label=${rootfs_label:-"rootfs"}
+
+		sfdisk_options="--force"
+
+		message="INFO: Partitioning: ${destination}"                                               ; broadcast
+		message="INFO: /sbin/sfdisk: [$(LC_ALL=C /sbin/sfdisk --version)]"                         ; broadcast
+		message="INFO: /sbin/sfdisk: [/sbin/sfdisk ${sfdisk_options} ${destination}]"              ; broadcast
+		message="INFO: /sbin/sfdisk: [${rfs_boot_startmb}M,${rfs_boot_size_mb}M,${rfs_sfdisk_fstype},*]" ; broadcast
+		message="INFO: /sbin/sfdisk: [${sfdisk_rootfs_startmb}M,,,-]" ; broadcast
+		message="--------------------------------------------------------------------------------" ; broadcast
+
+		LC_ALL=C /sbin/sfdisk ${sfdisk_options} "${destination}" <<-__EOF__
+			${rfs_boot_startmb}M,${rfs_boot_size_mb}M,${rfs_sfdisk_fstype},*
+			${sfdisk_rootfs_startmb}M,,,-
+		__EOF__
+
+		flush_cache
+		message="INFO: Formatting: ${destination}"                                                 ; broadcast
+		format_boot
+		format_root
+		message="INFO: Formatting: ${destination} complete"                                        ; broadcast
+		message="--------------------------------------------------------------------------------" ; broadcast
+
+		copy_boot
+		media_rootfs="2"
 		copy_rootfs
 	else
 		example_failure
