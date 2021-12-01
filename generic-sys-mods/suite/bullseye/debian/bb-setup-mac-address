@@ -50,13 +50,13 @@ get_mac_addr () {
 			is_mac_valid
 		fi
 
-		if [ -f ${mac_address_v54} && [ "x${is_valid}" = "x" ] ; then
+		if [ -f ${mac_address_v54} ] && [ "x${is_valid}" = "x" ] ; then
 			mac_addr0=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address_v54} | sed 's/.$//')
 			echo "${log} slave@200: ${mac_addr0}"
 			is_mac_valid
 		fi
 
-		if [ -f ${mac_address_v515} && [ "x${is_valid}" = "x" ] ; then
+		if [ -f ${mac_address_v515} ] && [ "x${is_valid}" = "x" ] ; then
 			mac_addr0=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address_v515} | sed 's/.$//')
 			echo "${log} port@1: ${mac_addr0}"
 			is_mac_valid
