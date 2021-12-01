@@ -26,7 +26,9 @@ run () {
 	echo " -- Robert Nelson <robertcnelson@gmail.com>  ${new_date}" >> ${wfile}
 	echo "" >> ${wfile}
 
-	cat ${DIR}/suite/${suite}/debian/changelog >> ${wfile}
+	if [ "x${clear_changelog}" = "x" ] ; then
+		cat ${DIR}/suite/${suite}/debian/changelog >> ${wfile}
+	fi
 	rm ${DIR}/suite/${suite}/debian/changelog
 	mv ${wfile} ${DIR}/suite/${suite}/debian/changelog
 }
