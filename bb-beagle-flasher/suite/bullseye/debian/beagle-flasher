@@ -6,7 +6,7 @@ if ! id | grep -q root; then
 	exit
 fi
 
-version_message="1.20211119.0: add BBAI bits..."
+version_message="1.202112002.0: add dual partition option..."
 
 #mke2fs -c
 #Check the device for bad blocks before creating the file system.
@@ -364,11 +364,11 @@ partition_drive () {
 		message="INFO: Partitioning: ${destination}"                                               ; broadcast
 		message="INFO: /sbin/sfdisk: [$(LC_ALL=C /sbin/sfdisk --version)]"                         ; broadcast
 		message="INFO: /sbin/sfdisk: [/sbin/sfdisk ${sfdisk_options} ${destination}]"              ; broadcast
-		message="INFO: /sbin/sfdisk: [${sfdisk_boot_startmb}M,,${sfdisk_fstype},*]"                 ; broadcast
+		message="INFO: /sbin/sfdisk: [${rfs_rootfs_startmb}M,,${sfdisk_fstype},*]"                 ; broadcast
 		message="--------------------------------------------------------------------------------" ; broadcast
 
 		LC_ALL=C /sbin/sfdisk ${sfdisk_options} "${destination}" <<-__EOF__
-			${sfdisk_boot_startmb}M,,${sfdisk_fstype},*
+			${rfs_rootfs_startmb}M,,${sfdisk_fstype},*
 		__EOF__
 
 		flush_cache
