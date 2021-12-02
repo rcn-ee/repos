@@ -93,7 +93,7 @@
 			label = "I2C_0";
 			scl-pin = < 0x19 >;
 			sda-pin = < 0x1a >;
-			phandle = < 0x4 >;
+			phandle = < 0x6 >;
 			mcu: msp430-usbbridge@4 {
 				compatible = "beagle,usbbridge";
 				reg = < 0x4 >;
@@ -149,6 +149,7 @@
 			compatible = "arm,cortex-m4";
 			reg = < 0x0 >;
 			clock-frequency = < 0x2dc6c00 >;
+			cpu-power-states = < &idle &standby >;
 		};
 	};
 	sram0: memory@20000000 {
@@ -213,6 +214,21 @@
 			compatible = "ti,hdc2010";
 			reg = < 0x41 >;
 			label = "HDC2010-HUMIDITY";
+		};
+	};
+	power-states {
+		idle: idle {
+			compatible = "zephyr,power-state";
+			power-state-name = "suspend-to-idle";
+			min-residency-us = < 0x3e8 >;
+			phandle = < 0x4 >;
+		};
+		standby: standby {
+			compatible = "zephyr,power-state";
+			power-state-name = "standby";
+			min-residency-us = < 0x1388 >;
+			exit-latency-us = < 0xf0 >;
+			phandle = < 0x5 >;
 		};
 	};
 	leds {
