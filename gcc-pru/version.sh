@@ -2,11 +2,11 @@
 
 package_name="gcc-pru"
 debian_pkg_name="${package_name}"
-package_version="10.1.0"
+package_version="12.0.RC.gaeedb00a1a"
 package_source=""
 src_dir=""
 
-newlib_version="3.3.0"
+newlib_version="4.1.0"
 
 git_repo=""
 git_sha=""
