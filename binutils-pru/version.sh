@@ -2,7 +2,7 @@
 
 package_name="binutils-pru"
 debian_pkg_name="${package_name}"
-package_version="2.34"
+package_version="2.37.50.g2749ac13"
 package_source=""
 src_dir=""
 

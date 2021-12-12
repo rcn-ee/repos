@@ -2,12 +2,12 @@
 
 package_name="gnuprumcu"
 debian_pkg_name="${package_name}"
-package_version="0.3.0-git20200828.0"
+package_version="0.7.0-git20211212.0"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
 git_repo="https://github.com/dinuxbg/gnuprumcu"
-git_sha="b62dfbc2cf1e8ad19e845141e7e3a6c077a6c4d5"
+git_sha="aa0fced67d9d03c21e40caa5f8e5820c7264f2b5"
 reprepro_dir="b/${package_name}"
 dl_path=""
 
