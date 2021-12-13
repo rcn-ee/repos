@@ -1,7 +1,8 @@
 [Unit]
 Description=BeagleBoard.org Code Server
-After=network.target
+Wants=network.target
 ConditionFileIsExecutable=/opt/bb-code-server/app/bin/code-server
+After=multi-user.target
 
 [Service]
 Type=exec
