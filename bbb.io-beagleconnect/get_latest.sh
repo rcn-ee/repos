@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version="beta0.0.15"
+version="beta0.0.16"
 
 dl_src () {
 	if [ -d ./build/ ] ; then

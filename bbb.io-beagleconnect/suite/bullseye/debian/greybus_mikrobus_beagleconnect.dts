@@ -25,6 +25,7 @@
 		interrupt-parent = < &nvic >;
 		ranges;
 		nvic: interrupt-controller@e000e100 {
+			#address-cells = < 0x1 >;
 			compatible = "arm,v7m-nvic";
 			reg = < 0xe000e100 0xc00 >;
 			interrupt-controller;
@@ -40,7 +41,6 @@
 		pinmux: pinmux@40081000 {
 			compatible = "ti,cc13xx-cc26xx-pinmux";
 			reg = < 0x40081000 0x1000 >;
-			label = "PINMUX";
 		};
 		gpio0: gpio@40022000 {
 			compatible = "ti,cc13xx-cc26xx-gpio";
@@ -78,8 +78,8 @@
 			status = "okay";
 			label = "UART_1";
 			current-speed = < 0x1c200 >;
-			tx-pin = < 0x15 0x14 >;
-			rx-pin = < 0x16 0x13 >;
+			tx-pin = < 0x16 0x14 >;
+			rx-pin = < 0x15 0x13 >;
 		};
 		i2c0: i2c@40002000 {
 			compatible = "ti,cc13xx-cc26xx-i2c";
@@ -92,21 +92,11 @@
 			label = "I2C_0";
 			scl-pin = < 0x19 >;
 			sda-pin = < 0x1a >;
-			phandle = < 0x4 >;
-			accel: lis2dh12-accel@18 {
-				compatible = "st,lis2dh12", "st,lis2dh", "st,lis2de12";
-				reg = < 0x18 >;
-				label = "LIS2DE12-ACCEL";
-			};
-			light: opt3001-light@44 {
-				compatible = "ti,opt3001";
-				reg = < 0x44 >;
-				label = "OPT3001-LIGHT";
-			};
-			humidity: hdc2010-humidity@40 {
-				compatible = "ti,hdc20x0";
-				reg = < 0x40 >;
-				label = "HDC2010-HUMIDITY";
+			phandle = < 0x6 >;
+			mcu: msp430-usbbridge@4 {
+				compatible = "beagle,usbbridge";
+				reg = < 0x4 >;
+				label = "MSP430-USBBRIDGE";
 			};
 		};
 		spi0: spi@40000000 {
@@ -158,6 +148,7 @@
 			compatible = "arm,cortex-m4";
 			reg = < 0x0 >;
 			clock-frequency = < 0x2dc6c00 >;
+			cpu-power-states = < &idle &standby >;
 		};
 	};
 	sram0: memory@20000000 {
@@ -168,22 +159,25 @@
 		compatible = "mmio-sram";
 		reg = < 0x11000000 0x2000 >;
 	};
+	flash0: serial-flash@0 {
+		compatible = "serial-flash";
+		reg = < 0x0 0x58000 >;
+		status = "okay";
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = < 0x1 >;
+			#size-cells = < 0x1 >;
+			ti_ccfg_partition: partition@57fa8 {
+				label = "ti_ccfg";
+				reg = < 0x57fa8 0x58 >;
+			};
+		};
+	};
 	sysclk: system-clock {
 		compatible = "fixed-clock";
 		clock-frequency = < 0x2dc6c00 >;
 		#clock-cells = < 0x0 >;
 		phandle = < 0x2 >;
-	};
-	flash_controller: flash-controller@400fd000 {
-		compatible = "ti,stellaris-flash-controller";
-		reg = < 0x400fd000 0x1000 >;
-		#address-cells = < 0x1 >;
-		#size-cells = < 0x1 >;
-		label = "FLASH_CTRL";
-		flash0: serial-flash@0 {
-			reg = < 0x0 0x58000 >;
-			status = "okay";
-		};
 	};
 	gpio_keys {
 		compatible = "gpio-keys";
@@ -194,13 +188,47 @@
 	};
 	gpio_leds {
 		compatible = "gpio-leds";
-		i2c_ctrl: i2c_ctrl {
-			label = "I2C_CTRL";
-			gpios = < &gpio0 0xe 0x0 >;
-		};
 		rf_sw: rf_sw {
 			label = "RF_SW";
 			gpios = < &gpio0 0x1d 0x0 >, < &gpio0 0x1e 0x0 >, < &gpio0 0x12 0x0 >;
+		};
+	};
+	sens_i2c: sensor-switch {
+		compatible = "ti,ts5a2066";
+		#address-cells = < 0x1 >;
+		#size-cells = < 0x0 >;
+		controller = < &i2c0 >;
+		gpios = < &gpio0 0xe 0x0 >;
+		label = "I2C_0S";
+		accel: lis2dh12-accel@18 {
+			compatible = "st,lis2dh12", "st,lis2dh", "st,lis2de12";
+			reg = < 0x18 >;
+			label = "LIS2DE12-ACCEL";
+		};
+		light: opt3001-light@44 {
+			compatible = "ti,opt3001";
+			reg = < 0x44 >;
+			label = "OPT3001-LIGHT";
+		};
+		humidity: hdc2010-humidity@41 {
+			compatible = "ti,hdc2010";
+			reg = < 0x41 >;
+			label = "HDC2010-HUMIDITY";
+		};
+	};
+	power-states {
+		idle: idle {
+			compatible = "zephyr,power-state";
+			power-state-name = "suspend-to-idle";
+			min-residency-us = < 0x3e8 >;
+			phandle = < 0x4 >;
+		};
+		standby: standby {
+			compatible = "zephyr,power-state";
+			power-state-name = "standby";
+			min-residency-us = < 0x1388 >;
+			exit-latency-us = < 0xf0 >;
+			phandle = < 0x5 >;
 		};
 	};
 	resources {
@@ -220,7 +248,7 @@
 			compatible = "zephyr,greybus-string";
 			id = < 0x1 >;
 			greybus-string = "Zephyr Project RTOS";
-			phandle = < 0x5 >;
+			phandle = < 0x7 >;
 		};
 		gbstring2: gbstring2 {
 			label = "GBSTRING_2";
@@ -228,7 +256,7 @@
 			compatible = "zephyr,greybus-string";
 			id = < 0x2 >;
 			greybus-string = "Greybus Service Sample Application";
-			phandle = < 0x6 >;
+			phandle = < 0x8 >;
 		};
 		gbstring3: gbstring3 {
 			label = "GBSTRING_3";
@@ -236,7 +264,7 @@
 			compatible = "zephyr,greybus-string";
 			id = < 0x3 >;
 			greybus-string = "opt3001";
-			phandle = < 0x7 >;
+			phandle = < 0x9 >;
 		};
 		gbstring4: gbstring4 {
 			label = "GBSTRING_4";
@@ -244,7 +272,7 @@
 			compatible = "zephyr,greybus-string";
 			id = < 0x4 >;
 			greybus-string = "hdc2010";
-			phandle = < 0x8 >;
+			phandle = < 0xa >;
 		};
 		gbinterface0 {
 			label = "GBINTERFACE_0";
@@ -289,7 +317,7 @@
 				label = "GBI2C_0";
 				status = "okay";
 				compatible = "zephyr,greybus-i2c-controller";
-				greybus-i2c-controller = < &i2c0 >;
+				greybus-i2c-controller = "I2C_0S";
 				id = < 0x2 >;
 				cport-protocol = < 0x3 >;
 			};
@@ -310,7 +338,7 @@
 			id = < 0x2 >;
 			driver-string-id = < &gbstring4 >;
 			protocol = < 0x3 >;
-			addr = < 0x40 >;
+			addr = < 0x41 >;
 		};
 	};
 	mikrobus0: mikrobus0 {

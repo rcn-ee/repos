@@ -55,7 +55,11 @@ else
     ip link add link wpan0 name lowpan0 type lowpan
 fi
 #set channel and activate device
-iwpan phy phy0 set channel 0 $CHANNEL
+
+###FIXME: I had to unload/reload bcfserial, so the phyX index increased.
+#iwpan phy phy0 set channel 0 $CHANNEL
+iwpan phy `iwpan phy | grep -m1 wpan_phy | cut -d' ' -f2` set channel 0 $CHANNEL
+
 iwpan dev wpan0 set ackreq_default $ACKREQ
 iwpan dev wpan0 set pan_id $PANID
 ip link set wpan0 up
