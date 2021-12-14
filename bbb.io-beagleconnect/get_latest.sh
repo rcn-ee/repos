@@ -31,5 +31,5 @@ wfile="build/cc1352/wpanusb_beagleconnect.bin" ; copy_all
 wfile="build/msp430/usb_uart_bridge_lp.hex" ; copy_all
 wfile="build/msp430/usb_uart_bridge.hex" ; copy_all
 
-echo "${version}" > ./suite/buster/debian/version
-echo "${version}" > ./suite/bullseye/debian/version
+echo "bcf-${version}" > ./suite/buster/debian/version
+echo "bcf-${version}" > ./suite/bullseye/debian/version
