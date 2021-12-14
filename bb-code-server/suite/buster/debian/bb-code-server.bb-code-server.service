@@ -1,14 +1,16 @@
 [Unit]
 Description=BeagleBoard.org Code Server
 Wants=network.target
-ConditionFileIsExecutable=/opt/bb-code-server/app/bin/code-server
+Documentation=https://github.com/cdr/code-server/tree/main/docs
 After=multi-user.target
 
 [Service]
 Type=exec
+User=debian
+Group=debian
 ExecStart=/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config /opt/bb-code-server/config/config.yaml --extensions-dir /opt/bb-code-server/extensions/ --bind-addr 0.0.0.0:3000
 Restart=always
-User=debian
+RestartSec=15
 
 [Install]
 WantedBy=multi-user.target

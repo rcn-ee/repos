@@ -4,8 +4,6 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
-project_dir=/opt/bb-code-server/app
-
 code_server_version=4.0.0
 
 # Disable dh_link
@@ -21,8 +19,14 @@ override_dh_strip_nondeterminism:
 override_dh_shlibdeps:
 
 override_dh_auto_configure:
-	mkdir -p ./tmp$(project_dir)/
-	tar xf debian/code-server-$(code_server_version)-linux-armv7l.tar.gz -C ./tmp$(project_dir)/ --strip-components 1
+	mkdir -p ./tmp/opt/bb-code-server/app/
+	tar xf debian/code-server-$(code_server_version)-linux-armv7l.tar.gz -C ./tmp/opt/bb-code-server/app/ --strip-components 1
+	mkdir -p /opt/bb-code-server/examples/
+	git clone https://github.com/beagleboard/VSX-examples /opt/bb-code-server/examples/ --branch main --depth 1
+	cd /opt/bb-code-server/examples/ ; git config user.email "beagle@beagleboard.org" ; git config user.name "BeagleBoard"
+	mv /opt/bb-code-server/examples/.git/ /opt/bb-code-server/examples/dotgit/
+	mkdir -p ./tmp/opt/bb-code-server/examples/
+	mv /opt/bb-code-server/examples/* ./tmp/opt/bb-code-server/examples/
 
 %:
 	dh $@ --with systemd

@@ -13,18 +13,28 @@ main_install () {
 	mkdir -p ${wdir}/config/
 	mkdir -p ${wdir}/extensions/
 
-	/opt/bb-code-server/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --list-extensions
+	/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --list-extensions
 
 	#Git
-	/opt/bb-code-server/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --install-extension donjayamanne.githistory --force
+	/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --install-extension donjayamanne.githistory --force
 
 	#Code Runner
-	/opt/bb-code-server/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --install-extension formulahendry.code-runner --force
+	/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --install-extension formulahendry.code-runner --force
 
-	/opt/bb-code-server/app/bin/code-server --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --list-extensions
+	/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --list-extensions
 
-	chown -R 1000:1000 ${wdir}/config/
-	chown -R 1000:1000 ${wdir}/extensions/
+	chown -R 1000:1000 ${wdir}/config/ || true
+	chown -R 1000:1000 ${wdir}/extensions/ || true
+	chown -R 1000:1000 ${wdir}/examples/ || true
+
+	mv ${wdir}/examples/dotgit/ ${wdir}/examples/.git/
+
+	echo "Updating Code Server examples from: https://github.com/beagleboard/VSX-examples"
+	cd ${wdir}/examples/
+	git reset HEAD --hard
+	git pull || true
+
+	chown -R 1000:1000 ${wdir}/examples/ || true
 
 	echo "${package}:Installed"
 }
