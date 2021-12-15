@@ -4,7 +4,7 @@
 
 package_name="bb-customizations"
 debian_pkg_name="${package_name}"
-package_version="1.20211214.0"
+package_version="1.20211215.0"
 package_source=""
 src_dir=""
 
@@ -19,8 +19,8 @@ debian_patch=""
 
 clear_changelog="enable"
 
-stretch_version="~stretch+20211214"
-buster_version="~buster+20211214"
-bullseye_version="~bullseye+20211214"
-bionic_version="~bionic+20211214"
-focal_version="~focal+20211214"
+stretch_version="~stretch+20211215"
+buster_version="~buster+20211215"
+bullseye_version="~bullseye+20211215"
+bionic_version="~bionic+20211215"
+focal_version="~focal+20211215"

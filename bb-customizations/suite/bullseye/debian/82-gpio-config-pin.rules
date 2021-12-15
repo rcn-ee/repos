@@ -1,0 +1,8 @@
+# /etc/udev/rules.d/82-gpio-config-pin.rules
+#
+# ReWritten by: Matthijs van Duin
+# Corrects sys GPIO permissions on the BB so non-root users in the gpio group can manipulate bits
+#
+SUBSYSTEM=="platform", DRIVER=="bone-pinmux-helper", ACTION=="add", \
+        RUN+="/bin/chgrp -R gpio '/sys%p'", \
+        RUN+="/bin/chmod -R g=u '/sys%p'"
