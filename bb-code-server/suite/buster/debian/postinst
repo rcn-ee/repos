@@ -35,13 +35,6 @@ main_install () {
 	git pull || true
 
 	chown -R 1000:1000 /opt/bb-code-server/examples/ || true
-
-	###FIXME, quick hack here, need to do it in the Rootfs Generation...
-	if [ -d /home/debian/ ] ; then
-		if [ ! -d /home/debian/example/ ] ; then
-			ln -s /opt/bb-code-server/examples/ /home/debian/
-		fi
-	fi
 	echo "${package}:Installed"
 }
 
