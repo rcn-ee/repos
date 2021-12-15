@@ -5,38 +5,43 @@
 set -e
 
 package="bb-code-server"
-wdir="/opt/bb-code-server"
 
 systemctl daemon-reload | true
 
 main_install () {
-	mkdir -p ${wdir}/config/
-	mkdir -p ${wdir}/extensions/
+	mkdir -p /opt/bb-code-server/config/
+	mkdir -p /opt/bb-code-server/extensions/
 
-	/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --list-extensions
+	/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config /opt/bb-code-server/config/config.yaml --extensions-dir /opt/bb-code-server/extensions/ --list-extensions
 
 	#Git
-	/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --install-extension donjayamanne.githistory --force
+	/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config /opt/bb-code-server/config/config.yaml --extensions-dir /opt/bb-code-server/extensions/ --install-extension donjayamanne.githistory --force
 
 	#Code Runner
-	/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --install-extension formulahendry.code-runner --force
+	/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config /opt/bb-code-server/config/config.yaml --extensions-dir /opt/bb-code-server/extensions/ --install-extension formulahendry.code-runner --force
 
-	/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config ${wdir}/config/config.yaml --extensions-dir ${wdir}/extensions/ --list-extensions
+	/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config /opt/bb-code-server/config/config.yaml --extensions-dir /opt/bb-code-server/extensions/ --list-extensions
 
-	chown -R 1000:1000 ${wdir}/config/ || true
-	chown -R 1000:1000 ${wdir}/extensions/ || true
-	chown -R 1000:1000 ${wdir}/examples/ || true
+	chown -R 1000:1000 /opt/bb-code-server/config/ || true
+	chown -R 1000:1000 /opt/bb-code-server/extensions/ || true
+	chown -R 1000:1000 /opt/bb-code-server/examples/ || true
 
-	mv ${wdir}/examples/dotgit/ ${wdir}/examples/.git/
-	mv ${wdir}/examples/dotgitignore ${wdir}/examples/.gitignore
+	mv /opt/bb-code-server/examples/dotgit/ /opt/bb-code-server/examples/.git/
+	mv /opt/bb-code-server/examples/dotgitignore /opt/bb-code-server/examples/.gitignore
 
 	echo "Updating Code Server examples from: https://github.com/beagleboard/VSX-examples"
-	cd ${wdir}/examples/
+	cd /opt/bb-code-server/examples/
 	git reset HEAD --hard
 	git pull || true
 
-	chown -R 1000:1000 ${wdir}/examples/ || true
+	chown -R 1000:1000 /opt/bb-code-server/examples/ || true
 
+	###FIXME, quick hack here, need to do it in the Rootfs Generation...
+	if [ -d /home/debian/ ] ; then
+		if [ ! -d /home/debian/example/ ] ; then
+			ln -s /opt/bb-code-server/examples/ /home/debian/
+		fi
+	fi
 	echo "${package}:Installed"
 }
 
