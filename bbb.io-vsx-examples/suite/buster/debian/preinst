@@ -1,0 +1,23 @@
+#!/bin/sh
+#
+# see: dh_installdeb(1)
+
+set -e
+
+package="bb-code-server"
+wdir="/opt/bb-code-server"
+
+if [ -d ${wdir}/examples_old/ ] ; then
+	rm -rf ${wdir}/examples_old/ || true
+fi
+
+if [ -d ${wdir}/examples/ ] ; then
+	echo "Backing up: ${wdir}/examples/ -> ${wdir}/examples_old/"
+	mv ${wdir}/examples/ ${wdir}/examples_old/
+else
+	mkdir -p ${wdir}/examples/ || true
+fi
+
+#DEBHELPER#
+
+exit 0

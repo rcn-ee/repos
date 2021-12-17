@@ -1,0 +1,17 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+export DH_VERBOSE=1
+
+override_dh_auto_configure:
+	mkdir -p /opt/vsx-examples/examples/
+	git clone https://github.com/beagleboard/vsx-examples /opt/vsx-examples/examples/ --branch main --depth 1
+	cd /opt/vsx-examples/examples/ ; git config user.email "beagle@beagleboard.org" ; git config user.name "BeagleBoard"
+	mv /opt/vsx-examples/examples/.git/ /opt/vsx-examples/examples/dotgit/
+	mv /opt/vsx-examples/examples/.gitignore /opt/vsx-examples/examples/dotgitignore
+	mkdir -p ./tmp/opt/vsx-examples/examples/
+	mv /opt/vsx-examples/examples/* ./tmp/opt/vsx-examples/examples/
+
+%:
+	dh $@
