@@ -4,7 +4,7 @@
 
 package_name="bbb.io-vsx-examples"
 debian_pkg_name="${package_name}"
-package_version="1.20211215.0"
+package_version="1.20211215.1"
 package_source=""
 src_dir=""
 

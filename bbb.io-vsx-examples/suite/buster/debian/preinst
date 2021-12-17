@@ -4,18 +4,15 @@
 
 set -e
 
-package="bb-code-server"
-wdir="/opt/bb-code-server"
-
-if [ -d ${wdir}/examples_old/ ] ; then
-	rm -rf ${wdir}/examples_old/ || true
+if [ -d /opt/vsx-examples/examples_old/ ] ; then
+	rm -rf /opt/vsx-examples/examples_old/ || true
 fi
 
-if [ -d ${wdir}/examples/ ] ; then
-	echo "Backing up: ${wdir}/examples/ -> ${wdir}/examples_old/"
-	mv ${wdir}/examples/ ${wdir}/examples_old/
+if [ -d /opt/vsx-examples/examples/ ] ; then
+	echo "Backing up: /opt/vsx-examples/examples/ -> /opt/vsx-examples/examples_old/"
+	mv /opt/vsx-examples/examples/ /opt/vsx-examples/examples_old/
 else
-	mkdir -p ${wdir}/examples/ || true
+	mkdir -p /opt/vsx-examples/examples/ || true
 fi
 
 #DEBHELPER#
