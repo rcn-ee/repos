@@ -12,29 +12,27 @@ main_install () {
 	mkdir -p /opt/bb-code-server/config/
 	mkdir -p /opt/bb-code-server/extensions/
 
+	echo "${package}: --list-extensions"
 	/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config /opt/bb-code-server/config/config.yaml --extensions-dir /opt/bb-code-server/extensions/ --list-extensions
+	echo "${package}: *****************"
 
 	#Git
+	echo "${package}: Installing: donjayamanne.githistory"
 	/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config /opt/bb-code-server/config/config.yaml --extensions-dir /opt/bb-code-server/extensions/ --install-extension donjayamanne.githistory --force
+	echo "${package}: *****************"
 
 	#Code Runner
+	echo "${package}: Installing: formulahendry.code-runner"
 	/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config /opt/bb-code-server/config/config.yaml --extensions-dir /opt/bb-code-server/extensions/ --install-extension formulahendry.code-runner --force
+	echo "${package}: *****************"
 
+	echo "${package}: --list-extensions"
 	/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config /opt/bb-code-server/config/config.yaml --extensions-dir /opt/bb-code-server/extensions/ --list-extensions
+	echo "${package}: *****************"
 
 	chown -R 1000:1000 /opt/bb-code-server/config/ || true
 	chown -R 1000:1000 /opt/bb-code-server/extensions/ || true
-	chown -R 1000:1000 /opt/bb-code-server/examples/ || true
 
-	mv /opt/bb-code-server/examples/dotgit/ /opt/bb-code-server/examples/.git/
-	mv /opt/bb-code-server/examples/dotgitignore /opt/bb-code-server/examples/.gitignore
-
-	echo "Updating Code Server examples from: https://github.com/beagleboard/VSX-examples"
-	cd /opt/bb-code-server/examples/
-	git reset HEAD --hard
-	git pull || true
-
-	chown -R 1000:1000 /opt/bb-code-server/examples/ || true
 	echo "${package}:Installed"
 }
 

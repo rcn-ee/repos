@@ -1,16 +1,16 @@
 [Unit]
 Description=BeagleBoard.org Code Server
 Wants=network.target
-Documentation=https://github.com/cdr/code-server/tree/main/docs
+Documentation=https://github.com/coder/code-server/tree/main/docs
 After=multi-user.target
 
 [Service]
 Type=exec
 User=debian
 Group=debian
-ExecStartPre=/bin/ln -sf /opt/bb-code-server/examples/ /home/debian/
+ExecStartPre=/bin/ln -sf /opt/vsx-examples/examples/ /home/debian/
 ExecStartPre=/bin/mkdir -p /home/debian/.local/share/code-server/User/
-ExecStartPre=/bin/cp /opt/bb-code-server/examples/settings.json /home/debian/.local/share/code-server/User/
+ExecStartPre=/bin/cp /opt/vsx-examples/examples/settings.json /home/debian/.local/share/code-server/User/
 ExecStart=/opt/bb-code-server/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config /opt/bb-code-server/config/config.yaml --extensions-dir /opt/bb-code-server/extensions/ --bind-addr 0.0.0.0:3000 /home/debian/examples/BeagleBoard.code-workspace
 Restart=always
 RestartSec=15
