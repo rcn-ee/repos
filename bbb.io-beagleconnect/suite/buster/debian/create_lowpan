@@ -25,6 +25,12 @@ LLADDR=$3
 IPADDR=$4
 ACKREQ=$5
 
+echo "create_lowpan:CHANNEL:$CHANNEL"
+echo "create_lowpan:PANID:$PANID"
+echo "create_lowpan:LLADDR:$LLADDR"
+echo "create_lowpan:IPADDR:$IPADDR"
+echo "create_lowpan:ACKREQ:$ACKREQ"
+
 # check for wpan0
 ip link show wpan0 1> /dev/null 2>&1
 if [[ $? == '0' ]] ; then
@@ -68,5 +74,5 @@ ip link set lowpan0 up
 if [ ! -z "$IPADDR" -a "$IPADDR" != " " ]; then
     sleep 1
     echo ". adding IPv6 address $IPADDR to lowpan0"
-    ip addr add $IPADDR dev lowpan0
+    ip -6 addr add $IPADDR dev lowpan0
 fi
