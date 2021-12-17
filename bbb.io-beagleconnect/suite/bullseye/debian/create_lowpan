@@ -21,15 +21,11 @@ fi
 
 CHANNEL=$1
 PANID=$2
-LLADDR=$3
-IPADDR=$4
-ACKREQ=$5
+IPADDR=$3
 
 echo "create_lowpan:CHANNEL:$CHANNEL"
 echo "create_lowpan:PANID:$PANID"
-echo "create_lowpan:LLADDR:$LLADDR"
 echo "create_lowpan:IPADDR:$IPADDR"
-echo "create_lowpan:ACKREQ:$ACKREQ"
 
 # check for wpan0
 ip link show wpan0 1> /dev/null 2>&1
@@ -40,17 +36,6 @@ else
     echo "! no wpan device found, exit!"
     exit 1
 fi
-if [ ! -z "$LLADDR" -a "$LLADDR" != " " ]; then
-    echo ". setting wpan0 LLADDR to $LLADDR"
-    ip link set dev wpan0 address $LLADDR
-fi
-
-# check for monitor0
-ip link show monitor0 1> /dev/null 2>&1
-[ $? == '0' ] && {
-    echo ". delete monitor0"
-    iwpan dev monitor0 del
-}
 # check for lowpan0
 ip link show lowpan0 1> /dev/null 2>&1
 if [[ $? == '0' ]]; then
@@ -66,7 +51,6 @@ fi
 #iwpan phy phy0 set channel 0 $CHANNEL
 iwpan phy `iwpan phy | grep -m1 wpan_phy | cut -d' ' -f2` set channel 0 $CHANNEL
 
-iwpan dev wpan0 set ackreq_default $ACKREQ
 iwpan dev wpan0 set pan_id $PANID
 ip link set wpan0 up
 ip link set lowpan0 up
