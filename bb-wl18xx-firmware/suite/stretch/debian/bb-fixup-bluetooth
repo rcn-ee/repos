@@ -6,15 +6,18 @@ if ! id | grep -q root; then
 fi
 
 if [ -f /sys/class/leds/wl18xx_bt_en/brightness ] ; then
+	unset hci_options
 	if [ -f /proc/device-tree/chosen/wl1835_bt ] ; then
-		echo 1 > /sys/class/leds/wl18xx_bt_en/brightness
-		sleep 5
-		hciattach /dev/tty`cat /proc/device-tree/chosen/wl1835_bt | sed 's/-/ /g'`
+		hci_options=$(cat /proc/device-tree/chosen/wl1835_bt | sed 's/-/ /g' | tr -d '\000')
+	elif [ -f /proc/device-tree/chosen/overlays/wl1835_bt ] ; then
+		hci_options=$(cat /proc/device-tree/chosen/overlays/wl1835_bt | sed 's/-/ /g' | tr -d '\000')
 	fi
-	if [ -f /proc/device-tree/chosen/overlays/wl1835_bt ] ; then
+
+	if [ ! "x${hci_options}" = "x" ] ; then
 		echo 1 > /sys/class/leds/wl18xx_bt_en/brightness
 		sleep 5
-		hciattach /dev/tty`cat /proc/device-tree/chosen/overlays/wl1835_bt | sed 's/-/ /g'`
+		echo "debug: [hciattach /dev/tty$hci_options]"
+		hciattach /dev/tty$hci_options
 	fi
 fi
 
