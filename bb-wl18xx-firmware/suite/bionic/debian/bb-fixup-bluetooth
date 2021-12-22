@@ -5,11 +5,16 @@ if ! id | grep -q root; then
 	exit
 fi
 
-if [ -f /proc/device-tree/chosen/wl1835_bt ] ; then
-	if [ -f /sys/class/leds/wl18xx_bt_en/brightness ] ; then
+if [ -f /sys/class/leds/wl18xx_bt_en/brightness ] ; then
+	if [ -f /proc/device-tree/chosen/wl1835_bt ] ; then
 		echo 1 > /sys/class/leds/wl18xx_bt_en/brightness
 		sleep 5
 		hciattach /dev/tty`cat /proc/device-tree/chosen/wl1835_bt | sed 's/-/ /g'`
+	fi
+	if [ -f /proc/device-tree/chosen/overlays/wl1835_bt ] ; then
+		echo 1 > /sys/class/leds/wl18xx_bt_en/brightness
+		sleep 5
+		hciattach /dev/tty`cat /proc/device-tree/chosen/overlays/wl1835_bt | sed 's/-/ /g'`
 	fi
 fi
 
