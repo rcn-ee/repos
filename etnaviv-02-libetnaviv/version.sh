@@ -4,7 +4,7 @@
 
 package_name="libetnaviv"
 debian_pkg_name="${package_name}"
-package_version="0.0.0-git20141102.1"
+package_version="0.0.0-git20141102.2"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
@@ -17,7 +17,8 @@ debian_version="${package_version}-0"
 debian_patch=""
 debian_diff=""
 
-stretch_version="~stretch+20200512"
-buster_version="~buster+20200512"
-bionic_version="~bionic+20200512"
-focal_version="~focal+20200512"
+clear_changelog="enable"
+
+buster_version="~buster+20211229"
+bullseye_version="~bullseye+20211229"
+focal_version="~focal+20211229"
