@@ -11,11 +11,12 @@ git_sha=""
 reprepro_dir="g/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee4"
+debian_version="${package_version}-0rcnee5"
 debian_untar=""
 debian_patch=""
 
-stretch_version="~stretch+20200512"
-buster_version="~buster+20200512"
-bionic_version="~bionic+20200512"
-focal_version="~focal+20200512"
+clear_changelog="enable"
+
+buster_version="~buster+20211229"
+bullseye_version="~bullseye+20211229"
+focal_version="~focal+20211229"
