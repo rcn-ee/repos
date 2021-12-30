@@ -14,6 +14,14 @@ if [ ! -f /etc/systemd/network/usb1.network ] ; then
 	cp -v /etc/bbb.io/templates/usb1-DHCPServer.network /etc/systemd/network/usb1.network
 fi
 
+if [ ! -d /etc/systemd/system/systemd-networkd-wait-online.service.d/ ] ; then
+	mkdir -p /etc/systemd/system/systemd-networkd-wait-online.service.d/ || true
+fi
+
+if [ ! -f /etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf ] ; then
+	cp -v /etc/bbb.io/templates/systemd-networkd-wait-online.override.conf /etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf
+fi
+
 if [ ! -d /etc/umtprd/ ] ; then
 	mkdir /etc/umtprd/ || true
 fi
@@ -24,10 +32,5 @@ else
 	rm -rf /etc/umtprd/umtprd.conf
 	cp -v /etc/bbb.io/templates/bbb-umtprd.conf /etc/umtprd/umtprd.conf
 fi
-
-#if [ ! -d /opt/mtp/ ] ; then
-#	mkdir /opt/mtp
-#	chown -R 1000:1000 /opt/mtp
-#fi
 
 #DEBHELPER#

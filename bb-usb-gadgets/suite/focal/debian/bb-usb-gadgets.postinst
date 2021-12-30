@@ -14,4 +14,12 @@ if [ ! -f /etc/systemd/network/usb1.network ] ; then
 	cp -v /etc/bbb.io/templates/usb1-DHCPServer.network /etc/systemd/network/usb1.network
 fi
 
+if [ ! -d /etc/systemd/system/systemd-networkd-wait-online.service.d/ ] ; then
+	mkdir -p /etc/systemd/system/systemd-networkd-wait-online.service.d/ || true
+fi
+
+if [ ! -f /etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf ] ; then
+	cp -v /etc/bbb.io/templates/systemd-networkd-wait-online.override.conf /etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf
+fi
+
 #DEBHELPER#
