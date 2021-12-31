@@ -1,0 +1,23 @@
+From 06f1d4ee28e6a94b1e43fc9ec79aa6ef24a639ea Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Fri, 31 Dec 2021 09:37:34 -0600
+Subject: [PATCH] debian: diable root login
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ tools/cockpit.debian.pam | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/tools/cockpit.debian.pam b/tools/cockpit.debian.pam
+index 98557255e..569d7f2c5 100644
+--- a/tools/cockpit.debian.pam
++++ b/tools/cockpit.debian.pam
+@@ -20,3 +20,5 @@ session    required     pam_env.so # [1]
+ # In Debian 4.0 (etch), locale-related environment variables were moved to
+ # /etc/default/locale, so read that as well.
+ session    required     pam_env.so user_readenv=1 envfile=/etc/default/locale
++
++auth requisite pam_succeed_if.so uid >= 1000
+-- 
+2.30.2
+
