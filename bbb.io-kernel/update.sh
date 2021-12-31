@@ -17,13 +17,16 @@ generate_header () {
 	echo "Section: misc" >> ./suite/${dist}/debian/${wfile}
 	echo "Priority: optional" >> ./suite/${dist}/debian/${wfile}
 	echo "Maintainer: Robert Nelson <robertcnelson@gmail.com>" >> ./suite/${dist}/debian/${wfile}
-	echo "Build-Depends: debhelper-compat (= ${debhelper})" >> ./suite/${dist}/debian/${wfile}
+	echo "Build-Depends:" >> ./suite/${dist}/debian/${wfile}
+	echo " debhelper-compat (= ${debhelper})" >> ./suite/${dist}/debian/${wfile}
 	echo "Standards-Version: 4.5.0" >> ./suite/${dist}/debian/${wfile}
 	echo "Rules-Requires-Root: no" >> ./suite/${dist}/debian/${wfile}
 	echo "" >> ./suite/${dist}/debian/${wfile}
 	echo "Package: bbb.io-kernel-tasks" >> ./suite/${dist}/debian/${wfile}
 	echo "Architecture: all" >> ./suite/${dist}/debian/${wfile}
-	echo "Depends: tasksel, \${misc:Depends}" >> ./suite/${dist}/debian/${wfile}
+	echo "Depends:" >> ./suite/${dist}/debian/${wfile}
+	echo " tasksel" >> ./suite/${dist}/debian/${wfile}
+	echo " , \${misc:Depends}" >> ./suite/${dist}/debian/${wfile}
 	echo "Description: BeagleBoard.org Kernel Branches" >> ./suite/${dist}/debian/${wfile}
 	echo " This package contains tasksel information for the BeagleBoard.org Kernel Branch." >> ./suite/${dist}/debian/${wfile}
 }
@@ -33,8 +36,11 @@ generate_kernel_ti () {
 	echo "Package: bbb.io-kernel-${msg}" >> ./suite/${dist}/debian/${wfile}
 	echo "Section: metapackages" >> ./suite/${dist}/debian/${wfile}
 	echo "Architecture: all" >> ./suite/${dist}/debian/${wfile}
-	echo "Pre-Depends: linux-image-${latest_kernel}," >> ./suite/${dist}/debian/${wfile}
-	echo "Depends: \${misc:Depends}, bbb.io-kernel-tasks (= \${source:Version})" >> ./suite/${dist}/debian/${wfile}
+	echo "Pre-Depends:" >> ./suite/${dist}/debian/${wfile}
+	echo " linux-image-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
+	echo "Depends:" >> ./suite/${dist}/debian/${wfile}
+	echo " \${misc:Depends}" >> ./suite/${dist}/debian/${wfile}
+	echo " , bbb.io-kernel-tasks (= \${source:Version})" >> ./suite/${dist}/debian/${wfile}
 	echo "Recommends: libpruio-modules-${latest_kernel}," >> ./suite/${dist}/debian/${wfile}
 	echo "Description: BeagleBoard.org ${msg}" >> ./suite/${dist}/debian/${wfile}
 	echo " This metapackage will install linux-image-${msg} in Debian." >> ./suite/${dist}/debian/${wfile}
@@ -43,13 +49,17 @@ generate_kernel_ti () {
 	echo "Package: bbb.io-kernel-${msg}-am335x" >> ./suite/${dist}/debian/${wfile}
 	echo "Section: metapackages" >> ./suite/${dist}/debian/${wfile}
 	echo "Architecture: all" >> ./suite/${dist}/debian/${wfile}
-	echo "Pre-Depends: linux-image-${latest_kernel}," >> ./suite/${dist}/debian/${wfile}
-	echo "Depends: \${misc:Depends}, bbb.io-kernel-tasks (= \${source:Version})" >> ./suite/${dist}/debian/${wfile}
-	echo "Recommends: libpruio-modules-${latest_kernel}," >> ./suite/${dist}/debian/${wfile}
+	echo "Pre-Depends:" >> ./suite/${dist}/debian/${wfile}
+	echo " linux-image-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
+	echo "Depends:" >> ./suite/${dist}/debian/${wfile}
+	echo " \${misc:Depends}" >> ./suite/${dist}/debian/${wfile}
+	echo " , bbb.io-kernel-tasks (= \${source:Version})" >> ./suite/${dist}/debian/${wfile}
+	echo "Recommends:" >> ./suite/${dist}/debian/${wfile}
+	echo " libpruio-modules-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
 	if [ "x${sgxti335x}" = "xenabled" ] ; then
-		echo "            ti-sgx-ti335x-modules-${latest_kernel}," >> ./suite/${dist}/debian/${wfile}
+		echo " , ti-sgx-ti335x-modules-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
 	fi
-	echo "            bb-u-boot-am335x-evm" >> ./suite/${dist}/debian/${wfile}
+	echo " , bb-u-boot-am335x-evm" >> ./suite/${dist}/debian/${wfile}
 	echo "Description: BeagleBoard.org ${msg} for am335x" >> ./suite/${dist}/debian/${wfile}
 	echo " This metapackage will install linux-image-${msg} for am335x in Debian." >> ./suite/${dist}/debian/${wfile}
 
@@ -57,13 +67,17 @@ generate_kernel_ti () {
 	echo "Package: bbb.io-kernel-${msg}-am57xx" >> ./suite/${dist}/debian/${wfile}
 	echo "Section: metapackages" >> ./suite/${dist}/debian/${wfile}
 	echo "Architecture: all" >> ./suite/${dist}/debian/${wfile}
-	echo "Pre-Depends: linux-image-${latest_kernel}," >> ./suite/${dist}/debian/${wfile}
-	echo "Depends: \${misc:Depends}, bbb.io-kernel-tasks (= \${source:Version})" >> ./suite/${dist}/debian/${wfile}
-	echo "Recommends: libpruio-modules-${latest_kernel}," >> ./suite/${dist}/debian/${wfile}
+	echo "Pre-Depends:" >> ./suite/${dist}/debian/${wfile}
+	echo " linux-image-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
+	echo "Depends:" >> ./suite/${dist}/debian/${wfile}
+	echo " \${misc:Depends}" >> ./suite/${dist}/debian/${wfile}
+	echo " , bbb.io-kernel-tasks (= \${source:Version})" >> ./suite/${dist}/debian/${wfile}
+	echo "Recommends:" >> ./suite/${dist}/debian/${wfile}
+	echo " libpruio-modules-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
 	if [ "x${sgxjacinto6evm}" = "xenabled" ] ; then
-		echo "            ti-sgx-jacinto6evm-modules-${latest_kernel}," >> ./suite/${dist}/debian/${wfile}
+		echo " , ti-sgx-jacinto6evm-modules-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
 	fi
-	echo "            bb-u-boot-am57xx-evm" >> ./suite/${dist}/debian/${wfile}
+	echo " , bb-u-boot-am57xx-evm" >> ./suite/${dist}/debian/${wfile}
 	echo "Description: BeagleBoard.org ${msg} for am57xx" >> ./suite/${dist}/debian/${wfile}
 	echo " This metapackage will install linux-image-${msg} for am57xx in Debian." >> ./suite/${dist}/debian/${wfile}
 }
@@ -132,6 +146,7 @@ do_buster () {
 	msg="4.19-bone-rt" ; var="bone-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.4-bone-rt"  ; var="bone-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.10-bone-rt" ; var="bone-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_bone
+	msg="5.15-bone-rt" ; var="bone-rt" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_bone
 
 	msg="4.19-armv7" ; var="armv7" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_armv7
 	msg="5.4-armv7"  ; var="armv7" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_armv7
@@ -141,6 +156,7 @@ do_buster () {
 	msg="4.19-armv7-rt" ; var="armv7-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_armv7
 	msg="5.4-armv7-rt"  ; var="armv7-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_armv7
 	msg="5.10-armv7-rt" ; var="armv7-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_armv7
+	msg="5.15-armv7-rt" ; var="armv7-rt" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_armv7
 
 	msg="4.19-armv7-lpae" ; var="armv7-lpae" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_armv7_lpae
 	msg="5.4-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
@@ -176,6 +192,7 @@ do_bullseye () {
 	msg="4.19-bone-rt" ; var="bone-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.4-bone-rt"  ; var="bone-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.10-bone-rt" ; var="bone-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_bone
+	msg="5.15-bone-rt" ; var="bone-rt" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_bone
 
 	msg="4.19-armv7" ; var="armv7" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_armv7
 	msg="5.4-armv7"  ; var="armv7" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_armv7
@@ -185,6 +202,7 @@ do_bullseye () {
 	msg="4.19-armv7-rt" ; var="armv7-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_armv7
 	msg="5.4-armv7-rt"  ; var="armv7-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_armv7
 	msg="5.10-armv7-rt" ; var="armv7-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_armv7
+	msg="5.15-armv7-rt" ; var="armv7-rt" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_armv7
 
 	msg="4.19-armv7-lpae" ; var="armv7-lpae" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_armv7_lpae
 	msg="5.4-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
