@@ -2,7 +2,7 @@
 
 package_name="bb-usb-gadgets"
 debian_pkg_name="${package_name}"
-package_version="1.20211231.0"
+package_version="1.20220103.0"
 package_source=""
 src_dir=""
 
@@ -17,8 +17,8 @@ debian_patch=""
 
 clear_changelog="enable"
 
-stretch_version="~stretch+20211231"
-buster_version="~buster+20211231"
-bullseye_version="~bullseye+20211231"
-bionic_version="~bionic+20211231"
-focal_version="~focal+20211231"
+stretch_version="~stretch+20220103"
+buster_version="~buster+20220103"
+bullseye_version="~bullseye+20220103"
+bionic_version="~bionic+20220103"
+focal_version="~focal+20220103"
