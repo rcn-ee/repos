@@ -45,7 +45,7 @@ usb_product="USB Device"
 
 usb_iserialnumber="1234BBBK5678"
 usb_imanufacturer="BeagleBoard.org"
-usb_iproduct="BeagleBoneBlack"
+usb_iproduct="BeagleBone"
 
 #mac address:
 #cpsw_0_mac = eth0 - wlan0 (in eeprom)
@@ -137,6 +137,8 @@ run_libcomposite () {
 			sleep 1
 		fi
 	fi
+
+	cd /sys/kernel/config/usb_gadget/g_multi
 
 	ls /sys/class/udc/ > UDC
 
