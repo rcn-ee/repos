@@ -7,7 +7,7 @@ mirror="http://http.debian.net/debian"
 
 package_name="cockpit"
 debian_pkg_name="${package_name}"
-package_version="259"
+package_version="260"
 package_source="${debian_pkg_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}-${package_version}"
 
@@ -19,6 +19,6 @@ dl_path="pool/main/${reprepro_dir}/"
 debian_version="${package_version}-1"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
-local_patch="rcnee1"
+local_patch="rcnee0"
 
-bullseye_version="~bullseye+20211231"
+bullseye_version="~bullseye+20220109"
