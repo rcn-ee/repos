@@ -47,6 +47,13 @@ usb_iserialnumber="1234BBBK5678"
 usb_imanufacturer="BeagleBoard.org"
 usb_iproduct="BeagleBone"
 
+#usb0 mass_storage
+usb_ms_stall=0
+usb_ms_cdrom=0
+usb_ms_nofua=1
+usb_ms_removable=1
+usb_ms_ro=1
+
 #mac address:
 #cpsw_0_mac = eth0 - wlan0 (in eeprom)
 #cpsw_1_mac = usb0 (BeagleBone Side) (in eeprom)
@@ -122,20 +129,33 @@ run_libcomposite () {
 		mkdir -p functions/acm.usb0
 		ln -s functions/acm.usb0 configs/c.1/
 
+		if [ -f /etc/bbb.io/templates/beaglebone-getting-started-2022-01-12.img ] ; then
+			echo "${log} enable USB mass_storage beaglebone-getting-started-2022-01-12.img"
+			mkdir -p functions/mass_storage.usb0
+			echo ${usb_ms_stall} > functions/mass_storage.usb0/stall
+			echo ${usb_ms_cdrom} > functions/mass_storage.usb0/lun.0/cdrom
+			echo ${usb_ms_nofua} > functions/mass_storage.usb0/lun.0/nofua
+			echo ${usb_ms_removable} > functions/mass_storage.usb0/lun.0/removable
+			echo ${usb_ms_ro} > functions/mass_storage.usb0/lun.0/ro
+			echo /etc/bbb.io/templates/beaglebone-getting-started-2022-01-12.img > functions/mass_storage.usb0/lun.0/file
+
+			ln -s functions/mass_storage.usb0 configs/c.1/
+		fi
+
 		#mkdir -p functions/mass_storage.usb0
 		#echo 0 > functions/mass_storage.usb0/stall
 		#echo /dev/nbd0 > functions/mass_storage.usb0/lun.0/file
 		#ln -s functions/mass_storage.usb0 configs/c.1/
 
-		if [ -f /usr/bin/umtprd ] ; then
-			mkdir -p functions/ffs.mtp
-			ln -s functions/ffs.mtp configs/c.1
+		#if [ -f /usr/bin/umtprd ] ; then
+		#	mkdir -p functions/ffs.mtp
+		#	ln -s functions/ffs.mtp configs/c.1
 
-			mkdir /dev/ffs-mtp
-			mount -t functionfs mtp /dev/ffs-mtp
-			/usr/bin/umtprd &
-			sleep 1
-		fi
+		#	mkdir /dev/ffs-mtp
+		#	mount -t functionfs mtp /dev/ffs-mtp
+		#	/usr/bin/umtprd &
+		#	sleep 1
+		#fi
 	fi
 
 	cd /sys/kernel/config/usb_gadget/g_multi
