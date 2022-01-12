@@ -6,17 +6,19 @@
 
 package_name="umtp-responder"
 debian_pkg_name="${package_name}"
-package_version="1.4.3-git20210912.0"
+package_version="1.6.2-git20211226.1"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
 git_repo="https://github.com/viveris/uMTP-Responder"
-git_sha="e140e559edc914976e10bcab13d37a56c4c505b2"
+git_sha="73287dfd9d6ec187538d76c062a09d6757efea9d"
 reprepro_dir="u/${package_name}"
 dl_path=""
 
-debian_version="${package_version}-0rcnee0"
+debian_version="${package_version}-0"
 debian_patch=""
 debian_diff=""
 
-bullseye_version="~bullseye+20211008"
+clear_changelog="enable"
+
+bullseye_version="~bullseye+20220112"
