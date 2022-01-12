@@ -5,7 +5,7 @@ if ! id | grep -q root; then
 	exit
 fi
 
-version_message="1.202112002.0: add dual partition option..."
+version_message="1.20220112.0: add cleanup grow_partition.service and beagle-flasher-init-shutdown.service..."
 
 #mke2fs -c
 #Check the device for bad blocks before creating the file system.
@@ -246,7 +246,6 @@ copy_boot () {
 	rsync -aAx /boot/firmware/ /tmp/boot/ || write_failure
 	flush_cache
 
-	flush_cache
 	umount /tmp/boot/ || umount -l /tmp/boot/ || write_failure
 	flush_cache
 	umount /boot/firmware || umount -l /boot/firmware || true
@@ -307,6 +306,14 @@ copy_rootfs () {
 		message="INFO: [cat /tmp/rootfs/etc/default/generic-sys-mods]"                             ; broadcast
 		message="`cat /tmp/rootfs/etc/default/generic-sys-mods`"                                   ; broadcast
 		message="--------------------------------------------------------------------------------" ; broadcast
+	fi
+
+	if [ -f /tmp/rootfs/etc/systemd/system/multi-user.target.wants/beagle-flasher-init-shutdown.service ] ; then
+		rm -rf /tmp/rootfs/etc/systemd/system/multi-user.target.wants/beagle-flasher-init-shutdown.service || true
+	fi
+
+	if [ -f /tmp/rootfs/etc/systemd/system/multi-user.target.wants/grow_partition.service ] ; then
+		rm -rf /tmp/rootfs/etc/systemd/system/multi-user.target.wants/grow_partition.service || true
 	fi
 
 	message="Copying: ${source}p${media_rootfs} -> ${destination}p${media_rootfs} complete"    ; broadcast
