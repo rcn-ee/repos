@@ -2,7 +2,7 @@
 
 package_name="beagleconnect-msp430"
 debian_pkg_name="${package_name}"
-package_version="1.20220128.7"
+package_version="1.20220128.8"
 package_source=""
 src_dir=""
 
