@@ -6,7 +6,7 @@ if ! id | grep -q root; then
 	exit
 fi
 
-version_message="1.20220112.0: add cleanup grow_partition.service and beagle-flasher-init-shutdown.service..."
+version_message="1.20220202.0: Implement LED Error conditions..."
 
 #mke2fs -c
 #Check the device for bad blocks before creating the file system.
@@ -92,6 +92,27 @@ reset_leds() {
 	fi
 }
 
+error_leds() {
+	if [ "x${has_usr_leds}" = "xenable" ] ; then
+		if [ -e /proc/$CYLON_PID ]; then
+			kill $CYLON_PID > /dev/null 2>&1
+		fi
+
+		leds_pattern0=${leds_pattern0:-"heartbeat"}
+		leds_pattern1=${leds_pattern1:-"heartbeat"}
+		leds_pattern2=${leds_pattern2:-"heartbeat"}
+		leds_pattern3=${leds_pattern3:-"heartbeat"}
+		leds_base=/sys/class/leds/beaglebone\:green\:usr
+
+		if [ -e ${leds_base}0/trigger ] ; then
+			echo ${leds_pattern0} > ${leds_base}0/trigger
+			echo ${leds_pattern1} > ${leds_base}1/trigger
+			echo ${leds_pattern2} > ${leds_base}2/trigger
+			echo ${leds_pattern3} > ${leds_base}3/trigger
+		fi
+	fi
+}
+
 flush_cache () {
 	sync
 	if [ "x${destination}" != "x" ] ; then
@@ -133,6 +154,7 @@ example_failure () {
 }
 
 write_failure () {
+	error_leds
 	message="ERROR: writing to [destination=${destination}] failed..."                         ; broadcast
 	message="--------------------------------------------------------------------------------" ; broadcast
 	flush_cache

@@ -7,6 +7,7 @@ if ! id | grep -q root; then
 fi
 
 if [ -f /etc/default/beagle-flasher ] ; then
+	sed -i -e 's:/opt/scripts/tools/eMMC/init-eMMC-flasher-v3.sh:/usr/sbin/init-beagle-flasher:g' /boot/uEnv.txt
 	sed -i -e 's:#cmdline=init:cmdline=init:g' /boot/uEnv.txt
 	systemctl enable beagle-flasher-init-shutdown.service || true
 	systemctl disable grow_partition.service || true
