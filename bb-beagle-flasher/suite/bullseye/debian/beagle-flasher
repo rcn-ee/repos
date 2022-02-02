@@ -92,27 +92,6 @@ reset_leds() {
 	fi
 }
 
-error_leds() {
-	if [ "x${has_usr_leds}" = "xenable" ] ; then
-		if [ -e /proc/$CYLON_PID ]; then
-			kill $CYLON_PID > /dev/null 2>&1
-		fi
-
-		leds_pattern0=${leds_pattern0:-"heartbeat"}
-		leds_pattern1=${leds_pattern1:-"heartbeat"}
-		leds_pattern2=${leds_pattern2:-"heartbeat"}
-		leds_pattern3=${leds_pattern3:-"heartbeat"}
-		leds_base=/sys/class/leds/beaglebone\:green\:usr
-
-		if [ -e ${leds_base}0/trigger ] ; then
-			echo ${leds_pattern0} > ${leds_base}0/trigger
-			echo ${leds_pattern1} > ${leds_base}1/trigger
-			echo ${leds_pattern2} > ${leds_base}2/trigger
-			echo ${leds_pattern3} > ${leds_base}3/trigger
-		fi
-	fi
-}
-
 flush_cache () {
 	sync
 	if [ "x${destination}" != "x" ] ; then
@@ -153,15 +132,49 @@ example_failure () {
 	exit 2
 }
 
+inf_loop () {
+	message="Error: Flash Failed please review log."                                           ; broadcast
+	while read MAGIC ; do
+		case $MAGIC in
+		beagleboard.org)
+			echo "Your foo is strong!"
+			bash -i
+			;;
+		*)	echo "Your foo is weak."
+			;;
+		esac
+	done
+}
+
 write_failure () {
-	error_leds
 	message="ERROR: writing to [destination=${destination}] failed..."                         ; broadcast
+
+	if [ "x${has_usr_leds}" = "xenable" ] ; then
+		if [ -e /proc/$CYLON_PID ]; then
+			kill $CYLON_PID > /dev/null 2>&1
+		fi
+
+		leds_pattern0=${leds_pattern0:-"heartbeat"}
+		leds_pattern1=${leds_pattern1:-"heartbeat"}
+		leds_pattern2=${leds_pattern2:-"heartbeat"}
+		leds_pattern3=${leds_pattern3:-"heartbeat"}
+		leds_base=/sys/class/leds/beaglebone\:green\:usr
+
+		if [ -e ${leds_base}0/trigger ] ; then
+			echo ${leds_pattern0} > ${leds_base}0/trigger
+			echo ${leds_pattern1} > ${leds_base}1/trigger
+			echo ${leds_pattern2} > ${leds_base}2/trigger
+			echo ${leds_pattern3} > ${leds_base}3/trigger
+		fi
+		message="Debug: Setting Heartbeat"                                                         ; broadcast
+	fi
+
 	message="--------------------------------------------------------------------------------" ; broadcast
 	flush_cache
 	if [ "x${destination}" != "x" ] ; then
 		umount ${destination}p1 > /dev/null 2>&1 || true
 	fi
-	exit 2
+	inf_loop
 }
 
 check_running_system () {
