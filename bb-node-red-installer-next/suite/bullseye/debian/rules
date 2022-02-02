@@ -101,7 +101,7 @@ override_dh_auto_configure:
 	echo "node-red-node-machinechat"
 	echo "Fake Install: node-red-node-machinechat@github"
 	TERM=dumb $(node_bin) $(npm_bin) install -g --unsafe-perm=true --loglevel=error --arch=arm --prefix /tmp https://github.com/MachinechatLLC/node-red-node-machinechat
-	tree $(tmp_dir)/node-red-node-machinechat/
+	tree $(tmp_dir)/
 	cd $(tmp_dir)/node-red-node-machinechat/ ; TERM=dumb $(node_bin) $(npm_bin) pack
 	TERM=dumb $(node_bin) $(npm_bin) install -g $(tmp_dir)/node-red-node-machinechat/*.tgz --unsafe-perm=true --loglevel=error --arch=arm --prefix $(project_dir) --no-save
 	rm -rf $(tmp_dir)/node-red-node-machinechat/
