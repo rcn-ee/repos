@@ -2,7 +2,7 @@
 
 package_name="sancloud-firmware"
 debian_pkg_name="${package_name}"
-package_version="1.20220217.1"
+package_version="0.1.0.20220217.2"
 package_source=""
 src_dir=""
 
