@@ -1,0 +1,202 @@
+From 0e1a9384f544d79e5e50ebef43f85d4cd64dc75e Mon Sep 17 00:00:00 2001
+From: Robin Getz <robin.getz@analog.com>
+Date: Sat, 23 Oct 2021 16:55:17 -0400
+Subject: [PATCH 20/26] CMake: re-work messages, to have a summary at the
+ bottom of the cmake
+
+This re-works some of the cmake to make it quieter, and less status in
+random places, to put a summary at the bottom of the file, to make it
+easier for people to find (and for us to debug).
+
+Now we get outputs like:
+
+-- Features Enabled : xml network dns-sd avahi ipv6 local usb utils iiod iiod-serial iiod-aio iiod-usb man-utils
+-- Features Disabled:  C#-bindings Python-bindings zstd serial examples iiod-systemd iiod-sysvinit iiod-upstart doc man
+
+Signed-off-by: Robin Getz <robin.getz@analog.com>
+---
+ CMakeLists.txt                 | 42 +++++++++++++++++++++++++---------
+ bindings/CMakeLists.txt        |  6 +++++
+ bindings/python/CMakeLists.txt |  3 ---
+ iiod/CMakeLists.txt            | 12 ++++++++--
+ man/CMakeLists.txt             |  7 +++++-
+ 5 files changed, 53 insertions(+), 17 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 91db382a..7437136c 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -149,8 +149,6 @@ if (WITH_USB_BACKEND)
+ 		message(SEND_ERROR "Unable to find libusb-1.0 dependency.\n"
+ 			"If you want to disable the USB backend, set WITH_USB_BACKEND=OFF.")
+ 	else()
+-		message(STATUS "Looking for libusb-1.0 : Found")
+-
+ 		set(IIOD_CLIENT 1)
+ 		set(NEED_LIBXML2 1)
+ 		set(NEED_THREADS 1)
+@@ -293,7 +291,6 @@ endif (WITH_ZSTD)
+ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+ 
+ if(WITH_NETWORK_BACKEND)
+-	message(STATUS "Building with Network back end support")
+ 	if (WIN32)
+ 		list(APPEND LIBS_TO_LINK wsock32 iphlpapi ws2_32)
+ 	endif()
+@@ -334,18 +331,14 @@ if(WITH_NETWORK_BACKEND)
+ 		message(STATUS "Building without DNS-SD (ZeroConf) support")
+ 	elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+ 		find_library(CORE_SERVICES CoreServices)
+-
+-		message(STATUS "Building with CFNetServices, an Apple DNS SD implementation")
+-
+ 		list(APPEND LIBIIO_CFILES dns_sd_bonjour.c dns_sd.c)
+ 		list(APPEND LIBS_TO_LINK ${CORE_SERVICES} )
+-
++		set(HAVE_BONJOUR ON)
+ 	elseif(WIN32)
+ 		list(APPEND LIBIIO_CFILES dns_sd_windows.c dns_sd.c)
+ 		if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
+ 			set_source_files_properties(dns_sd_windows.c PROPERTIES COMPILE_FLAGS "-Wno-unused-function")
+ 		endif()
+-		message(STATUS "Building with mdns, A Public domain mDNS/DNS-SD library in C ")
+ 	else()
+ 		find_library(AVAHI_CLIENT_LIBRARIES avahi-client)
+ 		find_library(AVAHI_COMMON_LIBRARIES avahi-common)
+@@ -354,9 +347,7 @@ if(WITH_NETWORK_BACKEND)
+ 				"If you want to disable DNS-SD (ZeroConf) support, set HAVE_DNS_SD=OFF.")
+ 		endif()
+ 
+-		message(STATUS "Building with Avahi, a DNS-SD (ZeroConf) implementation")
+ 		set(HAVE_AVAHI ON)
+-
+ 		list(APPEND LIBIIO_CFILES dns_sd_avahi.c dns_sd.c)
+ 		set(AVAHI_LIBRARIES ${AVAHI_CLIENT_LIBRARIES} ${AVAHI_COMMON_LIBRARIES})
+ 		list(APPEND LIBS_TO_LINK ${AVAHI_LIBRARIES})
+@@ -366,7 +357,6 @@ if(WITH_NETWORK_BACKEND)
+ 	set(IIOD_CLIENT 1)
+ 	set(NEED_LIBXML2 1)
+ else()
+-	message(STATUS "Building without network support")
+ 	set(HAVE_DNS_SD OFF)
+ endif()
+ 
+@@ -618,3 +608,33 @@ if (WITH_USB_BACKEND AND CMAKE_SYSTEM_NAME MATCHES "^Linux")
+ endif()
+ 
+ configure_file(iio-config.h.cmakein ${CMAKE_CURRENT_BINARY_DIR}/iio-config.h @ONLY)
++
++list(APPEND IIO_FEATURES_${WITH_XML_BACKEND} xml)
++list(APPEND IIO_FEATURES_${WITH_ZSTD} zstd)
++list(APPEND IIO_FEATURES_${WITH_NETWORK_BACKEND} network)
++list(APPEND IIO_FEATURES_${HAVE_DNS_SD} dns-sd)
++list(APPEND IIO_FEATURES_${HAVE_AVAHI} avahi)
++list(APPEND IIO_FEATURES_${HAVE_BONJOUR} bonjour)
++list(APPEND IIO_FEATURES_${ENABLE_IPV6} ipv6)
++list(APPEND IIO_FEATURES_${WITH_SERIAL_BACKEND} serial)
++list(APPEND IIO_FEATURES_${WITH_LOCAL_BACKEND} local)
++list(APPEND IIO_FEATURES_${WITH_USB_BACKEND} usb)
++list(APPEND IIO_FEATURES_${WITH_TESTS} utils)
++list(APPEND IIO_FEATURES_${WITH_EXAMPLES} examples)
++list(APPEND IIO_FEATURES_${WITH_IIOD} iiod)
++#add iiod settings
++list(APPEND IIO_FEATURES_ON ${IIOD_FEATURES_ON})
++list(APPEND IIO_FEATURES_OFF ${IIOD_FEATURES_OFF})
++list(APPEND IIO_FEATURES_${WITH_DOC} doc)
++#add man page settings
++list(APPEND IIO_FEATURES_ON ${IIOM_FEATURES_ON})
++list(APPEND IIO_FEATURES_OFF ${IIOM_FEATURES_OFF})
++#add binding settings
++list(APPEND IIO_FEATURES_ON ${IIOB_FEATURES_ON})
++list(APPEND IIO_FEATURES_OFF ${IIOB_FEATURES_OFF})
++
++string(REPLACE ";" " " IIO_FEATURES_ON "${IIO_FEATURES_ON}")
++string(REPLACE ";" " " IIO_FEATURES_OFF "${IIO_FEATURES_OFF}")
++
++message(STATUS "Features enabled : ${IIO_FEATURES_ON}")
++message(STATUS "Features disabled: ${IIO_FEATURES_OFF}")
+diff --git a/bindings/CMakeLists.txt b/bindings/CMakeLists.txt
+index 4c2063ac..12523ea6 100644
+--- a/bindings/CMakeLists.txt
++++ b/bindings/CMakeLists.txt
+@@ -5,3 +5,9 @@ endif()
+ if (PYTHON_BINDINGS)
+ 	add_subdirectory(python)
+ endif()
++
++list(APPEND IIOB_FEATURES_${PYTHON_BINDINGS} python-bindings)
++list(APPEND IIOB_FEATURES_${CSHARP_BINDINGS} "c#-bindings")
++
++set(IIOB_FEATURES_ON "${IIOB_FEATURES_ON}" PARENT_SCOPE)
++set(IIOB_FEATURES_OFF "${IIOB_FEATURES_OFF}" PARENT_SCOPE)
+diff --git a/bindings/python/CMakeLists.txt b/bindings/python/CMakeLists.txt
+index 6acac2ed..ec212a58 100644
+--- a/bindings/python/CMakeLists.txt
++++ b/bindings/python/CMakeLists.txt
+@@ -9,7 +9,6 @@ if(${CMAKE_VERSION} VERSION_LESS "3.12.0")
+ 	# which is available from CMake 3.12.
+ 	set(Python_Interpreter_FOUND ${PYTHONINTERP_FOUND})
+ 	set(Python_EXECUTABLE ${PYTHON_EXECUTABLE})
+-	message(STATUS "old")
+ else()
+ 	if(PYTHON_EXECUTABLE)
+ 		set(Python_EXECUTABLE ${PYTHON_EXECUTABLE})
+@@ -22,12 +21,10 @@ else()
+ 	endif()
+ 	message(STATUS "bin=${Python_EXECUTABLE} lib=${Python_LIBRARY} inc=${Python_INCLUDE_DIR}")
+ 	find_package (Python COMPONENTS Interpreter)
+-	message(STATUS "new")
+ 	message(STATUS "Python_EXECUTABLE ${Python_EXECUTABLE}")
+ endif()
+ 
+ if (Python_Interpreter_FOUND)
+-	message(STATUS "Found Python: Building bindings")
+ 	set(SETUP_PY_IN ${CMAKE_CURRENT_SOURCE_DIR}/setup.py.cmakein)
+ 	set(SETUP_PY ${CMAKE_CURRENT_BINARY_DIR}/setup.py)
+ 
+diff --git a/iiod/CMakeLists.txt b/iiod/CMakeLists.txt
+index 39b644c9..b144493f 100644
+--- a/iiod/CMakeLists.txt
++++ b/iiod/CMakeLists.txt
+@@ -37,8 +37,6 @@ if (WITH_AIO)
+ 			"If you want to disable async. I/O support, set WITH_AIO=OFF.")
+ 	endif ()
+ 
+-	message(STATUS "Looking for libaio: Found")
+-
+ 	option(WITH_IIOD_USBD "Add support for USB through FunctionFS within IIOD" ON)
+ 	if (WITH_IIOD_USBD)
+ 		include(CheckTypeSize)
+@@ -104,3 +102,13 @@ if (WITH_UPSTART)
+ 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/init/iiod.conf.cmakein ${PROJECT_BINARY_DIR}/init/iiod.conf)
+ 	install(FILES ${PROJECT_BINARY_DIR}/init/iiod.conf DESTINATION ${UPSTART_CONF_INSTALL_DIR})
+ endif()
++
++list(APPEND IIOD_FEATURES_${WITH_IIOD_SERIAL} iiod-serial)
++list(APPEND IIOD_FEATURES_${WITH_AIO} iiod-aio)
++list(APPEND IIOD_FEATURES_${WITH_IIOD_USBD} iiod-usb)
++list(APPEND IIOD_FEATURES_${WITH_SYSTEMD} iiod-systemd)
++list(APPEND IIOD_FEATURES_${WITH_SYSVINIT} iiod-sysvinit)
++list(APPEND IIOD_FEATURES_${WITH_UPSTART} iiod-upstart)
++
++set(IIOD_FEATURES_ON "${IIOD_FEATURES_ON}" PARENT_SCOPE)
++set(IIOD_FEATURES_OFF "${IIOD_FEATURES_OFF}" PARENT_SCOPE)
+diff --git a/man/CMakeLists.txt b/man/CMakeLists.txt
+index 2555eced..0d9d6a10 100644
+--- a/man/CMakeLists.txt
++++ b/man/CMakeLists.txt
+@@ -59,5 +59,10 @@ if (WITH_MAN)
+ 	install(DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_MANDIR}
+ 		DESTINATION ${CMAKE_INSTALL_MANDIR}/man1
+ 		COMPONENT doc FILES_MATCHING PATTERN "*.1*")
+-
+ endif()
++
++list(APPEND IIOM_FEATURES_${WITH_MAN} man)
++list(APPEND IIOM_FEATURES_${WITH_TESTS} man-utils)
++
++set(IIOM_FEATURES_ON "${IIOM_FEATURES_ON}" PARENT_SCOPE)
++set(IIOM_FEATURES_OFF "${IIOM_FEATURES_OFF}" PARENT_SCOPE)
+-- 
+2.30.2
+

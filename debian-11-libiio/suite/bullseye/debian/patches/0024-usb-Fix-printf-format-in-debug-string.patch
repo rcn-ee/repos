@@ -1,0 +1,29 @@
+From 471d2b84368a3dcd62efd12a365ad8aeaccb69a4 Mon Sep 17 00:00:00 2001
+From: Paul Cercueil <paul@crapouillou.net>
+Date: Fri, 12 Nov 2021 16:50:50 +0000
+Subject: [PATCH 24/26] usb: Fix printf format in debug string
+
+The parameter is a uint16_t, therefore the format specifier should be
+%hu and not %hhu.
+
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ usb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/usb.c b/usb.c
+index b2042e9c..97a4496b 100644
+--- a/usb.c
++++ b/usb.c
+@@ -928,7 +928,7 @@ static struct iio_context * usb_create_context(unsigned int bus,
+ 
+ 	pdata->nb_ep_couples = iface->bNumEndpoints / 2;
+ 
+-	IIO_DEBUG("Found %hhu usable i/o endpoint couples\n", pdata->nb_ep_couples);
++	IIO_DEBUG("Found %hu usable i/o endpoint couples\n", pdata->nb_ep_couples);
+ 
+ 	pdata->io_endpoints = calloc(pdata->nb_ep_couples,
+ 			sizeof(*pdata->io_endpoints));
+-- 
+2.30.2
+

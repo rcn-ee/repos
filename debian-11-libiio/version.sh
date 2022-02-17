@@ -13,9 +13,9 @@ git_sha=""
 reprepro_dir="libi/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-1"
+debian_version="${package_version}-2"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 local_patch="rcnee0"
 
-bullseye_version="~bullseye+20211111"
+bullseye_version="~bullseye+20220217"

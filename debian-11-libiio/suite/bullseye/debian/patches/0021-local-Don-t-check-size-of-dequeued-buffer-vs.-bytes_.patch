@@ -1,0 +1,35 @@
+From cbe8ba56228e89f3f5e226789c9362623aa40ef1 Mon Sep 17 00:00:00 2001
+From: Paul Cercueil <paul@crapouillou.net>
+Date: Fri, 12 Nov 2021 13:33:33 +0000
+Subject: [PATCH 21/26] local: Don't check size of dequeued buffer vs.
+ bytes_used
+
+We already make sure in the high-level API (buffer.c) that bytes_used
+will always be smaller or equal than the buffer size.
+
+Therefore, the case where bytes_used is bigger than a newly dequeued
+block will never happen.
+
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ local.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/local.c b/local.c
+index e9095201..0b7f3558 100644
+--- a/local.c
++++ b/local.c
+@@ -493,10 +493,6 @@ static ssize_t local_get_buffer(const struct iio_device *dev,
+ 		return ret;
+ 	}
+ 
+-	/* Requested buffer size is too big! */
+-	if (pdata->last_dequeued < 0 && bytes_used > block.size)
+-		return -EFBIG;
+-
+ 	pdata->last_dequeued = block.id;
+ 	*addr_ptr = pdata->addrs[block.id];
+ 	return (ssize_t) block.bytes_used;
+-- 
+2.30.2
+
