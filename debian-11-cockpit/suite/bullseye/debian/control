@@ -45,6 +45,7 @@ Recommends: cockpit-storaged (>= ${source:Version}),
             cockpit-packagekit (>= ${source:Version}),
 Suggests: cockpit-doc (>= ${source:Version}),
           cockpit-pcp (>= ${source:Version}),
+          cockpit-sosreport (>= ${source:Version}),
           xdg-utils,
 Description: Web Console for Linux servers
  The Cockpit Web Console enables users to administer GNU/Linux servers using a
@@ -163,3 +164,13 @@ Description: Cockpit Web Service
  .
  Install sssd-dbus for supporting client certificate/smart card authentication
  via sssd/FreeIPA.
+
+Package: cockpit-sosreport
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends},
+         cockpit-bridge (>= ${source:Version}),
+         sosreport
+Description: Cockpit user interface for diagnostic reports
+ The Cockpit component for creating diagnostic reports with the
+ sosreport tool.
