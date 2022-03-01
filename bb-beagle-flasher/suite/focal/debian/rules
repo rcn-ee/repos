@@ -1,0 +1,16 @@
+#!/usr/bin/make -f
+# See debhelper(7) (uncomment to enable)
+# output every command that modifies files on the build system.
+#DH_VERBOSE = 1
+
+%:
+	dh $@ --with systemd
+
+override_dh_installinit:
+	dh_installinit --name=beagle-flasher-init-shutdown --no-stop-on-upgrade --no-start
+
+override_dh_systemd_enable:
+	dh_systemd_enable --name=beagle-flasher-init-shutdown --no-enable
+
+override_dh_systemd_start:
+	dh_systemd_start --name=beagle-flasher-init-shutdown --no-start
