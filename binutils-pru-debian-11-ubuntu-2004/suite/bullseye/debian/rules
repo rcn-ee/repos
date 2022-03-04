@@ -4,6 +4,8 @@
 #
 # Based on the binutils-avr package
 
+DEB_BUILD_OPTIONS=noautodbgsym
+
 PACKAGE=binutils-pru
 TARGET=pru
 
@@ -19,6 +21,8 @@ CONFARGS = --prefix=/usr \
            --with-gnu-ld \
            --with-gnu-as \
            --disable-gdb \
+           --disable-sim \
+           --disable-libctf \
            --enable-install-libbfd \
 	   --with-bugurl="https://github.com/dinuxbg/gnupru/issues" \
            $(shell dpkg-buildflags --export=configure) 
@@ -114,7 +118,8 @@ install: build
 	rm -rf lib/libiberty.* lib/libbfd.* lib/libopcodes* \
 	include/bfd.h include/ansidecl.h include/bfdlink.h \
 	share/locale include/symcat.h include/dis-asm.h \
-	info share/info share/gdb include/gdb/jit-reader.h
+	info share/info share/gdb include/gdb/jit-reader.h \
+	lib/bfd-plugins/
 
 	mv debian/binutils-pru/usr/$(DEB_HOST_GNU_TYPE)/pru \
 	   debian/binutils-pru/usr/lib/pru/$(DEB_HOST_GNU_TYPE)

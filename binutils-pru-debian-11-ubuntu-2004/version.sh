@@ -11,9 +11,9 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee4"
+debian_version="${package_version}-0rcnee5"
 debian_untar=""
 debian_patch=""
 
-bullseye_version="~bullseye+20220221"
-focal_version="~focal+20220221"
+bullseye_version="~bullseye+20220304"
+focal_version="~focal+20220304"
