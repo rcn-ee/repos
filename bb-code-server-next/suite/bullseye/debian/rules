@@ -4,22 +4,23 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
-project_dir=/opt/bb-code-server-next/app
+code_server_version=4.1.0
 
-code_server_version=3.12.0
-
+# Disable dh_link
 override_dh_link:
-	# Just disable for now...
 
+# Disable dh_strip
 override_dh_strip:
-	# Just disable for now...
 
+# Disable dh_strip_nondeterminism
 override_dh_strip_nondeterminism:
-	# Just disable for now...
+
+# Disable dh_shlibdeps
+override_dh_shlibdeps:
 
 override_dh_auto_configure:
-	mkdir -p ./tmp$(project_dir)/
-	tar xf debian/code-server-$(code_server_version)-linux-armv7l.tar.gz -C ./tmp$(project_dir)/ --strip-components 1
+	mkdir -p ./tmp/opt/bb-code-server-next/app/
+	tar xf debian/code-server-$(code_server_version)-linux-armv7l.tar.gz -C ./tmp/opt/bb-code-server-next/app/ --strip-components 1
 
 %:
 	dh $@ --with systemd
