@@ -43,6 +43,7 @@ VULKAN_DRIVERS =
 
 confflags_DRI3 = -Ddri3=disabled
 confflags_OSMESA =  -Dosmesa=true
+confflags_SSE2 = -Dsse2=true
 
 # hurd doesn't do direct rendering
 ifeq ($(DEB_HOST_ARCH_OS), hurd)
@@ -135,6 +136,9 @@ else
   endif
 endif
 
+ifeq ($(DEB_HOST_ARCH), i386)
+	confflags_SSE2 = -Dsse2=false
+endif
 
 empty:=
 space := $(empty) $(empty)
@@ -168,6 +172,7 @@ confflags += \
 	$(confflags_GALLIUM) \
 	$(confflags_GLES) \
 	$(confflags_OSMESA) \
+	$(confflags_SSE2) \
 	$(confflags_VALGRIND) \
 	$(confflags_VULKAN)
 
