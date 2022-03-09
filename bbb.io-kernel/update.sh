@@ -59,6 +59,9 @@ generate_kernel_ti () {
 	if [ "x${sgxti335x}" = "xenabled" ] ; then
 		echo " , ti-sgx-ti335x-modules-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
 	fi
+	if [ "x${qcacld}" = "xenabled" ] ; then
+		echo " , qcacld-2.0-modules-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
+	fi
 	echo " , bb-u-boot-am335x-evm" >> ./suite/${dist}/debian/${wfile}
 	echo "Description: BeagleBoard.org ${msg} for am335x" >> ./suite/${dist}/debian/${wfile}
 	echo " This metapackage will install linux-image-${msg} for am335x in Debian." >> ./suite/${dist}/debian/${wfile}
@@ -132,8 +135,10 @@ do_buster () {
 	msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_ti
 	msg="5.4-ti"     ; var="ti"    ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
 	msg="5.4-ti-rt"  ; var="ti-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
+	qcacld="enabled"
 	msg="5.10-ti"    ; var="ti"    ; ver="LTS510" ; current_kernel ; generate_kernel_ti
 	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_ti
+	unset qcacld
 	unset sgxjacinto6evm
 	unset sgxti335x
 
@@ -179,8 +184,10 @@ do_bullseye () {
 	msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_ti
 	msg="5.4-ti"     ; var="ti"    ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
 	msg="5.4-ti-rt"  ; var="ti-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
+	qcacld="enabled"
 	msg="5.10-ti"    ; var="ti"    ; ver="LTS510" ; current_kernel ; generate_kernel_ti
 	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_ti
+	unset qcacld
 	unset sgxjacinto6evm
 	unset sgxti335x
 
