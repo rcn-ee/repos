@@ -1,0 +1,119 @@
+libpruio (0.6.6) jessie; urgency=low
+
+  * new: second parameter in function prussdrv_pru_enable() = start at
+  * new: function prussdrv_pru_resume() for restart after SLP 1 or HALT
+  * new: TIMER one shot mode with counter
+  * fix: examples pruss_[add|toggle], resume function implemented
+  * fix: function prussdrv_exIt(), optimized cleanup
+  * fix: PRU systems config: copies regs for disabled subsystems now
+  * fix: PRU code, reg PWMSS.TZCTL config
+  * fix: evaluation in Pwm/Tim->Value functions fixed
+  * fix: TIMERSS generated timers, start peak removed, one shot optimized
+  * fix: file pruio.py, macro PruReady removed
+  * fix: file rb_file.py, correct pointer p1 computation
+  * fix: gen. invalid pointer AdcUdt::Value in case of config error
+
+ -- Thomas Freiherr <Thomas.Freiherr@gmx.net>  Thu, 09 May 2019 13:57:29 +0200
+
+libpruio (0.6.4c) jessie; urgency=low
+
+  * fix: finetuning CAP input (freq&duty)
+  * fix: finetuning PWM output (freq&duty)
+  * fix: pinmux in setPin_lkm_bb for double pins
+  * fix: docs for TIMER and PWM
+  * fix: Timer scaling fixed [s] -> [ms]
+  * fix: PwmUdt::Sync LKM value 0x08 -> 0xFF
+  * cha: Timer PRU code starting by trigger
+  * cha: LKM tblck value 0x80 -> 0xFF
+  * fix: LKM case syntax (commas)
+  * cha: in GpioUdt renamed setGpio -> setGpioSs to be more clear
+
+ -- Thomas Freiherr <Thomas.Freiherr@gmx.net>  Fri, 19 Apr 2019 20:39:14 +0200
+
+libpruio (0.6.4b) jessie; urgency=low
+
+  * fix: DTOR does proper re-muxing again
+  * fix: race condition in fast setValue sequences
+
+ -- Thomas Freiherr <Thomas.Freiherr@gmx.net>  Wed, 27 Mar 2019 11:35:02 +0100
+
+libpruio (0.6.4a) jessie; urgency=low
+
+  * fix: BallInit/BallConf handling with LKM
+  * fix: ball# for double pins
+
+ -- Thomas Freiherr <Thomas.Freiherr@gmx.net>  Sat, 03 Nov 2018 18:35:39 +0100
+
+libpruio (0.6.4) jessie; urgency=low
+
+  * new: Python pruss_xxx examples
+  * new: Added documentation chapter Tips and Tricks
+  * new: Pocket and Beaglebone Blue hardware supported
+  * cha: Double pin check moved from LKM to function setPin()
+  * cha: GPIO subsystem registers get written before pinmuxing
+  * cha: GPIO registers now manipulated by new function setGpio()
+  * cha: Removed pin arrays from files pruio_pins.[h|bi], and
+  * cha: Macros AINx replaced by enumerators AdcStepMask (new values)
+  * cha: Define PRUIO_COM_GPIO_OUT removed (use PRUIO_COM_GPIO_CONF instead)
+  * cha: Documentation adapted for [Pocket]Beagle[Blue] (please report erata)
+  * fix: Fine-tuning in documentation
+  * fix: Python apt command fixed in chapter Preparation
+  * fix: Macros for AIN pins removed (avoid false pinmuxing)
+
+ -- Thomas Freiherr <Thomas.Freiherr@gmx.net>  Fri, 12 Oct 2018 22:06:17 +0200
+
+libpruio (0.6.2a) jessie; urgency=low
+
+  * fix: lkm source included
+
+ -- Thomas Freiherr <Thomas.Freiherr@gmx.net>  Thu, 20 Sep 2018 00:34:30 +0200
+
+libpruio (0.6.2) jessie; urgency=low
+
+  * new: Overview table for examples requirements
+  * new: Examples pruss_add and pruss_toggle (C and FreeBASIC)
+  * new: Symbol export for prussdrv functions (use driver for second PRU)
+  * cha: Correct ARM_PRUx_INTERRUPT usage (by new member PruIo::PruIntNo)
+  * fix: Optimized compile flags
+  * fix: Missing C headers included
+  * fix: Paths in _2_preparation.md fixed
+  * fix: Optimized CAP duty cycle computation
+  * fix: Congruent types in new prussdrv files
+  * fix: File src/python/libpruio/pruio.py removed from GIT
+  * fix: file src/python/libpruio/libprussdrv.py removed (intern now)
+  * fix: Correct handling for symbolic link (folder BBB in src/examples)
+
+ -- Thomas Freiherr <Thomas.Freiherr@gmx.net>  Wed, 19 Sep 2018 23:17:30 +0200
+
+libpruio (0.6.0b) jessie; urgency=low
+
+  * new: debian packaging
+  * new: python bindings and examples
+  * new: example button2 demonstrates pinmuxing
+  * new: in build prussdrv driver, less dependencies
+  * new: constructor mode PRUIO_ACT_FREMUX for free pinmuxing
+  * new: function PwmUdt::sync() for synchronization of PWMSS.Pwm outputs
+  * new: pinmuxing with loadable kernel module, no more overlays, easy install
+  * new: pins on SD slot added
+  * cha: easy installation due to debian packages
+  * cha: PruIo::setPin() function implemented as callback (C and Python)
+  * cha: no restrictions LKM pinmuxing, smaller memory footprint, faster boot
+  * cha: pinmuxing either by dtbo overlay or by loadable kernel module
+  * fix: examples source code reviewed
+  * fix: source code documentation reviewed
+  * fix: build system hierarchy and messages optimized
+  * fix: kernel 4.x problem with PWMSS.Pwm outputs fixed by LKM
+
+ -- Thomas Freiherr <Thomas.Freiherr@gmx.net>  Wed, 12 Sep 2018 09:48:49 +0200
+
+libpruio (0.6.0a) jessie; urgency=low
+
+  * Fixed header paths in C/FB examples
+
+ -- Thomas Freiherr <Thomas.Freiherr@gmx.net>  Wed, 05 Sep 2018 06:37:08 +0200
+
+libpruio (0.6.0) jessie; urgency=low
+
+  * First build of debian packages for jessie
+
+ -- Thomas Freiherr <Thomas.Freiherr@gmx.net>  Thu, 16 Aug 2018 13:02:20 +0200
