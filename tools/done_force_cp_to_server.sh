@@ -54,7 +54,6 @@ runner () {
 
 start_run () {
 	deb_arch="armhf"
-	suite="stretch" ; runner
 	suite="buster" ; runner
 	suite="bullseye" ; runner
 

@@ -43,18 +43,6 @@ echo "\$distribution = 'stretch';" >> ~/.sbuildrc
 mirror="http://${proxy}${debian_server}"
 deboot="sid"
 
-dist="stretch"
-unset flavor
-arch="armhf"
-options="--exclude=debfoster"
-setup_update_sbuild
-
-dist="stretch"
-flavor="-exp"
-arch="armhf"
-options="--exclude=debfoster --chroot-suffix=${flavor}-sbuild"
-setup_update_sbuild
-
 dist="buster"
 unset flavor
 arch="armhf"

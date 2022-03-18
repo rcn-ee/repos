@@ -76,7 +76,6 @@ runner () {
 
 start_run () {
 	deb_arch="armhf"
-	suite="stretch" ; runner
 	suite="buster" ; runner
 	suite="bullseye" ; runner
 
@@ -85,7 +84,6 @@ start_run () {
 }
 
 cleanup () {
-	suite="stretch" ; cleanup_suite
 	suite="buster" ; cleanup_suite
 	suite="bullseye" ; cleanup_suite
 
