@@ -18,4 +18,4 @@ debian_patch=""
 
 dist="debian"
 suite="bullseye"
-deb_arch="arm64"
+deb_arch="armhf"
