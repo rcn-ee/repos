@@ -1,9 +1,3 @@
-Debian 9: (stretch): http://repos.rcn-ee.com/debian/
-```
-deb [arch=armhf] http://repos.rcn-ee.com/debian/ stretch main
-#deb-src [arch=armhf] http://repos.rcn-ee.com/debian/ stretch main
-```
-
 Debian 10: (buster): http://repos.rcn-ee.com/debian/
 ```
 deb [arch=armhf] http://repos.rcn-ee.com/debian/ buster main
