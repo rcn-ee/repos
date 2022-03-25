@@ -148,6 +148,7 @@ do_buster () {
 	msg="5.14-bone" ; var="omap-psp" ; ver="V514X" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.15-bone" ; var="omap-psp" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.16-bone" ; var="omap-psp" ; ver="V516X" ; current_kernel ; generate_kernel_mainline_bone
+	msg="5.17-bone" ; var="omap-psp" ; ver="V517X" ; current_kernel ; generate_kernel_mainline_bone
 
 	msg="4.19-bone-rt" ; var="bone-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.4-bone-rt"  ; var="bone-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_bone
@@ -197,6 +198,7 @@ do_bullseye () {
 	msg="5.14-bone" ; var="omap-psp" ; ver="V514X" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.15-bone" ; var="omap-psp" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.16-bone" ; var="omap-psp" ; ver="V516X" ; current_kernel ; generate_kernel_mainline_bone
+	msg="5.17-bone" ; var="omap-psp" ; ver="V517X" ; current_kernel ; generate_kernel_mainline_bone
 
 	msg="4.19-bone-rt" ; var="bone-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.4-bone-rt"  ; var="bone-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_bone
