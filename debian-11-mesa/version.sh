@@ -4,7 +4,7 @@ mirror="http://http.debian.net/debian"
 
 package_name="mesa"
 debian_pkg_name="${package_name}"
-package_version="22.0.0"
+package_version="22.0.1"
 package_source="${debian_pkg_name}_${package_version}.orig.tar.gz"
 src_dir="${package_name}-${package_version}"
 
@@ -18,4 +18,4 @@ debian_untar=""
 debian_patch="${package_name}_${debian_version}.diff.gz"
 local_patch="rcnee0"
 
-bullseye_version="~bullseye+20220315"
+bullseye_version="~bullseye+20220330"
