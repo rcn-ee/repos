@@ -1,18 +1,18 @@
 #!/bin/bash -e
 
-#http://deb.debian.org/debian/pool/main/libd/libdrm/libdrm_2.4.109-2.dsc
+#http://deb.debian.org/debian/pool/main/libd/libdrm/libdrm_2.4.110-1.dsc
 mirror="https://deb.debian.org/debian"
 
 package_name="libdrm"
 debian_pkg_name="${package_name}"
-package_version="2.4.109"
+package_version="2.4.110"
 
 git_repo=""
 git_sha=""
 reprepro_dir="libd/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-2"
+debian_version="${package_version}-1"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 
