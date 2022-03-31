@@ -1,8 +1,1452 @@
-mesa (17.2.0~rc3-1rcnee0~stretch+20170814) stretch; urgency=low
+mesa (22.0.1-1rcnee0~bullseye+20220330) bullseye; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Mon, 14 Aug 2017 14:56:02 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Wed, 30 Mar 2022 12:13:45 -0500
+
+mesa (22.0.1-1) experimental; urgency=medium
+
+  * New upstream release.
+  * rules: Disable lto as suggested by upstream.
+  * revert-enabling-tlsdesc-support.diff: Revert a commit that's causing
+    apps to crash. (LP: #1966221)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 30 Mar 2022 11:47:25 +0300
+
+mesa (22.0.0-1) experimental; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Sun, 13 Mar 2022 20:46:36 +0200
+
+mesa (22.0.0~rc2-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+  * path_max.diff: Refreshed.
+  * rules: Drop classic drivers (r100, r200, nouveau_vieux, i915, i965).
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 17 Feb 2022 22:04:03 +0200
+
+mesa (21.3.4-1) unstable; urgency=medium
+
+  * New upstream release.
+  * control: Switch to libglvnd-core-dev build-dep. (Closes: #1003264)
+  * freedreno-afuc-Disable-the-disassembler-on-32-bit-bu.diff: Dropped,
+    upstream.
+  * Build with llvm-13 again.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 13 Jan 2022 14:35:37 +0200
+
+mesa (21.3.3-1) unstable; urgency=medium
+
+  * New upstream release.
+  * rules: Enable turnip, freedreno vulkan driver.
+  * freedreno-afuc-Disable-the-disassembler-on-32-bit-bu.diff: Fix ftbfs
+    on armhf.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 04 Jan 2022 10:30:13 +0200
+
+mesa (21.3.0-1) experimental; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 25 Nov 2021 16:35:02 +0200
+
+mesa (21.3.0~rc5-1) experimental; urgency=medium
+
+  * New upstream prerelease.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 17 Nov 2021 10:42:29 +0200
+
+mesa (21.3.0~rc1-1) experimental; urgency=medium
+
+  * New upstream prerelease.
+  * fix-python-shebang.diff: Dropped, upstream.
+  * libgbm1.symbols: Updated.
+  * rules: Enable crocus gallium driver. (LP: #1947200)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 20 Oct 2021 11:40:14 +0300
+
+mesa (21.2.6-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 25 Nov 2021 16:07:58 +0200
+
+mesa (21.2.5-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 03 Nov 2021 11:35:38 +0200
+
+mesa (21.2.4-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 18 Oct 2021 16:50:42 +0300
+
+mesa (21.2.3-2) unstable; urgency=medium
+
+  * Revert back to llvm 12. (Closes: #995835)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 07 Oct 2021 12:30:07 +0300
+
+mesa (21.2.3-1) unstable; urgency=medium
+
+  [ Timo Aaltonen ]
+  * New upstream release.
+  * rules: Build with -O2 for ppc64el.
+  * Build with llvm 13.
+
+  [ Aurelien Jarno ]
+  * Disable LLVM support on riscv64, it doesn't have JIT. (Closes: #995618)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 04 Oct 2021 15:18:27 +0300
+
+mesa (21.2.2-1) unstable; urgency=medium
+
+  * New upstream release.
+  * control: Add riscv64 to mesa-opencl-icd archs. (LP: #1942764)
+  * control: Drop libxdamage-dev from build-depends. (Closes: #979515)
+  * 0001-util-format-NEON-is-not-available-with-the-soft-floa.patch:
+    Dropped, upstream.
+  * control: Bump libdrm-dev build-dep.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 22 Sep 2021 14:33:55 +0300
+
+mesa (21.2.1-2) unstable; urgency=medium
+
+  [ Adrian Bunk ]
+  * Fix armel FTBFS
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 01 Sep 2021 14:02:18 +0300
+
+mesa (21.2.1-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 20 Aug 2021 11:38:23 +0300
+
+mesa (21.2.0-1) experimental; urgency=medium
+
+  * New upstream release. (LP: #1937988)
+  * iris-avoid-abort-if-enomem.diff: Dropped, upstream.
+  * control: Bump libdrm-dev build-dependency to 2.4.107.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 05 Aug 2021 09:48:22 +0300
+
+mesa (21.1.6-1) experimental; urgency=medium
+
+  * New upstream release.
+  * fix-ftbfs.diff: Dropped, fixed upstream.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 03 Aug 2021 13:10:20 +0300
+
+mesa (21.1.4-1) experimental; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 02 Jul 2021 16:26:26 +0300
+
+mesa (21.1.2-1) experimental; urgency=medium
+
+  * New upstream release.
+  * iris-avoid-abort-if-enomem.diff: Don't abort when out of memory.
+    (LP: #1918855)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 18 Jun 2021 14:33:09 +0300
+
+mesa (21.1.0-4) experimental; urgency=medium
+
+  * fix-ftbfs.diff: Fix build on armel/armhf/mipsel.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 17 May 2021 10:38:04 +0300
+
+mesa (21.1.0-3) experimental; urgency=medium
+
+  * rules: Drop the rule to clean up vulkan headers, not needed anymore.
+  * rules: Update vulkan layer option selection.
+  * libgbm1.symbols: Updated.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 06 May 2021 20:25:50 +0300
+
+mesa (21.1.0-2) experimental; urgency=medium
+
+  * control: Bump libdrm-dev build-dep.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 06 May 2021 16:46:12 +0300
+
+mesa (21.1.0-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Build with llvm-12.
+  * path_max.diff: Refreshed.
+  * rules: vulkan_intel.h is gone.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 06 May 2021 16:05:12 +0300
+
+mesa (21.0.3-1) experimental; urgency=medium
+
+  * New upstream release.
+  * rules: Limit d3d12 by DEB_HOST_ARCH, not DEB_HOST_ARCH_CPU. (Closes:
+    #986660)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 22 Apr 2021 10:01:11 +0300
+
+mesa (21.0.2-1) experimental; urgency=medium
+
+  * New upstream release.
+  * drisw-move-zink-down.diff: Dropped, upstream.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 08 Apr 2021 13:57:35 +0300
+
+mesa (21.0.1-2) experimental; urgency=medium
+
+  * Move zink down the list below the sw drivers. (LP: #1920665)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 07 Apr 2021 13:18:01 +0300
+
+mesa (21.0.1-1) experimental; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 25 Mar 2021 21:12:09 +0200
+
+mesa (21.0.0-1) experimental; urgency=medium
+
+  * New upstream release. (LP: #1917763)
+  * control: Add directx-headers-dev to build-depends for amd64 and arm64
+    on Linux, which is what WSL2 currently supports.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 15 Mar 2021 19:22:33 +0200
+
+mesa (21.0.0~rc5-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 22 Feb 2021 10:32:24 +0200
+
+mesa (21.0.0~rc4-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 08 Feb 2021 13:01:20 +0200
+
+mesa (21.0.0~rc3-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Sat, 30 Jan 2021 12:25:57 +0200
+
+mesa (21.0.0~rc2-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+  * lavapipe-Defer-lavapipe-warning-to-CreateDevice.patch: Dropped,
+    upstream.
+  * rules: Fix osmesa confflag to use a boolean.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 22 Jan 2021 13:44:42 +0200
+
+mesa (20.3.5-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 25 Mar 2021 12:11:46 +0200
+
+mesa (20.3.4-1) unstable; urgency=medium
+
+  [ Keith Packard ]
+  * Build most drivers for riscv64 targets
+
+  [ Timo Aaltonen ]
+  * New upstream release.
+  * lavapipe-Defer-lavapipe-warning-to-CreateDevice.patch: Dropped,
+    upstream.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Sun, 31 Jan 2021 20:26:42 +0200
+
+mesa (20.3.3-1) unstable; urgency=medium
+
+  * New upstream release.
+  * path_max.diff: Updated.
+  * lavapipe-Defer-lavapipe-warning-to-CreateDevice.patch:
+    Don't print a warning which might confuse users to think they're on
+    swrast vulkan.
+  * rules: Use 'enabled' instead of 'true' for DRI3.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 15 Jan 2021 15:16:30 +0200
+
+mesa (20.3.2-1) unstable; urgency=medium
+
+  * New upstream release.
+  * rules: Enable lavapipe (vulkan swrast) where llvm and vulkan is
+    enabled.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Sun, 03 Jan 2021 20:30:50 +0200
+
+mesa (20.3.1-1) experimental; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 18 Dec 2020 10:23:30 +0200
+
+mesa (20.3.0-2) experimental; urgency=medium
+
+  * rules: Fix the name of the broadcom vulkan driver.
+  * control, rules: Drop llvm support from kfreebsd, as llvm isn't built
+    there.
+  * rules: Enable gallium swrast (softpipe) and OSMesa everywhere, as
+    they're not actually tied to llvm being available.
+  * rules: Move common settings for !hurd to the top.
+  * rules: Use a better method to build the arrays of drivers, thanks
+    Witold Baryluk! (Closes: #972736)
+  * rules: Clarify the status of wayland support on non-linux ports.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 10 Dec 2020 14:21:30 +0200
+
+mesa (20.3.0-1) experimental; urgency=medium
+
+  * New upstream release.
+  * rules: Enable v3dv on armhf/arm64, and zink where vulkan is
+    available. (Closes: #975679)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 07 Dec 2020 16:39:42 +0200
+
+mesa (20.3.0~rc2-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 20 Nov 2020 17:00:27 +0200
+
+mesa (20.3.0~rc1-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+  * control: Add libxcb-shm0-dev to build-depends.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 11 Nov 2020 18:29:42 +0200
+
+mesa (20.2.6-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 17 Dec 2020 06:42:32 +0200
+
+mesa (20.2.5-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 16 Dec 2020 23:32:56 +0200
+
+mesa (20.2.4-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 07 Dec 2020 15:11:48 +0200
+
+mesa (20.2.3-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 25 Nov 2020 13:32:39 +0200
+
+mesa (20.2.2-1) unstable; urgency=medium
+
+  * New upstream release.
+  * control: Enable libdrm-dev for Hurd. (Closes: #973673)
+  * rules: Rework EGL_PLATFORMS to match current upstream defaults.
+  * rules: Fix warnings from deprecated options. (Closes: #973675)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 10 Nov 2020 22:38:16 +0200
+
+mesa (20.2.1-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 15 Oct 2020 12:38:36 +0300
+
+mesa (20.2.0-1) experimental; urgency=medium
+
+  * New upstream release.
+  * control: Add libclang-cpp11-dev to build-depends. (Closes: #954849)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 29 Sep 2020 11:07:13 +0300
+
+mesa (20.2.0~rc4-2) experimental; urgency=medium
+
+  * Migrate to llvm/clang-11.
+  * path_max.diff: Updated. (Closes: #969040)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 17 Sep 2020 12:07:08 +0300
+
+mesa (20.2.0~rc4-1) experimental; urgency=medium
+
+  * New upstream prerelease.
+  * rules: Move radv rule up to fix build on non-intel archs.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 04 Sep 2020 19:32:58 +0300
+
+mesa (20.2.0~rc2-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+  * rules: Get rid of trailing commas in *_DRIVERS options.
+  * control: Bump libglvnd build-dep.
+  * Update mesa-common-dev.docs.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 14 Aug 2020 18:30:42 +0300
+
+mesa (20.1.9-1) unstable; urgency=medium
+
+  * New upstream release.
+  * control: Add libclang-cpp11-dev to build-depends. (Closes: #954849)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 01 Oct 2020 10:12:00 +0300
+
+mesa (20.1.8-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 17 Sep 2020 11:23:02 +0300
+
+mesa (20.1.7-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 04 Sep 2020 14:45:01 +0300
+
+mesa (20.1.6-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 27 Aug 2020 21:08:41 +0300
+
+mesa (20.1.5-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 10 Aug 2020 10:32:11 +0300
+
+mesa (20.1.4-1) unstable; urgency=medium
+
+  * New upstream release.
+  * fix-ppc64el.patch: Dropped, upstream.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 28 Jul 2020 15:59:19 +0300
+
+mesa (20.1.2-1) unstable; urgency=medium
+
+  * New upstream release. (Closes: #963677)
+  * mesa-vulkan-drivers: Add support for device-select-layer.
+  * control, rules: Enable valgrind where supported. (Closes: #890846)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 25 Jun 2020 10:24:29 +0300
+
+mesa (20.1.1-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 11 Jun 2020 11:06:50 +0300
+
+mesa (20.1.0-1) experimental; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 28 May 2020 13:14:52 +0300
+
+mesa (20.1.0~rc4-1) experimental; urgency=medium
+
+  * New upstream snapshot.
+  * fix-build-with-llvm-10.diff: Dropped, upstream.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 22 May 2020 09:17:06 +0300
+
+mesa (20.1.0~rc1-1) experimental; urgency=medium
+
+  * New upstream snapshot.
+  * fix-build-with-llvm-10.diff: Refreshed.
+  * signing-key: Add key from Eric Engeström.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 05 May 2020 12:47:17 +0300
+
+mesa (20.0.7-1) unstable; urgency=medium
+
+  * New upstream release.
+  * src_glx_dri_common.h.diff: A new attempt to fix hurd ftbfs. (Closes:
+    #960197)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 22 May 2020 08:36:18 +0300
+
+mesa (20.0.6-3) unstable; urgency=medium
+
+  * src_glx_dri_common.h.diff: Dropped, breaks the build.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 08 May 2020 12:44:12 +0300
+
+mesa (20.0.6-2) unstable; urgency=medium
+
+  [ Timo Aaltonen ]
+  * control: Bump libdrm-dev build-dep.
+
+  [ Svante Signell ]
+  * src_glx_dri_common.h.diff: Fix build on Hurd. (Closes: #959975)
+
+  [ Frédéric Bonnard ]
+  * Fix ppc64el FTBFS. (Closes: #959943)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 08 May 2020 11:00:10 +0300
+
+mesa (20.0.6-1) unstable; urgency=medium
+
+  * New upstream release.
+  * patches: Drop upstreamed patches, refresh llvm-10 build-fix.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 05 May 2020 10:37:18 +0300
+
+mesa (20.0.4-2) unstable; urgency=medium
+
+  * fix-build-with-llvm-10.diff: Add a patch to fix build with Polly,
+    and build with llvm-10 again. (Closes: #956004)
+  * iris-drop-cache-coherent-cpu-mapping.diff: Fix corruption with iris
+    (Closes: #954311) (LP: #1864274)
+  * gallium-fix-bob-compute-shaders.diff: Fix vaapi with bob
+    deinterlacing. (LP: #1867188)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 15 Apr 2020 10:16:24 +0300
+
+mesa (20.0.4-1) unstable; urgency=medium
+
+  * New upstream release.
+  * path_max.diff, libglx-mesa0.symbols.hurd: Fix build on Hurd.
+    (Closes: #955351)
+  * upstream/signing-key.asc: Added Eric Engestrom's key.
+  * source/local-options: Update extend-diff-ignore.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Sun, 05 Apr 2020 23:39:55 +0300
+
+mesa (20.0.2-1) unstable; urgency=medium
+
+  * New upstream release.
+  * control: Revert to building with llvm/clang-9, until it builds with
+    10.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 19 Mar 2020 16:03:53 +0200
+
+mesa (20.0.1-2) experimental; urgency=medium
+
+  * control: Fix clang build-dep to actually use libclang-10-dev.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 09 Mar 2020 23:20:30 +0200
+
+mesa (20.0.1-1) experimental; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 09 Mar 2020 17:40:08 +0200
+
+mesa (20.0.0-1) experimental; urgency=medium
+
+  * New upstream release.
+  * control: Use debhelper-compat, bump to 12.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 20 Feb 2020 10:46:06 +0200
+
+mesa (20.0.0~rc3-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+  * rules: Fix dh_auto_test accepting failure.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 14 Feb 2020 14:07:05 +0200
+
+mesa (20.0.0~rc2-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+  * rules: Make running tests non-fatal, until they're actually expected
+    to pass on each arch.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 10 Feb 2020 15:02:10 +0200
+
+mesa (20.0.0~rc1-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+  * control: Add libzstd-dev to build-depends for zstd compressed shader
+    cache support.
+  * rules, fix-python-shebang.diff: Enable tests again to see where we
+    are now.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 04 Feb 2020 15:46:02 +0200
+
+mesa (20.0.0~git20200129-1) experimental; urgency=medium
+
+  * New upstream snapshot.
+  * mesa-vulkan-drivers.install: Include overlay control script.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 29 Jan 2020 09:29:20 +0200
+
+mesa (19.3.3-1) unstable; urgency=medium
+
+  * New upstream release.
+  * rules: Build zink on x86.
+  * control: Add libglvnd-dev to libegl1-mesa-dev/libgles2-mesa-
+    dev/libgl1-mesa-dev Depends to ease the transition. (Closes: #949677)
+  * drisw-fix-depth-for-ximage.diff: Dropped, upstream.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 28 Jan 2020 21:45:02 +0200
+
+mesa (19.3.2-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 15 Jan 2020 14:55:29 +0200
+
+mesa (19.3.1-4) unstable; urgency=medium
+
+  [ Julien Cristau ]
+  * Ensure strict dependencies on libglapi-mesa (closes: #947813).
+
+  [ Timo Aaltonen ]
+  * control: Add libgl{,x}-dev to mesa-common-dev Depends. (Closes:
+    #947392)
+  * drisw-fix-depth-for-ximage.diff: Fix sw driver rgbBits/depth calculation.
+    (Closes: #947196)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 08 Jan 2020 11:38:56 +0200
+
+mesa (19.3.1-3) unstable; urgency=medium
+
+  * control, rules: Actually build radv on mipsel, drop mips from
+    everywhere since it's not an arch anymore. (Closes: #947310)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 25 Dec 2019 22:05:01 +0200
+
+mesa (19.3.1-2) unstable; urgency=medium
+
+  * rules: Build radv on mips/mipsel again.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 19 Dec 2019 23:17:58 +0200
+
+mesa (19.3.1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * fix-radv-secure-compile.diff: Dropped, upstream.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 19 Dec 2019 16:45:25 +0200
+
+mesa (19.3.0-1) experimental; urgency=medium
+
+  * New upstream release.
+  * fix-radv-secure-compile.diff: Fix radv build where __NR__newselect
+    isn't defined.
+  * rules: Restore radv build on non-x86 archs.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 13 Dec 2019 01:39:02 +0200
+
+mesa (19.3.0~rc6-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+  * control, rules: Don't build radv on non-x86.
+  * Don't install EGL/GL/GLES headers or pkg-config files, they're
+    shipped by libglvnd 1.3.0 now. Make old -dev packages transitional,
+    except libegl1-mesa-dev which still has two mesa specific headers.
+  * generate-pc-files-for-gles-and-gles2.diff: Dropped, not needed anymore.
+  * rules: Update clean target.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 09 Dec 2019 13:29:49 +0200
+
+mesa (19.3.0~rc5-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+  * generate-pc-files-for-gles-and-gles2.diff: This is needed until we
+    have glvnd 1.2 in the archive.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 29 Nov 2019 21:56:04 +0200
+
+mesa (19.2.6-1) unstable; urgency=medium
+
+  * New upstream release.
+  * create-gles-pc-files-with-old-glvnd.diff: Dropped, upstream.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 29 Nov 2019 21:08:25 +0200
+
+mesa (19.2.4-1) unstable; urgency=medium
+
+  * New upstream release. (Closes: #944880)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 18 Nov 2019 15:25:12 +0200
+
+mesa (19.2.3-1) unstable; urgency=medium
+
+  * New upstream release.
+  * create-gles-pc-files-with-old-glvnd.diff: Drop the revert with a
+    proposed patch to fix creating gles pc files with old glvnd.
+  * rules: GLESv2 libs aren't built anymore, drop removing the libs.
+  * mesa-common-dev: Drop mangled GL/GLX headers, they're not generated
+    anymore.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 07 Nov 2019 14:01:26 +0200
+
+mesa (19.2.1-1) unstable; urgency=medium
+
+  [ Timo Aaltonen ]
+  * New upstream release.
+  * rules: Build Vulkan overlay on x32. (Closes: #932733)
+  * Revert-meson-fix-logic-for-generating-.pc-files-with.patch: Revert a
+    commit which attempted to fix the .pc generating logic, but
+    regressed GLES2.
+
+  [ Sven Joachim ]
+  * rules: Re-enable asm on x32, should be fixed since mesa 17.0.0
+    (Closes: #758094).
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 10 Oct 2019 07:31:08 +0300
+
+mesa (19.2.0-1) unstable; urgency=medium
+
+  * New upstream release.
+  * rules: Enable panfrost again, should be good now. (Closes: #941136)
+  * Drop reverts on pkgconfig removals, upstream now supports building
+    them with an older libglvnd.
+  * copyright: Don't refer to BSD license file.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 01 Oct 2019 15:49:52 +0300
+
+mesa (19.2.0~rc4-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+  * control: Bump libdrm-dev build-dep.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 19 Sep 2019 00:25:47 +0300
+
+mesa (19.2.0~rc3-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+  * control,rules: Restore libva-dev build-dep and nolibva build
+    profile.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 12 Sep 2019 15:34:19 +0300
+
+mesa (19.2.0~rc2-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+  * Migrate to llvm/clang-9. (Closes: #935768)
+  * control: Add vulkan-icd to mesa-vulkan-drivers Provides. (Closes:
+    #935869)
+  * control, rules: Drop libva-dev from build-depends, don't use
+    dh_libva and drop pkg.mesa.nolibva build profile, libva2 transition
+    is done.
+  * control: Bump llvm/clang build-dep.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 09 Sep 2019 14:36:14 +0300
+
+mesa (19.2.0~rc1-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+  * rules: Avoid having an empty string for -Dplatforms.
+  * Revert-egl-drop-incorrect-pkg-config-file-for-glvnd.patch: We still
+    need to ship egl.pc from mesa.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 21 Aug 2019 07:45:14 +0300
+
+mesa (19.1.6-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 04 Sep 2019 15:43:36 +0300
+
+mesa (19.1.4-1) unstable; urgency=medium
+
+  * New upstream release. (Closes: #933753, #933906)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 08 Aug 2019 07:30:48 +0300
+
+mesa (19.1.2-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+  * control: Add python3-setuptools to build-depends.
+  * rules: Use dh_missing.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 18 Jul 2019 17:07:07 +0300
+
+mesa (19.1.1-1) experimental; urgency=medium
+
+  * New upstream bugfix release.
+  * rules: Disable panfrost for now, revisit it again for 19.2. (Closes:
+    #930879)
+  * control, rules: Enable vulkan-overlay, add glslang-tools to build-depends.
+    (Closes: #930945)
+  * rules, libgles2-mesa-dev.install: Re-add the pkgconfig file for now.
+    (Closes: #930514)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 01 Jul 2019 17:24:52 +0300
+
+mesa (19.1.0-1) experimental; urgency=medium
+
+  * New upstream release.
+  * watch: Upstream switched to xz tarballs.
+  * rules: Use pkg-info.mk for gentarball.
+  * Drop upstreamed patches.
+  * libegl-mesa0.symbols: Updated.
+  * rules, libgles2-mesa-dev.install: GLES2 files aren't built anymore
+    now that GLVND is used.
+  * rules: Enable iris gallium driver.
+  * rules: Enable lima, panfrost on armhf/arm64. (Closes: #927893)
+  * rules: Update clean target.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 13 Jun 2019 10:52:07 +0300
+
+mesa (19.0.3-1) experimental; urgency=medium
+
+  * New upstream release.
+  * libgl1-mesa-dri.maintscript: Bump version so that drirc gets removed
+    for those who already upgraded to 19.0.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 08 May 2019 13:46:47 +0300
+
+mesa (19.0.2-1) experimental; urgency=medium
+
+  * New upstream release.
+  * control: Bump libdrm-dev build-dep, amdgpu needs 2.4.97.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 11 Apr 2019 11:50:26 +0300
+
+mesa (19.0.1-1) experimental; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 28 Mar 2019 15:38:58 +0200
+
+mesa (19.0.0-1) experimental; urgency=medium
+
+  * New upstream release.
+  * meson-fix-with-dri2-def-for-hurd.diff: Restored the original diff to
+    fix hurd build.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 14 Mar 2019 18:41:31 +0200
+
+mesa (19.0.0~rc7-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+  * Migrate to llvm/clang-8.
+  * fix-hurd-ftbfs.diff: Refreshed, and partially replaced by two
+    patches from upstream.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 07 Mar 2019 09:58:25 +0200
+
+mesa (19.0.0~rc6-1) experimental; urgency=medium
+
+  * New upstream release candidate. (LP: #1815236)
+  * rules: Replace imx with kmsro, fixes arm build.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 04 Mar 2019 09:26:07 +0200
+
+mesa (19.0.0~rc5-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+  * libgbm1.symbols: Updated.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 20 Feb 2019 14:02:45 +0200
+
+mesa (19.0.0~rc2-1) experimental; urgency=medium
+
+  * New upstream snapshot.
+  * 1-5-meson-remove-duplicate-definition.patch: Dropped, upstream.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 08 Feb 2019 10:44:48 +0200
+
+mesa (18.3.6-2) unstable; urgency=medium
+
+  * Cherry-pick c77acc3ceba (meson: remove meson-created megadrivers
+    symlinks) from upstream master branch. Removes a broken symlink
+    (Closes: #926857).
+
+ -- Andreas Boll <aboll@debian.org>  Sat, 11 May 2019 15:43:07 +0200
+
+mesa (18.3.6-1) unstable; urgency=medium
+
+  [ Timo Aaltonen ]
+  * libgl1-mesa-dri: Remove /etc/drirc which isn't installed anymore.
+    (Closes: #920241)
+
+  [ Andreas Boll ]
+  * New upstream release.
+    - wayland/egl: Ensure EGL surface is resized on DRI
+      update_buffers(). Fixes a crash with xwayland (Closes: #922346).
+  * Rebase patches/fix-hurd-ftbfs.diff.
+
+ -- Andreas Boll <aboll@debian.org>  Sat, 06 Apr 2019 20:58:43 +0200
+
+mesa (18.3.4-2) unstable; urgency=medium
+
+  * Cherry-pick f6556ec7d12 (dri: meson: do not prefix user provided dri-
+    drivers-path) from upstream master branch. Fixes a regression since
+    switching to meson (Closes: #922807).
+  * rules: Add meson option -Db_ndebug=true to disable assertions
+    (Related bugs: #920462, #922162, #922346).
+  * source/local-options: Remove meson build files from extend-diff-
+    ignore.
+
+ -- Andreas Boll <aboll@debian.org>  Sat, 02 Mar 2019 13:21:59 +0100
+
+mesa (18.3.4-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 19 Feb 2019 11:02:44 +0200
+
+mesa (18.3.3-1) unstable; urgency=medium
+
+  [ James Clarke ]
+  * Add pkg.mesa.nolibva build profile; this breaks the mesa -> libva-dev ->
+    libva-glx1 -> libgl1-mesa-glx dependency loop when bootstrapping.
+    (Closes: #870434)
+
+  [ Timo Aaltonen ]
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 06 Feb 2019 11:36:46 +0200
+
+mesa (18.3.2-1) unstable; urgency=medium
+
+  * New upstream release.
+    - 2-5..5-5*.patch: Dropped, upstream.
+  * fix-hurd-ftbfs.diff: Add one more check for PIPE_OS_HURD, and fixes
+    from James Clarke to address other issues with the build.
+  * nv30: Cherry-pick patches to fix a plasmashell crash. (Closes:
+    #918835)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 17 Jan 2019 20:36:15 +0200
+
+mesa (18.3.1-1) experimental; urgency=medium
+
+  * New upstream release.
+  * fix-hurd-ftbfs.diff: Fix src/util build on Hurd.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Sat, 12 Jan 2019 20:02:51 +0200
+
+mesa (18.3.0-1) experimental; urgency=medium
+
+  [ Timo Aaltonen ]
+  * control, rules. LLVM is available on s390x these days, so simplify
+    the packaging and let s390x build the same package set as other release
+    archs.
+
+  [ Andreas Boll ]
+  * New upstream release.
+  * Use proposed meson patches from upstream to fix hurd and ppc64el.
+  * control: Bump meson build-dep to 0.45 per meson.build.
+  * control: Drop unused build-dep libtool.
+  * control: Switch to python3 build-deps.
+  * Inline debian/not-installed into debian/rules.
+  * rules: Tidy up override_dh_install.
+
+ -- Andreas Boll <aboll@debian.org>  Mon, 10 Dec 2018 22:52:55 +0100
+
+mesa (18.3.0~rc5-2) experimental; urgency=medium
+
+  * rules: Drop virgl, va/vdpau from s390x.
+  * meson-fix-hurd-build.diff: Hurd needs -D_GNU_SOURCE.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 03 Dec 2018 20:43:45 +0200
+
+mesa (18.3.0~rc5-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+  * rules: Fix a typo in list of dri drivers.
+  * rules, meson-add-glx-direct-toggle.diff: Fix build on hurd.
+  * rules: Drop extra -Dosmesa from confflags.
+  * rules: Don't build gallium nouveau on s390x.
+  * rules: Classic osmesa needs classic swrast, and since it's not enabled
+    where llvmpipe is enabled, enable gallium osmesa there.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 30 Nov 2018 11:45:45 +0200
+
+mesa (18.3.0~rc4-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+  * control: Bump libdrm-dev dependency to 2.4.95.
+  * libgl1-mesa-dri.install: Updated, etc/drirc is now
+    usr/share/drirc.d/00-mesa-defaults.conf.
+  * libegl-mesa0.symbols: Updated.
+  * Build with gcc8 again.
+  * control, rules: Build with meson.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 29 Nov 2018 15:35:41 +0200
+
+mesa (18.2.8-2) unstable; urgency=medium
+
+  * Actually merge the upstream version. (Closes: #917556)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 28 Dec 2018 20:11:40 +0200
+
+mesa (18.2.8-1) unstable; urgency=medium
+
+  * New upstream release.
+  * control: Build-depend on libsensors-dev. (Closes: #917442)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 28 Dec 2018 10:50:13 +0200
+
+mesa (18.2.7-2) unstable; urgency=medium
+
+  * Temporarily disable libsensors support to bootstrap with libsensors5.
+
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Fri, 21 Dec 2018 09:22:16 +0100
+
+mesa (18.2.7-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 19 Dec 2018 11:47:32 +0200
+
+mesa (18.2.6-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 28 Nov 2018 22:58:22 +0200
+
+mesa (18.2.5-3) unstable; urgency=medium
+
+  [ Michael Biebl ]
+  * Force compilation against gcc-7, gcc-8 miscompiles mesa
+    See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=87859
+    (Closes: #914267).
+
+ -- Andreas Boll <aboll@debian.org>  Thu, 22 Nov 2018 21:18:39 +0100
+
+mesa (18.2.5-2) unstable; urgency=medium
+
+  * Move KHR/khrplatform.h from libegl1-mesa-dev to mesa-common-dev
+    because GL/glcorearb.h and GL/glext.h started to depend on this
+    header too (Closes: #914167).
+
+ -- Andreas Boll <aboll@debian.org>  Tue, 20 Nov 2018 21:20:51 +0100
+
+mesa (18.2.5-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Andreas Boll <aboll@debian.org>  Mon, 19 Nov 2018 16:18:34 +0100
+
+mesa (18.2.4-1) experimental; urgency=medium
+
+  [ Andreas Boll ]
+  * New upstream release.
+    - vulkan: Disable randr lease for libxcb < 1.13 (Closes: #908827,
+    #909720).
+  * Drop version from build-deps libxcb-dri3-dev and libxcb-present-dev.
+  * Bump libdrm-dev dependency to 2.4.92.
+  * Enable building etnaviv and imx on arm64 (Closes: #907136).
+
+  [ Timo Aaltonen ]
+  * copyright: Rewrite for format 1.0.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 15 Nov 2018 11:20:08 +0200
+
+mesa (18.2.1-1) experimental; urgency=medium
+
+  * New upstream release.
+  * control: Add libd3dadapter9-mesa to -dev depends.
+  * control: Fix libd3dadapter9-mesa-dev section, and drop
+    shlibs:Depends.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 24 Sep 2018 15:28:35 +0300
+
+mesa (18.2.0-3) experimental; urgency=medium
+
+  * control, rules: Nine needs llvmpipe, and also makes sense to build it
+    only on archs that have wine.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 19 Sep 2018 13:41:29 +0300
+
+mesa (18.2.0-2) experimental; urgency=medium
+
+  * control: Bump build-dep on libxcb-dri3-dev and libxcb-present-dev to
+    1.13. (Closes: #908827)
+  * control: Build-depend on x11proto-dev, modify libegl1-mesa-dev and
+    libgl1-mesa-dev depends.
+  * Migrate to llvm/clang-7.
+  * Enable gallium D3D state tracker, thanks Antonio Russo and Andrew
+    Cook! (Closes: #863972)
+  * rules: Enable v3d on arm. Thanks, Fabio Pedretti!
+  * rules: Drop enabling texture float, it's enabled by default now.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 18 Sep 2018 14:49:24 +0300
+
+mesa (18.2.0-1) experimental; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 10 Sep 2018 12:54:33 +0300
+
+mesa (18.2.0~rc4-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+  * control: Add libxrandr-dev and libwayland-egl-backend-dev to build-
+    depends.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 22 Aug 2018 19:59:55 +0300
+
+mesa (18.1.9-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Cherry-pick 2f1ad72ac17 (clover: Add explicit virtual destructor to
+    argument class) from upstream master branch. Fixes memory leaks with
+    some OpenCL apps (Closes: #909741). Thanks, David Kuehling!
+
+ -- Andreas Boll <aboll@debian.org>  Wed, 10 Oct 2018 16:54:18 +0200
+
+mesa (18.1.8-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 10 Sep 2018 10:34:39 +0300
+
+mesa (18.1.7-1) unstable; urgency=medium
+
+  * New upstream release.
+  * libglx-mesa0: Add Breaks: glx-diversions (<< 0.8.4~) (Closes:
+    #903929).
+
+ -- Andreas Boll <aboll@debian.org>  Wed, 29 Aug 2018 11:16:55 +0200
+
+mesa (18.1.6-1) unstable; urgency=medium
+
+  * New upstream release.
+    - Fixes white screen when running Xfwm4 with compositing
+      (Closes: #901789).
+  * Drop glvnd-fix-gl-dot-pc.patch, fixed upstream (0c927e8da9e)
+    (Closes: #896447).
+
+ -- Andreas Boll <aboll@debian.org>  Tue, 14 Aug 2018 09:28:56 +0200
+
+mesa (18.1.5-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 30 Jul 2018 14:30:06 +0300
+
+mesa (18.1.4-1) unstable; urgency=medium
+
+  [ Emilio Pozuelo Monfort ]
+  * New upstream release.
+
+  [ Simon McVittie ]
+  * Make libwayland-dev Build-Depends consistent with -dev Depends
+
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Sun, 15 Jul 2018 12:59:44 +0200
+
+mesa (18.1.3-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 02 Jul 2018 11:25:05 +0300
+
+mesa (18.1.2-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 19 Jun 2018 17:50:24 +0300
+
+mesa (18.1.1-1) unstable; urgency=medium
+
+  * New upstream release. (Closes: #901342)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 13 Jun 2018 11:46:04 +0300
+
+mesa (18.1.0-1) experimental; urgency=medium
+
+  [ Timo Aaltonen ]
+  * New upstream release candidate.
+  * signing-key.asc: Add the key from Dylan Baker.
+  * rules: Update clean target.
+
+  [ Andreas Boll ]
+  * New upstream release.
+  * signing-key.asc: Remove old key from Juan A. Suarez Romero.
+  * Enable support for tegra on armhf and arm64. Thanks, Fabio Pedretti!
+  * Bump libdrm-dev dependency to 2.4.91.
+
+ -- Andreas Boll <aboll@debian.org>  Sat, 26 May 2018 10:34:44 +0200
+
+mesa (18.0.5-1) unstable; urgency=medium
+
+  * New upstream release.
+    - Fixes compositor freezes with XServer 1.20. Closes: #900149.
+
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Mon, 04 Jun 2018 09:51:42 +0200
+
+mesa (18.0.4-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Add key from Juan A. Suarez.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 22 May 2018 10:07:58 +0300
+
+mesa (18.0.3-1) unstable; urgency=medium
+
+  [ Andreas Boll ]
+  * New upstream release.
+
+  [ Nicolas Braud-Santoni ]
+  * Add debian/gbp.conf.
+
+  [ Timo Aaltonen ]
+  * control: libegl1-mesa-dev should pull the new libwayland-dev, update
+    dependency.
+
+ -- Andreas Boll <aboll@debian.org>  Tue, 08 May 2018 10:42:07 +0200
+
+mesa (18.0.2-2) unstable; urgency=medium
+
+  * Upload to unstable.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 02 May 2018 13:22:18 +0300
+
+mesa (18.0.2-1) experimental; urgency=medium
+
+  * New upstream release.
+
+ -- Andreas Boll <aboll@debian.org>  Mon, 30 Apr 2018 10:15:24 +0200
+
+mesa (18.0.1-1) experimental; urgency=medium
+
+  [ Timo Aaltonen ]
+  * New upstream release.
+
+  [ Andreas Boll ]
+  * Update Vcs-* URLs to point at salsa.debian.org (Closes: #896146).
+    Thanks, Stuart Young!
+  * Bump debhelper compat to 11.
+  * Bump standards version to 4.1.4.
+
+ -- Andreas Boll <aboll@debian.org>  Fri, 20 Apr 2018 13:29:30 +0200
+
+mesa (18.0.0-1) experimental; urgency=medium
+
+  * New upstream release.
+  * control: Update to my Debian address.
+
+ -- Andreas Boll <aboll@debian.org>  Wed, 28 Mar 2018 13:04:01 +0200
+
+mesa (18.0.0~rc5-1) experimental; urgency=medium
+
+  [ Andreas Boll ]
+  * New upstream release candidate.
+
+  [ Fabio Pedretti ]
+  * rules: Rename --disable-gallium-llvm to --disable-llvm
+
+  [ Timo Aaltonen ]
+  * control, rules: Switch to llvm 6.0, bump libclc to match.
+  * Drop libwayland-egl-mesa, which is now provided by src:wayland.
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Wed, 21 Mar 2018 20:05:23 +0100
+
+mesa (18.0.0~rc4-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 12 Feb 2018 10:43:32 +0200
+
+mesa (18.0.0~rc2-1) experimental; urgency=medium
+
+  * New upstream release.
+  * libgbm1.symbols: Updated.
+  * rules: Use -O1 for sh3 & sh4, thanks John Paul Adrian Glaubitz!
+    (Closes: #887444)
+  * rules: Fix hurd FTBFS, thanks Samuel Thibault! (Closes: #888047)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 25 Jan 2018 13:42:14 +0200
+
+mesa (17.3.9-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Andreas Boll <aboll@debian.org>  Thu, 19 Apr 2018 11:18:35 +0200
+
+mesa (17.3.8-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Andreas Boll <aboll@debian.org>  Fri, 06 Apr 2018 10:24:44 +0200
+
+mesa (17.3.7-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Wed, 21 Mar 2018 18:26:10 +0100
+
+mesa (17.3.6-1) unstable; urgency=medium
+
+  * New upstream release.
+    - Fixes GPU hangs in the i965 driver (Closes: #890866).
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Tue, 27 Feb 2018 09:41:37 +0100
+
+mesa (17.3.5-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Tue, 20 Feb 2018 12:16:33 +0100
+
+mesa (17.3.4-1) unstable; urgency=medium
+
+  * New upstream release.
+    - winsys/radeon: Compute is_displayable in surf_drm_to_winsys
+    (Closes: #888633).
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Fri, 16 Feb 2018 11:56:39 +0100
+
+mesa (17.3.3-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Bump debhelper compat to 10.
+  * Bump standards version to 4.1.3.
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Fri, 19 Jan 2018 20:34:29 +0100
+
+mesa (17.3.2-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 12 Jan 2018 15:11:42 +0200
+
+mesa (17.3.1-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Fri, 22 Dec 2017 11:25:59 +0100
+
+mesa (17.3.0-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Bump standards version to 4.1.2.
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Wed, 13 Dec 2017 17:11:15 +0100
+
+mesa (17.3.0~rc5-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Tue, 21 Nov 2017 11:44:37 +0100
+
+mesa (17.3.0~rc3-1) experimental; urgency=medium
+
+  [ Andreas Boll ]
+  * New upstream release candidate.
+
+  [ Fabio Pedretti ]
+  * control: Remove libtxc-dxtn* recommends for S3TC.
+  * rules: Rename --enable-gallium-llvm to --enable-llvm.
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Wed, 08 Nov 2017 14:00:55 +0100
+
+mesa (17.3.0~rc2-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+  * Bump libdrm-dev build-dep to 2.4.85 per configure.ac.
+  * rules: Replace deprecated --disable-omx with --disable-omx-bellagio.
+  * Update libgbm1.symbols.
+  * Update extend-diff-ignore.
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Tue, 31 Oct 2017 14:12:08 +0100
+
+mesa (17.2.5-1) unstable; urgency=medium
+
+  [ Emilio Pozuelo Monfort ]
+  * Make mesa-va-drivers enhance libva2 rather than libva1 (Closes: #881374).
+
+  [ Timo Aaltonen ]
+  * libglx-mesa0.links.in: Add libGLX_indirect.so.0 to link against
+    libGLX_mesa so that GLX with a remote xserver works. (Closes: #881789)
+
+  [ Andreas Boll ]
+  * New upstream release.
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Fri, 17 Nov 2017 10:46:35 +0100
+
+mesa (17.2.4-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Build with dh_libva (Closes: #879064).
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Tue, 31 Oct 2017 12:19:49 +0100
+
+mesa (17.2.3-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+  * Bump standards version to 4.1.1 (Priority: extra -> optional).
+  * Update extend-diff-ignore.
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Fri, 20 Oct 2017 11:59:49 +0200
+
+mesa (17.2.2-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 03 Oct 2017 14:20:47 +0300
+
+mesa (17.2.1-2) unstable; urgency=medium
+
+  * Cherry-pick 2ef7f23820a (configure: check if -latomic is needed for
+    __atomic_*) from upstream. Should fix FTBFS on armel (Closes:
+    #874531).
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Tue, 26 Sep 2017 11:25:54 +0200
+
+mesa (17.2.1-1) unstable; urgency=medium
+
+  * New upstream bugfix release. (LP: #1716250)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 18 Sep 2017 14:33:02 +0300
+
+mesa (17.2.0-2) unstable; urgency=medium
+
+  * control: Mark transitional packages M-A: same. (Closes: #874013,
+    #874509).
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 06 Sep 2017 21:53:24 +0300
+
+mesa (17.2.0-1) unstable; urgency=medium
+
+  * New upstream release.
+  * control: Make transitional packages arch:any. (Closes: #874013)
+  * control: Add libglx-mesa0 to libgl1-mesa-glx Depends.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 05 Sep 2017 14:41:01 +0300
+
+mesa (17.2.0~rc6-1) experimental; urgency=medium
+
+  * New release candidate.
+  * control, rules: Build gallium/svga only on x86.
+  * rules: Improve readability.
+  * control, rules: Bump llvm/clang to 5.0, and libclc to match.
+  * control: Bump libgl1-mesa-dri to libglx-mesa0 Depends, it's needed
+    for swrast used on some tests.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 01 Sep 2017 11:37:30 +0300
+
+mesa (17.2.0~rc4-1) experimental; urgency=medium
+
+  * Migrate mesa to build against libglvnd:
+    + patches:
+      - Fix gl.pc
+    + control:
+      - Add libglvnd-core-dev to build-depends
+      - Drop libgles2-mesa, provide a transitional package which
+        depends on libgles2
+    + control, install, symbols, lintian-overrides:
+      - Drop libegl1-mesa, libgl1-mesa-glx, add libegl-mesa0, libglx-mesa0,
+        provide transitional packages for libegl1-mesa, libgl1-mesa-glx
+      - Replace depends on libegl1-mesa with libegl1 or libglvnd-dev
+      - Add Provides: libegl-vendor to libegl-mesa0 and libglx-vendor to
+        libglx-mesa0
+    + control, lib{,e}gl1-mesa-dev.install:
+      - Drop .so files, provided by libglvnd-dev now
+      - Depend on libglvnd-dev instead of libegl1-mesa/libgl1-mesa-glx
+    + rules:
+      - Add --enable-libglvnd
+      - GLESv2 libs still get built, purge them from debian/tmp
+      - Remove lib{EGL,GLX}_mesa.so which are not needed for anything
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 15 Aug 2017 09:44:24 +0300
 
 mesa (17.2.0~rc3-1) experimental; urgency=medium
 
