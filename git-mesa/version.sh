@@ -4,7 +4,7 @@ mirror="http://http.debian.net/debian"
 
 package_name="mesa"
 debian_pkg_name="${package_name}"
-package_version="22.1.0-git20210404.2"
+package_version="22.1.0-git20210404.3"
 package_source="${debian_pkg_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
