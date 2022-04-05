@@ -227,6 +227,11 @@ suite="sid"
 archs="arm64 source"
 setup_repo
 
+#Yes, this is under debian-arm64 it's to match builds with ros...
+suite="focal"
+archs="arm64 source"
+setup_repo
+
 dist="debian-riscv64"
 suite="sid"
 archs="riscv64 source"
