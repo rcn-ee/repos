@@ -4,7 +4,7 @@ mirror="http://http.debian.net/debian"
 
 package_name="mesa"
 debian_pkg_name="${package_name}"
-package_version="22.1.0-git20210404.0"
+package_version="22.1.0-git20210404.1"
 package_source="${debian_pkg_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
@@ -17,4 +17,4 @@ debian_version="${package_version}-0"
 debian_patch=""
 debian_diff=""
 
-bullseye_version="~bullseye+20220404"
+bullseye_version="~bullseye+20220405"
