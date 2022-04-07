@@ -1,10 +1,10 @@
 #!/bin/bash -e
 
-#https://github.com/beagleboard/u-boot/commits/v2021.10-bbb.io-am335x
+#https://git.beagleboard.org/beagleboard/u-boot/-/tree/v2022.04-bbb.io-am335x-am57xx
 
 package_name="bb-u-boot-am335x-evm-beta"
 debian_pkg_name="${package_name}"
-package_version="2021.10.20211217.0"
+package_version="2022.04.20220407.0"
 package_source=""
 src_dir=""
 
@@ -19,4 +19,4 @@ debian_patch=""
 
 clear_changelog="enable"
 
-buster_version="~buster+20211217"
+buster_version="~buster+20220407"
