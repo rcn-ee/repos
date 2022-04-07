@@ -1,10 +1,10 @@
 #!/bin/bash -e
 
-#https://github.com/beagleboard/u-boot/commits/v2021.10-bbb.io-am335x
+#https://git.beagleboard.org/beagleboard/u-boot/-/tree/v2022.04-bbb.io-am335x-am57xx
 
 package_name="bb-u-boot-am335x-evm"
 debian_pkg_name="${package_name}"
-package_version="2021.10.20211217.0"
+package_version="2022.04.20220407.0"
 package_source=""
 src_dir=""
 
@@ -19,5 +19,5 @@ debian_patch=""
 
 clear_changelog="enable"
 
-bullseye_version="~bullseye+20211217"
-focal_version="~focal+20211217"
+bullseye_version="~bullseye+20220407"
+focal_version="~focal+20220407"
