@@ -4,7 +4,7 @@
 
 package_name="bb-u-boot-am335x-evm"
 debian_pkg_name="${package_name}"
-package_version="2022.04.20220407.0"
+package_version="2022.04.20220407.1"
 package_source=""
 src_dir=""
 
@@ -19,5 +19,5 @@ debian_patch=""
 
 clear_changelog="enable"
 
-bullseye_version="~bullseye+20220407"
-focal_version="~focal+20220407"
+bullseye_version="~bullseye+20220408"
+focal_version="~focal+20220408"

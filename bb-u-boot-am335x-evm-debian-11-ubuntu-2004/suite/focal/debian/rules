@@ -12,7 +12,7 @@ override_dh_strip:
 	# Just disable for now...
 
 override_dh_auto_configure:
-	git clone -b $(UB_TAG) https://git.beagleboard.org/beagleboard/u-boot.git --depth=1
+	GIT_SSL_NO_VERIFY=true git clone -b $(UB_TAG) https://git.beagleboard.org/beagleboard/u-boot.git --depth=1
 	cd ./u-boot/ ; make ARCH=arm CROSS_COMPILE= distclean ; make ARCH=arm CROSS_COMPILE= $(UB_CONFIG) ; make -j2 ARCH=arm CROSS_COMPILE=
 
 %:
