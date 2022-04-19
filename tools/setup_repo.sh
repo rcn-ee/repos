@@ -214,6 +214,10 @@ suite="impish"
 archs="armhf source"
 setup_repo
 
+suite="jammy"
+archs="armhf source"
+setup_repo
+
 dist="debian-arm64"
 suite="bullseye"
 archs="arm64 source"
