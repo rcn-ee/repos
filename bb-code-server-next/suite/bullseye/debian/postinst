@@ -9,29 +9,29 @@ package="bb-code-server-next"
 systemctl daemon-reload | true
 
 main_install () {
-	mkdir -p /opt/bb-code-server-next/config/
-	mkdir -p /opt/bb-code-server-next/extensions/
+	mkdir -p /opt/${package}/config/
+	mkdir -p /opt/${package}/extensions/
 
 	echo "${package}: --list-extensions"
-	/opt/bb-code-server-next/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config /opt/bb-code-server-next/config/config.yaml --extensions-dir /opt/bb-code-server-next/extensions/ --list-extensions
+	/opt/${package}/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config /opt/${package}/config/config.yaml --extensions-dir /opt/${package}/extensions/ --list-extensions
 	echo "${package}: *****************"
 
 	#Git
 	echo "${package}: Installing: donjayamanne.githistory"
-	/opt/bb-code-server-next/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config /opt/bb-code-server-next/config/config.yaml --extensions-dir /opt/bb-code-server-next/extensions/ --install-extension donjayamanne.githistory --force
+	/opt/${package}/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config /opt/${package}/config/config.yaml --extensions-dir /opt/${package}/extensions/ --install-extension donjayamanne.githistory --force
 	echo "${package}: *****************"
 
 	#Code Runner
 	echo "${package}: Installing: formulahendry.code-runner"
-	/opt/bb-code-server-next/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config /opt/bb-code-server-next/config/config.yaml --extensions-dir /opt/bb-code-server-next/extensions/ --install-extension formulahendry.code-runner --force
+	/opt/${package}/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config /opt/${package}/config/config.yaml --extensions-dir /opt/${package}/extensions/ --install-extension formulahendry.code-runner --force
 	echo "${package}: *****************"
 
 	echo "${package}: --list-extensions"
-	/opt/bb-code-server-next/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config /opt/bb-code-server-next/config/config.yaml --extensions-dir /opt/bb-code-server-next/extensions/ --list-extensions
+	/opt/${package}/app/bin/code-server --auth none --disable-telemetry --disable-update-check --config /opt/${package}/config/config.yaml --extensions-dir /opt/${package}/extensions/ --list-extensions
 	echo "${package}: *****************"
 
-	chown -R 1000:1000 /opt/bb-code-server-next/config/ || true
-	chown -R 1000:1000 /opt/bb-code-server-next/extensions/ || true
+	chown -R 1000:1000 /opt/${package}/config/ || true
+	chown -R 1000:1000 /opt/${package}/extensions/ || true
 
 	echo "${package}:Installed"
 }
