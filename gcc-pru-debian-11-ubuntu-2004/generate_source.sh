@@ -5,9 +5,7 @@
 # rm *.tar.xz || true
 rm *.tar.bz2 || true
 
-# TODO - once GCC 12 is released, switch back to mainline tarballs.
-# wget http://ftpmirror.gnu.org/gcc/gcc-${package_version}/gcc-${package_version}.tar.xz
-wget http://dinux.eu/gnupru/gcc-${package_version}.tar.gz
+wget http://ftpmirror.gnu.org/gcc/gcc-${package_version}/gcc-${package_version}.tar.xz
 
 wget http://sourceware.org/pub/newlib/newlib-${newlib_version}.tar.gz
 
