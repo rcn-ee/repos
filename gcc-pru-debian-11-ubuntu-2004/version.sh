@@ -2,7 +2,7 @@
 
 package_name="gcc-pru"
 debian_pkg_name="${package_name}"
-package_version="12.0.RC.gaeedb00a1a"
+package_version="12.1.0"
 package_source=""
 src_dir=""
 
