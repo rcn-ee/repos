@@ -1,0 +1,21 @@
+Description: First call chmod, then mkswap
+ Avoids mkswap warning about insecure permissions, suggesting the
+ permissions the file will be set to anyways afterwards.
+Author: Axel Beckert <abe@debian.org>
+
+--- a/dphys-swapfile
++++ b/dphys-swapfile
+@@ -129,11 +129,12 @@
+ 
+       dd if=/dev/zero of="${CONF_SWAPFILE}" bs=1048576 \
+         count="${CONF_SWAPSIZE}" 2> /dev/null
+-      mkswap "${CONF_SWAPFILE}" > /dev/null
+ 
+       # ensure that only root can read possibly critical stuff going in here
+       chmod 600 "${CONF_SWAPFILE}"
+ 
++      mkswap "${CONF_SWAPFILE}" > /dev/null
++
+       # do not mount swapfile via fstab, because swapfile may only
+       #   be created after partitions are all mounted, not here yet
+       # so just add warning comment line that swapfile is not in fstab

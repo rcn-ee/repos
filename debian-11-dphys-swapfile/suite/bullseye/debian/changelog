@@ -1,0 +1,205 @@
+dphys-swapfile (20100506-7rcnee0~bullseye+20220601) bullseye; urgency=low
+
+  * Rebuild for repos.rcn-ee.com
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Wed, 01 Jun 2022 16:15:07 -0500
+
+dphys-swapfile (20100506-7+rpt1) bullseye; urgency=medium
+
+  * Reinstate fallocate.patch for ext filesystems
+
+ -- Serge Schneider <serge@raspberrypi.com>  Tue, 03 May 2022 15:58:42 +0100
+
+dphys-swapfile (20100506-7) unstable; urgency=medium
+
+  [ Axel Beckert ]
+  * Fix typo in previous debian/changelog entry.
+  * Bump debian/watch version from 3 to 4. Thanks Lintian!
+  * Update lintian overrides to follow tag renaming.
+  * Bump debhelper-compat to 13.
+  * Declare compliance with Debian Policy 4.5.1. (No changes needed.)
+
+  [ Louis Jackman ]
+  * Disable swapfile's Copy on Write flag for Copy on Write file systems.
+    (Salsa MR !2; add dependency on e2fsprogs for chattr.)
+  * Touch swapfile before trying to set the CoW attribute. (MR !3)
+
+ -- Axel Beckert <abe@debian.org>  Sun, 17 Jan 2021 04:29:50 +0100
+
+dphys-swapfile (20100506-6) unstable; urgency=medium
+
+  * Drop fallocate.patch: swapon(8) states that fallocate-generated
+    swapfiles will not work on certain file systems and explicitly
+    recommends the use of dd as upstream does. (Closes: #913481)
+  * Declare compliance with Debian Policy 4.4.0. (No changes needed.)
+  * Bump debhelper compatibility level to 12.
+    + Replace debian/compat with a versioned b-d on debhelper-compat.
+  * Add "Pre-Depends: ${misc:Pre-Depends}" to be able to use "invoke-rc.d
+    --skip-systemd-native". Thanks Lintian!
+
+ -- Axel Beckert <abe@debian.org>  Sat, 31 Aug 2019 15:27:16 +0200
+
+dphys-swapfile (20100506-5) unstable; urgency=high
+
+  * Add patch to fix the setup subcommand exiting prematurely with more
+    recent dc versions. (Closes: #906767, LP: #1788681) Also update
+    check-diskspace-first.patch which uses the same syntax. Thanks to
+    eHenry Berg for the initial bug report, Davide Prina for additional
+    debugging help, and Wladimir Mutel for finding the actual culprit.
+
+ -- Axel Beckert <abe@debian.org>  Thu, 23 Aug 2018 23:29:41 +0200
+
+dphys-swapfile (20100506-4) unstable; urgency=low
+
+  * Add patch to restrict swap file size to (configurable) 50% of the
+    remaining disk space (excluding potentially already existing
+    dphys-swapfile swap files). (Closes: #596187)
+  * Declare compliance with Debian Policy 4.2.0.
+    + Use HTTPS for the debian copyright format URL.
+    + Replace /var/run/ in CONF_SWAPFILE example in man page with nowadays
+      more realistic /var/tmp/.
+  * Update Vcs-* headers for move to Salsa.
+  * Bump debhelper compatibility level to 11.
+    + Update versioned build-dependency on debhelper accordingly.
+  * Add a systemd .service file. (Closes: #857861)
+    + Thanks to Christian Göttsche for the service file template.
+    + Should also fix issues where systemd kills the init script when
+      dphys-swapfile takes long to setup the swap file, e.g. due to slow
+      SD cards, since with "Type=oneshot" that timeout is disabled.
+      (LP: #1496216)
+  * Set "Rules-Requires-Root: no".
+  * Update copyright years in debian/copyright.
+  * Add a DEP12 debian/upstream/metadata file.
+
+ -- Axel Beckert <abe@debian.org>  Mon, 13 Aug 2018 00:38:54 +0200
+
+dphys-swapfile (20100506-3) unstable; urgency=medium
+
+  * Add versioned dependency on lsb-base for using /lib/lsb/init-functions
+    in the init script.
+  * Add patch to first call chmod, then mkswap. This avoids a mkswap
+    warning about insecure permissions, suggesting the permissions the
+    file will be set to anyways afterwards.
+  * Add patch by basti to use fallocate if available to create the swap
+    file much faster than with dd.
+
+ -- Axel Beckert <abe@debian.org>  Fri, 20 Jan 2017 00:40:08 +0100
+
+dphys-swapfile (20100506-2) unstable; urgency=medium
+
+  * Declare compliance with Debian Policy 3.9.8. (No changes needed.)
+  * Move packaging git repository from GitHub to Alioth.
+  * Add lintian-override for accused misspelling "allways".
+  * Revamp debian/copyright:
+    + Convert to machine-readable DEP5 format.
+    + Update copyright years.
+    + Update upstream author's e-mail address.
+    + Update initial packager's last name.
+    + Fix download URL (dphys-config vs dphys-swapfile; follow redirect)
+  * Long package description: Add a paragraph about usefulness with
+    provisioned SD card, USB stick and disk images.
+  * Add debian/maintscript to help migration from /etc/bash_completion.d/
+    to /usr/share/bash-completion/completions/.
+
+ -- Axel Beckert <abe@debian.org>  Thu, 28 Apr 2016 00:30:27 +0200
+
+dphys-swapfile (20100506-1) unstable; urgency=low
+
+  * Upload to unstable again.
+  * New upstream release
+    + Fixes issues on kfreebsd-*.
+  * Install bash completion file provided by Hans-Christoph Steiner
+    (Closes: #685113) Thanks!
+  * Install upstream's example configuration file also to /etc/. (Closes:
+    #685169)
+  * Add note to long description about the default values used upon
+    installation. (See #596187 for reasoning.)
+  * Switch to source format "3.0 (quilt)"
+    + Remove debian/README.source
+  * Bump Standards-Version to 3.9.4 (no changes)
+  * Fix lintian warnings:
+    + debian-rules-missing-recommended-target
+    + no-upstream-changelog
+    + copyright-refers-to-symlink-license
+    + init.d-script-does-not-source-init-functions
+    + init.d-script-does-not-implement-optional-option status
+  * Switch Vcs-* headers to GitHub
+  * Add Elmar to Uploaders.
+  * Bump debhelper compatibility to 9.
+    + Update versioned debhelper build-dependency accordingly.
+  * Revamp debian/rules:
+    + No more clean stamp files manually, done by dh_clean already
+    + Use dh_auto_{build,install,clean}
+    + Finally switch to a minimal dh7 style debian/rules file
+  * Apply wrap-and-sort.
+
+ -- Axel Beckert <abe@debian.org>  Tue, 01 Oct 2013 20:20:40 +0200
+
+dphys-swapfile (20100506~current-1) experimental; urgency=low
+
+  * New upstream snapshot
+    - uses dc instead of expr, so depend on dc
+    - All patches introduced in the previous upload have been accepted by
+      upstream (partially being improved, too) within a day and therefore
+      been removed from the package. Thanks, Neil!
+      + remove build dependency on quilt, too.
+    - Fixed spelling error in previous changelog entry.
+  * Bump Standards-Version to 3.9.1 (no changes)
+
+ -- Axel Beckert <abe@debian.org>  Fri, 11 Feb 2011 16:21:47 +0100
+
+dphys-swapfile (20061020-4) unstable; urgency=low
+
+  * Fix wrong magnitude in last upload's bugfix for 564466 when
+    calculating swap size. (Closes: #612877, LP: #706764) Thanks Antonio
+    Galea <antonio.galea@gmail.com> for a very unintrusive patch.
+
+ -- Axel Beckert <abe@debian.org>  Fri, 11 Feb 2011 14:40:33 +0100
+
+dphys-swapfile (20061020-3) unstable; urgency=low
+
+  * New maintainer
+  * Removed patch which removed the swapfile size limit (#502200). Without
+    this patch, the problem described in #564466 wouldn't have been so
+    harmful as it is.
+  * Updated homepage URL
+  * Moved to quilt patch management. New patches:
+    - adapt-source-code-comments-and-output.diff
+    - check-for-empty-or-zero-maxswap.diff
+    - use-meminfo-instead-of-kcore.diff (Closes: #564466)
+    - fix-spelling-errors.diff (fixes lintian warnings)
+  * Bumped standards version to 3.8.4 (no changes necessary)
+  * Added Vcs-* headers
+  * Added debian/source/format
+  * Added watch file
+  * Added "Depends: ${misc:Depends}" to debian/control due to debhelper
+    usage
+  * Added "$remote_fs" to Required-Start and Required-Stop in LSB init.d
+    section
+  * Added NEWS.Debian mentioning behaviour changes
+
+ -- Axel Beckert <abe@debian.org>  Wed, 05 May 2010 21:33:53 +0200
+
+dphys-swapfile (20061020-2) unstable; urgency=low
+
+  * Apply patch to remove maximal swapfile size. (Closes: #502200)
+    Thanks to Jacob Elder for the patch.
+  * Update my email address.
+  * Bump standards version.
+  * Bump debhelper version.
+  * Update debian/copyright.
+  * Move Homepage field in debian/control.
+
+ -- Gürkan Sengün <gurkan@phys.ethz.ch>  Thu, 19 Mar 2009 13:34:14 +0100
+
+dphys-swapfile (20061020-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Gürkan Sengün <gurkan@linuks.mine.nu>  Thu, 26 Oct 2006 09:15:10 +0200
+
+dphys-swapfile (20060915-1) unstable; urgency=low
+
+  * Initial release. (Closes: #388631)
+
+ -- Gürkan Sengün <gurkan@linuks.mine.nu>  Fri, 15 Sep 2006 19:02:47 +0200
