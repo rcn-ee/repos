@@ -62,6 +62,12 @@ generate_kernel_ti () {
 	if [ "x${qcacld}" = "xenabled" ] ; then
 		echo " , qcacld-2.0-modules-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
 	fi
+	if [ "x${rtl8723bu}" = "xenabled" ] ; then
+		echo " , rtl8723bu-modules-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
+	fi
+	if [ "x${rtl8821cu}" = "xenabled" ] ; then
+		echo " , rtl8821cu-modules-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
+	fi
 	echo " , bb-u-boot-am335x-evm" >> ./suite/${dist}/debian/${wfile}
 	echo "Description: BeagleBoard.org ${msg} for am335x" >> ./suite/${dist}/debian/${wfile}
 	echo " This metapackage will install linux-image-${msg} for am335x in Debian." >> ./suite/${dist}/debian/${wfile}
@@ -130,6 +136,8 @@ do_buster () {
 
 	sgxti335x="enabled"
 	sgxjacinto6evm="enabled"
+	rtl8723bu="enabled"
+	rtl8821cu="enabled"
 
 	msg="4.19-ti"    ; var="ti"    ; ver="LTS419" ; current_kernel ; generate_kernel_ti
 	msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_ti
@@ -139,6 +147,8 @@ do_buster () {
 	msg="5.10-ti"    ; var="ti"    ; ver="LTS510" ; current_kernel ; generate_kernel_ti
 	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_ti
 	unset qcacld
+	unset rtl8723bu
+	unset rtl8821cu
 	unset sgxjacinto6evm
 	unset sgxti335x
 
@@ -181,6 +191,8 @@ do_bullseye () {
 
 	sgxti335x="enabled"
 	sgxjacinto6evm="enabled"
+	rtl8723bu="enabled"
+	rtl8821cu="enabled"
 
 	msg="4.19-ti"    ; var="ti"    ; ver="LTS419" ; current_kernel ; generate_kernel_ti
 	msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_ti
@@ -190,6 +202,8 @@ do_bullseye () {
 	msg="5.10-ti"    ; var="ti"    ; ver="LTS510" ; current_kernel ; generate_kernel_ti
 	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_ti
 	unset qcacld
+	unset rtl8723bu
+	unset rtl8821cu
 	unset sgxjacinto6evm
 	unset sgxti335x
 
