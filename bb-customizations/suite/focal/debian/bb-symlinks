@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#WIP: ecap, these aren't on every board....
-#mkdir -p /dev/bone/ecap/
+mkdir -p /dev/bone/am335x/ecap/
+mkdir -p /dev/bone/counter/
 mkdir -p /dev/bone/pwm/
 
 i=0
@@ -13,21 +13,21 @@ do
 	fi
 
 	case "${pwm_node}" in
-#	ecap0)
-#		if [ -d /sys/class/pwm/pwmchip$i/pwm0/ ] ; then
-#			ln -sTf /sys/class/pwm/pwmchip$i/pwm0 /dev/bone/ecap/0
-#		fi
-#		;;
-#	ecap1)
-#		if [ -d /sys/class/pwm/pwmchip$i/pwm0/ ] ; then
-#			ln -sTf /sys/class/pwm/pwmchip$i/pwm0 /dev/bone/ecap/1
-#		fi
-#		;;
-#	ecap2)
-#		if [ -d /sys/class/pwm/pwmchip$i/pwm0/ ] ; then
-#			ln -sTf /sys/class/pwm/pwmchip$i/pwm0 /dev/bone/ecap/2
-#		fi
-#		;;
+	ecap0)
+		if [ -d /sys/class/pwm/pwmchip$i/pwm0/ ] ; then
+			ln -sTf /sys/class/pwm/pwmchip$i/pwm0 /dev/bone/am335x/ecap/0
+		fi
+		;;
+	ecap1)
+		if [ -d /sys/class/pwm/pwmchip$i/pwm0/ ] ; then
+			ln -sTf /sys/class/pwm/pwmchip$i/pwm0 /dev/bone/am335x/ecap/1
+		fi
+		;;
+	ecap2)
+		if [ -d /sys/class/pwm/pwmchip$i/pwm0/ ] ; then
+			ln -sTf /sys/class/pwm/pwmchip$i/pwm0 /dev/bone/am335x/ecap/2
+		fi
+		;;
 	ehrpwm0)
 		mkdir -p /dev/bone/pwm/0/
 		if [ -d /sys/class/pwm/pwmchip$i/pwm0/ ] ; then
@@ -59,3 +59,22 @@ do
 
 	i=$(($i+1))
 done
+
+if [ -d /sys/bus/counter/devices/counter0 ] ; then
+	/bin/chgrp -R gpio /sys/bus/counter/devices/counter0/
+	/bin/chmod -R g=u /sys/bus/counter/devices/counter0/
+	ln -sTf /sys/bus/counter/devices/counter0/ /dev/bone/counter/0
+fi
+
+if [ -d /sys/bus/counter/devices/counter1 ] ; then
+	/bin/chgrp -R gpio /sys/bus/counter/devices/counter1/
+	/bin/chmod -R g=u /sys/bus/counter/devices/counter1/
+	ln -sTf /sys/bus/counter/devices/counter1/ /dev/bone/counter/1
+fi
+
+if [ -d /sys/bus/counter/devices/counter0 ] ; then
+	/bin/chgrp -R gpio /sys/bus/counter/devices/counter2/
+	/bin/chmod -R g=u /sys/bus/counter/devices/counter2/
+	ln -sTf /sys/bus/counter/devices/counter2/ /dev/bone/counter/2
+fi
+
