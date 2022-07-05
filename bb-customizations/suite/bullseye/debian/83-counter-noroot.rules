@@ -1,0 +1,6 @@
+# /etc/udev/rules.d/83-counter-noroot.rules
+#
+SUBSYSTEM=="counter", ACTION=="add|change", \
+        RUN+="/bin/chgrp -R gpio '/sys%p'", \
+        RUN+="/bin/chmod -R g=u '/sys%p'"
+

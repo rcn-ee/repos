@@ -61,20 +61,14 @@ do
 done
 
 if [ -d /sys/bus/counter/devices/counter0 ] ; then
-	/bin/chgrp -R gpio /sys/bus/counter/devices/counter0/
-	/bin/chmod -R g=u /sys/bus/counter/devices/counter0/
 	ln -sTf /sys/bus/counter/devices/counter0/ /dev/bone/counter/0
 fi
 
 if [ -d /sys/bus/counter/devices/counter1 ] ; then
-	/bin/chgrp -R gpio /sys/bus/counter/devices/counter1/
-	/bin/chmod -R g=u /sys/bus/counter/devices/counter1/
 	ln -sTf /sys/bus/counter/devices/counter1/ /dev/bone/counter/1
 fi
 
 if [ -d /sys/bus/counter/devices/counter0 ] ; then
-	/bin/chgrp -R gpio /sys/bus/counter/devices/counter2/
-	/bin/chmod -R g=u /sys/bus/counter/devices/counter2/
 	ln -sTf /sys/bus/counter/devices/counter2/ /dev/bone/counter/2
 fi
 
