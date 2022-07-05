@@ -19,7 +19,6 @@ debian_patch=""
 
 clear_changelog="enable"
 
-stretch_version="~stretch+20220705"
 buster_version="~buster+20220705"
 bullseye_version="~bullseye+20220705"
 bionic_version="~bionic+20220705"
