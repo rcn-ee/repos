@@ -1,6 +1,7 @@
 #!/bin/bash
 
-mkdir -p /dev/bone/ecap/
+#WIP: ecap, these aren't on every board....
+#mkdir -p /dev/bone/ecap/
 mkdir -p /dev/bone/pwm/
 
 i=0
@@ -12,21 +13,21 @@ do
 	fi
 
 	case "${pwm_node}" in
-	ecap0)
-		if [ -d /sys/class/pwm/pwmchip$i/pwm0/ ] ; then
-			ln -sTf /sys/class/pwm/pwmchip$i/pwm0 /dev/bone/ecap/0
-		fi
-		;;
-	ecap1)
-		if [ -d /sys/class/pwm/pwmchip$i/pwm0/ ] ; then
-			ln -sTf /sys/class/pwm/pwmchip$i/pwm0 /dev/bone/ecap/1
-		fi
-		;;
-	ecap2)
-		if [ -d /sys/class/pwm/pwmchip$i/pwm0/ ] ; then
-			ln -sTf /sys/class/pwm/pwmchip$i/pwm0 /dev/bone/ecap/2
-		fi
-		;;
+#	ecap0)
+#		if [ -d /sys/class/pwm/pwmchip$i/pwm0/ ] ; then
+#			ln -sTf /sys/class/pwm/pwmchip$i/pwm0 /dev/bone/ecap/0
+#		fi
+#		;;
+#	ecap1)
+#		if [ -d /sys/class/pwm/pwmchip$i/pwm0/ ] ; then
+#			ln -sTf /sys/class/pwm/pwmchip$i/pwm0 /dev/bone/ecap/1
+#		fi
+#		;;
+#	ecap2)
+#		if [ -d /sys/class/pwm/pwmchip$i/pwm0/ ] ; then
+#			ln -sTf /sys/class/pwm/pwmchip$i/pwm0 /dev/bone/ecap/2
+#		fi
+#		;;
 	ehrpwm0)
 		mkdir -p /dev/bone/pwm/0/
 		if [ -d /sys/class/pwm/pwmchip$i/pwm0/ ] ; then
