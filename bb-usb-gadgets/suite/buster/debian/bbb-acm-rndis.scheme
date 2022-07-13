@@ -11,8 +11,9 @@ attrs :
 };
 os_descs : 
 {
-    use = 0;
-    qw_sign = "";
+    config_id = 1;
+    use = 1;
+    qw_sign = "MSFT100";
     b_vendor_code = 0x0;
 };
 strings = ( 
@@ -33,6 +34,21 @@ functions :
         };
         os_descs = ( );
     };
+    rndis_usb0 : 
+    {
+        instance = "usb0";
+        type = "rndis";
+        attrs : 
+        {
+            qmult = 5;
+        };
+        os_descs = ( 
+            {
+                interface = "rndis";
+                compatible_id = "RNDIS";
+                sub_compatible_id = "5162001";
+            } );
+    };
 };
 configs = ( 
     {
@@ -52,5 +68,9 @@ configs = (
             {
                 name = "acm.usb0";
                 function = "acm_usb0";
+            }, 
+            {
+                name = "rndis.usb0";
+                function = "rndis_usb0";
             } );
     } );

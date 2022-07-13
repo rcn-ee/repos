@@ -34,26 +34,12 @@ functions :
         };
         os_descs = ( );
     };
-    ncm_usb0 : 
-    {
-        instance = "usb0";
-        type = "ncm";
-        attrs : 
-        {
-            dev_addr = "NCM_DEV_ADDR";
-            host_addr = "NCM_HOST_ADDR";
-            qmult = 5;
-        };
-        os_descs = ( );
-    };
     rndis_usb0 : 
     {
         instance = "usb0";
         type = "rndis";
         attrs : 
         {
-            dev_addr = "RNDIS_DEV_ADDR";
-            host_addr = "RNDIS_HOST_ADDR";
             qmult = 5;
         };
         os_descs = ( 
@@ -82,10 +68,6 @@ configs = (
             {
                 name = "acm.usb0";
                 function = "acm_usb0";
-            }, 
-            {
-                name = "ncm.usb0";
-                function = "ncm_usb0";
             }, 
             {
                 name = "rndis.usb0";
