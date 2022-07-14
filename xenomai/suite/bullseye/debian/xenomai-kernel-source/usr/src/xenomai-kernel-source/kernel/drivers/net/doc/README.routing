@@ -1,0 +1,117 @@
+                              IP Routing Subsystem
+                              ====================
+
+The IPv4 implementation of RTnet comes with a real-time routing subsystem which
+has some differences compared to normal IP stacks. Basically, all dynamic
+elements of the routing and device address resolution (ARP) process have been
+converted into statically configurable mechanisms. This allows an easy analysis
+of the routing and address resolution complexity for known real-time networks.
+
+
+1. Concept
+----------
+
+The routing systems is based on two tables. The so-called host routing table
+contains all destination IPs which can be reached directly over local network
+segments. These IPs include local loopback addresses and network broadcasts.
+
+The optional network routing table provides the addresses of gateways
+to distant real-time networks, thus allowing more complex network structures.
+In order to use the network routing feature, RTnet has to be compiled with
+--enable-net-routing (see configure script).
+
+When preparing the transmission of an IP packet, RTnet first tries to find the
+destination address in the host routing table. If this fails and network
+routing is available, the network routing table is queried. On success, the
+host routing table is consulted again, this time using the gateway IP.
+
+Incoming IP packets are no longer checked against any routing table on standard
+RTnet nodes. Only if RTnet was compiled as a router by passing --enable-router
+to the configure script, the destination IP is checked if it describes a
+non-local address. In case the destination address does not equals the unicast
+or broadcast IP of the receiving device and if the input channel is not a
+loopback device, the RTnet router will try to find the next hop by performing
+the output routing procedure described above and, on success, will forward the
+packet. Note that, just like with non-real-time networks, any RTnet router can
+become a bottleneck for real-time messages if the traffic is not planned
+thoroughly (packets of the RTmac VNICs do not interfer with the real-time
+routing).
+
+
+2. Host Routing Table
+---------------------
+
+The content of the host routing table is comparable to ARP tables of standard
+IP stacks: destination IP address, the respective device address, and a
+reference to the output device. While normal ARP table lookups are not
+performed before the routing decision is made, RTnet is using this table
+already for the first and mostly sole routing process, and regardless of the
+device type, thus also for loopback IPs.
+
+All entries of the host routing table are stored according to a hash mechanism.
+The hash key is calculated using the least significant bits of the destination
+IP. The size of the hash table, i.e. the number of relevant destination bits is
+statically configured (default: 64, see ipv4/route.c). Also the number of
+available host routing entries is statically limited (default: 32) and can be
+set by recompiling RTnet with modified values.
+
+
+Example (hash table size 64):
+
+192.168.2.35 & 0.0.0.63 = 35, the host hash key
+
+
+Host routes are either added or updated manually via the rtroute tool or
+automatically when an ARP request or reply arrives. Note that ARP messages are
+only triggered by explicite user commands (rtroute solicit). Moreover, the
+entries in the host routing table will not expire until they are manually
+removed, e.g. by shutting down the respective output device.
+
+The easiest way to create and maintain the host routing table is to use RTcfg,
+see README.rtcfg for further information.
+
+
+3. Network Routing Table
+------------------------
+
+The entries of the network routing table contain the destination IP address, a
+mask defining the relevant bits of the destination IP, and the IP of the
+gateway to reach the destination network (or host). To simplify updates of host
+routes, i.e. foremost changes of the destination device address, gateway IPs
+have to be resolved through the host routing table.
+
+Network routes are either stored using a hash key derived from the destination
+IP or without any hashing mechanism. The size of the hash table and thus the
+number of considered IP bits for generating the key is defined in the source
+code (default: 32). The start of the bit range is specified by a module
+parameter of rtnet.o called net_hash_key_shift (default: 8).
+
+
+Example (hash table size 32, net_hash_key_shift 8):
+
+(192.168.2.35 >> 8) & 0.0.0.31 =
+= 0.192.168.2 & 0.0.0.31 = 2, the network hash key
+
+
+A new network route is only assigned to a hash key if the network mask of the
+route completely covers the hash mask.
+
+
+Examples (hash table size is 32, net_hash_key_shift is 8):
+
+rtroute add 192.168.2.0 netmask 255.255.255.0 gw 192.168.0.1
+hashmask = 0.0.0.31 << 8 = 0.0.31.0
+netmask & hashmask = 255.255.255.0 & 0.0.31.0 = 0.0.31.0 = hashmask => use key!
+
+rtroute add 10.0.0.0 netmask 255.0.0.0 gw 192.168.0.250
+netmask & hashmask = 255.0.0.0 & 0.0.31.0 = 0.0.0.0 != hashmask => no hash key!
+
+
+In the latter case, RTnet adds the new route to the list of key-less network
+routes. This list is querried only if a network route lookup in the hash table
+fails. Thus, the network routing process effectively consists of two stages:
+the hash-key-based lookup and a potential query of the key-less list of routes.
+
+RTnet provides by default a pool of 16 network routes. This number can be
+modified in the source code (see ipv4/route.c). Network routes are only
+manually added or removed via rtroute.

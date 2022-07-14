@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# Wrapper script to hide distribution-specific installation
+# prefixes when running standard Xenomai commands.
+#
+# e.g. "xeno latency"
+#
+
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+BINDIR="@bindir@"
+TESTDIR="@XENO_TEST_DIR@"
+unset prefix exec_prefix
+
+test -x $BINDIR/$1 && exec $BINDIR/$@
+test -x $TESTDIR/$1 && exec $TESTDIR/$@
+echo "$1: not found/executable"

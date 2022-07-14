@@ -1,0 +1,135 @@
+                                    RTcfg
+                                    =====
+
+The Real-Time Configuration Service (RTcfg) provides a mechanism to start up
+RTnet nodes synchronously. It implements a rendezvous during the RTnet start-up
+process, exchanges MAC addresses and optionally IP routes, and distributes
+configuration data to all stations.
+
+RTcfg consists of a kernel module which can either be configured to run as a
+server or a client. The server takes a list of all expected stations in the
+network and waits for them to come up while broadcasting invitation messages to
+the clients. The clients wait for the invitation, then exchange the
+configuration with the server, and wait for all other clients to start up.
+After all configuration steps are performed, the stations can use a further
+rendezvous mechanisms before starting the user application.
+
+
+Usage
+-----
+
+The RTcfg server and client functionality is controlled by the command line
+tool rtcfg. Note: Some feature may not be implemented yet so that the
+respective options has no effect.
+
+
+Server Commands
+---------------
+
+rtcfg <dev> server [-p period] [-b burstrate] [-h <heartbeat>]
+      [-t <threshold>] [-r]
+
+Starts a RTcfg server for the specified device <dev>. The server then sends
+every 1000 ms stage 1 configuration frames to new clients. <period> (in
+milliseconds) can be used to override the interval value. The number of
+clients invited within one period is controlled by <burstrate> (default: 4).
+This value also defines the number of stage 2 configuration fragments the
+server should send as far as the client supports it (see also "announce").
+<heartbeat> specifies the Heartbeat period of the clients in milliseconds
+(default: 1000 ms), the value 0 turns the heartbeat mechanism off. <threshold>
+sets the number of missing heartbeats after which a client shall be considered
+dead (default: 2). If -r is given, the server automatically reports to be
+ready within its stage 1 configuration frame, thus disengading it from issuing
+an explicite "ready" command.
+
+rtcfg <dev> add <address> [-hw <hw_address>] [-stage1 <stage1_file>]
+      [-stage2 <stage2_file>] [-t <timeout>]
+
+Adds a client to the server's list of potential participants of the network
+connected to the specified device <dev>. <address> can be either an IP address
+(A.B.C.D) or a physical address (AA:BB:CC:DD:EE:FF). If a physical address is
+explicitely assigned using <hw_address>, the <address> parameter must define
+the client's IP address. Optionally, files can specified which will be passed
+during the different configuration stages. If <stage1_file> is "-", rtcfg will
+read the stage 1 data from standard input. <timeout> (in milliseconds) defines
+the internal timeout after which a half-finished client configuration is reset
+to its initial state again. By default this reset is never performed.
+
+rtcfg <dev> del <address>
+
+Removes a client from the list of network participants. See above for details
+about the address format.
+
+rtcfg <dev> wait [-t <timeout>]
+
+Waits until both configuration stages for all clients in the server's list are
+completed. If <timeout> (in milliseconds) is given, rtcfg will return an error
+code when the configuration cannot be completed within the specified time. The
+default timeout is infinite.
+
+rtcfg <dev> ready [-t <timeout>]
+
+Reports that the server has completed its setup, generally including the RTmac
+startup phase, and waits until all other stations are reporting to be ready as
+well. If <timeout> (in milliseconds) is given, rtcfg will return an error code
+when the synchronisation cannot be completed within the specified time. The
+default timeout is infinite.
+
+rtcfg <dev> detach
+
+Stops the RTcfg server on the specified device <dev>. Afterwards, the device
+can be re-configured to act as server or client.
+
+
+Client Commands
+---------------
+
+rtcfg <dev> client [-t <timeout>] [-c|-f <stage1_file>] [-m maxstations]
+
+Waits until the first configuration stage is completed for the device <dev>.
+If <timeout> (in milliseconds) is given, rtcfg will return an error code when
+the configuration cannot be completed within the specified time. The default
+timeout is infinite. The incoming configuration data is either send to the
+standard output if -c is given or to <stage1_file> if specified. By default
+clients can synchronise with up to 32 other stations (including the server).
+This limit can be modified using the <maxstations> parameter.
+
+rtcfg <dev> announce [-t <timeout>] [-c|-f <stage2_file>] [-b burstrate] [-r]
+
+Sends an New Announcement frame over the device <dev> and waits until this
+second configuration stage is completed. If <timeout> (in milliseconds) is
+given, rtcfg will return an error code when the configuration cannot be
+completed within the specified time. The default timeout is infinite. If -c or
+-f is given, stage 2 configuration data is requested and either send to the
+standard output or to <stage2_file>. <burstrate> controls the number of stage 2
+configuration fragments the client should accept (default: 4). The actual
+amount is negotiated according to both the client's and the server's capability
+(see also "server"). If -r is given, the client automatically reports to be
+ready within its announcement frame, thus disengading it from issuing an
+explicite "ready" command.
+
+rtcfg <dev> ready [-t <timeout>]
+
+Reports that the client has completed its setup and waits until all other
+stations are reporting to be ready as well. If <timeout> (in milliseconds) is
+given, rtcfg will return an error code when the synchronisation cannot be
+completed within the specified time. The default timeout is infinite.
+
+rtcfg <dev> detach
+
+Stops the RTcfg client on the specified device <dev>. Afterwards, the device
+can be re-configured to act as server or client.
+
+
+Module Parameters
+-----------------
+
+start_timer     Set to zero if RTAI timer is already running. By default the
+                rtcfg module starts the timer when it is loaded.
+
+num_rtskbs      Number of realtime socket buffers used by the rtcfg module. You
+                may have to increase the default value of 32 when you are
+                working with multiple interfaces.
+
+
+2003-2005, Jan Kiszka <jan.kiszka-at-web.de>

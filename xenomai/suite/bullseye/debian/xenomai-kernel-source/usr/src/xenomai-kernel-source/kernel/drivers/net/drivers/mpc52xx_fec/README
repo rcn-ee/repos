@@ -1,0 +1,67 @@
+This is the RTnet driver for the MPC 52xx FEC for the Linux kernel
+2.4.25 (DENX linuxppc_2_4_devel tree). Unfortunately, the kernel
+requires a small patch to permit kernel modules accessing BESTCOMM
+functions (the FEC driver is not supported as module). The patch
+linuxppc_2_4_devel-fec.patch is available in this directory.
+
+Apply the FEC module patch mentioned above and then prepare and
+build the Linux kernel and Xenomai as usual:
+
+  $ export CROSS_COMPILE=ppc_6xx-
+  $ export QUILT_PATCHES=quilt_patches
+  $ export DESTDIR=/opt/eldk/ppc_6xx
+
+  $ cd linuxppc_2_4_devel
+  $ export KERNELDIR=$PWD
+  $ patch -p1 < <path>/linuxppc_2_4_devel-fec.patch
+  $ make TQM5200_config
+
+  $ cd ../xenomai
+  $ export XENODIR=$PWD
+  $ ./scripts/prepare-kernel.sh --linux=../linuxppc_2_4_devel --arch=ppc
+
+  $ cd $KERNELDIR
+  $ make menuconfig
+    ... check loadable module support ...
+    ... exit and save default configuration ...
+  $ make dep
+  $ make uImage
+  $ cp -pv arch/ppc/boot/images/uImage /tftpboot
+
+  $ $XENODIR
+  $ ./configure --host=ppc-linux --prefix=/usr/xenomai
+  $ make
+  $ make install
+
+This is the build process for the TQM5200-Board using the ELDK 3.1.1.
+
+The file rt_mpc52xx_fec.h contains a few configuration option.
+Please customize them according to your needs (according to your
+standard Linux kernel configuration):
+
+  $ cat rt_mpc52xx_fec.h
+  ...
+  /* Define board specific options */
+  #define CONFIG_RTNET_USE_MDIO
+  #define CONFIG_RTNET_FEC_GENERIC_PHY
+  #define CONFIG_RTNET_FEC_LXT971
+  #undef CONFIG_RTNET_FEC_DP83847
+
+Then configure and cross compile RTnet as shown:
+
+  $ ./configure --host=ppc-linux --with-linux=$KERNELDIR \
+    --with-rtext-config=$DESTDIR/usr/xenomai/bin/xeno-config \
+    --disable-e1000 --disable-8139  --disable-8139too \
+    --enable-mpc52xx-fec --enable-eepro100 \
+    --prefix=/usr/xenomai --enable-proxy
+  $ make
+  $ make install
+
+Note that RTnet gets installed into $DESTDIR/usr/xenomai, including
+the kernel modules.
+
+Also be aware that the MPC52xx has only one on-chip ethernet port.
+Driver development using a ram-disk based system might be cumbersome.
+It is convenient to use a supported PCI ethernet card, e.g. an
+EEPRO100, and to mount the root file-system via NFS.
+

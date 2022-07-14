@@ -1,0 +1,117 @@
+                              Buffer Pool Management
+                              ======================
+
+RTnet holds packet or packet fragments internally in so-called real-time socket
+buffers (rtskbs, comparable to Linux skbs). These buffers are used to store
+incoming data while it is processed by the stack and before it is copied to the
+user buffer. They are also used for setting up outgoing packets and passing
+them to the NIC driver.
+
+Unlike buffers in a normal network stack, rtskbs have to be allocatable in a
+strictly deterministic way. For this reason, rtskbs are kept preallocated in
+multiple pools, one for each producer or consumer of packets. When a filled
+buffer is passed from a producer to a consumer, the consumer has to return an
+empty rtskb back. Thus it can be avoided that a failing component can exhaust
+global resources like the buffers and lock the whole RTnet system.
+
+This is an overview of rtskb pool in RTnet, how large they are by default, and
+how they can be extended or shrunk.
+
+
+1. Socket Pools
+---------------
+
+Default Size:   16
+Resizable:      module parameter "socket_rtskbs"
+Runtime Resize: [rt_dev_]setsockopt()
+Initialization: real-time / non real-time (see text)
+
+Every socket gets an own rtskb pool upon creation. This pool is used for
+compensation when an incoming packet needs to be stored until the user fetches
+it and when a packet is prepared for transmission. The initial pool size can be
+set with "socket_rtskbs".
+
+During runtime the pool can be extended (RT_SO_EXTPOOL) or shrunk
+(RT_SO_SHRPOOL) using the [rt_dev_]setsockopt() function. When a socket is to
+be created within a real-time context (e.g. a kernel RT-task), the buffers are
+allocated from the real-time rtskb cache (see below) instead of using a Linux
+system call. When a real-time-created socket is closed again, the buffers
+return to that cache. Note that a [rt_dev_]close() call can fail if not all
+buffers have yet return to the socket pool. In this case, be patient and retry
+later. :)
+
+
+2. Global Pool
+--------------
+
+Default Size:   0 + 16 * number of registered NICs
+Resizable:      module parameter "global_rtskbs" (base value)
+                module parameter "device_rtskbs" (increment per NIC)
+Runtime Resize: by adding or removing NIC drivers
+Initialization: non real-time
+
+The global pool is used by the ARP protocol (transmission only) and by the
+real-time protocol part of RTmac.
+
+
+3. ICMP Pool
+------------
+
+Default Size:   8
+Resizable:      -
+Runtime Resize: -
+Initialization: non real-time
+
+For technical reasons, the ICMP pool which is used for replying incoming
+requests is separated from the global pool.
+
+
+4. NIC Receiver Pool
+--------------------
+
+Default Size:   16 (typically RX_RING_SIZE*2)
+Resizable:      module parameter "rx_pool_size" (8139too-rt.o only)
+Runtime Resize: -
+Initialization: non real-time
+
+The receiver pools are used by the NICs to store incoming packets. Their size
+is typically fixed and can only be changed by recompiling the driver.
+
+
+5. VNIC Pool
+------------
+
+Default Size:   32
+Resizable:      module parameter "vnic_rtskbs" (rtmac.o)
+Runtime Resize: -
+Initialization: non real-time
+
+The VNIC pool is used from compensating incoming non real-time packets when
+they are queued for being processed by Linux. The pool is also used for
+creating outgoing VNIC packets.
+
+
+6. rtnetproxy Pool
+------------------
+
+Default Size:   32
+Resizable:      module parameter "proxy_rtskbs" (rtnetproxy.o)
+Runtime Resize: -
+Initialization: non real-time
+
+This pool is used the same way as the VNIC pool.
+
+
+All module parameters at a glance:
+
+  Module     | Parameter        | Default Value
+ -----------------------------------------------
+  rtnet      | socket_rtskbs    | 16
+  rtnet      | global_rtskbs    | 0
+  rtnet      | device_rtskbs    | 16
+  rtmac      | vnic_rtskbs      | 32
+  rtnetproxy | proxy_rtskbs     | 32
+  rt_8139too | rx_pool_size     | 16
+
+A statistic of the currently allocated pools is available through the /proc
+interface of RTnet (/proc/rtnet/rtskb).

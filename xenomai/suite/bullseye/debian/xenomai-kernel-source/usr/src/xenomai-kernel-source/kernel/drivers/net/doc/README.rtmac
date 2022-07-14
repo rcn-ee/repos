@@ -1,0 +1,341 @@
+                     Real-Time Media Access Control (RTmac)
+                     ======================================
+
+RTmac is a module designed to be used with RTnet. It provides a media access
+control (MAC) infrastructure for RTnet. The actual access control mechanism is
+implemented by so-called discipline modules. The current version comes with a
+time division multiple access (TDMA) discipline. Because of the RTmac's modular
+design, you can also easily attach your own MAC discipline optimised for the
+specific application.
+
+
+RTmac Layer
+===========
+
+Without RTmac:
+
+           +---------------+
+           |RT applications|
+           +-------v-------+
+                   |
+          +--------v---------+
+          |  RT UDP/IP stack |
+          +------------------+
+          |RT ethernet driver|
+          +--------v---------+
+                   |
+              +----v---+
+              |   NIC  |
+              +--------+
+
+With RTmac inserted:
+
+           +---------------+    +-------------------+
+           |RT applications|    |   Linux network   |
+           +-------v-------+    |stack (TCP/IP etc.)|
+                   |            +---------v---------+
+          +--------v---------+            |
+          |  RT UDP/IP stack |         +--v--+
+          +------------------+         |VNIC |
+          |      RTmac       |         +--v--+
+          |      Layer       |            |
+          | .--------------. <------------+
+          | |MAC algorithm | |
+          | `--------------´ |
+          +------------------+
+          |RT ethernet driver|
+          +--------v---------+
+                   |
+              +----v---+
+              |   NIC  |
+              +--------+
+
+RTmac, if loaded, has the exclusive control over transmission of the network
+driver. Every outgoing packet is passed to RTmac which forwards it to the MAC
+discipline. It will decide then when the packets can be sent to the hardware
+driver.
+
+
+
+TDMA - Time Division Multiple Access
+====================================
+
+The TDMA media access control discipline is based on a master/slave hierarchy.
+A network master periodically publishes so-called Synchronisation frames,
+forming elementary cycles. Network participants, including the master, have
+exclusively assigned access windows (time slots) within these cycles, defined
+relatively to the Synchronisation frames. In order to catch potential breakdowns
+of the central master, additional backup masters can be set up which will take
+over sending Synchronistation frames in case of the the primary master failing
+to do so.
+
+A time slot can be used to transmit a single packet of up to a specified maximum
+size. This discipline revision supports flexible assignment of time slots to
+real-time network participants. It is possible to use multiple slots per cycle.
+Furthermore, a slot can be shared between participants by occupying it only
+every Nth cycle. Besides at least one payload slot per participant, slots have
+to be reserved for the Synchronisation frame and, optionally, for one or more
+backup Synchronisation frames. The concrete timing strongly depends on the
+capability of all network participants. Therefore, timing requirements like
+worst case jitters or minimum slot gaps are not statically specified, they can
+be defined individually for every project.
+
+In contrast to earlier TDMA discipline revisions, the slave configuration is
+no longer distributed by the TDMA master. This means that the slaves have to
+be aware of their slot setup before sending any data to a TDMA-managed
+network. Therefore, the required settings either have to be stored on the
+slaves or, if a centralised management is desired, the RTnet configuration
+service RTcfg has to be used (see related documentation for further details).
+
+
+Slot Identification and Selection
+---------------------------------
+
+Time slots carry an internal ID number, unique per participant. These numbers
+are used when determining the slot in which an outgoing packet shall be
+transmitted. The TDMA discipline contains no automatic scheduling mechanism.
+Instead, the sender, i.e. an user or a service, either explicitly provides a
+desired slot ID or a default slot is used.
+
+  Slot ID | Description
+ ---------+-----------------------------------------------------------------
+     0    | default slot for RT; also default NRT slot if slot 1 is missing
+     1    | non-RT slot; if missing, slot 0 is used
+     2    | user slots, used for explicitly scheduled packets
+     :    |
+
+
+Configuration Files
+-------------------
+
+To ease the setup of TDMA-based networks, the rtnet start script is provided
+with the RTnet distribution. It is controlled by a configuration file which is
+typically named rtnet.conf and stored in /etc. By setting the TDMA_MODE in this
+file, the role of the station is set to either "master" or "slave".
+
+Beyond this common parameter, the start script supports two configuration modes
+for TDMA. In the simple mode, only the IPs of all slaves have to listed in
+TDMA_SLAVES, the cycle period has to be provided in TDMA_CYCLE, and the slot
+offset difference must be specified in TDMA_OFFSET. Every station is then
+assigned a single time slot with the ID 0, starting with offset 0 for the
+master node, i.e. the master's payload frame will directly follow the
+Synchronisation frame. Further offsets are calculated by incrementing the
+previous value by TDMA_OFFSET for each further station.
+
+In contrast, the extended mode allows a detailed configuration of every node.
+To enable this mode, a TDMA configuration file (typically /etc/tdma.conf) is
+required. The path of this file has to be provided to rtnet.conf in the
+variable TDMA_CONFIG, while TDMA_SLAVES, TDMA_CYCLE, and TDMA_OFFSET have to
+be disabled, e.g. by commenting out. Beside TDMA-related paramters, also
+individual stage-2 files can be set for every slave node, overwriting the
+common STAGE_2_SRC variable in rtnet.conf (see RTcfg documentation for details
+about the configuration concept). The format of the TDMA configuration file is
+defined as follows:
+
+# Note: every station needs at least one time slot
+master:
+[ip 1.2.3.4]
+cycle <cycle_in_us>
+slot <id> <offset_in_us> [<phasing>/<period> [<size>]]
+[slot ...]
+
+# Slave with known MAC address, IP is assigned by the RTcfg server
+slave:
+ip 1.2.3.4
+mac AA:BB:CC:DD:EE:FF
+[stage2 <file>]
+slot ...
+
+# Slave with unknown MAC address, it is aware of its IP when starting
+slave:
+ip 1.2.3.4
+[stage2 <file>]
+slot ...
+
+# Slave with known MAC address without IP support
+slave:
+mac AA:BB:CC:DD:EE:FF
+[stage2 <file>]
+slot ...
+
+# Note:
+# - multiple backup masters can be set up, always the one with the smallest
+#   backup-slot value will take over in case of a failure
+# - the cycle period is already defined with the primary master
+backup-master:
+ip 1.2.3.4 (or IP+MAC or only MAC, see slave scenarios)
+backup-slot <offset_in_us>
+[stage2 <file>]
+slot ...
+
+
+Configuration Example
+---------------------
+
+An exemplary configuration consisting of two masters, one serving as backup,
+and three slaves is shown below. The slot period is expressed in the form
+<phasing>/<period>. For instance, 1/3 means that this slot will be used in
+every first of three cycles, while 3/3 means in every third of three.
+
+  +------+  +----------+  +---------+  +---------+  +----------+
+  |      |  | Master 2 |  | Slave A |  | Slave B |  | Master 1 |
+  | Sync |  |  Backup  |  | Slot 0  |  | Slot 0  |  |  Slot 0  |
+  |      |  |   Sync   |  | RT/NRT  |  |   RT    |  |  RT/NRT  |
+  | 1/1  |  |   1/1    |  |   1/1   |  |   1/1   |  |   1/1    |
+--+------+--+----------+--+---------+--+---------+--+----------+--...
+
+                                     +----------+
+                                     | Slave C  |
+                                     |  Slot 3  |
+                                     |    RT    |
+                                     |   3/3    |
+     +---------+                     +----------+
+     | Slave C |                     | Master 2 |
+     | Slot 0  |                     |  Slot 0  |
+     | RT/NRT  |                     |  RT/NRT  |
+     |   2/2   |                     |   2/3    |
+     +---------+        +---------+  +----------+             +------+
+     | Slave B |        | Slave C |  |  Slave A |             |      |
+     | Slot 1  |        | Slot 2  |  |  Slot 2  |             | Sync |
+     |   NRT   |        |   NRT   |  |    RT    |             |      |
+     |   1/2   |        |   1/4   |  |   1/3    |             | 1/1  |
+...--+---------+--------+---------+--+----------+-------------+------+-->
+
+A tdma.conf file describing this scenario is shown below (all time values are
+examplary, only expressing relative relations):
+
+# Master 1
+master:
+ip 10.0.0.1
+cycle 5000
+slot 0 800
+
+# Master 2
+backup-master:
+ip 10.0.0.2
+backup-offset 200
+slot 0 1500 2/3
+
+# Slave A
+slave:
+ip 10.0.0.3
+slot 0 400
+slot 2 1500 1/3
+
+# Slave B
+ip 10.0.0.2
+slot 0 600
+slot 1 1000 1/2
+
+# Slave C
+ip 10.0.0.2
+slot 0 1000 2/2
+slot 2 1300 1/4
+slot 3 1500 3/3
+
+
+Management Interface
+--------------------
+
+The TDMA discipline is managed by the command line tool tdmacfg. In the
+following, the usage of this tool is described. For typical setups, the rtnet
+start script manages the execution of tdmacfg.
+
+tdmacfg <dev> master <cycle_period> [-b <backup_offset>]
+        [-c calibration_rounds] [-i max_slot_id] [-m max_calibration_requests]
+
+Starts a TDMA master on the specified device <dev>. The cycle period length is
+given in microseconds using the <cycle_period> parameter. If <backup_offset>
+is provided, the master becomes a backup system. In case the main master
+fails, the backup master with the smallest <backup_offset> will start sending
+Synchronisation frames with the specified offset in microseconds relative to
+the scheduled cycle start. <calibration_rounds> specifies the number of clock
+calibration requests the master will send to any other potentially already
+active master during startup. By default, 100 rounds are performed. The
+calibration will be performed when the first slot is added. By default, a
+master can handle up to 64 calibration requests at the same time. This value
+can be adapted by specifying the <max_calibration_requests> parameter. The
+largest used slot ID is tunable by providing <max_slot_id> or will be limited
+to 7 if this parameter is omitted.
+
+tdmacfg <dev> slave [-c calibration_rounds] [-i max_slot_id]
+
+Starts a TDMA slave on the specified device <dev>. <calibration_rounds>
+specifies the number of clock calibration requests the slave sends to the
+active master during startup. By default, 100 rounds are performed. The
+calibration will be performed when the first slot is added. The largest used
+slot ID is tunable by providing <max_slot_id> or will be limited to 7 if this
+parameter is omitted.
+
+tdmacfg <dev> slot <id> [<offset> [-p <phasing>/<period>] [-s <size>]
+        [-j joint_slot] [-l calibration_log_file] [-t calibration_timeout]]
+
+Adds, reconfigures, or removes a time slot for outgoing data on a started TDMA
+master or slave. <id> is used to distinguish between multiple slots. See above
+slot ID table for predefined values. If <offset> is given, the time slot is
+added or modified to send data with the specified offset in microseconds
+relative to the scheduled cycle start, if omitted, the slot is removed from
+the station's configuration.
+
+By default, a slot will be used in every cycle. When providing <phasing> and
+<period>, the slot will only be occupied in every <phasing>-th of <period>
+cycles. By assigning e.g. 1/2 to one and 2/2 to another slot, the usage of the
+physical time slot will alternate between both slot owners. The <size>
+parameter limits the maximum payload size in bytes which can be transmitted
+within this slot. If no <size> parameter is provided, the maximum size the
+hardware supports is applied. To share the same output queue among several
+slots, secondary slots can be attached to a primary <joint_slot>. The slot
+sizes must match for this purpose.
+
+The addition of the station's first slot will trigger the clock calibration
+process. To store the results of each calibration handshake, a
+<calibration_log_file> can be provided. By default, this command will not
+terminate until the calibration is completed. The <calibration_timeout>
+parameter can be used to specify an upper time limit.
+
+NOTE: Reconfiguring an existing slot during runtime can cause packet drops on
+the involved output channel. You should stop all applications using this slot
+before reconfiguring it.
+
+tdmacfg <dev> detach
+
+Detaches a master or slave from the given devices <dev>. Past this command,
+the write access to the device is uncoordinated again and may interfere with
+remaining real-time network participants.
+
+
+
+NoMAC - Void Media Access Control
+=================================
+
+Formost as a skeleton for new MAC implementations, the NoMAC discipline module
+is provided. It simply forwards every outgoing packet to the driver as soon as
+the stack passes it over. NoMAC is configured using the command line tool
+nomaccfg. To attach NoMAC to a real-time network adapter, call
+
+nomaccfg <dev> attach
+
+To detach it again, use
+
+nomaccfg <dev> detach
+
+
+
+VNIC configuration
+==================
+
+As soon as an RTmac discipline is loaded and appropriately configured for a
+real-time network adapter, a virtual network interface controller (VNIC) is
+provided to standard Linux. It is named "vnic<n>", where <n> is the number of
+the associated rteth device (e.g. rteth1 --> vnic1). You just have to configure
+the VNIC as a normal network device using ifconfig. You are even free to assign
+a different IP than the real-time interface uses.
+
+
+
+References
+==========
+
+ - Real-Time Media Access Control Framework (RTmac), revision 2.0
+ - TDMA Media Access Control Discipline, revision 2.1a
+ - RTnet Configuration Service (RTcfg), revision 1.7
