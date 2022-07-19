@@ -1,0 +1,27 @@
+From e4b5cf1e4557a05867a036cdc4ff0aa219a5f70c Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Tue, 19 Jul 2022 15:10:35 -0500
+Subject: [PATCH] deb: use xz by default
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ configure.ac | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index f23944b..085a778 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -70,7 +70,8 @@ DPKG_WITH_DIR([zshcompletionsdir], [${datadir}/zsh/vendor-completions],
+   [zsh vendor completions directory [DATADIR/zsh/vendor-completions]])
+ 
+ # Set default dpkg-deb values
+-DPKG_DEB_COMPRESSOR([zstd])
++# Revert: https://git.launchpad.net/ubuntu/+source/dpkg/diff/configure.ac?h=applied/ubuntu/jammy-security&id=d75490f939911f44a1cec34249c944e68a45c28c
++DPKG_DEB_COMPRESSOR([xz])
+ 
+ # Checks for programs.
+ AC_PROG_SED
+-- 
+2.30.2
+
