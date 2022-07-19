@@ -86,4 +86,16 @@ apt update ; apt install --yes gnupg ; \
 apt-key adv --keyserver keyserver.ubuntu.com --recv-key D284E608A4C46402 ; \
 apt update ; apt-get clean ; echo "done..." ; exit
 
+#ubuntu jammy
+sudo sbuild-shell source:jammy-armhf-sbuild
+
+echo "deb http://proxy.gfnd.rcn-ee.org:3142/ports.ubuntu.com jammy main universe" > /etc/apt/sources.list ; \
+echo "deb-src http://proxy.gfnd.rcn-ee.org:3142/ports.ubuntu.com jammy main universe" >> /etc/apt/sources.list ; \
+echo "deb http://repos.rcn-ee.net/ubuntu jammy main" >> /etc/apt/sources.list ; \
+echo "deb-src http://repos.rcn-ee.net/ubuntu jammy main" >> /etc/apt/sources.list ; \
+cat /etc/apt/sources.list ; \
+apt update ; apt install --yes gnupg ; \
+apt-key adv --keyserver keyserver.ubuntu.com --recv-key D284E608A4C46402 ; \
+apt update ; apt-get clean ; echo "done..." ; exit
+
 #
