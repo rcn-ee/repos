@@ -164,7 +164,7 @@ run () {
 	fi
 
 	if [ -d ${DIR}/override/ ] ; then
-		cp -rv ${DIR}/override/* ./debian/
+		cp -rv ${DIR}/override/* ./
 	fi
 
 	#debuild -us -uc -S -d
