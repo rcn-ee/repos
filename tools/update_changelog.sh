@@ -83,4 +83,13 @@ if [ -d ${DIR}/suite/${suite}/ ] ; then
 	run
 fi
 
+suite="jammy"
+if [ -d ${DIR}/suite/${suite}/ ] ; then
+	rcn_ee_version="${jammy_version}"
+	cat ${DIR}/version.sh | grep -v jammy_version > ${DIR}/new-version.sh
+	echo "${suite}_version=\"~${suite}+${simple_date}\"" >> ${DIR}/new-version.sh
+	mv ${DIR}/new-version.sh ${DIR}/version.sh
+	run
+fi
+
 #

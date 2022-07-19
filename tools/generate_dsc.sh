@@ -163,7 +163,8 @@ run () {
 		cp -rv ${DIR}/common/* ./debian/common/
 	fi
 
-	debuild -us -uc -S -d
+	#debuild -us -uc -S -d
+	debuild --no-lintian -i -us -uc -S -d
 
 	cd ${DIR}/
 }
@@ -183,6 +184,7 @@ start_run () {
 	dist="ubuntu"
 	suite="bionic" ; runner
 	suite="focal" ; runner
+	suite="jammy" ; runner
 }
 
 start_run

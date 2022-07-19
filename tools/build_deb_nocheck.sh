@@ -81,6 +81,7 @@ start_run () {
 
 	suite="bionic" ; runner
 	suite="focal" ; runner
+	suite="jammy" ; runner
 }
 
 cleanup () {
@@ -89,6 +90,7 @@ cleanup () {
 
 	suite="bionic" ; cleanup_suite
 	suite="focal" ; cleanup_suite
+	suite="jammy" ; cleanup_suite
 }
 
 start_run

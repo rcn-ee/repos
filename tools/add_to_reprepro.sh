@@ -32,6 +32,7 @@ start_run () {
 	dist="ubuntu"
 	suite="bionic" ; runner
 	suite="focal" ; runner
+	suite="jammy" ; runner
 }
 
 start_run

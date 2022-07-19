@@ -59,6 +59,7 @@ start_run () {
 
 	suite="bionic" ; runner
 	suite="focal" ; runner
+	suite="jammy" ; runner
 }
 
 start_run
