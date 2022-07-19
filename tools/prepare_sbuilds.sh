@@ -88,4 +88,10 @@ arch="armhf"
 options="--exclude=debfoster"
 setup_update_sbuild
 
+dist="jammy"
+unset flavor
+arch="armhf"
+options="--exclude=debfoster"
+setup_update_sbuild
+
 #
