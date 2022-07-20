@@ -5,7 +5,7 @@ mirror="http://http.debian.net/debian"
 package_name="libiio"
 debian_pkg_name="${package_name}"
 package_version="0.24"
-package_source="${package_name}_${package_version}.orig.tar.xz"
+package_source="${package_name}_${package_version}.orig.tar.gz"
 src_dir="${package_name}-${package_version}"
 
 git_repo=""
