@@ -20,7 +20,6 @@ debian_patch=""
 debian_dl_1="https://github.com/coder/code-server/releases/download/v4.5.1/code-server-4.5.1-linux-armv7l.tar.gz"
 #debian_dl_1="https://github.com/coder/code-server/releases/download/v4.5.1/code-server-4.5.1-linux-arm64.tar.gz"
 
-
 clear_changelog="enable"
 
 buster_version="~buster+20220217"
