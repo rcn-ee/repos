@@ -22,7 +22,7 @@ override_dh_strip:
 	# Just disable for now...
 
 override_dh_auto_configure:
-	mkdir -p ./build ; cd ./build ; cmake .. -DDEFLATE_SUPPORT=OFF -DUNITTESTS=OFF -DSEASOCKS_SHARED=ON ; make -j${CORES} seasocks ; cmake -P cmake_install.cmake
+	mkdir -p ./build ; cd ./build ; cmake .. -DDEFLATE_SUPPORT=OFF -DUNITTESTS=OFF -DSEASOCKS_SHARED=ON ; make -j${CORES} seasocks ; cmake CMAKE_INSTALL_PREFIX=./tmp -P cmake_install.cmake ; cd ../ ; tree
 	
 %:
 	dh $@
