@@ -130,6 +130,37 @@ generate_kernel_mainline_armv7_lpae () {
 	echo " This metapackage will install linux-image-${msg} for armv7-lpae in Debian." >> ./suite/${dist}/debian/${wfile}
 }
 
+do_focal () {
+	arch="armhf"
+	dist="focal"
+	debhelper="12"
+	wfile="control"
+	generate_header
+
+	sgxti335x="enabled"
+	sgxjacinto6evm="enabled"
+	rtl8723bu="enabled"
+	rtl8821cu="enabled"
+
+	msg="4.19-ti"    ; var="ti"    ; ver="LTS419" ; current_kernel ; generate_kernel_ti
+	msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_ti
+	msg="5.4-ti"     ; var="ti"    ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
+	msg="5.4-ti-rt"  ; var="ti-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
+
+	rtl8723du="enabled"
+	qcacld="enabled"
+
+	msg="5.10-ti"    ; var="ti"    ; ver="LTS510" ; current_kernel ; generate_kernel_ti
+	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_ti
+
+	unset qcacld
+	unset rtl8723bu
+	unset rtl8723du
+	unset rtl8821cu
+	unset sgxjacinto6evm
+	unset sgxti335x
+}
+
 do_buster () {
 	arch="armhf"
 	dist="buster"
@@ -252,6 +283,7 @@ do_bullseye () {
 	msg="5.15-armv7-lpae" ; var="armv7-lpae" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_armv7_lpae
 }
 
+do_focal
 do_buster
 do_bullseye
 
