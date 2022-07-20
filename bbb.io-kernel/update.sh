@@ -23,7 +23,7 @@ generate_header () {
 	echo "Rules-Requires-Root: no" >> ./suite/${dist}/debian/${wfile}
 	echo "" >> ./suite/${dist}/debian/${wfile}
 	echo "Package: bbb.io-kernel-tasks" >> ./suite/${dist}/debian/${wfile}
-	echo "Architecture: all" >> ./suite/${dist}/debian/${wfile}
+	echo "Architecture: armhf" >> ./suite/${dist}/debian/${wfile}
 	echo "Depends:" >> ./suite/${dist}/debian/${wfile}
 	echo " tasksel" >> ./suite/${dist}/debian/${wfile}
 	echo " , \${misc:Depends}" >> ./suite/${dist}/debian/${wfile}
@@ -35,7 +35,7 @@ generate_kernel_ti () {
 	echo "" >> ./suite/${dist}/debian/${wfile}
 	echo "Package: bbb.io-kernel-${msg}" >> ./suite/${dist}/debian/${wfile}
 	echo "Section: metapackages" >> ./suite/${dist}/debian/${wfile}
-	echo "Architecture: all" >> ./suite/${dist}/debian/${wfile}
+	echo "Architecture: armhf" >> ./suite/${dist}/debian/${wfile}
 	echo "Pre-Depends:" >> ./suite/${dist}/debian/${wfile}
 	echo " linux-image-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
 	echo "Depends:" >> ./suite/${dist}/debian/${wfile}
@@ -48,7 +48,7 @@ generate_kernel_ti () {
 	echo "" >> ./suite/${dist}/debian/${wfile}
 	echo "Package: bbb.io-kernel-${msg}-am335x" >> ./suite/${dist}/debian/${wfile}
 	echo "Section: metapackages" >> ./suite/${dist}/debian/${wfile}
-	echo "Architecture: all" >> ./suite/${dist}/debian/${wfile}
+	echo "Architecture: armhf" >> ./suite/${dist}/debian/${wfile}
 	echo "Pre-Depends:" >> ./suite/${dist}/debian/${wfile}
 	echo " linux-image-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
 	echo "Depends:" >> ./suite/${dist}/debian/${wfile}
@@ -78,7 +78,7 @@ generate_kernel_ti () {
 	echo "" >> ./suite/${dist}/debian/${wfile}
 	echo "Package: bbb.io-kernel-${msg}-am57xx" >> ./suite/${dist}/debian/${wfile}
 	echo "Section: metapackages" >> ./suite/${dist}/debian/${wfile}
-	echo "Architecture: all" >> ./suite/${dist}/debian/${wfile}
+	echo "Architecture: armhf" >> ./suite/${dist}/debian/${wfile}
 	echo "Pre-Depends:" >> ./suite/${dist}/debian/${wfile}
 	echo " linux-image-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
 	echo "Depends:" >> ./suite/${dist}/debian/${wfile}
@@ -98,7 +98,7 @@ generate_kernel_mainline_bone () {
 	echo "" >> ./suite/${dist}/debian/${wfile}
 	echo "Package: bbb.io-kernel-${msg}" >> ./suite/${dist}/debian/${wfile}
 	echo "Section: metapackages" >> ./suite/${dist}/debian/${wfile}
-	echo "Architecture: all" >> ./suite/${dist}/debian/${wfile}
+	echo "Architecture: armhf" >> ./suite/${dist}/debian/${wfile}
 	echo "Pre-Depends: linux-image-${latest_kernel}," >> ./suite/${dist}/debian/${wfile}
 	echo "Depends: \${misc:Depends}, bbb.io-kernel-tasks (= \${source:Version})" >> ./suite/${dist}/debian/${wfile}
 	echo "Recommends: libpruio-modules-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
@@ -110,7 +110,7 @@ generate_kernel_mainline_armv7 () {
 	echo "" >> ./suite/${dist}/debian/${wfile}
 	echo "Package: bbb.io-kernel-${msg}" >> ./suite/${dist}/debian/${wfile}
 	echo "Section: metapackages" >> ./suite/${dist}/debian/${wfile}
-	echo "Architecture: all" >> ./suite/${dist}/debian/${wfile}
+	echo "Architecture: armhf" >> ./suite/${dist}/debian/${wfile}
 	echo "Pre-Depends: linux-image-${latest_kernel}," >> ./suite/${dist}/debian/${wfile}
 	echo "Depends: \${misc:Depends}, bbb.io-kernel-tasks (= \${source:Version})" >> ./suite/${dist}/debian/${wfile}
 	echo "Recommends: libpruio-modules-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
@@ -122,7 +122,7 @@ generate_kernel_mainline_armv7_lpae () {
 	echo "" >> ./suite/${dist}/debian/${wfile}
 	echo "Package: bbb.io-kernel-${msg}" >> ./suite/${dist}/debian/${wfile}
 	echo "Section: metapackages" >> ./suite/${dist}/debian/${wfile}
-	echo "Architecture: all" >> ./suite/${dist}/debian/${wfile}
+	echo "Architecture: armhf" >> ./suite/${dist}/debian/${wfile}
 	echo "Pre-Depends: linux-image-${latest_kernel}," >> ./suite/${dist}/debian/${wfile}
 	echo "Depends: \${misc:Depends}, bbb.io-kernel-tasks (= \${source:Version})" >> ./suite/${dist}/debian/${wfile}
 	echo "Recommends: libpruio-modules-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
