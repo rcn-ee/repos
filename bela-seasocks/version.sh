@@ -4,7 +4,7 @@
 
 package_name="seasocks"
 debian_pkg_name="${package_name}"
-package_version="1.4.4-git20220530.2"
+package_version="1.4.4-git20220530.3"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
