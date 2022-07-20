@@ -1,14 +1,10 @@
-Description: Documentation for systemd service files can be automatically viewed
- using systemctl help servicename if this field is present.
-Author: "A. Maitland Bottoms" <bottoms@debian.org>
-
 --- a/iiod/init/iiod.service.cmakein
 +++ b/iiod/init/iiod.service.cmakein
-@@ -4,6 +4,7 @@
- 
- [Unit]
- Description=IIO Daemon
-+Documentation=man:iiod(8)
- After=network.target
+@@ -9,6 +9,7 @@
+ Requires=systemd-udev-settle.service
+ After=network.target systemd-udev-settle.service
  ConditionPathExists=/sys/bus/iio
++Documentation=man:iiod(8)
  
+ [Service]
+ EnvironmentFile=-/etc/default/iiod
