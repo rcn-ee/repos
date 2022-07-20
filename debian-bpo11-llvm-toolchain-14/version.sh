@@ -5,7 +5,7 @@ mirror="https://deb.debian.org/debian"
 
 package_name="llvm-toolchain-14"
 debian_pkg_name="${package_name}"
-package_version="14.0.3"
+package_version="14.0.6"
 
 git_repo=""
 git_sha=""
