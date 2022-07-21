@@ -161,6 +161,31 @@ do_focal () {
 	unset sgxti335x
 }
 
+do_jammy () {
+	arch="armhf"
+	dist="jammy"
+	debhelper="13"
+	wfile="control"
+	generate_header
+
+	sgxti335x="enabled"
+	sgxjacinto6evm="enabled"
+	rtl8723bu="enabled"
+	rtl8821cu="enabled"
+	rtl8723du="enabled"
+	qcacld="enabled"
+
+	msg="5.10-ti"    ; var="ti"    ; ver="LTS510" ; current_kernel ; generate_kernel_ti
+	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_ti
+
+	unset qcacld
+	unset rtl8723bu
+	unset rtl8723du
+	unset rtl8821cu
+	unset sgxjacinto6evm
+	unset sgxti335x
+}
+
 do_buster () {
 	arch="armhf"
 	dist="buster"
@@ -284,6 +309,7 @@ do_bullseye () {
 }
 
 do_focal
+do_jammy
 do_buster
 do_bullseye
 
