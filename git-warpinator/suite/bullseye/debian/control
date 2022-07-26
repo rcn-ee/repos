@@ -1,0 +1,39 @@
+Source: warpinator
+Section: x11
+Priority: optional
+Maintainer: Linux Mint <root@linuxmint.com>
+Build-Depends:
+ debhelper-compat (= 12),
+ appstream,
+ ca-certificates,
+ curl,
+ dh-python,
+ gnome-pkg-tools (>= 0.10),
+ meson (>= 0.45.0),
+ policykit-1,
+ python3-grpc-tools (>= 1.14.0),
+ python3-protobuf (>= 3.6.1),
+ gobject-introspection
+Standards-Version: 3.9.6
+
+Package: warpinator
+Architecture: all
+Pre-Depends: ${misc:Pre-Depends}
+Depends:
+ gir1.2-glib-2.0,
+ gir1.2-gtk-3.0 (>= 3.20.0),
+ gir1.2-xapp-1.0 (>= 1.6.0),
+ python3,
+ python3-gi,
+ python3-setproctitle,
+ python3-xapp (>= 1.6.0),
+ python3-grpcio (>= 1.16.0),
+ python3-protobuf (>= 3.6.1),
+ python3-cryptography,
+ python3-nacl,
+ python3-netaddr,
+ python3-netifaces,
+ python3-ifaddr,
+ ${misc:Depends},
+ ${python3:Depends}
+Description: Allows simple local network file sharing.

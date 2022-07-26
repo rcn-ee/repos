@@ -1,0 +1,406 @@
+warpinator (1.2.13-0bbbio1~bullseye+20220726) bullseye; urgency=low
+
+  * Rebuild for repos.rcn-ee.com
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Tue, 26 Jul 2022 11:46:29 -0500
+
+warpinator (1.2.13) vanessa; urgency=medium
+
+  [ Michael Webster ]
+  * Add github link to the About dialog.
+  * Explain how to debug the flatpak version
+
+  [ Clement Lefebvre ]
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Sun, 24 Jul 2022 12:33:04 +0200
+
+warpinator (1.2.12) vanessa; urgency=medium
+
+  * UI: Add links to altinators
+  * l10n: Update POT
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 01 Jul 2022 16:59:31 +0200
+
+warpinator (1.2.11) vanessa; urgency=medium
+
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Mon, 27 Jun 2022 13:46:27 +0200
+
+warpinator (1.2.10) vanessa; urgency=medium
+
+  [ Michael Webster ]
+  * Remove a comment that no longer applies.
+  * auth.py: Limit the length of the zeroconf service name.
+  * transfers: Don't try to set mtime or mode on symlinks, and fix folder permission setting.
+  * Update readme.
+
+  [ Vincent Vermeulen ]
+  * make other platforms a bulleted list
+
+  [ Michael Webster ]
+  * Add some troubleshooting tips to the readme.
+
+  [ Cobinja ]
+  * Fix network device name fetching
+
+  [ Vincent Vermeulen ]
+  * Update README.md
+  * Update README.md
+
+  [ Michael Webster ]
+  * build: Add an option to include grpc to workaround broken version in ubuntu 22.04.
+
+  [ Clement Lefebvre ]
+  * Add keywords to .desktop file
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 09 Jun 2022 15:52:02 +0200
+
+warpinator (1.2.9) una; urgency=medium
+
+  [ Michael Webster ]
+  * Add some flatpak build notes.
+  * Transfers: Make transfers cancellable by the receiving computer once more.
+  * server.py: Fix regression from 2cd3b660c that was preventing existing ops from being restarted by the sender.
+  * transfers: Improve on 069cf5f57e6 by creating a generator object to wrap the origin response instead of returning two objects.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Mon, 03 Jan 2022 13:54:59 +0000
+
+warpinator (1.2.8) una; urgency=medium
+
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 31 Dec 2021 13:00:52 +0000
+
+warpinator (1.2.7) una; urgency=medium
+
+  [ Michael Webster ]
+  * network: Improve interface detection in the monitor and preferences.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 31 Dec 2021 11:30:03 +0000
+
+warpinator (1.2.6) una; urgency=medium
+
+  [ Michael Webster ]
+  * prefs.py: don't assume every interface listed by lshw has a 'product' key.
+
+  [ Clement Lefebvre ]
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Mon, 06 Dec 2021 15:51:44 +0000
+
+warpinator (1.2.5) una; urgency=medium
+
+  [ Michael Webster ]
+  * ufw-modify: Keep allowing udp+tcp on the main port for backward compatibility.
+  * Go back to not using network-manager.
+  * prefs.py: Don't break if lshw isn't available (like in a flatpak).
+  * meson.build: Fix false reporting of zeroconf download when building as a flatpak.
+  * Preserve file modification times during transfer.
+  * Add 128x128 fullcolor icons.
+  * Fix 128px icon names.
+  * transfers.py: Log mtime using correct variable names when sending a file.
+
+  [ Dušan Kazik ]
+  * Add Slovak language to LINGUAS file
+
+  [ Michael Webster ]
+  * prefs.py: Fix typo in port dupe guard.
+
+  [ Tony ]
+  * README: Add dependencies (#91)
+
+  [ Clement Lefebvre ]
+  * l10n: Update POT
+
+ -- Clement Lefebvre <root@linuxmint.com>  Tue, 23 Nov 2021 11:05:28 +0000
+
+warpinator (1.2.4) uma; urgency=medium
+
+  [ Michael Webster ]
+  * Fix readme - dpkg-buildpackage doesn't need sudo and git checkout is optional.
+  * file picker: Don't lose a multi-selection when enter is pressed.
+  * warpinator.py: Fix connecting network monitor signals when starting out with a bad save folder.
+  * warpinator.py: Use window.present_with_time().
+  * warpinator.py: Use an empty string instead of null when there is no valid interface.
+  * networkmonitor.py: Use a different connectivity check for older libnm.
+  * server.py: Catch zeroconf failing to start.
+  * networkmonitor.py: Don't check online state only when device or interface details change.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 23 Jul 2021 12:17:57 +0100
+
+warpinator (1.2.3) uma; urgency=medium
+
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 25 Jun 2021 15:15:36 +0100
+
+warpinator (1.2.2) uma; urgency=medium
+
+  [ Michael Webster ]
+  * debian/control: Add missing runtime dep for zeroconf.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Mon, 14 Jun 2021 12:31:23 +0100
+
+warpinator (1.2.1) uma; urgency=medium
+
+  [ Michael Webster ]
+  * Improve zeroconf handling and documentation.
+  * debian/control: Add curl to build deps.
+  * networkmonitor.py: Make get_ipv6() and get_ipv4() safe against a missing configuration.
+
+  [ Tony ]
+  * Improve the introduction of compilation methods (#89)
+
+  [ Clement Lefebvre ]
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 10 Jun 2021 10:58:04 +0100
+
+warpinator (1.2.0) uma; urgency=medium
+
+  [ Michael Webster ]
+  * debian: modernize build.
+  * Add .gitignore
+  * status icon: Add a new icon to represent offline/error state.
+  * warpinator.py: Fix status icon activation.
+  * Update README.md.
+  * Remove unused install script.
+  * Allow bundling of zeroconf.
+  * Don't insist on libxapp 2.0 - favorites aren't essential, and this allows warpinator to work on systems without the latest version.
+  * Fix regressions caused by 0331df4d287561a.
+
+  [ Balló György ]
+  * Fix icon name on About dialog
+
+  [ Michael Webster ]
+  * warpinator.py: Fix status icon menus.
+  * warpinator.py: Don't show the favorites submenu if there are no favorites.
+  * Add libnm (network-manager) interface.
+  * Various: Allow selection of network interface, improve registration and connection stability.
+  * Update prefs and firewall script to accommodate new port setting.
+  * util.py: Remove some unused remnants, add a utility debugging function.
+  * auth.py: refactor, simplify - keys are no longer written to disk, so we only need to worry about the keyfile.
+  * Add missing shebangs.
+  * some cleanup
+  * Add libnm dependency.
+  * download_zeroconf.py: Only download the python module, not the empty py.typed file.
+  * Hide warpinator's autostart entry.
+  * prefs.py: Fix segfault when opening the prefs window for a second time and toggling the tray icon switch.
+  * main-window.ui: Change a string in the troubleshooting page to reflect having multiple ports.
+  * Transfers: Allow compression when both sides have support and have it enabled.
+  * Show current network interface in the status bar next to the ip address, and some minor ui tweaks.
+  * transfers: Make block size configurable (not user-exposed), optimize a couple of transfer details.
+
+  [ Cobinja ]
+  * Fix connecting to self
+  * Retrieve complete ident
+
+  [ Clement Lefebvre ]
+  * l10n: Update POT
+
+ -- Clement Lefebvre <root@linuxmint.com>  Tue, 01 Jun 2021 15:03:21 +0100
+
+warpinator (1.1.2) ulyssa; urgency=medium
+
+  [ Michael Webster ]
+  * data/meson.build: populate the appdata file with version and date info.
+  * build: Add 'flatpak-build' build option instead of relying on the build prefix.
+  * Disable favorites and notification actions for flatpak versions.
+  * server.py: Add update_service to make zeroconf happy.
+  * build: Hardcode org.x.Warpinator desktop id, there's no need to have an option to change this just for flatpaks.
+  * appdata: Update screenshots with proper shadows.
+  * appdata: Update screenshot urls.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 25 Feb 2021 10:27:23 +0000
+
+warpinator (1.1.1) ulyssa; urgency=medium
+
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Sat, 02 Jan 2021 16:38:48 +0000
+
+warpinator (1.1.0) ulyssa; urgency=medium
+
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 10 Dec 2020 12:41:08 +0000
+
+warpinator (1.0.9) ulyssa; urgency=medium
+
+  [ Michael Webster ]
+  * Add flatpak folder with dependency info.
+  * Fix the icon name in a few other missed spots.
+  * appstream: Better screenshots.
+  * Update appdata screenshots.
+  * meson.build: Add a reminder to update the appdata file when tagging a new version.
+
+  [ Angedestenebres ]
+  * Add new dependency
+  * Update README.md
+  * Update README.md
+
+  [ Elagost ]
+  * add rpm specfile (#62)
+
+  [ Michael Webster ]
+  * warpinator.py: Add favorites to the send menus, move recents to its own submenu.
+
+  [ slowscript ]
+  * Put IP address into correct field on the certificate
+
+  [ Clement Lefebvre ]
+  * l10n: Update POT
+
+ -- Clement Lefebvre <root@linuxmint.com>  Wed, 02 Dec 2020 14:13:18 +0000
+
+warpinator (1.0.8) ulyana; urgency=medium
+
+  [ Michael Webster ]
+  * Fix appdata file.
+  * Add new dependency to debian/control.
+  * desktop file: Use new icon name.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 21 Aug 2020 10:31:06 +0100
+
+warpinator (1.0.7) ulyana; urgency=medium
+
+  [ Michael Webster ]
+  * Update README.md.
+  * makepot: Add scan for polkit file.
+  * Accommodate flatpak builds.
+  * about dialog: Show if this is a flatpak running.
+  * Preserve file permissions on target machine.
+  * transfers.py: Simplify symbolic link handling.  They should be transferred without any sort of modification to their target to accomodate the recipient's save folder.
+  * file chooser: Update the recent list with sent files, but only when the selection was a single item.
+  * transfers.py: Handle more errors during local fileinfo gathering.
+  * util.py: Remember the last location for the send dialog.
+  * Update protobuf files.
+  * appdata xml: Add a note to not translate 'Warpinator'.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 21 Aug 2020 10:30:53 +0100
+
+warpinator (1.0.6) ulyana; urgency=medium
+
+  [ Michael Webster ]
+  * util.py: Only use org.freedesktop.FileManager1 to reveal and select normal files.
+  * warpinator.py: Disable the clear-ops button in the user view if there aren't any ops.
+
+  [ Clement Lefebvre ]
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Wed, 24 Jun 2020 13:24:44 +0100
+
+warpinator (1.0.5) ulyana; urgency=medium
+
+  [ Michael Webster ]
+  * server: Remove zeroconf ttl adjustments, they're not supported in python zeroconf 19.1 (used in mint 19).
+  * util.py: Use native enums for file types.
+  * Connection reliability improvements and some other refactoring.
+  * remote: Limit duplex phase to 10 attempts, before waiting 30s to try a new connection.
+  * Use a global thread pool for all remotes.  Allow adjustment of server and remote thread pools for debugging purposes.
+  * notifications: Add a cancelled notification, in the case of the remote computer cancelling a transfer (in either direction).
+  * Improve logging
+  * remote: Track the connection loop by its thread's life, rather than our own accounting, it's more reliable.
+  * warpinator.py: catch any exception for disconnecting our shutdown callback - it may either be empty or glib can throw that there's nothing to disconnect (why? This should silently fail).
+  * server: Ignore services that appear to be on a different subnet.
+  * discovery: Check for tunneling netmask.
+  * notifications.py: Improve some wording.
+  * debian/control: add missing dependency.
+  * transfers: Remove some useless code.
+  * prefs.py: Default to a 'Warpinator' folder in the home folder, rather than the home folder itself.
+
+  [ Clement Lefebvre ]
+  * l10n: Update POT
+
+ -- Clement Lefebvre <root@linuxmint.com>  Sat, 06 Jun 2020 14:22:31 +0100
+
+warpinator (1.0.4) ulyana; urgency=medium
+
+  [ Michael Webster ]
+  * debian/control: Add policykit-1 dependency for build.
+  * Handle shutdowns better, add better logging tweak some keepalive bits.
+  * Kill the process if it's taking an excessive amount of time to perform an orderly shutdown.
+  * Startup: Add argument parser, option to enable debug output.
+  * remote: Make ping suppression during a transfer happen on both ends of the connection.
+  * Use a lock on the info updated trigger, there can be some collision on slower machines at startup.
+  * Clean up server, remote code.
+  * shutdown: Improve cleanup handling, shutdown gracefully when a quit is received (kill command or session manager).
+  * Increase discovery flush time, and extend the initialization view for a longer time to account for it.
+  * logging: Don't be so verbose with normal operation, and show info with a simpler format.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Wed, 27 May 2020 12:43:45 +0100
+
+warpinator (1.0.3) ulyana; urgency=medium
+
+  [ Michael Webster ]
+  * Generate a unique identifier for the server that will be used in the service name.
+  * Don't allow a remote to be considered 'online' until we actually have a duplex connection (both local and remote have discovered one another and connected successfully.
+  * prefs: Restart the server when the firewall rules are updated.
+  * testmode: Fix it again, use a real shutdown sequence.
+  * warpinator.py: Increase the startup timer ("Initializing...") and double it when we're restarting.
+
+  [ Clement Lefebvre ]
+  * l10n: Add translations
+  * l10n: Update POT
+
+ -- Clement Lefebvre <root@linuxmint.com>  Tue, 12 May 2020 11:31:40 +0100
+
+warpinator (1.0.2) ulyana; urgency=medium
+
+  [ Michael Webster ]
+  * prefs: Have the firewall button add an exception instead of just a picture showing how.
+  * util: Fix wrong variable names in surface loader 'size-prepared' callback.
+  * server: Stop using zeroconf properties to deliver the server cert.
+  * util.py: Use org.freedesktop.FileManager1 interface to open the save folder and select the file if one is provided, otherwise just open the save folder.
+  * all: Ensure a unique service name, and handle collisions gracefully internally and in the ui.
+  * server: Clean remotes folder at shutdown.
+  * remote.py: Use a threading.Event instead of time.sleep() for the ping timers.
+  * warpinator.py: Don't leave the file monitor connected once the save folder is validated.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 30 Apr 2020 16:50:32 +0100
+
+warpinator (1.0.1) ulyana; urgency=medium
+
+  [ Michael Webster ]
+  * warpinator.py: Check for a valid save folder before attempting to start the server.
+  * autostart: Always autostart, but check our setting in the starter script and exit immediately if autostart is disabled.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 23 Apr 2020 11:18:04 +0100
+
+warpinator (1.0.0) ulyana; urgency=medium
+
+  [ Michael Webster ]
+  * Fix test mode (again)
+  * server.py: Don't remove an offline remote from our list, it may come back, and it's still listed in the UI. (regression from recent commits)
+  * warpinator.py: Use button-sized icons.
+  * ui: Update glade files
+
+  [ JosephMcc ]
+  * util.py: Remove the ugly border width form the file picker dialog
+  * file-chooser: Set a parent for the dialog
+  * main-window.ui: Set a list box selection property to None
+
+  [ Michael Webster ]
+  * prefs: give the firewall popup a transient-parent to prevent a warning, and don't allow it to be resized.
+
+  [ slowscript ]
+  * Use a better name for the zeroconf service
+
+  [ Michael Webster ]
+  * Add new icons for the fallback theme.
+  * Remove markup from translatable strings.
+  * Add translator notes for strings with Warpinator in them.
+  * Add hidpi fallback icons, fix the folder names for the normal ones.
+
+  [ Clement Lefebvre ]
+  * l10n: Add POT
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 17 Apr 2020 16:29:17 +0100
+
+warpinator (0.0.1) unstable; urgency=medium
+
+  * Initial development
+
+ -- Michael Webster <miketwebster@gmail.com>  Tue, 11 Feb 2020 12:47:33 -0500
