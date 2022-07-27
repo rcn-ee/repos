@@ -1,0 +1,25 @@
+# /etc/udev/rules.d/86-remoteproc-noroot.rules
+#
+# ReWritten by: Matthijs van Duin
+# https://github.com/beagleboard/Latest-Images/issues/23#issuecomment-618263910
+#
+# identify remoteproc cores on am335x
+SUBSYSTEM=="remoteproc", KERNELS=="4a334000.pru",  ENV{REMOTEPROC_NAME}="pruss-core0"
+SUBSYSTEM=="remoteproc", KERNELS=="4a338000.pru",  ENV{REMOTEPROC_NAME}="pruss-core1"
+
+# identify remoteproc cores on am572x
+SUBSYSTEM=="remoteproc", KERNELS=="4b234000.pru",  ENV{REMOTEPROC_NAME}="pruss1-core0"
+SUBSYSTEM=="remoteproc", KERNELS=="4b238000.pru",  ENV{REMOTEPROC_NAME}="pruss1-core1"
+SUBSYSTEM=="remoteproc", KERNELS=="4b2b4000.pru",  ENV{REMOTEPROC_NAME}="pruss2-core0"
+SUBSYSTEM=="remoteproc", KERNELS=="4b2b8000.pru",  ENV{REMOTEPROC_NAME}="pruss2-core1"
+SUBSYSTEM=="remoteproc", KERNELS=="58820000.ipu",  ENV{REMOTEPROC_NAME}="ipu1"
+SUBSYSTEM=="remoteproc", KERNELS=="55020000.ipu",  ENV{REMOTEPROC_NAME}="ipu2"
+SUBSYSTEM=="remoteproc", KERNELS=="40800000.dsp",  ENV{REMOTEPROC_NAME}="dsp1"
+SUBSYSTEM=="remoteproc", KERNELS=="41000000.dsp",  ENV{REMOTEPROC_NAME}="dsp2"
+
+# set permissions and create symlinks
+SUBSYSTEM=="remoteproc", ENV{REMOTEPROC_NAME}!="", ACTION=="add", \
+        RUN+="/bin/chgrp -R gpio '/sys%p'", \
+        RUN+="/bin/chmod -R g=u '/sys%p'", \
+        RUN+="/bin/mkdir -p /dev/remoteproc", \
+        RUN+="/bin/ln -sT '/sys/class/remoteproc/%k' /dev/remoteproc/%E{REMOTEPROC_NAME}"

@@ -1,0 +1,17 @@
+# /etc/udev/rules.d/83-counter-noroot.rules
+#
+# Based off of Matthijs van Duin 81-pwm-noroot.rules
+#
+SUBSYSTEM=="counter", ACTION=="add|change", \
+        RUN+="/bin/chgrp -R gpio '/sys%p'", \
+        RUN+="/bin/chmod -R g=u '/sys%p'"
+
+# identify counter peripherals on am335x
+SUBSYSTEM=="counter", KERNELS=="48300180.*",  ENV{CHIP_NAME}="counter0"
+SUBSYSTEM=="counter", KERNELS=="48302180.*",  ENV{CHIP_NAME}="counter1"
+SUBSYSTEM=="counter", KERNELS=="48304180.*",  ENV{CHIP_NAME}="counter2"
+
+# create symlinks in /dev/bone/counter
+SUBSYSTEM=="counter", ENV{DEVTYPE}=="counter_device", ACTION=="add", ENV{CHIP_NAME}!="", \
+        RUN+="/bin/mkdir -p /dev/bone/counter", \
+        RUN+="/bin/ln -sT '/sys/bus/counter/devices/%k' /dev/bone/counter/%E{CHIP_NAME}"
