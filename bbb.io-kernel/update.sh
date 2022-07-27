@@ -159,6 +159,8 @@ do_focal () {
 	unset rtl8821cu
 	unset sgxjacinto6evm
 	unset sgxti335x
+
+	msg="5.19-bone" ; var="omap-psp" ; ver="V519X" ; current_kernel ; generate_kernel_mainline_bone
 }
 
 do_jammy () {
@@ -184,6 +186,8 @@ do_jammy () {
 	unset rtl8821cu
 	unset sgxjacinto6evm
 	unset sgxti335x
+
+	msg="5.19-bone" ; var="omap-psp" ; ver="V519X" ; current_kernel ; generate_kernel_mainline_bone
 }
 
 do_buster () {
