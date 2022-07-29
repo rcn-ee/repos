@@ -1,0 +1,13 @@
+[Unit]
+Description=Kill ssh sessions before network
+After=network.target
+
+[Service]
+TimeoutStartSec=0
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/true
+ExecStop=/usr/bin/killall sshd
+
+[Install]
+WantedBy=multi-user.target
