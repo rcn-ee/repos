@@ -1,0 +1,13 @@
+[Unit]
+Description=Kill Bela programme at shutdown if running
+After=network.target
+
+[Service]
+TimeoutStartSec=0
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/true
+ExecStop=/usr/bin/make -C /root/Bela stop
+
+[Install]
+WantedBy=multi-user.target

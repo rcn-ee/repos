@@ -1,0 +1,11 @@
+[Unit]
+Description=Configure Bela as a composite USB device
+Before=network-pre.target
+Wants=network-pre.target
+ 
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /opt/Bela/bela_gadget.sh
+ 
+[Install]
+WantedBy=default.target
