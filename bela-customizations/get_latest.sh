@@ -26,7 +26,6 @@ wfile="fstab" ; wdir="/etc/" ; copy_all
 wfile="hosts" ; wdir="/etc/" ; copy_all
 wfile="motd" ; wdir="/etc/" ; copy_all
 wfile="securetty" ; wdir="/etc/" ; copy_all
-wfile="sources.list" ; wdir="/etc/" ; copy_all
 
 wfile="bela_button.service" ; wdir="/lib/systemd/system/" ; copy_all
 wfile="bela_flash_emmc.service" ; wdir="/lib/systemd/system/" ; copy_all
@@ -43,9 +42,4 @@ wfile="bela_flash_emmc.sh" ; wdir="/opt/Bela/" ; copy_all
 wfile="bela_gadget.sh" ; wdir="/opt/Bela/" ; copy_all
 wfile="bela_mac.sh" ; wdir="/opt/Bela/" ; copy_all
 wfile="bela_startup.sh" ; wdir="/opt/Bela/" ; copy_all
-
-
-
-
-
 
