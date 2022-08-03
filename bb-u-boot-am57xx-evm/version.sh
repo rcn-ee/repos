@@ -21,6 +21,5 @@ clear_changelog="enable"
 
 buster_version="~buster+20220803"
 bullseye_version="~bullseye+20220803"
-bionic_version="~bionic+20220803"
 focal_version="~focal+20220803"
 jammy_version="~jammy+20220803"
