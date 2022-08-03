@@ -5,15 +5,17 @@
 export DH_VERBOSE=1
 
 #U-Boot
-UB_TAG=v2021.04-bbb.io-am57xx
+UB_TAG=v2022.04-bbb.io-am335x-am57xx
 UB_CONFIG=am57xx_evm_defconfig
 
 override_dh_strip:
 	# Just disable for now...
 
 override_dh_auto_configure:
-	git clone -b $(UB_TAG) https://github.com/beagleboard/u-boot --depth=1
-	cd ./u-boot/ ; make ARCH=arm CROSS_COMPILE= distclean ; make ARCH=arm CROSS_COMPILE= $(UB_CONFIG) ; make -j2 ARCH=arm CROSS_COMPILE=
+	git clone -b $(UB_TAG) https://git.beagleboard.org/beagleboard/u-boot.git --depth=1
+	make -C ./u-boot -j1 ARCH=arm CROSS_COMPILE= distclean 
+	make -C ./u-boot -j1 ARCH=arm CROSS_COMPILE= $(UB_CONFIG)
+	make -C ./u-boot -j3 ARCH=arm CROSS_COMPILE=
 
 %:
 	dh $@
