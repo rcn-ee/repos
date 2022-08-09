@@ -2,7 +2,7 @@
 
 package_name="bb-node-red-installer"
 debian_pkg_name="${package_name}"
-package_version="2.2.2.2"
+package_version="3.0.1.0"
 package_source=""
 src_dir=""
 
@@ -15,8 +15,8 @@ debian_version="${package_version}-0"
 debian_untar=""
 debian_patch=""
 
-debian_dl_1="https://nodejs.org/dist/latest-v12.x/node-v12.22.11-linux-armv7l.tar.xz"
+debian_dl_1="https://nodejs.org/dist/latest-v14.x/node-v14.20.0-linux-armv7l.tar.xz"
 
 clear_changelog="enable"
 
-bullseye_version="~bullseye+20220318"
+bullseye_version="~bullseye+20220802"
