@@ -25,6 +25,9 @@ node_red_contrib_gpio=0.51.0
 johnny_five_version=2.1.0
 beaglebone_io_version=4.1.0
 
+override_dh_strip:
+	# Just disable for now...
+
 override_dh_auto_configure:
 	mkdir -p $(project_dir)/
 	tar xf ./debian/node-$(nodejs_version)-linux-armv7l.tar.xz -C $(project_dir)/ --strip-components 1
