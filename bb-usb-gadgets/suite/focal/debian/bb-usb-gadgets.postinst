@@ -26,4 +26,8 @@ if [ ! -f /etc/systemd/system/systemd-networkd-wait-online.service.d/override.co
 	cp -v /etc/bbb.io/templates/systemd-networkd-wait-online.override.conf /etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf
 fi
 
+if [ ! -f /etc/default/bb-boot ] ; then
+	cp -v /etc/bbb.io/templates/bb-boot /etc/default/bb-boot
+fi
+
 #DEBHELPER#

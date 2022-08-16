@@ -16,6 +16,50 @@ Depends:
 Description: BeagleBoard.org Kernel Branches
  This package contains tasksel information for the BeagleBoard.org Kernel Branch.
 
+Package: bbb.io-kernel-4.14-ti-xenomai
+Section: metapackages
+Architecture: armhf
+Pre-Depends:
+ linux-image-4.14.108-ti-xenomai-r143
+Depends:
+ ${misc:Depends}
+ , bbb.io-kernel-tasks (= ${source:Version})
+Recommends: libpruio-modules-4.14.108-ti-xenomai-r143
+Description: BeagleBoard.org 4.14-ti-xenomai
+ This metapackage will install linux-image-4.14-ti-xenomai in Debian.
+
+Package: bbb.io-kernel-4.14-ti-xenomai-am335x
+Section: metapackages
+Architecture: armhf
+Pre-Depends:
+ linux-image-4.14.108-ti-xenomai-r143
+Depends:
+ ${misc:Depends}
+ , bbb.io-kernel-tasks (= ${source:Version})
+Recommends:
+ libpruio-modules-4.14.108-ti-xenomai-r143
+ , ti-sgx-ti335x-modules-4.14.108-ti-xenomai-r143
+ , rtl8723bu-modules-4.14.108-ti-xenomai-r143
+ , rtl8821cu-modules-4.14.108-ti-xenomai-r143
+ , bb-u-boot-am335x-evm
+Description: BeagleBoard.org 4.14-ti-xenomai for am335x
+ This metapackage will install linux-image-4.14-ti-xenomai for am335x in Debian.
+
+Package: bbb.io-kernel-4.14-ti-xenomai-am57xx
+Section: metapackages
+Architecture: armhf
+Pre-Depends:
+ linux-image-4.14.108-ti-xenomai-r143
+Depends:
+ ${misc:Depends}
+ , bbb.io-kernel-tasks (= ${source:Version})
+Recommends:
+ libpruio-modules-4.14.108-ti-xenomai-r143
+ , ti-sgx-jacinto6evm-modules-4.14.108-ti-xenomai-r143
+ , bb-u-boot-am57xx-evm
+Description: BeagleBoard.org 4.14-ti-xenomai for am57xx
+ This metapackage will install linux-image-4.14-ti-xenomai for am57xx in Debian.
+
 Package: bbb.io-kernel-4.19-ti
 Section: metapackages
 Architecture: armhf

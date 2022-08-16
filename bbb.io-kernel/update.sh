@@ -207,6 +207,8 @@ do_buster () {
 	rtl8723bu="enabled"
 	rtl8821cu="enabled"
 
+	msg="4.14-ti-xenomai" ; var="ti-xenomai" ; ver="LTS414" ; current_kernel ; generate_kernel_ti
+
 	msg="4.19-ti"    ; var="ti"    ; ver="LTS419" ; current_kernel ; generate_kernel_ti
 	msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_ti
 	msg="5.4-ti"     ; var="ti"    ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
@@ -267,6 +269,8 @@ do_bullseye () {
 	sgxjacinto6evm="enabled"
 	rtl8723bu="enabled"
 	rtl8821cu="enabled"
+
+	msg="4.14-ti-xenomai" ; var="ti-xenomai" ; ver="LTS414" ; current_kernel ; generate_kernel_ti
 
 	msg="4.19-ti"    ; var="ti"    ; ver="LTS419" ; current_kernel ; generate_kernel_ti
 	msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_ti
