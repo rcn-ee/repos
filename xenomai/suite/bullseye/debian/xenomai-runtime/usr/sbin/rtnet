@@ -1,0 +1,371 @@
+#!/bin/sh
+#
+# script for loading/unloading RTnet, RTmac/TMDA, and RTcap
+#
+
+prefix="/usr"
+RTNETCFG="${prefix}/etc/rtnet.conf"
+
+
+debug_func() {
+    echo "$*"
+    eval $*
+}
+
+usage() {
+    cat << EOF
+Usage:
+    $0 [-cf <config-file>] [-v] [-c] {start|stop}
+	Start or stop station according to configuration file
+
+    $0 [-cf <config-file>] [-v] [-c] master <slave_ip1> [<slave_ip2> ...]
+	Start station as master for given list of slaves
+
+    $0 [-cf <config-file>] [-v] capture
+	Start only passive realtime capturing
+
+    The additional switch -v enables verbose output.
+    The additional switch -c enables capturing mode to allow use of a network
+	analyzer such as Wireshark (if rtnet was built with --enable-rtcap).
+EOF
+}
+
+init_rtnet() {
+    modprobe rtnet >/dev/null || exit 1
+    modprobe rtipv4 >/dev/null || exit 1
+    modprobe $RT_DRIVER $RT_DRIVER_OPTIONS >/dev/null || exit 1
+
+    for dev in $REBIND_RT_NICS; do
+	if [ -d /sys/bus/pci/devices/$dev/driver ]; then
+	    echo $dev > /sys/bus/pci/devices/$dev/driver/unbind
+	fi
+	echo $dev > /sys/bus/pci/drivers/$RT_DRIVER/bind
+    done
+
+    for PROTOCOL in $RT_PROTOCOLS; do
+	modprobe rt$PROTOCOL >/dev/null || exit 1
+    done
+
+    if [ $RT_LOOPBACK = "yes" ]; then
+	modprobe rt_loopback >/dev/null || exit 1
+    fi
+
+    if [ $RTCAP = "yes" ]; then
+	modprobe rtcap >/dev/null || exit 1
+    fi
+
+    if [ $RT_LOOPBACK = "yes" ]; then
+	$RTIFCONFIG rtlo up 127.0.0.1
+    fi
+
+    if [ $RTCAP = "yes" ]; then
+	ifconfig rteth0 up
+	ifconfig rteth0-mac up
+	if [ $RT_LOOPBACK = "yes" ]; then
+	    ifconfig rtlo up
+	fi
+    fi
+
+    modprobe rtcfg >/dev/null
+    modprobe rtmac >/dev/null
+    modprobe tdma >/dev/null
+}
+
+submit_cfg() {
+    case "$STATION_TYPE" in
+	master)
+	    $RTIFCONFIG rteth0 up $STATION_IP
+
+	    $TDMACFG rteth0 master $TDMA_CYCLE
+	    eval "$TDMA_SLOTS"
+
+	    IPADDR=$STATION_IP
+	    NETMASK_OPT=
+	    ;;
+	slave)
+	    if [ ! "$STATION_IP" = "" ]; then
+		if [ ! "$STATION_MAC" = "" ]; then
+		    RTCFG_CLIENT="$STATION_IP -hw $STATION_MAC"
+		else
+		    RTCFG_CLIENT="$STATION_IP"
+		fi
+	    else
+		RTCFG_CLIENT="$STATION_MAC"
+	    fi
+
+	    ADD_STAGE1_CMDS="ifconfig vnic0 up $STATION_IP"
+
+	    echo "$TDMA_SLOTS$ADD_STAGE1_CMDS" | \
+		$RTCFG rteth0 add $RTCFG_CLIENT -stage1 -
+	    ;;
+	backup-master)
+	    if [ ! "$STATION_IP" = "" ]; then
+		if [ ! "$STATION_MAC" = "" ]; then
+		    RTCFG_CLIENT="$STATION_IP -hw $STATION_MAC"
+		else
+		    RTCFG_CLIENT="$STATION_IP"
+		fi
+	    else
+		RTCFG_CLIENT="$STATION_MAC"
+	    fi
+
+	    ADD_STAGE1_CMDS="ifconfig vnic0 up $STATION_IP"
+
+	    STAGE_2_OPT=
+	    if [ ! "$STATION_STAGE_2_SRC" = "" ]; then
+		STAGE_2_OPT="-stage2 $STATION_STAGE_2_SRC"
+	    fi
+
+	    echo "\$TDMACFG rteth0 detach;\$TDMACFG rteth0 master $TDMA_CYCLE -b $TDMA_BACKUP_OFFS;$TDMA_SLOTS$ADD_STAGE1_CMDS" | \
+		$RTCFG rteth0 add $RTCFG_CLIENT -stage1 - $STAGE_2_OPT
+	    ;;
+    esac
+
+    STATION_TYPE=
+    STATION_IP=
+    STATION_MAC=
+    STATION_STAGE_2_SRC=
+    TDMA_SLOTS=
+    TDMA_BACKUP_OFFS=
+}
+
+start_master() {
+    $RTCFG rteth0 server
+
+    STAGE_2_OPT=
+    if [ ! "$STAGE_2_SRC" = "" ]; then
+	STAGE_2_OPT="-stage2 $STAGE_2_SRC"
+    fi
+
+    if [ ! "$TDMA_SLAVES" = "" ]; then
+	# Simple setup:
+	#   Sync / Master Slot / + TDMA_OFFSET us / Slave 1 /
+	#   + TDMA_OFFSET us / Slave 2 / + TDMA_OFFSET us / ... / Slave n
+
+	$RTIFCONFIG rteth0 up $IPADDR $NETMASK_OPT
+
+	$TDMACFG rteth0 master $TDMA_CYCLE
+	$TDMACFG rteth0 slot 0 0
+
+	OFFSET=$TDMA_OFFSET
+	for SLAVE in $TDMA_SLAVES; do
+	    echo "\$TDMACFG rteth0 slot 0 $OFFSET;ifconfig vnic0 up \$IPADDR \$NETMASK_OPT" | \
+		$RTCFG rteth0 add $SLAVE -stage1 - $STAGE_2_OPT
+	    OFFSET=$(($OFFSET+$TDMA_OFFSET))
+	done
+    else
+	# Get setup from TDMA_CONFIG file:
+	#
+	# master:
+	# [ip 1.2.3.4]
+	# cycle <cycle_in_us>
+	# slot <id> <offset_in_us> [<phasing>/<period> [<size> [<joint_slot_id>]]]
+	# slot ...
+	#
+	# slave:
+	# ip 1.2.3.4
+	# mac AA:BB:CC:DD:EE:FF
+	# [stage2 <file>]
+	# slot ...
+	#
+	# slave:
+	# ip 1.2.3.4
+	# [stage2 <file>]
+	# slot ...
+	#
+	# slave:
+	# mac AA:BB:CC:DD:EE:FF
+	# [stage2 <file>]
+	# slot ...
+	#
+	# backup-master:
+	# ip 1.2.3.4    (or ip+mac or mac only, just like slaves)
+	# backup-slot <offset_in_us>
+	# [stage2 <file>]
+	# slot ...
+	#
+
+	if [ ! -r $TDMA_CONFIG ]; then
+	    echo "Could not read $TDMA_CONFIG"
+	    exit 1
+	fi
+
+	while read ARG1 ARG2 ARG3 ARG4 ARG5 ARG6; do
+	    case "$ARG1" in
+		"master:")
+		    submit_cfg
+		    STATION_TYPE=master
+		    ;;
+		"cycle")
+		    TDMA_CYCLE="$ARG2"
+		    ;;
+		"backup-master:")
+		    submit_cfg
+		    STATION_TYPE=backup-master
+		    ;;
+		"backup-offset")
+		    TDMA_BACKUP_OFFS="$ARG2"
+		    ;;
+		"slave:")
+		    submit_cfg
+		    STATION_TYPE=slave
+		    ;;
+		"ip")
+		    STATION_IP="$ARG2"
+		    ;;
+		"mac")
+		    STATION_MAC="$ARG2"
+		    ;;
+		"stage2")
+		    STATION_STAGE_2="$ARG2"
+		    ;;
+		"slot")
+		    TDMA_SLOTS="$TDMA_SLOTS\$TDMACFG rteth0 slot $ARG2 $ARG3"
+		    if [ ! "$ARG4" = "" ]; then
+			TDMA_SLOTS="$TDMA_SLOTS -p $ARG4"
+		    fi
+		    if [ ! "$ARG5" = "" ]; then
+			TDMA_SLOTS="$TDMA_SLOTS -s $ARG5"
+		    fi
+		    if [ ! "$ARG6" = "" ]; then
+			TDMA_SLOTS="$TDMA_SLOTS -j $ARG6"
+		    fi
+		    TDMA_SLOTS="$TDMA_SLOTS;"
+		    ;;
+	    esac
+	done < $TDMA_CONFIG
+	submit_cfg
+    fi
+
+    ifconfig vnic0 up $IPADDR $NETMASK_OPT
+
+    echo -n "Waiting for all slaves..."
+    $RTCFG rteth0 wait
+    $RTCFG rteth0 ready
+    echo
+}
+
+
+if [ "$1" = "-cf" ]; then
+    RTNETCFG="$2"
+    shift 2
+fi
+
+if [ -r $RTNETCFG ]; then
+    . $RTNETCFG
+else
+    echo "Could not read $RTNETCFG"
+    exit 1
+fi
+
+if [ "$1" = "-v" ]; then
+    echo "Turning on verbose mode"
+    RTIFCONFIG="debug_func $RTIFCONFIG"
+    RTCFG="debug_func $RTCFG"
+    TDMACFG="debug_func $TDMACFG"
+    shift 1
+fi
+
+if [ "$1" = "-c" ]; then
+    RTCAP="yes"
+    shift 1
+fi
+
+NETMASK_OPT=
+if [ ! "$NETMASK" = "" ]; then
+    NETMASK_OPT="netmask $NETMASK"
+fi
+
+
+case "$1" in
+    start)
+	init_rtnet
+
+	if [ $TDMA_MODE = "master" ]; then
+	    start_master
+	else
+	    $TDMACFG rteth0 slave
+
+	    $RTIFCONFIG rteth0 up $IPADDR $NETMASK_OPT
+
+	    echo -n "Stage 1: searching for master..."
+	    eval "`$RTCFG rteth0 client -c`"
+	    echo
+
+	    echo -n "Stage 2: waiting for other slaves..."
+	    if [ ! "$STAGE_2_DST" = "" ]; then
+		$RTCFG rteth0 announce -f $STAGE_2_DST
+		echo
+		eval "$STAGE_2_CMDS"
+	    else
+		$RTCFG rteth0 announce
+		echo
+	    fi
+
+	    echo -n "Stage 3: waiting for common setup completion..."
+	    $RTCFG rteth0 ready
+	    echo
+	fi
+	;;
+
+    stop)
+	ifconfig vnic0 down 2>/dev/null
+	ifconfig rteth0 down 2>/dev/null
+	ifconfig rteth0-mac down 2>/dev/null
+	ifconfig rtlo down 2>/dev/null
+
+	$RTIFCONFIG rteth0 down 2>/dev/null
+	$RTIFCONFIG rtlo down 2>/dev/null
+
+	rmmod tdma rtmac rtcfg rtcap rt_loopback $RT_DRIVER rtpacket rtudp rttcp rtipv4 rtnet 2>/dev/null
+
+	for dev in $REBIND_RT_NICS; do
+	    echo 1 > /sys/bus/pci/devices/$dev/remove
+	done
+	if [ ! "$REBIND_RT_NICS" = "" ]; then
+	    sleep 1
+	    echo 1 > /sys/bus/pci/rescan
+	fi
+	;;
+
+    master)
+	shift
+	init_rtnet
+	TDMA_SLAVES=$*
+	start_master
+	;;
+
+    capture)
+	modprobe rtnet >/dev/null || exit 1
+	modprobe $RT_DRIVER $RT_DRIVER_OPTIONS >/dev/null || exit 1
+	modprobe rtcap >/dev/null || exit 1
+	$RTIFCONFIG rteth0 up promisc
+	ifconfig rteth0 up
+	ifconfig rteth0-mac up
+	;;
+
+    loopback)
+	modprobe rtnet >/dev/null || exit 1
+	modprobe rtipv4 >/dev/null || exit 1
+
+	for PROTOCOL in $RT_PROTOCOLS; do
+	    modprobe rt$PROTOCOL >/dev/null || exit 1
+	done
+
+	modprobe rt_loopback >/dev/null || exit 1
+
+	if [ $RTCAP = "yes" ]; then
+	    modprobe rtcap >/dev/null || exit 1
+	fi
+
+	$RTIFCONFIG rtlo up 127.0.0.1
+
+	if [ $RTCAP = "yes" ]; then
+	    ifconfig rtlo up
+	fi
+	;;
+
+    *)
+	usage
+	exit 1
+esac

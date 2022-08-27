@@ -1,0 +1,52 @@
+TCP implementation for RTnet
+----------------------------
+  The goal of implementing the TCP support for RTnet is to allow talking
+  to non-RTnet devices that only expose their features via a TCP interface.
+  TCP remains tricky to use under real-time constraints, so it may not be
+  the first choice when designing both sides from scratch.
+
+  TCP is described in 130 RFCs (about 30 of them are already outdated)
+  for the last 30 years, and this complicates a complex enough stack
+  by itself.
+
+  To keep things simple, some features are lacked, and some of them
+  could be improved. Below is a short list of misfeatures and features
+  in wishlist.
+
+  *) PSH and URG packet flags are ignored and do not influence stack
+     or application behaviour.
+  *) All TCP packet options like MSS or window scaling are not parsed
+     in input packets and not generated.
+  *) The TCP stack is implemented with so known silly window syndrome
+     (see RFC 813 for details). In two words, SWS is a degeneration in
+     the throughput which develops over time, during a long data
+     transfer. Eventually it is not a challenging task to remove this
+     misfeature, but as for now it is present in the
+     implementation. If your application uses short TCP transfers, you
+     won't notice any discomfort, but if you would like to develop a
+     FTP or HTTP server over RTnet TCP, remember about this warning.
+  *) Server part of the stack is implemented in embryonic phase, so it
+     is even possible to create one server connection in non-POSIX
+     compilant way, but not more. Server connection socket descriptor
+     is the same, that you _pass_ to accept(), not _returned_ by the
+     call. As a consequence, listen() connection queue is not
+     implemented because of no further use.
+  *) Half closed connections, i. e. entered by shutdown() calls, are
+     not implemented.
+  *) sendmsg() and recvmsg() functions accept only one-element io
+     vertors.
+  *) Referencing to BSD code, anyone can find up to seven timers
+     related to every connection. In RTnet implementation it was
+     decided to exploit the idea of timerwheel data structure to
+     manage the only one timer for a connection - a packet
+     retransmission timer. It is possible to use timerwheels for
+     developing other kind of timers in price of one additional thread
+     in the stack for one kind of timers.
+     To simplify stack logic timers are missed for RTO, connection
+     establishment (retransmission timer is reused), delayed ACK,
+     persist timer, keepalive timer (half-implemented), FIN_WAIT_2 and
+     TIME_WAIT timers.
+  *) In comparison with Berkeley sockets lots of socket options are
+     not implemented. For now only SO_SNDTIMEO is implemented, and
+     SO_KEEPALIVE is half-implemented
+  *) TCP congestion avoidance is not covered at all.

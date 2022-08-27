@@ -1,0 +1,58 @@
+RTnet rt2500 WLAN README
+========================
+
+See http://www.fsf.org/resources/hw/net/wireless/cards.html 
+for a list of cards which use the rt2500 chipset.
+
+After the modules rt_rt2x00core and rt_rt2500pci have been loaded the driver
+can be configured with rtiwconfig. Following features are currently implemented
+(see also rtiwconfig --help):
+
+* bitrate: The committed value is multiplied with 0.5 Mbit/s.
+    Valid is 2, 4, 11, 22 for 802.11b and
+    12, 18, 24, 36, 48, 72, 96, 108 for 802.11g.
+
+* channel: Sets frequency/channel. Channel IDs are from 1 to 13.
+
+* txpower: Sets the transmission power. Zero means minimum TX power.
+
+* retry: The hardware can be configured to do transmission retries.
+    This sets the maximum amount of retries.
+
+* tx mode: The RTnet driver can be used in three different modes:
+
+    "raw": No acknowledgement of transmitted frames is expected.
+           -> No retries possible.
+           Target address of WLAN frame is set as passed from higher layers.
+
+    "ack": Acknowledgement of every transmitted frames is expected.
+           -> Retries are possible.
+           Target address of WLAN frame is set as passed from higher layers.
+           WARNING: This is currently only useful for unicast transmission.
+
+    "mcast": No acknowledgement of the frame is expected.
+           Receiver address of the WLAN frame is the own MAC-Address with group
+           bit set.
+
+* drop broadcast: Configures, whether the hardware shall drop received
+    broadcast frames.
+
+* drop multicast: Configures, whether the hardware shall drop received
+    multicast frames.
+
+* bbp sensibility: Sets the receiving sensibility of the base band processor.
+    Values around 70 seem to be useful.
+
+* autoresponder: Determines, whether the hardware responds automatically on
+    received unicast frames with an ACK frame.
+
+* regread/regwrite: Gives direct access to the chipset registers.
+    Only useful if you know what you are doing :)
+
+The driver has been tested with an ASUS WL-107g PCMCIA and a MSI PC54G2 PCI
+card.
+
+KNOWN BUGS: 
+After configuring the bitrate via rtiwconfig the driver activates the
+hardware autoresponder. If desired, the autoresponder has to be disabled again
+manually.
