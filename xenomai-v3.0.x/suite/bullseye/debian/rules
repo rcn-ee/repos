@@ -68,18 +68,18 @@ install: build
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp/
 	dh_install --sourcedir=$(CURDIR)/debian/tmp
 	for f in $(CURDIR)/kernel/cobalt/udev/*.rules ; do \
-	    cat $$f >> $(CURDIR)/debian/libxenomai1/etc/udev/xenomai.rules ; \
+	    cat $$f >> $(CURDIR)/debian/libxenomai1-v3.0/etc/udev/xenomai.rules ; \
 	done
 	# xeno-config should be only in xenomai-runtime
-	rm -f $(CURDIR)/debian/libxenomai-dev/usr/bin/xeno-config
-	rm -f $(CURDIR)/debian/libxenomai-dev/usr/share/man/man1/xeno-config.1
-	install -m 644 debian/libxenomai1.modprobe $(CURDIR)/debian/libxenomai1/etc/modprobe.d/xenomai.conf
+	rm -f $(CURDIR)/debian/libxenomai-v3.0-dev/usr/bin/xeno-config
+	rm -f $(CURDIR)/debian/libxenomai-v3.0-dev/usr/share/man/man1/xeno-config.1
+	install -m 644 debian/libxenomai1-v3.0.modprobe $(CURDIR)/debian/libxenomai1-v3.0/etc/modprobe.d/xenomai.conf
 	# remove empty directory
 	rm -rf $(CURDIR)/debian/xenomai-doc/usr/share/doc/xenomai-doc/ps
-	cp debian/libxenomai1.lintian $(CURDIR)/debian/libxenomai1/usr/share/lintian/overrides/libxenomai1
-	cp debian/libxenomai-dev.lintian $(CURDIR)/debian/libxenomai-dev/usr/share/lintian/overrides/libxenomai-dev
-	mkdir -p $(CURDIR)/debian/xenomai-kernel-source/usr/src/xenomai-kernel-source $(CURDIR)/debian/xenomai-kernel-source/usr/share/doc/xenomai-kernel-source
-	cp -a config kernel include scripts $(CURDIR)/debian/xenomai-kernel-source/usr/src/xenomai-kernel-source
+	cp debian/libxenomai1-v3.0.lintian $(CURDIR)/debian/libxenomai1-v3.0/usr/share/lintian/overrides/libxenomai1-v3.0
+	cp debian/libxenomai-v3.0-dev.lintian $(CURDIR)/debian/libxenomai-v3.0-dev/usr/share/lintian/overrides/libxenomai-v3.0-dev
+	mkdir -p $(CURDIR)/debian/xenomai-v3.0-kernel-source/usr/src/xenomai-v3.0-kernel-source $(CURDIR)/debian/xenomai-v3.0-kernel-source/usr/share/doc/xenomai-v3.0-kernel-source
+	cp -a config kernel include scripts $(CURDIR)/debian/xenomai-v3.0-kernel-source/usr/src/xenomai-v3.0-kernel-source
 
 # Build architecture-independent files here.
 binary-indep: build install
@@ -115,11 +115,11 @@ binary-arch: build install
 	dh_shlibdeps -s
 	dh_gencontrol -s
 #	 Echo config options to control.
-	echo " ." >> $(CURDIR)/debian/libxenomai1/DEBIAN/control
+	echo " ." >> $(CURDIR)/debian/libxenomai1-v3.0/DEBIAN/control
 	echo " Compiled with the following options." >> \
-	        $(CURDIR)/debian/libxenomai1/DEBIAN/control
+	        $(CURDIR)/debian/libxenomai1-v3.0/DEBIAN/control
 	echo "$(CONFIG_OPTS)" | awk '{ for ( i=1 ; i<=NF ; i++ ) print "   "$$i }' >> \
-	        $(CURDIR)/debian/libxenomai1/DEBIAN/control
+	        $(CURDIR)/debian/libxenomai1-v3.0/DEBIAN/control
 #	 End of hackery.
 	dh_md5sums -s
 	dh_builddeb -s
