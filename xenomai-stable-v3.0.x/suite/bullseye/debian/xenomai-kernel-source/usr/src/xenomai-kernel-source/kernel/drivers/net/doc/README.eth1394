@@ -1,0 +1,65 @@
+HOWTO for using RTnet over FireWire (ETH1394)
+=============================================
+To use RTnet over FireWire, one needs another package, i.e. RT-FireWire, which
+can be checked out via "svn checkout svn://svn.berlios.de/rtfirewire/trunk".
+RT-FireWire package is developed by RT-FireWire project team, see the project
+homepage for more interesting information (http://rtfirewire.berlios.de).
+
+It is recommended to compile and test the RT-FireWire package first.
+RT-FireWire only compiles with fusion. At the time of writing, it is the CVS
+version of fusion which will become release 0.9. Use --with-rtai=XXX to
+specify the installation location of fusion in your system.
+
+To compile RTnet's Eth1394 driver with RT-FireWire, one needs to do 2 things
+in configuration:
+1. add --with-rtfw=XXX to specify the source location of RT-FireWire
+2. add --enable-eth1394 to enable the compiling of eth1394
+Of course, don't forget --with-rtai=XXX for RTnet.
+
+RT-FireWire comes with some basic testing tool, one of which is similiar to
+"rtping" on Ethernet. See the Readme of RT-FireWire for how to play around
+with basic FireWire testing.
+
+Currently, Eth1394 appears exactly the same as normal Ethernet device. So from
+the application point of view, no medium difference can be seen, which means
+application on Ethernet can be directly moved to FireWire without any porting
+effort.
+
+So, play around with your new medium i.e. FireWire, with exactly the same tool
+on Ethernet-:).
+
+
+Modification to RFC2734
+=======================
+Each IP-capable node must have it own unique hardware address in the network.
+The original IPover1394 spec (RFC2734) employs the 64-bit GUID of each
+FireWire adapter chip as the hardware address. That way, the hardware address
+can be guaranteed to be unique even in the world scale, but the address
+resolution process is not efficient, see below:
+
+               ARP                    Eth1394 internal
+            resolution                   resolution
+  48-bit                    MAC                            16-bit
+IP address -----------> (64-bit GUID) ---------------> FireWire nodeid
+
+The modified ARP on IPover1394 directly use the FireWire node id as hardware
+address for each Eth1394 nodes. That way, the mapping between IP address and
+hardware address (FireWire node id) only needs one time of resolution, which
+is more efficient than the original one. Note that here we assume that we use
+static allocation of 1394 address space to IPover1394, i.e. on each node, the
+address space for Eth1394 would be exactly the same, see "eth1394.h". So, the
+16 bits would be enough to represent the hardware address. Now the address
+resolution process is  more efficient, as below:
+
+                   ARP resolution
+48-bit IP address ---------------> MAC (FireWire nodeid)
+
+To give exactly the same look as normal Ethernet devices, the MAC address of
+Eth1394 is extended to 6-bytes by filling 0 after the 2 bytes FireWire node
+id. This way all the highlevel stuff which is already working on Ethernet,
+like RTnet's TDMA, RTcfg, can be directly moved to Eth1394.
+
+
+Good Luck!
+
+2005-08-02 Zhang Yuchen <yuchen623-at-gmail.com>

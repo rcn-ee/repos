@@ -1,0 +1,220 @@
+#! /bin/sh
+
+staging=${DESTDIR}
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+libdir="@libdir@"
+datarootdir="@datarootdir@"
+datadir="@datadir@"
+pkgdatadir="${datadir}/@PACKAGE@"
+includedir="@includedir@"
+
+XENO_VERSION="@PACKAGE_VERSION@"
+XENO_PREFIX="${staging}${prefix}"
+XENO_CC="@CC@"
+XENO_TARGET_ARCH="@XENO_BUILD_STRING@"
+XENO_INCLUDE_DIR="${staging}${includedir}"
+XENO_BASE_CFLAGS="-I$XENO_INCLUDE_DIR/mercury -I$XENO_INCLUDE_DIR @XENO_USER_APP_CFLAGS@ -D__MERCURY__"
+XENO_BASE_LDFLAGS="-L${staging}${libdir} -lmercury -lpthread -lrt @XENO_USER_APP_LDFLAGS@"
+XENO_LIBRARY_DIR="${staging}${libdir}"
+
+unset skin_list codegen
+
+usage ()
+{
+cat <<EOF
+Usage xeno-config OPTIONS
+Options :
+        --help
+        --v,--verbose
+        --version
+        --cc
+        --ccld
+        --arch
+        --prefix
+        --[skin=]posix|vxworks|psos|alchemy|rtdm|smokey
+        --auto-init|auto-init-solib|no-auto-init
+        --cflags
+        --ldflags
+        --lib*-dir,--libdir,--user-libdir
+        --core
+        --info
+EOF
+    exit $1
+}
+
+verbose ()
+{
+    echo xeno-config --verbose
+    echo "        --core=mercury"
+    echo "        --version=\"${XENO_VERSION}\""
+    echo "        --cc=\"$XENO_CC\""
+    echo "        --ccld=\"$XENO_CC\""
+    echo "        --arch=\"$XENO_TARGET_ARCH\""
+    echo "        --prefix=\"$XENO_PREFIX\""
+    echo "        --library-dir=\"$XENO_LIBRARY_DIR\""
+    exit 0
+}
+
+dump_info ()
+{
+    version=${XENO_VERSION}
+    if test -x $XENO_PREFIX/sbin/version; then
+	_version=`$XENO_PREFIX/sbin/version 2>/dev/null`
+	test x"$_version" = x || version="$_version"
+    fi
+    echo "Xenomai version: ${version}"
+    uname -a 2>/dev/null || echo "Cannot determine system information (uname?)"
+    echo "Kernel parameters: `cat /proc/cmdline`"
+    echo "Compiler: @XENO_BUILD_COMPILER@"
+    eval echo "Build args: @XENO_BUILD_ARGS@"
+}
+
+if test $# -eq 0; then
+    verbose $*
+    usage 1 1>&2
+fi
+
+do_ldflags=
+do_cflags=
+do_setinit=
+do_autoinit=y
+do_autoinit_solib=
+
+while test $# -gt 0; do
+    case "$1" in
+        --v|--verbose)
+            verbose $*
+            exit 0
+            ;;
+        --version)
+            echo ${XENO_VERSION}
+            ;;
+        --cc|--ccld)
+            echo $XENO_CC
+            ;;
+        --arch)
+            echo $XENO_TARGET_ARCH
+            ;;
+        --prefix)
+            echo $XENO_PREFIX
+            ;;
+	--no-auto-init)
+	    do_setinit=y
+	    do_autoinit=
+	    do_autoinit_solib=
+	    ;;
+	--auto-init)
+	    do_setinit=y
+	    do_autoinit=y
+	    do_autoinit_solib=
+	    ;;
+	--auto-init-solib)
+	    if test \! -r ${XENO_LIBRARY_DIR}/xenomai/bootstrap-pic.o; then
+		echo "--auto-init-solib requires shared library support" 1>&2
+		exit 1
+	    fi
+	    do_setinit=y
+	    do_autoinit=y
+	    do_autoinit_solib=y
+	    ;;
+        --lib*-dir|--libdir|--user-libdir)
+            echo $XENO_LIBRARY_DIR
+            ;;
+	--skin)
+	    if [ "$2" = native ]; then
+		skin_list="$skin_list alchemy"
+	    else
+		skin_list="$skin_list $2"
+	    fi
+	    shift
+	    ;;
+	--skin=*)
+	    if [ "$1" = "--skin=native" -o "$1" = "--native" ]; then
+		skin_list="$skin_list alchemy"
+            else
+		skin_list="$skin_list `expr "$1" : '--skin=\(.*\)'`"
+	    fi
+	    ;;
+	--posix|--vxworks|--psos|--alchemy|--rtdm|--smokey)
+	    skin_list="$skin_list `expr "$1" : '--\(.*\)'`"
+	    ;;
+	--cflags)
+	    do_cflags=y
+	    ;;
+	--ldflags)
+	    do_ldflags=y
+	    ;;
+	--core)
+	    echo mercury
+	    ;;
+        --help)
+            usage 0 1>&2
+            ;;
+        --info)
+            dump_info
+            ;;
+        *)
+	 echo "invalid option: $1" 1>&2
+         usage 1 1>&2
+         ;;
+    esac
+    shift
+done
+
+if test x$do_setinit = xy -a x$do_ldflags = x; then
+	echo "--[no-]auto-init is meaningful only with --ldflags" 1>&2
+	exit 1
+fi
+
+if test x$do_cflags = xy; then
+    cflags="$XENO_BASE_CFLAGS"
+    test -z "$skin_list" && skin_list=posix
+    for skin in $skin_list; do
+	case "$skin" in
+	    vxworks|psos|alchemy|smokey)
+		cflags="$cflags -I$XENO_INCLUDE_DIR/$skin"
+		;;
+	    posix|rtdm)
+		;;
+	    *)
+		echo "$skin is not a user-space API" 1>&2
+		exit 1
+		;;
+	esac
+    done
+    echo $cflags
+fi
+
+if test x$do_ldflags = xy; then
+    test -z "$skin_list" && skin_list=posix
+    ldflags=
+    copperplate=
+    for skin in $skin_list; do
+	case "$skin" in
+	    posix|rtdm)
+		;;
+	    vxworks|psos|alchemy|smokey)
+		copperplate="-lcopperplate"
+		ldflags="-l$skin $ldflags"
+		;;
+	    *)
+		echo "unknown API: $skin" 1>&2
+		exit 1
+		;;
+	esac
+    done
+    wrap_main=
+    if test x$do_autoinit = xy; then
+	if test x$do_autoinit_solib = xy; then
+	    codegen=-pic
+	else
+	    wrap_main="-Wl,--wrap=main -Wl,--dynamic-list=${XENO_LIBRARY_DIR}/dynlist.ld"
+	fi
+	bootstrap="${XENO_LIBRARY_DIR}/xenomai/bootstrap${codegen}.o"
+    fi
+    ldflags="-Wl,--no-as-needed $ldflags"
+    echo "$ldflags $copperplate $bootstrap $wrap_main $XENO_BASE_LDFLAGS"
+fi
+
+exit 0

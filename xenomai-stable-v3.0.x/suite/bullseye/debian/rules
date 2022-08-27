@@ -1,0 +1,130 @@
+#!/usr/bin/make -f
+
+# Author: Paul Corner <paul_c@gna.org>
+# Created on: Sat Mar 3 12:00 GMT 2007
+# License: GPL Ver. 2
+
+#export DH_VERBOSE=1
+
+export DEB_BUILD_HARDENING=1
+
+DEB_HOST_GNU_CPU ?= $(shell dpkg-architecture -qDEB_HOST_GNU_CPU)
+DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
+DEB_HOST_GNU_TYPE=$(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE=$(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+
+CONFIG_OPTS = --prefix=/usr \
+            --includedir=/usr/include/xenomai \
+            --mandir=/usr/share/man \
+            --with-testdir=/usr/lib/xenomai/testsuite \
+            --enable-smp
+
+ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
+	CONFIG_OPTS += --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
+else
+	CONFIG_OPTS += --build $(DEB_BUILD_GNU_TYPE)
+endif
+
+build: build-arch build-indep
+
+build-arch: build-arch-stamp
+build-arch-stamp: config.status
+	dh_testdir
+	$(MAKE)
+	touch build-arch-stamp
+
+build-indep: build-indep-stamp
+build-indep-stamp: config.status
+	dh_testdir
+	touch build-indep-stamp
+
+config.status: bootstrap configure-stamp
+
+bootstrap:
+	dh_testdir
+	./scripts/bootstrap
+
+configure-stamp:
+	dh_testdir
+	./configure $(CONFIG_OPTS)
+	touch configure-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f configure-stamp build-indep-stamp build-arch-stamp
+	-if test -f Makefile ; then \
+	    $(MAKE) distclean ; \
+	fi
+	dh_clean
+	rm -fR $(CURDIR)/tmp
+	rm -f $(CURDIR)/*.patch
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_prep
+	dh_installdirs
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp/
+	dh_install --sourcedir=$(CURDIR)/debian/tmp
+	for f in $(CURDIR)/kernel/cobalt/udev/*.rules ; do \
+	    cat $$f >> $(CURDIR)/debian/libxenomai1/etc/udev/xenomai.rules ; \
+	done
+	# xeno-config should be only in xenomai-runtime
+	rm -f $(CURDIR)/debian/libxenomai-dev/usr/bin/xeno-config
+	rm -f $(CURDIR)/debian/libxenomai-dev/usr/share/man/man1/xeno-config.1
+	install -m 644 debian/libxenomai1.modprobe $(CURDIR)/debian/libxenomai1/etc/modprobe.d/xenomai.conf
+	# remove empty directory
+	rm -rf $(CURDIR)/debian/xenomai-doc/usr/share/doc/xenomai-doc/ps
+	cp debian/libxenomai1.lintian $(CURDIR)/debian/libxenomai1/usr/share/lintian/overrides/libxenomai1
+	cp debian/libxenomai-dev.lintian $(CURDIR)/debian/libxenomai-dev/usr/share/lintian/overrides/libxenomai-dev
+	mkdir -p $(CURDIR)/debian/xenomai-kernel-source/usr/src/xenomai-kernel-source $(CURDIR)/debian/xenomai-kernel-source/usr/share/doc/xenomai-kernel-source
+	cp -a config kernel include scripts $(CURDIR)/debian/xenomai-kernel-source/usr/src/xenomai-kernel-source
+
+# Build architecture-independent files here.
+binary-indep: build install
+	dh_testdir -i
+	dh_testroot -i
+	dh_installdocs -i -A README
+	dh_link -i
+	dh_installchangelogs -i
+	dh_strip -i
+	dh_compress -i -X.pdf
+	dh_fixperms -i
+	dh_makeshlibs -i
+	dh_installdeb -i
+	dh_shlibdeps -i
+	dh_gencontrol -i
+	dh_md5sums -i
+	dh_builddeb -i
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir -s
+	dh_testroot -s
+	dh_installinit -s --name=xenomai
+	dh_installman -s
+	dh_installdocs -s -A README
+	dh_link -s
+	dh_installchangelogs -s
+	dh_strip -s
+	dh_compress -s
+	dh_fixperms -s
+	dh_makeshlibs -s
+	dh_installdeb -s
+	dh_shlibdeps -s
+	dh_gencontrol -s
+#	 Echo config options to control.
+	echo " ." >> $(CURDIR)/debian/libxenomai1/DEBIAN/control
+	echo " Compiled with the following options." >> \
+	        $(CURDIR)/debian/libxenomai1/DEBIAN/control
+	echo "$(CONFIG_OPTS)" | awk '{ for ( i=1 ; i<=NF ; i++ ) print "   "$$i }' >> \
+	        $(CURDIR)/debian/libxenomai1/DEBIAN/control
+#	 End of hackery.
+	dh_md5sums -s
+	dh_builddeb -s
+
+# We have nothing to do by default.
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install

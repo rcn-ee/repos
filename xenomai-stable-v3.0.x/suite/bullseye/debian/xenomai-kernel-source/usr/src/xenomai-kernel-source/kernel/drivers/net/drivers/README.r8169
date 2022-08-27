@@ -1,0 +1,42 @@
+For general informations on RTnet an Gigabit Ethernet please have a look
+at the README.gigabit file in the RTnet 'Documentation' directory.
+
+This is the RTnet driver for NICs based on the Realtek RTL8169(S) chipset.
+The following cards should have this chipset:
+
+ o Buffalo LGY-PCI-GT (8169S)
+ o Corega CG-LAPCIGT (8169S)
+ o D-Link DGE-528T (8169S)
+ o Gigabyte 7N400 Pro2 Integrated Gigabit Ethernet (8110S)
+ o LevelOne GNC-0105T (8169S)
+ o Linksys EG1032v3 (8169S)
+ o Netgear GA511 PC Card (8169)
+ o PLANEX COMMUNICATIONS Inc. GN-1200TC (8169S)
+ o Surecom EP-320G-TX1 (8169S)
+ o US Robotics USR997902 (8169S)
+ o Xterasys XN-152 10/100/1000 NIC (8169)
+
+(see <http://www.openbsd.org/cgi-bin/man.cgi?query=re&arch=macppc&sektion=4>)
+
+This driver was actually only tested with a D-Link DGE-528T; for other NICs
+you may have to extend the PCI device id table within the driver.
+
+You can set various debugging levels while loading the module:
+
+DEBUG_RX_SYNC    1    Show received TDMA synchronisation frames
+DEBUG_RX_OTHER   2    Show other received packets
+DEBUG_TX_SYNC    4    Show sent TDMA synchronisation frames
+DEBUG_TX_OTHER   8    Show other sent packets
+DEBUG_RUN       16    Show general debugging infos when running...
+
+(The debugging output is in work, DEBUG_RX_* don't work yet).
+
+To see all sent packets (except TDMA sync frames) and general debugging
+output, just load the driver like this:
+
+  modprobe rt_r8169 debug=24
+ (DEBUG_TX_OTHER + DEBUG_RUN = 8 + 16 = 24)
+
+
+More documentation follows... =8-)
+                                                                 Klaus Keppler

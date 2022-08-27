@@ -1,0 +1,49 @@
+README.ipfragmentation
+=======================
+
+19-May-2003 - Mathias Koehrer (mathias_koehrer@yahoo.de) (original version)
+21-Oct-2003 - Jan Kiszka (jan.kiszka@web.de)
+
+
+This file documents the restrictions and pitfalls when using fragmented IP
+packets with RTnet.
+
+
+Introduction:
+-------------
+Ethernet provides 1500 bytes of payload within each packet. Subtracting the IP
+header (20 bytes without options) and the UDP header (8 bytes), this leaves
+1472 bytes of data for the (UDP) user. When sending larger packets, the RTnet
+implementation of IP fragments the packet and sends it in multiple chunks over
+the network. When a RTnet station receives a sequence of fragmented IP packets,
+it reassembles it and passed the whole packet to the next layer (UDP)
+afterwards.
+
+
+Restrictions:
+-------------
+Incoming IP fragments are collected by the IP layer. The collector mechanism is
+a global resource, when all collector slots are used, unassignable fragmented
+packets are dropped! In order to guarantee bounded execution time of the
+collector lookup mechanism, it is not possible to provide an unlimited number
+of collectors (currently 10 are support, see ipv4/ip_fragment.c). Therefore, be
+careful how many fragmented packets all of your stations are producing and if
+one receiver might be overwhelmed with fragments!
+
+Fragmented IP packets are generated AND received at the expense of the socket
+rtskb pool. Adjust the pool size appropriately to provide sufficient rtskbs
+(see also examples/frap_ip).
+
+To identify the destination socket and to simplify the defragmentation, all IP
+fragments must arrive in a strictly ascending order. Unordered packets are
+dropped, if they can be assigned to an existing collector, the already
+collected fragments are also cleaned up. However, for typically isolated
+real-time networks, this requirement can be easily fulfilled.
+
+
+Known Issues:
+-------------
+When sending fragmented IP packets over a NIC without RTmac being installed,
+the NIC's transmission queue may easily overflow (take a look at the driver
+source for the exact limit - typically TX_RING_SIZE). This is due to the still
+lacking flow control for packet transmission. Will hopefully be fixed soon...

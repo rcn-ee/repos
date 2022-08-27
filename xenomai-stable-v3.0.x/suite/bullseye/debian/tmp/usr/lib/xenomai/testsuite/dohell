@@ -1,0 +1,96 @@
+#! /bin/sh
+
+usage() {
+    cat <<EOF
+$0 [ -b path ] [ -s server ] [ -p port ] [ -m mntpoint ] [ -l path | seconds ]
+
+Generate load, using an assorted set of commands and optionnaly:
+- hackbench if the path to the hackbench binary is specified with -b;
+- nc to send TCP data to "server" port "port" if -s is specified (if -p
+is not specified, the port 9, aka discard is used);
+- dd to write data under "mntpoint" if -m is specified.
+
+during the runtime of the LTP test if the path to the LTP installation
+directory is specifed with -l or during "seconds" seconds.
+EOF
+}
+
+port=9
+while [ $# -gt 0 ]; do
+    case $1 in
+	-h|--help) usage
+	    exit 0;;
+	-b) shift; hackbench="$1"; shift
+	    ;;
+	-s) shift; server="$1"; shift
+	    ;;
+	-p) shift; port="$1"; shift
+	    ;;
+	-m) shift; mntpoint="$1"; shift
+	    ;;
+	-l) shift; ltpdir="$1"; shift
+	    ;;
+	-*) usage
+	    exit 1;;
+	*) break;;
+    esac
+done
+
+if [ -z "$ltpdir" -a $# -ne 1 ]; then
+    usage
+    exit 1
+fi
+
+pids=""
+
+if [ -n "$server" ]; then
+    if type nc > /dev/null 2>&1; then
+	nc=nc
+    elif type netcat > /dev/null 2>&1; then
+	nc=netcat
+    else
+	echo netcat or nc not found
+	exit 1
+    fi
+
+    seq 1 399999 > /tmp/netcat.data
+    ( while :; do cat /tmp/netcat.data; sleep 15; done | $nc $server $port ) &
+    pids="$!"
+fi
+
+if [ -n "$mntpoint" ]; then
+    while :; do dd if=/dev/zero of=$mntpoint/bigfile bs=1024000 count=100; sync; done &
+    pids="$pids $!"
+fi
+
+if [ -n "$hackbench" ]; then
+    while :; do $hackbench 1; done &
+    pids="$pids $!"
+fi
+
+while :; do cat /proc/interrupts; done > /dev/null 2>&1 &
+pids="$pids $!"
+
+while :; do ps w; done > /dev/null 2>&1 &
+pids="$pids $!"
+
+dd if=/dev/zero of=/dev/null &
+pids="$pids $!"
+
+while :; do ls -lR / > /dev/null 2>&1; done &
+pids="$pids $!"
+
+test -e /proc/sys/kernel/hung_task_timeout_secs && \
+echo 0 > /proc/sys/kernel/hung_task_timeout_secs
+
+if [ -n "$ltpdir" ]; then
+    cd "$ltpdir" && ./runalltests.sh
+    cd "$ltpdir" && ./runalltests.sh
+else
+    sleep $1
+fi
+
+kill $pids > /dev/null 2>&1
+sleep 5
+killall -KILL cat $nc dd hackbench ls ps > /dev/null 2>&1
+killall -KILL `basename $0` sleep > /dev/null 2>&1

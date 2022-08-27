@@ -1,0 +1,39 @@
+Real-Time Ethernet Capturing (RTcap)
+------------------------------------
+
+RTnet can capture incoming and outgoing Ethernet packets with a very low time
+stamp jitter, typically below 10 us (depends on the hardware).
+
+When it is configured and compiled with --enable-rtcap, some extensions will be
+added to the RTnet stack and an additional module rtcap.o will be created. This
+module has to be loaded *after* all NIC drivers are inserted and *before* any
+device is started or a RTmac discipline is attached to it. It will create two
+read-only Linux shadow network devices for every NIC:
+
+    <rtdevX>     (e.g. rteth0) and
+    <rtdevX>-mac (exception: loopback device will only be mirrored to "rtlo").
+
+The first capturing device mirrors any incoming packet the hardware reports to
+the stack and any outgoing packet sent on the local station using RTnet. The
+second one captures only packets which have be delayed by an active RTmac
+discipline. As the capturing time is dictated by the parent shadow device,
+packet lists can be unchronologic, but it provides a deeper look on the
+influence of RTmac on the packet transmission process.
+
+After these shadow devices are started up using ifconfig, any capturing tool
+like tcpdump or Ethereal can be used for the actual analysis work. In order to
+get hold of any packet on the network, the real-time NIC should be
+furthermore switched to promiscuous mode when it is configured:
+
+    rtifconfig <rtdevX> up <IP> promisc
+
+If you notice any potential packet losses while capturing, you can try to
+increase the number of real-time buffer used for storing packets before they
+can be processed by Linux. The module parameter rtcap_rtskb controls this
+parameter. It is set to 128 by default. Generally you should also tell RTcap to
+switch on the RTAI timer (module parameter: start_timer=1) and prevent any
+other module or program to do so as well.
+
+The capturing support adds a slight overhead to both paths of packets,
+therefore the compilation parameter should only be switched on when the service
+is actually required.

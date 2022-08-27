@@ -1,0 +1,74 @@
+README.rtnetproxy
+===================
+08-Nov-2002, Mathias Koehrer <mathias_koehrer@yahoo.de>
+02-May-2008, Wolfgang Grandegger <wg@grandegger.com>
+
+
+RTnetproxy can be used to share a single network adapter for both - realtime
+and non-realtime ethernet traffic. TCP/IP, UDP and ARP can be used via RTnet
+(of course not in realtime!)
+
+RTnetproxy represents a network device to standard Linux and can be used
+as any other Linux network device (ifconfig for configuration), the name
+the network device is "rtproxy".
+
+Setup:
+--------
+Get your RTnet working first! All IP addresses you are interested in have
+to be set via "rtifconfig ethX route solicit IP_ADDRESS"!
+
+     insmod rtnetproxy.o
+
+Now, you have a network device "rtproxy" ready to be used with Linux.
+Configure this network device using "ifconfig":
+
+Example:
+
+    ifconfig rtproxy up 192.168.10.10 netmask 255.255.255.0
+
+That's it!
+
+Configuration options:
+------------------------
+--enable-proxy: this enables RTnetproxy support, which is by default
+    restricted to IP-based protocols (TCP/IP!!!). Incoming frames from
+    ICMP are interpreted directly by RTnet and are not forwarded to the
+    RTnetproxy. UDP packets are forwarded if they are not requested by
+    an RTnet application.
+
+--enable-proxy-arp: this option enables ARP support for the rtproxy Linux
+    network device. Incoming ARP replys are delivered to both, the RTnet
+    and the Linux network stack. The rtproxy then gets attached to the
+    corresponding RTnet device, rteth0 by default.
+
+--disable-icmp: this option disables the RTnet IPv4 ICMP support. ICMP
+    will then be handled by the Linux network stack via the rtproxy Linux
+    network device.
+
+Important note:
+-----------------
+It is highly recommended to strictly separate realtime LAN traffic and non-
+realtime LAN traffic. For a configuration/setup phase, TCP/IP is sometimes
+very useful, buf for realtime data exchange the LAN should be reserved for
+the realtime traffic using UDP!
+
+
+How it works internally:
+--------------------------
+RTnetproxy works on top of RTnet.
+All data to be sent out or received is actually copied between RTnet and
+RTnetproxy => The performance is not as good as with the standard Linux
+network drivers.
+All incoming IPv4 frames, having a IP protocol ID that is not handled by
+RTnet are passed to RTnetproxy.
+Incoming frames, that are passed to RTnetproxy (TCP frames) slow down the
+realtime stuff a little bit - as all this is done in realtime mode context!
+
+
+Possible enhancements:
+-----------------------
+Pass incoming frames to RTnetproxy not only by checking the protocol ID but
+by actual checking, if a certain frame has been processed by RTnet or not.
+This leads to a couple of changes in the RTnet implementation...
+
+

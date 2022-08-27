@@ -1,0 +1,61 @@
++ diff -u linuxppc_2_4_devel/arch/ppc/5xxx_io/bestcomm/bestcomm_ksyms.c.RTNET linuxppc_2_4_devel/arch/ppc/5xxx_io/bestcomm/bestcomm_ksyms.c
+--- linuxppc_2_4_devel/arch/ppc/5xxx_io/bestcomm/bestcomm_ksyms.c.RTNET	2008-02-05 15:53:15.000000000 +0100
++++ linuxppc_2_4_devel/arch/ppc/5xxx_io/bestcomm/bestcomm_ksyms.c	2008-02-06 10:37:11.000000000 +0100
+@@ -0,0 +1,20 @@
++#include <linux/kernel.h>
++#include <linux/module.h>
++
++#include "ppctypes.h"
++#include "bestcomm_api.h"
++#include "task_api/bestcomm_cntrl.h"
++#include "task_api/bestcomm_api_mem.h"
++#include "task_api/tasksetup_bdtable.h"
++
++EXPORT_SYMBOL(TaskBDIdxTable);
++EXPORT_SYMBOL(TaskSetup_TASK_FEC_TX);
++EXPORT_SYMBOL(TaskSetup_TASK_FEC_RX);
++EXPORT_SYMBOL(TASK_FEC_TX_api);
++EXPORT_SYMBOL(TASK_FEC_RX_api);
++EXPORT_SYMBOL(TaskStart);
++EXPORT_SYMBOL(TaskBDAssign);
++EXPORT_SYMBOL(TaskBDRelease);
++EXPORT_SYMBOL(MBarGlobal);
++EXPORT_SYMBOL(TaskBDReset);
++EXPORT_SYMBOL(TaskStop);
++ diff -u linuxppc_2_4_devel/arch/ppc/5xxx_io/bestcomm/Makefile.RTNET linuxppc_2_4_devel/arch/ppc/5xxx_io/bestcomm/Makefile
+--- linuxppc_2_4_devel/arch/ppc/5xxx_io/bestcomm/Makefile.RTNET	2008-01-31 10:19:35.000000000 +0100
++++ linuxppc_2_4_devel/arch/ppc/5xxx_io/bestcomm/Makefile	2008-02-05 15:52:35.000000000 +0100
+@@ -12,6 +12,8 @@
+ 	       -I$(TOPDIR)/arch/$(ARCH)/5xxx_io/bestcomm/capi/task_api \
+ 	       -I$(TOPDIR)/arch/$(ARCH)/5xxx_io/bestcomm/code_dma/image_rtos1
+ 
++export-objs	:= bestcomm_ksyms.o
++
+ O_TARGET := bestcomm.o
+ 
+ obj-y	:=	capi/bestcomm_api.o capi/load_task.o \
+@@ -35,5 +37,8 @@
+ 		code_dma/image_rtos1/dma_image.o \
+ 		code_dma/image_rtos1/dma_image.reloc.o
+ 
++obj-$(CONFIG_MODULES)	+= bestcomm_ksyms.o
++
++
+ include $(TOPDIR)/Rules.make
+ 
++ diff -u linuxppc_2_4_devel/arch/ppc/kernel/mpc5xxx_common.c.RTNET linuxppc_2_4_devel/arch/ppc/kernel/mpc5xxx_common.c
+--- linuxppc_2_4_devel/arch/ppc/kernel/mpc5xxx_common.c.RTNET	2008-01-31 10:19:35.000000000 +0100
++++ linuxppc_2_4_devel/arch/ppc/kernel/mpc5xxx_common.c	2008-02-06 10:34:19.000000000 +0100
+@@ -16,11 +16,7 @@
+ #include <asm/ppcboot.h>
+ #endif
+ 
+-#if defined(CONFIG_PPC_5xxx_FEC) || \
+-    defined(CONFIG_UDA_1344) || \
+-    defined(CONFIG_5200_I2S) || \
+-    defined(CONFIG_BLK_DEV_IDE_MPC5xxx_MDMA) || \
+-    defined(CONFIG_BLK_DEV_IDE_MPC5xxx_UDMA)
++#if defined(CONFIG_BESTCOMM_API)
+ #define CONFIG_BESTCOMM_MPC5xxx
+ #include <bestcomm_api.h>
+ #include <mgt5200/sdma.h>

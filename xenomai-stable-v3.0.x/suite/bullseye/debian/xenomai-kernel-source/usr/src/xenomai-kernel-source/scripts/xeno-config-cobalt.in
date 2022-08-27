@@ -1,0 +1,289 @@
+#! /bin/sh
+
+staging=${DESTDIR}
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+libdir="@libdir@"
+datarootdir="@datarootdir@"
+datadir="@datadir@"
+pkgdatadir="${datadir}/@PACKAGE@"
+includedir="@includedir@"
+
+XENO_VERSION="@PACKAGE_VERSION@"
+XENO_PREFIX="${staging}${prefix}"
+XENO_CC="@CC@"
+XENO_TARGET_ARCH="@XENO_TARGET_ARCH@"
+XENO_INCLUDE_DIR="${staging}${includedir}"
+XENO_BASE_CFLAGS="-I$XENO_INCLUDE_DIR/cobalt -I$XENO_INCLUDE_DIR @XENO_USER_APP_CFLAGS@ -D__COBALT__"
+XENO_POSIX_LDFLAGS="-L${staging}${libdir} -lcobalt -lmodechk -lpthread -lrt @XENO_USER_APP_LDFLAGS@"
+XENO_LIBRARY_DIR="${staging}${libdir}"
+LD_FILE_OPTION="@LD_FILE_OPTION@"
+
+unset skin_list compat codegen
+
+dump_wrappers()
+{
+   file=$1
+   if test \! -r ${XENO_LIBRARY_DIR}/$file; then
+      echo "Xenomai: wrappers cannot be read from ${XENO_LIBRARY_DIR}/${file}" >&2
+      exit 1
+   fi
+   if test "$LD_FILE_OPTION" = "yes"; then
+      echo -n "-Wl,@${XENO_LIBRARY_DIR}/${file}"
+   else
+      wrappers=`while read wrap_option symbol; do	\
+	      echo -n "-Wl,$wrap_option=$symbol " ; \
+      done < ${XENO_LIBRARY_DIR}/${file}`
+      echo -n "$wrappers"
+   fi
+}
+
+usage ()
+{
+cat <<EOF
+Usage xeno-config OPTIONS
+Options :
+        --help
+        --v,--verbose
+        --version
+        --cc
+        --ccld
+        --arch
+        --prefix
+        --[skin=]posix|vxworks|psos|alchemy|rtdm|smokey|cobalt
+        --auto-init|auto-init-solib|no-auto-init
+        --mode-check|no-mode-check
+        --cflags
+        --ldflags
+        --lib*-dir|libdir|user-libdir
+        --core
+        --info
+        --compat
+EOF
+    exit $1
+}
+
+dump_info ()
+{
+    version=${XENO_VERSION}
+    if test -x $XENO_PREFIX/sbin/version; then
+	_version=`$XENO_PREFIX/sbin/version 2>/dev/null`
+	test x"$_version" = x || version="$_version"
+    fi
+    echo "Xenomai version: ${version}"
+    if test -r /proc/ipipe/version; then
+	uname -a 2>/dev/null || echo "Cannot determine system information (uname?)"
+	echo "Kernel parameters: `cat /proc/cmdline`"
+	echo "I-pipe release #`cat /proc/ipipe/version` detected"
+	if test -r /proc/xenomai/version; then
+	    echo "Cobalt core `cat /proc/xenomai/version` detected"
+	else
+	    echo "Cobalt core disabled on this system"
+	fi
+    else
+	    echo "Cobalt core is NOT present on this system"
+    fi
+    echo "Compiler: @XENO_BUILD_COMPILER@"
+    eval echo "Build args: @XENO_BUILD_ARGS@"
+    exit 0
+}
+
+verbose ()
+{
+    echo xeno-config --verbose
+    echo "        --core=cobalt"
+    echo "        --version=\"${XENO_VERSION}\""
+    echo "        --cc=\"$XENO_CC\""
+    echo "        --ccld=\"$XENO_PREFIX/bin/wrap-link.sh $XENO_CC\""
+    echo "        --arch=\"$XENO_TARGET_ARCH\""
+    echo "        --prefix=\"$XENO_PREFIX\""
+    echo "        --library-dir=\"$XENO_LIBRARY_DIR\""
+}
+
+if test $# -eq 0; then
+    verbose $*
+    usage 1 1>&2
+fi
+
+do_ldflags=
+do_cflags=
+do_setinit=
+do_autoinit=y
+do_autoinit_solib=
+do_mode_check=y
+
+while test $# -gt 0; do
+    case "$1" in
+        --v|--verbose)
+            verbose $*
+            exit 0
+            ;;
+        --version)
+            echo ${XENO_VERSION}
+            ;;
+        --cc)
+            echo $XENO_CC
+            ;;
+        --ccld)
+            echo $XENO_PREFIX/bin/wrap-link.sh $XENO_CC
+            ;;
+        --arch)
+            echo $XENO_TARGET_ARCH
+            ;;
+        --prefix)
+            echo $XENO_PREFIX
+            ;;
+	--no-auto-init)
+	    do_setinit=y
+	    do_autoinit=
+	    do_autoinit_solib=
+	    ;;
+	--auto-init)
+	    do_setinit=y
+	    do_autoinit=y
+	    do_autoinit_solib=
+	    ;;
+	--auto-init-solib)
+	    if test \! -r ${XENO_LIBRARY_DIR}/xenomai/bootstrap-pic.o; then
+		echo "--auto-init-solib requires shared library support" 1>&2
+		exit 1
+	    fi
+	    do_setinit=y
+	    do_autoinit=y
+	    do_autoinit_solib=y
+	    ;;
+        --lib*-dir|--libdir|--user-libdir)
+            echo $XENO_LIBRARY_DIR
+            ;;
+	--skin)
+	    if [ "$2" = native ]; then
+		skin_list="$skin_list alchemy"
+		compat=y
+	    else
+		skin_list="$skin_list $2"
+	    fi
+	    shift
+	    ;;
+	--native|--skin=*)
+	    if [ "$1" = "--skin=native" -o "$1" = "--native" ]; then
+		skin_list="$skin_list alchemy"
+		compat=y
+            else
+		skin_list="$skin_list `expr "$1" : '--skin=\(.*\)'`"
+	    fi
+	    ;;
+	--posix|--cobalt|--vxworks|--psos|--alchemy|--rtdm|--smokey)
+	    skin_list="$skin_list `expr "$1" : '--\(.*\)'`"
+	    ;;
+	--cflags)
+	    do_cflags=y
+	    ;;
+	--ldflags)
+	    do_ldflags=y
+	    ;;
+	--core)
+	    echo cobalt
+	    ;;
+        --help)
+            usage 0 1>&2
+            ;;
+        --info)
+            dump_info
+            ;;
+	--compat)
+	    compat=y
+            ;;
+	--mode-check)
+	    do_mode_check=y
+	    ;;
+	--no-mode-check)
+	    do_mode_check=
+	    ;;
+        *)
+         usage 1 1>&2
+         ;;
+    esac
+    shift
+done
+
+if test x$do_setinit = xy -a x$do_ldflags = x; then
+	echo "--[no-]auto-init is meaningful only with --ldflags" 1>&2
+	exit 1
+fi
+
+if test x$do_cflags = xy; then
+    if test -z "$skin_list"; then
+	echo "no API specified, missing --skin before --cflags" 1>&2
+	exit 1
+    fi
+    cflags="$XENO_BASE_CFLAGS"
+    test x$compat = xy && cflags="-I$XENO_INCLUDE_DIR/trank -D__XENO_COMPAT__ $cflags"
+    for skin in $skin_list; do
+	case "$skin" in
+	    posix|rtdm)
+		test x$compat = xy && cflags="-I$XENO_INCLUDE_DIR/trank/posix $cflags"
+		cflags="$cflags -D__COBALT_WRAP__"
+		;;
+	    cobalt)
+		;;
+	    vxworks|psos|alchemy|smokey)
+		cflags="$cflags -I$XENO_INCLUDE_DIR/$skin"
+		;;
+	    *)
+		echo "$skin is not a user-space API" 1>&2
+		exit 1
+		;;
+	esac
+    done
+    echo $cflags
+fi
+
+if test x$do_ldflags = xy; then
+    if test -z "$skin_list"; then
+	echo "no API specified, missing --skin before --ldflags" 1>&2
+	exit 1
+    fi
+    ldflags=
+    if test x$do_mode_check = xy; then
+	ldflags="`dump_wrappers modechk.wrappers`"
+    fi
+    test x$compat = xy && ldflags="-ltrank $ldflags"
+    copperplate=
+    for skin in $skin_list; do
+	case "$skin" in
+	    posix|rtdm)
+		ldflags="`dump_wrappers cobalt.wrappers` $ldflags"
+		;;
+	    cobalt)
+		# do NOT wrap POSIX symbols in application code with
+		# --cobalt. On the contrary, --posix does. This switch
+		# does not affect mode checking wrappers,
+		# --[no-]mode-check does.
+		;;
+	    vxworks|psos|alchemy|smokey)
+		copperplate="-lcopperplate"
+		ldflags="$ldflags -l$skin"
+		if [ -r ${XENO_LIBRARY_DIR}/${skin}.wrappers ]; then
+		    ldflags=" `dump_wrappers ${skin}.wrappers` $ldflags"
+		fi
+		;;
+	    *)
+		echo "unknown API: $skin" 1>&2
+		exit 1
+		;;
+	esac
+    done
+    wrap_main=
+    if test x$do_autoinit = xy; then
+	if test x$do_autoinit_solib = xy; then
+	    codegen=-pic
+	else
+	    wrap_main="-Wl,--wrap=main -Wl,--dynamic-list=${XENO_LIBRARY_DIR}/dynlist.ld"
+	fi
+	bootstrap="${XENO_LIBRARY_DIR}/xenomai/bootstrap${codegen}.o"
+    fi
+    ldflags="-Wl,--no-as-needed $ldflags"
+    echo "$ldflags $copperplate $bootstrap $wrap_main $XENO_POSIX_LDFLAGS"
+fi
+
+exit 0
