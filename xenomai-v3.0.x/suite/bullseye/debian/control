@@ -1,4 +1,4 @@
-Source: xenomai
+Source: xenomai-v3.0
 Section: devel
 Priority: extra
 Maintainer: Xenomai <xenomai@xenomai.org>
@@ -6,13 +6,13 @@ Build-Depends: debhelper (>= 8), findutils (>= 4.2.28), autotools-dev, autoconf,
 Standards-Version: 3.9.3
 Homepage: http://www.xenomai.org/
 
-Package: xenomai-runtime
+Package: xenomai-v3.0-runtime
 Section: devel
 Architecture: amd64 arm armeb armel armhf i386 powerpc powerpcspe
 Depends: ${shlibs:Depends}, ${misc:Depends}, psmisc, netcat
-Suggests: xenomai-kernel-source
-Replaces: xenomai
-Conflicts: xenomai
+Suggests: xenomai-v3.0-kernel-source
+Replaces: xenomai-v3.0
+Conflicts: xenomai-v3.0
 Description: Xenomai runtime utilities
  Xenomai is a real-time development framework cooperating with the Linux
  kernel in order to provide a pervasive, interface-agnostic, hard real-time
@@ -23,11 +23,11 @@ Description: Xenomai runtime utilities
  This package contains the runtime programs and the testsuite for the Xenomai
  realtime system.
 
-Package: xenomai-kernel-source
+Package: xenomai-v3.0-kernel-source
 Section: kernel
 Architecture: all
 Depends: ${misc:Depends}
-Suggests: xenomai, linux-source, kernel-package
+Suggests: xenomai-v3.0, linux-source, kernel-package
 Description: Source for Xenomai kernel-space support
  Xenomai is a real-time development framework cooperating with the Linux
  kernel in order to provide a pervasive, interface-agnostic, hard real-time
@@ -43,13 +43,13 @@ Description: Source for Xenomai kernel-space support
  which should be run to patch the Linux kernel sources with Xenomai
  kernel-space support.
 
-Package: libxenomai1
+Package: libxenomai1-v3.0
 Section: libs
 Architecture: amd64 arm armeb armel armhf i386 powerpc powerpcspe
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Suggests: xenomai-kernel-source
-Replaces: xenomai
-Conflicts: xenomai
+Suggests: xenomai-v3.0-kernel-source
+Replaces: xenomai-v3.0
+Conflicts: xenomai-v3.0
 Description: Shared libraries for Xenomai
  Xenomai is a real-time development framework cooperating with the Linux
  kernel in order to provide a pervasive, interface-agnostic, hard real-time
@@ -59,13 +59,13 @@ Description: Shared libraries for Xenomai
  .
  This package contains the shared libraries.
 
-Package: libxenomai-dev
+Package: libxenomai-v3.0-dev
 Section: libdevel
 Architecture: amd64 arm armeb armel armhf i386 powerpc powerpcspe
-Depends: libxenomai1 (= ${binary:Version}), ${misc:Depends}
-Suggests: xenomai-kernel-source
-Replaces: xenomai
-Conflicts: xenomai
+Depends: libxenomai1-v3.0 (= ${binary:Version}), ${misc:Depends}
+Suggests: xenomai-v3.0-kernel-source
+Replaces: xenomai-v3.0
+Conflicts: xenomai-v3.0
 Description: Headers and static libs for Xenomai
  Xenomai is a real-time development framework cooperating with the Linux
  kernel in order to provide a pervasive, interface-agnostic, hard real-time
