@@ -16,16 +16,10 @@ copy_all () {
 dl_src
 
 wfile="isc-dhcp-server" ; wdir="/etc/default/" ; copy_all
-wfile="dhcpd.conf" ; wdir="/etc/dhcp/" ; copy_all
 wfile="modules.conf" ; wdir="/etc/modules-load.d/" ; copy_all
-wfile="interfaces" ; wdir="/etc/network/" ; copy_all
 wfile="sshd_config" ; wdir="/etc/ssh/" ; copy_all
 wfile="bela" ; wdir="/etc/sudoers.d/" ; copy_all
-wfile="wpa_supplicant.conf" ; wdir="/etc/wpa_supplicant/" ; copy_all
-wfile="fstab" ; wdir="/etc/" ; copy_all
-wfile="hosts" ; wdir="/etc/" ; copy_all
 wfile="motd" ; wdir="/etc/" ; copy_all
-wfile="securetty" ; wdir="/etc/" ; copy_all
 
 wfile="bela_button.service" ; wdir="/lib/systemd/system/" ; copy_all
 wfile="bela_flash_emmc.service" ; wdir="/lib/systemd/system/" ; copy_all
