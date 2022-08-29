@@ -65,41 +65,7 @@ if [ "$bootloader_location" = "fatfs_boot" ] ; then
 	exit
 fi
 
-if [ "$board" != "am335x_evm" ] ; then
-	echo "bad board $board"
-	umount $DIR
-	exit
-fi
-
-if [ "x${dd_spl_uboot_seek}" = "x" ] ; then
-	echo "dd_spl_uboot_seek not found in ${DRIVE}/SOC.sh halting"
-	umount $DIR
-	exit
-fi
-
-if [ "x${dd_spl_uboot_bs}" = "x" ] ; then
-	echo "dd_spl_uboot_bs not found in SOC.sh halting"
-	umount $DIR
-	exit
-fi
-
-if [ "x${dd_uboot_seek}" = "x" ] ; then
-	echo "dd_uboot_seek not found in SOC.sh halting"
-	umount $DIR
-	exit
-fi
-
-if [ "x${dd_uboot_bs}" = "x" ] ; then
-	echo "dd_uboot_bs not found in SOC.sh halting"
-	umount $DIR
-	exit
-fi
-
-
-echo "log: dd if=/mnt/boot/MLO of=${DEVICE} seek=${dd_spl_uboot_seek} bs=${dd_spl_uboot_bs}"
-dd if=/mnt/boot/MLO of=${DEVICE} seek=${dd_spl_uboot_seek} bs=${dd_spl_uboot_bs}
-echo "log: dd if=/mnt/boot/u-boot.img of=${DEVICE} seek=${dd_uboot_seek} bs=${dd_uboot_bs}"
-dd if=/mnt/boot/u-boot.img of=${DEVICE} seek=${dd_uboot_seek} bs=${dd_uboot_bs}
+/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
 sync
 
 umount $DIR
