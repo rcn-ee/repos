@@ -17,6 +17,7 @@ set -e
 # for details, see https://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
+cp -v /etc/bela/templates/bela-motd /etc/motd
 
 case "$1" in
     configure)

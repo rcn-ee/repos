@@ -2,7 +2,7 @@
 
 package_name="bela-customizations"
 debian_pkg_name="${package_name}"
-package_version="1.20220831.0"
+package_version="1.20220831.1"
 package_source=""
 src_dir=""
 
