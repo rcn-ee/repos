@@ -2,7 +2,7 @@
 
 package_name="bela-customizations"
 debian_pkg_name="${package_name}"
-package_version="1.20220829.4"
+package_version="1.20220831.0"
 package_source=""
 src_dir=""
 
@@ -17,4 +17,4 @@ debian_patch=""
 
 clear_changelog="enable"
 
-bullseye_version="~bullseye+20220829"
+bullseye_version="~bullseye+20220831"
