@@ -19,5 +19,5 @@ debian_diff=""
 
 clear_changelog="enable"
 
-buster_version="~buster+20220302"
+buster_version="~buster+20220902"
 bullseye_version="~bullseye+20220902"
