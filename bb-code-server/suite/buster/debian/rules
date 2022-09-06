@@ -4,7 +4,7 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
-code_server_version=4.6.0
+code_server_version=4.6.1
 
 # Disable dh_link
 override_dh_link:
@@ -20,7 +20,7 @@ override_dh_shlibdeps:
 
 override_dh_auto_configure:
 	mkdir -p ./tmp/opt/bb-code-server/app/
-	tar xf debian/code-server-$(code_server_version)-linux-armv7l.tar.gz -C ./tmp/opt/bb-code-server/app/ --strip-components 1
+	tar xf debian/code-server-$(code_server_version)-linux-*.tar.gz -C ./tmp/opt/bb-code-server/app/ --strip-components 1
 
 %:
 	dh $@ --with systemd
