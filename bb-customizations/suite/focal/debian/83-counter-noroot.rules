@@ -7,9 +7,9 @@ SUBSYSTEM=="counter", ACTION=="add|change", \
         RUN+="/bin/chmod -R g=u '/sys%p'"
 
 # identify counter peripherals on am335x
-SUBSYSTEM=="counter", KERNELS=="48300180.*",  ENV{CHIP_NAME}="counter0"
-SUBSYSTEM=="counter", KERNELS=="48302180.*",  ENV{CHIP_NAME}="counter1"
-SUBSYSTEM=="counter", KERNELS=="48304180.*",  ENV{CHIP_NAME}="counter2"
+SUBSYSTEM=="counter", KERNELS=="48300180.*",  ENV{CHIP_NAME}="0"
+SUBSYSTEM=="counter", KERNELS=="48302180.*",  ENV{CHIP_NAME}="1"
+SUBSYSTEM=="counter", KERNELS=="48304180.*",  ENV{CHIP_NAME}="2"
 
 # create symlinks in /dev/bone/counter
 SUBSYSTEM=="counter", ENV{DEVTYPE}=="counter_device", ACTION=="add", ENV{CHIP_NAME}!="", \
