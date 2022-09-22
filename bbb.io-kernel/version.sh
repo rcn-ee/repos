@@ -17,7 +17,7 @@ debian_patch=""
 
 clear_changelog="enable"
 
-buster_version="~buster+20220913"
-bullseye_version="~bullseye+20220913"
-focal_version="~focal+20220913"
-jammy_version="~jammy+20220913"
+buster_version="~buster+20220922"
+bullseye_version="~bullseye+20220922"
+focal_version="~focal+20220922"
+jammy_version="~jammy+20220922"
