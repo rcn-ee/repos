@@ -25,7 +25,20 @@ if [ -f /etc/apt/apt.conf.d/02-no-languages ] ; then
 fi
 
 if [ -f /lib/systemd/system/bb-code-server.service ] ; then
-	systemctl enable --now bb-code-server.service || true
+	systemctl enable bb-code-server.service || true
 fi
+
+
+new_machine=$(cat /proc/device-tree/model | sed "s/ /_/g" | sed "s/-/_/g" | tr -d '\000')
+case "${new_machine}" in
+BeagleBoard.org_BeagleBone_AI)
+	if [ -f /etc/udev/rules.d/81-add-SoftAp0-interface.rules ] ; then
+		rm -rf /etc/udev/rules.d/81-add-SoftAp0-interface.rules || true
+	fi
+	if [ -f /etc/udev/rules.d/82-SoftAp0-start-hostpad.rules ] ; then
+		rm -rf /etc/udev/rules.d/82-SoftAp0-start-hostpad.rules || true
+	fi
+	;;
+esac
 
 #DEBHELPER#
