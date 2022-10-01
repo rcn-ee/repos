@@ -2,10 +2,6 @@
 
 set -e
 
-if [ -f /etc/default/bb-wl18xx ] ; then
-	sed -i -e 's:TETHER_ENABLED=yes:TETHER_ENABLED=no:g' /etc/default/bb-wl18xx
-fi
-
 if [ -f /etc/systemd/timesyncd.conf ] ; then
 	sed -i -e 's:#NTP=:NTP=192.168.1.24:g' /etc/systemd/timesyncd.conf
 fi
@@ -28,20 +24,8 @@ if [ -f /etc/apt/apt.conf.d/02-no-languages ] ; then
 	rm -f /etc/apt/apt.conf.d/02-no-languages || true
 fi
 
-if [ -f /etc/apt/apt.conf.d/02apt-get-clean ] ; then
-	rm -f /etc/apt/apt.conf.d/02apt-get-clean || true
-fi
-
-if [ -f /etc/apt/apt.conf.d/02compress-indexes ] ; then
-	rm -f /etc/apt/apt.conf.d/02compress-indexes || true
-fi
-
-if [ -f /etc/apt/apt.conf.d/03-proxy-https ] ; then
-	rm -f /etc/apt/apt.conf.d/03-proxy-https || true
-fi
-
-if [ -f /etc/apt/apt.conf.d/proxy ] ; then
-	rm -f /etc/apt/apt.conf.d/proxy || true
+if [ -f /lib/systemd/system/bb-code-server.service ] ; then
+	systemctl enable --now bb-code-server.service || true
 fi
 
 #DEBHELPER#
