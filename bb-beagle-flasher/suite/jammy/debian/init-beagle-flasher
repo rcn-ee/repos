@@ -5,7 +5,7 @@ if ! id | grep -q root; then
 	exit
 fi
 
-version_message="1.20221010.0, rsync add -X option for xattrs..."
+version_message="1.20221010.1, rsync add -H option for hardlinks, final image running out of space..."
 
 #mke2fs -c
 #Check the device for bad blocks before creating the file system.
@@ -278,8 +278,8 @@ copy_boot () {
 
 	mount ${destination}p1 /tmp/boot/ -o sync
 
-	message="rsync: (-aAXx) /boot/firmware/ -> /tmp/boot/" ; broadcast
-	rsync -aAXx /boot/firmware/ /tmp/boot/ || write_failure
+	message="rsync: (-aHAXx) /boot/firmware/ -> /tmp/boot/" ; broadcast
+	rsync -aHAXx /boot/firmware/ /tmp/boot/ || write_failure
 	flush_cache
 
 	umount /tmp/boot/ || umount -l /tmp/boot/ || write_failure
@@ -294,15 +294,15 @@ copy_rootfs () {
 	message="INFO: [mount ${destination}p${media_rootfs} /tmp/rootfs/ -o async,noatime]"       ; broadcast
 	mount ${destination}p${media_rootfs} /tmp/rootfs/ -o async,noatime
 
-	message="INFO: /usr/bin/rsync: (-aAXx) [/ -> /tmp/rootfs/]"                                ; broadcast
-	/usr/bin/rsync -aAXx /* /tmp/rootfs/ --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost+found,/lib/modules/*,/uEnv.txt} || write_failure
+	message="INFO: /usr/bin/rsync: (-aHAXx) [/ -> /tmp/rootfs/]"                                ; broadcast
+	/usr/bin/rsync -aHAXx /* /tmp/rootfs/ --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost+found,/lib/modules/*,/uEnv.txt} || write_failure
 	message="--------------------------------------------------------------------------------" ; broadcast
 	flush_cache
 
 	message="INFO: Copying: Kernel modules"                                                    ; broadcast
 	mkdir -p /tmp/rootfs/lib/modules/$(uname -r)/ || true
-	message="INFO: /usr/bin/rsync: (-aAXx) /lib/modules/$(uname -r)/ -> /tmp/rootfs/lib/modules/$(uname -r)/" ; broadcast
-	/usr/bin/rsync -aAXx /lib/modules/$(uname -r)/* /tmp/rootfs/lib/modules/$(uname -r)/ || write_failure
+	message="INFO: /usr/bin/rsync: (-aHAXx) /lib/modules/$(uname -r)/ -> /tmp/rootfs/lib/modules/$(uname -r)/" ; broadcast
+	/usr/bin/rsync -aHAXx /lib/modules/$(uname -r)/* /tmp/rootfs/lib/modules/$(uname -r)/ || write_failure
 	message="--------------------------------------------------------------------------------" ; broadcast
 	flush_cache
 
