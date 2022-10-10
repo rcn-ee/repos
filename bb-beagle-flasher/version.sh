@@ -2,7 +2,7 @@
 
 package_name="bb-beagle-flasher"
 debian_pkg_name="${package_name}"
-package_version="1.20220727.0"
+package_version="1.20221010.0"
 package_source=""
 src_dir=""
 
@@ -17,7 +17,7 @@ debian_patch=""
 
 clear_changelog="enable"
 
-buster_version="~buster+20220727"
-bullseye_version="~bullseye+20220727"
-focal_version="~focal+20220727"
-jammy_version="~jammy+20220727"
+buster_version="~buster+20221010"
+bullseye_version="~bullseye+20221010"
+focal_version="~focal+20221010"
+jammy_version="~jammy+20221010"
