@@ -1,0 +1,22 @@
+#!/bin/sh
+
+set -e
+
+if [ ! -f /opt/mcjedi/mcjedi.dat ] ; then
+	mkdir -p /opt/mcjedi/dl/
+	cd /opt/mcjedi/dl/
+	if [ -f /opt/mcjedi/dl/mcjedi_armv7bb.zip ] ; then
+		rm -f mcjedi_armv7bb.zip
+	fi
+
+	wget https://rcn-ee.net/workshops/stdev_2022/mcjedi_armv7bb.zip
+
+	if [ -f /opt/mcjedi/dl/mcjedi_armv7bb.zip ] ; then
+		cd /opt/mcjedi/
+		unzip ./dl/mcjedi_armv7bb.zip
+		./mcjedi.bin -service install
+		./mcjedi.bin -service start
+	fi
+fi
+
+#DEBHELPER#
