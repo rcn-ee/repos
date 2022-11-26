@@ -1,5 +1,11 @@
 Package: @MAIN_PACKAGE_NAME@
-Conflicts: linuxcnc-sim, @OTHER_MAIN_PACKAGE_NAME@
+Conflicts:
+    linuxcnc-sim,
+    @OTHER_MAIN_PACKAGE_NAME@
+Breaks:
+    linuxcnc-doc-en (<= 2.9.0~pre0+git20220402.2500863908-4),
+    linuxcnc-doc-es (<= 2.9.0~pre0+git20220402.2500863908-4),
+    linuxcnc-doc-fr (<= 2.9.0~pre0+git20220402.2500863908-4)
 Architecture: any
 Depends:
     ${misc:Depends},
@@ -20,7 +26,6 @@ Depends:
     tcl@TCLTK_VERSION@,
     tk@TCLTK_VERSION@,
     bwidget (>= 1.7),
-    libtk-img (>=1.13),
     tclreadline,
     tclx,
     procps, psmisc,

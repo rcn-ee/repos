@@ -7,7 +7,14 @@ Build-Depends:
     debhelper-compat (= 13),
     dh-python,
     libudev-dev,
+    docbook-xsl,
+    asciidoc,
+    ghostscript,
+    imagemagick,
+    source-highlight,
+    asciidoc-dblatex,
     autoconf,
+    automake,
     bwidget (>= 1.7),
     desktop-file-utils,
     gettext,
@@ -21,10 +28,10 @@ Build-Depends:
     libmodbus-dev (>= 3.0),
     libeditreadline-dev,
     libtirpc-dev,
-    libtk-img,
     libusb-1.0-0-dev,
     libxmu-dev,
     netcat,
+    po4a,
     procps,
     psmisc,
     python3,
@@ -36,31 +43,28 @@ Build-Depends:
     tk8.6-dev,
     yapps2
 Build-Depends-Indep:
-    asciidoc (>= 8.5),
     dblatex (>= 0.2.12),
-    docbook-xsl,
     dvipng,
-    ghostscript,
     graphviz,
     groff,
-    imagemagick,
     inkscape,
     python3-lxml,
-    source-highlight,
     w3c-linkchecker,
     xsltproc,
     texlive-extra-utils,
     texlive-font-utils,
     texlive-fonts-recommended,
     texlive-lang-cyrillic,
+    texlive-lang-european,
     texlive-lang-french,
     texlive-lang-german,
     texlive-lang-polish,
     texlive-lang-spanish,
     texlive-latex-recommended,
-    asciidoc-dblatex,
-    texlive-xetex
-Standards-Version: 4.6.0
+    fonts-dejavu,
+    texlive-xetex,
+Standards-Version: 4.6.1
+Homepage: https://linuxcnc.org/
 Vcs-Browser: https://github.com/LinuxCNC/linuxcnc
 Vcs-Git: https://github.com/LinuxCNC/linuxcnc.git
 Rules-Requires-Root: binary-targets
@@ -124,7 +128,13 @@ Description: PC based motion controller for real-time Linux
  in your developments.
 
 Package: linuxcnc-uspace
-Conflicts: linuxcnc-sim, linuxcnc
+Conflicts:
+    linuxcnc-sim,
+    linuxcnc
+Breaks:
+    linuxcnc-doc-en (<= 2.9.0~pre0+git20220402.2500863908-4),
+    linuxcnc-doc-es (<= 2.9.0~pre0+git20220402.2500863908-4),
+    linuxcnc-doc-fr (<= 2.9.0~pre0+git20220402.2500863908-4)
 Architecture: any
 Depends:
     ${misc:Depends},
@@ -144,7 +154,6 @@ Depends:
     tcl8.6,
     tk8.6,
     bwidget (>= 1.7),
-    libtk-img (>=1.13),
     tclreadline,
     tclx,
     procps, psmisc,
@@ -163,8 +172,7 @@ Recommends:
     python3-dbus,python3-espeak,
     python3-dbus.mainloop.pyqt5,
     python3-pyqt5.qtwebkit,
-    python3-xlib,
-    espeak-ng,python3-numpy,
+    espeak-ng,
     pyqt5-dev-tools,
     gstreamer1.0-tools,espeak,
     sound-theme-freedesktop
@@ -216,10 +224,26 @@ Description: motion controller for CNC machines and robots
  .
  This package provides the main package for LinuxCNC.
 
-Package: linuxcnc-doc-en
+Package: linuxcnc-doc-de
 Provides: linuxcnc-doc
 Architecture: all
 Depends: ${misc:Depends}
+Recommends: xdg-utils
+Suggests: pdf-viewer
+Description: motion controller for CNC machines and robots (German documentation)
+ LinuxCNC is the next-generation Enhanced Machine Controller which
+ provides motion control for CNC machine tools and robotic
+ applications (milling, cutting, routing, etc.).
+ .
+ This package contains the documentation in German.
+
+Package: linuxcnc-doc-en
+Provides: linuxcnc-doc
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends}
+Breaks: linuxcnc-uspace (<= 2.9.0~pre0+git20220402.2500863908-4),
+Replaces: linuxcnc-uspace (<= 2.9.0~pre0+git20220402.2500863908-4)
 Recommends: xdg-utils
 Suggests: pdf-viewer
 Description: motion controller for CNC machines and robots (English documentation)
@@ -232,7 +256,10 @@ Description: motion controller for CNC machines and robots (English documentatio
 Package: linuxcnc-doc-fr
 Provides: linuxcnc-doc
 Architecture: all
+Multi-Arch: foreign
 Depends: ${misc:Depends}
+Breaks: linuxcnc-uspace (<= 2.9.0~pre0+git20220402.2500863908-4)
+Replaces: linuxcnc-uspace (<= 2.9.0~pre0+git20220402.2500863908-4)
 Recommends: xdg-utils
 Suggests: pdf-viewer
 Description: motion controller for CNC machines and robots (French documentation)
@@ -245,8 +272,11 @@ Description: motion controller for CNC machines and robots (French documentation
 Package: linuxcnc-doc-es
 Provides: linuxcnc-doc
 Architecture: all
+Multi-Arch: foreign
 Depends: ${misc:Depends}
-Recommends: mailcap
+Breaks: linuxcnc-uspace (<= 2.9.0~pre0+git20220402.2500863908-4)
+Replaces: linuxcnc-uspace (<= 2.9.0~pre0+git20220402.2500863908-4)
+Recommends: xdg-utils
 Suggests: pdf-viewer
 Description: controlador de movimiento para máquinas CNC y robots (Español).
  LinuxCNC es EMC (controlador de máquina mejorado) que proporciona
@@ -258,6 +288,7 @@ Description: controlador de movimiento para máquinas CNC y robots (Español).
 Package: linuxcnc-doc-zh-cn
 Provides: linuxcnc-doc
 Architecture: all
+Multi-Arch: foreign
 Depends: ${misc:Depends}
 Recommends: xdg-utils
 Suggests: pdf-viewer
