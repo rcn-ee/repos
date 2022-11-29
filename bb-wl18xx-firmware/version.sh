@@ -2,7 +2,7 @@
 
 package_name="bb-wl18xx-firmware"
 debian_pkg_name="${package_name}"
-package_version="1.20211222.2"
+package_version="1.20221129.0"
 package_source=""
 src_dir=""
 
@@ -17,8 +17,7 @@ debian_patch=""
 
 clear_changelog="enable"
 
-stretch_version="~stretch+20211222"
-buster_version="~buster+20211222"
-bullseye_version="~bullseye+20211222"
-bionic_version="~bionic+20211222"
-focal_version="~focal+20211222"
+buster_version="~buster+20221129"
+bullseye_version="~bullseye+20221129"
+bionic_version="~bionic+20221129"
+focal_version="~focal+20221129"

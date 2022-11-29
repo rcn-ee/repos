@@ -21,6 +21,7 @@
 # THE SOFTWARE.
 
 ap_interface="SoftAp0"
+wlan_interface=""
 log="wl18xx:tether"
 use_mac=""
 
@@ -203,49 +204,46 @@ wait_for_mac () {
 }
 
 wait_for_wlan () {
-	if [ ! -d /sys/class/net/wlan0/ ] ; then
-		sleep 5
-	fi
-	until [ -d /sys/class/net/wlan0/ ] ; do
-		echo "${log} waiting for /sys/class/net/wlan0"
+	while true ; do
+		for interface in $(ls /sys/class/net/ | grep "^wl") ; do
+			if cat /sys/class/net/${interface}/device/uevent | grep -q wl18xx ; then
+				echo "${log} found wl18xx interface: ${interface}"
+				wlan_interface=${interface}
+				break 2
+			fi
+		done
+		echo "${log} waiting for wl18xx interface"
 		sleep 5
 	done
 }
 
 create_softap0_interface () {
 	if [ ! -d /sys/class/net/${ap_interface} ] ; then
-		number_of_wlan=$(ls /sys/class/net/ | grep wlan | wc -l || true)
+		phyname=$(cat /sys/class/net/${wlan_interface}/phy80211/name)
+		echo "${log} [iw phy ${phyname} interface add ${ap_interface} type managed]"
+		iw phy ${phyname} interface add ${ap_interface} type managed
 
-		if [ "x${number_of_wlan}" = "x1" ] ; then
-			echo "${log} [iw phy phy0 interface add ${ap_interface} type managed]"
-			iw phy phy0 interface add ${ap_interface} type managed
+		if [ $? -eq 0 ] ; then
+			echo "${log} [${ap_interface} created]"
+		else
+			echo "${log} [Error: can't create ${ap_interface}]"
+			exit 1
+		fi
 
-			p=$?
-			if [ $p==0 ];then
-				echo "${log} [phy0 created]"
-			else
-				echo "${log} [Err: can't creat phy0]"
-				exit 1
-			fi
+		sync
 
-			sync
+		if [ ! -d /sys/class/net/${ap_interface} ] ; then
+			get_wl=$(ls /sys/class/net/ | grep wlx | tail -1 || true)
+			echo "${log} [ip link set dev ${get_wl} name ${ap_interface}]"
+			ip link set dev ${get_wl} name ${ap_interface}
 
+			#We really want to use ${ap_interface}
+			sleep 2
 			if [ ! -d /sys/class/net/${ap_interface} ] ; then
 				get_wl=$(ls /sys/class/net/ | grep wlx | tail -1 || true)
 				echo "${log} [ip link set dev ${get_wl} name ${ap_interface}]"
 				ip link set dev ${get_wl} name ${ap_interface}
-
-				#We really want to use ${ap_interface}
-				sleep 2
-				if [ ! -d /sys/class/net/${ap_interface} ] ; then
-					get_wl=$(ls /sys/class/net/ | grep wlx | tail -1 || true)
-					echo "${log} [ip link set dev ${get_wl} name ${ap_interface}]"
-					ip link set dev ${get_wl} name ${ap_interface}
-				fi
 			fi
-		else
-			#FIXME
-			echo "${log} FIXME, found multple wlan0's, SoftAp0 untested..."
 		fi
 	fi
 }
@@ -279,12 +277,12 @@ bringup_softap0_interface () {
 		ip_forward=$(cat /proc/sys/net/ipv4/ip_forward)
 		if [ "x${ip_forward}" = "x0" ] ; then
 			echo 1 > /proc/sys/net/ipv4/ip_forward
-			echo "${log} [iptables -w -t nat -A POSTROUTING -o wlan0 -j MASQUERADE]"
-			iptables -w -t nat -A POSTROUTING -o wlan0 -j MASQUERADE || true
-			echo "${log} [iptables -w -A FORWARD -i wlan0 -o ${ap_interface} -m state --state RELATED,ESTABLISHED -j ACCEPT]"
-			iptables -w -A FORWARD -i wlan0 -o ${ap_interface} -m state --state RELATED,ESTABLISHED -j ACCEPT || true
-			echo "${log} [iptables -w -A FORWARD -i ${ap_interface} -o wlan0 -j ACCEPT]"
-			iptables -w -A FORWARD -i ${ap_interface} -o wlan0 -j ACCEPT || true
+			echo "${log} [iptables -w -t nat -A POSTROUTING -o ${wlan_interface} -j MASQUERADE]"
+			iptables -w -t nat -A POSTROUTING -o ${wlan_interface} -j MASQUERADE || true
+			echo "${log} [iptables -w -A FORWARD -i ${wlan_interface} -o ${ap_interface} -m state --state RELATED,ESTABLISHED -j ACCEPT]"
+			iptables -w -A FORWARD -i ${wlan_interface} -o ${ap_interface} -m state --state RELATED,ESTABLISHED -j ACCEPT || true
+			echo "${log} [iptables -w -A FORWARD -i ${ap_interface} -o ${wlan_interface} -j ACCEPT]"
+			iptables -w -A FORWARD -i ${ap_interface} -o ${wlan_interface} -j ACCEPT || true
 		fi
 	fi
 }
@@ -380,8 +378,8 @@ default () {
 	connman_disable_tether
 
 	if [ "x${USE_WL18XX_POWER_MANAGMENT}" = "xoff" ] ; then
-		echo "wl18xx:wlan0:Power Management:off"
-		/sbin/iwconfig wlan0 power off || true
+		echo "wl18xx:${wlan_interface}:Power Management:off"
+		/sbin/iwconfig ${wlan_interface} power off || true
 	fi
 
 	if [ "x${USE_CONNMAN_TETHER}" != "xyes" ] ; then
@@ -402,8 +400,8 @@ just_softap () {
 	connman_disable_tether
 
 	if [ "x${USE_WL18XX_POWER_MANAGMENT}" = "xoff" ] ; then
-		echo "wl18xx:wlan0:Power Management:off"
-		/sbin/iwconfig wlan0 power off || true
+		echo "wl18xx:${wlan_interface}:Power Management:off"
+		/sbin/iwconfig ${wlan_interface} power off || true
 	fi
 
 	if [ "x${USE_CONNMAN_TETHER}" != "xyes" ] ; then

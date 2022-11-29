@@ -5,41 +5,33 @@ dl_src () {
 		rm -rf ./src/
 	fi
 
-	git clone git@github.com:RobertCNelson/bb-wl18xx-firmware.git ./src/
+	git clone https://git.beagleboard.org/beagleboard/usr-customizations.git ./src/
 }
 
 copy_all () {
-	cp -v ./src${wdir}${wfile} ./suite/bionic/debian/
-	cp -v ./src${wdir}${wfile} ./suite/focal/debian/
-	cp -v ./src${wdir}${wfile} ./suite/stretch/debian/
-	cp -v ./src${wdir}${wfile} ./suite/buster/debian/
+	cp -v ./src/${wfile} ./suite/bionic/debian/
+	cp -v ./src/${wfile} ./suite/buster/debian/
 }
 
 copy_some () {
-	cp -v ./src${wdir}${wfile} ./suite/bullseye/debian/
+	cp -v ./src/${wfile} ./suite/focal/debian/
+	cp -v ./src/${wfile} ./suite/bullseye/debian/
 }
 
 dl_src
 
-wfile="bb-wl18xx-bluetooth" ; wdir="/debian/" ; copy_all
-wfile="bb-wl18xx-bluetooth.service" ; wdir="/debian/" ; copy_all
-wfile="bb_wl18xx_bts_firmware" ; wdir="/debian/" ; copy_all
-wfile="bb-wl18xx-tether" ; wdir="/debian/" ; copy_all
-wfile="bb-wl18xx-wlan0" ; wdir="/debian/" ; copy_all
-wfile="bb-wl18xx-wlan0.service" ; wdir="/debian/" ; copy_all
-wfile="btwilink-blacklist.conf" ; wdir="/debian/" ; copy_all
-wfile="compat" ; wdir="/debian/" ; copy_all
-wfile="install" ; wdir="/debian/" ; copy_all
-wfile="postinst" ; wdir="/debian/" ; copy_all
-wfile="postrm" ; wdir="/debian/" ; copy_all
-wfile="prerm" ; wdir="/debian/" ; copy_all
-wfile="rules" ; wdir="/debian/" ; copy_all
-wfile="TIInit_11.8.32.bts" ; wdir="/debian/" ; copy_all
-wfile="wl18xx.conf" ; wdir="/debian/" ; copy_all
-wfile="wl18xx-conf.bin" ; wdir="/debian/" ; copy_all
-wfile="wl18xx-fw-4.bin" ; wdir="/debian/" ; copy_all
+wfile="arm32/usr/bin/bb-wl18xx-bluetooth" ; copy_all
+wfile="arm32/lib/systemd/system/bb-wl18xx-bluetooth.service" ; copy_all
+wfile="arm32/usr/bin/bb-wl18xx-tether" ; copy_all
+wfile="arm32/usr/bin/bb-wl18xx-wlan0" ; copy_all
+wfile="arm32/lib/systemd/system/bb-wl18xx-wlan0.service" ; copy_all
 
-wfile="TIInit_11.8.32.bts" ; wdir="/debian/" ; copy_some
-wfile="wl18xx.conf" ; wdir="/debian/" ; copy_some
-wfile="wl18xx-conf.bin" ; wdir="/debian/" ; copy_some
-wfile="wl18xx-fw-4.bin" ; wdir="/debian/" ; copy_some
+#wfile="TIInit_11.8.32.bts" ; wdir="/debian/" ; copy_all
+#wfile="wl18xx.conf" ; wdir="/debian/" ; copy_all
+#wfile="wl18xx-conf.bin" ; wdir="/debian/" ; copy_all
+#wfile="wl18xx-fw-4.bin" ; wdir="/debian/" ; copy_all
+
+#wfile="TIInit_11.8.32.bts" ; wdir="/debian/" ; copy_some
+#wfile="wl18xx.conf" ; wdir="/debian/" ; copy_some
+#wfile="wl18xx-conf.bin" ; wdir="/debian/" ; copy_some
+#wfile="wl18xx-fw-4.bin" ; wdir="/debian/" ; copy_some
