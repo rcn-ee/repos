@@ -4,13 +4,20 @@
 
 set -e
 
+if [ ! -f /etc/default/bb-wl18xx-fw ] ; then
+	echo "WLFW=wl18xx-fw-4-8.9.0.0.79.bin" > /etc/default/bb-wl18xx-fw
+	source /etc/default/bb-wl18xx-fw
+else
+	source /etc/default/bb-wl18xx-fw
+fi
+
+echo "bb-wl18xx-firmware: [${WLFW}] was set in /etc/default/bb-wl18xx-fw"
+
 if [ -f /lib/firmware/ti-connectivity/wl18xx-fw-4.bin ] ; then
 	rm -f /lib/firmware/ti-connectivity/wl18xx-fw-4.bin || true
-	cp -v /lib/firmware/ti-connectivity/git/wl18xx-fw-4-8.9.0.0.79.bin /lib/firmware/ti-connectivity/wl18xx-fw-4.bin
-	echo "WLFW=wl18xx-fw-4-8.9.0.0.79.bin" > /etc/default/bb-wl18xx-fw
+	cp -v /lib/firmware/ti-connectivity/git/${WLFW} /lib/firmware/ti-connectivity/wl18xx-fw-4.bin
 else
-	cp -v /lib/firmware/ti-connectivity/git/wl18xx-fw-4-8.9.0.0.79.bin /lib/firmware/ti-connectivity/wl18xx-fw-4.bin
-	echo "WLFW=wl18xx-fw-4-8.9.0.0.79.bin" > /etc/default/bb-wl18xx-fw
+	cp -v /lib/firmware/ti-connectivity/git/${WLFW} /lib/firmware/ti-connectivity/wl18xx-fw-4.bin
 fi
 
 case "$1" in
