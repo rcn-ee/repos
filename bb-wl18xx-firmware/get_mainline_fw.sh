@@ -10,7 +10,7 @@ dl_src () {
 
 dl_src
 
-cp -v ./src/ti-connectivity/wl18xx-fw-4.bin ./override/
+cp -v ./src/ti-connectivity/wl18xx-fw-4.bin ./debian/
 
 if [ -d ./src/ ] ; then
 	rm -rf ./src/
