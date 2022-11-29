@@ -6,9 +6,11 @@ set -e
 
 if [ -f /lib/firmware/ti-connectivity/wl18xx-fw-4.bin ] ; then
 	rm -f /lib/firmware/ti-connectivity/wl18xx-fw-4.bin || true
-	cp -v /lib/firmware/ti-connectivity/git/wl18xx-fw-4.bin /lib/firmware/ti-connectivity/wl18xx-fw-4.bin
+	cp -v /lib/firmware/ti-connectivity/git/wl18xx-fw-4-8.9.0.0.79.bin /lib/firmware/ti-connectivity/wl18xx-fw-4.bin
+	echo "WLFW=wl18xx-fw-4-8.9.0.0.79.bin" > /etc/default/bb-wl18xx-fw
 else
-	cp -v /lib/firmware/ti-connectivity/git/wl18xx-fw-4.bin /lib/firmware/ti-connectivity/wl18xx-fw-4.bin
+	cp -v /lib/firmware/ti-connectivity/git/wl18xx-fw-4-8.9.0.0.79.bin /lib/firmware/ti-connectivity/wl18xx-fw-4.bin
+	echo "WLFW=wl18xx-fw-4-8.9.0.0.79.bin" > /etc/default/bb-wl18xx-fw
 fi
 
 case "$1" in
