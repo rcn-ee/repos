@@ -2,7 +2,7 @@
 
 package_name="bb-wl18xx-firmware"
 debian_pkg_name="${package_name}"
-package_version="1.20221129.3"
+package_version="1.20221129.4"
 package_source=""
 src_dir=""
 

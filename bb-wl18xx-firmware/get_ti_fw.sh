@@ -2,7 +2,7 @@
 
 get_fw () {
 	git checkout ${sha} -b ${fw}
-	cp -v ./wl18xx-fw-4.bin ../debian/wl18xx-fw-${fw}.bin
+	cp -v ./wl18xx-fw-4.bin ../debian/wl18xx-fw-4-${fw}.bin
 }
 
 dl_src () {
