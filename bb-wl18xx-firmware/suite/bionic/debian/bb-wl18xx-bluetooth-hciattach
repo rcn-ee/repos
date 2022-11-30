@@ -1,0 +1,23 @@
+#!/bin/bash -e
+
+if ! id | grep -q root; then
+	echo "bb-wl18xx-bluetooth-hciattach must be run as root:"
+	echo "sudo bb-wl18xx-bluetooth-hciattach"
+	exit
+fi
+
+if [ -f /sys/class/leds/wl18xx_bt_en/brightness ] ; then
+	unset hci_options
+	if [ -f /proc/device-tree/chosen/wl1835_bt ] ; then
+		hci_options=$(cat /proc/device-tree/chosen/wl1835_bt | sed 's/-/ /g' | tr -d '\000')
+	elif [ -f /proc/device-tree/chosen/overlays/wl1835_bt ] ; then
+		hci_options=$(cat /proc/device-tree/chosen/overlays/wl1835_bt | sed 's/-/ /g' | tr -d '\000')
+	fi
+
+	if [ ! "x${hci_options}" = "x" ] ; then
+		echo 1 > /sys/class/leds/wl18xx_bt_en/brightness
+		sleep 5
+		echo "debug: [hciattach /dev/tty$hci_options]"
+		hciattach /dev/tty$hci_options
+	fi
+fi

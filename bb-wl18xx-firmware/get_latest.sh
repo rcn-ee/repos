@@ -33,6 +33,7 @@ wfile="arm32/usr/bin/bb-wl18xx-tether" ; copy_old
 wfile="arm32/usr/bin/bb-wl18xx-wlan0" ; copy_old
 wfile="arm32/lib/systemd/system/bb-wl18xx-wlan0.service" ; copy_old
 wfile="arm32/usr/sbin/bb-wl18xx-select-fw" ; copy_all
+wfile="arm32/usr/sbin/bb-wl18xx-bluetooth-hciattach" ; copy_all
 
 #wfile="TIInit_11.8.32.bts" ; wdir="/debian/" ; copy_all
 #wfile="wl18xx.conf" ; wdir="/debian/" ; copy_all
