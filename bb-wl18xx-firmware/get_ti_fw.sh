@@ -40,6 +40,18 @@ sha="bda5304cc86e9c4029f8101394d2a8b39c640f53"
 fw="8.9.0.0.88"
 get_fw
 
+sha="6c5ca87b9a912f09d090d5e1b6ace86d26718888"
+fw="8.9.0.0.89"
+get_fw
+
+sha="d2588c16809ecca8e0dc7ea011fc6180c7b08a92"
+fw="8.9.0.0.90"
+get_fw
+
+sha="efe46943410eb00776cf05175243e06760e66f1a"
+fw="8.9.1.0.0"
+get_fw
+
 if [ -d ./src/ ] ; then
 	rm -rf ./src/
 fi

@@ -16,14 +16,17 @@ if [ -f /etc/default/bb-wl18xx-fw ] ; then
 	. /etc/default/bb-wl18xx-fw
 fi
 
-FW_OPTION=$(whiptail --title "TI wl18xx Firmware Options" --menu "Choose TI wl18xx Firmware Version" 25 78 7 \
+FW_OPTION=$(whiptail --title "TI wl18xx Firmware Options" --menu "Choose TI wl18xx Firmware Version" 25 78 10 \
 "8.9.0.0.79" "TI wl18xx_fw git repo 8.9.0.0.79" \
 "8.9.0.0.81" "TI wl18xx_fw git repo 8.9.0.0.81" \
 "8.9.0.0.83" "(default) linux-firmware.git 8.9.0.0.83" \
 "8.9.0.0.84" "TI wl18xx_fw git repo 8.9.0.0.84" \
 "8.9.0.0.85" "TI wl18xx_fw git repo 8.9.0.0.85" \
 "8.9.0.0.86" "TI wl18xx_fw git repo 8.9.0.0.86" \
-"8.9.0.0.88" "TI wl18xx_fw git repo 8.9.0.0.88" 3>&1 1>&2 2>&3)
+"8.9.0.0.88" "TI wl18xx_fw git repo 8.9.0.0.88" \
+"8.9.0.0.89" "TI wl18xx_fw git repo 8.9.0.0.89" \
+"8.9.0.0.90" "TI wl18xx_fw git repo 8.9.0.0.90" \
+"8.9.1.0.0" "TI wl18xx_fw git repo 8.9.1.0.0" 3>&1 1>&2 2>&3)
 
 if [ "x${WLFW}" = "xwl18xx-fw-4-${FW_OPTION}.bin" ] ; then
 	echo "The chosen [wl18xx-fw-4-${FW_OPTION}.bin] firmware is already enabled."
