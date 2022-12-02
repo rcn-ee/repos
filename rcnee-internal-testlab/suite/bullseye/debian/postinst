@@ -31,13 +31,13 @@ if [ -f /usr/lib/systemd/user/code-server.service ] ; then
 
 	if [ -d /home/voodoo/ ] ; then
 		systemctl enable --now code-server@voodoo || true
-		sync ; sleep 1 ; sync
+		sync ; echo "Sleep 10" ; sleep 10 ; sync
 		sed -i -e 's:127.0.0.1:0.0.0.0:g' /home/voodoo/.config/code-server/config.yaml
 		sed -i -e 's: password: none:g' /home/voodoo/.config/code-server/config.yaml
 		sed -i -e 's:false:true:g' /home/voodoo/.config/code-server/config.yaml
 	elif [ -d /home/debian/ ] ; then
 		systemctl enable --now code-server@debian || true
-		sync ; sleep 1 ; sync
+		sync ; echo "Sleep 10" ; sleep 10 ; sync
 		sed -i -e 's:127.0.0.1:0.0.0.0:g' /home/debian/.config/code-server/config.yaml
 		sed -i -e 's: password: none:g' /home/debian/.config/code-server/config.yaml
 		sed -i -e 's:false:true:g' /home/debian/.config/code-server/config.yaml
