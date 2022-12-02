@@ -24,7 +24,7 @@ if [ -f /etc/apt/apt.conf.d/02-no-languages ] ; then
 	rm -f /etc/apt/apt.conf.d/02-no-languages || true
 fi
 
-if [ ! -f /usr/lib/systemd/user/code-server.service ] ; then
+if [ -f /usr/lib/systemd/user/code-server.service ] ; then
 	if [ -f /etc/systemd/system/multi-user.target.wants/bb-code-server.service ] ; then
 		systemctl disable bb-code-server.service || true
 	fi
