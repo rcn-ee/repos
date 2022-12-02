@@ -2,7 +2,7 @@
 
 package_name="rcnee-internal-testlab"
 debian_pkg_name="${package_name}"
-package_version="1.20221001.2"
+package_version="1.20221202.0"
 package_source=""
 src_dir=""
 
@@ -17,5 +17,5 @@ debian_patch=""
 
 clear_changelog="enable"
 
-buster_version="~buster+20221001"
-bullseye_version="~bullseye+20221001"
+buster_version="~buster+20221202"
+bullseye_version="~bullseye+20221202"

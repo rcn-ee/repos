@@ -24,9 +24,23 @@ if [ -f /etc/apt/apt.conf.d/02-no-languages ] ; then
 	rm -f /etc/apt/apt.conf.d/02-no-languages || true
 fi
 
-if [ ! -f /etc/systemd/system/multi-user.target.wants/bb-code-server.service ] ; then
-	if [ -f /lib/systemd/system/bb-code-server.service ] ; then
-		systemctl enable bb-code-server.service || true
+if [ ! -f /usr/lib/systemd/user/code-server.service ] ; then
+	if [ -f /etc/systemd/system/multi-user.target.wants/bb-code-server.service ] ; then
+		systemctl disable bb-code-server.service || true
+	fi
+
+	if [ -d /home/voodoo/ ] ; then
+		systemctl enable --now code-server@voodoo || true
+		sync ; sleep 1 ; sync
+		sed -i -e 's:127.0.0.1:0.0.0.0:g' /home/voodoo/.config/code-server/config.yaml
+		sed -i -e 's: password: none:g' /home/voodoo/.config/code-server/config.yaml
+		sed -i -e 's:false:true:g' /home/voodoo/.config/code-server/config.yaml
+	elif [ -d /home/debian/ ] ; then
+		systemctl enable --now code-server@debian || true
+		sync ; sleep 1 ; sync
+		sed -i -e 's:127.0.0.1:0.0.0.0:g' /home/debian/.config/code-server/config.yaml
+		sed -i -e 's: password: none:g' /home/debian/.config/code-server/config.yaml
+		sed -i -e 's:false:true:g' /home/debian/.config/code-server/config.yaml
 	fi
 fi
 
