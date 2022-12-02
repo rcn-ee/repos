@@ -2,7 +2,7 @@
 
 package_name="bb-bbai-firmware"
 debian_pkg_name="${package_name}"
-package_version="1.20211117.2"
+package_version="1.20221202.0"
 package_source=""
 src_dir=""
 
@@ -15,8 +15,9 @@ debian_version="${package_version}-0"
 debian_untar=""
 debian_patch=""
 
-stretch_version="~stretch+20211119"
-buster_version="~buster+20211119"
-bullseye_version="~bullseye+20211119"
-bionic_version="~bionic+20211119"
-focal_version="~focal+20211119"
+clear_changelog="enable"
+
+buster_version="~buster+20221202"
+bullseye_version="~bullseye+20221202"
+bionic_version="~bionic+20221202"
+focal_version="~focal+20221202"

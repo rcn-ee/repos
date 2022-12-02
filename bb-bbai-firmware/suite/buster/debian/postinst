@@ -3,19 +3,6 @@
 # see: dh_installdeb(1)
 
 set -e
-
-# summary of how this script can be called:
-#        * <postinst> `configure' <most-recently-configured-version>
-#        * <old-postinst> `abort-upgrade' <new version>
-#        * <conflictor's-postinst> `abort-remove' `in-favour' <package>
-#          <new-version>
-#        * <postinst> `abort-remove'
-#        * <deconfigured's-postinst> `abort-deconfigure' `in-favour'
-#          <failed-install-package> <version> `removing'
-#          <conflicting-package> <version>
-# for details, see http://www.debian.org/doc/debian-policy/ or
-# the debian-policy package
-
 if [ -f /lib/firmware/brcm/brcmfmac43455-sdio.txt ] ; then
 	rm -f /lib/firmware/brcm/brcmfmac43455-sdio.txt || true
 	cp -v /lib/firmware/brcm/brcmfmac43455-sdio.beagleboard.org,am5729-beagleboneai.txt /lib/firmware/brcm/brcmfmac43455-sdio.txt
@@ -28,6 +15,31 @@ if [ -f /lib/firmware/brcm/brcmfmac43455.bin ] ; then
 	cp -v /lib/firmware/brcm/brcmfmac43455-sdio_am5729-beagleboneai.bin /lib/firmware/brcm/brcmfmac43455.bin
 else
 	cp -v /lib/firmware/brcm/brcmfmac43455-sdio_am5729-beagleboneai.bin /lib/firmware/brcm/brcmfmac43455.bin
+fi
+
+if [ ! -d /lib/firmware/cypress/ ] ; then
+	mkdir -p /lib/firmware/cypress/
+fi
+
+if [ -f /lib/firmware/cypress/cyfmac43455-sdio.txt ] ; then
+	rm -f /lib/firmware/cypress/cyfmac43455-sdio.txt || true
+	cp -v /lib/firmware/brcm/brcmfmac43455-sdio.beagleboard.org,am5729-beagleboneai.txt /lib/firmware/cypress/cyfmac43455-sdio.txt
+else
+	cp -v /lib/firmware/brcm/brcmfmac43455-sdio.beagleboard.org,am5729-beagleboneai.txt /lib/firmware/cypress/cyfmac43455-sdio.txt
+fi
+
+if [ -f /lib/firmware/cypress/cyfmac43455-sdio.bin ] ; then
+	rm -f /lib/firmware/cypress/cyfmac43455-sdio.bin || true
+	cp -v /lib/firmware/bbb.io/cyfmac43455-sdio.bin /lib/firmware/cypress/
+else
+	cp -v /lib/firmware/bbb.io/cyfmac43455-sdio.bin /lib/firmware/cypress/
+fi
+
+if [ -f /lib/firmware/cypress/cyfmac43455-sdio.clm_blob ] ; then
+	rm -f /lib/firmware/cypress/cyfmac43455-sdio.clm_blob || true
+	cp -v /lib/firmware/bbb.io/cyfmac43455-sdio.clm_blob /lib/firmware/cypress/
+else
+	cp -v /lib/firmware/bbb.io/cyfmac43455-sdio.clm_blob /lib/firmware/cypress/
 fi
 
 if [ -f /etc/udev/rules.d/90-bbai-virt-ap.rules ] ; then
