@@ -1,10 +1,11 @@
 [Unit]
 Description=code-server
+Wants=network.target dphys-swapfile.service
 After=network.target
 
 [Service]
 Type=exec
-ExecStart=/opt/bb-code-server/app/bin/code-server
+ExecStart=/opt/bb-code-server/app/bin/code-server --disable-telemetry --disable-update-check
 Restart=always
 
 [Install]
