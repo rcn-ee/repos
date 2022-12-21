@@ -24,8 +24,10 @@ if [ -f /etc/apt/apt.conf.d/02-no-languages ] ; then
 	rm -f /etc/apt/apt.conf.d/02-no-languages || true
 fi
 
-mkdir -p /mnt/farm || true
-echo "192.168.1.3:/var/www/html/farm /mnt/farm nfs defaults" >> /etc/fstab
+if [ ! -d /mnt/farm/uptime/ ] ; then
+	mkdir -p /mnt/farm || true
+	echo "192.168.1.3:/var/www/html/farm /mnt/farm nfs defaults" >> /etc/fstab
+fi
 
 if [ -f /usr/lib/systemd/user/code-server.service ] ; then
 	if [ -f /etc/systemd/system/multi-user.target.wants/bb-code-server.service ] ; then
