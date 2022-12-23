@@ -34,25 +34,31 @@ if [ -f /usr/lib/systemd/user/code-server.service ] ; then
 		systemctl disable bb-code-server.service || true
 	fi
 
-	if [ -d /home/voodoo/ ] ; then
-		systemctl enable code-server@voodoo || true
-		mkdir -p  /home/voodoo/.config/code-server/ || true
-		echo "bind-addr: 0.0.0.0:8080" > /home/voodoo/.config/code-server/config.yaml
-		echo "auth: none" >> /home/voodoo/.config/code-server/config.yaml
-		echo "cert: true" >> /home/voodoo/.config/code-server/config.yaml
-		chown -R voodoo:voodoo /home/voodoo/.config/
+	soc_family=$(cat /sys/devices/soc0/family || true)
 
-		chown -R voodoo:voodoo /mnt/farm
-	elif [ -d /home/debian/ ] ; then
-		systemctl enable --now code-server@debian || true
-		mkdir -p  /home/debian/.config/code-server/ || true
-		echo "bind-addr: 0.0.0.0:8080" > /home/debian/.config/code-server/config.yaml
-		echo "auth: none" >> /home/debian/.config/code-server/config.yaml
-		echo "cert: true" >> /home/debian/.config/code-server/config.yaml
-		chown -R debian:debian /home/debian/.config/
+	case "${soc_family}" in
+	DRA7)
+		if [ -d /home/voodoo/ ] ; then
+			systemctl enable code-server@voodoo || true
+			mkdir -p  /home/voodoo/.config/code-server/ || true
+			echo "bind-addr: 0.0.0.0:8080" > /home/voodoo/.config/code-server/config.yaml
+			echo "auth: none" >> /home/voodoo/.config/code-server/config.yaml
+			echo "cert: true" >> /home/voodoo/.config/code-server/config.yaml
+			chown -R voodoo:voodoo /home/voodoo/.config/
 
-		chown -R debian:debian /mnt/farm
-	fi
+			chown -R voodoo:voodoo /mnt/farm
+		elif [ -d /home/debian/ ] ; then
+			systemctl enable --now code-server@debian || true
+			mkdir -p  /home/debian/.config/code-server/ || true
+			echo "bind-addr: 0.0.0.0:8080" > /home/debian/.config/code-server/config.yaml
+			echo "auth: none" >> /home/debian/.config/code-server/config.yaml
+			echo "cert: true" >> /home/debian/.config/code-server/config.yaml
+			chown -R debian:debian /home/debian/.config/
+
+			chown -R debian:debian /mnt/farm
+		fi
+		;;
+	esac
 fi
 
 new_machine=$(cat /proc/device-tree/model | sed "s/ /_/g" | sed "s/-/_/g" | tr -d '\000')
