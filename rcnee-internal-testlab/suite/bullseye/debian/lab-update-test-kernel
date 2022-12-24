@@ -1,0 +1,132 @@
+#!/bin/bash -e
+
+debian_bullseye () {
+	echo "deb http://deb.debian.org/debian bullseye main contrib non-free" > /tmp/sources.list
+	echo "deb http://security.debian.org/debian-security bullseye-security main contrib non-free" >> /tmp/sources.list
+	echo "deb http://deb.debian.org/debian bullseye-updates main contrib non-free" >> /tmp/sources.list
+
+	echo "" >> /tmp/sources.list
+	
+	echo "deb [arch=armhf signed-by=/usr/share/keyrings/rcn-ee-archive-keyring.gpg] http://repos.rcn-ee.com/debian/ bullseye main" >> /tmp/sources.list
+
+	echo "" >> /tmp/sources.list
+	echo "#Debian - wheezy - 7.x" >> /tmp/sources.list
+	echo "#deb [arch=armhf] http://repos.rcn-ee.com/debian/ wheezy main" >> /tmp/sources.list
+
+	echo "" >> /tmp/sources.list
+	echo "#Debian - jessie - 8.x" >> /tmp/sources.list
+	echo "#deb [arch=armhf] http://repos.rcn-ee.com/debian/ jessie main" >> /tmp/sources.list
+
+	echo "" >> /tmp/sources.list
+	echo "#Debian - stretch - 9.x" >> /tmp/sources.list
+	echo "#deb [arch=armhf] http://repos.rcn-ee.com/debian/ stretch main" >> /tmp/sources.list
+
+	echo "" >> /tmp/sources.list
+	echo "#Debian - buster - 10.x" >> /tmp/sources.list
+	echo "#deb [arch=armhf] http://repos.rcn-ee.com/debian/ buster main" >> /tmp/sources.list
+
+	echo "" >> /tmp/sources.list
+	echo "#Debian - bullseye - 11.x" >> /tmp/sources.list
+	echo "#deb [arch=armhf] http://repos.rcn-ee.com/debian/ bullseye main" >> /tmp/sources.list
+
+	echo "" >> /tmp/sources.list
+	echo "#Debian - bookworm - 12.x" >> /tmp/sources.list
+	echo "#deb [arch=armhf] http://repos.rcn-ee.com/debian/ bookworm main" >> /tmp/sources.list
+
+	echo "" >> /tmp/sources.list
+	echo "#Debian - sid" >> /tmp/sources.list
+	echo "#deb [arch=armhf] http://repos.rcn-ee.com/debian/ sid main" >> /tmp/sources.list
+
+	echo "" >> /tmp/sources.list
+	echo "#14.04 - trusty - lts" >> /tmp/sources.list
+	echo "#deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ trusty main" >> /tmp/sources.list
+
+	echo "" >> /tmp/sources.list
+	echo "#16.04 - xenial - lts" >> /tmp/sources.list
+	echo "#deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ xenial main" >> /tmp/sources.list
+
+	echo "" >> /tmp/sources.list
+	echo "#18.04 - bionic - lts" >> /tmp/sources.list
+	echo "#deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ bionic main" >> /tmp/sources.list
+
+	echo "" >> /tmp/sources.list
+	echo "#20.04 - focal - lts" >> /tmp/sources.list
+	echo "#deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ focal main" >> /tmp/sources.list
+
+	echo "" >> /tmp/sources.list
+	echo "#20.10 - groovy" >> /tmp/sources.list
+	echo "#deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ groovy main" >> /tmp/sources.list
+
+	echo "" >> /tmp/sources.list
+	echo "#21.04 - hirsute" >> /tmp/sources.list
+	echo "#deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ hirsute main" >> /tmp/sources.list
+
+	echo "" >> /tmp/sources.list
+	echo "#21.10 - impish" >> /tmp/sources.list
+	echo "#deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ impish main" >> /tmp/sources.list
+
+	echo "" >> /tmp/sources.list
+	echo "#22.04 - impish" >> /tmp/sources.list
+	echo "#deb [arch=armhf] http://repos.rcn-ee.com/ubuntu/ jammy main" >> /tmp/sources.list
+
+	echo "" >> /tmp/sources.list
+
+	if [ ! "x${extra_repo}" = "x" ] ; then
+		echo "${extra_repo}" >> /tmp/sources.list
+	fi
+	sudo mv /tmp/sources.list /etc/apt/sources.list
+}
+
+get_system () {
+	#going to use mac address's...
+
+	unset dont_use_uboot_overlays
+
+	debian_bullseye
+	ker_old_pkg="bbb.io-kernel-5.10-ti"
+	ker_pkg="bbb.io-kernel-6.1-bone"
+}
+
+
+setup_boot_uenvtxt () {
+	echo "uname_r=`uname -r`" > /tmp/uEnv.txt
+
+	echo "cmdline=coherent_pool=1M net.ifnames=0 lpj=1990656 rng_core.default_quality=100" >> /tmp/uEnv.txt
+
+	if [ "x${dont_use_uboot_overlays}" = "xtrue" ] ; then
+		echo "#enable_uboot_overlays=1" >> /tmp/uEnv.txt
+	else
+		echo "enable_uboot_overlays=1" >> /tmp/uEnv.txt
+		echo "enable_uboot_cape_universal=1" >> /tmp/uEnv.txt
+		if [ ! "x${pru}" = "x" ] ; then
+			echo "${pru}" >> /tmp/uEnv.txt
+		fi
+	fi
+
+	sudo cp -v /tmp/uEnv.txt /boot/uEnv.txt
+}
+
+get_system
+setup_boot_uenvtxt
+
+sudo dpkg --configure -a
+
+sudo apt update
+sudo apt -y upgrade || true
+sudo apt -y dist-upgrade || true
+if [ ! "x${ker_pkg}" = "x" ] ; then
+	sudo apt -y install ${ker_pkg} || true
+	if [ ! "x${ker_old_pkg}" = "x" ] ; then
+		sudo apt -y remove ${ker_old_pkg} --purge || true
+	fi
+fi
+
+sudo apt -y autoremove || true
+sync
+
+echo "...uname -r..."
+uname -r
+
+echo "rebooting..."
+sudo systemctl reboot
+
