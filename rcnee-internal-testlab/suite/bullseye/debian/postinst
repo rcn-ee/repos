@@ -24,9 +24,15 @@ if [ -f /etc/apt/apt.conf.d/02-no-languages ] ; then
 	rm -f /etc/apt/apt.conf.d/02-no-languages || true
 fi
 
-if [ ! -d /mnt/farm/uptime/ ] ; then
+if [ ! -d /mnt/farm/ ] ; then
 	mkdir -p /mnt/farm || true
 	echo "192.168.1.3:/var/www/html/farm /mnt/farm nfs defaults" >> /etc/fstab
+
+	if [ -d /home/voodoo/ ] ; then
+		chown -R voodoo:voodoo /mnt/farm
+	elif [ -d /home/debian/ ] ; then
+		chown -R debian:debian /mnt/farm
+	fi
 fi
 
 if [ -f /lib/systemd/system/beagle-flasher-init-shutdown.service ] ; then
@@ -49,8 +55,6 @@ if [ -f /usr/lib/systemd/user/code-server.service ] ; then
 			echo "auth: none" >> /home/voodoo/.config/code-server/config.yaml
 			echo "cert: true" >> /home/voodoo/.config/code-server/config.yaml
 			chown -R voodoo:voodoo /home/voodoo/.config/
-
-			chown -R voodoo:voodoo /mnt/farm
 		elif [ -d /home/debian/ ] ; then
 			systemctl enable --now code-server@debian || true
 			mkdir -p  /home/debian/.config/code-server/ || true
@@ -58,8 +62,6 @@ if [ -f /usr/lib/systemd/user/code-server.service ] ; then
 			echo "auth: none" >> /home/debian/.config/code-server/config.yaml
 			echo "cert: true" >> /home/debian/.config/code-server/config.yaml
 			chown -R debian:debian /home/debian/.config/
-
-			chown -R debian:debian /mnt/farm
 		fi
 		;;
 	esac
