@@ -1,0 +1,40 @@
+From 6db28768679c5c59a6d6dbd7c480194f942011db Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Wed, 28 Dec 2022 09:21:20 -0600
+Subject: [PATCH 2/2] wpa_supplicant: enable both nl80211 and wext
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ wpa_supplicant/systemd/wpa_supplicant-nl80211.service.arg.in | 2 +-
+ wpa_supplicant/systemd/wpa_supplicant.service.arg.in         | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/wpa_supplicant/systemd/wpa_supplicant-nl80211.service.arg.in b/wpa_supplicant/systemd/wpa_supplicant-nl80211.service.arg.in
+index e1258d1..a9f72e5 100644
+--- a/wpa_supplicant/systemd/wpa_supplicant-nl80211.service.arg.in
++++ b/wpa_supplicant/systemd/wpa_supplicant-nl80211.service.arg.in
+@@ -9,7 +9,7 @@ Wants=network.target
+ 
+ [Service]
+ Type=simple
+-ExecStart=@BINDIR@/wpa_supplicant -c/etc/wpa_supplicant/wpa_supplicant-nl80211-%I.conf -Dnl80211 -i%I
++ExecStart=@BINDIR@/wpa_supplicant -c/etc/wpa_supplicant/wpa_supplicant-nl80211-%I.conf -Dnl80211,wext -i%I
+ 
+ [Install]
+ WantedBy=sys-subsystem-net-devices-%i.device
+diff --git a/wpa_supplicant/systemd/wpa_supplicant.service.arg.in b/wpa_supplicant/systemd/wpa_supplicant.service.arg.in
+index ca17dff..7a8909e 100644
+--- a/wpa_supplicant/systemd/wpa_supplicant.service.arg.in
++++ b/wpa_supplicant/systemd/wpa_supplicant.service.arg.in
+@@ -9,7 +9,7 @@ Wants=network.target
+ 
+ [Service]
+ Type=simple
+-ExecStart=@BINDIR@/wpa_supplicant -c/etc/wpa_supplicant/wpa_supplicant-%I.conf -i%I
++ExecStart=@BINDIR@/wpa_supplicant -c/etc/wpa_supplicant/wpa_supplicant-%I.conf -Dnl80211,wext -i%I
+ 
+ [Install]
+ WantedBy=sys-subsystem-net-devices-%i.device
+-- 
+2.30.2
+
