@@ -11,7 +11,7 @@ git_sha=""
 reprepro_dir="b/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0rcnee13"
+debian_version="${package_version}-0rcnee14"
 debian_untar=""
 debian_patch=""
 
@@ -25,4 +25,4 @@ debian_patch=""
 #debian_dl_1="${dl_mirror}/${node_async}-${v10}.tar.xz"
 #debian_dl_2="${dl_mirror}/${node_sensortag}-${v10}.tar.xz"
 
-buster_version="~buster+20200713"
+buster_version="~buster+20221228"
