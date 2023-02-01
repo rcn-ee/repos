@@ -4,7 +4,7 @@
 
 package_name="bbb.io-vsx-examples"
 debian_pkg_name="${package_name}"
-package_version="1.20211215.2"
+package_version="1.20230201.0"
 package_source=""
 src_dir=""
 
@@ -19,5 +19,5 @@ debian_patch=""
 
 clear_changelog="enable"
 
-buster_version="~buster+20211217"
-bullseye_version="~bullseye+20211217"
+buster_version="~buster+20230201"
+bullseye_version="~bullseye+20230201"
