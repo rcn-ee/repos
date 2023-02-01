@@ -7,8 +7,12 @@ set -e
 main_install () {
 	chown -R 1000:1000 /opt/vsx-examples/examples/ || true
 
-	mv /opt/vsx-examples/examples/dotgit/ /opt/vsx-examples/examples/.git/
-	mv /opt/vsx-examples/examples/dotgitignore /opt/vsx-examples/examples/.gitignore
+	if [ -d /opt/vsx-examples/examples/dotgit/ ] ; then
+		mv /opt/vsx-examples/examples/dotgit/ /opt/vsx-examples/examples/.git/
+	fi
+	if [ -d /opt/vsx-examples/examples/dotgitignore ] ; then
+		mv /opt/vsx-examples/examples/dotgitignore /opt/vsx-examples/examples/.gitignore
+	fi
 
 	echo "Updating Code Server examples from: https://github.com/beagleboard/vsx-examples"
 	cd /opt/vsx-examples/examples/
