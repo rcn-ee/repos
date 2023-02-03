@@ -19,7 +19,7 @@ dl_path="pool/main/${reprepro_dir}/"
 debian_version="${package_version}-11"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
-local_patch="bbbio1"
+local_patch="bbbio2"
 
 bullseye_version="~bullseye+20230203"
 focal_version="~focal+20230203"
