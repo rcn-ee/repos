@@ -8,7 +8,7 @@ Build-Depends: debhelper-compat (= 12),
  dh-exec,
  libdbus-1-dev,
  libssl-dev,
- qtbase5-dev <!pkg.wpa.nogui>,
+ qtbase5-dev [linux-any] <!pkg.wpa.nogui>,
  libncurses5-dev,
  libpcsclite-dev,
  libnl-3-dev (>= 3.4.0~) [linux-any],
@@ -18,8 +18,8 @@ Build-Depends: debhelper-compat (= 12),
  libbsd-dev [kfreebsd-any],
  libreadline-dev,
  pkgconf | pkg-config,
- docbook-to-man,
- docbook-utils
+ docbook-to-man <!nodoc>,
+ docbook-utils <!nodoc>,
 Standards-Version: 4.4.1
 Rules-Requires-Root: no
 Vcs-Browser: https://salsa.debian.org/debian/wpa
@@ -57,7 +57,7 @@ Description: access point and authentication server for Wi-Fi and Ethernet
   * Any wired Ethernet driver for wired IEEE 802.1X authentication.
 
 Package: wpagui
-Architecture: linux-any kfreebsd-any
+Architecture: linux-any
 Build-Profiles: <!pkg.wpa.nogui>
 Multi-Arch: foreign
 Depends: ${shlibs:Depends},

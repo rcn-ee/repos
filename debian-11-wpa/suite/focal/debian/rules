@@ -1,20 +1,20 @@
 #!/usr/bin/make -f
 
-DEB_BUILD_OPTIONS=noautodbgsym
-
 export QT_SELECT=qt5
 export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 DPKG_EXPORT_BUILDFLAGS = 1
-include /usr/share/dpkg/default.mk
 
 # The build system doesn't use CPPFLAGS, pass them to CFLAGS/CXXFLAGS to
 # enable the missing (hardening) flags
-DEB_CFLAGS_MAINT_APPEND   = -MMD -Wall $(shell dpkg-buildflags --get CPPFLAGS) -Wno-error=array-bounds $(warning WARNING: Building with -Wno-error=array-bounds)
+DEB_CFLAGS_MAINT_APPEND   = -MMD -Wall $(shell dpkg-buildflags --get CPPFLAGS)
 DEB_CXXFLAGS_MAINT_APPEND = $(shell dpkg-buildflags --get CPPFLAGS)
-DEB_LDFLAGS_MAINT_APPEND  = -Wl,--as-needed
-export DEB_CFLAGS_MAINT_APPEND DEB_CXXFLAGS_MAINT_APPEND DEB_LDFLAGS_MAINT_APPEND
 
-UCFLAGS   = -MMD -Wall -fPIC $(shell dpkg-buildflags --get CPPFLAGS) $(shell dpkg-buildflags --get CFLAGS)
+include /usr/share/dpkg/default.mk
+
+ifeq ($(DEB_HOST_ARCH_OS),kfreebsd)
+DEB_BUILD_PROFILES := pkg.wpa.nogui $(DEB_BUILD_PROFILES)
+export LIBS = -ldl
+endif
 
 BINDIR    = /sbin
 V = 1
@@ -23,7 +23,6 @@ PKG_CONFIG ?= $(DEB_HOST_GNU_TYPE)-pkg-config
 
 export BINDIR V PKG_CONFIG
 
-include /usr/share/dpkg/architecture.mk
 HOSTAPD_DOT_CONFIG            := debian/config/hostapd/$(DEB_HOST_ARCH_OS)
 WPASUPPLICANT_DOT_CONFIG      := debian/config/wpasupplicant/$(DEB_HOST_ARCH_OS)
 WPASUPPLICANT_UDEB_DOT_CONFIG := debian/config/wpasupplicant/$(DEB_HOST_ARCH_OS)-udeb
@@ -36,14 +35,16 @@ ifeq (,$(filter pkg.wpa.nogui,$(DEB_BUILD_PROFILES)))
 endif
 
 override_dh_auto_build:
+ifeq (,$(filter nodoc,$(DEB_BUILD_PROFILES)))
 	# build documentation
 	dh_auto_build --sourcedirectory=wpa_supplicant/doc/docbook \
 	              --buildsystem=makefile \
 	              -- man
+endif
 ifeq (,$(filter noudeb,$(DEB_BUILD_PROFILES)))
 	# build wpasupplicant-udeb
 	cp -v --remove-destination $(WPASUPPLICANT_UDEB_DOT_CONFIG) wpa_supplicant/.config
-	CFLAGS="$(UCFLAGS)" dh_auto_build --sourcedirectory=wpa_supplicant \
+	dh_auto_build --sourcedirectory=wpa_supplicant \
 	              --buildsystem=makefile
 	mv -v wpa_supplicant/wpa_supplicant wpa_supplicant/wpa_supplicant-udeb
 	dh_auto_clean --sourcedirectory=wpa_supplicant \
@@ -66,8 +67,10 @@ endif
 	dh_auto_clean --sourcedirectory=src --buildsystem=makefile
 
 override_dh_auto_clean:
+ifeq (,$(filter nodoc,$(DEB_BUILD_PROFILES)))
 	dh_auto_clean --sourcedirectory=wpa_supplicant/doc/docbook \
 	              --buildsystem=makefile
+endif
 	dh_auto_clean --sourcedirectory=wpa_supplicant \
 	              --buildsystem=makefile
 ifeq (,$(filter pkg.wpa.nogui,$(DEB_BUILD_PROFILES)))

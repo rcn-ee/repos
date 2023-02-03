@@ -1,0 +1,72 @@
+From: Thomas Glanzmann <thomas@glanzmann.de>
+Date: Sun, 13 Feb 2022 10:13:53 +0100
+Subject: Replace the wheel group with netdev
+
+wpa_supplicant.conf(5) manpage includes multiple examples with group wheel.
+Group wheel does not exist on Debian as a result the example fails.
+
+Bug-Debian: https://bugs.debian.org/1005639
+---
+ wpa_supplicant/doc/docbook/wpa_supplicant.conf.sgml | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/wpa_supplicant/doc/docbook/wpa_supplicant.conf.sgml b/wpa_supplicant/doc/docbook/wpa_supplicant.conf.sgml
+index 8a0314e..0518289 100644
+--- a/wpa_supplicant/doc/docbook/wpa_supplicant.conf.sgml
++++ b/wpa_supplicant/doc/docbook/wpa_supplicant.conf.sgml
+@@ -49,8 +49,8 @@
+       EAP-TLS as work network.</para>
+ 
+ <blockquote><programlisting>
+-# allow frontend (e.g., wpa_cli) to be used by all users in 'wheel' group
+-ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=wheel
++# allow frontend (e.g., wpa_cli) to be used by all users in 'netdev' group
++ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+ #
+ # home network; allow all valid ciphers
+ network={
+@@ -83,7 +83,7 @@ network={
+         Aegis, Interlink RAD-Series)</para>
+ 
+ <blockquote><programlisting>
+-ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=wheel
++ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+ network={
+ 	ssid="example"
+ 	scan_ssid=1
+@@ -105,7 +105,7 @@ network={
+ 
+ 
+ <blockquote><programlisting>
+-ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=wheel
++ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+ network={
+ 	ssid="example"
+ 	scan_ssid=1
+@@ -127,7 +127,7 @@ network={
+         authentication</para>
+ 
+ <blockquote><programlisting>
+-ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=wheel
++ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+ network={
+ 	ssid="1x-test"
+ 	scan_ssid=1
+@@ -152,7 +152,7 @@ network={
+         use.</para>
+ 
+ <blockquote><programlisting>
+-ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=wheel
++ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+ network={
+ 	ssid="example"
+ 	scan_ssid=1
+@@ -182,7 +182,7 @@ network={
+         (-Dwired or -Droboswitch on command line).</para>
+ 
+ <blockquote><programlisting>
+-ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=wheel
++ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+ ap_scan=0
+ network={
+ 	key_mgmt=IEEE8021X

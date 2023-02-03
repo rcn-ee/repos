@@ -1,0 +1,26 @@
+From: Andrej Shadura <andrew.shadura@collabora.co.uk>
+Date: Wed, 15 Jun 2022 14:47:05 +0200
+Subject: Configure wpa_supplicant.service to create control sockets owned by group netdev
+
+Bug-Debian: https://bugs.debian.org/1012844
+---
+ wpa_supplicant/systemd/wpa_supplicant.service.in | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/wpa_supplicant/systemd/wpa_supplicant.service.in b/wpa_supplicant/systemd/wpa_supplicant.service.in
+index 18cbc11..f02bc15 100644
+--- a/wpa_supplicant/systemd/wpa_supplicant.service.in
++++ b/wpa_supplicant/systemd/wpa_supplicant.service.in
+@@ -8,8 +8,11 @@ IgnoreOnIsolate=true
+ [Service]
+ Type=dbus
+ BusName=fi.w1.wpa_supplicant1
+-ExecStart=@BINDIR@/wpa_supplicant -u -s -O /run/wpa_supplicant
++ExecStart=@BINDIR@/wpa_supplicant -u -s -O "DIR=/run/wpa_supplicant GROUP=netdev"
+ ExecReload=/bin/kill -HUP $MAINPID
++Group=netdev
++RuntimeDirectory=wpa_supplicant
++RuntimeDirectoryMode=0750
+ 
+ [Install]
+ WantedBy=multi-user.target

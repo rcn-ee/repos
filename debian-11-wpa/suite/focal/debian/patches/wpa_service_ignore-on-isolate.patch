@@ -1,6 +1,7 @@
 From: Mathieu Trudel-Lapierre <cyphermox@ubuntu.com>
-Subject: Add IgnoreOnIsolate=yes to keep wpa-supplicant running while systemctl isolate
 Date: Mon, 13 Mar 2017 13:46:12 -0400
+Subject: Add IgnoreOnIsolate=yes to keep wpa-supplicant running while
+ systemctl isolate
 
 > Add IgnoreOnIsolate=yes so that when switching "runlevels" in
 > oem-config will not kill off wpa and cause wireless to be
@@ -17,11 +18,12 @@ Also happens when running systemctl isolate default.target:
 > started when NM tries to use it.
 
 Bug-Ubuntu: https://bugs.launchpad.net/bugs/1576024
-
 ---
- wpa_supplicant/systemd/wpa_supplicant.service.in |    2 ++
- 1 file changed, 2 insertions(+)
+ wpa_supplicant/systemd/wpa_supplicant.service.in | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/wpa_supplicant/systemd/wpa_supplicant.service.in b/wpa_supplicant/systemd/wpa_supplicant.service.in
+index bc0688a..561ae8f 100644
 --- a/wpa_supplicant/systemd/wpa_supplicant.service.in
 +++ b/wpa_supplicant/systemd/wpa_supplicant.service.in
 @@ -3,6 +3,7 @@ Description=WPA supplicant

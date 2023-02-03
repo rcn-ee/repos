@@ -1,8 +1,148 @@
-wpa (2:2.9.0-23rcnee2~focal+20221228) focal; urgency=low
+wpa (2:2.10-11bbbio1~focal+20230203) focal; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Wed, 28 Dec 2022 09:26:06 -0600
+ -- Robert Nelson <robertcnelson@gmail.com>  Fri, 03 Feb 2023 11:39:38 -0600
+
+wpa (2:2.10-11) unstable; urgency=medium
+
+  * Drop security level to 0 with OpenSSL 3.0 when using TLS 1.0/1.1
+    (Closes: #1011121, LP: #1958267)
+  * Drop dependency on lsb-base.
+
+ -- Andrej Shadura <andrewsh@debian.org>  Tue, 31 Jan 2023 12:58:02 +0100
+
+wpa (2:2.10-10) unstable; urgency=medium
+
+  * Configure wpa_supplicant.service to create control sockets owned by group netdev
+    (Closes: #1012844)
+
+ -- Andrej Shadura <andrewsh@debian.org>  Wed, 21 Dec 2022 10:03:29 +0100
+
+wpa (2:2.10-9) unstable; urgency=medium
+
+  [ Sebastien Bacher ]
+  * debian/patches/allow-legacy-renegotiation.patch:
+    Allow legacy renegotiation to fix PEAP issues with some servers
+    (Closes: #1010603, LP: #1962541)
+
+ -- Andrej Shadura <andrewsh@debian.org>  Thu, 05 May 2022 11:23:33 +0100
+
+wpa (2:2.10-8) unstable; urgency=medium
+
+  * Pull the defconfig updates from the upstream’s Git.
+  * Add an upstream patch: AP: guard FT-SAE code with CONFIG_IEEE80211R_AP.
+  * Declare Breaks against NM without this patch (Closes: #1003907):
+    - supplicant: enable WPA3 transition mode only when interface supports PMF
+
+ -- Andrej Shadura <andrewsh@debian.org>  Sat, 09 Apr 2022 09:28:35 +0200
+
+wpa (2:2.10-7) unstable; urgency=medium
+
+  * Support nodoc build profile.
+  * Disable OWE on kFreeBSD.
+
+ -- Andrej Shadura <andrewsh@debian.org>  Mon, 04 Apr 2022 16:56:16 +0200
+
+wpa (2:2.10-6) unstable; urgency=medium
+
+  * Link against dl on kFreeBSD.
+
+ -- Andrej Shadura <andrewsh@debian.org>  Mon, 04 Apr 2022 15:04:12 +0200
+
+wpa (2:2.10-5) unstable; urgency=medium
+
+  * Synchronise build configs with defconfigs.
+  * Disable options not compilable on kFreeBSD in kFreeBSD builds.
+
+ -- Andrej Shadura <andrewsh@debian.org>  Mon, 04 Apr 2022 13:59:59 +0200
+
+wpa (2:2.10-4) unstable; urgency=medium
+
+  * Skip GUI build on kFreeBSD, not Hurd.
+
+ -- Andrej Shadura <andrewsh@debian.org>  Sat, 02 Apr 2022 17:25:31 +0200
+
+wpa (2:2.10-3) unstable; urgency=medium
+
+  [ Andrej Shadura ]
+  * Bump debhelper from old 12 to 13.
+  * Avoid explicitly specifying -Wl,--as-needed linker flag.
+  * Drop dh-exec usage, dh 13 supports substitutions natively.
+  * Re-enable WEP (Closes: #1006366).
+  * Remove constraints unnecessary since buster.
+  * Clean up compiler flags.
+  * Don’t build the GUI on kFreeBSD since Qt 5 is uninstallable.
+  * Add sync-config script to simplify synchronising configuration.
+  * Explicitly undefine options we want to disable.
+
+  [ Thomas Glanzmann ]
+  * Replace the wheel group with netdev in the manpage
+    (Closes: #1005639).
+
+ -- Andrej Shadura <andrewsh@debian.org>  Sat, 02 Apr 2022 15:30:45 +0200
+
+wpa (2:2.10-2) unstable; urgency=medium
+
+  [ Ryutaroh Matsumoto ]
+  * Add reload support to the systemd unit files (Closes: #931554).
+
+  [ Michael Yartys ]
+  * Enable OCV in compile-time config.
+
+  [ Andrej Shadura ]
+  * Apply an upstream patch to fix broadcom-wl (Closes: #1004524).
+    Thanks to David Bauer for the patch.
+
+ -- Andrej Shadura <andrewsh@debian.org>  Wed, 02 Feb 2022 01:14:41 +0100
+
+wpa (2:2.10-1) unstable; urgency=medium
+
+  * Upload to unstable.
+  * New upstream release.
+
+ -- Andrej Shadura <andrewsh@debian.org>  Mon, 17 Jan 2022 10:30:13 +0100
+
+wpa (2:2.9.0+git20211116+0b853303ae31-1) experimental; urgency=medium
+
+  * New upstream snapshot.
+  * Refresh patches, drop patches applied upstream.
+
+ -- Andrej Shadura <andrewsh@debian.org>  Wed, 17 Nov 2021 21:43:03 +0100
+
+wpa (2:2.9.0+git20211018+2e122945fa53-1) experimental; urgency=medium
+
+  * New upstream snapshot.
+  * Update the copyright years.
+  * Refresh patches, drop patch applied upstream.
+  * Drop KNotify patch for wpa-gui.
+  * Drop patch modifying the wpa_gui’s desktop file for /usr/sbin.
+  * Install wpa_gui into /usr/bin.
+
+ -- Andrej Shadura <andrewsh@debian.org>  Thu, 21 Oct 2021 12:20:49 +0200
+
+wpa (2:2.9.0+git20210909+a75fdcd-1) experimental; urgency=medium
+
+  * New upstream snapshot.
+  * Refresh patches.
+  * Merge changes from unstable.
+  * Enable WNM, MBO, FILS and mesh networking
+    (Closes: #886414, #930751).
+
+ -- Andrej Shadura <andrewsh@debian.org>  Wed, 15 Sep 2021 21:41:39 +0100
+
+wpa (2:2.9.0+git20200517+dd2daf0-1) experimental; urgency=medium
+
+  * New upstream snapshot.
+  * Refresh patches.
+
+ -- Andrej Shadura <andrewsh@debian.org>  Tue, 19 May 2020 14:45:27 +0200
+
+wpa (2:2.9.0+git20200221+f65da0c-1) experimental; urgency=medium
+
+  * New upstream snapshot.
+
+ -- Andrej Shadura <andrewsh@debian.org>  Sat, 22 Feb 2020 11:31:25 +0300
 
 wpa (2:2.9.0-23) unstable; urgency=medium
 
