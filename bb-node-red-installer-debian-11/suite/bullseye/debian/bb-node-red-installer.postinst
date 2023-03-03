@@ -20,16 +20,12 @@ echo "Proceeding with existing ${pkg_user} user..."
 chown ${pkg_user} ${pkg_data_dir}
 
 groupadd gpio --system || true
-groupadd i2c --system || true
 
 echo "Updating ${pkg_user} user to group gpio"
 usermod -a -G gpio ${pkg_user}
 
 echo "Updating ${pkg_user} user to group dialout"
 usermod -a -G dialout ${pkg_user}
-
-echo "Updating ${pkg_user} user to group i2c"
-usermod -a -G i2c ${pkg_user}
 
 main_install () {
 	if [ -d /etc/avahi/services/ ] ; then
@@ -53,50 +49,23 @@ main_install () {
 		chown -R root:root ${wfile}
 	fi
 	echo "${package}:Installed"
-}
 
-cleanup () {
-	if [ -d /usr/local/lib/node_modules/node-red/ ] ; then
-		rm -rf /usr/local/lib/node_modules/node-red/ || true
-	fi
+	chmod +x /opt/node-red/bin/corepack
+	chmod +x /opt/node-red/bin/node-red
+	chmod +x /opt/node-red/bin/node-red-pi
+	chmod +x /opt/node-red/bin/npm
+	chmod +x /opt/node-red/bin/npx
 
-	if [ -d /usr/local/lib/node_modules/node-red-contrib-blockly/ ] ; then
-		rm -rf /usr/local/lib/node_modules/node-red-contrib-blockly/ || true
-	fi
-
-	if [ -d /usr/local/lib/node_modules/node-red-contrib-gpio/ ] ; then
-		rm -rf /usr/local/lib/node_modules/node-red-contrib-gpio/ || true
-	fi
-
-	if [ -d /usr/local/lib/node_modules/node-red-contrib-mjpgcamera/ ] ; then
-		rm -rf /usr/local/lib/node_modules/node-red-contrib-mjpgcamera/ || true
-	fi
-
-	if [ -d /usr/local/lib/node_modules/node-red-contrib-particle/ ] ; then
-		rm -rf /usr/local/lib/node_modules/node-red-contrib-particle/ || true
-	fi
-
-	if [ -d /usr/local/lib/node_modules/node-red-dashboard/ ] ; then
-		rm -rf /usr/local/lib/node_modules/node-red-dashboard/ || true
-	fi
-
-	if [ -d /usr/local/lib/node_modules/node-red-node-serialport/ ] ; then
-		rm -rf /usr/local/lib/node_modules/node-red-node-serialport/ || true
-	fi
-
-	if [ -d /var/cache/bb-node-red-installer/ ] ; then
-		rm -rf /var/cache/bb-node-red-installer/ || true
-	fi
-
-	if [ -d /root/.node-red/ ] ; then
-		rm -rf /root/.node-red/ || true
-	fi
+	sed -i -e 's:env node:env /opt/node-red/bin/node:g' /opt/node-red/lib/node_modules/corepack/dist/corepack.js
+	sed -i -e 's:env node:env /opt/node-red/bin/node:g' /opt/node-red/lib/node_modules/node-red/red.js
+	sed -i -e 's:env node:env /opt/node-red/bin/node:g' /opt/node-red/lib/node_modules/node-red/bin/node-red-pi
+	sed -i -e 's:env node:env /opt/node-red/bin/node:g' /opt/node-red/lib/node_modules/npm/bin/npm-cli.js
+	sed -i -e 's:env node:env /opt/node-red/bin/node:g' /opt/node-red/lib/node_modules/npm/bin/npx-cli.js
 }
 
 case "$1" in
     configure)
 	main_install
-	cleanup
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
