@@ -3,7 +3,8 @@
 set -e
 
 if [ -f /etc/systemd/timesyncd.conf ] ; then
-	sed -i -e 's:#NTP=:NTP=192.168.1.24:g' /etc/systemd/timesyncd.conf
+	sed -i -e 's:#NTP=:NTP=192.168.1.12:g' /etc/systemd/timesyncd.conf
+	sed -i -e 's:NTP=192.168.1.24:NTP=192.168.1.12:g' /etc/systemd/timesyncd.conf
 fi
 
 if [ -f /lib/systemd/system/apt-daily.service ] ; then
