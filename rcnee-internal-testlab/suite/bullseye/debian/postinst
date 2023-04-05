@@ -5,6 +5,11 @@ set -e
 if [ -f /etc/systemd/timesyncd.conf ] ; then
 	sed -i -e 's:#NTP=:NTP=192.168.1.12:g' /etc/systemd/timesyncd.conf
 	sed -i -e 's:NTP=192.168.1.24:NTP=192.168.1.12:g' /etc/systemd/timesyncd.conf
+
+	timedatectl
+	timedatectl set-timezone America/North_Dakota/Center
+	timedatectl set-ntp true
+	timedatectl
 fi
 
 if [ -f /lib/systemd/system/apt-daily.service ] ; then
