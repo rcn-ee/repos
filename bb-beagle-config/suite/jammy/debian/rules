@@ -1,0 +1,16 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+export DH_VERBOSE=1
+
+override_dh_strip:
+	# Just disable for now...
+
+override_dh_auto_configure:
+	git clone https://github.com/SAtacker/bb-config --depth=1
+	mkdir -p ./bb-config/build ; cd ./bb-config/build ; cmake .. ; make
+
+%:
+	dh $@
+
