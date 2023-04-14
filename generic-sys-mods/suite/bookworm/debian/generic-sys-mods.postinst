@@ -1,0 +1,20 @@
+#!/bin/sh
+
+set -e
+
+if [ -f /etc/default/generic-sys-mods ] ; then
+	. /etc/default/generic-sys-mods
+else
+	ROOT_DRIVE="/dev/mmcblk0"
+	ROOT_PARTITION="1"
+	ARCH_SOC_MODULES="generic"
+fi
+
+echo "#This file is sourced by /usb/bin/bb-growpart" > /etc/default/generic-sys-mods
+echo "ROOT_DRIVE=${ROOT_DRIVE}" >> /etc/default/generic-sys-mods
+echo "ROOT_PARTITION=${ROOT_PARTITION}" >> /etc/default/generic-sys-mods
+echo "ARCH_SOC_MODULES=${ARCH_SOC_MODULES}" >> /etc/default/generic-sys-mods
+
+cp -vf /etc/bbb.io/templates/profile /etc/profile
+
+#DEBHELPER#

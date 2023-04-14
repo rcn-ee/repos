@@ -1,0 +1,12 @@
+[Unit]
+Description=Resize Root File System
+Before=ssh.service
+ConditionFileIsExecutable=/usr/bin/bb-resizefs
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bb-resizefs
+ExecStartPost=/bin/systemctl disable resize_filesystem
+
+[Install]
+WantedBy=multi-user.target
