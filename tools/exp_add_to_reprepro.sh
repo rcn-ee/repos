@@ -28,6 +28,7 @@ start_run () {
 	deb_arch="armhf"
 	suite="buster" ; runner
 	suite="bullseye" ; runner
+	suite="bookworm" ; runner
 
 	dist="ubuntu"
 	suite="bionic" ; runner

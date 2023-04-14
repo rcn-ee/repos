@@ -56,6 +56,7 @@ start_run () {
 	deb_arch="armhf"
 	suite="buster" ; runner
 	suite="bullseye" ; runner
+	suite="bookworm" ; runner
 
 	suite="bionic" ; runner
 	suite="focal" ; runner

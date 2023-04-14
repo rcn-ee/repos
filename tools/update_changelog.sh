@@ -64,6 +64,15 @@ if [ -d ${DIR}/suite/${suite}/ ] ; then
 	run
 fi
 
+suite="bookworm"
+if [ -d ${DIR}/suite/${suite}/ ] ; then
+	rcn_ee_version="${bookworm_version}"
+	cat ${DIR}/version.sh | grep -v bookworm_version > ${DIR}/new-version.sh
+	echo "${suite}_version=\"~${suite}+${simple_date}\"" >> ${DIR}/new-version.sh
+	mv ${DIR}/new-version.sh ${DIR}/version.sh
+	run
+fi
+
 dist="ubuntu"
 suite="bionic"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
