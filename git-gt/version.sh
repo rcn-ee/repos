@@ -4,12 +4,12 @@
 
 package_name="gt"
 debian_pkg_name="${package_name}"
-package_version="0.0.0-git20210712.8"
+package_version="0.0.0-git20220507.1"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
 git_repo="https://github.com/linux-usb-gadgets/gt"
-git_sha="31b135546d0d1733b5b7ca19f48748c06824d65a"
+git_sha="7f9c45d98425a27444e49606ce3cf375e6164e8e"
 reprepro_dir="g/${package_name}"
 dl_path=""
 
@@ -19,7 +19,9 @@ debian_diff=""
 
 clear_changelog="enable"
 
-buster_version="~buster+20220713"
-bullseye_version="~bullseye+20220713"
-bionic_version="~bionic+20220713"
-focal_version="~focal+20220713"
+buster_version="~buster+20230414"
+bullseye_version="~bullseye+20230414"
+bookworm_version="~bookworm+20230414"
+bionic_version="~bionic+20230414"
+focal_version="~focal+20230414"
+jammy_version="~jammy+20230414"
