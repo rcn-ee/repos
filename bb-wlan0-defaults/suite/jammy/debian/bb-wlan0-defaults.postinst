@@ -1,0 +1,26 @@
+#!/bin/sh
+#
+# see: dh_installdeb(1)
+
+set -e
+
+if [ ! -f /etc/systemd/network/wlan0.network ] ; then
+	cp -v /etc/bbb.io/templates/wlan0-DHCP.network /etc/systemd/network/wlan0.network
+fi
+
+if [ ! -f /etc/systemd/network/SoftAp0-DHCPServer.network ] ; then
+	cp -v /etc/bbb.io/templates/SoftAp0-DHCPServer.network /etc/systemd/network/SoftAp0.network
+fi
+
+if [ ! -f /etc/wpa_supplicant/wpa_supplicant-wlan0.conf ] ; then
+	cp -v /etc/bbb.io/templates/wpa_supplicant-wlan0.conf /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
+fi
+
+if [ ! -f /etc/hostapd/hostapd.conf ] ; then
+	cp -v /etc/bbb.io/templates/bb-hostapd.conf /etc/hostapd/hostapd.conf
+fi
+
+#DEBHELPER#
+
+exit 0
+
