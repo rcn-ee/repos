@@ -4,7 +4,7 @@
 
 package_name="libusbgx"
 debian_pkg_name="${package_name}"
-package_version="0.2.0-git20210811.4"
+package_version="0.2.0-git20210811.5"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
@@ -19,7 +19,9 @@ debian_diff=""
 
 clear_changelog="enable"
 
-buster_version="~buster+20220713"
-bullseye_version="~bullseye+20220713"
-bionic_version="~bionic+20220713"
-focal_version="~focal+20220713"
+buster_version="~buster+20230414"
+bullseye_version="~bullseye+20230414"
+bookworm_version="~bookworm+20230414"
+bionic_version="~bionic+20230414"
+focal_version="~focal+20230414"
+jammy_version="~jammy+20230414"
