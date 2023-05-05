@@ -155,10 +155,12 @@ do_focal () {
 
 	unset qcacld
 	unset rtl8723bu
-	unset rtl8723du
 	unset rtl8821cu
 	unset sgxjacinto6evm
 	unset sgxti335x
+
+	msg="6.1-ti"     ; var="ti"    ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
+	unset rtl8723du
 
 	msg="5.10-bone" ; var="omap-psp" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.15-bone" ; var="omap-psp" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_bone
@@ -189,10 +191,12 @@ do_jammy () {
 
 	unset qcacld
 	unset rtl8723bu
-	unset rtl8723du
 	unset rtl8821cu
 	unset sgxjacinto6evm
 	unset sgxti335x
+
+	msg="6.1-ti"     ; var="ti"    ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
+	unset rtl8723du
 
 	msg="5.10-bone" ; var="omap-psp" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.15-bone" ; var="omap-psp" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_bone
@@ -231,10 +235,12 @@ do_buster () {
 
 	unset qcacld
 	unset rtl8723bu
-	unset rtl8723du
 	unset rtl8821cu
 	unset sgxjacinto6evm
 	unset sgxti335x
+
+	msg="6.1-ti"     ; var="ti"    ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
+	unset rtl8723du
 
 	msg="4.19-bone" ; var="omap-psp" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.4-bone"  ; var="omap-psp" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_bone
@@ -297,10 +303,12 @@ do_bullseye () {
 
 	unset qcacld
 	unset rtl8723bu
-	unset rtl8723du
 	unset rtl8821cu
 	unset sgxjacinto6evm
 	unset sgxti335x
+
+	msg="6.1-ti"     ; var="ti"    ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
+	unset rtl8723du
 
 	msg="4.19-bone" ; var="omap-psp" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.4-bone"  ; var="omap-psp" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_bone
@@ -355,6 +363,15 @@ do_bookworm () {
 
 	msg="5.10-ti"    ; var="ti"    ; ver="LTS510" ; current_kernel ; generate_kernel_ti
 	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_ti
+
+	unset qcacld
+	unset rtl8723bu
+	unset rtl8821cu
+	unset sgxjacinto6evm
+	unset sgxti335x
+
+	msg="6.1-ti"     ; var="ti"    ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
+	unset rtl8723du
 }
 
 do_focal
