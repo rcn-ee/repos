@@ -7,3 +7,4 @@ chmod +x check-config.sh
 
 cp -v check-config.sh ./suite/buster/debian/docker-check-config.sh
 cp -v check-config.sh ./suite/bullseye/debian/docker-check-config.sh
+cp -v check-config.sh ./suite/bookworm/debian/docker-check-config.sh

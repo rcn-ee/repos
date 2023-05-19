@@ -320,7 +320,7 @@ check_flags \
 	CGROUP_PERF \
 	CGROUP_HUGETLB \
 	NET_CLS_CGROUP $netprio \
-	CFS_BANDWIDTH FAIR_GROUP_SCHED RT_GROUP_SCHED \
+	CFS_BANDWIDTH FAIR_GROUP_SCHED \
 	IP_NF_TARGET_REDIRECT \
 	IP_VS \
 	IP_VS_NFCT \
@@ -368,22 +368,9 @@ EXITCODE=0
 STORAGE=1
 
 echo '- Storage Drivers:'
-echo "  - \"$(wrap_color 'aufs' blue)\":"
-check_flags AUFS_FS | sed 's/^/    /'
-if ! is_set AUFS_FS && grep -q aufs /proc/filesystems; then
-	echo "      $(wrap_color '(note that some kernels include AUFS patches but not the AUFS_FS flag)' bold black)"
-fi
-[ "$EXITCODE" = 0 ] && STORAGE=0
-EXITCODE=0
-
 echo "  - \"$(wrap_color 'btrfs' blue)\":"
 check_flags BTRFS_FS | sed 's/^/    /'
 check_flags BTRFS_FS_POSIX_ACL | sed 's/^/    /'
-[ "$EXITCODE" = 0 ] && STORAGE=0
-EXITCODE=0
-
-echo "  - \"$(wrap_color 'devicemapper' blue)\":"
-check_flags BLK_DEV_DM DM_THIN_PROVISIONING | sed 's/^/    /'
 [ "$EXITCODE" = 0 ] && STORAGE=0
 EXITCODE=0
 
