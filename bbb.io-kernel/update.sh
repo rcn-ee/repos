@@ -160,6 +160,7 @@ do_focal () {
 	unset sgxti335x
 
 	msg="6.1-ti"     ; var="ti"    ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
+	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
 	unset rtl8723du
 
 	msg="5.10-bone" ; var="omap-psp" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_bone
@@ -196,6 +197,7 @@ do_jammy () {
 	unset sgxti335x
 
 	msg="6.1-ti"     ; var="ti"    ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
+	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
 	unset rtl8723du
 
 	msg="5.10-bone" ; var="omap-psp" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_bone
@@ -240,6 +242,7 @@ do_buster () {
 	unset sgxti335x
 
 	msg="6.1-ti"     ; var="ti"    ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
+	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
 	unset rtl8723du
 
 	msg="4.19-bone" ; var="omap-psp" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_bone
@@ -308,6 +311,7 @@ do_bullseye () {
 	unset sgxti335x
 
 	msg="6.1-ti"     ; var="ti"    ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
+	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
 	unset rtl8723du
 
 	msg="4.19-bone" ; var="omap-psp" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_bone
@@ -372,6 +376,7 @@ do_bookworm () {
 	unset sgxti335x
 
 	msg="6.1-ti"     ; var="ti"    ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
+	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
 	unset rtl8723du
 
 	msg="5.10-bone" ; var="omap-psp" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_bone
