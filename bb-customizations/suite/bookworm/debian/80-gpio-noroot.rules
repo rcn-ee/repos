@@ -1,0 +1,12 @@
+# /etc/udev/rules.d/80-gpio-noroot.rules
+#
+# ReWritten by: Matthijs van Duin
+# Corrects sys GPIO permissions on the BB so non-root users in the gpio group can manipulate bits
+#
+SUBSYSTEM=="gpio", ACTION=="add", \
+	RUN+="/bin/chgrp -R gpio '/sys%p'", \
+	RUN+="/bin/chmod -R g=u '/sys%p'"
+
+SUBSYSTEM=="subsystem", KERNEL=="gpio", ACTION=="add", \
+	RUN+="/bin/chgrp gpio '/sys/class/gpio/export' '/sys/class/gpio/unexport'", \
+	RUN+="/bin/chmod g=u '/sys/class/gpio/export' '/sys/class/gpio/unexport'"
