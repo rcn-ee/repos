@@ -113,6 +113,10 @@ suite="bookworm"
 archs="armhf source"
 setup_repo
 
+suite="trixie"
+archs="armhf source"
+setup_repo
+
 suite="sid"
 archs="armhf source"
 setup_repo
@@ -224,6 +228,10 @@ archs="arm64 source"
 setup_repo
 
 suite="bookworm"
+archs="arm64 source"
+setup_repo
+
+suite="trixie"
 archs="arm64 source"
 setup_repo
 
