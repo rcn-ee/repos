@@ -13,7 +13,7 @@ debian_bullseye () {
 
 	echo "" >> /tmp/sources.list
 	
-	echo "deb [arch=armhf signed-by=/usr/share/keyrings/rcn-ee-archive-keyring.gpg] http://repos.rcn-ee.com/debian/ bullseye main" >> /tmp/sources.list
+	echo "deb [arch=armhf signed-by=/usr/share/keyrings/rcn-ee-archive-keyring.gpg] http://repos.rcn-ee.net/debian/ bullseye main" >> /tmp/sources.list
 
 	echo "" >> /tmp/sources.list
 	echo "#Debian - wheezy - 7.x" >> /tmp/sources.list
@@ -83,13 +83,15 @@ debian_bullseye () {
 	mv /tmp/sources.list /etc/apt/sources.list
 
 	hostnamectl set-hostname ${node}
+	sed -i -e "s:BeagleBone:$node:g" /etc/hosts
 }
 
 get_system () {
 	#going to use mac address's...
 
 	#unset dont_use_uboot_overlays
-	dont_use_uboot_overlays=true
+	#dont_use_uboot_overlays=true
+	unset upgrade_uboot
 
 	machine=$(cat /proc/device-tree/model | sed "s/ /_/g" | tr -d '\000')
 	case "${machine}" in
@@ -124,73 +126,112 @@ get_system () {
 	21-am335x-bbb)
 		ker_pkg=bbb.io-kernel-4.19-ti-am335x
 		debian_bullseye
+		upgrade_uboot=true
+		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
 		;;
 	22-am335x-bbb)
 		ker_pkg=bbb.io-kernel-4.19-ti-rt-am335x
 		debian_bullseye
+		upgrade_uboot=true
+		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
 		;;
 	23-am335x-bbb)
 		unset ker_old_pkg
 		ker_pkg=bbb.io-kernel-5.10-ti-am335x
 		debian_bullseye
+		upgrade_uboot=true
+		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
 		;;
 	24-am335x-bbb)
 		ker_pkg=bbb.io-kernel-5.10-ti-rt-am335x
 		debian_bullseye
+		upgrade_uboot=true
+		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
 		;;
 	25-am335x-bbb)
 		ker_old_pkg=bbb.io-kernel-6.2-bone
 		ker_pkg=bbb.io-kernel-6.1-ti-am335x
 		debian_bullseye
+		dont_use_uboot_overlays=true
+		upgrade_uboot=true
+		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
 		;;
 	26-am335x-bbg)
-		ker_old_pkg=bbb.io-kernel-6.2-bone
-		ker_pkg=bbb.io-kernel-6.1-ti-am335x
+		ker_old_pkg=bbb.io-kernel-5.10-ti-am335x
+		ker_pkg=bbb.io-kernel-6.1-ti-rt-am335x
 		debian_bullseye
+		dont_use_uboot_overlays=true
+		upgrade_uboot=true
+		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
 		;;
 	27-am335x-bbg)
 		ker_pkg=bbb.io-kernel-6.1-bone
 		debian_bullseye
+		dont_use_uboot_overlays=true
+		upgrade_uboot=true
+		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
 		;;
 	28-am335x-bbg)
 		ker_pkg=bbb.io-kernel-6.1-bone-rt
 		debian_bullseye
+		dont_use_uboot_overlays=true
+		upgrade_uboot=true
+		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
 		;;
 	29-am335x-bbg)
+		ker_old_pkg=bbb.io-kernel-5.10-ti-am335x
 		ker_pkg=bbb.io-kernel-5.15-bone
 		debian_bullseye
+		dont_use_uboot_overlays=true
+		upgrade_uboot=true
+		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
 		;;
 	30-am335x-bbg)
 		ker_pkg=bbb.io-kernel-5.15-bone-rt
 		debian_bullseye
+		dont_use_uboot_overlays=true
+		upgrade_uboot=true
+		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
 		;;
 	31-am335x-bbg)
-		ker_pkg=bbb.io-kernel-5.10-bone
+		ker_old_pkg=bbb.io-kernel-5.10-ti-am335x
+		ker_pkg=bbb.io-kernel-6.1-ti-am335x
 		debian_bullseye
+		dont_use_uboot_overlays=true
+		upgrade_uboot=true
+		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
 		;;
 	32-am335x-bbg)
-		ker_pkg=bbb.io-kernel-5.10-bone-rt
+		ker_old_pkg=bbb.io-kernel-5.10-bone-rt
+		ker_pkg=bbb.io-kernel-6.1-ti-rt-am335x
 		debian_bullseye
+		dont_use_uboot_overlays=true
+		upgrade_uboot=true
+		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
 		;;
 	45-am57xx-bbai)
 		unset ker_old_pkg
 		ker_pkg=bbb.io-kernel-5.10-ti-am57xx
 		debian_bullseye
+		dont_use_uboot_overlays=true
 		;;
 	46-am57xx-bbai)
 		unset ker_old_pkg
 		ker_pkg=bbb.io-kernel-5.10-ti-am57xx
 		debian_bullseye
+		dont_use_uboot_overlays=true
 		;;
 	47-am57xx-bbai)
 		unset ker_old_pkg
 		ker_pkg=bbb.io-kernel-5.10-ti-am57xx
 		debian_bullseye
+		dont_use_uboot_overlays=true
 		;;
 	48-am57xx-bbai)
 		unset ker_old_pkg
 		ker_pkg=bbb.io-kernel-5.10-ti-am57xx
 		debian_bullseye
+		dont_use_uboot_overlays=true
 		;;
 	esac
 }
@@ -241,6 +282,14 @@ fi
 dpkg --list | grep bbb.io-kernel
 
 apt -y autoremove || true
+
+if [ "x${upgrade_uboot}" = "xtrue" ] ; then
+	lsblk
+	if [ -f ${uboot} ] ; then
+		sudo ${uboot}
+	fi
+fi
+
 sync
 
 echo "...uname -r..."
