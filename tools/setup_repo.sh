@@ -244,6 +244,11 @@ suite="focal"
 archs="arm64 source"
 setup_repo
 
+#Yes, this is under debian-arm64, to better sync builds with debian..
+suite="jammy"
+archs="arm64 source"
+setup_repo
+
 dist="debian-riscv64"
 suite="sid"
 archs="riscv64 source"
