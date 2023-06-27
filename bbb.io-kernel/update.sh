@@ -195,6 +195,10 @@ do_jammy () {
 	sgxjacinto6evm="enabled"
 	rtl8723bu="enabled"
 	rtl8821cu="enabled"
+
+	msg="4.19-ti"    ; var="ti"    ; ver="LTS419" ; current_kernel ; generate_kernel_ti
+	msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_ti
+
 	rtl8723du="enabled"
 	qcacld="enabled"
 
@@ -374,6 +378,9 @@ do_bookworm () {
 	rtl8723bu="enabled"
 	rtl8821cu="enabled"
 
+	msg="4.19-ti"    ; var="ti"    ; ver="LTS419" ; current_kernel ; generate_kernel_ti
+	msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_ti
+
 	rtl8723du="enabled"
 	qcacld="enabled"
 
@@ -423,6 +430,10 @@ do_trixie () {
 	rtl8723bu="enabled"
 	rtl8821cu="enabled"
 
+	#4.19-ti will not build on trixie/sid...
+	#msg="4.19-ti"    ; var="ti"    ; ver="LTS419" ; current_kernel ; generate_kernel_ti
+	#msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_ti
+
 	rtl8723du="enabled"
 	qcacld="enabled"
 
@@ -439,9 +450,9 @@ do_trixie () {
 	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
 	unset rtl8723du
 
-	#msg="5.10-bone" ; var="omap-psp" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_bone
-	#msg="5.15-bone" ; var="omap-psp" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_bone
-	#msg="6.1-bone"  ; var="omap-psp" ; ver="LTS61" ; current_kernel ; generate_kernel_mainline_bone
+	msg="5.10-bone" ; var="omap-psp" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_bone
+	msg="5.15-bone" ; var="omap-psp" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.1-bone"  ; var="omap-psp" ; ver="LTS61" ; current_kernel ; generate_kernel_mainline_bone
 	#msg="6.2-bone"  ; var="omap-psp" ; ver="V62X"  ; current_kernel ; generate_kernel_mainline_bone
 	#msg="6.3-bone"  ; var="omap-psp" ; ver="V63X"  ; current_kernel ; generate_kernel_mainline_bone
 	#msg="6.4-bone"  ; var="omap-psp" ; ver="V64X"  ; current_kernel ; generate_kernel_mainline_bone
