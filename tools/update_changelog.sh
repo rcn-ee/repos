@@ -46,6 +46,7 @@ if [ -d ${DIR}/suite/${suite}/ ] ; then
 	run
 fi
 
+dist="debian"
 suite="buster"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${buster_version}"
@@ -55,6 +56,7 @@ if [ -d ${DIR}/suite/${suite}/ ] ; then
 	run
 fi
 
+dist="debian"
 suite="bullseye"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${bullseye_version}"
@@ -64,6 +66,7 @@ if [ -d ${DIR}/suite/${suite}/ ] ; then
 	run
 fi
 
+dist="debian"
 suite="bookworm"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${bookworm_version}"
@@ -73,16 +76,17 @@ if [ -d ${DIR}/suite/${suite}/ ] ; then
 	run
 fi
 
-dist="ubuntu"
-suite="bionic"
+dist="debian"
+suite="trixie"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
-	rcn_ee_version="${bionic_version}"
-	cat ${DIR}/version.sh | grep -v bionic_version > ${DIR}/new-version.sh
+	rcn_ee_version="${trixie_version}"
+	cat ${DIR}/version.sh | grep -v trixie_version > ${DIR}/new-version.sh
 	echo "${suite}_version=\"~${suite}+${simple_date}\"" >> ${DIR}/new-version.sh
 	mv ${DIR}/new-version.sh ${DIR}/version.sh
 	run
 fi
 
+dist="ubuntu"
 suite="focal"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${focal_version}"
@@ -92,6 +96,7 @@ if [ -d ${DIR}/suite/${suite}/ ] ; then
 	run
 fi
 
+dist="ubuntu"
 suite="jammy"
 if [ -d ${DIR}/suite/${suite}/ ] ; then
 	rcn_ee_version="${jammy_version}"

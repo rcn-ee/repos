@@ -48,6 +48,7 @@ run () {
 
 runner () {
 	if [ -d ./suite/${suite}/ ] ; then
+		echo ${suite}
 		run
 	fi
 }
@@ -58,7 +59,6 @@ start_run () {
 	suite="bullseye" ; runner
 	suite="bookworm" ; runner
 
-	suite="bionic" ; runner
 	suite="focal" ; runner
 	suite="jammy" ; runner
 }

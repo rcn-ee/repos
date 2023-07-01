@@ -70,6 +70,7 @@ run () {
 
 runner () {
 	if [ -d ./suite/${suite}/ ] ; then
+		echo ${suite}
 		run
 	fi
 }
@@ -79,8 +80,7 @@ start_run () {
 	suite="buster" ; runner
 	suite="bullseye" ; runner
 	suite="bookworm" ; runner
-
-	suite="bionic" ; runner
+	suite="trixie" ; runner
 	suite="focal" ; runner
 	suite="jammy" ; runner
 }
@@ -89,8 +89,7 @@ cleanup () {
 	suite="buster" ; cleanup_suite
 	suite="bullseye" ; cleanup_suite
 	suite="bookworm" ; cleanup_suite
-
-	suite="bionic" ; cleanup_suite
+	suite="trixie" ; cleanup_suite
 	suite="focal" ; cleanup_suite
 	suite="jammy" ; cleanup_suite
 }

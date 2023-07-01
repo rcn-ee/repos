@@ -19,6 +19,7 @@ run () {
 runner () {
 	repo="${base}${dist}/"
 	if [ -d ./suite/${suite}/ ] ; then
+		echo ${suite}
 		run
 	fi
 }
@@ -29,9 +30,8 @@ start_run () {
 	suite="buster" ; runner
 	suite="bullseye" ; runner
 	suite="bookworm" ; runner
-
+	suite="trixie" ; runner
 	dist="ubuntu"
-	suite="bionic" ; runner
 	suite="focal" ; runner
 	suite="jammy" ; runner
 }
