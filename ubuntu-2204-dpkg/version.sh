@@ -17,6 +17,6 @@ dl_path="pool/main/${reprepro_dir}/"
 debian_version=""
 debian_untar=""
 debian_patch=""
-local_patch="rcnee1"
+local_patch="rcnee2"
 
 jammy_version="~jammy+20230701"
