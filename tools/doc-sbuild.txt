@@ -1,55 +1,3 @@
-#debian stretch:
-sudo sbuild-shell source:stretch-armhf-sbuild
-
-echo "deb http://proxy.gfnd.rcn-ee.org:3142/deb.debian.org/debian stretch main" > /etc/apt/sources.list ; \
-echo "deb-src http://proxy.gfnd.rcn-ee.org:3142/deb.debian.org/debian stretch main" >> /etc/apt/sources.list ; \
-echo "deb http://repos.rcn-ee.net/debian stretch main" >> /etc/apt/sources.list ; \
-echo "deb-src http://repos.rcn-ee.net/debian stretch main" >> /etc/apt/sources.list ; \
-cat /etc/apt/sources.list ; \
-apt update ; apt install --yes gnupg ; \
-apt-key adv --keyserver keyserver.ubuntu.com --recv-key D284E608A4C46402 ; \
-apt update ; apt-get clean ; echo "done..." ; exit
-
-#debian stretch (exp)
-sudo sbuild-shell source:stretch-armhf-exp-sbuild
-
-echo "deb http://proxy.gfnd.rcn-ee.org:3142/deb.debian.org/debian stretch main" > /etc/apt/sources.list ; \
-echo "deb-src http://proxy.gfnd.rcn-ee.org:3142/deb.debian.org/debian stretch main" >> /etc/apt/sources.list ; \
-echo "deb http://repos.rcn-ee.net/debian stretch main" >> /etc/apt/sources.list ; \
-echo "deb-src http://repos.rcn-ee.net/debian stretch main" >> /etc/apt/sources.list ; \
-echo "deb http://repos.rcn-ee.net/debian-exp stretch main" >> /etc/apt/sources.list ; \
-echo "deb-src http://repos.rcn-ee.net/debian-exp stretch main" >> /etc/apt/sources.list ; \
-cat /etc/apt/sources.list ; \
-apt update ; apt install --yes gnupg ; \
-apt-key adv --keyserver keyserver.ubuntu.com --recv-key D284E608A4C46402 ; \
-apt update ; apt-get clean ; echo "done..." ; exit
-
-#debian buster:
-sudo sbuild-shell source:buster-armhf-sbuild
-
-echo "deb http://proxy.gfnd.rcn-ee.org:3142/deb.debian.org/debian buster main" > /etc/apt/sources.list ; \
-echo "deb-src http://proxy.gfnd.rcn-ee.org:3142/deb.debian.org/debian buster main" >> /etc/apt/sources.list ; \
-echo "deb http://repos.rcn-ee.net/debian buster main" >> /etc/apt/sources.list ; \
-echo "deb-src http://repos.rcn-ee.net/debian buster main" >> /etc/apt/sources.list ; \
-cat /etc/apt/sources.list ; \
-apt update ; apt install --yes gnupg ; \
-apt-key adv --keyserver keyserver.ubuntu.com --recv-key D284E608A4C46402 ; \
-apt update ; apt-get clean ; echo "done..." ; exit
-
-#debian buster (exp)
-sudo sbuild-shell source:buster-armhf-exp-sbuild
-
-echo "deb http://proxy.gfnd.rcn-ee.org:3142/deb.debian.org/debian buster main" > /etc/apt/sources.list ; \
-echo "deb-src http://proxy.gfnd.rcn-ee.org:3142/deb.debian.org/debian buster main" >> /etc/apt/sources.list ; \
-echo "deb http://repos.rcn-ee.net/debian buster main" >> /etc/apt/sources.list ; \
-echo "deb-src http://repos.rcn-ee.net/debian buster main" >> /etc/apt/sources.list ; \
-echo "deb http://repos.rcn-ee.net/debian-exp buster main" >> /etc/apt/sources.list ; \
-echo "deb-src http://repos.rcn-ee.net/debian-exp buster main" >> /etc/apt/sources.list ; \
-cat /etc/apt/sources.list ; \
-apt update ; apt install --yes gnupg ; \
-apt-key adv --keyserver keyserver.ubuntu.com --recv-key D284E608A4C46402 ; \
-apt update ; apt-get clean ; echo "done..." ; exit
-
 #debian bullseye:
 sudo sbuild-shell source:bullseye-armhf-sbuild
 
@@ -77,18 +25,6 @@ echo "deb-src http://proxy.gfnd.rcn-ee.org:3142/deb.debian.org/debian bookworm m
 echo "deb [arch=armhf signed-by=/usr/share/keyrings/rcn-ee-archive-keyring.gpg] http://repos.rcn-ee.net/debian bookworm main" >> /etc/apt/sources.list ; \
 echo "deb-src [arch=armhf signed-by=/usr/share/keyrings/rcn-ee-archive-keyring.gpg] http://repos.rcn-ee.net/debian bookworm main" >> /etc/apt/sources.list ; \
 cat /etc/apt/sources.list ; \
-apt update ; apt-get clean ; echo "done..." ; exit
-
-#ubuntu bionic
-sudo sbuild-shell source:bionic-armhf-sbuild
-
-echo "deb http://proxy.gfnd.rcn-ee.org:3142/ports.ubuntu.com bionic main universe" > /etc/apt/sources.list ; \
-echo "deb-src http://proxy.gfnd.rcn-ee.org:3142/ports.ubuntu.com bionic main universe" >> /etc/apt/sources.list ; \
-echo "deb http://repos.rcn-ee.net/ubuntu bionic main" >> /etc/apt/sources.list ; \
-echo "deb-src http://repos.rcn-ee.net/ubuntu bionic main" >> /etc/apt/sources.list ; \
-cat /etc/apt/sources.list ; \
-apt update ; apt install --yes gnupg ; \
-apt-key adv --keyserver keyserver.ubuntu.com --recv-key D284E608A4C46402 ; \
 apt update ; apt-get clean ; echo "done..." ; exit
 
 #ubuntu focal
