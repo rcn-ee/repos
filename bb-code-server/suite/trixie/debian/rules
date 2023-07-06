@@ -1,0 +1,33 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+export DH_VERBOSE=1
+
+# Disable dh_link
+override_dh_link:
+
+# Disable dh_strip
+override_dh_strip:
+
+# Disable dh_strip_nondeterminism
+override_dh_strip_nondeterminism:
+
+# Disable dh_shlibdeps
+override_dh_shlibdeps:
+
+override_dh_auto_configure:
+	mkdir -p ./tmp/opt/bb-code-server/app/
+	tar xf debian/code-server-*-linux-*.tar.gz -C ./tmp/opt/bb-code-server/app/ --strip-components 1
+
+%:
+	dh $@ --with systemd
+
+override_dh_installinit:
+	dh_installinit --name=bb-code-server --no-stop-on-upgrade --no-start
+
+override_dh_systemd_enable:
+	dh_systemd_enable --name=bb-code-server --no-enable
+
+override_dh_systemd_start:
+	dh_systemd_start --name=bb-code-server --no-start
