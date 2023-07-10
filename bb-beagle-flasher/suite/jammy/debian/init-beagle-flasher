@@ -5,7 +5,7 @@ if ! id | grep -q root; then
 	exit
 fi
 
-version_message="1.20221010.1, rsync add -H option for hardlinks, final image running out of space..."
+version_message="1.20230710.0, merged generic cleanups..."
 
 #mke2fs -c
 #Check the device for bad blocks before creating the file system.
@@ -21,47 +21,47 @@ cylon_leds() {
 	#cat /sys/class/leds/beaglebone\:green\:usr*/trigger
 	local leds_base=/sys/class/leds/beaglebone\:green\:usr
 	if [ -e ${leds_base}0/trigger ] ; then
-		echo none > ${leds_base}0/trigger
-		echo none > ${leds_base}1/trigger
-		echo none > ${leds_base}2/trigger
-		echo none > ${leds_base}3/trigger
+		echo none > ${leds_base}0/trigger || true
+		echo none > ${leds_base}1/trigger || true
+		echo none > ${leds_base}2/trigger || true
+		echo none > ${leds_base}3/trigger || true
 
 		STATE=1
 		while : ; do
 		case $STATE in
 			1)
-				echo 1 > ${leds_base}0/brightness
-				echo 0 > ${leds_base}1/brightness
+				echo 1 > ${leds_base}0/brightness || true
+				echo 0 > ${leds_base}1/brightness || true
 				STATE=2
 				;;
 			2)
-				echo 1 > ${leds_base}1/brightness
-				echo 0 > ${leds_base}0/brightness
+				echo 1 > ${leds_base}1/brightness || true
+				echo 0 > ${leds_base}0/brightness || true
 				STATE=3
 				;;
 			3)
-				echo 1 > ${leds_base}2/brightness
-				echo 0 > ${leds_base}1/brightness
+				echo 1 > ${leds_base}2/brightness || true
+				echo 0 > ${leds_base}1/brightness || true
 				STATE=4
 				;;
 			4)
-				echo 1 > ${leds_base}3/brightness
-				echo 0 > ${leds_base}2/brightness
+				echo 1 > ${leds_base}3/brightness || true
+				echo 0 > ${leds_base}2/brightness || true
 				STATE=5
 				;;
 			5)
-				echo 1 > ${leds_base}2/brightness
-				echo 0 > ${leds_base}3/brightness
+				echo 1 > ${leds_base}2/brightness || true
+				echo 0 > ${leds_base}3/brightness || true
 				STATE=6
 				;;
 			6)
-				echo 1 > ${leds_base}1/brightness
-				echo 0 > ${leds_base}2/brightness
+				echo 1 > ${leds_base}1/brightness || true
+				echo 0 > ${leds_base}2/brightness || true
 				STATE=1
 				;;
 			*)
-				echo 1 > ${leds_base}0/brightness
-				echo 0 > ${leds_base}1/brightness
+				echo 1 > ${leds_base}0/brightness || true
+				echo 0 > ${leds_base}1/brightness || true
 				STATE=2
 				;;
 		esac
@@ -83,10 +83,10 @@ reset_leds() {
 		leds_base=/sys/class/leds/beaglebone\:green\:usr
 
 		if [ -e ${leds_base}0/trigger ] ; then
-			echo ${leds_pattern0} > ${leds_base}0/trigger
-			echo ${leds_pattern1} > ${leds_base}1/trigger
-			echo ${leds_pattern2} > ${leds_base}2/trigger
-			echo ${leds_pattern3} > ${leds_base}3/trigger
+			echo ${leds_pattern0} > ${leds_base}0/trigger || true
+			echo ${leds_pattern1} > ${leds_base}1/trigger || true
+			echo ${leds_pattern2} > ${leds_base}2/trigger || true
+			echo ${leds_pattern3} > ${leds_base}3/trigger || true
 		fi
 	fi
 }
@@ -131,20 +131,6 @@ example_failure () {
 	exit 2
 }
 
-inf_loop () {
-	message="Error: Flash Failed please review log."                                           ; broadcast
-	while read MAGIC ; do
-		case $MAGIC in
-		beagleboard.org)
-			echo "Your foo is strong!"
-			bash -i
-			;;
-		*)	echo "Your foo is weak."
-			;;
-		esac
-	done
-}
-
 write_failure () {
 	message="ERROR: writing to [destination=${destination}] failed..."                         ; broadcast
 
@@ -160,10 +146,10 @@ write_failure () {
 		leds_base=/sys/class/leds/beaglebone\:green\:usr
 
 		if [ -e ${leds_base}0/trigger ] ; then
-			echo ${leds_pattern0} > ${leds_base}0/trigger
-			echo ${leds_pattern1} > ${leds_base}1/trigger
-			echo ${leds_pattern2} > ${leds_base}2/trigger
-			echo ${leds_pattern3} > ${leds_base}3/trigger
+			echo ${leds_pattern0} > ${leds_base}0/trigger || true
+			echo ${leds_pattern1} > ${leds_base}1/trigger || true
+			echo ${leds_pattern2} > ${leds_base}2/trigger || true
+			echo ${leds_pattern3} > ${leds_base}3/trigger || true
 		fi
 		message="Debug: Setting Heartbeat"                                                         ; broadcast
 	fi
@@ -173,7 +159,6 @@ write_failure () {
 	if [ "x${destination}" != "x" ] ; then
 		umount ${destination}p1 > /dev/null 2>&1 || true
 	fi
-	inf_loop
 }
 
 check_running_system () {
@@ -317,6 +302,7 @@ copy_rootfs () {
 	message="INFO: [cat /tmp/rootfs/etc/fstab]"                                                ; broadcast
 	message="`cat /tmp/rootfs/etc/fstab`"                                                      ; broadcast
 	message="--------------------------------------------------------------------------------" ; broadcast
+	flush_cache
 
 	sed -i -e 's:cmdline=init:#cmdline=init:g' /tmp/rootfs/boot/uEnv.txt
 	message="INFO: [cat /tmp/rootfs/boot/uEnv.txt]"                                            ; broadcast
@@ -324,10 +310,16 @@ copy_rootfs () {
 	message="--------------------------------------------------------------------------------" ; broadcast
 
 	if [ "x${flash_back}" != "x" ] ; then
-		if [ -f /etc/beagle-flasher/${flash_back} ] ; then
-			message="INFO: [cp -v /etc/beagle-flasher/${flash_back} /tmp/rootfs/etc/default/beagle-flasher]" ; broadcast
-			cp -v /etc/beagle-flasher/${flash_back} /tmp/rootfs/etc/default/beagle-flasher
+		if [ -f ${flash_back} ] ; then
+			message="INFO: [cp -v ${flash_back} /tmp/rootfs/etc/default/beagle-flasher]" ; broadcast
+			cp -v ${flash_back} /tmp/rootfs/etc/default/beagle-flasher
 			message="--------------------------------------------------------------------------------" ; broadcast
+		else
+			if [ -f /etc/beagle-flasher/${flash_back} ] ; then
+				message="INFO: [cp -v /etc/beagle-flasher/${flash_back} /tmp/rootfs/etc/default/beagle-flasher]" ; broadcast
+				cp -v /etc/beagle-flasher/${flash_back} /tmp/rootfs/etc/default/beagle-flasher
+				message="--------------------------------------------------------------------------------" ; broadcast
+			fi
 		fi
 	fi
 
@@ -351,6 +343,7 @@ copy_rootfs () {
 	if [ -f /tmp/rootfs/etc/systemd/system/multi-user.target.wants/grow_partition.service ] ; then
 		rm -rf /tmp/rootfs/etc/systemd/system/multi-user.target.wants/grow_partition.service || true
 	fi
+	flush_cache
 
 	message="Copying: ${source}p${media_rootfs} -> ${destination}p${media_rootfs} complete"    ; broadcast
 	message="--------------------------------------------------------------------------------" ; broadcast
@@ -410,13 +403,11 @@ partition_drive () {
 
 	if [ "x${rfs_partition}" = "xsingle" ] ; then
 		rfs_rootfs_startmb=${rfs_rootfs_startmb:-"4"}
+		sfdisk_fstype=${sfdisk_fstype:-"L"}
 
-		if [ "x${rfs_rootfs_type}" = "xext4" ] ; then
-			sfdisk_fstype="L"
-		fi
 		single_root_label=${single_root_label:-"rootfs"}
 
-		sfdisk_options="--force"
+		sfdisk_options="--force --wipe-partitions always"
 
 		message="INFO: Partitioning: ${destination}"                                               ; broadcast
 		message="INFO: /sbin/sfdisk: [$(LC_ALL=C /sbin/sfdisk --version)]"                         ; broadcast
@@ -446,7 +437,7 @@ partition_drive () {
 		boot_label=${boot_label:-"FIRMWARE"}
 		rootfs_label=${rootfs_label:-"rootfs"}
 
-		sfdisk_options="--force"
+		sfdisk_options="--force --wipe-partitions always"
 
 		message="INFO: Partitioning: ${destination}"                                               ; broadcast
 		message="INFO: /sbin/sfdisk: [$(LC_ALL=C /sbin/sfdisk --version)]"                         ; broadcast
