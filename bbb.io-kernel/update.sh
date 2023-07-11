@@ -182,6 +182,15 @@ do_focal () {
 	msg="5.10-bone-rt" ; var="bone-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.15-bone-rt" ; var="bone-rt" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.1-bone-rt"  ; var="bone-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_mainline_bone
+
+	msg="5.10-armv7" ; var="armv7" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_armv7
+	msg="5.15-armv7" ; var="armv7" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_armv7
+
+	msg="5.10-armv7-rt" ; var="armv7-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_armv7
+	msg="5.15-armv7-rt" ; var="armv7-rt" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_armv7
+
+	msg="5.10-armv7-lpae" ; var="armv7-lpae" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_armv7_lpae
+	msg="5.15-armv7-lpae" ; var="armv7-lpae" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_armv7_lpae
 }
 
 do_jammy () {
@@ -224,6 +233,15 @@ do_jammy () {
 	msg="5.10-bone-rt" ; var="bone-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.15-bone-rt" ; var="bone-rt" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.1-bone-rt"  ; var="bone-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_mainline_bone
+
+	msg="5.10-armv7" ; var="armv7" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_armv7
+	msg="5.15-armv7" ; var="armv7" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_armv7
+
+	msg="5.10-armv7-rt" ; var="armv7-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_armv7
+	msg="5.15-armv7-rt" ; var="armv7-rt" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_armv7
+
+	msg="5.10-armv7-lpae" ; var="armv7-lpae" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_armv7_lpae
+	msg="5.15-armv7-lpae" ; var="armv7-lpae" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_armv7_lpae
 }
 
 do_buster () {
