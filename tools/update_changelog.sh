@@ -21,7 +21,9 @@ run () {
 		fi
 	fi
 	echo "" >> ${wfile}
-	if [  -f ${DIR}/suite/${suite}/readme.log ] ; then
+	if [  -f ${DIR}/readme.log ] ; then
+		cat ${DIR}/readme.log >> ${wfile}
+	elif  [  -f ${DIR}/suite/${suite}/readme.log ] ; then
 		cat ${DIR}/suite/${suite}/readme.log >> ${wfile}
 	else
 		echo "  * Rebuild for repos.rcn-ee.com" >> ${wfile}
