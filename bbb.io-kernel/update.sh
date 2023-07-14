@@ -40,8 +40,7 @@ generate_kernel_ti () {
 		echo "Package: bbb.io-kernel-${msg}" >> ./suite/${dist}/debian/${wfile}
 		echo "Section: metapackages" >> ./suite/${dist}/debian/${wfile}
 		echo "Architecture: armhf" >> ./suite/${dist}/debian/${wfile}
-		echo "Pre-Depends:" >> ./suite/${dist}/debian/${wfile}
-		echo " linux-image-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
+		echo "Pre-Depends: linux-image-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
 		echo "Depends:" >> ./suite/${dist}/debian/${wfile}
 		echo " \${misc:Depends}" >> ./suite/${dist}/debian/${wfile}
 		echo " , bbb.io-kernel-tasks (= \${source:Version})" >> ./suite/${dist}/debian/${wfile}
@@ -53,8 +52,7 @@ generate_kernel_ti () {
 		echo "Package: bbb.io-kernel-${msg}-am335x" >> ./suite/${dist}/debian/${wfile}
 		echo "Section: metapackages" >> ./suite/${dist}/debian/${wfile}
 		echo "Architecture: armhf" >> ./suite/${dist}/debian/${wfile}
-		echo "Pre-Depends:" >> ./suite/${dist}/debian/${wfile}
-		echo " linux-image-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
+		echo "Pre-Depends: linux-image-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
 		echo "Depends:" >> ./suite/${dist}/debian/${wfile}
 		echo " \${misc:Depends}" >> ./suite/${dist}/debian/${wfile}
 		echo " , bbb.io-kernel-tasks (= \${source:Version})" >> ./suite/${dist}/debian/${wfile}
@@ -83,8 +81,7 @@ generate_kernel_ti () {
 		echo "Package: bbb.io-kernel-${msg}-am57xx" >> ./suite/${dist}/debian/${wfile}
 		echo "Section: metapackages" >> ./suite/${dist}/debian/${wfile}
 		echo "Architecture: armhf" >> ./suite/${dist}/debian/${wfile}
-		echo "Pre-Depends:" >> ./suite/${dist}/debian/${wfile}
-		echo " linux-image-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
+		echo "Pre-Depends: linux-image-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
 		echo "Depends:" >> ./suite/${dist}/debian/${wfile}
 		echo " \${misc:Depends}" >> ./suite/${dist}/debian/${wfile}
 		echo " , bbb.io-kernel-tasks (= \${source:Version})" >> ./suite/${dist}/debian/${wfile}
@@ -141,6 +138,15 @@ generate_kernel_mainline_armv7_lpae () {
 	fi
 }
 
+changelog () {
+	git diff ./suite/${dist}/debian/control > /tmp/changelog-readme.diff
+	cat /tmp/changelog-readme.diff | grep +Pre-Depends: | awk '{print $2}' | awk -F ',' '{print $1}' > /tmp/changelog-readme.cat
+	sort -u /tmp/changelog-readme.cat > /tmp/changelog-readme.sort
+	echo "  * Kernel Updates" > suite/${dist}/readme.log
+	ts "  *" /tmp/changelog-readme.sort >> suite/${dist}/readme.log
+	cat suite/${dist}/readme.log
+}
+
 do_focal () {
 	arch="armhf"
 	dist="focal"
@@ -191,6 +197,7 @@ do_focal () {
 
 	msg="5.10-armv7-lpae" ; var="armv7-lpae" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_armv7_lpae
 	msg="5.15-armv7-lpae" ; var="armv7-lpae" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_armv7_lpae
+	changelog
 }
 
 do_jammy () {
@@ -207,6 +214,8 @@ do_jammy () {
 
 	msg="4.19-ti"    ; var="ti"    ; ver="LTS419" ; current_kernel ; generate_kernel_ti
 	msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_ti
+	msg="5.4-ti"     ; var="ti"    ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
+	msg="5.4-ti-rt"  ; var="ti-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
 
 	rtl8723du="enabled"
 	qcacld="enabled"
@@ -242,6 +251,7 @@ do_jammy () {
 
 	msg="5.10-armv7-lpae" ; var="armv7-lpae" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_armv7_lpae
 	msg="5.15-armv7-lpae" ; var="armv7-lpae" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_armv7_lpae
+	changelog
 }
 
 do_buster () {
@@ -312,6 +322,7 @@ do_buster () {
 	msg="5.4-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
 	msg="5.10-armv7-lpae" ; var="armv7-lpae" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_armv7_lpae
 	msg="5.15-armv7-lpae" ; var="armv7-lpae" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_armv7_lpae
+	changelog
 }
 
 do_bullseye () {
@@ -385,6 +396,7 @@ do_bullseye () {
 	msg="5.4-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
 	msg="5.10-armv7-lpae" ; var="armv7-lpae" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_armv7_lpae
 	msg="5.15-armv7-lpae" ; var="armv7-lpae" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_armv7_lpae
+	changelog
 }
 
 do_bookworm () {
@@ -401,6 +413,8 @@ do_bookworm () {
 
 	msg="4.19-ti"    ; var="ti"    ; ver="LTS419" ; current_kernel ; generate_kernel_ti
 	msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_ti
+	msg="5.4-ti"     ; var="ti"    ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
+	msg="5.4-ti-rt"  ; var="ti-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
 
 	rtl8723du="enabled"
 	qcacld="enabled"
@@ -438,6 +452,7 @@ do_bookworm () {
 
 	msg="5.10-armv7-lpae" ; var="armv7-lpae" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_armv7_lpae
 	msg="5.15-armv7-lpae" ; var="armv7-lpae" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_armv7_lpae
+	changelog
 }
 
 do_trixie () {
@@ -452,9 +467,11 @@ do_trixie () {
 	rtl8723bu="enabled"
 	rtl8821cu="enabled"
 
-	#4.19-ti will not build on trixie/sid...
+	#4.19-ti/5.4-ti will not build on trixie/sid...
 	#msg="4.19-ti"    ; var="ti"    ; ver="LTS419" ; current_kernel ; generate_kernel_ti
 	#msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_ti
+	#msg="5.4-ti"     ; var="ti"    ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
+	#msg="5.4-ti-rt"  ; var="ti-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
 
 	rtl8723du="enabled"
 	qcacld="enabled"
@@ -475,7 +492,7 @@ do_trixie () {
 	msg="5.10-bone" ; var="omap-psp" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.15-bone" ; var="omap-psp" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.1-bone"  ; var="omap-psp" ; ver="LTS61" ; current_kernel ; generate_kernel_mainline_bone
-	#msg="6.2-bone"  ; var="omap-psp" ; ver="V62X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.2-bone"  ; var="omap-psp" ; ver="V62X"  ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.3-bone"  ; var="omap-psp" ; ver="V63X"  ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.4-bone"  ; var="omap-psp" ; ver="V64X"  ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.5-bone"  ; var="omap-psp" ; ver="V65X"  ; current_kernel ; generate_kernel_mainline_bone
@@ -492,6 +509,7 @@ do_trixie () {
 
 	msg="5.10-armv7-lpae" ; var="armv7-lpae" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_armv7_lpae
 	msg="5.15-armv7-lpae" ; var="armv7-lpae" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_armv7_lpae
+	changelog
 }
 
 do_focal
