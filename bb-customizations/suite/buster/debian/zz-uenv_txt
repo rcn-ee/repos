@@ -9,6 +9,7 @@ if [ -z "${version}" ] ; then
 fi
 
 if [ -f /boot/uEnv.txt ] ; then
+	depmod -a ${version} || true
 	unset older_kernel
 	older_kernel=$(cat /boot/uEnv.txt | grep -v '#' | sed 's/ /\n/g' | grep 'uname_r=' | awk -F"=" '{print $2}' || true)
 
