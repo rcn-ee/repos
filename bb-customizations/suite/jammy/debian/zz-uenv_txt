@@ -8,8 +8,18 @@ if [ -z "${version}" ] ; then
 	exit 2
 fi
 
+#For some reason depmod was not being called by update-initramfs...
+depmod -a ${version} || true
+
 if [ -f /boot/uEnv.txt ] ; then
-	depmod -a ${version} || true
+	#Starting in v6.5, overlays/dtbo files get dumped in the same directory as dtb's CONFIG_ARCH_WANT_FLAT_DTB_INSTALL
+	#https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/scripts/Makefile.dtbinst?h=v6.5-rc1#n37
+	#copy these under /boot/dtbs/${version}/overlays/ for older versions of u-boot.
+	if [ -f /boot/vmlinuz-${version} ] ; then
+		mkdir -p /boot/dtbs/${version}/overlays/ || true
+		cp -v /usr/lib/linux-image-${version}/*.dtbo /boot/dtbs/${version}/overlays/ || true
+	fi
+
 	unset older_kernel
 	older_kernel=$(cat /boot/uEnv.txt | grep -v '#' | sed 's/ /\n/g' | grep 'uname_r=' | awk -F"=" '{print $2}' || true)
 
@@ -70,6 +80,11 @@ if [ -f ${udir}/uEnv.txt ] ; then
 				fi
 			fi
 		fi
+
+		mkdir -p ${udir}/dtbs/current/overlays/ || true
+		cp -v /usr/lib/linux-image-${version}/overlays/*.dtbo /boot/dtbs/${version}/overlays/ || true
+		cp -v /usr/lib/linux-image-${version}/*.dtbo /boot/dtbs/${version}/overlays/ || true
+
 		echo "zz-uenv_txt: Updating boot drive for: [${version}]"
 	fi
 fi
