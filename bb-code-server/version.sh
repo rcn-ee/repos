@@ -7,7 +7,7 @@ ver="4.16.0"
 
 package_name="bb-code-server"
 debian_pkg_name="${package_name}"
-package_version="${ver}.0"
+package_version="${ver}.1"
 package_source=""
 src_dir=""
 
