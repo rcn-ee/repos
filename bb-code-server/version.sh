@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-#https://github.com/coder/code-server/releases/tag/v4.16.0
+#https://github.com/coder/code-server/releases
 
 arch="armv7l"
 ver="4.16.1"
