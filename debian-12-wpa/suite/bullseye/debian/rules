@@ -1,0 +1,116 @@
+#!/usr/bin/make -f
+
+export QT_SELECT=qt5
+export DEB_BUILD_MAINT_OPTIONS=hardening=+all
+DPKG_EXPORT_BUILDFLAGS = 1
+
+# The build system doesn't use CPPFLAGS, pass them to CFLAGS/CXXFLAGS to
+# enable the missing (hardening) flags
+DEB_CFLAGS_MAINT_APPEND   = -MMD -Wall $(shell dpkg-buildflags --get CPPFLAGS)
+DEB_CXXFLAGS_MAINT_APPEND = $(shell dpkg-buildflags --get CPPFLAGS)
+
+include /usr/share/dpkg/default.mk
+
+ifeq ($(DEB_HOST_ARCH_OS),kfreebsd)
+DEB_BUILD_PROFILES := pkg.wpa.nogui $(DEB_BUILD_PROFILES)
+export LIBS = -ldl
+endif
+
+BINDIR    = /sbin
+V = 1
+
+PKG_CONFIG ?= $(DEB_HOST_GNU_TYPE)-pkg-config
+
+export BINDIR V PKG_CONFIG
+
+HOSTAPD_DOT_CONFIG            := debian/config/hostapd/$(DEB_HOST_ARCH_OS)
+WPASUPPLICANT_DOT_CONFIG      := debian/config/wpasupplicant/$(DEB_HOST_ARCH_OS)
+WPASUPPLICANT_UDEB_DOT_CONFIG := debian/config/wpasupplicant/$(DEB_HOST_ARCH_OS)-udeb
+
+### start dh overrides
+override_dh_auto_configure:
+ifeq (,$(filter pkg.wpa.nogui,$(DEB_BUILD_PROFILES)))
+	dh_auto_configure --sourcedirectory=wpa_supplicant/wpa_gui-qt4 \
+	                  --buildsystem=qmake
+endif
+
+override_dh_auto_build:
+ifeq (,$(filter nodoc,$(DEB_BUILD_PROFILES)))
+	# build documentation
+	dh_auto_build --sourcedirectory=wpa_supplicant/doc/docbook \
+	              --buildsystem=makefile \
+	              -- man
+endif
+ifeq (,$(filter noudeb,$(DEB_BUILD_PROFILES)))
+	# build wpasupplicant-udeb
+	cp -v --remove-destination $(WPASUPPLICANT_UDEB_DOT_CONFIG) wpa_supplicant/.config
+	dh_auto_build --sourcedirectory=wpa_supplicant \
+	              --buildsystem=makefile
+	mv -v wpa_supplicant/wpa_supplicant wpa_supplicant/wpa_supplicant-udeb
+	dh_auto_clean --sourcedirectory=wpa_supplicant \
+	              --buildsystem=makefile
+endif
+	# build wpasupplicant, libwpa_client and eapol_test
+	cp -v --remove-destination $(WPASUPPLICANT_DOT_CONFIG) wpa_supplicant/.config
+	dh_auto_build --sourcedirectory=wpa_supplicant \
+	              --buildsystem=makefile -- all libwpa_client.a eapol_test
+ifeq (,$(filter pkg.wpa.nogui,$(DEB_BUILD_PROFILES)))
+	# build wpa_gui-qt4
+	dh_auto_build --sourcedirectory=wpa_supplicant/wpa_gui-qt4 \
+	              --buildsystem=qmake
+endif
+	dh_auto_clean --sourcedirectory=src --buildsystem=makefile
+	# build hostapd
+	cp -v --remove-destination $(HOSTAPD_DOT_CONFIG) hostapd/.config
+	dh_auto_build --sourcedirectory=hostapd \
+	              --buildsystem=makefile
+	dh_auto_clean --sourcedirectory=src --buildsystem=makefile
+
+override_dh_auto_clean:
+ifeq (,$(filter nodoc,$(DEB_BUILD_PROFILES)))
+	dh_auto_clean --sourcedirectory=wpa_supplicant/doc/docbook \
+	              --buildsystem=makefile
+endif
+	dh_auto_clean --sourcedirectory=wpa_supplicant \
+	              --buildsystem=makefile
+ifeq (,$(filter pkg.wpa.nogui,$(DEB_BUILD_PROFILES)))
+	dh_auto_clean --sourcedirectory=wpa_supplicant/wpa_gui-qt4 \
+	              --buildsystem=qmake
+	-find wpa_supplicant/wpa_gui-qt4 -type d -name \.moc -exec rm -rf {} \;
+	-find wpa_supplicant/wpa_gui-qt4 -type d -name \.ui  -exec rm -rf {} \;
+	-find wpa_supplicant/wpa_gui-qt4 -type d -name \.obj -exec rm -rf {} \;
+endif
+	dh_auto_clean --sourcedirectory=hostapd \
+	              --buildsystem=makefile
+
+override_dh_auto_install:
+	$(info Skip dh_auto_install ...)
+
+execute_before_dh_clean:
+	# make sure to remove the staging directory for the udeb
+	rm -rf debian/wpasupplicant-udeb
+
+execute_after_dh_install:
+	# install D-Bus service activation files & configuration
+	install --mode=644 -D wpa_supplicant/dbus/dbus-wpa_supplicant.conf \
+		debian/wpasupplicant/etc/dbus-1/system.d/wpa_supplicant.conf
+ifeq (,$(filter noudeb,$(DEB_BUILD_PROFILES)))
+	# Install udeb
+	install --mode=755 -D wpa_supplicant/wpa_supplicant-udeb \
+		debian/wpasupplicant-udeb/sbin/wpa_supplicant
+endif
+
+override_dh_installchangelogs:
+	dh_installchangelogs --package=hostapd hostapd/ChangeLog
+	dh_installchangelogs --package=wpasupplicant wpa_supplicant/ChangeLog
+ifeq (,$(filter pkg.wpa.nogui,$(DEB_BUILD_PROFILES)))
+	dh_installchangelogs --package=wpagui wpa_supplicant/ChangeLog
+endif
+	dh_installchangelogs --remaining-packages
+### end dh overrides
+
+execute_after_dh_installexamples:
+	sed -e 's="includes.h"=<stddef.h>=' -e 's="common/wpa_ctrl.h"=<wpa_ctrl.h>=' -i debian/*/usr/share/doc/*/examples/*.c
+
+%:
+	dh $@

@@ -1,0 +1,43 @@
+hostapd for Debian
+------------------
+
+This package provides two methods for managing hostapd process(es); an
+initscript and an ifupdown hook. Both methods require creation of a
+hostapd daemon configuration file (/etc/hostapd/hostapd.conf) to
+function correctly.
+
+An example hostapd.conf may be used as a template but _must_ be edited
+to suit your local configuration. An example is located at:
+  /usr/share/doc/hostapd/examples/hostapd.conf.gz
+
+To use the example as a template:
+  # zcat /usr/share/doc/hostapd/examples/hostapd.conf.gz > \
+  	/etc/hostapd/hostapd.conf
+  # $EDITOR /etc/hostapd/hostapd.conf
+
+If you're running systemd, you need to unmask the hostapd unit by running:
+
+    systemctl unmask hostapd
+
+If you want to run multiple instances of hostapd with different
+configurations, consider using a service template hostapd@.service
+shipped with the package. E.g. for a hostapd configuration file named
+/etc/hostapd/wifi.conf, the service name will be hostapd@wifi.service.
+
+The previously supported configuration setting DAEMON_CONF in
+/etc/default/hostapd is deprecated and its support will be removed.
+
+To use the ifupdown method, the path to hostapd configuration file can
+be specified in a network interfaces configuration stanza in
+/etc/network/interfaces like so:
+
+iface eth1 inet static
+	hostapd /etc/hostapd/hostapd.conf
+	...
+
+The hostapd process will be started in the pre-up phase of ifup, and be
+terminated in the post-down phase of ifdown.
+
+Please note:
+* If you want to use hostapd with a Prism2/2.5/3 card in WPA mode, you'll need
+  STA firmware version >= 1.7.0.
