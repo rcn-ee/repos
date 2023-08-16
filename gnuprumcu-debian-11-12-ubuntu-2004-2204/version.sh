@@ -2,18 +2,21 @@
 
 package_name="gnuprumcu"
 debian_pkg_name="${package_name}"
-package_version="0.7.0-git20211212.0"
+package_version="0.9.4-git20230525.0"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
 git_repo="https://github.com/dinuxbg/gnuprumcu"
-git_sha="aa0fced67d9d03c21e40caa5f8e5820c7264f2b5"
+git_sha="add29b89053bd5bd7157c6eb48c2f6963cf232da"
 reprepro_dir="b/${package_name}"
 dl_path=""
 
-debian_version="${package_version}-0rcnee0"
+debian_version="${package_version}-0"
 debian_patch=""
 debian_diff=""
+local_patch="bbbio1"
 
-bullseye_version="~bullseye+20211224"
-focal_version="~focal+20211224"
+bullseye_version="~bullseye+20230816"
+bookworm_version="~bookworm+20230816"
+focal_version="~focal+20230816"
+jammy_version="~jammy+20230816"
