@@ -259,4 +259,9 @@ suite="lunar"
 archs="riscv64 source"
 setup_repo
 
+#Yes, this also under debian-riscv64, to better sync builds with debian..
+suite="mantic"
+archs="riscv64 source"
+setup_repo
+
 #
