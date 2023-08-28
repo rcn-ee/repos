@@ -5,7 +5,7 @@ if ! id | grep -q root; then
 	exit
 fi
 
-wdir="/opt/u-boot/bb-u-boot-am57xx-evm-beta"
+wdir="/opt/u-boot/bb-u-boot-am57xx-evm-rc"
 
 if [ -b /dev/mmcblk0 ] ; then
 	echo "dd if=${wdir}/MLO of=/dev/mmcblk0 count=2 seek=1 bs=128k"
