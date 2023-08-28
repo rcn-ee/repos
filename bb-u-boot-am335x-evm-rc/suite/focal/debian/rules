@@ -1,0 +1,24 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+export DH_VERBOSE=1
+
+#U-Boot
+UB_CONFIG=am335x_evm
+UB_BRANCH=v2023.10-rc3
+UB_REPO="https://github.com/u-boot/u-boot.git"
+
+override_dh_strip:
+	# Just disable for now...
+
+override_dh_auto_configure:
+	mkdir -p ./tmp/u-boot/ ; git clone -b $(UB_BRANCH) $(UB_REPO) --depth=5 ./tmp/u-boot/
+	make -C ./tmp/u-boot -j1 CROSS_COMPILE=arm-linux-gnueabihf- $(UB_CONFIG)_defconfig
+	make -C ./tmp/u-boot -j4 CROSS_COMPILE=arm-linux-gnueabihf-
+
+%:
+	dh $@
+
+override_dh_builddeb:
+	dh_builddeb -- -Zxz

@@ -1,10 +1,8 @@
 #!/bin/bash -e
 
-#https://git.beagleboard.org/beagleboard/u-boot/-/tree/v2022.04-bbb.io-am335x-am57xx
-
-package_name="bb-u-boot-am335x-evm-beta"
+package_name="bb-u-boot-am335x-evm-rc"
 debian_pkg_name="${package_name}"
-package_version="2022.04.20220407.0"
+package_version="2023.10.20230821.0"
 package_source=""
 src_dir=""
 
@@ -19,4 +17,7 @@ debian_patch=""
 
 clear_changelog="enable"
 
-buster_version="~buster+20220407"
+buster_version="~buster+20230828"
+bullseye_version="~bullseye+20230828"
+focal_version="~focal+20230828"
+jammy_version="~jammy+20230828"
