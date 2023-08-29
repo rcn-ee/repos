@@ -184,6 +184,7 @@ do_focal () {
 	msg="5.15-bone" ; var="omap-psp" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.19-bone" ; var="omap-psp" ; ver="V519X"  ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.1-bone"  ; var="omap-psp" ; ver="LTS61"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.5-bone"  ; var="omap-psp" ; ver="V65X"  ; current_kernel ; generate_kernel_mainline_bone
 
 	msg="5.10-bone-rt" ; var="bone-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.15-bone-rt" ; var="bone-rt" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_bone
@@ -211,11 +212,6 @@ do_jammy () {
 	sgxjacinto6evm="enabled"
 	rtl8723bu="enabled"
 	rtl8821cu="enabled"
-
-	msg="4.19-ti"    ; var="ti"    ; ver="LTS419" ; current_kernel ; generate_kernel_ti
-	msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_ti
-	msg="5.4-ti"     ; var="ti"    ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
-	msg="5.4-ti-rt"  ; var="ti-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
 
 	rtl8723du="enabled"
 	qcacld="enabled"
