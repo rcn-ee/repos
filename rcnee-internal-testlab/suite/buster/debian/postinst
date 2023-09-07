@@ -2,6 +2,12 @@
 
 set -e
 
+if [ ! -f /etc/ssl/certs/gitlab.gfnd.rcn-ee.org.crt ] ; then
+	wget --quiet --directory-prefix=/tmp/ http://192.168.1.98/internal/gitlab.gfnd.rcn-ee.org.crt
+	sync
+	cp -v /tmp/gitlab.gfnd.rcn-ee.org.crt /etc/ssl/certs/
+fi
+
 if [ -f /etc/default/bb-wl18xx ] ; then
 	sed -i -e 's:TETHER_ENABLED=yes:TETHER_ENABLED=no:g' /etc/default/bb-wl18xx
 fi
