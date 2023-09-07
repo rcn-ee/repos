@@ -15,6 +15,11 @@ fi
 if [ -f /etc/systemd/timesyncd.conf ] ; then
 	sed -i -e 's:#NTP=:NTP=192.168.1.12:g' /etc/systemd/timesyncd.conf
 	sed -i -e 's:NTP=192.168.1.24:NTP=192.168.1.12:g' /etc/systemd/timesyncd.conf
+
+	timedatectl
+	timedatectl set-timezone America/North_Dakota/Center
+	timedatectl set-ntp true
+	timedatectl
 fi
 
 if [ -f /lib/systemd/system/apt-daily.service ] ; then
@@ -33,6 +38,17 @@ fi
 
 if [ -f /etc/apt/apt.conf.d/02-no-languages ] ; then
 	rm -f /etc/apt/apt.conf.d/02-no-languages || true
+fi
+
+if [ ! -d /mnt/farm/uptime/ ] ; then
+	mkdir -p /mnt/farm || true
+	echo "192.168.1.3:/var/www/html/farm /mnt/farm nfs defaults" >> /etc/fstab
+
+	if [ -d /home/voodoo/ ] ; then
+		chown -R voodoo:voodoo /mnt/farm
+	elif [ -d /home/debian/ ] ; then
+		chown -R debian:debian /mnt/farm
+	fi
 fi
 
 if [ -f /etc/apt/apt.conf.d/02apt-get-clean ] ; then
