@@ -44,6 +44,10 @@ if [ ! -d /mnt/farm/uptime/ ] ; then
 		chown -R voodoo:voodoo /mnt/farm
 	elif [ -d /home/debian/ ] ; then
 		chown -R debian:debian /mnt/farm
+	elif [ -d /home/ubuntu/ ] ; then
+		chown -R ubuntu:ubuntu /mnt/farm
+	elif [ -d /home/beagle/ ] ; then
+		chown -R beagle:beagle /mnt/farm
 	fi
 fi
 
@@ -95,5 +99,15 @@ BeagleBoard.org_BeagleBone_AI)
 	fi
 	;;
 esac
+
+if [ -d /home/voodoo/ ] ; then
+	echo "voodoo    ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/voodoo
+elif [ -d /home/debian/ ] ; then
+	echo "debian    ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/debian
+elif [ -d /home/ubuntu/ ] ; then
+	echo "ubuntu    ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/ubuntu
+elif [ -d /home/beagle/ ] ; then
+	echo "beagle    ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/beagle
+fi
 
 #DEBHELPER#
