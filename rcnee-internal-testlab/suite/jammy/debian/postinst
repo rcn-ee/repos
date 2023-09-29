@@ -49,13 +49,13 @@ if [ ! -d /mnt/farm/uptime/ ] ; then
 	echo "192.168.1.89:/mnt/tank/farm /mnt/farm nfs defaults" >> /etc/fstab
 
 	if [ -d /home/voodoo/ ] ; then
-		chown -R voodoo:voodoo /mnt/farm
+		chown -R voodoo:voodoo /mnt/farm || true
 	elif [ -d /home/debian/ ] ; then
-		chown -R debian:debian /mnt/farm
+		chown -R debian:debian /mnt/farm || true
 	elif [ -d /home/ubuntu/ ] ; then
-		chown -R ubuntu:ubuntu /mnt/farm
+		chown -R ubuntu:ubuntu /mnt/farm || true
 	elif [ -d /home/beagle/ ] ; then
-		chown -R beagle:beagle /mnt/farm
+		chown -R beagle:beagle /mnt/farm || true
 	fi
 else
 	sed -i -e 's:192.168.1.3:192.168.1.89:g' /etc/fstab
