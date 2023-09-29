@@ -2,7 +2,7 @@
 
 package_name="bb-wlan0-defaults"
 debian_pkg_name="${package_name}"
-package_version="1.20230414.0"
+package_version="1.20230929.0"
 package_source=""
 src_dir=""
 
@@ -17,7 +17,7 @@ debian_patch=""
 
 clear_changelog="enable"
 
-bullseye_version="~bullseye+20230414"
-bookworm_version="~bookworm+20230414"
-focal_version="~focal+20230414"
-jammy_version="~jammy+20230414"
+bullseye_version="~bullseye+20230929"
+bookworm_version="~bookworm+20230929"
+focal_version="~focal+20230929"
+jammy_version="~jammy+20230929"
