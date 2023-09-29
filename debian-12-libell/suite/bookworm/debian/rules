@@ -1,0 +1,22 @@
+#!/usr/bin/make -f
+
+DEB_BUILD_OPTIONS=noautodbgsym
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+CFLAGS:=$(shell dpkg-buildflags --get CFLAGS)
+
+%:
+	dh $@ --exclude=.la
+
+override_dh_auto_configure:
+	dh_auto_configure -- --enable-static
+
+override_dh_auto_test:
+	# DBus is needed to run the tests
+	# Some tests are not compatible with LTO, not supported by upstream:
+	# https://lore.kernel.org/ell/c5629468613b76d7fe650006c2276f7f49a42e2b.camel@intel.com/T/
+	dbus-run-session -- make CFLAGS="$(CFLAGS) -fno-lto" check VERBOSE=1
+
+override_dh_builddeb:
+	dh_builddeb -- -Zxz

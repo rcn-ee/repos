@@ -1,0 +1,531 @@
+ell (0.58-2bbbio1~bookworm+20230925) bookworm; urgency=low
+
+  * Rebuild for repos.rcn-ee.com
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Mon, 25 Sep 2023 16:36:11 -0500
+
+ell (0.58-2) unstable; urgency=medium
+
+  * build-depend on procps,
+    needed for new sysctl test
+
+ -- Jonas Smedegaard <dr@jones.dk>  Wed, 30 Aug 2023 12:28:50 +0200
+
+ell (0.58-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+  [ Jonas Smedegaard ]
+  * update copyright info: update coverage
+  * simplify rules:
+    + stop explicitly enable autoreconf,
+      done by default with debhelper compat level 13
+
+ -- Jonas Smedegaard <dr@jones.dk>  Wed, 30 Aug 2023 11:47:26 +0200
+
+ell (0.57-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+ -- Jonas Smedegaard <dr@jones.dk>  Mon, 12 Jun 2023 17:53:47 +0200
+
+ell (0.56-3) unstable; urgency=medium
+
+  [ Helmut Grohne ]
+  * Fix FTCBFS: Annotate dbus-daemon dependency <!nocheck>. (Closes: #1031070)
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Sun, 12 Feb 2023 13:28:37 +0900
+
+ell (0.56-2) unstable; urgency=medium
+
+  * add autopkgtest;
+    closes: bug#1010669, thanks to Sebastien Bacher and Jeremy Bicha
+  * update copyright info: update coverage
+
+ -- Jonas Smedegaard <dr@jones.dk>  Thu, 26 Jan 2023 20:55:22 +0100
+
+ell (0.56-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+  [ Jonas Smedegaard ]
+  * update symbols: added 3 symbols
+
+ -- Jonas Smedegaard <dr@jones.dk>  Thu, 26 Jan 2023 13:33:49 +0100
+
+ell (0.55-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+  [ Jonas Smedegaard ]
+  * declare compliance with Debian Policy 4.6.2
+
+ -- Jonas Smedegaard <dr@jones.dk>  Wed, 21 Dec 2022 13:35:03 +0100
+
+ell (0.54-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+ -- Jonas Smedegaard <dr@jones.dk>  Sun, 27 Nov 2022 15:49:10 +0100
+
+ell (0.53-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+  [ Jonas Smedegaard ]
+  * update symbols: added 3 symbols
+
+ -- Jonas Smedegaard <dr@jones.dk>  Fri, 09 Sep 2022 16:34:03 +0200
+
+ell (0.52-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+  [ Jonas Smedegaard ]
+  * update copyright info: update coverage
+  * update symbols: added 4 symbols
+
+ -- Jonas Smedegaard <dr@jones.dk>  Mon, 18 Jul 2022 12:04:08 +0200
+
+ell (0.51-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+  [ Jonas Smedegaard ]
+  * update copyright info:
+    + update coverage
+    + update lintian overrides
+  * declare compliance with Debian Policy 4.6.1
+  * update symbols: added 11 symbols
+
+ -- Jonas Smedegaard <dr@jones.dk>  Sun, 05 Jun 2022 20:50:24 +0200
+
+ell (0.50-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+  [ Jonas Smedegaard ]
+  * add source helper script copyright-check
+  * update copyright info:
+    + use Reference field,
+      treating former not-actual-license text
+      as License-Grant for packaging;
+      add related lintian overrides
+    + sort authors by name,
+      merge years, strip trailing non-abbreviation point,
+      and normalize indentation
+    + normalize indentation of Files entries,
+      listing each entry on separate line
+      (except initial wildcard entry)
+    + fix typo in Upstream-Contact,
+      and capitalize Upstream-* fields
+    + update coverage;
+      add related lintian overrides
+    + merge Files sections with identical License-Grant and License
+  * use semantic newlines in long description and copyright fields
+  * update symbols: added 23 symbols
+
+ -- Jonas Smedegaard <dr@jones.dk>  Fri, 22 Apr 2022 12:05:21 +0200
+
+ell (0.49-1) unstable; urgency=medium
+
+  * New upstream released. (Closes: #1006488).
+  * Update d/libell0.symbols.
+    - Added following APIs:
+      - l_rtnl_route_get_dst@ELL_0.10 0.49
+      - l_settings_clone@ELL_0.10 0.49
+      - l_settings_remove_embedded_groups@ELL_0.10 0.49
+  * Update d/control
+    - Add Jonas Smedegaard <dr@jones.dk> to Uploaders.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Mon, 14 Mar 2022 04:14:17 +0900
+
+ell (0.48-1) unstable; urgency=medium
+
+  [ Matthieu Baerts ]
+  * debian: tests: disable LTO (Closes: LP: 1960343)
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Sun, 20 Feb 2022 16:56:17 +0900
+
+ell (0.48-0.1) unstable; urgency=medium
+
+  * non-maintainer upload
+
+  [ upstream ]
+  * new release
+    closes: bug#1004607
+
+  [ Jonas Smedegaard ]
+  * declare compliance with Debian Policy 4.6.0
+    (which is techicaly equal to 4.6.0.1
+    since 4th segment only track editorial changes)
+  * load dbus daemon before checking tests,
+    and tighten to fail on error;
+    build-depend on dbus-daemon
+  * update symbols:
+    + added 2 symbols
+    + dropped 1 symbol (unused by any reverse dependency in Debian)
+
+ -- Jonas Smedegaard <dr@jones.dk>  Sat, 05 Feb 2022 12:16:46 +0100
+
+ell (0.47-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update d/libell0.symbols.
+    - Added following APIs:
+      - l_genl_family_request_sent@ELL_0.10 0.47
+      - l_uintset_size@ELL_0.10 0.47
+  * d/control
+    - Bump Standards-Version to 4.6.0.1.
+  * d/copyright
+    - Update copyright year.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Sun, 09 Jan 2022 13:58:43 +0900
+
+ell (0.46-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update d/upstream/metadata and d/copyright.
+    Change address to ell@@lists.linux.dev.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Sun, 21 Nov 2021 15:54:32 +0900
+
+ell (0.45-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update d/libell0.symbols.
+    - Added following APIs:
+      - l_dhcp_lease_get_address_u32@ELL_0.10 0.45
+      - l_dhcp_lease_get_gateway_u32@ELL_0.10 0.45
+      - l_dhcp_lease_get_netmask_u32@ELL_0.10 0.45
+      - l_dhcp_lease_get_prefix_length@ELL_0.10 0.45
+      - l_dhcp_lease_get_server_mac@ELL_0.10 0.45
+      - l_strv_eq@ELL_0.10 0.45
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Tue, 09 Nov 2021 12:01:37 +0900
+
+ell (0.44-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update d/libell0.symbols.
+    - Added following APIs:
+      - l_rtnl_neighbor_get_hwaddr@ELL_0.10
+      - l_rtnl_neighbor_set_hwaddr@ELL_0.10
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Sun, 19 Sep 2021 14:46:40 +0900
+
+ell (0.43-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update d/libell0.symbols.
+    - Added following APIs:
+      - l_dhcp_server_decline@ELL_0.10
+      - l_dhcp_server_discover@ELL_0.10
+      - l_dhcp_server_expire_by_mac@ELL_0.10
+      - l_dhcp_server_lease_remove@ELL_0.10
+      - l_dhcp_server_release@ELL_0.10
+      - l_dhcp_server_request@ELL_0.10
+      - l_dhcp_server_set_authoritative@ELL_0.10
+      - l_dhcp_server_set_enable_rapid_commit@ELL_0.10
+      - l_ecc_curve_from_ike_group@ELL_0.10
+      - l_ecc_curve_from_name@ELL_0.10
+      - l_ecc_curve_from_tls_group@ELL_0.10
+      - l_ecc_point_clone@ELL_0.10
+      - l_ecc_point_from_sswu@ELL_0.10
+      - l_ecc_point_get_curve@ELL_0.10
+      - l_ecc_point_get_y@ELL_0.10
+      - l_ecc_scalar_new_modp@ELL_0.10
+      - l_ecc_scalar_new_reduced_1_to_n@ELL_0.10
+      - l_ecc_supported_ike_groups@ELL_0.10
+      - l_ecc_supported_tls_groups@ELL_0.10
+      - l_icmp6_router_get_address@ELL_0.10
+      - l_rtnl_route_get_gateway@ELL_0.10
+      - l_streq0@ELL_0.10
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Mon, 23 Aug 2021 11:17:11 +0900
+
+ell (0.41-1~exp0) experimental; urgency=medium
+
+  * New upstream release.
+  * Update d/libell0.symbols.
+    - Added following APIs:
+      - l_rtnl_address_clone@ELL_0.10
+      - l_rtnl_ifaddr_extract@ELL_0.10
+  * Update d/upstream/metadata.
+    - Add Bug-Submit.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Mon, 21 Jun 2021 18:27:47 +0900
+
+ell (0.40-1~exp0) experimental; urgency=medium
+
+  * New upstream release. (Closes: #987003)
+  * Update d/libell0.symbols.
+    - Added following APIs:
+      - l_cert_load_container_file@ELL_0.10
+      - l_cert_pkcs5_pbkdf1@ELL_0.10
+      - l_cert_pkcs5_pbkdf2@ELL_0.10
+      - l_secure_memeq@ELL_0.10
+      - l_settings_add_group@ELL_0.10
+      - l_tester_add@ELL_0.10
+      - l_tester_add_full@ELL_0.10
+      - l_tester_destroy@ELL_0.10
+      - l_tester_get_data@ELL_0.10
+      - l_tester_get_stage@ELL_0.10
+      - l_tester_new@ELL_0.10
+      - l_tester_post_teardown_complete@ELL_0.10
+      - l_tester_post_teardown_failed@ELL_0.10
+      - l_tester_pre_setup_complete@ELL_0.10
+      - l_tester_pre_setup_failed@ELL_0.10
+      - l_tester_setup_complete@ELL_0.10
+      - l_tester_setup_failed@ELL_0.10
+      - l_tester_start@ELL_0.10
+      - l_tester_summarize@ELL_0.10
+      - l_tester_teardown_complete@ELL_0.10
+      - l_tester_teardown_failed@ELL_0.10
+      - l_tester_test_abort@ELL_0.10
+      - l_tester_test_failed@ELL_0.10
+      - l_tester_test_passed@ELL_0.10
+      - l_tester_wait@ELL_0.10
+    - Dropped following APIs:
+      - l_pkcs5_pbkdf1@ELL_0.10 0.15
+      - l_pkcs5_pbkdf2@ELL_0.10 0.15
+    - Add Build-Depends-Package: libell-dev to the libell0 symbols file.
+  * Update d/rules.
+    - Set 'hardening=+all' to DEB_BUILD_MAINT_OPTIONS.
+  * Update d/control.
+    - Bump Standards-Version to 4.5.1.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Mon, 03 May 2021 06:57:22 +0900
+
+ell (0.36-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update d/control.
+    - Add Rules-Requires-Root: no.
+  * Update d/gbp.conf.
+    - Add dist = DEP14.
+    - Change debian-branch to debian/sid.
+  * Update d/libell0.symbols. Add following API:
+    - l_acd_destroy@ELL_0.10
+    - l_acd_new@ELL_0.10
+    - l_acd_set_debug@ELL_0.10
+    - l_acd_set_defend_policy@ELL_0.10
+    - l_acd_set_event_handler@ELL_0.10
+    - l_acd_set_skip_probes@ELL_0.10
+    - l_acd_start@ELL_0.10
+    - l_acd_stop@ELL_0.10
+    - l_tls_set_cert_dump_path@ELL_0.10
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Thu, 07 Jan 2021 15:27:50 +0900
+
+ell (0.35-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update d/control.
+    - Update debhelper-compat to 13.
+  * Update d/libell0.symbols.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Sat, 05 Dec 2020 07:24:24 +0900
+
+ell (0.33-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update d/libell0.symbols. Add following API:
+    - l_dhcp6_client_add_request_option
+    - l_dhcp6_client_destroy
+    - l_dhcp6_client_get_lease
+    - l_dhcp6_client_new
+    - l_dhcp6_client_set_address
+    - l_dhcp6_client_set_debug
+    - l_dhcp6_client_set_event_handler
+    - l_dhcp6_client_set_lla_randomized
+    - l_dhcp6_client_set_nodelay
+    - l_dhcp6_client_set_stateless
+    - l_dhcp6_client_start
+    - l_dhcp6_client_stop
+    - l_hashmap_replace
+    - l_uintset_clone
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Wed, 16 Sep 2020 16:53:24 +0900
+
+ell (0.32-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Tue, 04 Aug 2020 17:49:56 +0900
+
+ell (0.31-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update d/libell0.symbols. Add following API:
+    - l_genl_msg_get_extended_error
+    - l_genl_msg_new_from_data
+    - l_genl_msg_to_data
+    - l_ringbuf_append
+    - l_rtnl_ifaddr4_add
+    - l_rtnl_ifaddr4_delete
+    - l_rtnl_ifaddr4_dump
+    - l_rtnl_ifaddr4_extract
+    - l_rtnl_ifaddr6_add
+    - l_rtnl_ifaddr6_delete
+    - l_rtnl_ifaddr6_dump
+    - l_rtnl_ifaddr6_extract
+    - l_rtnl_route4_add_connected
+    - l_rtnl_route4_add_gateway
+    - l_rtnl_route4_dump
+    - l_rtnl_route4_extract
+    - l_rtnl_route6_add_gateway
+    - l_rtnl_route6_delete_gateway
+    - l_rtnl_route6_dump
+    - l_rtnl_route6_extract
+    - l_rtnl_set_linkmode_and_operstate
+    - l_rtnl_set_mac
+    - l_rtnl_set_powered
+  * Bump Standards-Version to 4.5.0.
+  * Change to debhelper 12.
+  * Add --exclude option to dh to fix dh_missing's warning.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Sun, 24 May 2020 06:26:59 +0900
+
+ell (0.28-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Tue, 24 Mar 2020 10:30:01 +0900
+
+ell (0.27-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update d/libell0.symbols.
+    - Add l_dhcp_lease_get_domain_name, l_net_hostname_is_localhost and
+      l_net_hostname_is_root.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Fri, 03 Jan 2020 18:03:28 +0900
+
+ell (0.26-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Fri, 08 Nov 2019 09:42:59 +0900
+
+ell (0.25-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update d/libell0.symbols.
+    - Remove l_certchain_find@ELL_0.10.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Mon, 28 Oct 2019 22:45:45 +0900
+
+ell (0.24-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Fri, 11 Oct 2019 10:22:50 +0900
+
+ell (0.23-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update d/libell0.symbols.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Sat, 28 Sep 2019 21:16:12 +0900
+
+ell (0.22-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update d/libell0.symbols.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Mon, 16 Sep 2019 06:52:11 +0900
+
+ell (0.21-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update d/control.
+    - Add 'Multi-Arch: same' to all packages.
+  * Update d/libell0.symbols.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Tue, 20 Aug 2019 21:48:05 +0900
+
+ell (0.20-2) unstable; urgency=medium
+
+  * Upload to unstable.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Sat, 06 Jul 2019 16:58:03 +0900
+
+ell (0.19-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Update d/libell0.symbols.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Thu, 02 May 2019 07:10:45 +0900
+
+ell (0.17-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update d/libell0.symbols.
+  * Bump Standards-Version to 4.3.0.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Mon, 21 Jan 2019 13:55:12 +0900
+
+ell (0.16-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update d/libell0.symbols.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Tue, 18 Dec 2018 07:28:04 +0900
+
+ell (0.15-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Add d/watch.
+  * Update d/libell0.symbols
+  * Add d/upstream/metadata
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Mon, 03 Dec 2018 14:26:38 +0900
+
+ell (0.12-1) unstable; urgency=medium
+
+  * New upstream release. (Closes: #911525)
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Tue, 23 Oct 2018 01:31:07 +0900
+
+ell (0.10+git20181001.0b885d95-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Snapshot, taken from the master (20191001) (Closes: #909350).
+  * Bump Standards-Version to 4.2.1.
+  * Update libell0.symbols.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Tue, 02 Oct 2018 12:25:41 +0900
+
+ell (0.7-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Tue, 31 Jul 2018 14:55:50 +0900
+
+ell (0.6-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Thu, 28 Jun 2018 12:07:11 +0900
+
+ell (0.4-2) unstable; urgency=medium
+
+  * Add libell0 to Depends of libell-dev. (Closes: #901225)
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Tue, 12 Jun 2018 08:26:45 +0900
+
+ell (0.4-1) unstable; urgency=medium
+
+  * Initial release. (Closes: #895584)
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Thu, 03 May 2018 07:23:15 +0900
