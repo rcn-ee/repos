@@ -1,8 +1,45 @@
-wpa (2:2.10-12bbbio1~bookworm+20230406) bookworm; urgency=low
+wpa (2:2.10-15bbbio1~bookworm+20230929) bookworm; urgency=low
 
   * Rebuild for repos.rcn-ee.com
 
- -- Robert Nelson <robertcnelson@gmail.com>  Thu, 06 Apr 2023 09:01:12 -0500
+ -- Robert Nelson <robertcnelson@gmail.com>  Fri, 29 Sep 2023 16:31:47 -0500
+
+wpa (2:2.10-15bbbio1~bookworm+20230925) bookworm; urgency=low
+
+  * Rebuild for repos.rcn-ee.com
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Mon, 25 Sep 2023 16:20:46 -0500
+
+wpa (2:2.10-15) unstable; urgency=medium
+
+  * Apply proposed upstream patch:
+    - Abort ongoing scan:
+      Along with canceling queued scan, abort ongoing scan if any, this
+      ensures Wi-Fi interface is in usable state after disconnect is issued,
+      else subsequent scan after disconnect might fail with EBUSY.
+
+ -- Andrej Shadura <andrewsh@debian.org>  Wed, 30 Aug 2023 14:28:29 +0200
+
+wpa (2:2.10-14) unstable; urgency=medium
+
+  * Drop a patch with a missing dependency.
+
+ -- Andrej Shadura <andrewsh@debian.org>  Wed, 23 Aug 2023 00:37:01 +0200
+
+wpa (2:2.10-13) unstable; urgency=medium
+
+  [ Gioele Barabucci ]
+  * d/rules: Install dbus policy in /usr instead of /etc (Closes: #1035609).
+
+  [ Andrej Shadura ]
+  * Update lintian override info format in d/wpasupplicant.lintian-overrides
+  * Set upstream metadata fields: Repository.
+  * Apply upstream patches:
+    - wnm: Choose best available bss, not just first one
+    - Fix wpa_supplicant configuration parsing error
+    - Fix multiple BSSID STA aid count.
+
+ -- Andrej Shadura <andrewsh@debian.org>  Tue, 22 Aug 2023 21:34:36 +0200
 
 wpa (2:2.10-12) unstable; urgency=medium
 
