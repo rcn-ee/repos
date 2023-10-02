@@ -1,0 +1,45 @@
+Source: iwd
+Section: net
+Priority: optional
+Maintainer: Jonas Smedegaard <dr@jones.dk>
+Homepage: https://iwd.wiki.kernel.org/
+Build-Depends:
+ debhelper-compat (= 13),
+ libdbus-1-dev,
+ libell-dev (>= 0.58),
+ libreadline-dev,
+ openssl <!nocheck>,
+ python3-docutils <!nodoc>,
+ systemd,
+Standards-Version: 4.6.2
+Vcs-Git: https://salsa.debian.org/debian/iwd.git
+Vcs-Browser: https://salsa.debian.org/debian/iwd
+Rules-Requires-Root: no
+
+Package: iwd
+Architecture: linux-any
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+Recommends:
+ dbus | dbus-system-bus,
+ wireless-regdb,
+Breaks:
+ orphan-sysvinit-scripts (<< 0.11),
+Description: wireless daemon for Linux
+ iNet Wireless Daemon (iwd) is a minimalistic wireless daemon
+ that uses modern Linux interfaces
+ like cfg80211 and nl80211 (netlink).
+ The daemon provides a D-Bus API.
+ .
+ The daemon can be controlled from the command line
+ with the included iwctl client utility.
+ .
+ The included iwmon utility can be used
+ to monitor the 802.11 subsystem generic netlink commands and events.
+ It uses the nlmon kernel driver from Linux 3.10 and later.
+ .
+ Note that the package defaults
+ to relying on dbus activation to start.
+ If you want to use iwd standalone without any manager,
+ then you'll need to manually enable the system service.

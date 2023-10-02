@@ -1,0 +1,714 @@
+iwd (2.8-1bbbio1~bookworm+20230926) bookworm; urgency=low
+
+  * Rebuild for repos.rcn-ee.com
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Tue, 26 Sep 2023 16:55:22 -0500
+
+iwd (2.8-1) unstable; urgency=medium
+
+  * add patch 2001 to use system group sudo instead of wheel;
+    closes: bug#1050325, thanks to Michael Biebl and Simon McVittie
+  * tighten build-dependency on libell-dev
+  * update copyright info: update coverage
+
+ -- Jonas Smedegaard <dr@jones.dk>  Wed, 30 Aug 2023 19:44:59 +0200
+
+iwd (2.7-2) unstable; urgency=medium
+
+  * drop patch 2001, obsoleted since upstream release v1.23;
+    closes: bug#1043265, thanks to Diederik de Haas
+
+ -- Jonas Smedegaard <dr@jones.dk>  Tue, 08 Aug 2023 11:23:48 +0200
+
+iwd (2.7-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+ -- Jonas Smedegaard <dr@jones.dk>  Thu, 06 Jul 2023 18:57:37 +0200
+
+iwd (2.6-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+ -- Jonas Smedegaard <dr@jones.dk>  Tue, 27 Jun 2023 18:20:24 +0200
+
+iwd (2.5-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+  [ Jonas Smedegaard ]
+  * unfuzz patches
+  * tighten build-dependency on libell-dev
+
+ -- Jonas Smedegaard <dr@jones.dk>  Tue, 13 Jun 2023 00:09:12 +0200
+
+iwd (2.3-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+ -- Jonas Smedegaard <dr@jones.dk>  Sat, 04 Feb 2023 13:57:18 +0100
+
+iwd (2.2-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+  [ Jonas Smedegaard ]
+  * fix source helper tool copyright-check
+    + work with Path::Tiny 0.144
+    + avoid insecure shell expansion
+  * tighten build-dependency on libell-dev
+
+ -- Jonas Smedegaard <dr@jones.dk>  Thu, 26 Jan 2023 18:31:20 +0100
+
+iwd (2.1-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+  [ Jonas Smedegaard ]
+  * declare compliance with Debian Policy 4.6.2
+  * tighten build-dependency on libell-dev
+
+ -- Jonas Smedegaard <dr@jones.dk>  Wed, 21 Dec 2022 13:50:08 +0100
+
+iwd (2.0-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+  [ Jonas Smedegaard ]
+  * update copyright info: update coverage
+  * unfuzz patches
+  * tighten build-dependency on libell-dev
+
+ -- Jonas Smedegaard <dr@jones.dk>  Thu, 01 Dec 2022 10:25:36 +0100
+
+iwd (1.30-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+  [ Jonas Smedegaard ]
+  * unfuzz patches
+  * tighten build-dependency on libell-dev
+
+ -- Jonas Smedegaard <dr@jones.dk>  Fri, 09 Sep 2022 20:35:26 +0200
+
+iwd (1.29-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+ -- Jonas Smedegaard <dr@jones.dk>  Mon, 18 Jul 2022 10:49:43 +0200
+
+iwd (1.28-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+  [ Jonas Smedegaard ]
+  * tighten build-dependency on libell-dev
+  * declare compliance with Debian Policy 4.6.1
+  * update copyright info: update coverage
+  * unfuzz patches
+
+ -- Jonas Smedegaard <dr@jones.dk>  Mon, 06 Jun 2022 10:34:46 +0200
+
+iwd (1.27-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+  [ Jonas Smedegaard ]
+  * update git-buildpackage config: enable automatic DEP-14 branch name handling
+  * tighten build-dependency on libell-dev
+
+ -- Jonas Smedegaard <dr@jones.dk>  Fri, 22 Apr 2022 13:07:17 +0200
+
+iwd (1.26-3) unstable; urgency=medium
+
+  * revert to enable hardening,
+    still needed to enable feature bindnow
+    (i.e. LDFLAGS=-Wl,-z,now);
+    thanks to Jeremy Bicha
+
+ -- Jonas Smedegaard <dr@jones.dk>  Sun, 27 Mar 2022 11:25:26 +0200
+
+iwd (1.26-2) unstable; urgency=medium
+
+  * revert to again disable DPP unit test,
+    not stable after all;
+    closes bug#1008392, thanks to Paul Gevers
+  * stop explicitly enable hardening,
+    done by default nowadays
+
+ -- Jonas Smedegaard <dr@jones.dk>  Sun, 27 Mar 2022 03:13:40 +0200
+
+iwd (1.26-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+ -- Jonas Smedegaard <dr@jones.dk>  Thu, 24 Mar 2022 11:22:51 +0100
+
+iwd (1.25-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+  [ Jonas Smedegaard ]
+  * drop patches cherry-picked upstream now applied
+  * unfuzz patches
+  * enable DDP unit test, seemingly now stabilized
+  * update copyright info: update coverage
+  * tighten build-dependency on libell-dev
+  * update git-buildpackage config:
+    + use branch name debian/latest (not debian/master)
+    + stop needlessly set upstream-vcs-tag
+
+ -- Jonas Smedegaard <dr@jones.dk>  Mon, 14 Mar 2022 08:52:32 +0100
+
+iwd (1.24-2) unstable; urgency=medium
+
+  * add patches cherry-picked upstream:
+    + remove periodic scans from queue on abort
+    + fix crash from not cancelling netdev_get_oci
+
+ -- Jonas Smedegaard <dr@jones.dk>  Tue, 22 Feb 2022 03:19:33 +0100
+
+iwd (1.24-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release(s)
+    + dbus: Remove 'at_console', add 'netdev' settings
+      closes: bug#998427,
+      thanks to Nelson A. de Oliveira and Diederik de Haas
+
+  [ Jonas Smedegaard ]
+  * tighten build-dependency on libell-dev
+  * unfuzz patches
+
+ -- Jonas Smedegaard <dr@jones.dk>  Mon, 07 Feb 2022 17:01:38 +0100
+
+iwd (1.21-3) unstable; urgency=medium
+
+  * skip DPP test failing on CI tests on arm64
+    (upstream describes DPP as experimental,
+    so treating this as of low importance)
+  * improve notes in source about skipped tests
+
+ -- Jonas Smedegaard <dr@jones.dk>  Fri, 14 Jan 2022 02:12:51 +0100
+
+iwd (1.21-2) unstable; urgency=medium
+
+  * skip unit test test-dpp
+
+ -- Jonas Smedegaard <dr@jones.dk>  Tue, 11 Jan 2022 01:19:28 +0100
+
+iwd (1.21-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+  [ Jonas Smedegaard ]
+  * update copyright info: update coverage
+  * unfuzz patches
+  * install upstream-shipped config file;
+    closes: bug#1002575, thanks to Diederik de Haas
+  * tighten lintian overrides
+
+ -- Jonas Smedegaard <dr@jones.dk>  Sun, 09 Jan 2022 21:25:59 +0100
+
+iwd (1.20-3) unstable; urgency=medium
+
+  * Declare that iwd breaks older orphan-sysvinit-scripts
+    (see bug#1000879)
+
+ -- Jonas Smedegaard <dr@jones.dk>  Sun, 05 Dec 2021 14:04:11 +0100
+
+iwd (1.20-2) unstable; urgency=medium
+
+  * link against system-shared libell;
+    build-depend on libell-dev;
+    closes: bug#911057, thanks to Andreas Henriksson
+  * add patch 1001 proposed by Andreas Henriksson
+    to hook up traditional dbus activation
+  * add systemV init script
+    (disabled by default same as systemd service);
+    closes: bug#966518, thanks to Job Bautista
+  * add README.Debian,
+    mentioning how to enable as persistently running service
+  * mention in README.Debian that network device naming is overridden;
+    closes: bug#941652, thanks to Michael Biebl and Andreas Henriksson
+
+ -- Jonas Smedegaard <dr@jones.dk>  Tue, 30 Nov 2021 15:34:31 +0100
+
+iwd (1.20-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+ -- Jonas Smedegaard <dr@jones.dk>  Sat, 20 Nov 2021 04:07:53 +0100
+
+iwd (1.19-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+  [ Jonas Smedegaard ]
+  * fix check tests only once during build
+
+ -- Jonas Smedegaard <dr@jones.dk>  Tue, 02 Nov 2021 20:54:47 +0100
+
+iwd (1.18-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+  [ Jonas Smedegaard ]
+  * update copyright info:
+    + improve source script copyright-check
+    + use Reference (not License-Reference);
+      add lintian overrides about License-Reference field
+    + update coverage
+  * drop patch cherry-picked upstream now applied
+  * update git-buildpackage config:
+    + avoid any .git* files
+    + add usage comment
+  * drop NEWS file: contained only an entry predating stable Debian
+  * drop unused gitlab-ci file from source
+
+ -- Jonas Smedegaard <dr@jones.dk>  Sat, 18 Sep 2021 17:09:51 +0200
+
+iwd (1.17-2) unstable; urgency=medium
+
+  * re-enable unit test test-eapol
+  * add patch cherry-picked upstream
+    to fix eapol IP Allocation test failure
+  * rename patch 0001 -> 2001,
+    and add debian/patches/README documenting patch-naming-micro-policy
+
+ -- Jonas Smedegaard <dr@jones.dk>  Sun, 05 Sep 2021 18:09:44 +0200
+
+iwd (1.17-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new bugfix release
+
+  [ Jonas Smedegaard ]
+  * declare compliance with Debian Policy 4.6.0
+  * skip unit test test-eapol
+  * add homepage
+  * update upstream name (and mention it in long description),
+    and add upstream preferred contact
+
+ -- Jonas Smedegaard <dr@jones.dk>  Mon, 23 Aug 2021 11:25:34 +0200
+
+iwd (1.16-2) unstable; urgency=medium
+
+  * release for unstable
+
+ -- Jonas Smedegaard <dr@jones.dk>  Mon, 16 Aug 2021 15:55:09 +0200
+
+iwd (1.16-1) experimental; urgency=medium
+
+  [ upstream ]
+  * new release
+
+ -- Jonas Smedegaard <dr@jones.dk>  Tue, 10 Aug 2021 18:53:00 +0200
+
+iwd (1.15-1) experimental; urgency=medium
+
+  [ upstream ]
+  * new release
+
+  [ Jonas Smedegaard ]
+  * copyright info: update coverage
+
+ -- Jonas Smedegaard <dr@jones.dk>  Sun, 20 Jun 2021 08:36:44 +0200
+
+iwd (1.14-3) unstable; urgency=medium
+
+  * fix treat failing tests as flaky (not reliably failing):
+    they fail with sbuild but succeed with pbuilder
+
+ -- Jonas Smedegaard <dr@jones.dk>  Thu, 06 May 2021 09:06:22 +0200
+
+iwd (1.14-2) unstable; urgency=medium
+
+  * fix stop avoid tests in autopkgtest
+    (seemingly fail only during build)
+
+ -- Jonas Smedegaard <dr@jones.dk>  Wed, 05 May 2021 18:29:12 +0200
+
+iwd (1.14-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new bugfix release
+
+  [ Jonas Smedegaard ]
+  * tighten build-time tests,
+    ignoring only known failing tests test-wsc test-eap-sim
+    (not the whole testsuite)
+  * add autopkgtest
+
+ -- Jonas Smedegaard <dr@jones.dk>  Wed, 05 May 2021 17:35:37 +0200
+
+iwd (1.13-2) unstable; urgency=medium
+
+  * release to unstable
+
+ -- Jonas Smedegaard <dr@jones.dk>  Tue, 20 Apr 2021 08:22:14 +0200
+
+iwd (1.13-1) experimental; urgency=medium
+
+  [ upstream ]
+  * new release;
+    closes: bug#986181, thanks to Job Bautista
+
+ -- Jonas Smedegaard <dr@jones.dk>  Thu, 01 Apr 2021 00:03:01 +0200
+
+iwd (1.12-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+  [ Jonas Smedegaard ]
+  * copyright: update coverage
+
+ -- Jonas Smedegaard <dr@jones.dk>  Wed, 17 Feb 2021 12:52:17 +0100
+
+iwd (1.11-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+  [ Jonas Smedegaard ]
+  * recommend wireless-regdb
+
+ -- Jonas Smedegaard <dr@jones.dk>  Mon, 11 Jan 2021 23:46:49 +0100
+
+iwd (1.10-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+
+  [ Jonas Smedegaard ]
+  * use debhelper compatibility level 13 (not 12)
+  * declare compliance with Debian Policy 4.5.1
+
+ -- Jonas Smedegaard <dr@jones.dk>  Thu, 17 Dec 2020 14:13:42 +0100
+
+iwd (1.9-2) unstable; urgency=medium
+
+  * adopt package
+  * set Rules-Requires-Root: no
+  * declare compliance with Debian Policy 4.5.0
+  * add CVE closure for previous changelog section
+  * copyright:
+    + normalize listing of copyright holders
+    + use License-Grant and License-Reference,
+      and list License sections last
+    + merge same-licensed Files sections
+    + update coverage
+  * add source script copyright-check
+
+ -- Jonas Smedegaard <dr@jones.dk>  Thu, 08 Oct 2020 01:35:19 +0200
+
+iwd (1.9-1) unstable; urgency=medium
+
+  [ upstream ]
+  * new release
+    + eapol: prevent key reinstallation on retransmitted Msg4/4
+      closes: bug#968996, thanks to Salvatore Bonaccorso
+      CVE-2020-17497
+
+  [ Andreas Henriksson ]
+  * Recommend dbus (system bus)
+    Interaction with iwd happens via dbus, i.e. as used by the iwctl
+    command (or NetworkManager iwd backend).
+    Packages using D-Bus usually doesn't describe this in their package
+    relationships and implicitly rely on everyone having a bus available.
+    People using iwd however seems to be confused about the lack of a
+    startup script and fails to realize that "dbus activation" is the
+    intended way to start iwd so hopefully making the dbus relationship more
+    explicit will give a hint and help people figure this out.
+  * Do not enable/start/restart service by default
+  * Extend package description with note about dbus activation
+  * Add d/p/0001-Switch-wheel-to-netdev-group-in-dbus-policy.patch
+  * New upstream release.
+  * Update debian/copyright
+  * Orphan package (see #969586)
+
+ -- Andreas Henriksson <andreas@fatal.se>  Sat, 05 Sep 2020 16:05:08 +0200
+
+iwd (1.8-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Andreas Henriksson <andreas@fatal.se>  Thu, 18 Jun 2020 11:15:35 +0200
+
+iwd (1.7-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Andreas Henriksson <andreas@fatal.se>  Thu, 16 Apr 2020 08:17:36 +0200
+
+iwd (1.6-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Add debian/iwd.bug-presubj with instructions for bug reporting
+
+ -- Andreas Henriksson <andreas@fatal.se>  Wed, 25 Mar 2020 15:01:09 +0100
+
+iwd (1.5-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Andreas Henriksson <andreas@fatal.se>  Sun, 09 Feb 2020 19:01:56 +0100
+
+iwd (1.4-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Add debian/NEWS about iwctl history file non-migration.
+  * Revert "Add patch suggested by upstream for EOPNOTSUPP"
+  * Revert "Cherry-pick patch from upstream fixing crash"
+
+ -- Andreas Henriksson <andreas@fatal.se>  Sun, 09 Feb 2020 19:01:42 +0100
+
+iwd (1.2-2) unstable; urgency=medium
+
+  * Cherry-pick patch from upstream fixing crash (Closes: #946639)
+  * Add patch suggested by upstream for EOPNOTSUPP
+
+ -- Andreas Henriksson <andreas@fatal.se>  Thu, 12 Dec 2019 20:00:05 +0100
+
+iwd (1.2-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Andreas Henriksson <andreas@fatal.se>  Thu, 28 Nov 2019 10:06:15 +0100
+
+iwd (1.1-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Andreas Henriksson <andreas@fatal.se>  Fri, 15 Nov 2019 22:46:26 +0100
+
+iwd (1.0-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/iwd.docs: drop installing main.conf example
+    - obsolete example was removed upstream, see newly written
+      manpage documentation now available instead.
+
+ -- Andreas Henriksson <andreas@fatal.se>  Wed, 30 Oct 2019 14:30:11 +0100
+
+iwd (0.23-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Andreas Henriksson <andreas@fatal.se>  Thu, 24 Oct 2019 09:38:10 +0200
+
+iwd (0.22-1) unstable; urgency=medium
+
+  * New upstream release.
+  * iwd.docs: doc/*.txt no longer shipped
+  * Build-depend on python3-docutils for manpage generation
+  * Build-dep on openssl for unit test cert generation
+
+ -- Andreas Henriksson <andreas@fatal.se>  Fri, 11 Oct 2019 10:34:15 +0200
+
+iwd (0.21-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Ship main.conf example and other docs (Closes: #939037)
+  * Drop obsolete postinst script
+
+ -- Andreas Henriksson <andreas@fatal.se>  Wed, 18 Sep 2019 10:34:03 +0200
+
+iwd (0.20-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Drop cherry-picked patch now part of upstream release.
+
+ -- Andreas Henriksson <andreas@fatal.se>  Thu, 29 Aug 2019 18:22:43 +0200
+
+iwd (0.19-2) unstable; urgency=medium
+
+  * Cherry-pick patch from upstream to create storage dirs (Closes: #934194)
+
+ -- Andreas Henriksson <andreas@fatal.se>  Sun, 11 Aug 2019 14:09:00 +0200
+
+iwd (0.19-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Andreas Henriksson <andreas@fatal.se>  Mon, 05 Aug 2019 13:37:59 +0200
+
+iwd (0.18-1) experimental; urgency=medium
+
+  * New upstream release.
+
+ -- Andreas Henriksson <andreas@fatal.se>  Wed, 15 May 2019 06:31:11 +0200
+
+iwd (0.17-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Drop debian/patches/*, fixed upstream.
+
+ -- Andreas Henriksson <andreas@fatal.se>  Fri, 19 Apr 2019 22:55:40 +0200
+
+iwd (0.16-2) experimental; urgency=medium
+
+  * Update sae patch to use a smaller hammer
+
+ -- Andreas Henriksson <andreas@fatal.se>  Thu, 04 Apr 2019 17:38:57 +0200
+
+iwd (0.16-1) experimental; urgency=medium
+
+  [ Salsa Pipeline ]
+  * Update salsa CI pipeline
+
+  [ Andreas Henriksson ]
+  * Revert "Build against external (lib)ell"
+  * New upstream release.
+
+ -- Andreas Henriksson <andreas@fatal.se>  Thu, 04 Apr 2019 10:18:12 +0200
+
+iwd (0.14-2) unstable; urgency=medium
+
+  * Build against external (lib)ell (Closes: #911057)
+
+ -- Andreas Henriksson <andreas@fatal.se>  Mon, 18 Feb 2019 23:13:53 +0100
+
+iwd (0.14-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update disable-sae-test.patch to apply again
+  * Use a proper and new-style dh compat 12
+
+ -- Andreas Henriksson <andreas@fatal.se>  Thu, 17 Jan 2019 13:00:11 +0100
+
+iwd (0.13-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Drop debian/patches/lfs.patch, merged upstream.
+  * Update disable-sae-test.patch to apply again
+
+ -- Andreas Henriksson <andreas@fatal.se>  Tue, 11 Dec 2018 16:53:47 +0100
+
+iwd (0.12-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Andreas Henriksson <andreas@fatal.se>  Fri, 16 Nov 2018 15:15:04 +0100
+
+iwd (0.10-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Andreas Henriksson <andreas@fatal.se>  Sun, 21 Oct 2018 14:56:09 +0200
+
+iwd (0.9-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Drop debian/patches/dh_private.path
+    - now included in upstream release.
+  * Bump to (experimental) debhelper compat 12
+  * Drop libexecdir configure override
+
+ -- Andreas Henriksson <andreas@fatal.se>  Mon, 08 Oct 2018 16:24:43 +0200
+
+iwd (0.8-2) unstable; urgency=medium
+
+  * Replace d/p/dh_private.patch with upstream version
+
+ -- Andreas Henriksson <andreas@fatal.se>  Fri, 21 Sep 2018 11:30:48 +0200
+
+iwd (0.8-1) unstable; urgency=medium
+
+  * Properly escape libexecdir path configure argument
+  * New upstream release.
+  * Add debian/patches/dh_private.patch to fix build
+
+ -- Andreas Henriksson <andreas@fatal.se>  Thu, 20 Sep 2018 21:52:21 +0200
+
+iwd (0.7-2) unstable; urgency=medium
+
+  * Add debian/patches/disable-sae-test.patch
+
+ -- Andreas Henriksson <andreas@fatal.se>  Tue, 28 Aug 2018 21:34:59 +0200
+
+iwd (0.7-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Bump Standards-Version to 4.2.1
+  * Add debian/patches/lfs.patch
+    - enable large file support by adding AC_SYS_LARGEFILE to configure.ac
+  * Enable all hardening flags (incl. bindnow)
+
+ -- Andreas Henriksson <andreas@fatal.se>  Mon, 27 Aug 2018 20:12:36 +0200
+
+iwd (0.6-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Andreas Henriksson <andreas@fatal.se>  Fri, 10 Aug 2018 22:11:58 +0200
+
+iwd (0.5-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Andreas Henriksson <andreas@fatal.se>  Fri, 10 Aug 2018 21:37:10 +0200
+
+iwd (0.4-1) unstable; urgency=medium
+
+  * Enable pristine-tar usage in gbp.conf
+  * New upstream release.
+
+ -- Andreas Henriksson <andreas@fatal.se>  Thu, 26 Jul 2018 14:46:46 +0200
+
+iwd (0.3-1) unstable; urgency=medium
+
+  * Add iwd wiki in upstream/metadata Documentation url
+  * New upstream release.
+  * Add postinst snippet to purge iwd.service state
+    - upstream changed the service from network-pre.target
+      to multi-user.target and we want to follow along.
+
+ -- Andreas Henriksson <andreas@fatal.se>  Sun, 17 Jun 2018 15:19:59 +0200
+
+iwd (0.2-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Bump Standards-Version to 4.1.4.
+  * Drop debian/patches, now part of upstream release.
+
+ -- Andreas Henriksson <andreas@fatal.se>  Sat, 12 May 2018 09:26:41 +0200
+
+iwd (0.1-3) unstable; urgency=medium
+
+  * Make test-suite non-fatal
+
+ -- Andreas Henriksson <andreas@fatal.se>  Tue, 24 Apr 2018 18:22:44 +0200
+
+iwd (0.1-2) unstable; urgency=medium
+
+  * Fix mistakenly swapped Vcs-* field URIs.
+    Thanks to Chris Lamb for pointing it out
+  * Add missing build-dependency for systemd.pc
+  * Cherry-pick upstream commit hopefully fixing parrallel build
+
+ -- Andreas Henriksson <andreas@fatal.se>  Tue, 24 Apr 2018 09:21:43 +0200
+
+iwd (0.1-1) unstable; urgency=medium
+
+  * Initial release (Closes: #894537)
+
+ -- Andreas Henriksson <andreas@fatal.se>  Tue, 03 Apr 2018 11:08:50 +0200
