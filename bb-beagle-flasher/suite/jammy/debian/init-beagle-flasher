@@ -181,6 +181,11 @@ check_running_system () {
 	mount -t tmpfs tmpfs /tmp
 	message="--------------------------------------------------------------------------------" ; broadcast
 
+	message="INFO: /proc/cmdline"                                                              ; broadcast
+	message="INFO: [cat /proc/cmdline]"                                                        ; broadcast
+	cat /proc/cmdline
+	message="--------------------------------------------------------------------------------" ; broadcast
+
 	has_usr_leds="enable"
 	machine=$(cat /proc/device-tree/model | sed "s/ /_/g" | tr -d '\000')
 
@@ -336,10 +341,6 @@ copy_rootfs () {
 		message="--------------------------------------------------------------------------------" ; broadcast
 	fi
 
-	if [ -f /tmp/rootfs/etc/systemd/system/multi-user.target.wants/beagle-flasher-init-shutdown.service ] ; then
-		rm -rf /tmp/rootfs/etc/systemd/system/multi-user.target.wants/beagle-flasher-init-shutdown.service || true
-	fi
-
 	if [ -f /tmp/rootfs/etc/systemd/system/multi-user.target.wants/grow_partition.service ] ; then
 		rm -rf /tmp/rootfs/etc/systemd/system/multi-user.target.wants/grow_partition.service || true
 	fi
@@ -371,7 +372,39 @@ copy_rootfs () {
 	unset are_we_flasher
 	are_we_flasher=$(grep init-beagle-flasher /proc/cmdline || true)
 	if [ ! "x${are_we_flasher}" = "x" ] ; then
-		message="INFO: [We are init]"                                                      ; broadcast
+		message="INFO: [We are init, trying to shutdown, we may crash, data is RO so safe]" ; broadcast
+		message="5"                                                                                ; broadcast
+		sleep 1
+
+		if [ -f /proc/sysrq-trigger ] ; then
+			message="INFO: [found: /proc/sysrq-trigger]" ; broadcast
+			message="INFO: [found: echo s > /proc/sysrq-trigger" ; broadcast
+			message="INFO: [found: echo o > /proc/sysrq-trigger" ; broadcast
+			message="4"                                                                                ; broadcast
+			sleep 1
+			message="3"                                                                                ; broadcast
+			sleep 1
+			message="2"                                                                                ; broadcast
+			sleep 1
+			message="1"                                                                                ; broadcast
+			sleep 1
+			message="--------------------------------------------------------------------------------" ; broadcast
+			#For sync
+			echo s > /proc/sysrq-trigger
+			#For shutdown the system
+			echo o > /proc/sysrq-trigger
+		fi
+
+		message="4"                                                                                ; broadcast
+		sleep 1
+		message="3"                                                                                ; broadcast
+		sleep 1
+		message="2"                                                                                ; broadcast
+		sleep 1
+		message="1"                                                                                ; broadcast
+		sleep 1
+		message="--------------------------------------------------------------------------------" ; broadcast
+
 		#When run as init
 		exec /sbin/init
 		exit #We should not hit that
