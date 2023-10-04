@@ -45,3 +45,6 @@ override_dh_systemd_start:
 	dh_systemd_start --name=grow_partition --no-start
 	dh_systemd_start --name=resize_filesystem --no-start
 	dh_systemd_start --name=bb_install_modules --no-start
+
+override_dh_builddeb:
+	dh_builddeb -- -Zxz

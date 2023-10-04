@@ -1,10 +1,8 @@
 #!/bin/bash -e
 
-#https://github.com/u-boot/u-boot/commits/master
-
 package_name="generic-sys-mods"
 debian_pkg_name="${package_name}"
-package_version="1.20230414.0"
+package_version="1.20231003.0"
 package_source=""
 src_dir=""
 
@@ -19,8 +17,7 @@ debian_patch=""
 
 clear_changelog="enable"
 
-buster_version="~buster+20230414"
-bullseye_version="~bullseye+20230414"
-bookworm_version="~bookworm+20230414"
-focal_version="~focal+20230414"
-jammy_version="~jammy+20230414"
+bullseye_version="~bullseye+20231003"
+bookworm_version="~bookworm+20231003"
+focal_version="~focal+20231003"
+jammy_version="~jammy+20231003"
