@@ -1,7 +1,4 @@
 #!/usr/bin/make -f
-# See debhelper(7) (uncomment to enable)
-# output every command that modifies files on the build system.
-#DH_VERBOSE = 1
 
 # see EXAMPLES in dpkg-buildflags(1) and read /usr/share/dpkg/*
 DPKG_EXPORT_BUILDFLAGS = 1
@@ -18,3 +15,6 @@ override_dh_systemd_enable:
 
 override_dh_systemd_start:
 	dh_systemd_start --name=bb-usb-gadgets --no-start
+
+override_dh_builddeb:
+	dh_builddeb -- -Zxz
