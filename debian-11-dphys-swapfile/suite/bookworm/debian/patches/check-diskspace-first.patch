@@ -1,0 +1,55 @@
+Description: check available disk space first to avoid filling up disks
+Author: Axel Beckert <abe@debian.org>
+Reviewed-By: Petter Reinholdtsen <pere@hungry.com>
+Debian-Bug: https://bugs.debian.org/596187
+Forwarded: not-yet
+
+--- a/dphys-swapfile
++++ b/dphys-swapfile
+@@ -29,6 +29,9 @@
+ #   but is also sensible on 64bit to prevent filling /var or even / partition
+ CONF_MAXSWAP=2048
+ 
++# restrict size to this percentage of the remaining disk space.
++CONF_MAXDISK_PCT=50
++
+ 
+ ### ------ actual implementation from here on
+ # no user settings any more below this point
+@@ -78,6 +81,20 @@
+     # announce end resulting config
+     echo -n "want ${CONF_SWAPFILE}=${CONF_SWAPSIZE}MByte"
+ 
++    if [ "${CONF_MAXDISK_PCT}" != "" ] ; then
++      # check for free disk size percentage and don't overstep it
++      AVAIL_KB=$(/bin/df --output=avail "$(dirname "${CONF_SWAPFILE}")/." | tail -1)
++      if [ -n "${CONF_SWAPFILE}" -a -e "${CONF_SWAPFILE}" ]; then
++          CURRENT_SIZE_B=$(stat --printf='%s' "${CONF_SWAPFILE}")
++          AVAIL_KB=$(echo "${AVAIL_KB} ${CURRENT_SIZE_B} 1024 / + p" | dc)
++      fi
++      HALF_AVAIL_MB=$(echo "${AVAIL_KB} 2048 / p" | dc)
++      if [ "${CONF_SWAPSIZE}" -gt "${HALF_AVAIL_MB}" ] ; then
++        echo -n ", restricting to ${CONF_MAXDISK_PCT}% of remaining disk size: ${HALF_AVAIL_MB}MBytes"
++        CONF_SWAPSIZE="${HALF_AVAIL_MB}"
++      fi
++    fi
++
+     if [ "${CONF_MAXSWAP}" != "" ] ; then
+       # check for swap size limit and restrict to it
+       if [ "${CONF_SWAPSIZE}" -gt "${CONF_MAXSWAP}" ] ; then
+--- a/dphys-swapfile.8
++++ b/dphys-swapfile.8
+@@ -70,6 +70,13 @@
+ excess diskspace on small RAM (and disk?) systems. Defaults to 2, which gives
+ swap size = 2 * RAM size.
+ .TP
++.B CONF_MAXDISK_PCT
++Sets the maximal percentage of the remaining disk space which may be
++used for the swap file. Takes potentially existing dphys-swapfile swap
++files into account, i.e. adds their size to the available disk space
++before calculating the percentage. Defaults to 50. Set it to the empty
++string to disable this check.
++.TP
+ .B CONF_MAXSWAP
+ Set size restriction of maximal computed and absolute(!) values, in MBytes.
+ Defaults to 2048 which was a former 32bit kernel limit for the swapfile size

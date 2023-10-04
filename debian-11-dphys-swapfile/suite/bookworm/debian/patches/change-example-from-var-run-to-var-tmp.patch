@@ -1,0 +1,23 @@
+Description: Change /var/run/ example to /var/tmp/
+ Using /var/run/ for swap files doesn't make sense anymore as /run/
+ (to which /var/run/ symlinks nowadays) is usually a tmpfs.
+Author: Axel Beckert <abe@debian.org>
+Forwarded: no
+
+--- a/dphys-swapfile.8
++++ b/dphys-swapfile.8
+@@ -115,12 +115,12 @@
+ exit 0\!
+ .fi
+ .PP
+-If an sysadmin wants to have the swapfile in another place, say /var/run/swap,
++If an sysadmin wants to have the swapfile in another place, say /var/tmp/swap,
+ he can use:
+ .PP
+ In \fI/etc/dphys-swapfile\fP:
+ .PP
+-CONF_SWAPFILE=/var/run/swap
++CONF_SWAPFILE=/var/tmp/swap
+ 
+ 
+ .SH AUTHOR

@@ -1,0 +1,13 @@
+[Unit]
+Description=dphys-swapfile - set up, mount/unmount, and delete a swap file
+Documentation=man:dphys-swapfile(8)
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/dphys-swapfile setup
+ExecStart=/sbin/dphys-swapfile swapon
+ExecStop=/sbin/dphys-swapfile swapoff
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

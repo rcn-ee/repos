@@ -13,9 +13,10 @@ git_sha=""
 reprepro_dir="d/${package_name}"
 dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-7"
+debian_version="${package_version}-7.1"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
-local_patch="rcnee0"
+local_patch="bbbio0"
 
-bullseye_version="~bullseye+20220601"
+bullseye_version="~bullseye+20231003"
+bookworm_version="~bookworm+20231003"

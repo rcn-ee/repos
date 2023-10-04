@@ -1,0 +1,13 @@
+#!/usr/bin/make -f
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+%:
+	dh $@ --with bash-completion
+
+override_dh_install:
+	dh_install
+	cd debian/dphys-swapfile/etc/ && mv -v dphys-swapfile.example dphys-swapfile
+
+override_dh_installchangelogs:
+	dh_installchangelogs Logfile

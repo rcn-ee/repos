@@ -1,0 +1,24 @@
+## Bash completion for the Android SDK tools.
+#
+# Written by Hans-Christoph Steiner, 2012
+#
+# This work is too trival to have any copyright, I hereby wave any copyright
+# and release it into the public domain.
+
+function _dphys_swapfile()
+{
+  local cur prev opts
+  COMPREPLY=()
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+  opts="setup swapon swapoff uninstall"
+
+  if [ ${COMP_CWORD} -eq 1 ]; then
+      COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+      return 0
+  else  
+      COMPREPLY=""
+      return 0
+  fi
+}
+complete -o default -F _dphys_swapfile dphys-swapfile

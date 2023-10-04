@@ -1,0 +1,32 @@
+Source: dphys-swapfile
+Section: admin
+Priority: optional
+Maintainer: Axel Beckert <abe@debian.org>
+Uploaders: Elmar S. Heeb <elmar@heebs.ch>
+Build-Depends: bash-completion,
+               debhelper-compat (= 13)
+Homepage: http://neil.franklin.ch/Projects/dphys-swapfile/
+Standards-Version: 4.5.1
+Vcs-Git: https://salsa.debian.org/debian/dphys-swapfile.git
+Vcs-Browser: https://salsa.debian.org/debian/dphys-swapfile
+Rules-Requires-Root: no
+
+Package: dphys-swapfile
+Architecture: all
+Depends: dc,
+         e2fsprogs,
+         lsb-base (>= 3.0-6),
+         ${misc:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: Autogenerate and use a swap file
+ This init.d script exists so one does not need to have a fixed size
+ swap partition. Instead install without swap partition and then run this,
+ with file size (re-)computed automatically to fit the current RAM size.
+ .
+ By default (and hence on installation) it creates swapfile twice as
+ big as the present RAM amount with an upper limit of 2 GB.
+ .
+ It's also very helpful when included in SD card, USB stick or disk
+ images which are distributed and run on many machines with different
+ amount of RAM, e.g. different models of the Raspberry Pi or cloud
+ images.

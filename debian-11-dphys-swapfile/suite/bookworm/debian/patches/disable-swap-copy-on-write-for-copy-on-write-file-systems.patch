@@ -1,0 +1,25 @@
+Description: Disable swapfile's CoW for CoW filesystems
+ Touch swapfile before trying to set the CoW attribute.
+Author: Louis Jackman <ljackman@protonmail.com>
+Origin: https://salsa.debian.org/debian/dphys-swapfile/-/merge_requests/2
+Origin: https://salsa.debian.org/debian/dphys-swapfile/-/merge_requests/3
+
+--- a/dphys-swapfile
++++ b/dphys-swapfile
+@@ -144,6 +144,16 @@
+       grep -v "^${CONF_SWAPFILE}" /etc/fstab > /etc/.fstab
+       mv /etc/.fstab /etc/fstab
+ 
++      # the later copy-on-write chattr wants an empty file rather than an
++      # already-populated file
++      touch "${CONF_SWAPFILE}"
++
++      # disable copy-on-write on the swapfile, for copy-on-write filesystems
++      #
++      # to avoid errors on non-copy-on-write filesystems, suppress error with
++      #`-f` and `|| true`
++      chattr -f +C "${CONF_SWAPFILE}" || true
++
+       dd if=/dev/zero of="${CONF_SWAPFILE}" bs=1048576 \
+         count="${CONF_SWAPSIZE}" 2> /dev/null
+ 

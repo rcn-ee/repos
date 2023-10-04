@@ -1,0 +1,19 @@
+--- a/dphys-swapfile
++++ b/dphys-swapfile
+@@ -154,8 +154,14 @@ case "$1" in
+       #`-f` and `|| true`
+       chattr -f +C "${CONF_SWAPFILE}" || true
+ 
+-      dd if=/dev/zero of="${CONF_SWAPFILE}" bs=1048576 \
+-        count="${CONF_SWAPSIZE}" 2> /dev/null
++      FS_TYPE="$(stat -f -c %T "$(dirname ${CONF_SWAPFILE})")"
++      # use fallocate if found to create swapfile, else use dd
++      if type fallocate > /dev/null && [ "${FS_TYPE}" = "ext2/ext3" ]; then
++        fallocate -l "${CONF_SWAPSIZE}"M "${CONF_SWAPFILE}" 2> /dev/null
++      else
++        dd if=/dev/zero of="${CONF_SWAPFILE}" bs=1048576 \
++          count="${CONF_SWAPSIZE}" 2> /dev/null
++      fi
+ 
+       # ensure that only root can read possibly critical stuff going in here
+       chmod 600 "${CONF_SWAPFILE}"

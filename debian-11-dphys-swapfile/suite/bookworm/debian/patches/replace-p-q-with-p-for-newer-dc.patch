@@ -1,0 +1,35 @@
+Description: Replace "p q" by "p" since newer dc releases consider this syntax to be an error
+Bug-Debian: https://bugs.debian.org/906767
+Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/dphys-swapfile/+bug/1788681
+Author: Axel Beckert <abe@debian.org>
+Forwarded: no
+
+--- a/dphys-swapfile
++++ b/dphys-swapfile
+@@ -66,14 +66,14 @@
+       #   but it actually then fails from AMD64 kernel 2.6.32 onwards
+       #KCORESIZE="`ls -l /proc/kcore | awk '{ print $5 }'`"
+       ## make MBytes which rounded down will be exactly 1 too few, so add 1
+-      #MEMSIZE="`echo "${KCORESIZE} 1048576 / 1 + p q" | dc`"
++      #MEMSIZE="`echo "${KCORESIZE} 1048576 / 1 + p" | dc`"
+       # so second attempt at finding out physical RAM size, lacks about 10M
+       #   see how long this variant stays usable :-)
+       MEMTOTAL="`grep '^MemTotal:' /proc/meminfo | awk '{ print $2 }'`"
+       # make MBytes which rounded down will be about 10 too few, so add 10
+-      MEMSIZE="`echo "${MEMTOTAL} 1024 / 10 + p q" | dc`"
++      MEMSIZE="`echo "${MEMTOTAL} 1024 / 10 + p" | dc`"
+       # compute desired swap size, as factor * RAM
+-      CONF_SWAPSIZE="`echo "${MEMSIZE} ${CONF_SWAPFACTOR} * p q" | dc`"
++      CONF_SWAPSIZE="`echo "${MEMSIZE} ${CONF_SWAPFACTOR} * p" | dc`"
+       # remove any fractional MBytes
+       CONF_SWAPSIZE="`echo "${CONF_SWAPSIZE}" | cut -f 1 -d '.'`"
+     fi
+@@ -116,7 +116,7 @@
+       echo -n ", checking existing"
+ 
+       # we need bytes for comparing with existing swap file
+-      SWAPBYTES="`echo "${CONF_SWAPSIZE} 1048576 * p q" | dc`"
++      SWAPBYTES="`echo "${CONF_SWAPSIZE} 1048576 * p" | dc`"
+ 
+       FILEBYTES="`ls -l "${CONF_SWAPFILE}" | awk '{ print $5 }'`"
+ 
