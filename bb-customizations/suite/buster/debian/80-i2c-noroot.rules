@@ -1,5 +1,7 @@
 # /etc/udev/rules.d/80-i2c-noroot.rules
 #
-SUBSYSTEM=="i2c", GROUP="gpio", ACTION=="add", \
+#udevadm test $(udevadm info --query=path --name=i2c-0)
+#
+SUBSYSTEM=="i2c-dev", GROUP="gpio", ACTION=="add", \
         RUN+="/bin/chgrp -R gpio '/sys%p'", \
         RUN+="/bin/chmod -R g=u '/sys%p'"

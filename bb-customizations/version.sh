@@ -4,7 +4,7 @@
 
 package_name="bb-customizations"
 debian_pkg_name="${package_name}"
-package_version="1.20230720.1"
+package_version="1.20231006.0"
 package_source=""
 src_dir=""
 
@@ -19,8 +19,8 @@ debian_patch=""
 
 clear_changelog="enable"
 
-buster_version="~buster+20230720"
-bullseye_version="~bullseye+20230720"
-bookworm_version="~bookworm+20230720"
-focal_version="~focal+20230720"
-jammy_version="~jammy+20230720"
+buster_version="~buster+20231006"
+bullseye_version="~bullseye+20231006"
+bookworm_version="~bookworm+20231006"
+focal_version="~focal+20231006"
+jammy_version="~jammy+20231006"
