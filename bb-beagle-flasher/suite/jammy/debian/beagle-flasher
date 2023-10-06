@@ -163,6 +163,12 @@ write_failure () {
 }
 
 check_running_system () {
+
+	message="INFO: /proc/cmdline"                                                              ; broadcast
+	message="INFO: [cat /proc/cmdline]"                                                        ; broadcast
+	cat /proc/cmdline
+	message="--------------------------------------------------------------------------------" ; broadcast
+
 	has_usr_leds="enable"
 	machine=$(cat /proc/device-tree/model | sed "s/ /_/g" | tr -d '\000')
 
@@ -336,10 +342,6 @@ copy_rootfs () {
 		message="--------------------------------------------------------------------------------" ; broadcast
 	fi
 
-	if [ -f /tmp/rootfs/etc/systemd/system/multi-user.target.wants/beagle-flasher-init-shutdown.service ] ; then
-		rm -rf /tmp/rootfs/etc/systemd/system/multi-user.target.wants/beagle-flasher-init-shutdown.service || true
-	fi
-
 	if [ -f /tmp/rootfs/etc/systemd/system/multi-user.target.wants/grow_partition.service ] ; then
 		rm -rf /tmp/rootfs/etc/systemd/system/multi-user.target.wants/grow_partition.service || true
 	fi
@@ -454,7 +456,6 @@ partition_drive () {
 
 ###FIXME
 if [ -f /etc/default/beagle-flasher ] ; then
-	clear
 	. /etc/default/beagle-flasher
 	message="--------------------------------------------------------------------------------" ; broadcast
 	message="Version: [${version_message}]" ; broadcast
