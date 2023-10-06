@@ -207,8 +207,14 @@ echo "dmesg | grep gpio-of-helper"
 dmesg | grep gpio-of-helper || true
 echo "dmesg | grep wlcore"
 dmesg | grep wlcore || true
-echo "lsusb"
-lsusb || true
+if [ -f /usr/bin/lsusb ] ; then
+	echo "lsusb"
+	lsusb || true
+fi
+if [ -f /usr/bin/lspci ] ; then
+	echo "lspci"
+	lspci || true
+fi
 echo "END"
 
 #

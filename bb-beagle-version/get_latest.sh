@@ -17,4 +17,4 @@ copy_all () {
 
 dl_src
 
-wfile="arm32/usr/bin/beagle-version" ; copy_all
+wfile="arm32/usr/sbin/beagle-version" ; copy_all
