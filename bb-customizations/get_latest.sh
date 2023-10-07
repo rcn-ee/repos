@@ -8,6 +8,14 @@ dl_src () {
 	git clone https://git.beagleboard.org/beagleboard/usr-customizations.git ./src/
 }
 
+copy_dir () {
+	cp -rv ./src${wdir}/* ./suite/focal/debian/
+	cp -rv ./src${wdir}/* ./suite/buster/debian/
+	cp -rv ./src${wdir}/* ./suite/bullseye/debian/
+	cp -rv ./src${wdir}/* ./suite/bookworm/debian/
+	cp -rv ./src${wdir}/* ./suite/jammy/debian/
+}
+
 copy_all () {
 	cp -v ./src${wdir}${wfile} ./suite/focal/debian/
 	cp -v ./src${wdir}${wfile} ./suite/buster/debian/
@@ -53,3 +61,5 @@ wfile="am57xx-pru2_0-fw.sleep" ; wdir="/pru/am33_am57/am57xx/" ; copy_all
 wfile="am57xx-pru2_1-fw.sleep" ; wdir="/pru/am33_am57/am57xx/" ; copy_all
 
 wfile="beagle-version" ; wdir="/arm32/usr/sbin/" ; copy_some
+
+wdir="/common/etc/bbb.io/" ; copy_dir
