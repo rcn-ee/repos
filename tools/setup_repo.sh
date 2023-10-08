@@ -1,8 +1,9 @@
 #!/bin/sh -e
 
-apache_dir="/var/www/html/rcn-ee.us/repos"
+apache_dir="/var/www/html/repos"
 
 setup_repo () {
+	echo "${dist}-${suite}"
 	if [ ! -d ${apache_dir}/${dist}/dists/${suite}/ ] ; then
 		mkdir -p ${apache_dir}/${dist}/conf/
 	fi
