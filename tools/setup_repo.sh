@@ -90,6 +90,8 @@ fi
 
 key="A4C46402"
 
+###Debian (armhf) EOL repos:
+
 dist="debian"
 suite="wheezy"
 archs="armhf source"
@@ -104,22 +106,6 @@ archs="armhf source"
 setup_repo
 
 suite="buster"
-archs="armhf source"
-setup_repo
-
-suite="bullseye"
-archs="armhf source"
-setup_repo
-
-suite="bookworm"
-archs="armhf source"
-setup_repo
-
-suite="trixie"
-archs="armhf source"
-setup_repo
-
-suite="sid"
 archs="armhf source"
 setup_repo
 
@@ -148,81 +134,132 @@ suite="wheezy"
 archs="armhf source"
 setup_repo
 
+###Ubuntu (armhf) eol repos:
+
 dist="ubuntu"
-suite="trusty"
-archs="armhf source"
-setup_repo
 
 #eol: july 25 2015
+#14.10
 suite="utopic"
 archs="armhf source"
 setup_repo
 
 #eol: feb 4 2016
+#15.04
 suite="vivid"
 archs="armhf source"
 setup_repo
 
 #eol: July 28 2016
+#15.10
 suite="wily"
 archs="armhf source"
 setup_repo
 
-suite="xenial"
-archs="armhf source"
-setup_repo
-
+#16.10
 #eol: July 20 2017
 suite="yakkety"
 archs="armhf source"
 setup_repo
 
+#17.04
 #eol: January 2018
 suite="zesty"
 archs="armhf source"
 setup_repo
 
+#17.10
 #eol: July 2018
 suite="artful"
 archs="armhf source"
 setup_repo
 
-suite="bionic"
-archs="armhf source"
-setup_repo
-
+#18.10
 #eol: July 18, 2019
 suite="cosmic"
 archs="armhf source"
 setup_repo
 
+#19.04
+#eol: Jan 23, 2020
 suite="disco"
 archs="armhf source"
 setup_repo
 
+#19.10
+#eol: July 17, 2020
 suite="eoan"
 archs="armhf source"
 setup_repo
 
-suite="focal"
-archs="armhf source"
-setup_repo
-
+#20.10
+#eol: July 22, 2021
 suite="groovy"
 archs="armhf source"
 setup_repo
 
+#21.04
+#eol: Jan 20, 2022
 suite="hirsute"
 archs="armhf source"
 setup_repo
 
+#21.10
+#eol: July 14, 2022
 suite="impish"
 archs="armhf source"
 setup_repo
 
+###Ubuntu (armhf) LTS:
+
+dist="ubuntu"
+
+#14.04
+suite="trusty"
+archs="armhf source"
+setup_repo
+
+#16.04
+suite="xenial"
+archs="armhf source"
+setup_repo
+
+#18.04
+suite="bionic"
+archs="armhf source"
+setup_repo
+
+#20.04
+suite="focal"
+archs="armhf source"
+setup_repo
+
+#22.04
 suite="jammy"
 archs="armhf source"
 setup_repo
+
+###Debian (armhf):
+
+dist="debian"
+
+suite="bullseye"
+archs="armhf source"
+setup_repo
+
+suite="bookworm"
+archs="armhf source"
+setup_repo
+
+suite="trixie"
+archs="armhf source"
+setup_repo
+
+suite="sid"
+archs="armhf source"
+setup_repo
+
+###Debian (arm64):
 
 dist="debian-arm64"
 suite="bullseye"
@@ -250,6 +287,8 @@ setup_repo
 suite="jammy"
 archs="arm64 source"
 setup_repo
+
+###Debian (riscv64):
 
 dist="debian-riscv64"
 suite="sid"
