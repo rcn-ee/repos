@@ -1,5 +1,6 @@
-#!/bin/sh -e
+#!/bin/bash -e
 
+DIR="$PWD"
 apache_dir="/var/www/html/repos"
 
 setup_repo () {
@@ -32,7 +33,7 @@ setup_repo () {
 
 	cd ${apache_dir}/${dist}/conf/
 	gpg --armor --output repos.rcn-ee.net.gpg.key --export ${key}
-	cd -
+	cd ${DIR}/
 
 	if [ -f ${apache_dir}/${dist}/conf/repos.rcn-ee.net.2015.gpg.key ] ; then
 		rm -f ${apache_dir}/${dist}/conf/repos.rcn-ee.net.2015.gpg.key
@@ -40,7 +41,7 @@ setup_repo () {
 
 	cd ${apache_dir}/${dist}/conf/
 	gpg --armor --output repos.rcn-ee.net.2015.gpg.key --export A4C46402
-	cd -
+	cd ${DIR}/
 
 	#for apt-cacher-ng...
 	if [ -f ${apache_dir}/${dist}/conf/custom.gpg ] ; then
@@ -49,7 +50,7 @@ setup_repo () {
 
 	cd ${apache_dir}/${dist}/conf/
 	gpg --armor --output custom.gpg --export ${key}
-	cd -
+	cd ${DIR}/
 }
 
 dist="debian"
