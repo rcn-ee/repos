@@ -239,6 +239,11 @@ suite="jammy"
 archs="armhf source"
 setup_repo
 
+#24.04
+suite="noble"
+archs="armhf source"
+setup_repo
+
 ###Debian (armhf):
 
 dist="debian"
@@ -288,6 +293,12 @@ suite="jammy"
 archs="arm64 source"
 setup_repo
 
+#24.04
+#Yes, this also under debian-riscv64, to better sync builds with debian..
+suite="noble"
+archs="arm64 source"
+setup_repo
+
 ###Debian (riscv64):
 
 dist="debian-riscv64"
@@ -302,6 +313,12 @@ setup_repo
 
 #Yes, this also under debian-riscv64, to better sync builds with debian..
 suite="mantic"
+archs="riscv64 source"
+setup_repo
+
+#24.04
+#Yes, this also under debian-riscv64, to better sync builds with debian..
+suite="noble"
 archs="riscv64 source"
 setup_repo
 
