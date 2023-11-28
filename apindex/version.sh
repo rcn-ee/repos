@@ -2,7 +2,7 @@
 
 package_name="apindex"
 debian_pkg_name="${package_name}"
-package_version="2.2-1.20230319.1"
+package_version="2.2-1.20230319.2"
 package_source=""
 src_dir=""
 
