@@ -5,8 +5,8 @@
 export DH_VERBOSE=1
 
 override_dh_auto_configure:
-	git -c http.sslVerify=false clone https://git.beagleboard.org/RobertCNelson/apindex-v2.git --depth=1
-	cd ./apindex-v2/ ; cmake . -DCMAKE_INSTALL_PREFIX=./tmp ; make install
+	git -c http.sslVerify=false clone -b bbbio-20231128 https://git.beagleboard.org/RobertCNelson/apindex-v2.git --depth=1 ./src/
+	cd ./src/ ; cmake . -DCMAKE_INSTALL_PREFIX=./tmp ; make install
 
 %:
 	dh $@
