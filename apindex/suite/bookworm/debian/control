@@ -1,21 +1,16 @@
-Source: bb-u-boot-am335x-evm
-Section: misc
-Priority: extra
+Source: apindex
+Section: admin
+Priority: optional
 Maintainer: Robert Nelson <robertcnelson@gmail.com>
 Build-Depends:
  debhelper (>= 10)
- , bc,
- , bison
- , ca-certificates
- , flex
- , git
- , libssl-dev
+ , cmake
 Standards-Version: 4.5.1
-Homepage: https://git.beagleboard.org/beagleboard/u-boot.git
+Homepage: https://thinkpads.org/projects/apindex
 
-Package: bb-u-boot-am335x-evm
-Architecture: armhf
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: beagleboard.org u-boot for am335x_evm
- beagleboard.org u-boot for am335x_evm MLO/u-boot-dtb.img
-
+Package: apindex
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, python3
+Description: Static HTML file index generator
+ This program enables you to generate a file index for static web 
+ servers such as Github Pages or mini HTTP servers.

@@ -4,17 +4,9 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
-#U-Boot
-UB_TAG=v2022.04-bbb.io-am335x-am57xx
-UB_CONFIG=am335x_evm_defconfig
-
-override_dh_strip:
-	# Just disable for now...
-
 override_dh_auto_configure:
-	git clone -b $(UB_TAG) https://git.beagleboard.org/beagleboard/u-boot.git --depth=1
-	cd ./u-boot/ ; make ARCH=arm CROSS_COMPILE= distclean ; make ARCH=arm CROSS_COMPILE= $(UB_CONFIG) ; make -j2 ARCH=arm CROSS_COMPILE=
+	git clone https://git.beagleboard.org/RobertCNelson/apindex-v2.git --depth=1
+	cd ./apindex-v2/ ; cmake . -DCMAKE_INSTALL_PREFIX=/usr ; make install
 
 %:
 	dh $@
-
