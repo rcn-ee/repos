@@ -322,4 +322,11 @@ suite="noble"
 archs="riscv64 source"
 setup_repo
 
+###Debian (amd64):
+
+dist="debian-amd64"
+suite="bookworm"
+archs="amd64 source"
+setup_repo
+
 #
