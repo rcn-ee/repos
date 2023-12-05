@@ -3,18 +3,25 @@
 set -e
 
 if [ ! -f /etc/ssl/certs/gitlab.gfnd.rcn-ee.org.crt ] ; then
-	wget --quiet --directory-prefix=/tmp/ http://192.168.1.98/internal/gitlab.gfnd.rcn-ee.org.crt
+	wget --quiet --directory-prefix=/tmp/ http://192.168.1.98/mirror/internal/gitlab.gfnd.rcn-ee.org.crt
 	sync
 	cp -v /tmp/gitlab.gfnd.rcn-ee.org.crt /etc/ssl/certs/
 fi
 chmod 644 /etc/ssl/certs/gitlab.gfnd.rcn-ee.org.crt
 
 if [ ! -f /etc/ssl/certs/gitea.gfnd.rcn-ee.org.crt ] ; then
-	wget --quiet --directory-prefix=/tmp/ http://192.168.1.98/internal/gitea.gfnd.rcn-ee.org.crt
+	wget --quiet --directory-prefix=/tmp/ http://192.168.1.98/mirror/internal/gitea.gfnd.rcn-ee.org.crt
 	sync
 	cp -v /tmp/gitea.gfnd.rcn-ee.org.crt /etc/ssl/certs/
 fi
 chmod 644 /etc/ssl/certs/gitea.gfnd.rcn-ee.org.crt
+
+if [ ! -f /etc/ssl/certs/git.gfnd.rcn-ee.org.crt ] ; then
+	wget --quiet --directory-prefix=/tmp/ http://192.168.1.98/mirror/internal/git.gfnd.rcn-ee.org.crt
+	sync
+	cp -v /tmp/git.gfnd.rcn-ee.org.crt /etc/ssl/certs/
+fi
+chmod 644 /etc/ssl/certs/git.gfnd.rcn-ee.org.crt
 
 if [ -f /etc/systemd/timesyncd.conf ] ; then
 	sed -i -e 's:#NTP=:NTP=192.168.1.12:g' /etc/systemd/timesyncd.conf
