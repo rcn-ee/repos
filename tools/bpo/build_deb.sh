@@ -9,9 +9,9 @@ builder=`cat /etc/hostname`
 
 build () {
 	if [ "x${sbuild_chroot}" = "x" ] ; then
-		options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite}"
+		options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite} --no-run-lintian"
 	else
-		options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite} --chroot=${suite}-${deb_arch}-${sbuild_chroot}-sbuild"
+		options="--arch=${deb_arch} -A -s --force-orig-source --dist=${suite} --chroot=${suite}-${deb_arch}-${sbuild_chroot}-sbuild --no-run-lintian"
 	fi
 
 	echo "-----------------"
