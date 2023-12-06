@@ -283,11 +283,13 @@ suite="sid"
 archs="arm64 source"
 setup_repo
 
+#20.04
 #Yes, this is under debian-arm64 it's to match builds with ros...
 suite="focal"
 archs="arm64 source"
 setup_repo
 
+#22.04
 #Yes, this is under debian-arm64, to better sync builds with debian..
 suite="jammy"
 archs="arm64 source"
