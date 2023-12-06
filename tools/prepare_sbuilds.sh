@@ -82,4 +82,10 @@ arch="armhf"
 options="--exclude=debfoster"
 setup_update_sbuild
 
+dist="noble"
+unset flavor
+arch="armhf"
+options="--exclude=debfoster"
+setup_update_sbuild
+
 #
