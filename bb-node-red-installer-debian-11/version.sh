@@ -4,7 +4,7 @@
 
 package_name="bb-node-red-installer"
 debian_pkg_name="${package_name}"
-package_version="3.1.0.0"
+package_version="3.1.2.0"
 package_source=""
 src_dir=""
 
@@ -21,5 +21,6 @@ debian_dl_1="https://nodejs.org/dist/latest-v14.x/node-v14.21.3-linux-armv7l.tar
 
 clear_changelog="enable"
 
-bullseye_version="~bullseye+20231003"
-bookworm_version="~bookworm+20231003"
+bullseye_version="~bullseye+20231207"
+bookworm_version="~bookworm+20231207"
+trixie_version="~trixie+20231207"
