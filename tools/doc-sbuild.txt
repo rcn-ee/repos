@@ -36,6 +36,18 @@ apt update ; apt upgrade -yq ; apt install -yq bbb.io-keyring ; \
 cp -v /etc/bbb.io/templates/apt/sbuild.list /etc/apt/sources.list.d/beagle.list ; \
 apt update ; apt upgrade -yq ; apt clean ; echo "done..." ; exit
 
+#debian trixie:
+sudo sbuild-shell source:trixie-armhf-sbuild
+
+apt update ; apt upgrade -yq ; \
+echo "deb http://deb.debian.org/debian trixie main" > /etc/apt/sources.list ; \
+echo "deb-src http://deb.debian.org/debian trixie main" >> /etc/apt/sources.list ; \
+echo "deb [trusted=yes] http://repos.rcn-ee.net/debian trixie main" > /etc/apt/sources.list.d/beagle.list ; \
+echo "deb-src [trusted=yes] http://repos.rcn-ee.net/debian trixie main" >> /etc/apt/sources.list.d/beagle.list ; \
+apt update ; apt upgrade -yq ; apt install -yq bbb.io-keyring ; \
+cp -v /etc/bbb.io/templates/apt/sbuild.list /etc/apt/sources.list.d/beagle.list ; \
+apt update ; apt upgrade -yq ; apt clean ; echo "done..." ; exit
+
 #ubuntu 20.04 focal
 sudo sbuild-shell source:focal-armhf-sbuild
 
