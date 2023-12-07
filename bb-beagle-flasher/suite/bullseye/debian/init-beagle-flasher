@@ -5,16 +5,13 @@ if ! id | grep -q root; then
 	exit
 fi
 
-version_message="1.20230710.0, merged generic cleanups..."
+version_message="1.20231207.0, e2fsprogs (1.47.0) disable orphan_file..."
 
-#mke2fs -c
-#Check the device for bad blocks before creating the file system.
-#If this option is specified twice, then a slower read-write test is
-#used instead of a fast read-only test.
-
-mkfs_options=""
-#mkfs_options="-c"
-#mkfs_options="-cc"
+#Debian 12, Ubuntu Lunar, Mantic, Noble
+#https://packages.debian.org/source/bookworm/e2fsprogs
+#e2fsprogs (1.47.0) added orphan_file first added in v5.15.x
+unset ext4_options
+#ext4_options="-O ^orphan_file"
 
 cylon_leds() {
 	#ls /sys/class/leds/beaglebone\:green\:usr*
@@ -256,8 +253,8 @@ format_root () {
 }
 
 format_single_root () {
-	message="/sbin/mkfs.ext4 ${mkfs_options} ${destination}p1 -L ${single_root_label}"         ; broadcast
-	LC_ALL=C /sbin/mkfs.ext4 ${mkfs_options} ${destination}p1 -L ${single_root_label}
+	message="/sbin/mkfs.ext4 ${ext4_options} ${destination}p1 -L ${single_root_label}"         ; broadcast
+	LC_ALL=C /sbin/mkfs.ext4 ${ext4_options} ${destination}p1 -L ${single_root_label}
 	message="--------------------------------------------------------------------------------" ; broadcast
 	flush_cache
 }
