@@ -263,6 +263,19 @@ do_jammy () {
 	changelog
 }
 
+do_noble () {
+	#24.04
+	arch="armhf"
+	dist="noble"
+	debhelper="13"
+	wfile="control"
+	generate_header
+
+	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
+
+	changelog
+}
+
 do_buster () {
 	#10.x
 	arch="armhf"
@@ -497,6 +510,7 @@ do_trixie () {
 
 do_focal
 do_jammy
+do_noble
 do_buster
 do_bullseye
 do_bookworm
