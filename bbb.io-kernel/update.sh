@@ -271,6 +271,15 @@ do_noble () {
 	wfile="control"
 	generate_header
 
+	msg="6.4-bone"  ; var="omap-psp" ; ver="V64X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.5-bone"  ; var="omap-psp" ; ver="V65X"  ; current_kernel ; generate_kernel_mainline_bone
+
+	msg="6.6-bone"  ; var="omap-psp" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.6-bone-rt"  ; var="bone-rt" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.6-armv7"  ; var="armv7" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_armv7
+	msg="6.6-armv7-rt"  ; var="armv7-rt" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_armv7
+	msg="6.6-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
+
 	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
 
 	changelog
