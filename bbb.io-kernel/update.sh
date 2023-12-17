@@ -174,6 +174,23 @@ do_all_lts () {
 	msg="6.6-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
 }
 
+do_some_lts () {
+	msg="6.1-bone"  ; var="omap-psp" ; ver="LTS61"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.6-bone"  ; var="omap-psp" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_bone
+
+	msg="6.1-bone-rt"  ; var="bone-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.6-bone-rt"  ; var="bone-rt" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_bone
+
+	msg="6.1-armv7"  ; var="armv7" ; ver="LTS61"  ; current_kernel ; generate_kernel_mainline_armv7
+	msg="6.6-armv7"  ; var="armv7" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_armv7
+
+	msg="6.1-armv7-rt"  ; var="armv7-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_mainline_armv7
+	msg="6.6-armv7-rt"  ; var="armv7-rt" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_armv7
+
+	msg="6.1-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS61"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
+	msg="6.6-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
+}
+
 do_focal () {
 	#20.04
 	arch="armhf"
@@ -273,16 +290,33 @@ do_noble () {
 	wfile="control"
 	generate_header
 
+	sgxti335x="enabled"
+	sgxjacinto6evm="enabled"
+	rtl8723bu="enabled"
+	rtl8821cu="enabled"
+
+	rtl8723du="enabled"
+	qcacld="enabled"
+
+	msg="5.10-ti"    ; var="ti"    ; ver="LTS510" ; current_kernel ; generate_kernel_ti
+	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_ti
+
+	unset qcacld
+	unset rtl8723bu
+	unset rtl8821cu
+	unset sgxjacinto6evm
+	unset sgxti335x
+
+	msg="6.1-ti"     ; var="ti"    ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
+	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
+	unset rtl8723du
+
+	do_some_lts
+
 	msg="6.2-bone"  ; var="omap-psp" ; ver="V62X"  ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.3-bone"  ; var="omap-psp" ; ver="V63X"  ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.4-bone"  ; var="omap-psp" ; ver="V64X"  ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.5-bone"  ; var="omap-psp" ; ver="V65X"  ; current_kernel ; generate_kernel_mainline_bone
-
-	msg="6.6-bone"  ; var="omap-psp" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.6-bone-rt"  ; var="bone-rt" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.6-armv7"  ; var="armv7" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_armv7
-	msg="6.6-armv7-rt"  ; var="armv7-rt" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_armv7
-	msg="6.6-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
 
 	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
 
