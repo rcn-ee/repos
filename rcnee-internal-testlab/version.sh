@@ -2,7 +2,7 @@
 
 package_name="rcnee-internal-testlab"
 debian_pkg_name="${package_name}"
-package_version="1.20240105.0"
+package_version="1.20240105.1"
 package_source=""
 src_dir=""
 
