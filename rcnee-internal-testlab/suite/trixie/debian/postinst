@@ -9,13 +9,6 @@ if [ ! -f /etc/ssl/certs/gitlab.gfnd.rcn-ee.org.crt ] ; then
 fi
 chmod 644 /etc/ssl/certs/gitlab.gfnd.rcn-ee.org.crt
 
-if [ ! -f /etc/ssl/certs/gitea.gfnd.rcn-ee.org.crt ] ; then
-	wget --quiet --directory-prefix=/tmp/ http://192.168.1.98/mirror/internal/gitea.gfnd.rcn-ee.org.crt
-	sync
-	cp -v /tmp/gitea.gfnd.rcn-ee.org.crt /etc/ssl/certs/
-fi
-chmod 644 /etc/ssl/certs/gitea.gfnd.rcn-ee.org.crt
-
 if [ ! -f /etc/ssl/certs/git.gfnd.rcn-ee.org.crt ] ; then
 	wget --quiet --directory-prefix=/tmp/ http://192.168.1.98/mirror/internal/git.gfnd.rcn-ee.org.crt
 	sync
@@ -116,6 +109,19 @@ BeagleBoard.org_BeagleBone_AI)
 		rm -rf /etc/wpa_supplicant/wpa_supplicant-wlan0.conf || true
 	fi
 	;;
+TI_AM335x_BeagleBone_Black_Wireless)
+	if [ -f /etc/udev/rules.d/81-add-SoftAp0-interface.rules ] ; then
+		rm -rf /etc/udev/rules.d/81-add-SoftAp0-interface.rules || true
+	fi
+
+	if [ -f /etc/udev/rules.d/82-SoftAp0-start-hostpad.rules ] ; then
+		rm -rf /etc/udev/rules.d/82-SoftAp0-start-hostpad.rules || true
+	fi
+
+	if [ -f /etc/wpa_supplicant/wpa_supplicant-wlan0.conf ] ; then
+		rm -rf /etc/wpa_supplicant/wpa_supplicant-wlan0.conf || true
+	fi
+	;;
 esac
 
 if [ -d /home/voodoo/ ] ; then
@@ -126,6 +132,10 @@ elif [ -d /home/ubuntu/ ] ; then
 	echo "ubuntu    ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/ubuntu
 elif [ -d /home/beagle/ ] ; then
 	echo "beagle    ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/beagle
+fi
+
+if [ -f /etc/resolvconf.conf ] ; then
+	echo "name_servers=192.168.1.1" >> /etc/resolvconf.conf
 fi
 
 #DEBHELPER#

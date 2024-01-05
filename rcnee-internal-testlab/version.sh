@@ -2,7 +2,7 @@
 
 package_name="rcnee-internal-testlab"
 debian_pkg_name="${package_name}"
-package_version="1.20231205.0"
+package_version="1.20240105.0"
 package_source=""
 src_dir=""
 
@@ -17,7 +17,8 @@ debian_patch=""
 
 clear_changelog="enable"
 
-bullseye_version="~bullseye+20231205"
-bookworm_version="~bookworm+20231205"
-trixie_version="~trixie+20231205"
-jammy_version="~jammy+20231205"
+bullseye_version="~bullseye+20240105"
+bookworm_version="~bookworm+20240105"
+trixie_version="~trixie+20240105"
+jammy_version="~jammy+20240105"
+noble_version="~noble+20240105"

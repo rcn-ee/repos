@@ -98,6 +98,11 @@ debian_bullseye () {
 	echo "#deb [arch=armhf signed-by=/usr/share/keyrings/rcn-ee-archive-keyring.gpg] http://repos.rcn-ee.com/ubuntu/ jammy main" >> /tmp/sources.list
 
 	echo "" >> /tmp/sources.list
+	echo "#24.04 - noble" >> /tmp/sources.list
+	echo "#deb [arch=armhf signed-by=/usr/share/keyrings/rcn-ee-archive-keyring.gpg] http://repos.rcn-ee.com/ubuntu/ noble main" >> /tmp/sources.list
+
+
+	echo "" >> /tmp/sources.list
 
 	if [ ! "x${extra_repo}" = "x" ] ; then
 		echo "${extra_repo}" >> /tmp/sources.list
@@ -114,6 +119,10 @@ get_system () {
 	#unset dont_use_uboot_overlays
 	#dont_use_uboot_overlays=true
 	unset upgrade_uboot
+	unset microsd
+	unset emmc
+	unset erase_mmc
+	unset disable_uboot_overlay_video
 
 	machine=$(cat /proc/device-tree/model | sed "s/ /_/g" | tr -d '\000')
 	case "${machine}" in
@@ -130,6 +139,13 @@ get_system () {
 		label="${theIPaddress}-bbb"
 		number=$(ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1 | awk -F'.' '{print $4}')
 		node="${number}-am335x-bbg"
+		;;
+	TI_AM335x_BeagleBone_Black_Wireless)
+		device=wlan0
+		theIPaddress=$(ip addr show wlan0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+		label="${theIPaddress}-bbbw"
+		number=$(ip addr show wlan0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1 | awk -F'.' '{print $4}')
+		node="${number}-am335x-bbbw"
 		;;
 	BeagleBoard.org_BeagleBone_AI)
 		device=eth0
@@ -150,44 +166,55 @@ get_system () {
 		ker_pkg="bbb.io-kernel-4.19-ti-am335x"
 		debian_bullseye
 		upgrade_uboot=true
-		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
+		microsd="bb-u-boot-am335x-evm/install-mmcblk0.sh"
+		erase_mmc="mmcblk1"
 		;;
 	22-am335x-bbb)
 		unset old_ker_pkg
 		ker_pkg="bbb.io-kernel-4.19-ti-rt-am335x"
 		debian_bullseye
 		upgrade_uboot=true
-		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
+		microsd="bb-u-boot-am335x-evm/install-mmcblk0.sh"
+		erase_mmc="mmcblk1"
 		;;
 	23-am335x-bbb)
 		unset old_ker_pkg
 		ker_pkg="bbb.io-kernel-5.10-ti-am335x"
 		debian_bullseye
 		upgrade_uboot=true
-		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
+		microsd="bb-u-boot-am335x-evm/install-mmcblk0.sh"
+		erase_mmc="mmcblk1"
 		;;
 	24-am335x-bbb)
 		unset old_ker_pkg
 		ker_pkg="bbb.io-kernel-5.10-ti-rt-am335x"
 		debian_bullseye
 		upgrade_uboot=true
-		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
+		microsd="bb-u-boot-am335x-evm/install-mmcblk0.sh"
+		erase_mmc="mmcblk1"
 		;;
 	25-am335x-bbb)
 		unset old_ker_pkg
 		ker_pkg="bbb.io-kernel-6.1-ti-am335x"
 		debian_bullseye
-		dont_use_uboot_overlays=true
+		#dont_use_uboot_overlays=true
+		disable_uboot_overlay_video=true
+		disable_uboot_cape_universal=true
+		pru="uboot_overlay_pru=AM335X-PRU-UIO-00A0.dtbo"
 		upgrade_uboot=true
-		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
+		microsd="bb-u-boot-am335x-evm/install-mmcblk0.sh"
+		erase_mmc="mmcblk1"
 		;;
 	26-am335x-bbg)
 		unset old_ker_pkg
 		ker_pkg="bbb.io-kernel-6.1-ti-rt-am335x"
 		debian_bullseye
-		dont_use_uboot_overlays=true
+		#dont_use_uboot_overlays=true
+		disable_uboot_cape_universal=true
+		pru="uboot_overlay_pru=AM335X-PRU-UIO-00A0.dtbo"
 		upgrade_uboot=true
-		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
+		microsd="bb-u-boot-am335x-evm/install-mmcblk0.sh"
+		erase_mmc="mmcblk1"
 		;;
 	27-am335x-bbg)
 		unset old_ker_pkg
@@ -196,7 +223,8 @@ get_system () {
 		debian_bullseye
 		dont_use_uboot_overlays=true
 		upgrade_uboot=true
-		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
+		microsd="bb-u-boot-am335x-evm/install-mmcblk0.sh"
+		erase_mmc="mmcblk1"
 		;;
 	28-am335x-bbg)
 		unset old_ker_pkg
@@ -205,25 +233,32 @@ get_system () {
 		debian_bullseye
 		dont_use_uboot_overlays=true
 		upgrade_uboot=true
-		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
+		microsd="bb-u-boot-am335x-evm/install-mmcblk0.sh"
+		erase_mmc="mmcblk1"
 		;;
 	29-am335x-bbg)
 		unset old_ker_pkg
 		old_ker_pkg="bbb.io-kernel-5.15-bone"
 		ker_pkg="bbb.io-kernel-6.1-bone"
 		debian_bullseye
-		dont_use_uboot_overlays=true
+		#dont_use_uboot_overlays=true
+		disable_uboot_cape_universal=true
+		pru="uboot_overlay_pru=AM335X-PRU-UIO-00A0.dtbo"
 		upgrade_uboot=true
-		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
+		microsd="bb-u-boot-am335x-evm/install-mmcblk0.sh"
+		erase_mmc="mmcblk1"
 		;;
 	30-am335x-bbg)
 		unset old_ker_pkg
 		old_ker_pkg="bbb.io-kernel-5.15-bone-rt"
 		ker_pkg="bbb.io-kernel-6.1-bone-rt"
 		debian_bullseye
-		dont_use_uboot_overlays=true
+		#dont_use_uboot_overlays=true
+		disable_uboot_cape_universal=true
+		pru="uboot_overlay_pru=AM335X-PRU-UIO-00A0.dtbo"
 		upgrade_uboot=true
-		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
+		microsd="bb-u-boot-am335x-evm/install-mmcblk0.sh"
+		erase_mmc="mmcblk1"
 		;;
 	31-am335x-bbg)
 		unset old_ker_pkg
@@ -232,7 +267,8 @@ get_system () {
 		debian_bullseye
 		dont_use_uboot_overlays=true
 		upgrade_uboot=true
-		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
+		microsd="bb-u-boot-am335x-evm/install-mmcblk0.sh"
+		erase_mmc="mmcblk1"
 		;;
 	32-am335x-bbg)
 		unset old_ker_pkg
@@ -241,21 +277,52 @@ get_system () {
 		debian_bullseye
 		dont_use_uboot_overlays=true
 		upgrade_uboot=true
-		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
+		microsd="bb-u-boot-am335x-evm/install-mmcblk0.sh"
+		erase_mmc="mmcblk1"
 		;;
 	39-am335x-bbb)
 		unset old_ker_pkg
-		ker_pkg="bbb.io-kernel-5.10-ti-am335x"
+		old_ker_pkg="bbb.io-kernel-5.10-ti-am335x"
+		ker_pkg="bbb.io-kernel-6.1-ti-am335x"
 		debian_bookworm
+		disable_uboot_overlay_video=true
+		disable_uboot_cape_universal=true
+		pru="uboot_overlay_pru=AM335X-PRU-UIO-00A0.dtbo"
 		upgrade_uboot=true
-		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
+		emmc="bb-u-boot-am335x-evm/install-mmcblk1.sh"
 		;;
 	40-am335x-bbb)
 		unset old_ker_pkg
+		old_ker_pkg="bbb.io-kernel-5.10-ti-am335x"
+		ker_pkg="bbb.io-kernel-6.1-ti-am335x"
+		debian_bookworm
+		disable_uboot_overlay_video=true
+		disable_uboot_cape_universal=true
+		pru="uboot_overlay_pru=AM335X-PRU-UIO-00A0.dtbo"
+		upgrade_uboot=true
+		emmc="bb-u-boot-am335x-evm/install-mmcblk1.sh"
+		;;
+	41-am335x-bbbw)
+		unset old_ker_pkg
 		ker_pkg="bbb.io-kernel-5.10-ti-am335x"
 		debian_bookworm
+		disable_uboot_overlay_video=true
+		disable_uboot_cape_universal=true
+		pru="uboot_overlay_pru=AM335X-PRU-UIO-00A0.dtbo"
 		upgrade_uboot=true
-		uboot=/opt/u-boot/bb-u-boot-am335x-evm/install-mmcblk1.sh
+		microsd="bb-u-boot-am335x-evm/install-mmcblk0.sh"
+		erase_mmc="mmcblk1"
+		;;
+	42-am335x-bbbw)
+		unset old_ker_pkg
+		ker_pkg="bbb.io-kernel-5.10-ti-am335x"
+		debian_bookworm
+		disable_uboot_overlay_video=true
+		disable_uboot_cape_universal=true
+		pru="uboot_overlay_pru=AM335X-PRU-UIO-00A0.dtbo"
+		upgrade_uboot=true
+		microsd="bb-u-boot-am335x-evm/install-mmcblk0.sh"
+		erase_mmc="mmcblk1"
 		;;
 	45-am57xx-bbai)
 		unset old_ker_pkg
@@ -297,7 +364,12 @@ setup_boot_uenvtxt () {
 		echo "#enable_uboot_overlays=1" >> /tmp/uEnv.txt
 	else
 		echo "enable_uboot_overlays=1" >> /tmp/uEnv.txt
-		echo "enable_uboot_cape_universal=1" >> /tmp/uEnv.txt
+		if [ "x${disable_uboot_overlay_video}" = "xtrue" ] ; then
+			echo "disable_uboot_overlay_video=1" >> /tmp/uEnv.txt
+		fi
+		if [ ! "x${disable_uboot_cape_universal}" = "xtrue" ] ; then
+			echo "enable_uboot_cape_universal=1" >> /tmp/uEnv.txt
+		fi
 		if [ ! "x${pru}" = "x" ] ; then
 			echo "${pru}" >> /tmp/uEnv.txt
 		fi
@@ -322,11 +394,15 @@ if [ ! "x${pkg_list}" = "x" ] ; then
 	apt -yq remove --purge ${pkg_list}
 fi
 
-apt -y upgrade || true
-apt -y dist-upgrade || true
+echo "apt upgrade -q -y"
+DEBIAN_FRONTEND=noninteractive apt upgrade -q -y
+echo "apt dist-upgrade -q -y"
+DEBIAN_FRONTEND=noninteractive apt dist-upgrade -q -y
 if [ ! "x${ker_pkg}" = "x" ] ; then
+	echo "apt -yq install ${ker_pkg}"
 	apt -yq install ${ker_pkg} || true
 	if [ ! "x${old_ker_pkg}" = "x" ] ; then
+		echo "apt -yq remove ${old_ker_pkg}"
 		apt -yq remove ${old_ker_pkg} --purge || true
 	fi
 fi
@@ -337,14 +413,24 @@ apt -y autoremove || true
 
 if [ "x${upgrade_uboot}" = "xtrue" ] ; then
 	lsblk
-	if [ -f ${uboot} ] ; then
-		sudo ${uboot}
+	if [ -f /opt/u-boot/${microsd} ] ; then
+		echo "/opt/u-boot/${microsd}"
+		/opt/u-boot/${microsd}
 		sync
-		dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=108 status=progress
+	fi
+	if [ -f /opt/u-boot/${emmc} ] ; then
+		echo "/opt/u-boot/${emmc}"
+		/opt/u-boot/${emmc}
 		sync
 	fi
 fi
 
+if [ ! "x${erase_mmc}" = "x" ] ; then
+	if [ -b /dev/${erase_mmc} ] ; then
+		echo "dd if=/dev/zero of=/dev/${erase_mmc} bs=1M count=10 status=progress"
+		dd if=/dev/zero of=/dev/${erase_mmc} bs=1M count=10 status=progress
+	fi
+fi
 sync
 
 echo "...uname -r..."
