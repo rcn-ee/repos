@@ -1,0 +1,134 @@
+#!/bin/sh
+
+if ! id | grep -q root; then
+	echo "must be run as root"
+	exit
+fi
+
+log="bb-setup-mac-address:"
+
+#mac address:
+#cpsw_0_mac = eth0 - (from eeprom)
+#cpsw_1_mac = usb0 - (BeagleBone Side: usb0_host_addr)
+#cpsw_2_mac = usb0 - (USB host, pc side: usb0_dev_addr)
+#cpsw_3_mac = usb1 - (BeagleBone Side: usb1_host_addr)
+#cpsw_4_mac = usb1 - (USB host, pc side: usb1_dev_addr)
+
+#wl18xx      - (internal wl18xx eeprom)
+#wl18xx (AP) - (internal wl18xx eeprom + 1)
+
+is_mac_valid () {
+	#Some devices are showing a blank mac_addr0 [00:00:00:00:00:00], let's fix that up...
+	if [ "x${mac_addr0}" = "x00:00:00:00:00:00" ] ; then
+		unset is_valid
+	else
+		is_valid=true
+	fi
+}
+
+get_mac_addr () {
+	unset mac_addr0
+	unset is_valid
+	new_machine=$(cat /proc/device-tree/model | sed "s/ /_/g" | sed "s/-/_/g" | tr -d '\000')
+	case "${new_machine}" in
+	BeagleBoard.org_BeagleBone_AI)
+		mac_addr0=$(dmesg | grep MACID | awk -F'= ' '{print $2}'| awk '{print toupper($0)}')
+		is_mac_valid
+		;;
+	*)
+		mac_address="/proc/device-tree/ocp/ethernet@4a100000/slave@4a100200/mac-address"
+		mac_address_v54="/proc/device-tree/ocp/interconnect@4a000000/segment@0/target-module@100000/ethernet@0/slave@200/mac-address"
+		mac_address_v515="/proc/device-tree/ocp/interconnect@4a000000/segment@0/target-module@100000/switch@0/ethernet-ports/port@1/mac-address"
+
+		if [ -f ${mac_address} ] ; then
+			mac_addr0=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address} | sed 's/.$//')
+			echo "${log} slave@4a100200: ${mac_addr0}"
+			is_mac_valid
+		fi
+
+		### With the cpsw rewrite, mac_address_v54 or mac_address_v515 can come up with zero! ;)
+		if [ -f ${mac_address_v54} ] && [ "x${is_valid}" = "x" ] ; then
+			mac_addr0=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address_v54} | sed 's/.$//')
+			echo "${log} slave@200: ${mac_addr0}"
+			is_mac_valid
+		fi
+
+		### With the cpsw rewrite, mac_address_v54 or mac_address_v515 can come up with zero! ;)
+		if [ -f ${mac_address_v515} ] && [ "x${is_valid}" = "x" ] ; then
+			mac_addr0=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address_v515} | sed 's/.$//')
+			echo "${log} port@1: ${mac_addr0}"
+			is_mac_valid
+		fi
+		;;
+	esac
+
+	#Some devices are showing a blank mac_addr0 [00:00:00:00:00:00], let's fix that up...
+	if [ "x${is_valid}" = "x" ] ; then
+		echo "${log} mac came up 00:00:00:00:00:00 fixing..."
+		mac_addr0="1C:BA:8C:A2:ED:68"
+		echo "${log} eth0: ${mac_addr0}"
+	fi
+}
+
+process_base () {
+	mac_addr0_octet_1_5=$(echo ${mac_addr0} | cut -c 1-14)
+	mac_addr0_octet_6=$(echo ${mac_addr0} | awk -F ':' '{print $6}')
+}
+
+generate_usb0_host_addr () {
+	#bc cuts off leading zero's, we need ten/ones value
+	new_octet_6=$(echo "obase=16;ibase=16;$mac_addr0_octet_6 + 102" | bc)
+	usb0_host_addr=${mac_addr0_octet_1_5}:$(echo ${new_octet_6} | cut -c 2-3)
+	echo "${log} usb0_host_addr: ${usb0_host_addr}"
+}
+
+generate_usb0_dev_addr () {
+	#bc cuts off leading zero's, we need ten/ones value
+	new_octet_6=$(echo "obase=16;ibase=16;$mac_addr0_octet_6 + 103" | bc)
+	usb0_dev_addr=${mac_addr0_octet_1_5}:$(echo ${new_octet_6} | cut -c 2-3)
+	echo "${log} usb0_dev_addr: ${usb0_dev_addr}"
+}
+
+generate_usb1_host_addr () {
+	#bc cuts off leading zero's, we need ten/ones value
+	new_octet_6=$(echo "obase=16;ibase=16;$mac_addr0_octet_6 + 104" | bc)
+	usb1_host_addr=${mac_addr0_octet_1_5}:$(echo ${new_octet_6} | cut -c 2-3)
+	echo "${log} usb1_host_addr: ${usb1_host_addr}"
+}
+
+generate_usb1_dev_addr () {
+	#bc cuts off leading zero's, we need ten/ones value
+	new_octet_6=$(echo "obase=16;ibase=16;$mac_addr0_octet_6 + 105" | bc)
+	usb1_dev_addr=${mac_addr0_octet_1_5}:$(echo ${new_octet_6} | cut -c 2-3)
+	echo "${log} usb1_dev_addr: ${usb1_dev_addr}"
+}
+
+write_default_bb_mac_addr () {
+	echo "# Default settings for bb-usb-gadgets. This file is sourced by /bin/sh from" > /etc/default/bb-mac-addr
+	echo "# /usr/bin/bb-start-acm-ncm-rndis-old-gadget" >> /etc/default/bb-mac-addr
+	echo "MAC_ADDR=${mac_addr0}" >> /etc/default/bb-mac-addr
+	echo "USB0_HOST_ADDR=${usb0_host_addr}" >> /etc/default/bb-mac-addr
+	echo "USB0_DEV_ADDR=${usb0_dev_addr}" >> /etc/default/bb-mac-addr
+	echo "USB1_HOST_ADDR=${usb1_host_addr}" >> /etc/default/bb-mac-addr
+	echo "USB1_DEV_ADDR=${usb1_dev_addr}" >> /etc/default/bb-mac-addr
+}
+
+update_default_hostapd () {
+	ssid_append=$(echo ${mac_addr0} | cut -b 13-17 | sed 's/://g' || true)
+	if [ -f /etc/hostapd/hostapd.conf ] ; then
+		sed -i -e "s:BeagleBone-WXYZ:BeagleBone-$ssid_append:g" /etc/hostapd/hostapd.conf
+	fi
+
+	if [ -f /etc/hostapd/SoftAp0.conf ] ; then
+		sed -i -e "s:BeagleBone-WXYZ:BeagleBone-$ssid_append:g" /etc/hostapd/SoftAp0.conf
+	fi
+}
+
+get_mac_addr
+process_base
+generate_usb0_host_addr
+generate_usb0_dev_addr
+generate_usb1_host_addr
+generate_usb1_dev_addr
+write_default_bb_mac_addr
+update_default_hostapd

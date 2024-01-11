@@ -1,0 +1,32 @@
+#!/bin/sh
+
+if ! id | grep -q root; then
+	echo "must be run as root"
+	exit
+fi
+
+log="bb-install-modules:"
+
+. /etc/default/generic-sys-mods
+
+if [ -f /opt/modules/install ] ; then
+	. /opt/modules/install
+
+	case "${ARCH_SOC_MODULES}" in
+	am335x)
+		dpkg -i /opt/modules/ti-sgx-ti335x-modules-${uname}*_armhf.deb || true
+		dpkg -i /opt/modules/bbb.io-kernel-tasks*.deb || true
+		dpkg -i /opt/modules/bbb.io-kernel-${branch}-am335x_1*.deb || true
+		dpkg -i /opt/modules/bbb.io-kernel-${branch}_1*.deb || true
+		;;
+	am57xx)
+		dpkg -i /opt/modules/ti-sgx-jacinto6evm-modules-${uname}*_armhf.deb || true
+		dpkg -i /opt/modules/bbb.io-kernel-tasks*.deb || true
+		dpkg -i /opt/modules/bbb.io-kernel-${branch}-am57xx_1*.deb || true
+		dpkg -i /opt/modules/bbb.io-kernel-${branch}_1*.deb || true
+		;;
+	*)
+		echo "Please update ARCH_SOC_MODULES in /etc/default/generic-sys-mods"
+		;;
+	esac
+fi
