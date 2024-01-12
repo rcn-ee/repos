@@ -26,16 +26,6 @@ if [ -f /etc/systemd/timesyncd.conf ] ; then
 	timedatectl
 fi
 
-if [ -f /lib/systemd/system/apt-daily.service ] ; then
-	systemctl disable apt-daily.service || true
-	systemctl disable apt-daily.timer || true
-fi
-
-if [ -f /lib/systemd/system/apt-daily-upgrade.service ] ; then
-	systemctl disable apt-daily-upgrade.service || true
-	systemctl disable apt-daily-upgrade.timer || true
-fi
-
 if [ -f /etc/apt/apt.conf.d/02-no-pdiffs ] ; then
 	rm -f /etc/apt/apt.conf.d/02-no-pdiffs || true
 fi
