@@ -5,18 +5,24 @@
 export DH_VERBOSE=1
 
 #U-Boot
-UB_TAG=v2022.04-bbb.io-am335x-am57xx
-UB_CONFIG=am57xx_evm_defconfig
+UB_CONFIG=am57xx_evm
+UB_BRANCH=v2022.04-bbb.io-am335x-am57xx
+UB_REPO="https://openbeagle.org/beagleboard/u-boot.git"
 
 override_dh_strip:
 	# Just disable for now...
 
 override_dh_auto_configure:
-	git clone -b $(UB_TAG) https://git.beagleboard.org/beagleboard/u-boot.git --depth=1
-	make -C ./u-boot -j1 ARCH=arm CROSS_COMPILE= distclean 
-	make -C ./u-boot -j1 ARCH=arm CROSS_COMPILE= $(UB_CONFIG)
-	make -C ./u-boot -j3 ARCH=arm CROSS_COMPILE=
+	mkdir -p ./tmp/pkg/
+	mkdir -p ./tmp/u-boot/ ; git -c http.sslVerify=false clone -b $(UB_BRANCH) $(UB_REPO) --depth=5 ./tmp/u-boot/ ; git --git-dir ./tmp/u-boot/.git log --pretty=oneline
+	make -C ./tmp/u-boot -j1 ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- $(UB_CONFIG)_defconfig
+	make -C ./tmp/u-boot -j2 ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-
+	ls -lha ./tmp/u-boot/
+	cp -v ./tmp/u-boot/MLO ./tmp/pkg/
+	cp -v ./tmp/u-boot/u-boot-dtb.img ./tmp/pkg/
 
 %:
 	dh $@
 
+override_dh_builddeb:
+	dh_builddeb -- -Zxz
