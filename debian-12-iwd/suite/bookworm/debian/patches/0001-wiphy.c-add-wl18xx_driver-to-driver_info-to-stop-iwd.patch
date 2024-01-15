@@ -1,0 +1,26 @@
+From eda9cf3ec5d7bef0491ac66e8628e8d6208eb655 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Mon, 15 Jan 2024 16:14:54 -0600
+Subject: [PATCH] wiphy.c: add wl18xx_driver to driver_info to stop iwd from
+ re-create the netdev
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ src/wiphy.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/wiphy.c b/src/wiphy.c
+index 3258b761..69b16463 100644
+--- a/src/wiphy.c
++++ b/src/wiphy.c
+@@ -97,6 +97,7 @@ static const struct driver_info driver_infos[] = {
+ 	{ "rtw_*",           DEFAULT_IF },
+ 	{ "brcmfmac",        DEFAULT_IF },
+ 	{ "bcmsdh_sdmmc",    DEFAULT_IF },
++	{ "wl18xx_driver",   DEFAULT_IF },
+ };
+ 
+ static const struct driver_flag_name driver_flag_names[] = {
+-- 
+2.39.2
+
