@@ -7,9 +7,9 @@ if ! id | grep -q root; then
 fi
 
 debian_bookworm () {
-	echo "deb http://deb.debian.org/debian bookworm main contrib non-free non-free-firmware" > /tmp/sources.list
+	echo "deb http://192.168.1.12/debian bookworm main contrib non-free non-free-firmware" > /tmp/sources.list
+	echo "deb http://192.168.1.12/debian bookworm-updates main contrib non-free non-free-firmware" >> /tmp/sources.list
 	echo "deb http://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware" >> /tmp/sources.list
-	echo "deb http://deb.debian.org/debian bookworm-updates main contrib non-free non-free-firmware" >> /tmp/sources.list
 
 	echo "" >> /tmp/sources.list
 	echo "deb [arch=armhf signed-by=/usr/share/keyrings/rcn-ee-archive-keyring.gpg] http://repos.rcn-ee.net/debian/ bookworm main" >> /tmp/sources.list
@@ -26,9 +26,9 @@ debian_bookworm () {
 }
 
 debian_bullseye () {
-	echo "deb http://deb.debian.org/debian bullseye main contrib non-free" > /tmp/sources.list
+	echo "deb http://192.168.1.12/debian bullseye main contrib non-free" > /tmp/sources.list
+	echo "deb http://192.168.1.12/debian bullseye-updates main contrib non-free" >> /tmp/sources.list
 	echo "deb http://security.debian.org/debian-security bullseye-security main contrib non-free" >> /tmp/sources.list
-	echo "deb http://deb.debian.org/debian bullseye-updates main contrib non-free" >> /tmp/sources.list
 
 	echo "" >> /tmp/sources.list
 	echo "deb [arch=armhf signed-by=/usr/share/keyrings/rcn-ee-archive-keyring.gpg] http://repos.rcn-ee.net/debian/ bullseye main" >> /tmp/sources.list
@@ -100,7 +100,6 @@ debian_bullseye () {
 	echo "" >> /tmp/sources.list
 	echo "#24.04 - noble" >> /tmp/sources.list
 	echo "#deb [arch=armhf signed-by=/usr/share/keyrings/rcn-ee-archive-keyring.gpg] http://repos.rcn-ee.com/ubuntu/ noble main" >> /tmp/sources.list
-
 
 	echo "" >> /tmp/sources.list
 
