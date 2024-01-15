@@ -1,10 +1,10 @@
 #!/bin/bash -e
 
-#https://git.beagleboard.org/beagleboard/u-boot/-/tree/v2022.04-bbb.io-am335x-am57xx
+#https://openbeagle.org/beagleboard/u-boot/-/tree/v2022.04-bbb.io-am335x-am57xx
 
 package_name="bb-u-boot-am335x-evm"
 debian_pkg_name="${package_name}"
-package_version="2022.04.20220602.3"
+package_version="2022.04.20240115.0"
 package_source=""
 src_dir=""
 
@@ -19,9 +19,9 @@ debian_patch=""
 
 clear_changelog="enable"
 
-bullseye_version="~bullseye+20231207"
-bookworm_version="~bookworm+20231207"
-trixie_version="~trixie+20231207"
-focal_version="~focal+20231207"
-jammy_version="~jammy+20231207"
-noble_version="~noble+20231207"
+bullseye_version="~bullseye+20240115"
+bookworm_version="~bookworm+20240115"
+trixie_version="~trixie+20240115"
+focal_version="~focal+20240115"
+jammy_version="~jammy+20240115"
+noble_version="~noble+20240115"
