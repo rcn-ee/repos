@@ -1,0 +1,17 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+export DH_VERBOSE=1
+
+UB_BRANCH=v6.1.0
+UB_REPO="https://git.gfnd.rcn-ee.org/TexasInstruments/pru-software-support-package.git"
+
+override_dh_auto_configure:
+	mkdir -p ./tmp/src/ ; git -c http.sslVerify=false clone -b $(UB_BRANCH) $(UB_REPO) --depth=5 ./tmp/src/
+
+%:
+	dh $@
+
+override_dh_builddeb:
+	dh_builddeb -- -Zxz
