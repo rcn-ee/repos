@@ -22,3 +22,4 @@ local_patch="bbbio0"
 clear_changelog="enable"
 
 bullseye_version="~bullseye+20240117"
+bookworm_version="~bookworm+20240117"
