@@ -26,7 +26,7 @@ run () {
 	elif  [  -f ${DIR}/suite/${suite}/readme.log ] ; then
 		cat ${DIR}/suite/${suite}/readme.log >> ${wfile}
 	else
-		echo "  * Rebuild for repos.rcn-ee.com" >> ${wfile}
+		echo "  * Rebuild ${debian_pkg_name}_${debian_version} for repos.rcn-ee.com" >> ${wfile}
 	fi
 	echo "" >> ${wfile}
 	echo " -- Robert Nelson <robertcnelson@gmail.com>  ${new_date}" >> ${wfile}
