@@ -1,0 +1,23 @@
+#!/usr/bin/make -f
+
+DEB_BUILD_OPTIONS=noautodbgsym
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+%:
+	dh $@
+
+override_dh_auto_install-indep:
+	dh_installdocs --indep -plibusbgx-doc \
+		doxygen-doc/html
+	dh_doxygen --indep -plibusbgx-doc
+
+override_dh_auto_configure:
+	dh_auto_configure -- \
+		--disable-examples
+
+execute_after_dh_auto_build:
+		$(MAKE) doxygen-run
+
+override_dh_builddeb:
+	dh_builddeb -- -Zxz

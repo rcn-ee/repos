@@ -1,0 +1,34 @@
+From cf104bd635fbded31832fb5c16374b1de739af9e Mon Sep 17 00:00:00 2001
+From: Manuel Traut <manuel.traut@mt.com>
+Date: Mon, 28 Aug 2023 14:55:44 +0200
+Subject: [PATCH] Automake: fix conditional tests build
+
+make distclean considers all DIST_SUBDIRS for cleaning.
+Therefore the Makefile in all listed directories need
+to be created.
+
+Signed-off-by: Manuel Traut <manuel.traut@mt.com>
+---
+ configure.ac | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+Index: libusbgx/configure.ac
+===================================================================
+--- libusbgx.orig/configure.ac
++++ libusbgx/configure.ac
+@@ -47,7 +47,6 @@ AM_CONDITIONAL(BUILD_EXAMPLES, [test "x$
+ AS_IF([test "x$enable_tests" = xyes], [
+ 	PKG_CHECK_MODULES([CMOCKA], [cmocka >= 1.0.0],
+ 			  AC_DEFINE(HAS_CMOCKA, 1, [detected cmocka]))
+-	AC_CONFIG_FILES([tests/Makefile])
+ ])
+ AM_CONDITIONAL(BUILD_TESTS, [test "x$enable_tests" = xyes])
+ 
+@@ -56,6 +55,6 @@ AS_IF([test "x$enable_gadget_schemes" =
+ AM_CONDITIONAL(TEST_GADGET_SCHEMES, [test "x$enable_gadget_schemes" != xno])
+ 
+ LT_INIT
+-AC_CONFIG_FILES([Makefile src/Makefile examples/Makefile include/usbg/usbg_version.h libusbgx.pc doxygen.cfg])
++AC_CONFIG_FILES([Makefile src/Makefile examples/Makefile tests/Makefile include/usbg/usbg_version.h libusbgx.pc doxygen.cfg])
+ DX_INIT_DOXYGEN([$PACKAGE_NAME],[doxygen.cfg])
+ AC_OUTPUT
