@@ -220,7 +220,9 @@ get_system () {
 		old_ker_pkg="bbb.io-kernel-6.1-bone"
 		ker_pkg="bbb.io-kernel-6.6-bone"
 		debian_bullseye
-		dont_use_uboot_overlays=true
+		#dont_use_uboot_overlays=true
+		disable_uboot_cape_universal=true
+		pru="uboot_overlay_pru=AM335X-PRU-UIO-00A0.dtbo"
 		upgrade_uboot=true
 		microsd="bb-u-boot-am335x-evm/install-mmcblk0.sh"
 		erase_mmc="mmcblk1"
@@ -230,7 +232,9 @@ get_system () {
 		old_ker_pkg="bbb.io-kernel-6.1-bone-rt"
 		ker_pkg="bbb.io-kernel-6.6-bone-rt"
 		debian_bullseye
-		dont_use_uboot_overlays=true
+		#dont_use_uboot_overlays=true
+		disable_uboot_cape_universal=true
+		pru="uboot_overlay_pru=AM335X-PRU-UIO-00A0.dtbo"
 		upgrade_uboot=true
 		microsd="bb-u-boot-am335x-evm/install-mmcblk0.sh"
 		erase_mmc="mmcblk1"
@@ -273,7 +277,7 @@ get_system () {
 		unset old_ker_pkg
 		old_ker_pkg="bbb.io-kernel-6.1-ti-rt-am335x"
 		ker_pkg="bbb.io-kernel-5.15-bone-rt"
-		debian_bullseye
+		debian_bookworm
 		dont_use_uboot_overlays=true
 		upgrade_uboot=true
 		microsd="bb-u-boot-am335x-evm/install-mmcblk0.sh"
@@ -307,7 +311,7 @@ get_system () {
 		;;
 	41-am335x-bbbw)
 		unset old_ker_pkg
-		ker_pkg="bbb.io-kernel-5.10-ti-am335x"
+		ker_pkg="bbb.io-kernel-6.1-ti-am335x"
 		debian_bookworm
 		disable_uboot_overlay_video=true
 		disable_uboot_cape_universal=true
@@ -318,7 +322,7 @@ get_system () {
 		;;
 	42-am335x-bbbw)
 		unset old_ker_pkg
-		ker_pkg="bbb.io-kernel-5.10-ti-am335x"
+		ker_pkg="bbb.io-kernel-6.1-ti-am335x"
 		debian_bookworm
 		disable_uboot_overlay_video=true
 		disable_uboot_cape_universal=true
@@ -341,19 +345,27 @@ get_system () {
 		;;
 	47-am57xx-bbai)
 		unset old_ker_pkg
-		#old_ker_pkg="bbb.io-kernel-5.10-ti-am57xx"
-		old_ker_pkg="bbb.io-kernel-6.1-ti-am57xx"
-		ker_pkg="bbb.io-kernel-5.10-ti-am57xx"
+		#old_ker_pkg="bbb.io-kernel-6.1-ti-am57xx"
+		#ker_pkg="bbb.io-kernel-5.10-ti-am57xx"
+		old_ker_pkg="bbb.io-kernel-5.10-ti-am57xx"
+		ker_pkg="bbb.io-kernel-6.1-ti-am57xx"
 		debian_bullseye
-		dont_use_uboot_overlays=true
+		#dont_use_uboot_overlays=true
+		upgrade_uboot=true
+		microsd="bb-u-boot-am57xx-evm/install-mmcblk0.sh"
+		erase_mmc="mmcblk1"
 		;;
 	48-am57xx-bbai)
 		unset old_ker_pkg
-		#old_ker_pkg="bbb.io-kernel-5.10-ti-am57xx"
-		old_ker_pkg="bbb.io-kernel-6.1-ti-am57xx"
-		ker_pkg="bbb.io-kernel-5.10-ti-am57xx"
+		#old_ker_pkg="bbb.io-kernel-6.1-ti-am57xx"
+		#ker_pkg="bbb.io-kernel-5.10-ti-am57xx"
+		old_ker_pkg="bbb.io-kernel-5.10-ti-am57xx"
+		ker_pkg="bbb.io-kernel-6.1-ti-am57xx"
 		debian_bullseye
-		dont_use_uboot_overlays=true
+		#dont_use_uboot_overlays=true
+		upgrade_uboot=true
+		microsd="bb-u-boot-am57xx-evm/install-mmcblk0.sh"
+		erase_mmc="mmcblk1"
 		;;
 	esac
 }

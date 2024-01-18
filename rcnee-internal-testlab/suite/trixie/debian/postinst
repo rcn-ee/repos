@@ -36,9 +36,6 @@ if [ -f /etc/apt/apt.conf.d/80proxy ] ; then
 	rm -f /etc/apt/apt.conf.d/80proxy || true
 fi
 
-systemctl enable apt-daily.timer || true
-systemctl enable apt-daily-upgrade.timer || true
-
 if [ ! -d /mnt/farm/uptime/ ] ; then
 	mkdir -p /mnt/farm || true
 	echo "192.168.1.89:/mnt/tank/farm /mnt/farm nfs defaults" >> /etc/fstab
