@@ -5,7 +5,7 @@
 
 package_name="ti-pru-software-v6.0"
 debian_pkg_name="${package_name}"
-package_version="6.0.1"
+package_version="6.0.1.0"
 package_source=""
 src_dir=""
 
@@ -17,10 +17,10 @@ dl_path="pool/main/${reprepro_dir}/"
 debian_version="${package_version}-0"
 debian_untar=""
 debian_patch=""
-local_patch="bbbio1"
+local_patch="bbbio2"
 
 clear_changelog="enable"
 
-bullseye_version="~bullseye+20240117"
-bookworm_version="~bookworm+20240117"
-trixie_version="~trixie+20240117"
+bullseye_version="~bullseye+20240118"
+bookworm_version="~bookworm+20240118"
+trixie_version="~trixie+20240118"
