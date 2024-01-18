@@ -7,17 +7,25 @@ DIR="$PWD"
 run () {
 	wfile="${DIR}/suite/${suite}/debian/new"
 
-	if [ "x${debian_version}" = "x" ] ; then
+	if [ ! "x${old_debian_version}" = "x" ] ; then
 		if [ "x${epoch}" = "x" ] ; then
-			echo "${debian_pkg_name} (${package_version}${local_patch}~${suite}+${simple_date}) ${suite}; urgency=low" > ${wfile}
+			echo "${debian_pkg_name} (${old_debian_version}${local_patch}~${suite}+${simple_date}) ${suite}; urgency=low" > ${wfile}
 		else
-			echo "${debian_pkg_name} (${epoch}:${package_version}${local_patch}~${suite}+${simple_date}) ${suite}; urgency=low" > ${wfile}
+			echo "${debian_pkg_name} (${epoch}:${old_debian_version}${local_patch}~${suite}+${simple_date}) ${suite}; urgency=low" > ${wfile}
 		fi
 	else
-		if [ "x${epoch}" = "x" ] ; then
-			echo "${debian_pkg_name} (${debian_version}${local_patch}~${suite}+${simple_date}) ${suite}; urgency=low" > ${wfile}
+		if [ "x${debian_version}" = "x" ] ; then
+			if [ "x${epoch}" = "x" ] ; then
+				echo "${debian_pkg_name} (${package_version}${local_patch}~${suite}+${simple_date}) ${suite}; urgency=low" > ${wfile}
+			else
+				echo "${debian_pkg_name} (${epoch}:${package_version}${local_patch}~${suite}+${simple_date}) ${suite}; urgency=low" > ${wfile}
+			fi
 		else
-			echo "${debian_pkg_name} (${epoch}:${debian_version}${local_patch}~${suite}+${simple_date}) ${suite}; urgency=low" > ${wfile}
+			if [ "x${epoch}" = "x" ] ; then
+				echo "${debian_pkg_name} (${debian_version}${local_patch}~${suite}+${simple_date}) ${suite}; urgency=low" > ${wfile}
+			else
+				echo "${debian_pkg_name} (${epoch}:${debian_version}${local_patch}~${suite}+${simple_date}) ${suite}; urgency=low" > ${wfile}
+			fi
 		fi
 	fi
 	echo "" >> ${wfile}

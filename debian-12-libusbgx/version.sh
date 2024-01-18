@@ -1,27 +1,24 @@
 #!/bin/bash -e
 
-#https://github.com/linux-usb-gadgets/libusbgx
+mirror="http://http.debian.net/debian"
 
 package_name="libusbgx"
 debian_pkg_name="${package_name}"
-package_version="0.2.0-git20210811.5"
-package_source="${package_name}_${package_version}.orig.tar.xz"
-src_dir="${package_name}_${package_version}"
+package_version="0.2.0"
+package_source="${debian_pkg_name}_${package_version}.orig.tar.gz"
+src_dir="${package_name}-${package_name}-v${package_version}"
 
-git_repo="https://github.com/linux-usb-gadgets/libusbgx"
-git_sha="fa4e7e92260e33f78b72e7796b3df28c4c84b8e2"
+git_repo=""
+git_sha=""
 reprepro_dir="libu/${package_name}"
-dl_path=""
+dl_path="pool/main/${reprepro_dir}/"
 
-debian_version="${package_version}-0"
+debian_version="${package_version}-3"
+old_debian_version="0.2.0-git20210811.5-3"
+debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
-debian_diff=""
+local_patch="bbbio1"
 
-clear_changelog="enable"
-
-buster_version="~buster+20230414"
-bullseye_version="~bullseye+20230414"
-bookworm_version="~bookworm+20230414"
-bionic_version="~bionic+20230414"
-focal_version="~focal+20230414"
-jammy_version="~jammy+20230414"
+bullseye_version="~bullseye+20240118"
+bookworm_version="~bookworm+20240118"
+jammy_version="~jammy+20240118"

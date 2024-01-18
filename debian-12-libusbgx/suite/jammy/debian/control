@@ -1,18 +1,55 @@
 Source: libusbgx
-Section: misc
-Priority: extra
-Maintainer: Robert Nelson <robertcnelson@gmail.com>
+Section: libs
+Priority: optional
+Maintainer: Manuel Traut <manut@mecka.net>
+Rules-Requires-Root: no
 Build-Depends:
- debhelper (>= 9)
- , dh-autoreconf
- , libconfig-dev
-Standards-Version: 4.5.1
+ debhelper-compat (= 13),
+ libconfig-dev,
+ doxygen,
+ graphviz,
+Standards-Version: 4.6.2
 Homepage: https://github.com/linux-usb-gadgets/libusbgx
+Vcs-Browser: https://salsa.debian.org/debian/libusbgx
+Vcs-Git: https://salsa.debian.org/debian/libusbgx.git
 
-Package: libusbgx
-Architecture: armhf
+Package: libusbgx-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
 Depends:
- ${shlibs:Depends}
- , ${misc:Depends}
-Description: beagleboard.org libusbgx
- beagleboard.org libusbgx for beagleboard devices
+ libusbgx2 (= ${binary:Version}),
+ ${misc:Depends},
+Description: Development files for libusbgx
+ It provides routines for creating and parsing USB gadget devices using
+ the configfs API. Currently, all USB gadget configfs functions that can
+ be enabled in kernel release 3.11 (Linux for Workgroups!) are supported.
+ .
+ This package contains the header and development files needed to build
+ programs and packages using libusbgx2.
+
+Package: libusbgx-doc
+Architecture: all
+Multi-Arch: foreign
+Section: doc
+Depends:
+ ${misc:Depends},
+Suggests: libusbgx-dev
+Description: Documentation files for libusbgx
+ It provides routines for creating and parsing USB gadget devices using
+ the configfs API. Currently, all USB gadget configfs functions that can
+ be enabled in kernel release 3.11 (Linux for Workgroups!) are supported.
+ .
+ This package contains the document files like examples files,
+ and doxygen generated API documentation.
+
+Package: libusbgx2
+Architecture: any
+Multi-Arch: same
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+Description: C library encapsulating the kernel USB gadget-configfs
+ It provides routines for creating and parsing USB gadget devices using
+ the configfs API. Currently, all USB gadget configfs functions that can
+ be enabled in kernel release 3.11 (Linux for Workgroups!) are supported.
