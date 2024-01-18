@@ -4,12 +4,12 @@ mirror="http://http.debian.net/debian"
 
 package_name="libusbgx"
 debian_pkg_name="${package_name}"
-package_version="0.2.0-git20210811.6"
+package_version="0.2.0-git20210811.7"
 package_source="${package_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}_${package_version}"
 
-git_repo="https://github.com/linux-usb-gadgets/libusbgx"
-git_sha="ec0b01c03fdc7893997b7b32ec1c12c6103f62f3"
+git_repo="https://salsa.debian.org/manut/libusbgx.git"
+git_sha="45be9b2c9e8fc84c06249b2c4fc968751e65630a"
 reprepro_dir="libu/${package_name}"
 dl_path=""
 
