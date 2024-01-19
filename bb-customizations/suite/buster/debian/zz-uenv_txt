@@ -17,9 +17,9 @@ if [ -f /boot/uEnv.txt ] ; then
 	#copy these under /boot/dtbs/${version}/overlays/ for older versions of u-boot.
 	if [ -f /boot/vmlinuz-${version} ] ; then
 		mkdir -p /boot/dtbs/${version}/overlays/ || true
-		cp /usr/lib/linux-image-${version}/*.dtb /boot/dtbs/${version}/ || true
-		cp /usr/lib/linux-image-${version}/*.dtbo /boot/dtbs/${version}/overlays/ || true
-		cp /usr/lib/linux-image-${version}/*.dtbo /boot/dtbs/${version}/ || true
+		cp /usr/lib/linux-image-${version}/*.dtb /boot/dtbs/${version}/ 2>/dev/null || true
+		cp /usr/lib/linux-image-${version}/*.dtbo /boot/dtbs/${version}/overlays/ 2>/dev/null || true
+		cp /usr/lib/linux-image-${version}/*.dtbo /boot/dtbs/${version}/ 2>/dev/null || true
 	fi
 
 	unset older_kernel
@@ -84,11 +84,11 @@ if [ -f ${udir}/uEnv.txt ] ; then
 		fi
 
 		mkdir -p ${udir}/dtbs/current/overlays/ || true
-		cp /usr/lib/linux-image-${version}/*.dtb ${udir}/dtbs/current/ || true
-		cp /usr/lib/linux-image-${version}/overlays/*.dtbo ${udir}/dtbs/current/overlays/ || true
-		cp /usr/lib/linux-image-${version}/overlays/*.dtbo ${udir}/dtbs/current/ || true
-		cp /usr/lib/linux-image-${version}/*.dtbo ${udir}/dtbs/current/overlays/ || true
-		cp /usr/lib/linux-image-${version}/*.dtbo ${udir}/dtbs/current/ || true
+		cp /usr/lib/linux-image-${version}/*.dtb ${udir}/dtbs/current/ 2>/dev/null || true
+		cp /usr/lib/linux-image-${version}/overlays/*.dtbo ${udir}/dtbs/current/overlays/ 2>/dev/null || true
+		cp /usr/lib/linux-image-${version}/overlays/*.dtbo ${udir}/dtbs/current/ 2>/dev/null || true
+		cp /usr/lib/linux-image-${version}/*.dtbo ${udir}/dtbs/current/overlays/ 2>/dev/null || true
+		cp /usr/lib/linux-image-${version}/*.dtbo ${udir}/dtbs/current/ 2>/dev/null || true
 
 		echo "zz-uenv_txt: Updating boot drive for: [${version}]"
 	fi
