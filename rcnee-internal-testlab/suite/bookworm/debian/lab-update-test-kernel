@@ -7,12 +7,16 @@ if ! id | grep -q root; then
 fi
 
 debian_bookworm () {
-	echo "deb http://192.168.1.12/debian bookworm main contrib non-free non-free-firmware" > /tmp/sources.list
-	echo "deb http://192.168.1.12/debian bookworm-updates main contrib non-free non-free-firmware" >> /tmp/sources.list
+	echo "deb http://192.168.1.10/debian bookworm main contrib non-free non-free-firmware" > /tmp/sources.list
+	echo "deb http://192.168.1.10/debian bookworm-updates main contrib non-free non-free-firmware" >> /tmp/sources.list
 	echo "deb http://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware" >> /tmp/sources.list
 
-	echo "" >> /tmp/sources.list
-	echo "deb [arch=armhf signed-by=/usr/share/keyrings/rcn-ee-archive-keyring.gpg] http://repos.rcn-ee.net/debian/ bookworm main" >> /tmp/sources.list
+	if [ -f /etc/bbb.io/templates/apt/beagle.list ] ; then
+		cp -v /etc/bbb.io/templates/apt/beagle.list /etc/apt/sources.list.d/beagle.list
+	else
+		echo "" >> /tmp/sources.list
+		echo "deb [arch=armhf signed-by=/usr/share/keyrings/rcn-ee-archive-keyring.gpg] http://repos.rcn-ee.net/debian/ bookworm main" >> /tmp/sources.list
+	fi
 
 	echo "" >> /tmp/sources.list
 
@@ -26,12 +30,16 @@ debian_bookworm () {
 }
 
 debian_bullseye () {
-	echo "deb http://192.168.1.12/debian bullseye main contrib non-free" > /tmp/sources.list
-	echo "deb http://192.168.1.12/debian bullseye-updates main contrib non-free" >> /tmp/sources.list
+	echo "deb http://192.168.1.10/debian bullseye main contrib non-free" > /tmp/sources.list
+	echo "deb http://192.168.1.10/debian bullseye-updates main contrib non-free" >> /tmp/sources.list
 	echo "deb http://security.debian.org/debian-security bullseye-security main contrib non-free" >> /tmp/sources.list
 
-	echo "" >> /tmp/sources.list
-	echo "deb [arch=armhf signed-by=/usr/share/keyrings/rcn-ee-archive-keyring.gpg] http://repos.rcn-ee.net/debian/ bullseye main" >> /tmp/sources.list
+	if [ -f /etc/bbb.io/templates/apt/beagle.list ] ; then
+		cp -v /etc/bbb.io/templates/apt/beagle.list /etc/apt/sources.list.d/beagle.list
+	else
+		echo "" >> /tmp/sources.list
+		echo "deb [arch=armhf signed-by=/usr/share/keyrings/rcn-ee-archive-keyring.gpg] http://repos.rcn-ee.net/debian/ bullseye main" >> /tmp/sources.list
+	fi
 
 	echo "" >> /tmp/sources.list
 	echo "#Debian - wheezy - 7.x" >> /tmp/sources.list
@@ -406,25 +414,25 @@ unset pkg_list
 pkg_list=$(dpkg --list | grep linux-image | awk '{print $2}' | grep -v linux-image-`uname -r` | tr '\n' ' ' || true)
 if [ ! "x${pkg_list}" = "x" ] ; then
 	echo "Cleaning up: ${pkg_list}"
-	apt -yq remove --purge ${pkg_list}
+	apt -o Dpkg::Progress-Fancy=0 -yq remove --purge ${pkg_list}
 fi
 
 echo "apt upgrade -q -y"
-DEBIAN_FRONTEND=noninteractive apt upgrade -q -y
+DEBIAN_FRONTEND=noninteractive apt -o Dpkg::Progress-Fancy=0 upgrade -q -y
 echo "apt dist-upgrade -q -y"
-DEBIAN_FRONTEND=noninteractive apt dist-upgrade -q -y
+DEBIAN_FRONTEND=noninteractive apt -o Dpkg::Progress-Fancy=0 dist-upgrade -q -y
 if [ ! "x${ker_pkg}" = "x" ] ; then
 	echo "apt -yq install ${ker_pkg}"
-	apt -yq install ${ker_pkg} || true
+	apt -o Dpkg::Progress-Fancy=0 -yq install ${ker_pkg} || true
 	if [ ! "x${old_ker_pkg}" = "x" ] ; then
 		echo "apt -yq remove ${old_ker_pkg}"
-		apt -yq remove ${old_ker_pkg} --purge || true
+		apt -o Dpkg::Progress-Fancy=0 -yq remove ${old_ker_pkg} --purge || true
 	fi
 fi
 
 dpkg --list | grep bbb.io-kernel
 
-apt -y autoremove || true
+apt -o Dpkg::Progress-Fancy=0 -y autoremove || true
 
 if [ "x${upgrade_uboot}" = "xtrue" ] ; then
 	lsblk
