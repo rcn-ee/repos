@@ -235,6 +235,7 @@ do_focal () {
 	msg="6.5-bone"  ; var="omap-psp" ; ver="V65X"  ; current_kernel ; generate_kernel_mainline_bone
 
 	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.8-bone"  ; var="omap-psp" ; ver="V68X"  ; current_kernel ; generate_kernel_mainline_bone
 
 	changelog
 }
@@ -278,6 +279,7 @@ do_jammy () {
 	msg="6.5-bone"  ; var="omap-psp" ; ver="V65X"  ; current_kernel ; generate_kernel_mainline_bone
 
 	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.8-bone"  ; var="omap-psp" ; ver="V68X"  ; current_kernel ; generate_kernel_mainline_bone
 
 	changelog
 }
@@ -319,6 +321,7 @@ do_noble () {
 	msg="6.5-bone"  ; var="omap-psp" ; ver="V65X"  ; current_kernel ; generate_kernel_mainline_bone
 
 	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.8-bone"  ; var="omap-psp" ; ver="V68X"  ; current_kernel ; generate_kernel_mainline_bone
 
 	changelog
 }
@@ -390,6 +393,8 @@ do_buster () {
 	msg="6.5-bone"  ; var="omap-psp" ; ver="V65X"  ; current_kernel ; generate_kernel_mainline_bone
 
 	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.8-bone"  ; var="omap-psp" ; ver="V68X"  ; current_kernel ; generate_kernel_mainline_bone
+
 	changelog
 }
 
@@ -460,6 +465,7 @@ do_bullseye () {
 	msg="6.5-bone"  ; var="omap-psp" ; ver="V65X"  ; current_kernel ; generate_kernel_mainline_bone
 
 	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.8-bone"  ; var="omap-psp" ; ver="V68X"  ; current_kernel ; generate_kernel_mainline_bone
 
 	changelog
 }
@@ -506,6 +512,7 @@ do_bookworm () {
 	msg="6.5-bone"  ; var="omap-psp" ; ver="V65X"  ; current_kernel ; generate_kernel_mainline_bone
 
 	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.8-bone"  ; var="omap-psp" ; ver="V68X"  ; current_kernel ; generate_kernel_mainline_bone
 
 	changelog
 }
@@ -553,6 +560,8 @@ do_trixie () {
 	msg="6.5-bone"  ; var="omap-psp" ; ver="V65X"  ; current_kernel ; generate_kernel_mainline_bone
 
 	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.8-bone"  ; var="omap-psp" ; ver="V68X"  ; current_kernel ; generate_kernel_mainline_bone
+
 	changelog
 }
 
