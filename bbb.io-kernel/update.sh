@@ -313,7 +313,7 @@ do_noble () {
 	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
 	unset rtl8723du
 
-	do_some_lts
+	do_all_lts
 
 	msg="6.2-bone"  ; var="omap-psp" ; ver="V62X"  ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.3-bone"  ; var="omap-psp" ; ver="V63X"  ; current_kernel ; generate_kernel_mainline_bone
