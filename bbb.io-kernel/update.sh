@@ -236,6 +236,7 @@ do_focal () {
 
 	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.8-bone"  ; var="omap-psp" ; ver="V68X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.9-bone"  ; var="omap-psp" ; ver="V69X"  ; current_kernel ; generate_kernel_mainline_bone
 
 	changelog
 }
@@ -280,6 +281,7 @@ do_jammy () {
 
 	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.8-bone"  ; var="omap-psp" ; ver="V68X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.9-bone"  ; var="omap-psp" ; ver="V69X"  ; current_kernel ; generate_kernel_mainline_bone
 
 	changelog
 }
@@ -322,6 +324,7 @@ do_noble () {
 
 	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.8-bone"  ; var="omap-psp" ; ver="V68X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.9-bone"  ; var="omap-psp" ; ver="V69X"  ; current_kernel ; generate_kernel_mainline_bone
 
 	changelog
 }
@@ -379,8 +382,6 @@ do_buster () {
 
 	do_all_lts
 
-	msg="5.14-bone" ; var="omap-psp" ; ver="V514X" ; current_kernel ; generate_kernel_mainline_bone
-
 	msg="5.16-bone" ; var="omap-psp" ; ver="V516X" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.17-bone" ; var="omap-psp" ; ver="V517X" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.18-bone" ; var="omap-psp" ; ver="V518X" ; current_kernel ; generate_kernel_mainline_bone
@@ -394,6 +395,7 @@ do_buster () {
 
 	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.8-bone"  ; var="omap-psp" ; ver="V68X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.9-bone"  ; var="omap-psp" ; ver="V69X"  ; current_kernel ; generate_kernel_mainline_bone
 
 	changelog
 }
@@ -451,8 +453,6 @@ do_bullseye () {
 
 	do_all_lts
 
-	msg="5.14-bone" ; var="omap-psp" ; ver="V514X" ; current_kernel ; generate_kernel_mainline_bone
-
 	msg="5.16-bone" ; var="omap-psp" ; ver="V516X" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.17-bone" ; var="omap-psp" ; ver="V517X" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.18-bone" ; var="omap-psp" ; ver="V518X" ; current_kernel ; generate_kernel_mainline_bone
@@ -466,6 +466,7 @@ do_bullseye () {
 
 	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.8-bone"  ; var="omap-psp" ; ver="V68X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.9-bone"  ; var="omap-psp" ; ver="V69X"  ; current_kernel ; generate_kernel_mainline_bone
 
 	changelog
 }
@@ -513,6 +514,7 @@ do_bookworm () {
 
 	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.8-bone"  ; var="omap-psp" ; ver="V68X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.9-bone"  ; var="omap-psp" ; ver="V69X"  ; current_kernel ; generate_kernel_mainline_bone
 
 	changelog
 }
@@ -561,6 +563,7 @@ do_trixie () {
 
 	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.8-bone"  ; var="omap-psp" ; ver="V68X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.9-bone"  ; var="omap-psp" ; ver="V69X"  ; current_kernel ; generate_kernel_mainline_bone
 
 	changelog
 }
