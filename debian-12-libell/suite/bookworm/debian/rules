@@ -2,7 +2,7 @@
 
 DEB_BUILD_OPTIONS=noautodbgsym
 
-export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all future=+lfs
 
 CFLAGS:=$(shell dpkg-buildflags --get CFLAGS)
 
@@ -19,4 +19,4 @@ override_dh_auto_test:
 	dbus-run-session -- make CFLAGS="$(CFLAGS) -fno-lto" check VERBOSE=1
 
 override_dh_builddeb:
-	dh_builddeb -- -Zxz
+	dh_builddeb -- -Zzstd

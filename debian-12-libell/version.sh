@@ -7,7 +7,7 @@ mirror="http://http.debian.net/debian"
 
 package_name="ell"
 debian_pkg_name="${package_name}"
-package_version="0.63"
+package_version="0.64"
 package_source="${debian_pkg_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}-${package_version}"
 
@@ -21,4 +21,4 @@ debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 local_patch="bbbio0"
 
-bookworm_version="~bookworm+20240314"
+bookworm_version="~bookworm+20240402"
