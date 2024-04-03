@@ -1,0 +1,33 @@
+#!/bin/sh
+
+set -e
+
+if [ ! -f /etc/systemd/system/getty.target.wants/serial-getty@ttyGS0.service ] ; then
+	systemctl enable serial-getty@ttyGS0.service
+fi
+
+if [ ! -f /etc/systemd/network/eth1.network ] ; then
+	cp -v /etc/bbb.io/templates/eth1-DHCP.network /etc/systemd/network/eth1.network
+fi
+
+if [ ! -f /etc/systemd/network/usb0.network ] ; then
+	cp -v /etc/bbb.io/templates/usb0-DHCPServer.network /etc/systemd/network/usb0.network
+fi
+
+if [ ! -f /etc/systemd/network/usb1.network ] ; then
+	cp -v /etc/bbb.io/templates/usb1-DHCPServer.network /etc/systemd/network/usb1.network
+fi
+
+if [ ! -d /etc/systemd/system/systemd-networkd-wait-online.service.d/ ] ; then
+	mkdir -p /etc/systemd/system/systemd-networkd-wait-online.service.d/ || true
+fi
+
+if [ ! -f /etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf ] ; then
+	cp -v /etc/bbb.io/templates/systemd-networkd-wait-online.override.conf /etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf
+fi
+
+if [ ! -f /etc/default/bb-boot ] ; then
+	cp -v /etc/bbb.io/templates/bb-boot /etc/default/bb-boot
+fi
+
+#DEBHELPER#
