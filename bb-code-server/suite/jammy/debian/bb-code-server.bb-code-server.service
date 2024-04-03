@@ -7,7 +7,6 @@ After=network.target
 Type=exec
 User=ubuntu
 Group=ubuntu
-ExecStartPre=/bin/ln -sf /opt/vsx-examples/examples/ /home/ubuntu/
 ExecStartPre=/bin/mkdir -p /home/ubuntu/.local/share/code-server/User/
 ExecStartPre=/bin/cp -v /opt/bb-code-server/settings.json /home/ubuntu/.local/share/code-server/User/
 ExecStart=/opt/bb-code-server/app/bin/code-server --cert --auth none --disable-telemetry --disable-update-check --config /opt/bb-code-server/config/config.yaml --extensions-dir /opt/bb-code-server/extensions/ --bind-addr 0.0.0.0:3000 /home/ubuntu/examples/BeagleBoard.code-workspace
