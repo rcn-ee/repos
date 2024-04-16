@@ -36,6 +36,10 @@ if [ -f /etc/apt/apt.conf.d/80proxy ] ; then
 	rm -f /etc/apt/apt.conf.d/80proxy || true
 fi
 
+if [ ! -f /etc/modules-load.d/spidev.conf ] ; then
+	echo "spidev" > /etc/modules-load.d/spidev.conf
+fi
+
 if [ ! -d /mnt/farm/uptime/ ] ; then
 	mkdir -p /mnt/farm || true
 	echo "192.168.1.89:/mnt/tank/farm /mnt/farm nfs defaults" >> /etc/fstab
