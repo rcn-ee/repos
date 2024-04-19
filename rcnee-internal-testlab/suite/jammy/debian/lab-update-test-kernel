@@ -339,6 +339,15 @@ get_system () {
 		microsd="bb-u-boot-am335x-evm/install-mmcblk0.sh"
 		erase_mmc="mmcblk1"
 		;;
+	43-am335x-bbb)
+		unset old_ker_pkg
+		ker_pkg="bbb.io-kernel-6.6-bone"
+		debian_bookworm
+		disable_uboot_overlay_video=true
+		disable_uboot_cape_universal=true
+		upgrade_uboot=true
+		emmc="bb-u-boot-am335x-evm/install-mmcblk1.sh"
+		;;
 	45-am57xx-bbai)
 		unset old_ker_pkg
 		ker_pkg="bbb.io-kernel-5.10-ti-am57xx"
@@ -406,7 +415,7 @@ setup_boot_uenvtxt
 
 dpkg --configure -a
 
-apt update
+apt-get update
 
 uname -r
 
@@ -414,25 +423,25 @@ unset pkg_list
 pkg_list=$(dpkg --list | grep linux-image | awk '{print $2}' | grep -v linux-image-`uname -r` | tr '\n' ' ' || true)
 if [ ! "x${pkg_list}" = "x" ] ; then
 	echo "Cleaning up: ${pkg_list}"
-	apt -o Dpkg::Progress-Fancy=0 -yq remove --purge ${pkg_list}
+	apt-get -yq remove --purge ${pkg_list}
 fi
 
-echo "apt upgrade -q -y"
-DEBIAN_FRONTEND=noninteractive apt -o Dpkg::Progress-Fancy=0 upgrade -q -y
-echo "apt dist-upgrade -q -y"
-DEBIAN_FRONTEND=noninteractive apt -o Dpkg::Progress-Fancy=0 dist-upgrade -q -y
+echo "apt-get upgrade -q -y"
+DEBIAN_FRONTEND=noninteractive apt-get upgrade -q -y
+echo "apt-get dist-upgrade -q -y"
+DEBIAN_FRONTEND=noninteractive apt-get dist-upgrade -q -y
 if [ ! "x${ker_pkg}" = "x" ] ; then
-	echo "apt -yq install ${ker_pkg}"
-	apt -o Dpkg::Progress-Fancy=0 -yq install ${ker_pkg} || true
+	echo "apt-get -yq install ${ker_pkg}"
+	apt-get -yq install ${ker_pkg} || true
 	if [ ! "x${old_ker_pkg}" = "x" ] ; then
-		echo "apt -yq remove ${old_ker_pkg}"
-		apt -o Dpkg::Progress-Fancy=0 -yq remove ${old_ker_pkg} --purge || true
+		echo "apt-get -yq remove ${old_ker_pkg}"
+		apt-get -yq remove ${old_ker_pkg} --purge || true
 	fi
 fi
 
 dpkg --list | grep bbb.io-kernel
 
-apt -o Dpkg::Progress-Fancy=0 -y autoremove || true
+apt-get -y autoremove || true
 
 if [ "x${upgrade_uboot}" = "xtrue" ] ; then
 	lsblk
