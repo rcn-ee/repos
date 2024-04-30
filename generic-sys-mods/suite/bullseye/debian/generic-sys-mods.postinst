@@ -17,4 +17,12 @@ echo "ARCH_SOC_MODULES=${ARCH_SOC_MODULES}" >> /etc/default/generic-sys-mods
 
 cp -vf /etc/bbb.io/templates/profile /etc/profile
 
+if [ -f /boot/firmware/extlinux/extlinux.conf ] ; then
+	if [ ! -d /boot/firmware/services/enable/ ] ; then
+		mkdir -p /boot/firmware/services/enable/ || true
+	fi
+	cp -r /etc/bbb.io/templates/services/* /boot/firmware/services/
+	cp /etc/bbb.io/templates/sysconf.txt /boot/firmware/sysconf.txt
+fi
+
 #DEBHELPER#

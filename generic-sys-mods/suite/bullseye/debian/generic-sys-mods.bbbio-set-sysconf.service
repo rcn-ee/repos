@@ -1,0 +1,11 @@
+[Unit]
+Description=BeagleBoard Set up system configuration
+Requires=boot-firmware.mount
+After=boot-firmware.mount
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/bbbio-set-sysconf
+
+[Install]
+RequiredBy=basic.target
