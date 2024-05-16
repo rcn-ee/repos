@@ -8,6 +8,7 @@ use feature 'switch';
 my $call_reboot = 0;
 
 my ($current_user) = getpwuid(1000);
+my ($current_group) = getgrgid(1000);
 
 my ($filename, $conf);
 
@@ -94,8 +95,16 @@ if (my $user_authorized_key = delete($conf->{user_authorized_key})) {
 
 if (my $new_user_name = delete($conf->{user_name})) {
     logger('debug', "Changing $current_user to $new_user_name");
+    if ( -f "/etc/systemd/system/default.target.wants/code-server\@$current_user.service") {
+        system("systemctl stop code-server\@$current_user.service");
+    }
+    if( -f "/usr/lib/systemd/system/bb-code-server.service") {
+        system("systemctl stop bb-code-server.service");
+    }
+    system("pgrep -u $current_user | xargs ps -f -p");
+    system("pkill -u $current_user");
     system("usermod --login $new_user_name --home /home/$new_user_name --move-home $current_user");
-    system("groupmod --new-name $new_user_name $current_user");
+    system("groupmod --new-name $new_user_name $current_group");
     if( -f "/etc/issue") {
         system("sed -i -e 's:\\[$current_user\\]:\\[$new_user_name\\]:g' /etc/issue");
     }
@@ -105,13 +114,18 @@ if (my $new_user_name = delete($conf->{user_name})) {
     if( -f "/etc/lightdm/lightdm.conf") {
         system("sed -i -e 's:autologin-user=$current_user:autologin-user=$new_user_name:g' /etc/lightdm/lightdm.conf");
     }
+    if( -f "/home/$new_user_name/.local/share/code-server/coder.json") {
+        system("sed -i -e 's:/home/$current_user:/home/$new_user_name:g' /home/$new_user_name/.local/share/code-server/coder.json");
+    }
+    if ( -f "/etc/systemd/system/default.target.wants/code-server\@$current_user.service") {
+        system("systemctl disable code-server\@$current_user.service");
+        system("sed -i -e 's:/home/$current_user:/home/$new_user_name:g' /var/www/html/VSCode.html");
+        system("systemctl enable code-server\@$new_user_name.service");
+    }
     if( -f "/usr/lib/systemd/system/bb-code-server.service") {
         system("sed -i -e 's:User=$current_user:User=$new_user_name:g' /usr/lib/systemd/system/bb-code-server.service");
-        system("sed -i -e 's:Group=$current_user:Group=$new_user_name:g' /usr/lib/systemd/system/bb-code-server.service");
+        system("sed -i -e 's:Group=$current_group:Group=$new_user_name:g' /usr/lib/systemd/system/bb-code-server.service");
         system("sed -i -e 's:/home/$current_user/:/home/$new_user_name/:g' /usr/lib/systemd/system/bb-code-server.service");
-        if( -f "/home/$new_user_name/.local/share/code-server/coder.json") {
-            system("sed -i -e 's:/home/$current_user:/home/$new_user_name:g' /home/$new_user_name/.local/share/code-server/coder.json");
-        }
     }
     $call_reboot = 1;
 }
@@ -258,14 +272,14 @@ q(# This file will be automatically evaluated and installed at next boot
 # leave no space to indicate the line is an example that could be
 # uncommented.
 
-# root_password - Set a password for the root user
+# root_password - Set a password for the root user (not used in ubuntu)
 #root_password=FooBar
 
-# root_authorized_key - Set an authorized key for a root ssh login
+# root_authorized_key - Set an authorized key for a root ssh login (not used in ubuntu)
 #root_authorized_key=
 
 # user_name - Set a user name for the user (1000)
-#user_name=debian
+#user_name=beagle
 
 # user_password - Set a password for user (1000)
 #user_password=FooBar
