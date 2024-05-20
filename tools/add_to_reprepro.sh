@@ -27,7 +27,6 @@ runner () {
 start_run () {
 	dist="debian"
 	deb_arch="armhf"
-	suite="buster" ; runner
 	suite="bullseye" ; runner
 	suite="bookworm" ; runner
 	suite="trixie" ; runner
