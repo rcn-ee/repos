@@ -5,9 +5,11 @@ ConditionFileIsExecutable=/usr/bin/ssh-keygen
 
 [Service]
 Type=oneshot
-ExecStartPre=-/bin/sh -c "/bin/rm -f -v /etc/ssh/ssh_host_*_key*"
-ExecStart=/usr/bin/ssh-keygen -A -v
-ExecStartPost=/bin/systemctl disable regenerate_ssh_host_keys
+ExecStartPre=-sh -c "rm -f -v /etc/ssh/ssh_host_*_key*"
+ExecStart=ssh-keygen -A -v
+ExecStartPost=-sh -c "echo ssh-keygen: Complete"
+ExecStartPost=systemctl disable regenerate_ssh_host_keys
+StandardOutput=journal+console
 
 [Install]
 WantedBy=multi-user.target

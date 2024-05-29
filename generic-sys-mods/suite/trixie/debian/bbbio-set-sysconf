@@ -5,6 +5,8 @@ use IO::File;
 use IO::Pipe;
 use feature 'switch';
 
+my $enable_lightdm = 0;
+my $enable_ufw = 0;
 my $call_reboot = 0;
 
 my ($current_user) = getpwuid(1000);
@@ -19,7 +21,7 @@ $conf = read_conf($filename);
 
 if (my $pass = delete($conf->{root_password})) {
     my $pipe;
-    logger('debug', 'Resetting root password');
+    logger('info', 'Resetting root password');
     unless (open($pipe, '|-', '/usr/sbin/chpasswd')) {
 	my $err = $!;
 	logger('error', "Could not run chpasswd: $err");
@@ -32,7 +34,7 @@ if (my $pass = delete($conf->{root_password})) {
 
 if (my $user_pass = delete($conf->{user_password})) {
     my $pipe;
-    logger('debug', "Resetting $current_user password");
+    logger('info', "Resetting $current_user password");
     unless (open($pipe, '|-', '/usr/sbin/chpasswd')) {
         my $err = $!;
         logger('error', "Could not run chpasswd: $err");
@@ -46,12 +48,13 @@ if (my $user_pass = delete($conf->{user_password})) {
     if( -f "/etc/issue.net") {
         system("sed -i -e 's:\\] with a one time password of \\[temppwd\\]:\\]:g' /etc/issue.net");
     }
+    $enable_lightdm = 1;
     $call_reboot = 1;
 }
 
 if (my $root_authorized_key = delete($conf->{root_authorized_key})) {
     my $fh;
-    logger('debug', "Adding key to root's authorized_keys");
+    logger('info', "Adding key to root's authorized_keys");
     if(! -d "/root/.ssh") {
         if(!mkdir("/root/.ssh", 0700)) {
             my $err = sprintf("Could not create /root/.ssh directory: %s", $!);
@@ -71,7 +74,7 @@ if (my $root_authorized_key = delete($conf->{root_authorized_key})) {
 
 if (my $user_authorized_key = delete($conf->{user_authorized_key})) {
     my $fh;
-    logger('debug', "Adding key to $current_user authorized_keys");
+    logger('info', "Adding key to $current_user authorized_keys");
     if(! -d "/home/$current_user/.ssh") {
         if(!mkdir("/home/$current_user/.ssh", 0700)) {
             my $err = sprintf("Could not create /home/$current_user/.ssh directory: %s", $!);
@@ -94,14 +97,13 @@ if (my $user_authorized_key = delete($conf->{user_authorized_key})) {
 }
 
 if (my $new_user_name = delete($conf->{user_name})) {
-    logger('debug', "Changing $current_user to $new_user_name");
+    logger('info', "Changing $current_user to $new_user_name");
     if ( -f "/etc/systemd/system/default.target.wants/code-server\@$current_user.service") {
         system("systemctl stop code-server\@$current_user.service");
     }
     if( -f "/usr/lib/systemd/system/bb-code-server.service") {
         system("systemctl stop bb-code-server.service");
     }
-    system("pgrep -u $current_user | xargs ps -f -p");
     system("pkill -u $current_user");
     system("usermod --login $new_user_name --home /home/$new_user_name --move-home $current_user");
     system("groupmod --new-name $new_user_name $current_group");
@@ -113,6 +115,10 @@ if (my $new_user_name = delete($conf->{user_name})) {
     }
     if( -f "/etc/lightdm/lightdm.conf") {
         system("sed -i -e 's:autologin-user=$current_user:autologin-user=$new_user_name:g' /etc/lightdm/lightdm.conf");
+    }
+    if( -f "/etc/lightdm/lightdm.conf.d/$current_user.conf") {
+        system("sed -i -e 's:autologin-user=$current_user:autologin-user=$new_user_name:g' /etc/lightdm/lightdm.conf.d/$current_user.conf");
+        system("mv /etc/lightdm/lightdm.conf.d/$current_user.conf /etc/lightdm/lightdm.conf.d/$new_user_name.conf");
     }
     if( -f "/home/$new_user_name/.local/share/code-server/coder.json") {
         system("sed -i -e 's:/home/$current_user:/home/$new_user_name:g' /home/$new_user_name/.local/share/code-server/coder.json");
@@ -127,11 +133,12 @@ if (my $new_user_name = delete($conf->{user_name})) {
         system("sed -i -e 's:Group=$current_group:Group=$new_user_name:g' /usr/lib/systemd/system/bb-code-server.service");
         system("sed -i -e 's:/home/$current_user/:/home/$new_user_name/:g' /usr/lib/systemd/system/bb-code-server.service");
     }
+    $enable_lightdm = 1;
     $call_reboot = 1;
 }
 
 if (my $iwd_psk_file = delete($conf->{iwd_psk_file})) {
-    logger('debug', "Setting up iwd with '$iwd_psk_file'");
+    logger('info', "Setting up iwd with '$iwd_psk_file'");
     if( -f "/boot/firmware/services/$iwd_psk_file") {
         system("cp /boot/firmware/services/$iwd_psk_file /var/lib/iwd/");
         system("dos2unix -q /var/lib/iwd/$iwd_psk_file");
@@ -140,7 +147,7 @@ if (my $iwd_psk_file = delete($conf->{iwd_psk_file})) {
 }
 
 if (my $hostapd_file = delete($conf->{hostapd_file})) {
-    logger('debug', "Setting up hostapd with '$hostapd_file'");
+    logger('info', "Setting up hostapd with '$hostapd_file'");
     if( -f "/boot/firmware/services/$hostapd_file") {
         system("cp /boot/firmware/services/$hostapd_file /etc/hostapd/SoftAp0.conf");
         system("dos2unix -q /etc/hostapd/SoftAp0.conf");
@@ -150,7 +157,7 @@ if (my $hostapd_file = delete($conf->{hostapd_file})) {
 
 if (my $name = delete($conf->{hostname})) {
     my $fh;
-    logger('debug', "Setting hostname to '$name'");
+    logger('info', "Setting hostname to '$name'");
     unless ($fh = IO::File->new('/etc/hostname', 'w')) {
 	my $err = $!;
 	logger('error', "Could not write hostname '$name': $err");
@@ -161,7 +168,7 @@ if (my $name = delete($conf->{hostname})) {
     system('hostname', '--file', '/etc/hostname');
 
     my $fha;
-    logger('debug', "Adding '$name' to /etc/hosts");
+    logger('info', "Adding '$name' to /etc/hosts");
     unless ($fha = IO::File->new('/etc/hosts', 'w')) {
 	my $err = $!;
 	logger('error', "Could not write to /etc/hosts '$name': $err");
@@ -179,27 +186,94 @@ if (my $name = delete($conf->{hostname})) {
 }
 
 if (my $new_keymap = delete($conf->{keymap})) {
+    logger('info', "Setting keymap to '$new_keymap'");
     system("/usr/lib/beagleboard-sys-mods/imager_custom set_keymap '$new_keymap'");
     $call_reboot = 1;
 }
 
 if (my $new_timezone = delete($conf->{timezone})) {
+    logger('info', "Setting timezone to '$new_timezone'");
     system("/usr/lib/beagleboard-sys-mods/imager_custom set_timezone '$new_timezone'");
     $call_reboot = 1;
 }
 
 if (my $legacy_rndis_support = delete($conf->{legacy_rndis_support})) {
-    logger('debug', "Enabling Legacy RNDIS support");
+    logger('info', "Enabling Legacy RNDIS support");
     if( -f "/etc/default/bb-boot") {
         system("sed -i -e 's:USB_RNDIS_DISABLED=yes:#USB_RNDIS_DISABLED=yes:g' /etc/default/bb-boot");
         $call_reboot = 1;
     }
 }
 
+if (my $new_enable_ufw = delete($conf->{enable_ufw})) {
+    logger('info', "UFW: Enable UFW firewall");
+    $enable_ufw = 1;
+}
+
+if (my $new_ufw_allow_ssh = delete($conf->{ufw_allow_ssh})) {
+    logger('info', "UFW: allow ssh access over port 22");
+    system("ufw allow 22");
+    $enable_ufw = 1;
+}
+
+if (my $new_ufw_allow_http = delete($conf->{ufw_allow_http})) {
+    logger('info', "UFW: allow http access over port 80");
+    system("ufw allow 80");
+    $enable_ufw = 1;
+}
+
+if (my $new_ufw_allow_https = delete($conf->{ufw_allow_https})) {
+    logger('info', "UFW: allow https access over port 443");
+    system("ufw allow 443");
+    $enable_ufw = 1;
+}
+
+if (my $new_ufw_allow_nodered = delete($conf->{ufw_allow_nodered})) {
+    logger('info', "UFW: allow nodered access over port 1880");
+    system("ufw allow 1880");
+    $enable_ufw = 1;
+}
+
+if (my $new_ufw_allow_vscode = delete($conf->{ufw_allow_vscode})) {
+    logger('info', "UFW: allow vscode access over port 3000");
+    system("ufw allow 3000");
+    $enable_ufw = 1;
+}
+
+if (my $new_ufw_allow_vnc = delete($conf->{ufw_allow_vnc})) {
+    logger('info', "UFW: allow vnc access over port 5901");
+    system("ufw allow 5901");
+    $enable_ufw = 1;
+}
+
+if (my $new_ufw_allow_cockpit = delete($conf->{ufw_allow_cockpit})) {
+    logger('info', "UFW: allow cockpit access over port 9090");
+    system("ufw allow 9090");
+    $enable_ufw = 1;
+}
+
 rewrite_conf_file($filename, $conf);
 
+if ($enable_ufw) {
+    logger('info', "UFW: Enabling UFW firewall");
+    system("ufw enable");
+    system("ufw status");
+    $call_reboot = 1;
+}
+
+if ($enable_lightdm) {
+    if( -f "/usr/lib/systemd/system/lightdm.service") {
+        logger('info', "Enabling lightdm.service");
+        system("systemctl enable lightdm.service");
+    }
+}
+
 if ($call_reboot) {
-    system("systemctl reboot");
+    logger('info', "**********************************************");
+    logger('info', "Rebooting after setting up sysconf.txt options");
+    logger('info', "**********************************************");
+    sleep 2;
+    system('systemctl', '--message="Rebooting after setting up sysconf.txt options"', 'reboot');
 }
 
 exit 0;
@@ -237,8 +311,8 @@ sub read_conf {
 
 sub logger {
     my ($prio, $msg) = @_;
-    system('logger', '-p', "daemon.$prio",
-	   '-t', 'bbbio-set-sysconf', $msg);
+    system('logger', '-p', "daemon.$prio", '-t', 'bbbio-set-sysconf', $msg);
+    system('echo', $msg);
 }
 
 sub rewrite_conf_file {
@@ -301,6 +375,30 @@ q(# This file will be automatically evaluated and installed at next boot
 
 # timezone - Set the system timezone.
 #timezone=America/Chicago
+
+# enable_ufw - enable ufw firewall (https://en.wikipedia.org/wiki/Uncomplicated_Firewall)
+#enable_ufw=yes
+
+# ufw_allow_ssh - allow ssh access over port 22
+#ufw_allow_ssh=yes
+
+# ufw_allow_http - allow http access over port 80
+#ufw_allow_http=yes
+
+# ufw_allow_https - allow https access over port 443
+#ufw_allow_https=yes
+
+# ufw_allow_nodered - allow nodered access over port 1880 (https://nodered.org/)
+#ufw_allow_nodered=yes
+
+# ufw_allow_vscode - allow vscode access over port 3000 (https://github.com/coder/code-server)
+#ufw_allow_vscode=yes
+
+# ufw_allow_vnc - allow vnc access over port 5901
+#ufw_allow_vnc=yes
+
+# ufw_allow_cockpit - allow cockpit access over port 9090 (https://cockpit-project.org/)
+#ufw_allow_cockpit=yes
 ));
 
     if (scalar keys %$conf) {
