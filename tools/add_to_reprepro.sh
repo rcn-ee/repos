@@ -30,6 +30,7 @@ start_run () {
 	suite="bullseye" ; runner
 	suite="bookworm" ; runner
 	suite="trixie" ; runner
+	suite="noble" ; runner
 
 	dist="ubuntu"
 	suite="focal" ; runner
