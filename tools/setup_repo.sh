@@ -264,6 +264,12 @@ suite="sid"
 archs="armhf source"
 setup_repo
 
+#24.04
+#Yes, this is under debian it's to make things easier..
+suite="noble"
+archs="armhf source"
+setup_repo
+
 ###Debian (arm64):
 
 dist="debian-arm64"
