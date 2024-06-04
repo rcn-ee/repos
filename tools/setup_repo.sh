@@ -58,22 +58,12 @@ if [ -f ${apache_dir}/${dist}/conf/distributions ] ; then
 	rm -f ${apache_dir}/${dist}/conf/distributions || true
 fi
 
-dist="debian-exp"
-if [ -f ${apache_dir}/${dist}/conf/distributions ] ; then
-	rm -f ${apache_dir}/${dist}/conf/distributions || true
-fi
-
-dist="debian-machinekit"
-if [ -f ${apache_dir}/${dist}/conf/distributions ] ; then
-	rm -f ${apache_dir}/${dist}/conf/distributions || true
-fi
-
-dist="debian-nodejs"
-if [ -f ${apache_dir}/${dist}/conf/distributions ] ; then
-	rm -f ${apache_dir}/${dist}/conf/distributions || true
-fi
-
 dist="ubuntu"
+if [ -f ${apache_dir}/${dist}/conf/distributions ] ; then
+	rm -f ${apache_dir}/${dist}/conf/distributions || true
+fi
+
+dist="debian-amd64"
 if [ -f ${apache_dir}/${dist}/conf/distributions ] ; then
 	rm -f ${apache_dir}/${dist}/conf/distributions || true
 fi
@@ -106,31 +96,6 @@ archs="armhf source"
 setup_repo
 
 suite="buster"
-archs="armhf source"
-setup_repo
-
-dist="debian-exp"
-suite="jessie"
-archs="armhf source"
-setup_repo
-
-dist="debian-exp"
-suite="stretch"
-archs="armhf source"
-setup_repo
-
-dist="debian-exp"
-suite="buster"
-archs="armhf source"
-setup_repo
-
-dist="debian-exp"
-suite="bullseye"
-archs="armhf source"
-setup_repo
-
-dist="debian-machinekit"
-suite="wheezy"
 archs="armhf source"
 setup_repo
 
