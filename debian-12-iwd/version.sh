@@ -6,7 +6,7 @@ mirror="http://http.debian.net/debian"
 
 package_name="iwd"
 debian_pkg_name="${package_name}"
-package_version="2.17"
+package_version="2.18"
 package_source="${debian_pkg_name}_${package_version}.orig.tar.xz"
 src_dir="${package_name}-${package_version}"
 
@@ -20,4 +20,5 @@ debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
 local_patch="bbbio0"
 
-bookworm_version="~bookworm+20240402"
+bookworm_version="~bookworm+20240606"
+noble_version="~noble+20240606"
