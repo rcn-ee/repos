@@ -191,6 +191,18 @@ do_some_lts () {
 	msg="6.6-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
 }
 
+do_some_bone () {
+	msg="6.2-bone"  ; var="omap-psp" ; ver="V62X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.3-bone"  ; var="omap-psp" ; ver="V63X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.4-bone"  ; var="omap-psp" ; ver="V64X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.5-bone"  ; var="omap-psp" ; ver="V65X"  ; current_kernel ; generate_kernel_mainline_bone
+
+	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.8-bone"  ; var="omap-psp" ; ver="V68X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.9-bone"  ; var="omap-psp" ; ver="V69X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.10-bone" ; var="omap-psp" ; ver="V610X" ; current_kernel ; generate_kernel_mainline_bone
+}
+
 do_focal () {
 	#20.04
 	arch="armhf"
@@ -225,18 +237,14 @@ do_focal () {
 	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
 	unset rtl8723du
 
+	msg="6.6-ti"     ; var="ti"    ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
+	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
+
 	do_all_lts
 
 	msg="5.19-bone" ; var="omap-psp" ; ver="V519X"  ; current_kernel ; generate_kernel_mainline_bone
 
-	msg="6.2-bone"  ; var="omap-psp" ; ver="V62X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.3-bone"  ; var="omap-psp" ; ver="V63X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.4-bone"  ; var="omap-psp" ; ver="V64X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.5-bone"  ; var="omap-psp" ; ver="V65X"  ; current_kernel ; generate_kernel_mainline_bone
-
-	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.8-bone"  ; var="omap-psp" ; ver="V68X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.9-bone"  ; var="omap-psp" ; ver="V69X"  ; current_kernel ; generate_kernel_mainline_bone
+	do_some_bone
 
 	changelog
 }
@@ -270,18 +278,14 @@ do_jammy () {
 	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
 	unset rtl8723du
 
+	msg="6.6-ti"     ; var="ti"    ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
+	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
+
 	do_all_lts
 
 	msg="5.19-bone" ; var="omap-psp" ; ver="V519X"  ; current_kernel ; generate_kernel_mainline_bone
 
-	msg="6.2-bone"  ; var="omap-psp" ; ver="V62X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.3-bone"  ; var="omap-psp" ; ver="V63X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.4-bone"  ; var="omap-psp" ; ver="V64X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.5-bone"  ; var="omap-psp" ; ver="V65X"  ; current_kernel ; generate_kernel_mainline_bone
-
-	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.8-bone"  ; var="omap-psp" ; ver="V68X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.9-bone"  ; var="omap-psp" ; ver="V69X"  ; current_kernel ; generate_kernel_mainline_bone
+	do_some_bone
 
 	changelog
 }
@@ -315,16 +319,12 @@ do_noble () {
 	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
 	unset rtl8723du
 
+	msg="6.6-ti"     ; var="ti"    ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
+	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
+
 	do_all_lts
 
-	msg="6.2-bone"  ; var="omap-psp" ; ver="V62X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.3-bone"  ; var="omap-psp" ; ver="V63X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.4-bone"  ; var="omap-psp" ; ver="V64X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.5-bone"  ; var="omap-psp" ; ver="V65X"  ; current_kernel ; generate_kernel_mainline_bone
-
-	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.8-bone"  ; var="omap-psp" ; ver="V68X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.9-bone"  ; var="omap-psp" ; ver="V69X"  ; current_kernel ; generate_kernel_mainline_bone
+	do_some_bone
 
 	changelog
 }
@@ -365,6 +365,9 @@ do_bullseye () {
 	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
 	unset rtl8723du
 
+	msg="6.6-ti"     ; var="ti"    ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
+	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
+
 	msg="4.19-bone" ; var="omap-psp" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.4-bone"  ; var="omap-psp" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_bone
 
@@ -388,14 +391,7 @@ do_bullseye () {
 	msg="5.19-bone" ; var="omap-psp" ; ver="V519X" ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.0-bone"  ; var="omap-psp" ; ver="V60X"  ; current_kernel ; generate_kernel_mainline_bone
 
-	msg="6.2-bone"  ; var="omap-psp" ; ver="V62X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.3-bone"  ; var="omap-psp" ; ver="V63X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.4-bone"  ; var="omap-psp" ; ver="V64X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.5-bone"  ; var="omap-psp" ; ver="V65X"  ; current_kernel ; generate_kernel_mainline_bone
-
-	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.8-bone"  ; var="omap-psp" ; ver="V68X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.9-bone"  ; var="omap-psp" ; ver="V69X"  ; current_kernel ; generate_kernel_mainline_bone
+	do_some_bone
 
 	changelog
 }
@@ -434,16 +430,12 @@ do_bookworm () {
 	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
 	unset rtl8723du
 
+	msg="6.6-ti"     ; var="ti"    ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
+	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
+
 	do_all_lts
 
-	msg="6.2-bone"  ; var="omap-psp" ; ver="V62X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.3-bone"  ; var="omap-psp" ; ver="V63X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.4-bone"  ; var="omap-psp" ; ver="V64X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.5-bone"  ; var="omap-psp" ; ver="V65X"  ; current_kernel ; generate_kernel_mainline_bone
-
-	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.8-bone"  ; var="omap-psp" ; ver="V68X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.9-bone"  ; var="omap-psp" ; ver="V69X"  ; current_kernel ; generate_kernel_mainline_bone
+	do_some_bone
 
 	changelog
 }
@@ -483,16 +475,12 @@ do_trixie () {
 	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
 	unset rtl8723du
 
+	msg="6.6-ti"     ; var="ti"    ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
+	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
+
 	do_all_lts
 
-	msg="6.2-bone"  ; var="omap-psp" ; ver="V62X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.3-bone"  ; var="omap-psp" ; ver="V63X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.4-bone"  ; var="omap-psp" ; ver="V64X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.5-bone"  ; var="omap-psp" ; ver="V65X"  ; current_kernel ; generate_kernel_mainline_bone
-
-	msg="6.7-bone"  ; var="omap-psp" ; ver="V67X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.8-bone"  ; var="omap-psp" ; ver="V68X"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.9-bone"  ; var="omap-psp" ; ver="V69X"  ; current_kernel ; generate_kernel_mainline_bone
+	do_some_bone
 
 	changelog
 }
