@@ -5,6 +5,7 @@ use IO::File;
 use IO::Pipe;
 use feature 'switch';
 
+my $wifi_not_configured = 1;
 my $enable_lightdm = 0;
 my $enable_ufw = 0;
 my $call_reboot = 0;
@@ -41,6 +42,26 @@ if (my $user_pass = delete($conf->{user_password})) {
         die $err;
     }
     $pipe->print("$current_user:$user_pass");
+    close($pipe);
+    if( -f "/etc/issue") {
+        system("sed -i -e 's:\\] with a one time password of \\[temppwd\\]:\\]:g' /etc/issue");
+    }
+    if( -f "/etc/issue.net") {
+        system("sed -i -e 's:\\] with a one time password of \\[temppwd\\]:\\]:g' /etc/issue.net");
+    }
+    $enable_lightdm = 1;
+    $call_reboot = 1;
+}
+
+if (my $user_enc_pass = delete($conf->{user_encypted_password})) {
+    my $pipe;
+    logger('info', "Resetting $current_user password");
+    unless (open($pipe, '|-', '/usr/sbin/chpasswd', '-e')) {
+        my $err = $!;
+        logger('error', "Could not run chpasswd: $err");
+        die $err;
+    }
+    $pipe->print("$current_user:$user_enc_pass");
     close($pipe);
     if( -f "/etc/issue") {
         system("sed -i -e 's:\\] with a one time password of \\[temppwd\\]:\\]:g' /etc/issue");
@@ -137,21 +158,41 @@ if (my $new_user_name = delete($conf->{user_name})) {
     $call_reboot = 1;
 }
 
-if (my $iwd_psk_file = delete($conf->{iwd_psk_file})) {
-    logger('info', "Setting up iwd with '$iwd_psk_file'");
-    if( -f "/boot/firmware/services/$iwd_psk_file") {
-        system("cp /boot/firmware/services/$iwd_psk_file /var/lib/iwd/");
-        system("dos2unix -q /var/lib/iwd/$iwd_psk_file");
-        system("systemctl restart iwd.service");
+if (my $wifi_regdom = delete($conf->{wifi_regdom})) {
+    if( -f "/etc/iwd/main.conf") {
+        logger('info', "Setting up iwd with Country code '$wifi_regdom'");
+        system("sed -i -e 's:#Country=US:Country=$wifi_regdom:g' /etc/iwd/main.conf");
+        if( -f "/boot/firmware/firstrun.sh") {
+            logger('info', "Configuring WiFi Credentials");
+            system("/usr/lib/beagleboard-sys-mods/iwd_migration.py");
+            $wifi_not_configured = 0;
+        }
+        $call_reboot = 1;
     }
 }
 
+if (my $iwd_psk_file = delete($conf->{iwd_psk_file})) {
+    if ($wifi_not_configured) {
+        if( -f "/boot/firmware/services/$iwd_psk_file") {
+            logger('info', "Setting up iwd with '$iwd_psk_file'");
+            system("cp /boot/firmware/services/$iwd_psk_file /var/lib/iwd/");
+            system("dos2unix -q /var/lib/iwd/$iwd_psk_file");
+            $wifi_not_configured = 0;
+            $call_reboot = 1;
+        }
+    }
+}
+
+if (my $iwd_psk_file_contents = delete($conf->{iwd_psk_file_contents})) {
+    logger('info', "Obsolete iwd_psk_file_contents");
+}
+
 if (my $hostapd_file = delete($conf->{hostapd_file})) {
-    logger('info', "Setting up hostapd with '$hostapd_file'");
     if( -f "/boot/firmware/services/$hostapd_file") {
+        logger('info', "Setting up hostapd with '$hostapd_file'");
         system("cp /boot/firmware/services/$hostapd_file /etc/hostapd/SoftAp0.conf");
         system("dos2unix -q /etc/hostapd/SoftAp0.conf");
-        system("systemctl restart hostapd\@SoftAp0.service");
+        $call_reboot = 1;
     }
 }
 
@@ -198,8 +239,8 @@ if (my $new_timezone = delete($conf->{timezone})) {
 }
 
 if (my $legacy_rndis_support = delete($conf->{legacy_rndis_support})) {
-    logger('info', "Enabling Legacy RNDIS support");
     if( -f "/etc/default/bb-boot") {
+        logger('info', "Enabling Legacy RNDIS support");
         system("sed -i -e 's:USB_RNDIS_DISABLED=yes:#USB_RNDIS_DISABLED=yes:g' /etc/default/bb-boot");
         $call_reboot = 1;
     }
@@ -364,6 +405,9 @@ q(# This file will be automatically evaluated and installed at next boot
 # iwd_psk_file - Set a configuration for iwd https://wiki.archlinux.org/title/iwd
 #iwd_psk_file=
 
+# wifi_regdom - Country Code (ISO Alpha-2) Requests the country be set for the system.
+#wifi_regdom=US
+
 # hostapd_file - Set a configuration for hostapd https://wiki.gentoo.org/wiki/Hostapd
 #hostapd_file=SoftAp0.conf
 
@@ -402,7 +446,7 @@ q(# This file will be automatically evaluated and installed at next boot
 ));
 
     if (scalar keys %$conf) {
-	logger('warn', 'Unprocessed keys left in $filename: ' .
+	logger('warn', 'Unprocessed keys left in /boot/firmware/sysconf.txt: ' .
 	       join(', ', sort keys %$conf));
 	$fh->print(
 q(
