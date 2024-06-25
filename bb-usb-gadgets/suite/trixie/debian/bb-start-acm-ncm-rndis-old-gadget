@@ -35,6 +35,10 @@ if [ -f /etc/default/bb-boot ] ; then
 	. /etc/default/bb-boot
 fi
 
+if [ -f /etc/default/generic-sys-mods ] ; then
+	. /etc/default/generic-sys-mods
+fi
+
 log="usb_gadget:"
 
 usb_gadget="/sys/kernel/config/usb_gadget"
@@ -54,7 +58,7 @@ usb_product="USB Device"
 usb_iserialnumber="1234BBBK5678"
 #usb_iserialnumber="$(cat /proc/device-tree/serial-number)"
 usb_imanufacturer="BeagleBoard.org"
-usb_iproduct="BeagleBone"
+usb_iproduct="$(cat /proc/device-tree/model | sed "s/ /_/g" | tr -d '\000')"
 
 #usb0 mass_storage
 usb_ms_stall=0
@@ -70,6 +74,10 @@ usb_ms_ro=1
 #cpsw_3_mac = wl18xx (AP) (cpsw_0_mac + 3)
 #cpsw_4_mac = usb1 (BeagleBone Side)
 #cpsw_5_mac = usb1 (USB host, pc side)
+
+if [ -f /etc/default/usb-oem ] ; then
+	. /etc/default/usb-oem
+fi
 
 run_libcomposite () {
 	if [ ! -d /sys/kernel/config/usb_gadget/g_multi/ ] ; then
