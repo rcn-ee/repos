@@ -295,6 +295,12 @@ suite="noble"
 archs="riscv64 source"
 setup_repo
 
+#24.10
+#Yes, this also under debian-riscv64, to better sync builds with debian..
+suite="oracular"
+archs="riscv64 source"
+setup_repo
+
 ###Debian (amd64):
 
 dist="debian-amd64"
