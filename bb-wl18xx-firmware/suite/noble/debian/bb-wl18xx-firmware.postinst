@@ -1,0 +1,42 @@
+#!/bin/sh
+#
+# see: dh_installdeb(1)
+
+set -e
+
+if [ ! -f /etc/default/bb-wl18xx-fw ] ; then
+	echo "WLFW=wl18xx-fw-4-8.9.0.0.83.bin" > /etc/default/bb-wl18xx-fw
+	. /etc/default/bb-wl18xx-fw
+else
+	. /etc/default/bb-wl18xx-fw
+fi
+
+echo "bb-wl18xx-firmware: [${WLFW}] was set in /etc/default/bb-wl18xx-fw"
+
+if [ -f /lib/firmware/ti-connectivity/wl18xx-fw-4.bin ] ; then
+	rm -f /lib/firmware/ti-connectivity/wl18xx-fw-4.bin || true
+	cp -v /lib/firmware/ti-connectivity/git/${WLFW} /lib/firmware/ti-connectivity/wl18xx-fw-4.bin
+else
+	cp -v /lib/firmware/ti-connectivity/git/${WLFW} /lib/firmware/ti-connectivity/wl18xx-fw-4.bin
+fi
+
+case "$1" in
+	configure)
+		if [ -x /usr/sbin/update-initramfs -a -e /etc/initramfs-tools/initramfs.conf ] ; then
+			update-initramfs -u
+		fi
+	;;
+
+	abort-upgrade|abort-remove|abort-deconfigure)
+	;;
+
+	*)
+		echo "postinst called with unknown argument \`$1'" >&2
+		exit 1
+	;;
+esac
+
+#DEBHELPER#
+
+exit 0
+

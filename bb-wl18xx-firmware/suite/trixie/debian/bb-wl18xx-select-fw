@@ -1,0 +1,47 @@
+#!/bin/bash -e
+
+#Mainline Firmware:
+#https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/
+
+#TI firmware:
+#https://git.ti.com/gitweb?p=wilink8-wlan/wl18xx_fw.git;a=summary
+
+if ! id | grep -q root; then
+	echo "bb-wl18xx-select-fw must be run as root:"
+	echo "sudo bb-wl18xx-select-fw"
+	exit
+fi
+
+if [ -f /etc/default/bb-wl18xx-fw ] ; then
+	. /etc/default/bb-wl18xx-fw
+fi
+
+FW_OPTION=$(whiptail --title "TI wl18xx Firmware Options" --menu "Choose TI wl18xx Firmware Version" 25 78 10 \
+"8.9.0.0.79" "TI wl18xx_fw git repo 8.9.0.0.79" \
+"8.9.0.0.81" "TI wl18xx_fw git repo 8.9.0.0.81" \
+"8.9.0.0.83" "(default) linux-firmware.git 8.9.0.0.83" \
+"8.9.0.0.84" "TI wl18xx_fw git repo 8.9.0.0.84" \
+"8.9.0.0.85" "TI wl18xx_fw git repo 8.9.0.0.85" \
+"8.9.0.0.86" "TI wl18xx_fw git repo 8.9.0.0.86" \
+"8.9.0.0.88" "TI wl18xx_fw git repo 8.9.0.0.88" \
+"8.9.0.0.89" "TI wl18xx_fw git repo 8.9.0.0.89" \
+"8.9.0.0.90" "TI wl18xx_fw git repo 8.9.0.0.90" \
+"8.9.1.0.0" "TI wl18xx_fw git repo 8.9.1.0.0" 3>&1 1>&2 2>&3)
+
+if [ "x${WLFW}" = "xwl18xx-fw-4-${FW_OPTION}.bin" ] ; then
+	echo "The chosen [wl18xx-fw-4-${FW_OPTION}.bin] firmware is already enabled."
+else
+	if [ -f /lib/firmware/ti-connectivity/git/wl18xx-fw-4-${FW_OPTION}.bin ] ; then
+		echo "Updating /etc/default/bb-wl18xx-fw with [WLFW=wl18xx-fw-4-${FW_OPTION}.bin]"
+		echo "WLFW=wl18xx-fw-4-${FW_OPTION}.bin" > /etc/default/bb-wl18xx-fw
+		rm -rf /lib/firmware/ti-connectivity/wl18xx-fw-4.bin
+		cp -v /lib/firmware/ti-connectivity/git/wl18xx-fw-4-${FW_OPTION}.bin /lib/firmware/ti-connectivity/wl18xx-fw-4.bin
+		sync
+		#Some users dont run with an initrd.img
+		if [ -f /boot/initrd.img-`uname -r` ] ; then
+			update-initramfs -u || true
+		fi
+	else
+		echo "Unable to find /lib/firmware/ti-connectivity/git/wl18xx-fw-4-${FW_OPTION}.bin"
+	fi
+fi
