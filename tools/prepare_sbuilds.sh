@@ -13,12 +13,10 @@ ubuntu_server="ports.ubuntu.com"
 
 builder=`cat /etc/hostname`
 
-unset flavor
-
 setup_update_sbuild () {
-	if [ ! -f /usr/share/debootstrap/scripts/${dist} ] ; then
-		ln -s /usr/share/debootstrap/scripts/${deboot} /usr/share/debootstrap/scripts/${dist}
-	fi
+#	if [ ! -f /usr/share/debootstrap/scripts/${dist} ] ; then
+#		ln -s /usr/share/debootstrap/scripts/${deboot} /usr/share/debootstrap/scripts/${dist}
+#	fi
 
 	if [ -f /usr/share/lintian/data/changes-file/known-dists ] ; then
 		unset lintian_check
@@ -28,11 +26,16 @@ setup_update_sbuild () {
 		fi
 	fi
 
-	if [ ! -f /var/lib/sbuild/${dist}-${arch}${flavor}.tar.gz ] ; then
-		sbuild-createchroot ${options} --arch=${arch} --make-sbuild-tarball=/var/lib/sbuild/${dist}-${arch}${flavor}.tar.gz ${dist} `mktemp -d` ${mirror}
+	if [ ! -f /var/lib/sbuild/${dist}-${arch}.tar.gz ] ; then
+		if [ ! -f /var/lib/sbuild/${dist}-${arch}.tar ] ; then
+			sbuild-createchroot ${options} --arch=${arch} --make-sbuild-tarball=/var/lib/sbuild/${dist}-${arch}.tar ${dist} `mktemp -d` ${mirror}
+		else
+			chown -R root:root /var/lib/sbuild/${dist}-${arch}.tar
+			sbuild-update -udcar ${dist}-${arch}-sbuild
+		fi
 	else
-		chown -R root:root /var/lib/sbuild/${dist}-${arch}${flavor}.tar.gz
-		sbuild-update -udcar ${dist}-${arch}${flavor}-sbuild
+		chown -R root:root /var/lib/sbuild/${dist}-${arch}.tar.gz
+		sbuild-update -udcar ${dist}-${arch}-sbuild
 	fi
 }
 
@@ -41,43 +44,37 @@ echo "\$build_source = 1;" >> ~/.sbuildrc
 echo "\$distribution = 'bookworm';" >> ~/.sbuildrc
 
 mirror="http://${proxy}${debian_server}"
-deboot="sid"
+#deboot="sid"
 
 dist="bullseye"
-unset flavor
 arch="armhf"
 options="--exclude=debfoster"
 setup_update_sbuild
 
 dist="bookworm"
-unset flavor
 arch="armhf"
 options="--exclude=debfoster"
 setup_update_sbuild
 
 dist="trixie"
-unset flavor
 arch="armhf"
 options="--exclude=debfoster"
 setup_update_sbuild
 
 mirror="http://${proxy}${ubuntu_server}"
-deboot="gutsy"
+#deboot="gutsy"
 
 dist="focal"
-unset flavor
 arch="armhf"
 options="--exclude=debfoster"
 setup_update_sbuild
 
 dist="jammy"
-unset flavor
 arch="armhf"
 options="--exclude=debfoster"
 setup_update_sbuild
 
 dist="noble"
-unset flavor
 arch="armhf"
 options="--exclude=debfoster"
 setup_update_sbuild
