@@ -44,47 +44,12 @@ if [ ! -d /mnt/farm/uptime/ ] ; then
 	mkdir -p /mnt/farm || true
 	echo "192.168.1.89:/mnt/tank/farm /mnt/farm nfs defaults" >> /etc/fstab
 
-	if [ -d /home/voodoo/ ] ; then
-		chown -R voodoo:voodoo /mnt/farm || true
-	elif [ -d /home/debian/ ] ; then
-		chown -R debian:debian /mnt/farm || true
-	elif [ -d /home/ubuntu/ ] ; then
-		chown -R ubuntu:ubuntu /mnt/farm || true
-	elif [ -d /home/beagle/ ] ; then
-		chown -R beagle:beagle /mnt/farm || true
-	fi
+	USER_GROUPS=$(groups `id -nu 1000`)
+	chown -R ${USER_GROUPS}:${USER_GROUPS} /mnt/farm || true
 fi
 
 if [ -f /lib/systemd/system/beagle-flasher-init-shutdown.service ] ; then
 	systemctl disable beagle-flasher-init-shutdown.service || true
-fi
-
-if [ -f /usr/lib/systemd/user/code-server.service ] ; then
-	if [ -f /etc/systemd/system/multi-user.target.wants/bb-code-server.service ] ; then
-		systemctl disable bb-code-server.service || true
-	fi
-
-	soc_family=$(cat /sys/devices/soc0/family || true)
-
-	case "${soc_family}" in
-	DRA7)
-		if [ -d /home/voodoo/ ] ; then
-			systemctl enable code-server@voodoo || true
-			mkdir -p  /home/voodoo/.config/code-server/ || true
-			echo "bind-addr: 0.0.0.0:8080" > /home/voodoo/.config/code-server/config.yaml
-			echo "auth: none" >> /home/voodoo/.config/code-server/config.yaml
-			echo "cert: true" >> /home/voodoo/.config/code-server/config.yaml
-			chown -R voodoo:voodoo /home/voodoo/.config/
-		elif [ -d /home/debian/ ] ; then
-			systemctl enable --now code-server@debian || true
-			mkdir -p  /home/debian/.config/code-server/ || true
-			echo "bind-addr: 0.0.0.0:8080" > /home/debian/.config/code-server/config.yaml
-			echo "auth: none" >> /home/debian/.config/code-server/config.yaml
-			echo "cert: true" >> /home/debian/.config/code-server/config.yaml
-			chown -R debian:debian /home/debian/.config/
-		fi
-		;;
-	esac
 fi
 
 new_machine=$(cat /proc/device-tree/model | sed "s/ /_/g" | sed "s/-/_/g" | tr -d '\000')
@@ -104,14 +69,7 @@ BeagleBoard.org_BeagleBone_AI)
 	;;
 esac
 
-if [ -d /home/voodoo/ ] ; then
-	echo "voodoo    ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/voodoo
-elif [ -d /home/debian/ ] ; then
-	echo "debian    ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/debian
-elif [ -d /home/ubuntu/ ] ; then
-	echo "ubuntu    ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/ubuntu
-elif [ -d /home/beagle/ ] ; then
-	echo "beagle    ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/beagle
-fi
+USER_GROUPS=$(groups `id -nu 1000`)
+echo "${USER_GROUPS}    ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USER_GROUPS}
 
 #DEBHELPER#
