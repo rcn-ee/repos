@@ -44,8 +44,8 @@ if [ ! -d /mnt/farm/uptime/ ] ; then
 	mkdir -p /mnt/farm || true
 	echo "192.168.1.89:/mnt/tank/farm /mnt/farm nfs defaults" >> /etc/fstab
 
-	USER_GROUPS=$(groups `id -nu 1000`)
-	chown -R ${USER_GROUPS}:${USER_GROUPS} /mnt/farm || true
+	CURRENT_USER=$(id -nu 1000)
+	chown -R ${CURRENT_USER}:${CURRENT_USER} /mnt/farm || true
 fi
 
 if [ -f /lib/systemd/system/beagle-flasher-init-shutdown.service ] ; then
@@ -69,7 +69,7 @@ BeagleBoard.org_BeagleBone_AI)
 	;;
 esac
 
-USER_GROUPS=$(groups `id -nu 1000`)
-echo "${USER_GROUPS}    ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USER_GROUPS}
+CURRENT_USER=$(id -nu 1000)
+echo "${CURRENT_USER}    ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/${CURRENT_USER}
 
 #DEBHELPER#
