@@ -18,7 +18,7 @@ dl_path="pool/main/${reprepro_dir}/"
 debian_version="${package_version}-1"
 debian_untar="${package_name}_${debian_version}.debian.tar.xz"
 debian_patch=""
-local_patch="bbbio0"
+local_patch="bbbio1"
 
 bookworm_version="~bookworm+20240710"
 trixie_version="~trixie+20240710"
