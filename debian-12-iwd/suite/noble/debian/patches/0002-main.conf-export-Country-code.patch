@@ -1,0 +1,33 @@
+From 8eea0e1b986895987520508070d486bdd595f53c Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Wed, 12 Jun 2024 11:30:59 -0500
+Subject: [PATCH 2/3] main.conf: export Country code
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ doc/main.conf | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/doc/main.conf b/doc/main.conf
+index 2fcd1073..17b4a776 100644
+--- a/doc/main.conf
++++ b/doc/main.conf
+@@ -26,6 +26,15 @@
+ #RoamThreshold=-70
+ #RoamThreshold5G=-76
+ #
++# Value: Country Code (ISO Alpha-2) Requests the country be set for the system.
++# Note that setting this is simply a request to set the country, and does not
++# guarantee the country will be set. For a self-managed wiphy it is never
++# possible to set the country from userspace. For other devices any regulatory
++# domain request is just a 'hint' and ultimately left up to the kernel to set
++# the country.
++#
++#Country=US
++#
+ [Network]
+ # If EnableNetworkConfiguration=true is set, iwd forwards DNS information to
+ # the system resolving service.  The currently supported services are:
+-- 
+2.39.2
+

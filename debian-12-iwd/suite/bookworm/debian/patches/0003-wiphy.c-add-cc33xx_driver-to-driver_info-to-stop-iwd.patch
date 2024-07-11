@@ -1,0 +1,26 @@
+From 2f58a008dbcb183b7280ea5016e46bc488a00e28 Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Sat, 22 Jun 2024 13:52:55 -0500
+Subject: [PATCH 3/3] wiphy.c: add cc33xx_driver to driver_info to stop iwd
+ from re-create the netdev
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ src/wiphy.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/wiphy.c b/src/wiphy.c
+index ef4b003d..d5428cda 100644
+--- a/src/wiphy.c
++++ b/src/wiphy.c
+@@ -98,6 +98,7 @@ static const struct driver_info driver_infos[] = {
+ 	{ "brcmfmac",        DEFAULT_IF },
+ 	{ "bcmsdh_sdmmc",    DEFAULT_IF },
+ 	{ "wl18xx_driver",   DEFAULT_IF },
++	{ "cc33xx_driver",   DEFAULT_IF },
+ };
+ 
+ static const struct driver_flag_name driver_flag_names[] = {
+-- 
+2.39.2
+
