@@ -1,0 +1,26 @@
+iNet Wireless Daemon packaged for Debian
+========================================
+
+This is the pre-packaged Debian version of iNet Wireless Daemon.
+
+
+Network device naming overridden
+--------------------------------
+
+This package installs a systemd network device configuration
+which overrides default naming scheme for wifi devices.
+See more details at <https://iwd.wiki.kernel.org/interface_lifecycle>,
+and discussion at <https://bugs.debian.org/941652>.
+
+
+Enable as persistently running service
+--------------------------------------
+
+In its default configuration the daemon runs only on-demand,
+triggered by DBus calls e.g. from included command-line tool iwctl.
+If you want the daemon to run persistently as a system service,
+enable it using the command 'systemctl enable --now iwd',
+or for non-systemd systems using the command 'update-rc.d iwd enable'.
+
+
+ -- Jonas Smedegaard <dr@jones.dk>  Tue, 30 Nov 2021 14:31:30 +0100

@@ -1,0 +1,43 @@
+Description: use system group sudo instead of wheel
+ System group wheel is unused on Debian systems by default,
+ and granting access based on it is a security risk,
+ as a group with that name might be added locally
+ for a different purpose.
+Author: Jonas Smedegaard <dr@jones.dk>
+Bug-Debian: https://bugs.debian.org/1050325
+Last-Update: 2023-08-30
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/src/iwd-dbus.conf
++++ b/src/iwd-dbus.conf
+@@ -15,7 +15,7 @@
+     <allow send_interface="net.connman.iwd.SharedCodeAgent"/>
+   </policy>
+ 
+-  <policy group="wheel">
++  <policy group="sudo">
+     <allow send_destination="net.connman.iwd"/>
+   </policy>
+ 
+--- a/tools/hwsim-dbus.conf
++++ b/tools/hwsim-dbus.conf
+@@ -12,7 +12,7 @@
+     <allow send_destination="net.connman.hwsim"/>
+   </policy>
+ 
+-  <policy group="wheel">
++  <policy group="sudo">
+     <allow send_destination="net.connman.hwsim"/>
+   </policy>
+ 
+--- a/wired/ead-dbus.conf
++++ b/wired/ead-dbus.conf
+@@ -13,7 +13,7 @@
+     <allow send_interface="net.connman.ead.Agent"/>
+   </policy>
+ 
+-  <policy group="wheel">
++  <policy group="sudo">
+     <allow send_destination="net.connman.ead"/>
+   </policy>
+ 

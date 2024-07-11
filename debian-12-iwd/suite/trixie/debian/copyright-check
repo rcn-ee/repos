@@ -1,0 +1,130 @@
+#!/bin/sh
+# Copyright 2020-2023  Jonas Smedegaard <dr@jones.dk>
+# Copyright 2020-2021  Purism, SPC
+# Description: helper script to update copyright_hints
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Depends:
+#  licensecheck,
+#  libimage-exiftool-perl,
+#  libipc-system-simple-perl,
+#  libpath-tiny-perl,
+#  libregexp-assemble-perl,
+#  perl,
+
+set -eu
+
+# resolve file regex from contained license or shebang, or path regex
+_file_regex() {
+	perl -MGetopt::Long=:config,gnu_getopt -MPath::Tiny -MRegexp::Assemble -MList::Util=any \
+		-e 'GetOptions ( \%opt, "shortname=s@", "grantglob=s@", "regex=s@", "shebang=s@", "nonverb=s@" );'\
+		-e '@section = split /\n\n+/, path("debian/copyright")->slurp_utf8;'\
+		-e 'for $name ( @{ $opt{shortname} } ) {'\
+			-e 'push @license, map { /^License:\h*\Q$name\E\n\h+(\S[^\n]*(?:\n\h+\S[^\n]*)*)/ } @section };'\
+		-e 'for $glob ( @{ $opt{grantglob} } ) {'\
+			-e 'push @files, grep { /^Files:\n?\h(?:\S[^\n]*\n?\h)*\Q$glob\E\s/ } @section };'\
+		-e '@grant = map { /^License(?:-Grant:|:\h*\S[^\n]*)\h*\n\h+(\S[^\n]*(?:\n\h+\S[^\n]*)*)/mg } @files;'\
+		-e '@firstline_re = map { qr/^\Q$_\E/ } @{ $opt{shebang} };'\
+		-e '$nonverb_re = Regexp::Assemble->new->add( "\\W+", map { "\\W+(?:$_)\\W+" } @{ $opt{nonverb} } )->as_string;'\
+		-e '@content_re = map { s/\W+/[**]/g; s/\Q[**]\E\d\Q[**]\E/[**]\\S{0,2}[**]/g; s/\Q[**]\E/$nonverb_re/g; qr/$_/ } @license, @grant;'\
+		-e '$inspect = sub {'\
+			-e 'return if $_[0]->is_dir;'\
+			-e '$file = $_[0];'\
+			-e 'if (@firstline_re) {'\
+				-e '($head) = $file->lines( { count => 1 } );'\
+				-e 'push @match, quotemeta and return '\
+					-e 'if any { $head =~ $_ } @firstline_re };'\
+			-e 'push @match, quotemeta'\
+				-e 'if any { $file->slurp_raw =~ $_ } @content_re };'\
+		-e 'for (@ARGV) {'\
+			-e 'path($_)->is_dir'\
+			-e '? path($_)->visit( \&$inspect, { recurse => 1 } )'\
+			-e ': &$inspect( path($_) ) };'\
+		-e '$files_re = Regexp::Assemble->new->add( @match, @{ $opt{regex} } );'\
+		-e 'print $files_re->as_string =~ s/\(\?:/\(/gr;'\
+		-- "$@"
+}
+
+SKIPFILES='skip|meta|comment'
+
+# default licensed files
+#RE_default=$(grep --files-with-matches --recursive --null \
+# --regexp='Copyright (C) .* Intel Corporation\. All rights reserved' \
+# | tr '\0' '|' | perl -pe 's/\|$//')
+RE_default=$(_file_regex --grantglob '*' -- *)
+
+# generated files
+RE_FSFUL_configure='(.*/)?configure'
+RE_FSFULLR='(.*/)?(aclocal|libtool|lt(options|sugar|version|~obsolete))\.m4'
+RE_FSFULLR_Makefile='(.*/)?Makefile\.in'
+RE_GPL_Autoconf='(.*/)?(compile|config\.(guess|sub)|depcomp|missing|test-driver|ylwrap)'
+RE_GPL_Libtool='(.*/)?ltmain\.sh'
+RE_X11='(.*/)?install-sh'
+RE_generated="$RE_FSFUL_configure|$RE_FSFULLR|$RE_FSFULLR_Makefile|$RE_GPL_Autoconf|$RE_GPL_Libtool|$RE_X11"
+
+# TODO: automate more of this manual cleanup:
+#  * strip garbage copyright holders
+#  * optionally merge equally licensed Files sections
+#  * do "sort -k2 -k1,1 -u" on copyright holders
+#  * merge copyright years for each copyright holder
+# TODO: strip files matching glob in current (only, no later) section
+_licensecheck() {
+	SKIPFILES=$SKIPFILES perl -MGetopt::Long=:config,gnu_getopt -MIPC::System::Simple=capture -MList::Util=uniq \
+		-e 'GetOptions ( \%opt, "check=s", "ignore=s", "shortname=s", "subset=s", "merge-licenses" );'\
+		-e '@subset = split( " ", $opt{subset} );' \
+		-e '$subset_globs = join "\n ", @subset;' \
+		-E 'if ( $subset_globs =~ /^[*]$/ ) { say STDERR "check default section(s) ..." }' \
+		-E 'elsif ( @subset and $opt{shortname} ) { say STDERR "check $opt{shortname} section(s) @subset ..." }' \
+		-E 'elsif (@subset) { say STDERR "check section(s) @subset ..." }' \
+		-E 'elsif ($opt{shortname} ) { say STDERR "check $opt{shortname} section(s) @subset ..." }' \
+		-E 'else { say STDERR "check remaining upstream section(s) ..." };' \
+		-e '@cmd = ( qw(licensecheck --copyright --deb-machine --recursive --lines 0), "--check", $opt{check}, "--ignore", $opt{ignore}, $opt{"merge-licenses"} ? "--merge-licenses" : (), "--" );'\
+		-E 'say STDERR "@cmd *" if $ENV{DEBUG};'\
+		-e '$_ = $dump = capture( @cmd, glob "*" );'\
+		-e 'if ( !$ENV{NOGLOBMERGE} and grep /[*]/, @subset ) { s/^.*?\n\nFiles: \K.*?(?=\n\w)/$subset_globs/s }' \
+		-e 'elsif (@subset) { s/^.*?\n\nFiles: \K/$subset_globs\n /s };' \
+		-e 'if ( $subset[0] ne "*" ) { s/^.*?\n\n//s };' \
+		-e 's/^Files:\K /\n /mg;' \
+		-e 's/^Copyright:\K /\n  /mg;' \
+		-e 's/(?:(?<=^  )|(?<=\d{4})),\K (?=\d{4})//mg;' \
+		-e 's/:(?:$ENV{SKIPFILES})$//mg;' \
+		-e 'if ($opt{shortname}) { s/^License: \K(.*)/ join " and\/or ", uniq sort grep( !m{\AUNKNOWN\Z}, split(" and\/or ",$1), $opt{shortname} ) /mge };' \
+		-e 'print $_;'\
+		-- "$@" \
+		>> debian/copyright_hints
+}
+
+rm -f debian/copyright_hints
+
+# try check all upstream files to learn roughly what to check in which order
+#rm -f debian/copyright_hints
+#_licensecheck --check '.*' --ignore '^debian/'
+#exit 0
+
+# check default licensed files first
+_licensecheck --shortname 'LGPL-2.1+' --subset '*' --check "^($RE_default)$" --ignore '^debian/' --merge-licenses
+
+# check generated files
+_licensecheck --shortname 'FSFUL' --subset '*/configure' --check "^($RE_FSFUL_configure)$" --ignore "^($RE_default|debian/.*)$"
+_licensecheck --shortname 'FSFULLR' --subset '*/aclocal.m4 */libtool.m4 */ltoptions.m4 */ltsugar.m4 */ltversion.m4 */lt~obsolete.m4' --check "^($RE_FSFULLR)$" --ignore "^($RE_default|debian/.*)$"
+_licensecheck --shortname 'FSFULLR~Makefile.in' --subset '*/Makefile.in' --check "^($RE_FSFULLR_Makefile)$" --ignore "^($RE_default|debian/.*)$"
+_licensecheck --shortname 'GPL-2+ with Autoconf-data exception' --subset '*/compile */config.guess */config.sub */depcomp */missing */test-driver */ylwrap' --check "^($RE_GPL_Autoconf)$" --ignore "^($RE_default|debian/.*)$"
+_licensecheck --shortname 'GPL-2+ with Libtool exception' --subset '*/ltmain.sh' --check "^($RE_GPL_Libtool)$" --ignore "^($RE_default|debian/.*)$"
+_licensecheck --shortname 'X11' --subset '*/install-sh' --check "^($RE_X11)$" --ignore "^($RE_default|debian/.*)$"
+
+# check generally
+#  * omit non-copyright-protected Debian files
+_licensecheck --subset '' --check '.*' --ignore "^($RE_default|$RE_generated|debian/.*)$"
+_licensecheck --subset 'debian/*' --check '^debian/' --ignore '^debian/(changelog|copyright(_hints)?|source/lintian-overrides)$'

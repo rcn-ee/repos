@@ -1,0 +1,31 @@
+#!/usr/bin/make -f
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+# skip tests failing on official build daemons:
+#  * test-wsc: unit/test-wsc.c:435: wsc_test_uuid_from_addr: Assertion `wsc_uuid_from_addr(test->addr, uuid)' failed.
+#  * test-eap-sim: unit/test-eap-sim.c:193: test_calc_mac: Assertion `!memcmp(ex_mac, pkt + pos - EAP_SIM_MAC_LEN, EAP_SIM_MAC_LEN)' failed.
+#  * test-dpp: unit/test-dpp.c:114: test_key_derivation: Assertion `m' failed.
+# cause could be kernel modules: <https://bugs.debian.org/1003536>
+# or (less likely) network-related: <https://bugs.debian.org/813471#40>
+TESTS = $(basename $(wildcard unit/*.c))
+TESTS_FLAKY = unit/test-wsc unit/test-eap-sim unit/test-dpp
+
+override_dh_auto_configure:
+	dh_auto_configure -- --enable-external-ell
+
+override_dh_auto_test:
+	make -j2 check VERBOSE=1 TESTS='$(filter-out $(TESTS_FLAKY),$(TESTS))'
+	make -j2 check VERBOSE=1 TESTS='$(TESTS_FLAKY)' || true
+
+override_dh_installinit:
+	dh_installinit --no-enable --no-start --no-stop-on-upgrade
+
+override_dh_installsystemd:
+	dh_installsystemd --no-enable --no-start --no-stop-on-upgrade
+
+%:
+	dh $@
+
+override_dh_builddeb:
+	dh_builddeb -- -Zxz
