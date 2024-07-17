@@ -66,6 +66,7 @@ usb_ms_cdrom=0
 usb_ms_nofua=1
 usb_ms_removable=1
 usb_ms_ro=1
+usb_ms_imagefile=/etc/bbb.io/templates/beagle-getting-started.img
 
 #mac address:
 #cpsw_0_mac = eth0 - wlan0 (in eeprom)
@@ -156,15 +157,15 @@ run_libcomposite () {
 		ln -s functions/acm.usb0 configs/c.1/
 
 		if [ ! "x${USB_IMAGE_FILE_DISABLED}" = "xyes" ]; then
-			if [ -f /etc/bbb.io/templates/beagle-getting-started.img ] ; then
-				echo "${log} enable USB mass_storage beagle-getting-started.img"
+			if [ -f ${usb_ms_imagefile} ] ; then
+				echo "${log} enable USB mass_storage img file"
 				mkdir -p functions/mass_storage.usb0
 				echo ${usb_ms_stall} > functions/mass_storage.usb0/stall
 				echo ${usb_ms_cdrom} > functions/mass_storage.usb0/lun.0/cdrom
 				echo ${usb_ms_nofua} > functions/mass_storage.usb0/lun.0/nofua
 				echo ${usb_ms_removable} > functions/mass_storage.usb0/lun.0/removable
 				echo ${usb_ms_ro} > functions/mass_storage.usb0/lun.0/ro
-				echo /etc/bbb.io/templates/beagle-getting-started.img > functions/mass_storage.usb0/lun.0/file
+				echo ${usb_ms_imagefile} > functions/mass_storage.usb0/lun.0/file
 
 				ln -s functions/mass_storage.usb0 configs/c.1/
 			fi
