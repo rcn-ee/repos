@@ -5,7 +5,7 @@ if ! id | grep -q root; then
 	exit
 fi
 
-version_message="1.20231211.0, e2fsprogs (1.47.0) disable ^metadata_csum,64bit,orphan_file..."
+version_message="1.20240419.0, merged usr cleanups..."
 
 #Debian 12, Ubuntu Lunar, Mantic, Noble
 #https://packages.debian.org/source/bookworm/e2fsprogs
@@ -239,22 +239,22 @@ check_running_system () {
 }
 
 format_boot () {
-	message="/sbin/mkfs.vfat -F 16 ${destination}p1 -n ${boot_label}"                          ; broadcast
-	LC_ALL=C /sbin/mkfs.vfat -F 16 ${destination}p1 -n ${boot_label}
+	message="mkfs.vfat -F 16 ${destination}p1 -n ${boot_label}"                          ; broadcast
+	LC_ALL=C mkfs.vfat -F 16 ${destination}p1 -n ${boot_label}
 	message="--------------------------------------------------------------------------------" ; broadcast
 	flush_cache
 }
 
 format_root () {
-	message="/sbin/mkfs.ext4 ${ext4_options} ${destination}p2 -L ${rootfs_label}"              ; broadcast
-	LC_ALL=C /sbin/mkfs.ext4 ${ext4_options} ${destination}p2 -L ${rootfs_label}
+	message="mkfs.ext4 ${ext4_options} ${destination}p2 -L ${rootfs_label}"              ; broadcast
+	LC_ALL=C mkfs.ext4 ${ext4_options} ${destination}p2 -L ${rootfs_label}
 	message="--------------------------------------------------------------------------------" ; broadcast
 	flush_cache
 }
 
 format_single_root () {
-	message="/sbin/mkfs.ext4 ${ext4_options} ${destination}p1 -L ${single_root_label}"         ; broadcast
-	LC_ALL=C /sbin/mkfs.ext4 ${ext4_options} ${destination}p1 -L ${single_root_label}
+	message="mkfs.ext4 ${ext4_options} ${destination}p1 -L ${single_root_label}"         ; broadcast
+	LC_ALL=C mkfs.ext4 ${ext4_options} ${destination}p1 -L ${single_root_label}
 	message="--------------------------------------------------------------------------------" ; broadcast
 	flush_cache
 }
@@ -281,15 +281,20 @@ copy_rootfs () {
 	message="INFO: [mount ${destination}p${media_rootfs} /tmp/rootfs/ -o async,noatime]"       ; broadcast
 	mount ${destination}p${media_rootfs} /tmp/rootfs/ -o async,noatime
 
-	message="INFO: /usr/bin/rsync: (-aHAXx) [/ -> /tmp/rootfs/]"                                ; broadcast
-	/usr/bin/rsync -aHAXx /* /tmp/rootfs/ --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost+found,/lib/modules/*,/uEnv.txt} || write_failure
+	message="INFO: rsync: (-aHAXx) [/ -> /tmp/rootfs/]"                                ; broadcast
+	rsync -aHAXx --human-readable --info=progress2 /* /tmp/rootfs/ --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/media/*,/lost+found,/lib/modules/*,/uEnv.txt} || write_failure
+	message="--------------------------------------------------------------------------------" ; broadcast
+	flush_cache
+
+	message="INFO: rsync: (-aHAXx) [/ -> /tmp/rootfs/]"                                ; broadcast
+	rsync -aHAXx --human-readable --info=progress2 /* /tmp/rootfs/ --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/media/*,/lost+found,/lib/modules/*,/uEnv.txt} || write_failure
 	message="--------------------------------------------------------------------------------" ; broadcast
 	flush_cache
 
 	message="INFO: Copying: Kernel modules"                                                    ; broadcast
 	mkdir -p /tmp/rootfs/lib/modules/$(uname -r)/ || true
-	message="INFO: /usr/bin/rsync: (-aHAXx) /lib/modules/$(uname -r)/ -> /tmp/rootfs/lib/modules/$(uname -r)/" ; broadcast
-	/usr/bin/rsync -aHAXx /lib/modules/$(uname -r)/* /tmp/rootfs/lib/modules/$(uname -r)/ || write_failure
+	message="INFO: rsync: (-aHAXx) /lib/modules/$(uname -r)/ -> /tmp/rootfs/lib/modules/$(uname -r)/" ; broadcast
+	rsync -aHAXx --human-readable --info=progress2 /lib/modules/$(uname -r)/* /tmp/rootfs/lib/modules/$(uname -r)/ || write_failure
 	message="--------------------------------------------------------------------------------" ; broadcast
 	flush_cache
 
@@ -440,12 +445,12 @@ partition_drive () {
 		sfdisk_options="--force --wipe-partitions always"
 
 		message="INFO: Partitioning: ${destination}"                                               ; broadcast
-		message="INFO: /sbin/sfdisk: [$(LC_ALL=C /sbin/sfdisk --version)]"                         ; broadcast
-		message="INFO: /sbin/sfdisk: [/sbin/sfdisk ${sfdisk_options} ${destination}]"              ; broadcast
-		message="INFO: /sbin/sfdisk: [${rfs_rootfs_startmb}M,,${sfdisk_fstype},*]"                 ; broadcast
+		message="INFO: sfdisk: [$(LC_ALL=C sfdisk --version)]"                         ; broadcast
+		message="INFO: sfdisk: [sfdisk ${sfdisk_options} ${destination}]"              ; broadcast
+		message="INFO: sfdisk: [${rfs_rootfs_startmb}M,,${sfdisk_fstype},*]"                 ; broadcast
 		message="--------------------------------------------------------------------------------" ; broadcast
 
-		LC_ALL=C /sbin/sfdisk ${sfdisk_options} "${destination}" <<-__EOF__
+		LC_ALL=C sfdisk ${sfdisk_options} "${destination}" <<-__EOF__
 			${rfs_rootfs_startmb}M,,${sfdisk_fstype},*
 		__EOF__
 
@@ -470,13 +475,13 @@ partition_drive () {
 		sfdisk_options="--force --wipe-partitions always"
 
 		message="INFO: Partitioning: ${destination}"                                               ; broadcast
-		message="INFO: /sbin/sfdisk: [$(LC_ALL=C /sbin/sfdisk --version)]"                         ; broadcast
-		message="INFO: /sbin/sfdisk: [/sbin/sfdisk ${sfdisk_options} ${destination}]"              ; broadcast
-		message="INFO: /sbin/sfdisk: [${rfs_boot_startmb}M,${rfs_boot_size_mb}M,${rfs_sfdisk_fstype},*]" ; broadcast
-		message="INFO: /sbin/sfdisk: [${sfdisk_rootfs_startmb}M,,,-]" ; broadcast
+		message="INFO: sfdisk: [$(LC_ALL=C sfdisk --version)]"                         ; broadcast
+		message="INFO: sfdisk: [sfdisk ${sfdisk_options} ${destination}]"              ; broadcast
+		message="INFO: sfdisk: [${rfs_boot_startmb}M,${rfs_boot_size_mb}M,${rfs_sfdisk_fstype},*]" ; broadcast
+		message="INFO: sfdisk: [${sfdisk_rootfs_startmb}M,,,-]" ; broadcast
 		message="--------------------------------------------------------------------------------" ; broadcast
 
-		LC_ALL=C /sbin/sfdisk ${sfdisk_options} "${destination}" <<-__EOF__
+		LC_ALL=C sfdisk ${sfdisk_options} "${destination}" <<-__EOF__
 			${rfs_boot_startmb}M,${rfs_boot_size_mb}M,${rfs_sfdisk_fstype},*
 			${sfdisk_rootfs_startmb}M,,,-
 		__EOF__
