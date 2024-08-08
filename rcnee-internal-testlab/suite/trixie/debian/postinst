@@ -42,10 +42,15 @@ fi
 
 if [ ! -d /mnt/farm/uptime/ ] ; then
 	mkdir -p /mnt/farm || true
-	echo "192.168.1.89:/mnt/tank/farm /mnt/farm nfs defaults" >> /etc/fstab
 
 	CURRENT_USER=$(id -nu 1000)
 	chown -R ${CURRENT_USER}:${CURRENT_USER} /mnt/farm || true
+fi
+
+if [ ! -f /etc/systemd/system/mnt-farm.mount ] ; then
+	cp -v /etc/bbb.io/templates/mnt-farm.mount /etc/systemd/system/
+	systemctl enable mnt-farm.mount || true
+	sed -i -e 's:192.168.1.89:#192.168.1.89:g' /etc/fstab
 fi
 
 if [ -f /lib/systemd/system/beagle-flasher-init-shutdown.service ] ; then
