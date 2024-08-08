@@ -1,0 +1,47 @@
+#!/usr/bin/make -f
+
+export LC_ALL=C
+
+TZGEN := $(CURDIR)/tzgen
+
+%:
+	dh $@
+
+override_dh_auto_build-indep:
+	# Generate a tzdata.zi and leapseconds file
+	$(MAKE) AWK=gawk BACKWARD="backward" PACKRATDATA=backzone PACKRATLIST=zone.tab VERSION_DEPS= tzdata.zi leapseconds
+
+	# Build the timezone data
+	/usr/sbin/zic -d $(TZGEN) -L /dev/null tzdata.zi
+	/usr/sbin/zic -d $(TZGEN)/right -L leapseconds tzdata.zi
+
+	# Replace hardlinks by symlinks
+	grep '^L ' $(CURDIR)/tzdata.zi | while read L target name ; do \
+		absolute_name="$(TZGEN)/$$name"; \
+		relative_target=$$(realpath -m -s --relative-to="$${absolute_name%/*}" "$(TZGEN)/$$target"); \
+		ln -sf "$$relative_target" "$(TZGEN)/$$name" ; \
+		ln -sf "$$relative_target" "$(TZGEN)/right/$$name" ; \
+	done
+
+	# Generate a posixrules file
+	ln -s America/New_York $(TZGEN)/posixrules
+
+	debian/generate_debconf_templates -d "$(TZGEN)" > debian/tzdata.templates
+	debconf-updatepo
+
+# The upstream tests are related to the sources. Just skip it.
+override_dh_auto_test:
+	debian/test_timezone_conversions -z "$(TZGEN)"
+	PYTHONTZPATH="$(TZGEN)" debian/tests/python
+	debian/check_translations debian/po/*.po
+
+override_dh_auto_install:
+	mkdir -p debian/tmp/usr/share/zoneinfo
+	cp -r tzgen/* debian/tmp/usr/share/zoneinfo
+
+override_dh_auto_clean:
+	-rm -rf $(TZGEN)
+	dh_auto_clean
+
+override_dh_installchangelogs:
+	dh_installchangelogs NEWS

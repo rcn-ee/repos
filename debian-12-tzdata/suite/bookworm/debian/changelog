@@ -1,0 +1,2295 @@
+tzdata (2024a-4bbbio0~bookworm+20240707) bookworm; urgency=low
+
+  * Rebuild tzdata_2024a-4 for repos.rcn-ee.com
+
+ -- Robert Nelson <robertcnelson@gmail.com>  Sun, 07 Jul 2024 16:05:05 -0500
+
+tzdata (2024a-4) unstable; urgency=medium
+
+  * d/rules: Support creating symlinks pointing to symlinks
+  * Fixup for avoid timezones being symlinks to symlinks (LP: #2062522)
+
+ -- Benjamin Drung <bdrung@debian.org>  Thu, 02 May 2024 17:51:44 +0200
+
+tzdata (2024a-3) unstable; urgency=medium
+
+  * Avoid timezones being symlinks to symlinks to avoid breaking C++20 standard
+    expectation (LP: #2062522)
+
+ -- Benjamin Drung <bdrung@debian.org>  Fri, 19 Apr 2024 21:38:15 +0200
+
+tzdata (2024a-2) unstable; urgency=medium
+
+  * Update Italian debconf translation.
+    Thanks to Ceppo <ceppo@oziosi.org> (Closes: #1063490)
+  * Replace America/Godthab by America/Nuuk
+  * Do not replace CET, CST6CDT, EET, EST*, HST, MET, MST*, PST8PDT, WET.
+    The replacements differed in using daylight saving. (LP: #2055718)
+  * Fix updating US/Indiana-Starke to America/Indiana/Knox
+  * Allow ziguard.awk to generate timezone symlink that point to symlinks
+    to fix (at least) the timezone symlinks Africa/Asmera,
+    Antarctica/South_Pole, Iceland, Pacific/Ponape, and Pacific/Truk.
+  * test_timezone_conversions: Check symlink targets
+
+ -- Benjamin Drung <bdrung@debian.org>  Fri, 05 Apr 2024 22:24:29 +0200
+
+tzdata (2024a-1) unstable; urgency=medium
+
+  * New upstream version 2024a
+     - Kazakhstan unifies on UTC+5 beginning 2024-03-01.
+     - Palestine springs forward a week later after Ramadan.
+  * Add autopkgtest test case for 2024a release
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sat, 03 Feb 2024 17:28:52 +0100
+
+tzdata (2023d-1) unstable; urgency=medium
+
+  * New upstream version (LP: #2047314):
+    - Ittoqqortoormiit, Greenland changes time zones on 2024-03-31.
+    - Vostok, Antarctica changed time zones on 2023-12-18.
+    - Casey, Antarctica changed time zones five times since 2020.
+    - Code and data fixes for Palestine timestamps starting in 2072.
+    - A new data file zonenow.tab for timestamps starting now.
+  * Install zonenow.tab in tzdata
+  * Add autopkgtest test case for 2023d release
+  * Document tzdata-legacy split in NEWS.Debian (Closes: #1051973, #1056908)
+
+ -- Benjamin Drung <bdrung@debian.org>  Tue, 02 Jan 2024 14:19:32 +0100
+
+tzdata (2023c-11) unstable; urgency=medium
+
+  * Update Swedish debconf translation.
+    Thanks to Martin Bagge / brother <brother@persilja.net> (Closes: #1054616)
+  * Update leap-seconds.list from upstream
+  * Remove leapseconds during clean target
+
+ -- Aurelien Jarno <aurel32@debian.org>  Tue, 28 Nov 2023 00:26:04 +0100
+
+tzdata (2023c-10) unstable; urgency=medium
+
+  * Partially revert 2023c-8: Move top-level timezones like UTC and CET back to
+    tzdata. Only the old or merged timezones mentioned in the upstream backward
+    file stay in tzdata-legacy (Closes: #1043250, LP: #2030684)
+
+ -- Benjamin Drung <bdrung@debian.org>  Wed, 09 Aug 2023 23:10:14 +0200
+
+tzdata (2023c-9) unstable; urgency=medium
+
+  * Move top-level UTC timezone back to tzdata (Closes: #1043250, LP: #2030684)
+
+ -- Benjamin Drung <bdrung@debian.org>  Tue, 08 Aug 2023 12:00:00 +0200
+
+tzdata (2023c-8) unstable; urgency=medium
+
+  * Update Dutch debconf translation.
+    Thanks to Frans Spiesschaert <Frans.Spiesschaert@yucom.be>
+    (Closes: #1041278)
+  * Ship only timezones in tzdata that follow the current rules of geographical
+    region (continent or ocean) and city name. Move all legacy timezone symlinks
+    (that are upgraded during package update) to tzdata-legacy. This includes
+    dropping the special handling for US/* timezones. (Closes: #1040997)
+
+ -- Benjamin Drung <bdrung@debian.org>  Mon, 07 Aug 2023 15:02:14 +0200
+
+tzdata (2023c-7) unstable; urgency=medium
+
+  * Update Romanian debconf translation. Thanks to Remus-Gabriel Chelu
+    (Closes: #1038905)
+
+ -- Benjamin Drung <bdrung@debian.org>  Mon, 03 Jul 2023 17:18:18 +0200
+
+tzdata (2023c-6) unstable; urgency=medium
+
+  [ Aurelien Jarno ]
+  * Change Provides: from tzdata-bookworm to tzdata-trixie
+
+  [ Benjamin Drung ]
+  * Drop /usr/share/zoneinfo/posix (identical to /usr/share/zoneinfo)
+    (LP: #2008076)
+  * Split right/* timezones into separate tzdata-legacy package (LP: #2008076)
+  * Update Turkish debconf translation. Thanks to Atila KOÇ (Closes: #1037266)
+
+ -- Benjamin Drung <bdrung@debian.org>  Sun, 11 Jun 2023 23:44:54 +0200
+
+tzdata (2023c-5) unstable; urgency=medium
+
+  * Update German debconf translation.
+    Thanks to Helge Kreutzmann <debian@helgefjell.de> (Closes: #1036464)
+
+ -- Benjamin Drung <bdrung@debian.org>  Sun, 28 May 2023 21:54:34 +0200
+
+tzdata (2023c-4) unstable; urgency=medium
+
+  * Sort timezones naturally in debconf
+  * Add explanation for plus/minus used by Etc/GMT timezones
+    (Closes: #540305, LP: #1325949)
+  * Build tzdata with PACKRATLIST=zone.tab. In combination with
+    PACKRATDATA=backzone (which is used since 2022g-3), time zones that differ
+    pre-1970 and had been resurrected will not incur changes to data from 1970
+    on. This also removes Asia/Hanoi again. (LP: #2017999)
+  * Update Croatian debconf translation. Thanks to Tomislav Krznar.
+
+ -- Benjamin Drung <bdrung@debian.org>  Wed, 10 May 2023 00:00:40 +0200
+
+tzdata (2023c-3) unstable; urgency=medium
+
+  * test_timezone_conversions: Print all failures before failing
+  * Add Romanian debconf translation. Thanks to Remus-Gabriel Chelu
+    (Closes: #1034094)
+  * Add Language metadata to all debconf translation files
+  * Convert Pacific/Ponape to Pacific/Pohnpei on upgrade
+  * Convert Asia/Ujung_Pandang to Asia/Makassar on upgrade
+  * Convert Pacific/Truk to Pacific/Chuuk on upgrade
+  * Fix or drop wrong translations
+  * Check debconf translation files for inconsistencies
+  * Fix German translation of Christmas and Easter Island
+
+ -- Benjamin Drung <bdrung@debian.org>  Thu, 13 Apr 2023 13:54:30 +0200
+
+tzdata (2023c-2) unstable; urgency=medium
+
+  * Add autopkgtest test case for pre-1970 timestamps
+  * generate_debconf_templates: Be explicit about including or excluding
+    symlinks (to catch cases like renamed timezones)
+  * test_timezone_conversions: Also check for missing conversions (timezones
+    that cannot be selected in debconf should be converted on upgrade)
+
+ -- Benjamin Drung <bdrung@debian.org>  Thu, 30 Mar 2023 01:14:49 +0200
+
+tzdata (2023c-1) unstable; urgency=medium
+
+  * New upstream version (LP: #2012599):
+    - Revert all changes made in 2023b to model this week's daylight saving
+      chaos in Lebanon.
+
+ -- Benjamin Drung <bdrung@debian.org>  Wed, 29 Mar 2023 11:37:18 +0200
+
+tzdata (2023b-1) unstable; urgency=medium
+
+  * New upstream version (LP: #2012599):
+    - Lebanon delays the start of DST this year.
+
+ -- Benjamin Drung <bdrung@debian.org>  Fri, 24 Mar 2023 12:23:17 +0100
+
+tzdata (2023a-1) unstable; urgency=medium
+
+  * New upstream version (LP: #2012599):
+    - Egypt now uses DST again, from April through October.
+    - This year Morocco springs forward April 23, not April 30.
+    - Palestine delays the start of DST this year.
+    - Much of Greenland still uses DST from 2024 on.
+  * Add autopkgtest test case for 2023a release
+  * Update Dutch debconf translation. (Closes: #1032537)
+    Thanks to Frans Spiesschaert <Frans.Spiesschaert@yucom.be>
+
+ -- Benjamin Drung <bdrung@debian.org>  Thu, 23 Mar 2023 11:53:35 +0100
+
+tzdata (2022g-7) unstable; urgency=medium
+
+  * Create /etc/timezone with default SELinux context (Closes: #1031514)
+
+ -- Benjamin Drung <bdrung@debian.org>  Fri, 17 Feb 2023 23:55:21 +0100
+
+tzdata (2022g-6) unstable; urgency=medium
+
+  * Restore generating /etc/timezone again. The removal of /etc/timezone
+    will be done in Debian 13 "Trixie". (Closes: #1031376, #1031395)
+  * Update Turkish debconf translation.
+    Thanks to Atila KOÇ <koc@artielektronik.com.tr> (Closes: #1031211)
+
+ -- Benjamin Drung <bdrung@debian.org>  Thu, 16 Feb 2023 21:54:13 +0100
+
+tzdata (2022g-5) unstable; urgency=medium
+
+  * Fix environment variable name to PYTHONTZPATH for Python test
+    (Closes: #1031028)
+  * Skip test_localtime during package build
+
+ -- Benjamin Drung <bdrung@debian.org>  Fri, 10 Feb 2023 17:47:26 +0100
+
+tzdata (2022g-4) unstable; urgency=medium
+
+  * Fix configuration failure with relative /etc/localtime symlink
+    (Closes: #1030742)
+  * Fix exit status 10 for invalid /etc/localtime symlinks
+
+ -- Benjamin Drung <bdrung@debian.org>  Tue, 07 Feb 2023 17:53:35 +0100
+
+tzdata (2022g-3) unstable; urgency=medium
+
+  * Update Brazilian Portuguese debconf translation.  (Closes: #1029004)
+    Thanks to Adriano Rafael Gomes <adrianorg@debian.org>
+  * Update Dutch debconf translation. (Closes: #1029019)
+    Thanks to Frans Spiesschaert <Frans.Spiesschaert@yucom.be>
+  * Update Turkish debconf translation. (Closes: #1029492)
+    Thanks to Atila KOÇ <koc@artielektronik.com.tr>
+  * Drop Asia/Rangoon from debconf options (was renamed to Asia/Yangon)
+  * Update conversion targets to America/Indiana/Indianapolis
+  * Remove incorrect fuzzy debconf translations
+  * Test convert_timezone for consistency
+  * Build timezones that differ pre-1970 (LP: #2003797)
+  * Update English and German debconf translations
+  * Test timezones using Python's zoneinfo module
+  * Stop creating /etc/timezone and remove it on upgrades as a one-time action,
+    but keep updating it in case users restore it (Closes: #822733)
+  * Remove /etc/timezone on purge (LP: #1683595)
+  * Test debconf configuration with autopkgtest
+  * d/tzdata.config: Group matches by target timzones
+
+ -- Benjamin Drung <bdrung@debian.org>  Tue, 07 Feb 2023 00:31:33 +0100
+
+tzdata (2022g-2) unstable; urgency=medium
+
+  [ Benjamin Drung ]
+  * Update Czech debconf translation.
+    Thanks to Miroslav Kuře <kurem@upcase.inf.upol.cz> (Closes: #1027862)
+  * Update Korean debconf translation.
+    Thanks to Changwoo Ryu <cwryu@debian.org> (Closes: #1027983)
+  * d/tzdata.config: Update Mideast/Riyadh8[789] to Asia/Riyadh
+  * Address shellcheck complaints in postinst and tzdata.config
+  * d/tzdata.config: Rename Pacific/Enderbury to Pacific/Kanton
+  * Replace obsolete two-level American timezones by three-level timezones
+  * Translate area "America" as "Americas" in English
+    (Closes: #508118, LP: #599466)
+
+  [ Aurelien Jarno ]
+  * Update Spanish debconf translation.
+    Thanks to Jonatan Porras <jonatanpc8@gmail.com>
+  * Update Polish debconf translation.
+    Thanks to Łukasz Dulny <BartekChom@poczta.onet.pl>
+  * Update French debconf translation.
+    Thanks to Baptiste Jammet <baptiste@mailoo.org>
+  * Update Hebrew debconf translation.
+    Thanks to Omer Zak <w1@zak.co.il>
+  * Update Swedish debconf translation.
+    Thanks to Luna Jernberg <droidbittin@gmail.com>
+  * Drop wrong conversion of the Pacific/Enderbury timezone
+
+  [ Benjamin Drung ]
+  * d/rules: Exclude obsolete Uzhgorod and Zaporozhye from debconf
+  * Generate debconf templates with Python
+  * Drop obsolete tzconfig command (use "dpkg-reconfigure tzdata" instead)
+  * Do not update US/* timezones to their America/* counterparts
+    (Closes: #688318, LP: #772024)
+  * Fix German translation of "Indian" to "Indischer Ozean"
+
+ -- Benjamin Drung <bdrung@debian.org>  Tue, 10 Jan 2023 23:18:28 +0100
+
+tzdata (2022g-1) unstable; urgency=medium
+
+  * New upstream version:
+    - The northern edge of Chihuahua changes to US timekeeping.
+    - Much of Greenland stops changing clocks after March 2023.
+    - Fix some pre-1996 timestamps in northern Canada.
+  * debian/tzdata.config: convert Europe/Uzhgorod and Europe/Zaporozhye
+    into Europe/Kyiv.
+  * debian/tzdata.templates: Remove Uzhgorod and Zaporozhye, add Ciudad_Juarez
+  * debian/watch: Switch from failing ftp to https
+  * Add myself to Uploaders
+  * Replace timezone files in posix directory by symlinks (Closes: #1010477)
+  * Convert d/copyright to machine-readable format. Thanks to Bastian Germann
+    (Closes: #1023598)
+  * Bump Standards-Version to 4.6.2
+  * Add debian/upstream/metadata
+
+ -- Benjamin Drung <bdrung@debian.org>  Mon, 02 Jan 2023 15:27:07 +0100
+
+tzdata (2022f-1) unstable; urgency=high
+
+  * New upstream version:
+    - Mexico will no longer observe DST except near the US border.
+      Chihuahua moves to year-round -06 on 2022-10-30.
+    - Fiji no longer observes DST.
+  * Set urgency to high as the first change happens tomorrow.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sat, 29 Oct 2022 12:19:28 +0200
+
+tzdata (2022e-1) unstable; urgency=medium
+
+  * New upstream version:
+    - Jordan and Syria are abandoning the DST regime and are changing to
+      permanent +03, so they will not fall back from +03 to +02 on
+      2022-10-28.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Fri, 14 Oct 2022 21:54:44 +0200
+
+tzdata (2022d-1) unstable; urgency=medium
+
+  * New upstream version:
+    - Palestine transitions are now Saturdays at 02:00. This means 2022 falls
+      back 10-29 at 02:00, not 10-28 at 01:00.
+    - Simplify three Ukraine zones into one.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Mon, 26 Sep 2022 23:14:01 +0200
+
+tzdata (2022c-1) unstable; urgency=medium
+
+  * New upstream version, no changes to the timezones.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Tue, 16 Aug 2022 11:14:49 +0200
+
+tzdata (2022b-1) unstable; urgency=medium
+
+  [ Aurelien Jarno ]
+  * New upstream version:
+    - Chile's 2022 DST start is delayed from September 4 to September 11.
+    - Iran plans to stop observing DST permanently, after it falls back
+      on 2022-09-21.
+  * debian/tzdata.config: convert Europe/Kiev into Europe/Kyiv.
+  * debian/tzdata.templates, debian/po/*: update templates and translation
+    following the above change.
+  * Bump Standards-Version to 4.6.1 (no changes).
+
+ -- Aurelien Jarno <aurel32@debian.org>  Thu, 11 Aug 2022 15:29:52 +0200
+
+tzdata (2022a-1) unstable; urgency=high
+
+  [ Aurelien Jarno ]
+  * New upstream version:
+    - Palestine will spring forward on 2022-03-27, not -03-26.
+  * Set urgency to high as the Palestine DST change is in 4 days.
+  * debian/tzdata.config: do not try to get a value from debconf if it hasn't
+    been seen yet.  Closes: #999465.
+  * Update English debconf translation.
+
+  [ Johannes Schauer Marin Rodrigues ]
+  * Add support for support DPKG_ROOT.  Closes: #1007756.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Tue, 22 Mar 2022 20:49:04 +0100
+
+tzdata (2021e-1) unstable; urgency=medium
+
+  * New upstream version:
+    - Palestine will fall back 2021-10-29 (not 2021-10-30) at 01:00.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Mon, 25 Oct 2021 12:04:40 +0200
+
+tzdata (2021d-1) unstable; urgency=medium
+
+  [ Aurelien Jarno ]
+  * New upstream version:
+    - Fiji suspends DST for the 2021/2022 season.
+  * Update English debconf translation.
+
+  [ Łukasz Dulny ]
+  * Update Polish debconf translation.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sun, 17 Oct 2021 23:52:06 +0200
+
+tzdata (2021c-3) unstable; urgency=medium
+
+  [ Martin Bagge ]
+  * Update Swedish debconf translation.  Closes: #995697.
+
+  [ Changwoo Ryu ]
+  * Add Korean debconf translation.  Closes: #995701.
+
+  [ Frans Spiesschaert ]
+  * Update Dutch debconf translation.  Closes: #995998.
+
+  [ Agustí Grau ]
+  * Update Catalan debconf translation.
+
+  [ Adriano Rafael Gomes ]
+  * Update Portuguese debconf translation.  Closes: #996264.
+
+  [ Aurelien Jarno ]
+  * Replace underscore by space in the following debconf translations: be, fr,
+    gu, hr, hu, id, ku, lt, ml, pt, pt_BR, sk, sq, vi, wo.
+
+  [ victory ]
+  * Update Japanese debconf translation.
+
+  [ Jean-Pierre Giraud ]
+  * Update French debconf translation.  Closes: #996163.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Fri, 15 Oct 2021 22:00:58 +0200
+
+tzdata (2021c-2) unstable; urgency=medium
+
+  [ Holger Wansing ]
+  * Update German debconf translation.
+
+  [ Jonatan Porras ]
+  * Update Spanish debconf translation.
+
+  [ Bolesław Śliwicki ]
+  * Update Polish debconf translation.
+
+  [ Parodper ]
+  * Update Galician debconf translation.
+
+  [ Matěj Pokorný ]
+  * Update Czech debconf translation.
+
+  [ Hace İbrahim Özbal ]
+  * Update Turkish debconf translation.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Thu, 07 Oct 2021 23:25:15 +0200
+
+tzdata (2021c-1) unstable; urgency=medium
+
+  * New upstream version.
+    - Drop 01-fix-jan-mayen-typo.patch.
+  * Bump debhelper compatibility to 13.
+  * Bump Standards-Version to 4.6.0 (no changes).
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sat, 02 Oct 2021 19:00:21 +0200
+
+tzdata (2021b-1) unstable; urgency=low
+
+  * New upstream version.
+    - Drop 01-no-leap-second-2021-12-31.patch.
+    - Drop 02-samoa-dst.patch.
+    - Drop 03-jordan-dst.patch.
+  * Cherry pick patch from upstream:
+    - 01-fix-jan-mayen-typo.patch: fix for Atlantic/Jan_Mayen from upstream.
+  * Update debian/upstream/signing-key.asc.
+  * Handle Pacific/Enderbury to Pacific/Kanton renaming:
+    - Add an entry to tzdata.config
+    - Do not translate Pacific/Enderbury.
+    - Update debconf templates and translations.
+  * Set urgency to low as this new upstream version merged many pre-1970
+    timezones, and this needs more testing.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Wed, 29 Sep 2021 01:02:50 +0200
+
+tzdata (2021a-2) unstable; urgency=critical
+
+  * Set urgency to critical as the Samoa DST change is already effective.
+  * Update Provides to tzdata-bookworm.
+  * debian/control: remove Adam Conrad from Uploaders. RIP.  Closes: #986954.
+  * Cherry-pick patches from tzdata-2021b until the upstream situation gets
+    less confused:
+    - 01-no-leap-second-2021-12-31.patch: No leap second on 2021-12-31 as per
+      IERS Bulletin C 62.
+    - 02-samoa-dst.patch: Samoa no longer observes DST.
+    - 03-jordan-dst.patch: Jordan now starts DST on February's last Thursday.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Mon, 27 Sep 2021 18:20:02 +0200
+
+tzdata (2021a-1) unstable; urgency=medium
+
+  * New upstream version, affecting the following future timestamp:
+    - South Sudan changes from +03 to +02 on 2021-02-01 at 00:00.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sun, 24 Jan 2021 23:05:23 +0100
+
+tzdata (2020f-1) unstable; urgency=medium
+
+  * New upstream version with no impact on the content of the debian
+    package, except for the version number.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sat, 02 Jan 2021 18:43:15 +0100
+
+tzdata (2020e-1) unstable; urgency=medium
+
+  * New upstream version, affecting the following future timestamp:
+    - Volgograd switches to Moscow time on 2020-12-27 at 02:00.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Wed, 23 Dec 2020 10:41:32 +0100
+
+tzdata (2020d-1) unstable; urgency=high
+
+  * New upstream version, affecting the following future timestamp:
+    - Palestine ends DST earlier than predicted, on 2020-10-24.
+  * Set urgency to high to get the package into testing before the next
+    change.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Wed, 21 Oct 2020 22:21:30 +0200
+
+tzdata (2020c-1) unstable; urgency=medium
+
+  * New upstream version, affecting the following future timestamp:
+    - Fiji starts DST later than usual, on 2020-12-20.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sat, 17 Oct 2020 01:21:17 +0200
+
+tzdata (2020b-1) unstable; urgency=medium
+
+  * New upstream version, affecting the following past and future
+    timestamps:
+    - Revised predictions for Morocco's changes starting in 2023.
+    - Macquarie Island has stayed in sync with Tasmania since 2011.
+    - Casey, Antarctica is at +08 in winter and +11 in summer since 2018.
+  * Update German debconf translation, by Helge Kreutzmann.  Closes:
+    #960783.
+  * Update Dutch debconf translation, by Frans Spiesschaert.  Closes:
+    #963007.
+  * Update Portuguese debconf translation, by Rui Branco.  Closes:
+    #871051.
+  * Update debian/upstream/signing-key.asc.
+  * Get rid of old SystemV timezones, as this has been fully removed
+    upstream. Convert existing configuration to the "new" America/*
+    names.
+  * Drop pacificnew support, it has been removed upstream.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sat, 10 Oct 2020 22:50:56 +0200
+
+tzdata (2020a-1) unstable; urgency=medium
+
+  * New upstream version, affecting the following future timestamps:
+    - Morocco springs forward on 2020-05-31, not 2020-05-24.
+    - Canada's Yukon advanced to -07 year-round on 2020-03-08.
+  * Bump Standards-Version to 4.5.0 (no changes).
+
+ -- Aurelien Jarno <aurel32@debian.org>  Fri, 24 Apr 2020 21:32:19 +0200
+
+tzdata (2019c-3) unstable; urgency=medium
+
+  * Build the timezone data from tzdata.zi.
+  * Install leapseconds file /usr/share/zoneinfo.
+  * Bump Standards-Version to 4.4.1 (no changes).
+
+ -- Aurelien Jarno <aurel32@debian.org>  Tue, 01 Oct 2019 22:53:04 +0200
+
+tzdata (2019c-2) unstable; urgency=medium
+
+  [ Paul Eggert ]
+  * Install tzdata.zi file in /usr/share/zoneinfo.  Closes: #940852.
+
+  [ Aurelien Jarno ]
+  * Use tzdata.zi to change hardlinks into symlinks.
+  * Bump debhelper compatibility to 12.
+  * Bump Standards-Version to 4.4.0 (no changes).
+  * Drop Replaces on libc6, it is not needed anymore since Lenny.
+  * Depends on gawk and use it instead of mawk which crashes with a memory
+    corruption.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sun, 29 Sep 2019 00:56:50 +0200
+
+tzdata (2019c-1) unstable; urgency=medium
+
+  * New upstream version, affecting the following future timestamps:
+    - Fiji's next DST transitions will be 2019-11-10 and 2020-01-12
+      instead of 2019-11-03 and 2020-01-19.
+    - Norfolk Island will observe Australian-style DST starting in
+      spring 2019.  The first transition is on 2019-10-06.
+  * Update French debconf translation, by Baptiste Jammet.  Closes:
+    #935153.
+  * debian/rules: drop obsolete -y zic option.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Wed, 11 Sep 2019 23:05:32 +0200
+
+tzdata (2019b-2) unstable; urgency=medium
+
+  * Change provides to tzdata-bullseye from tzdata-buster.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Mon, 12 Aug 2019 11:40:33 +0200
+
+tzdata (2019b-1) unstable; urgency=medium
+
+  * New upstream version, affecting the following past and future timestamps:
+    - Brazil has canceled DST and will stay on standard time indefinitely.
+    - Predictions for Morocco now go through 2087 instead of 2037.
+    - Palestine's 2019 spring transition was 03-29 at 00:00, not 03-30
+      at 01:00.  Guess future transitions to be March's last Friday at 00:00.
+    - Many corrections to historical Hong Kong transitions from 1941 to 1947.
+
+ -- Adam Conrad <adconrad@0c3.net>  Thu, 04 Jul 2019 15:04:32 -0600
+
+tzdata (2019a-1) unstable; urgency=medium
+
+  * New upstream version, affecting the following past and future
+    timestamps:
+    - Palestine will not start DST until 2019-03-30, instead of 2019-03-23
+      as previously predicted.
+    - Metlakatla ended its observance of Pacific standard time, rejoining
+      Alaska Time, on 2019-01-20 at 02:00.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Tue, 26 Mar 2019 23:05:57 +0100
+
+tzdata (2018i-2) unstable; urgency=medium
+
+  * Update German debconf translation, by Holger Wansing.  Closes:
+    #918455.
+  * Update Dutch debconf translation, by Frans Spiesschaert.  Closes:
+    #920427.
+  * Update Russian debconf translation, by Lev Lamberov.  Closes:
+    #920598.
+  * Update Danish debconf translation, by Joe Hansen.  Closes:
+    #923061.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Thu, 28 Feb 2019 22:56:09 +0100
+
+tzdata (2018i-1) unstable; urgency=high
+
+  * New upstream version, affecting the following future timestamps:
+    - São Tomé and Príncipe switches from +01 to +00 on 2019-01-01.
+
+ -- Clint Adams <clint@debian.org>  Sun, 30 Dec 2018 21:02:04 -0500
+
+tzdata (2018h-1) unstable; urgency=medium
+
+  * New upstream version, affecting the following past and future
+    timestamps:
+    - Qyzylorda, Kazakhstan moved from +06 to +05 on 2018-12-21. A new
+      zone Asia/Qostanay has been added, because Qostanay, Kazakhstan
+      didn't move.
+    - Metlakatla, Alaska observes PST this winter only.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sun, 30 Dec 2018 00:14:21 +0100
+
+tzdata (2018g-1) unstable; urgency=high
+
+  * New upstream version, affecting the following future timestamp:
+    - Morocco switches to permanent +01 on 2018-10-27.
+  * Urgency set to high as the change will happen the next hours.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sat, 27 Oct 2018 15:14:23 +0200
+
+tzdata (2018f-1) unstable; urgency=medium
+
+  * New upstream version, affecting the following future timestamp:
+    - Volgograd moves from +03 to +04 on 2018-10-28.
+    - Fiji ends DST 2019-01-13, not 2019-01-20.
+    - Most of Chile changes DST dates, effective 2019-04-06.
+  * Update French debconf translation, by Baptiste Jammet.  Closes:
+    #903425.
+  * Drop debian/source/options.
+  * Set Rules-Requires-Root: no.
+  * debian/control: Update Standards-Version to 4.2.1.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Thu, 18 Oct 2018 20:22:56 +0200
+
+tzdata (2018e-1) unstable; urgency=medium
+
+  [ Aurelien Jarno ]
+  * New upstream version, affecting the following future timestamp:
+    - North Korea switches back to +09 on 2018-05-05.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Fri, 04 May 2018 13:12:53 +0200
+
+tzdata (2018d-1) unstable; urgency=medium
+
+  [ Aurelien Jarno ]
+  * debian/control: Update Vcs-Git and Vcs-Browser fields following the move
+    to Salsa.
+
+  [ Clint Adams ]
+  * New upstream version.
+  * Remove Pacific-New as a choice.  closes: #815200.
+
+ -- Clint Adams <clint@debian.org>  Mon, 26 Mar 2018 18:23:37 -0400
+
+tzdata (2018c-1) unstable; urgency=medium
+
+  [ Aurelien Jarno ]
+  * New upstream version.
+  * debian/control: Update Standards-Version to 4.1.3.
+  * debian/patches/quiltrc: Remove.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Thu, 25 Jan 2018 23:47:46 +0100
+
+tzdata (2018b-1) unstable; urgency=medium
+
+  [ Aurelien Jarno ]
+  * Update Russian debconf translation, by Lev Lamberov.  Closes:
+    #883876.
+  * Update German debconf translation, by Holger Wansing.  Closes:
+    #884811.
+
+  [ Clint Adams ]
+  * New upstream version.
+
+ -- Clint Adams <clint@debian.org>  Sat, 20 Jan 2018 23:04:41 -0500
+
+tzdata (2017c-1) unstable; urgency=medium
+
+  * New upstream version, affecting the following future timestamp:
+    - Northern Cyprus resumed EU rules starting 2017-10-29.
+    - Namibia will switch from +01 with DST to +02 all year, affecting
+      UT offsets starting 2018-04-01.
+    - Sudan will switch from +03 to +02 on 2017-11-01.
+    - Tonga will not observe DST on 2017-11-05.
+    - Turks & Caicos will switch from -04 all year to -05 with US DST,
+      affecting UT offset starting 2018-11-04.
+  * debian/control, debian/copyright: update upstream links to use https.
+  * debian/upstream/signing-key.asc: new file.
+  * debian/watch: update watch file to version 4, add check for the OpenPGP
+    signatures.
+  * debian/control: Update Standards-Version to 4.1.1.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Wed, 25 Oct 2017 00:55:42 +0200
+
+tzdata (2017b-2) unstable; urgency=medium
+
+  [ Aurelien Jarno ]
+  * Update Dutch debconf translation, by Frans Spiesschaert.  Closes:
+    #861700.
+  * debian/control: provide tzdata-buster instead of tzdata-stretch.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sun, 18 Jun 2017 18:46:11 +0200
+
+tzdata (2017b-1) unstable; urgency=medium
+
+  [ Aurelien Jarno ]
+  * New upstream version, affecting the following future timestamp:
+    - Haiti resumed observance of DST in 2017.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Thu, 06 Apr 2017 11:31:27 +0200
+
+tzdata (2017a-1) unstable; urgency=medium
+
+  [ Aurelien Jarno ]
+  * New upstream version, affecting the following future timestamp:
+    - Mongolia no longer observes DST.
+    - Magallanes region diverges from Santiago starting 2017-05-13,
+      the America/Punta_Arenas zone has been added.
+  * Update Dutch debconf translation, by Frans Spiesschaert.  Closes:
+    #849234.
+  * Update Japanese debconf translation, by victory <victory.deb@gmail.com>.
+  * Update French debconf translation, by Baptiste Jammet.  Closes: #851589.
+  * Remove /etc/localtime on purge.  Closes: #854141.
+  * Update Danish debconf translation, by Joe Hansen.  Closes: #856785.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sun, 12 Mar 2017 21:39:11 +0100
+
+tzdata (2016j-2) unstable; urgency=medium
+
+  [ Aurelien Jarno ]
+  * Allow partially translated choices in debconf templates.
+  * Update Dutch debconf translation, by Frans Spiesschaert.  Closes:
+    #845691.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Fri, 25 Nov 2016 23:03:59 +0100
+
+tzdata (2016j-1) unstable; urgency=medium
+
+  [ Aurelien Jarno ]
+  * New upstream version, affecting the following future timestamp:
+    - Saratov, Russia switches from +03 to +04 on 2016-12-04 at 02:00.
+  * Update templates and translations.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Thu, 24 Nov 2016 20:54:54 +0100
+
+tzdata (2016i-1) unstable; urgency=high
+
+  [ Aurelien Jarno ]
+  * New upstream version, affecting the following past and future timestamps:
+    - Pacific/Tongatapu (DST starting on 2016-11-06 at 02:00).
+    - Northern Cyprus is now +03 year round, the Asia/Famagusta zone has
+      been added.
+    - Antarctica/Casey (switched from +08 to +11 on 2016-10-22).
+  * Update templates and translations.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sat, 05 Nov 2016 23:55:01 +0100
+
+tzdata (2016h-1) unstable; urgency=high
+
+  [ Aurelien Jarno ]
+  * New upstream version, affecting the following future timestamp:
+    - Asia/Gaza and Asia/Hebron (DST ending on 2016-10-29 at 01:00, not
+      2016-10-21 at 00:00).
+  * Convert Asia/Rangoon into Asia/Yangon, as the former is now deprecaed.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Thu, 20 Oct 2016 23:29:12 +0200
+
+tzdata (2016g-1) unstable; urgency=medium
+
+  [ Aurelien Jarno ]
+  * Update Danish debconf translation, by Joe Hansen.  Closes: #830591.
+  * Update German debconf translation, by Holger Wansing.  Closes: #835538.
+
+  [ Clint Adams ]
+  * New upstream version.
+
+ -- Clint Adams <clint@debian.org>  Thu, 22 Sep 2016 16:08:33 -0400
+
+tzdata (2016f-1) unstable; urgency=medium
+
+  * New upstream version, affecting the following future time stamp:
+    - Africa/Cairo (DST starting on 2016-07-07 cancelled).
+    - Asia/Novosibirsk (on 2016-07-24).
+  * debian/control: Update Standards-Version to 3.9.8, no changes.
+  * debian/rules: install NEWS as upstream changelog.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Tue, 05 Jul 2016 19:35:18 +0200
+
+tzdata (2016e-1) unstable; urgency=medium
+
+  * New upstream version, affecting the following future time stamp:
+    Africa/Cairo
+  * Update Dutch debconf translation, by Frans Spiesschaert.  Closes:
+    #823442.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sun, 26 Jun 2016 14:34:16 +0200
+
+tzdata (2016d-2) unstable; urgency=medium
+
+  * Update Japanese debconf translation, by Takuma Yamada.  Closes:
+    #819599.
+  * Update French debconf translation, by Christian Perrier.  Closes:
+    #819949.
+  * Update Dutch debconf translation, by Frans Spiesschaert.  Closes:
+    #821439.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Thu, 21 Apr 2016 13:04:30 +0200
+
+tzdata (2016d-1) unstable; urgency=medium
+
+  * New upstream version, affecting the following future time stamps:
+    - America/Caracas.  Closes: #821147.
+    - Asia/Magadan
+    - Asia/Tomsk (new timezone).
+  * Update templates and translations.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Wed, 20 Apr 2016 20:37:29 +0200
+
+tzdata (2016c-1) unstable; urgency=medium
+
+  * New upstream version, affecting the following future time stamps:
+    - America/Santiago
+    - Asia/Baku
+
+ -- Aurelien Jarno <aurel32@debian.org>  Fri, 25 Mar 2016 23:19:01 +0100
+
+tzdata (2016b-1) unstable; urgency=medium
+
+  * New upstream version, affecting the following future time stamps:
+    - America/Port-au-Prince
+    - Asia/Gaza
+    - Asia/Hebron
+  * debian/rules: remove emdebian ifdefs.
+  * debian/compat, debian/control, debian/rules: rewrite using dh and
+    debhelper compatibility 9.
+  * Update French debconf translation, by Christian Perrier.  Closes:
+    #814831.
+  * Update Japanese debconf translation, by Takuma Yamada.  Closes:
+    #815386.
+  * Drop the tzdata-java package.  Closes: #814073.
+  * debian/control: Update Standards-Version to 3.9.7, no changes.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Mon, 14 Mar 2016 21:45:24 +0100
+
+tzdata (2016a-1) unstable; urgency=medium
+
+  [ Aurelien Jarno ]
+  * Add Vcs-Git and Vcs-Browser fields to debian/control.
+  * New upstream version, affecting the following future time stamps:
+    - America/Cayman
+    - Asia/Chita
+    - Asia Tehran
+  * Change /etc/localtime into a symlink (closes: #803144)
+
+ -- Aurelien Jarno <aurel32@debian.org>  Fri, 29 Jan 2016 17:26:32 +0100
+
+tzdata (2015g-1) unstable; urgency=medium
+
+  [ Aurelien Jarno ]
+  * New upstream version, affecting the following future time stamps:
+    - Fiji
+    - Fort Nelson, British Columbia
+    - Norfolk Island
+    - Turkey (closes: #801172)
+
+ -- Aurelien Jarno <aurel32@debian.org>  Wed, 07 Oct 2015 15:51:25 +0200
+
+tzdata (2015f-1) unstable; urgency=high
+
+  [ Aurelien Jarno ]
+  * New upstream version, affecting the following future time stamps:
+    - North Korea switches to +0830 on 2015-08-15.
+    - Uruguay no longer observes DST.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Tue, 11 Aug 2015 19:56:35 +0200
+
+tzdata (2015e-1) unstable; urgency=medium
+
+  [ Aurelien Jarno ]
+  * New upstream version:
+    - DST suspension from 2015-06-14 03:00 through 2015-07-19 02:00 in
+      Morroco.
+  * Change the Provides: to tzdata-stretch from tzdata-jessie.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Tue, 16 Jun 2015 20:38:21 +0200
+
+tzdata (2015d-1) unstable; urgency=medium
+
+  [ Adam Conrad ]
+  * New upstream release with yet another urgent DST change for Egypt.
+  * Install leap-seconds.list to /usr/share/zoneinfo (Closes: #775166)
+
+  [ Aurelien Jarno ]
+  * Install zone1970.tab.  Closes: #782646.
+
+ -- Adam Conrad <adconrad@0c3.net>  Sun, 26 Apr 2015 23:17:21 +0100
+
+tzdata (2015c-1) unstable; urgency=high
+
+  * New upstream release, with an urgent change for Egypt in ten days.
+
+ -- Adam Conrad <adconrad@0c3.net>  Tue, 14 Apr 2015 08:35:34 -0600
+
+tzdata (2015b-1) unstable; urgency=high
+
+  * New upstream release with urgent updates for Mongolia and Palestine.
+
+ -- Adam Conrad <adconrad@0c3.net>  Sat, 21 Mar 2015 12:25:26 -0600
+
+tzdata (2015a-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Clint Adams <clint@debian.org>  Fri, 30 Jan 2015 21:53:01 -0500
+
+tzdata (2014j-1) unstable; urgency=high
+
+  * New upstream release, with an ammendment for a change that was
+    meant to occur ten days ago for America/Grand_Turk, but didn't.
+
+ -- Adam Conrad <adconrad@0c3.net>  Wed, 12 Nov 2014 19:37:38 -0700
+
+tzdata (2014i-1) unstable; urgency=critical
+
+  * New upstream release with zone changes in 4 days for Belarus.
+
+ -- Adam Conrad <adconrad@0c3.net>  Wed, 22 Oct 2014 16:31:47 -0600
+
+tzdata (2014h-2) unstable; urgency=medium
+
+  [ Debconf translations ]
+  * Dutch (Frans Spiesscha).  Closes: #763458
+
+  [ Aurelien Jarno ]
+  * debian/control: Update Standards-Version to 3.9.6, no changes.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Tue, 07 Oct 2014 23:41:18 +0200
+
+tzdata (2014h-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sun, 28 Sep 2014 20:29:16 +0200
+
+tzdata (2014g-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Adam Conrad <adconrad@0c3.net>  Sat, 30 Aug 2014 14:24:21 -0600
+
+tzdata (2014f-1) unstable; urgency=medium
+
+  [ Debconf translations ]
+  * Turkish (Mert Dirik).  Closes: #756755
+
+  [ Clint Adams ]
+  * New upstream version.
+
+ -- Clint Adams <clint@debian.org>  Fri, 08 Aug 2014 11:26:29 -0400
+
+tzdata (2014e-1) unstable; urgency=high
+
+  * New upstream release, with more Egypt zone changes in 13 days.
+  * debian/control: Update our section to match archive overrides.
+  * debian/control: Update Standards-Version to 3.9.5, no changes.
+
+ -- Adam Conrad <adconrad@0c3.net>  Fri, 13 Jun 2014 16:02:45 -0600
+
+tzdata (2014d-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Adam Conrad <adconrad@0c3.net>  Thu, 29 May 2014 05:57:38 -0600
+
+tzdata (2014c-1) unstable; urgency=critical
+
+  * New upstream release, critical urgency due to Egypt zone
+    changes happening on May 15th (only two days from now).
+
+ -- Adam Conrad <adconrad@0c3.net>  Tue, 13 May 2014 10:47:46 -0600
+
+tzdata (2014b-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Adam Conrad <adconrad@0c3.net>  Wed, 02 Apr 2014 01:00:33 -0600
+
+tzdata (2014a-1) unstable; urgency=medium
+
+  [ Christian Perrier ]
+  * Use umlaut in French translation of "Büsingen"
+
+  [ Clint Adams ]
+  * New upstream version.
+    - New DST for Chile.  closes: #741265.
+
+ -- Clint Adams <clint@debian.org>  Mon, 10 Mar 2014 10:54:28 -0400
+
+tzdata (2013i-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Remove solar87, solar88 and solar89 from the list of timezones, as
+    they have been removed upstream.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Tue, 24 Dec 2013 22:56:13 +0100
+
+tzdata (2013h-2) unstable; urgency=medium
+
+  * Switch to default-jre-headless (closes: #732233)
+  * Add myself to uploaders.
+
+ -- Adam Conrad <adconrad@0c3.net>  Mon, 16 Dec 2013 02:20:13 -0700
+
+tzdata (2013h-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Fri, 29 Nov 2013 18:50:05 +0100
+
+tzdata (2013d-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Clint Adams <clint@debian.org>  Sat, 27 Jul 2013 12:26:36 -0400
+
+tzdata (2013c-2) unstable; urgency=low
+
+  * Use rdfind + symlinks instead of fdupes + handcoded shell script to
+    get rid of hardlinks.
+  * Provides: tzdata-jessie instead of tzdata-wheezy.
+  * debian/rules: use dh_prep instead of dh_clean -k.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Wed, 22 May 2013 06:29:13 +0200
+
+tzdata (2013c-1) experimental; urgency=low
+
+  * New upstream version.
+
+ -- Clint Adams <clint@debian.org>  Fri, 03 May 2013 00:02:25 -0400
+
+tzdata (2013b-2) unstable; urgency=low
+
+  [ Debconf translations ]
+  * French (Christian Perrier).
+  * Danish (Joe Hansen).  closes: #703059.
+  * German (Holger Wansing).  closes: #703069.
+  * Japanese (Kenshi Muto).  closes: #703018.
+  * Portuguese (Miguel Figueiredo).  closes: #703066.
+  * Hebrew (Omer Zak).
+  * Brazilian Portuguese (Marcelo Gomes de Santana).  Closes: #703167
+  * Russian (Yuri Kozlov).  Closes: #703223
+  * Italian (Francesca Ciceri).  Closes: #703243
+  * Basque (Iñaki Larrañaga Murgoitio).  Closes: #703304
+  * Swedish (Martin Bagge / brother).  Closes: #703398
+  * Czech (Miroslav Kure).  Closes: #703532
+  * Galician (Jorge Barreiro).  Closes: #703576
+  * Spanish; (Matías Bellone).  Closes: #703966
+  * Hungarian (Dr. Nagy Elemér Károly).
+
+ -- Clint Adams <clint@debian.org>  Thu, 28 Mar 2013 00:11:48 -0400
+
+tzdata (2013b-1) unstable; urgency=low
+
+  * New upstream release.
+  * Update English translations.
+
+ -- Clint Adams <clint@debian.org>  Mon, 11 Mar 2013 19:05:55 -0400
+
+tzdata (2013a-1) unstable; urgency=low
+
+  * New upstream release.  closes: #702266.
+
+ -- Clint Adams <clint@debian.org>  Wed, 06 Mar 2013 23:13:53 -0500
+
+tzdata (2012j-1) unstable; urgency=low
+
+  * New upstream version.
+  * Bump to Standards-Version 3.9.4.
+
+ -- Clint Adams <clint@debian.org>  Sat, 01 Dec 2012 18:54:01 -0500
+
+tzdata (2012i-1) unstable; urgency=low
+
+  * New upstream version.
+    - Drop brazil-dst-2012-changes.diff (merged).
+
+ -- Clint Adams <clint@debian.org>  Tue, 06 Nov 2012 12:51:27 -0500
+
+tzdata (2012g-1) unstable; urgency=low
+
+  * New upstream version.
+  * Add brazil-dst-2012-changes.diff from Antonio Terceiro to add
+    DST 2012 rule for the America/Bahia zone.  Closes: #690606.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Thu, 18 Oct 2012 19:01:18 +0200
+
+tzdata (2012f-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Clint Adams <clint@debian.org>  Thu, 13 Sep 2012 10:43:58 -0400
+
+tzdata (2012e-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Clint Adams <clint@debian.org>  Fri, 17 Aug 2012 18:30:32 -0400
+
+tzdata (2012d-1) unstable; urgency=low
+
+  [ Debconf translations ]
+  * Thai (Theppitak Karoonboonyanan).  Closes: #672213
+  * Really add Polish translation. Really Closes: #658403
+  * Slovak (Ivan Masár).  Closes: #677910
+
+  [ Clint Adams ]
+  * New upstream version.
+
+ -- Clint Adams <clint@debian.org>  Thu, 19 Jul 2012 22:43:21 -0400
+
+tzdata (2012c-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Clint Adams <clint@debian.org>  Tue, 01 May 2012 20:30:36 -0400
+
+tzdata (2012b-1) unstable; urgency=low
+
+  [ Debconf translations ]
+  * Indonesian (Mahyuddin Susanto).  Closes: #656706
+  * Italian (Francesca Ciceri).  Closes: #656937
+  * Polish (Michał Kułach).  Closes: #658403
+  * Basque (Iñaki Larrañaga Murgoitio).  Closes: #660645
+
+  [ Clint Adams ]
+  * New upstream version.
+  * Fix watch file.
+  * Bump to Standards-Version 3.9.3.
+  * Add Homepage to debian/control.
+
+ -- Clint Adams <clint@debian.org>  Tue, 06 Mar 2012 13:30:10 -0500
+
+tzdata (2011n-2) unstable; urgency=low
+
+  [ Debconf translations ]
+  * Dutch (Jeroen Schot).  Closes: #650647
+  * Russian (Yuri Kozlov).  Closes: #650868
+  * Brazilian Portuguese (Flamarion Jorge).  Closes: #651266
+  * German (Holger Wansing).  Closes: #651328
+  * Slovak (Ivan Masár).  Closes: #651329
+  * Danish (Joe Hansen).  Closes: #651341
+  * Swedish (Martin Bagge / brother).  Closes: #651350
+  * Thai (Theppitak Karoonboonyanan).  Closes: #651360
+  * Gujarati (Kartik Mistry).  Closes: #651366
+  * Japanese (Kenshi Muto).  Closes: #651371
+  * Portuguese (Miguel Figueiredo).  Closes: #651618
+  * Spanish; (Francisco Javier Cuadrado).  Closes: #651632
+  * Catalan; (Agustí Grau).  Closes: #652071
+  * Czech (Miroslav Kure).  Closes: #652584
+  * Hebrew (Omer Zak).  Closes: #653273
+
+ -- Aurelien Jarno <aurel32@debian.org>  Thu, 29 Dec 2011 13:01:02 +0100
+
+tzdata (2011n-1) unstable; urgency=critical
+
+  * New upstream veersion, fixing DST for:
+    - Cuba.
+    - Fidji.
+    - Pridnestrovian Moldavian Republic.
+  * Set urgency to high as some of the above changes are already
+    effective.
+  * Update French translation.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Mon, 31 Oct 2011 23:32:50 +0100
+
+tzdata (2011m-1) unstable; urgency=critical
+
+  * New upstream version, fixing DST for:
+    - Pridnestrovian Moldavian Republic.
+    - Ukraine (Closes: #645783).
+    - Bahia, Brazil. Drop debian/patches/bahia.diff.
+  * Set urgency to critical as the above changes will be effective on the
+    night from Saturday to Sunday.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Tue, 25 Oct 2011 05:08:18 +0200
+
+tzdata (2011l-2) unstable; urgency=high
+
+  * Upstream is now ICANN, update debian/watch and debian/copyright.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Mon, 17 Oct 2011 21:51:26 +0200
+
+tzdata (2011l-1.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * debian/patches/bahia.diff: add DST for America/Bahia (Closes: #645638).
+    Next upstream release should also include this change.
+
+ -- Antonio Terceiro <terceiro@debian.org>  Mon, 17 Oct 2011 15:12:38 -0300
+
+tzdata (2011l-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Clint Adams <clint@debian.org>  Tue, 11 Oct 2011 22:41:17 -0400
+
+tzdata (2011k-1) unstable; urgency=low
+
+  [ Aurelien Jarno ]
+  * New upstream release:
+    - Update DST rules for Ukraine.  Closes: #642232.
+    - Update DST rules for Belarus.  Closes: #641846.
+
+  [ Debconf translations ]
+  * Spanish (Francisco Javier Cuadrado).  Closes: #642071.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Mon, 26 Sep 2011 20:19:53 +0200
+
+tzdata (2011j-1) unstable; urgency=low
+
+  [ Aurelien Jarno ]
+  * New upstream release.
+
+  [ Debconf translations ]
+  * Swedish (Martin Bagge / brother).  Closes: #640624
+  * Italian (David Paleino).  Closes: #640772
+  * Catalan (Jordà Polo).  Closes: #640775
+  * Russian (Yuri Kozlov).  Closes: #640820
+  * Japanese (Kenshi Muto).  Closes: #641113
+  * German (Holger Wansing).  Closes: #641220
+  * Danish (Joe Hansen).  Closes: #640833
+
+ -- Aurelien Jarno <aurel32@debian.org>  Wed, 14 Sep 2011 00:53:02 +0200
+
+tzdata (2011i-2) unstable; urgency=medium
+
+  [ Aurelien Jarno ]
+  * OpenJDK-6 changed the path to the java binary without warning. Try both
+    the old and the new path, to avoid adding a versioned dependency on
+    openjdk-6-jre-headless that would prevent migration to testing.  Closes:
+    #640276.
+  * Set urgency to medium to avoid delaying too much migration to testing
+    with this upload.
+
+  [ Debconf translations ]
+  * French updated (Christian Perrier)
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sun, 04 Sep 2011 17:03:02 +0200
+
+tzdata (2011i-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Wed, 31 Aug 2011 22:27:16 +0200
+
+tzdata (2011h-4) unstable; urgency=low
+
+  * Add build-arch and build-indep targets.
+  * Remove hardlinks to comply with the policy, by replacing identical
+    files with symlinks. It also reduces the package size by 38% and
+    the installed size by 35%.
+  * Change the source compression format to "xz", .po files in plenty of
+    different languages compress very well.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Mon, 22 Aug 2011 22:25:12 +0200
+
+tzdata (2011h-3) unstable; urgency=low
+
+  * Correctly handle empty debconf values (how is that possible for a
+    select entry?).  Closes: #545146, #631878.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Mon, 04 Jul 2011 19:53:21 +0200
+
+tzdata (2011h-2) unstable; urgency=low
+
+  * Ignore debconf errors, return default values in that case.
+    Closes: #631878.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Tue, 28 Jun 2011 07:23:04 +0200
+
+tzdata (2011h-1) unstable; urgency=low
+
+  [ Aurelien Jarno ]
+  * Fix preseeding.  Closes: #510908.
+
+  [ Clint Adams ]
+  * New upstream release.
+  * Bump to Standards-Version 3.9.2.
+
+ -- Clint Adams <clint@debian.org>  Mon, 27 Jun 2011 14:33:48 -0400
+
+tzdata (2011g-1) unstable; urgency=high
+
+  * New upstream release.  closes: #624154.
+
+ -- Clint Adams <clint@debian.org>  Tue, 26 Apr 2011 00:27:36 -0400
+
+tzdata (2011f-1) unstable; urgency=low
+
+  * New upstream release.
+  * Update Danish translation from Joe Dalton.  closes: #601231.
+
+ -- Clint Adams <clint@debian.org>  Thu, 21 Apr 2011 14:37:11 -0400
+
+tzdata (2011e-1) unstable; urgency=high
+
+  * New upstream release.
+    - Changes Chilean DST yet again.  closes: #620288.
+
+ -- Clint Adams <clint@debian.org>  Fri, 01 Apr 2011 09:59:29 -0400
+
+tzdata (2011d-1) unstable; urgency=high
+
+  [ Aurelien Jarno ]
+  * debian/control: provides tzdata-wheezy instead of tzdata-squeeze.
+
+  [ Clint Adams ]
+  * New upstream release.
+
+ -- Clint Adams <clint@debian.org>  Mon, 14 Mar 2011 10:37:14 -0400
+
+tzdata (2011c-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Clint Adams <clint@debian.org>  Mon, 07 Mar 2011 12:29:07 -0500
+
+tzdata (2011b-2) unstable; urgency=low
+
+  * Mark tzdata and tzdata-java as Multi-Arch: foreign.
+    closes: #612700.
+
+ -- Clint Adams <clint@debian.org>  Thu, 10 Feb 2011 12:28:15 -0500
+
+tzdata (2011b-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Clint Adams <clint@debian.org>  Thu, 10 Feb 2011 09:58:03 -0500
+
+tzdata (2011a-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Clint Adams <clint@gnu.org>  Mon, 24 Jan 2011 12:33:59 -0500
+
+tzdata (2010o-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Clint Adams <schizo@debian.org>  Mon, 01 Nov 2010 23:33:41 -0400
+
+tzdata (2010m-1) unstable; urgency=low
+
+  [ Aurelien Jarno ]
+  * Danish translation (Joe Hansen).  Closes: #596143.
+
+  [ Clint Adams ]
+  * New upstream release.
+
+ -- Clint Adams <schizo@debian.org>  Mon, 27 Sep 2010 10:12:57 -0400
+
+tzdata (2010l-1) unstable; urgency=low
+
+  * New upstream release.
+  * gl.po: updated Galician translation from Jorge Barreiro.
+    closes: #592814.
+
+ -- Clint Adams <schizo@debian.org>  Wed, 18 Aug 2010 13:29:15 -0400
+
+tzdata (2010k-1) unstable; urgency=low
+
+  * New upstream release.
+  * Bump to Standards-Version 3.9.1.
+
+ -- Clint Adams <schizo@debian.org>  Tue, 10 Aug 2010 23:50:20 -0400
+
+tzdata (2010j-1) unstable; urgency=low
+
+  * New upstream version.
+  * en.po: rename "Noronha" to "Fernando de Noronha"
+    and "Ponape" to "Pohnpei".  closes: #580745.
+  * de.po: updated German translation from Holger Wansing.
+    closes: #580935.
+
+ -- Clint Adams <schizo@debian.org>  Sun, 09 May 2010 00:18:40 -0400
+
+tzdata (2010i-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Clint Adams <schizo@debian.org>  Tue, 20 Apr 2010 10:44:01 -0400
+
+tzdata (2010h-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Clint Adams <schizo@debian.org>  Mon, 05 Apr 2010 11:03:59 -0400
+
+tzdata (2010g-1) unstable; urgency=low
+
+  * New upstream release.
+    - Drop russia-2010.diff (obsolete).
+
+ -- Clint Adams <schizo@debian.org>  Mon, 29 Mar 2010 09:31:52 -0400
+
+tzdata (2010f-2) unstable; urgency=low
+
+  * Add russia-2010.diff for March 28 timezone changes.
+    closes: #574919.
+
+ -- Clint Adams <schizo@debian.org>  Mon, 22 Mar 2010 19:43:27 -0400
+
+tzdata (2010f-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Clint Adams <schizo@debian.org>  Mon, 22 Mar 2010 18:10:55 -0400
+
+tzdata (2010e-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Clint Adams <schizo@debian.org>  Tue, 09 Mar 2010 18:17:15 -0500
+
+tzdata (2010d-1) unstable; urgency=low
+
+  * New upstream release.
+    - Adjusts Chile 2010 DST dates.  closes: #572715.
+  * Bump to Standards-Version 3.8.4.
+
+ -- Clint Adams <schizo@debian.org>  Mon, 08 Mar 2010 11:01:21 -0500
+
+tzdata (2010c-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Clint Adams <schizo@debian.org>  Fri, 05 Mar 2010 16:37:24 -0500
+
+tzdata (2010b-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Clint Adams <schizo@debian.org>  Sat, 30 Jan 2010 16:31:22 -0500
+
+tzdata (2010a-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Clint Adams <schizo@debian.org>  Mon, 18 Jan 2010 08:42:23 -0500
+
+tzdata (2009u-1) unstable; urgency=low
+
+  * New upstream release.
+    - Drop bangladesh-openended.diff.
+
+ -- Clint Adams <schizo@debian.org>  Mon, 28 Dec 2009 21:40:51 -0500
+
+tzdata (2009s-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Clint Adams <schizo@debian.org>  Mon, 16 Nov 2009 18:48:10 -0500
+
+tzdata (2009r-1) unstable; urgency=low
+
+  * New upstream release.
+  * Don't remove .pc/ in clean target.
+
+ -- Clint Adams <schizo@debian.org>  Tue, 10 Nov 2009 02:15:03 -0500
+
+tzdata (2009q-2) unstable; urgency=low
+
+  * Fix the "DST" offset of Dhaka, broken by the fix for #552110.
+
+ -- Clint Adams <schizo@debian.org>  Tue, 03 Nov 2009 04:10:24 -0500
+
+tzdata (2009q-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Use 3.0 (quilt) source format, drop build dependency on quilt.
+
+ -- Clint Adams <schizo@debian.org>  Mon, 02 Nov 2009 13:54:29 -0500
+
+tzdata (2009p-1) unstable; urgency=low
+
+  * New upstream release.  closes: #551195.
+    - Drop argentinas-dst-2009.diff (obsolete).
+
+ -- Clint Adams <schizo@debian.org>  Mon, 26 Oct 2009 12:32:25 -0400
+
+tzdata (2009o-2) unstable; urgency=low
+
+  * debian/patches/bangladesh-openended.diff: Fix broken Asia/Dhaka
+    DST.  closes: #552110.
+
+ -- Clint Adams <schizo@debian.org>  Fri, 23 Oct 2009 10:36:14 -0400
+
+tzdata (2009o-1) unstable; urgency=low
+
+  * New upstream release.
+  * Rework rules to stop using tarball-in-tarball.
+
+ -- Clint Adams <schizo@debian.org>  Mon, 19 Oct 2009 09:04:43 -0700
+
+tzdata (2009n-2) unstable; urgency=low
+
+  [ Christian Perrier ]
+  * Brazilian Portuguese translation (Flamarion Jorge).  Closes: #550846
+
+  [ Clint Adams ]
+  * debian/patches/argentinas-dst-2009.diff: patch from Margarita
+    Manterola to fix Argentina DST again.  closes: #551195.
+
+ -- Clint Adams <schizo@debian.org>  Fri, 16 Oct 2009 08:17:48 -0700
+
+tzdata (2009n-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Clint Adams <schizo@debian.org>  Tue, 29 Sep 2009 10:14:23 -0400
+
+tzdata (2009m-1) unstable; urgency=low
+
+  * New upstream release.
+  * Bump to Standards-Version 3.8.3.
+
+ -- Clint Adams <schizo@debian.org>  Tue, 08 Sep 2009 22:36:35 -0400
+
+tzdata (2009l-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Clint Adams <schizo@debian.org>  Thu, 20 Aug 2009 23:17:47 -0400
+
+tzdata (2009k-3) unstable; urgency=low
+
+  * Clarify some wording in postinst and debconf template.  closes: #507164.
+  * Re-enable U.S. time zone choices.  closes: #509745.
+
+ -- Clint Adams <schizo@debian.org>  Mon, 03 Aug 2009 22:46:22 -0400
+
+tzdata (2009k-2) unstable; urgency=low
+
+  [ Christian Perrier ]
+  * es.po. Spanish translation from Francisco Javier Cuadrado. Closes: #538423
+  * ru.po: Russian translation from Yuri Kozlov. Closes: #538649
+
+  [ Aurelien Jarno ]
+  * Remove 'Katmandu' from the templates, only keeping 'Kathmandu'.
+  * debian/control: add missing depends on ${misc:Depends}.
+  * debian/control: bump to Standards-Version 3.8.2.
+  * Switch to debhelper 5.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sun, 26 Jul 2009 23:48:55 +0200
+
+tzdata (2009k-1) unstable; urgency=low
+
+  [ Aurelien Jarno ]
+  * New upstream version.
+
+  [ Clint Adams ]
+  * sk.po: Slovak translation from Ivan Masár.  closes: #534440.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Fri, 24 Jul 2009 19:51:59 +0200
+
+tzdata (2009j-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Clint Adams <schizo@debian.org>  Sun, 21 Jun 2009 12:20:00 -0400
+
+tzdata (2009i-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Clint Adams <schizo@debian.org>  Thu, 11 Jun 2009 14:58:36 -0400
+
+tzdata (2009h-1) unstable; urgency=low
+
+  * New upstream version.
+  * Include Pacific Presidential Election Time.  closes: #524046.
+
+ -- Clint Adams <schizo@debian.org>  Fri, 29 May 2009 21:35:19 -0400
+
+tzdata (2009g-1) unstable; urgency=low
+
+  [ Aurelien Jarno ]
+  * postinst: fix race condition when updating /etc/localtime. Closes:
+    bug#516755.
+
+  [ Clint Adams ]
+  * New upstream version.
+
+ -- Clint Adams <schizo@debian.org>  Mon, 27 Apr 2009 09:15:36 -0400
+
+tzdata (2009f-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Clint Adams <schizo@debian.org>  Sun, 19 Apr 2009 13:44:18 -0400
+
+tzdata (2009e-1) unstable; urgency=low
+
+  [ Christian Perrier ]
+  * Debconf translations:
+    - Spanish. Closes: #521807
+
+  [ Clint Adams ]
+  * New upstream version.
+
+ -- Clint Adams <schizo@debian.org>  Mon, 06 Apr 2009 10:33:21 -0400
+
+tzdata (2009d-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Clint Adams <schizo@debian.org>  Thu, 26 Mar 2009 10:04:03 -0400
+
+tzdata (2009c-1) unstable; urgency=low
+
+  [ Aurelien Jarno ]
+  * debian/control: s/tzdata-lenny/tzdata-squeeze/
+  * debian/control: move tzdata-java to section java.
+
+  [ Clint Adams ]
+  * New upstream release.
+  * debian/control: bump to Standards-Version 3.8.1.
+
+ -- Clint Adams <schizo@debian.org>  Mon, 16 Mar 2009 21:20:07 -0400
+
+tzdata (2009b-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Clint Adams <schizo@debian.org>  Sat, 14 Feb 2009 11:41:30 -0500
+
+tzdata (2008i-3) unstable; urgency=low
+
+  * Debconf translations:
+  * Italian. Closes: #504139
+  * Portuguese. Closes: #504276
+  * Finnish. Closes: #504311
+  * Turkish. Closes: #504442
+  * Czech. Closes: #504401
+  * Basque. Closes: #504533
+  * Kurdish. Closes: #504545
+  * Bulgarian. Closes: #504598
+  * Thai. Closes: #504687
+  * Russian. Closes: #504890
+  * Wolof. Closes: #504915
+
+ -- Christian Perrier <bubulle@debian.org>  Mon, 03 Nov 2008 08:13:32 +0100
+
+tzdata (2008i-2) unstable; urgency=low
+
+  [ Christian Perrier ]
+  * Debconf translations:
+  * French
+  * Belarusian. Closes: #503969
+  * Japanese. Closes: #503979
+  * Gujarati. Closes: #503988
+  * Lithuanian. Closes: #503995
+  * Kurdish
+  * Swedish. Closes: #504036
+  * German. Closes: #504038
+  * Catalan. Closes: #504074
+
+  [ Clint Adams ]
+  * debian/postinst: apply patch from Martin Orr to restore SELinux
+    context of /etc/localtime.  closes: #503028.
+
+ -- Clint Adams <schizo@debian.org>  Sat, 01 Nov 2008 19:45:54 -0400
+
+tzdata (2008i-1) unstable; urgency=low
+
+  * New upstream version.
+    - Drop argentina-no-dst.diff (obsolete).
+  * debian/po/en.po: add translation for Salta (Argentina).
+
+ -- Clint Adams <schizo@debian.org>  Mon, 27 Oct 2008 21:34:51 -0400
+
+tzdata (2008h-2) unstable; urgency=high
+
+  * Apply patch from Margarita Manterola to fix DST for Argentina this
+    weekend.  closes: #502430.
+
+ -- Clint Adams <schizo@debian.org>  Fri, 17 Oct 2008 12:16:57 -0400
+
+tzdata (2008h-1) unstable; urgency=high
+
+  * New upstream version.
+  * Remove argentina.diff to enable DST in Argentina for October 19th.
+  * Urgency set to high, as the change will happen soon.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Wed, 15 Oct 2008 11:09:34 +0200
+
+tzdata (2008g-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Mon, 06 Oct 2008 15:17:28 +0200
+
+tzdata (2008f-2) unstable; urgency=low
+
+  * Fix Argentinian timezone wrt DST.  Closes: #501169
+
+ -- Aurelien Jarno <aurel32@debian.org>  Mon, 06 Oct 2008 13:38:46 +0200
+
+tzdata (2008f-1) unstable; urgency=low
+
+  [ Christian Perrier ]
+  * debian/po/pt.po: update from Ricardo Silva. closes: #498963
+
+  [ Clint Adams ]
+  * New upstream release.
+
+ -- Clint Adams <schizo@debian.org>  Fri, 26 Sep 2008 12:41:52 -0400
+
+tzdata (2008e-4) unstable; urgency=low
+
+  * Add a README.Debian file explaining the difference between the
+    "posix" and the "right" versions of the timezone data.
+  * Only build the posix version of the timezone data on emdebian.
+  * Don't build solar87, solar88 and solar89 on emdebian as they are
+    useless.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sat, 06 Sep 2008 16:57:41 +0200
+
+tzdata (2008e-3) unstable; urgency=low
+
+  * Provide a tzconfig compatibility script.  Closes: #493978.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sat, 09 Aug 2008 21:57:23 +0200
+
+tzdata (2008e-2) unstable; urgency=low
+
+  * Build a tzdata-java package, using javazic from openjdk-6.
+  * debian/po/fr.po: update from Nicolas François. closes: #492769.
+  * debian/po/tr.po: new file from Mert Dirik. closes: #491207.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Thu, 31 Jul 2008 14:15:19 +0200
+
+tzdata (2008e-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Tue, 29 Jul 2008 02:12:00 +0200
+
+tzdata (2008d-1) unstable; urgency=medium
+
+  [ Clint Adams ]
+  * New upstream release.
+  * Bump to Standards-Version 3.8.0.
+  * debian/po/en.po: translation of "Santarem".
+  * Add Italian translations from David Paleino.  closes: #483917.
+
+  [ Christian Perrier ]
+  * Debconf translations (credits are in PO files):
+    - French
+    - Gujarati. Closes: #490674
+    - Malayalam. Closes: #490685
+    - Galician. Closes: #490692
+    - Catalan. Closes: #490709
+    - German. Closes: #490713, #486867
+    - Bulgarian. Closes: #490726
+    - Basque. Closes: #490731
+    - Lithuanian. Closes: #490773
+    - Swedish. Closes: #490783
+    - Japanese. Closes: #490807
+    - Thai. Closes: #490942
+    - Finnish. Closes: #490993
+    - Vietnamese. Closes: #491047
+    - Turkish. Closes: #491207
+    - Russian. Closes: #491339
+    - Belarusian. Closes: #491444
+
+  [ Aurelien Jarno ]
+  * patches/systemv.diff: convert to -p1.  Closes: #485364.
+
+ -- Clint Adams <schizo@debian.org>  Fri, 25 Jul 2008 09:41:04 -0400
+
+tzdata (2008c-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/po/sv.po: updates from Martin Bagge.  closes: #482459.
+  * debian/po/es.po: updates from Rudy Godoy Guillén.  closes: #482941
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sat, 31 May 2008 10:00:54 +0200
+
+tzdata (2008b-2) unstable; urgency=medium
+
+  [ Christian Perrier ]
+  * Properly spell "Sydney" in debian/config. closes: #478403
+  * debian/po/de.po: update from Helge Kreutzmann. German. closes: #472682
+  * debian/po/fi.po: update from Esko Arajärvi. Finnish. closes: #475226
+  * debian/po/fr.po: update from Christian Perrier. French. closes: #472596
+  * debian/po/gu.po: update from Kartik Mistry. Gujarati. closes: #480529
+  * debian/po/gl.po: update from Jacobo Tarrio. Galician. closes: #480535
+  * debian/po/ca.po: update from Jordà Polo. Catalan. closes: #480554
+  * debian/po/sq.po: update from Elian Myftiu. Albanian. closes: #480562
+  * debian/po/ja.po: update from Kenshi Muto. Japanese. closes: #480581
+  * debian/po/ml.po: update from Praveen. Malayalam. closes: #480582
+  * debian/po/vi.po: update from Clytie Siddall. Vietnamese. closes: #480651
+  * debian/po/hu.po: update from SZERVÁC Attila. Hungarian. closes: #480665
+  * debian/po/bg.po: update from Damyan Ivanov and Yavor Doganov.
+                     Bulgarian. closes: #480674
+  * debian/po/es.po: update from Rudy Godoy. Spanish. closes: #480745
+  * debian/po/be.po: update from Pavel Piatruk. Belarusian.
+  * debian/po/id.po: update from Arief S Fitrianto. Indonesian. closes: #480832
+  * debian/po/lt.po: update from Kęstutis Biliūnas. Lithuanian. closes: #480836
+  * debian/po/eu.po: update from Piarres Beobide. Basque. closes: #480843
+  * debian/po/cs.po: update from Miroslav Kure. Czech. closes: #480929
+  * Russian. Closes: #481216
+
+  [ Clint Adams ]
+  * debian/po/nl.po: update from Bart Cornelis.  closes: #481741.
+  * debian/po/ru.po: update from Yuri Kozlov.  closes: #481216.
+  * debian/po/en.po: fix fuzzy mistranslation of San Luis to San Juan.
+
+ -- Clint Adams <schizo@debian.org>  Sun, 18 May 2008 07:52:23 -0400
+
+tzdata (2008b-1) unstable; urgency=low
+
+  * New upstream release.
+    - Renames Asia/Saigon to Asia/Ho_Chi_Minh. closes: #471305.
+  * Add conversion code for Asia/Saigon and Asia/Calcutta to
+    Asia/Ho_Chi_Minh and Asia/Kolkata respectively.
+
+ -- Clint Adams <schizo@debian.org>  Mon, 24 Mar 2008 09:42:35 -0400
+
+tzdata (2008a-1) unstable; urgency=low
+
+  * New upstream release.
+    - Drop Chile patch (fixed in a different way).
+
+ -- Clint Adams <schizo@debian.org>  Sun, 09 Mar 2008 10:24:05 -0400
+
+tzdata (2007k-4) unstable; urgency=high
+
+  * debian/patches/chile_2008.diff: add Chile DST rule for 2008.
+    closes: #469194.
+  * Set urgency to high as the DST change will happen in 4 days.
+  * debian/po/fi.po: update from Esko Arajärvi.  closes: #468544.
+  * debian/po/ru.po: update from Yuri Kozlov.  closes: #466752.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Tue, 04 Mar 2008 12:32:26 +0100
+
+tzdata (2007k-3) unstable; urgency=low
+
+  * Add a Provides: tzdata-lenny.
+  * debian/po/nl.po: update from Bart Cornelis.  closes: #463434.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Mon, 04 Feb 2008 22:36:41 +0100
+
+tzdata (2007k-2) unstable; urgency=low
+
+  * debian/po/sv.po: initial translation from Christer Andersson
+    closes: #459490.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sat, 12 Jan 2008 12:52:02 +0100
+
+tzdata (2007k-1) unstable; urgency=low
+
+  * New upstream release.
+    - Drop Argentina patch (fixed upstream in a different way).
+
+ -- Clint Adams <schizo@debian.org>  Mon, 31 Dec 2007 12:26:58 -0500
+
+tzdata (2007j-3) unstable; urgency=high
+
+  [ Aurelien Jarno ]
+  * debian/po/eu.po: update from Piarres Beobide.  closes: #457288.
+
+  [ Clint Adams ]
+  * debian/po/de.po: update from Helge Kreutzmann.  closes: #457747.
+  * Add DST for Argentina, closes: #457938.
+  * Bump to Standards-Version 3.7.3.
+
+ -- Clint Adams <schizo@debian.org>  Tue, 25 Dec 2007 19:15:23 -0500
+
+tzdata (2007j-2) unstable; urgency=high
+
+  * Urgency set to high, to make sure the version in testing is
+    high than in debian-volatile.
+  * debian/po/de.po: update from Helge Kreutzmann.  closes: #454335.
+  * debian/po/fr.po: update from Christian Perrier.  closes: #454410.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Tue, 11 Dec 2007 14:46:52 +0100
+
+tzdata (2007j-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Clint Adams <schizo@debian.org>  Mon, 03 Dec 2007 10:15:33 -0500
+
+tzdata (2007i-2) unstable; urgency=low
+
+  * Remove leading/trailing slashes when reading the timezone.
+    closes: #452275.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sun, 25 Nov 2007 05:22:24 +0100
+
+tzdata (2007i-1) unstable; urgency=low
+
+  * New upstream version.
+  * debian/po/de.po: initial translation from Helge Kreutzmann.
+    closes: #447173.
+  * debian/po/gl.po: update from Jacobo Tarrio.  closes: #447930.
+  * debian/po/nl.po: update from Bart Cornelis.  closes: #448016.
+  * debian/po/fi.po: initial translation from Esko Arajärvi.
+    closes: #448545.
+
+ -- Clint Adams <schizo@debian.org>  Mon, 05 Nov 2007 19:47:10 -0500
+
+tzdata (2007h-2) unstable; urgency=low
+
+  * debian/po/ca.po: update from Jordà Polo. closes: #446397.
+  * debian/po/ja.po: update from Kenshi Muto. closes: #446564.
+
+ -- Clint Adams <schizo@debian.org>  Sun, 14 Oct 2007 09:50:48 -0400
+
+tzdata (2007h-1) unstable; urgency=low
+
+  * New upstream version.
+    - Includes Venezuelan time zone change.  closes: #443202.
+  * debian/po/ru.po: update from Yuri Kozlov. closes: #444040.
+
+ -- Clint Adams <schizo@debian.org>  Wed, 03 Oct 2007 11:36:09 -0400
+
+tzdata (2007g-2) unstable; urgency=low
+
+  * debian/po/fr.po: update from Christian Perrier.  closes: #439883.
+  * debian/po/es.po: update from Rudy Godoy Guillén.  closes: #440595.
+
+ -- Clint Adams <schizo@debian.org>  Fri, 21 Sep 2007 08:44:02 -0400
+
+tzdata (2007g-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Clint Adams <schizo@debian.org>  Sun, 26 Aug 2007 16:59:29 -0400
+
+tzdata (2007f-12) unstable; urgency=high
+
+  * debian/preinst: remove.
+  * debian/config: don't try to detect modified /etc/localtime file.
+    closes: #438449.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sat, 25 Aug 2007 01:10:44 +0200
+
+tzdata (2007f-11) unstable; urgency=high
+
+  * Urgency set to high as it fixes an RC bug.
+  * debian/configure: remove comparison of /etc/localtime
+    with /usr/share/zoneinfo/.  closes: #438191.
+    rework the rest of the script.
+  * debian/preinst: new script to compare /etc/localtime
+    with /usr/share/zoneinfo/.
+  * debian/postinst: don't touch anything if /etc/timezone
+    if not there.
+  * debian/rules: Remove the Canada area, all cities are
+    already in America.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Thu, 16 Aug 2007 14:14:27 -0230
+
+tzdata (2007f-10) unstable; urgency=low
+
+  * New Catalan debconf translation from Jordà Polo.  closes: #431972.
+  * debian/postinst: only print "Run 'dpkg-reconfigure tzdata' if you wish
+    to change it." message when not using dpkg-reconfigure.  closes:
+    #428083.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Tue, 31 Jul 2007 16:17:16 +0200
+
+tzdata (2007f-9) unstable; urgency=low
+
+  * debian/po/wo.po: update from M Mamoune Mbacke.  closes: #427504.
+  * debian/config: patch form Ingo Saitz to fix handling of
+    cases where /etc/localtime is missing.  closes: #427584.
+  * debian/po/vi.po: update from Clytie Siddall.
+  * debian/po/fr.po: update from Christian Perrier.  closes: #427733.
+  * New Spanish debconf translation from Rudy Godoy Guillén.
+    closes: #429414.
+
+ -- Clint Adams <schizo@debian.org>  Tue, 19 Jun 2007 05:52:15 -0400
+
+tzdata (2007f-8) unstable; urgency=high
+
+  * debian/config: reverse the division of area/zone given the hack
+    for the 3-level zones in America/ . closes: #427389.
+
+ -- Clint Adams <schizo@debian.org>  Sun, 03 Jun 2007 19:00:32 -0400
+
+tzdata (2007f-7) unstable; urgency=medium
+
+  * debian/po/fr.po: update from Christian Perrier.
+    closes: #427305.
+  * debian/config: strip off any leading right/ or posix/ ;
+    this allows tzdata to install when such a zone is set, but
+    makes it more difficult for the user to set a "right"
+    time zone.  closes: #427226.
+
+ -- Clint Adams <schizo@debian.org>  Sun, 03 Jun 2007 08:28:04 -0400
+
+tzdata (2007f-6) unstable; urgency=low
+
+  * debian/po/en.po: a few minor cleanups.
+  * Remove Asmera as a debconf choice.
+  * Convert Antarctica/South_Pole to Antarctica/McMurdo.
+
+ -- Clint Adams <schizo@debian.org>  Fri, 01 Jun 2007 14:36:36 -0400
+
+tzdata (2007f-5) unstable; urgency=medium
+
+  * Handle three-level timezones (including Argentina) in debconf
+    selection, as well as converting Argentine compatibility zones
+    to their three-level counterparts.  closes: #426914.
+  * debian/po/en.po: updates for "new" zones.
+
+ -- Clint Adams <schizo@debian.org>  Thu, 31 May 2007 14:21:48 -0400
+
+tzdata (2007f-4) unstable; urgency=low
+
+  * New Malayalam debconf translation from Praveen A.  closes: #425361.
+  * New Lithuanian debconf translation from Kęstutis Biliūnas.
+    closes: #425383.
+  * debian/po/ru.po: updates from Yuri Kozlov. closes: #424892.
+  * debian/po/bg.po: updates from Damyan Ivanov.  closes: #425512.
+  * New Hebrew debconf translation from Lior Kaplan.  closes: #425733.
+
+ -- Clint Adams <schizo@debian.org>  Mon, 21 May 2007 11:48:09 -0400
+
+tzdata (2007f-3) unstable; urgency=medium
+
+  * New Czech debconf translation by Miroslav Kure.
+    closes: #425134.
+  * Fix misspelling of "Cambridge Bay" in en.po.
+  * New Basque debconf translation by Piarres Beobide.
+    closes: #424983.
+  * New Albanian debconf translation by Elian Myftiu.
+    closes: #425172.
+  * New Belarusian debconf translation by Paul Petruk.
+    closes: #424769.
+  * debian/po/fr.po: fixes from Christian Perrier.
+    closes: #424437.
+
+ -- Clint Adams <schizo@debian.org>  Sat, 19 May 2007 11:50:13 -0400
+
+tzdata (2007f-2) unstable; urgency=low
+
+  * New Indonesian debconf translation by Arief S Fitrianto.
+    closes: #423402.
+  * debian/config: Use parameter expansion to get substrings,
+    thereby eliminating use of sed.
+  * debian/config: Ulaanbaatar is the canonical name, not
+    Ulan_Bator.
+  * debian/config: Asmara is the canonical name for Asmera.
+  * debian/po/templates.pot: remove Asmera.
+  * New Gujarati debconf translation by Kartik Mistry.
+    closes: #423492.
+
+ -- Clint Adams <schizo@debian.org>  Fri, 11 May 2007 11:14:37 -0400
+
+tzdata (2007f-1) unstable; urgency=medium
+
+  * New upstream release.
+    - Remove debian/patches/grand_turk.diff (superseded)
+  * New Dutch debconf translation by Bart Cornelis. closes: #423064.
+  * New Thai debconf translation by Theppitak Karoonboonyanan.
+    closes: #422744.
+  * New Kurdish debconf translation by Amed Çeko Jiyan.
+    closes: #422880.
+
+ -- Clint Adams <schizo@debian.org>  Wed, 09 May 2007 12:43:32 -0400
+
+tzdata (2007e-8) unstable; urgency=low
+
+  * New Bulgarian debconf translation, by Damyan Ivanov (closes:
+    bug#422429).
+  * New Croatian debconf translation, by Josip Rodin (closes:
+    bug#422434).
+  * New Hungarian debconf translation, by Attila Szervác (closes:
+    bug#422458).
+  * New Japanese debconf translation, by Kenshi Muto (closes:
+    bug#422460).
+  * New Galician debconf translation, by Jacobo Tarrio (closes:
+    bug#422519.
+  * debian/postinst: also set LC_ALL=C in sub-shells (closes: bug#422551).
+  * Don't show backward links in debconf templates for Australian states,
+    and for Cities whose names have changed.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sun, 06 May 2007 23:55:23 +0200
+
+tzdata (2007e-7) unstable; urgency=low
+
+  * debian/po/en.po: fixes two typos. Thanks to Thijs Kinkhorst (closes:
+    #421889).
+  * New Russian debconf translation, by Yuri Kozlov (closes: bug#421499).
+  * New Portuguese debconf translation, by Rui Branco (closes: bug#422329).
+  * Partly merge patch from the Debconf templates review (closes:
+    bug#422186).
+  * debian/config: verify that /etc/localtime symlink points to a file
+    in /usr/share/zoneinfo (closes: bug#421280).
+  * debian/postinst: print the current local and UTC times even when using
+    user defined /etc/localtime.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sat, 05 May 2007 05:52:04 -0700
+
+tzdata (2007e-6) unstable; urgency=low
+
+  * Remove -x from the config script (closes: #420988).
+
+ -- Aurelien Jarno <aurel32@debian.org>  Wed, 25 Apr 2007 19:35:09 +0200
+
+tzdata (2007e-5) unstable; urgency=low
+
+  * Convert old or single-level timezones into two-level timezones
+    (closes: bug#420895).
+  * Remove the US area, all cities are already in America.
+  * Add Arctic area.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Wed, 25 Apr 2007 09:25:46 -0400
+
+tzdata (2007e-4) unstable; urgency=low
+
+  * Don't ask debconf questions during the first upgrade if the timezone
+    is already configured (closes: bug#419276).
+  * Set the old timezone in case of cancellation (closes: bug#419344).
+  * Don't overwrite /etc/localtime if the user choose to manage it by
+    him/herself.
+  * Update templates from the current status of the Smith Review
+    Project.
+  * Add preliminary French templates.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Wed, 25 Apr 2007 00:25:37 +0200
+
+tzdata (2007e-3) unstable; urgency=low
+
+  * Add missing Australia area (closes: bug#419191).
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sat, 14 Apr 2007 12:33:17 +0200
+
+tzdata (2007e-2) unstable; urgency=low
+
+  * Switch to debconf (closes: bug#391529).
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sat, 14 Apr 2007 00:03:20 +0200
+
+tzdata (2007e-1) unstable; urgency=low
+
+  * New upstream release.
+    - Fixes for Syria and Honduras.
+  * Add watch file.
+
+ -- Clint Adams <schizo@debian.org>  Mon, 09 Apr 2007 19:16:23 -0400
+
+tzdata (2007d-1) unstable; urgency=low
+
+  * New upstream release:
+    - Fix timezone change for Turkey (closes: bug#416120).
+  * debian/patches/grand_turk.diff: Fix timezone change for Turks & Caicos
+    Islands (closes: bug#415007).
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sun, 25 Mar 2007 03:04:44 +0200
+
+tzdata (2007c-1) unstable; urgency=low
+
+  * New upstream release.
+    - Fix timezone change for Pulaski County, Indiana, USA (closes:
+      bug#414222).
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sat, 10 Mar 2007 22:16:21 +0100
+
+tzdata (2007b-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sun, 18 Feb 2007 19:10:15 +0100
+
+tzdata (2007a-3) unstable; urgency=low
+
+  * Make tzdata an Essential package.
+  * Fix postinst script with broken /etc/localtime file (closes: bug#409419).
+
+ -- Aurelien Jarno <aurel32@debian.org>  Fri,  2 Feb 2007 22:37:36 +0100
+
+tzdata (2007a-2) unstable; urgency=low
+
+  * Generate and ship /usr/share/zoneinfo/posixrules (closes: bug#409275).
+
+ -- Aurelien Jarno <aurel32@debian.org>  Thu,  1 Feb 2007 18:39:05 +0100
+
+tzdata (2007a-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sun, 21 Jan 2007 22:28:24 +0100
+
+tzdata (2006p-1) unstable; urgency=low
+
+  [ Aurelien Jarno ]
+  * New upstream release.
+    - Includes DST rules for West Australia.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Tue, 28 Nov 2006 10:58:53 +0100
+
+tzdata (2006n-1) unstable; urgency=low
+
+  [ Aurelien Jarno ]
+  * New upstream release.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sat, 21 Oct 2006 22:51:50 +0200
+
+tzdata (2006m-1) unstable; urgency=low
+
+  [ Aurelien Jarno ]
+  * New upstream release.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sun,  8 Oct 2006 19:39:42 +0200
+
+tzdata (2006l-1) unstable; urgency=low
+
+  [ Denis Barbier ]
+  * New upstream release.
+  * debian/rules: Use debian/patches/quiltrc for quilt global settings.
+
+ -- Denis Barbier <barbier@debian.org>  Tue, 19 Sep 2006 22:26:27 +0200
+
+tzdata (2006k-1) unstable; urgency=low
+
+  [ Aurelien Jarno ]
+  * New upstream release.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Tue, 29 Aug 2006 22:53:57 +0200
+
+tzdata (2006g-2) unstable; urgency=low
+
+  * patches/systemv.diff: As Indianapolis use DST since 2006, it can no
+    more be an alias for SystemV/EST5, replace it with Panama.
+    Closes: #367025
+  * debian/watch: New file.
+
+ -- Denis Barbier <barbier@debian.org>  Fri,  2 Jun 2006 23:44:21 +0200
+
+tzdata (2006g-1) unstable; urgency=low
+
+  [ Denis Barbier ]
+  * New upstream release.
+  * debian/control: Bump Standards-Version: 3.7.2  (no changes needed)
+  * debian/control: quilt is not run by the 'clean' target, so move it
+    into Build-Depends-Indep.
+
+ -- Denis Barbier <barbier@debian.org>  Thu,  1 Jun 2006 22:19:57 +0200
+
+tzdata (2006c-2) unstable; urgency=low
+
+  * Put a copy of the current timezone into /etc/localtime instead of a
+    symlink.
+  * Add a patching system.
+  * patches/systemv.diff: create the SystemV links for compatibility reasons.
+  * Drop the dependency on libc-bin.
+  * Drop the preinst script, we don't support upgrades from Potato :-)
+
+ -- Aurelien Jarno <aurel32@debian.org>  Mon, 10 Apr 2006 09:13:04 +0200
+
+tzdata (2006c-1) unstable; urgency=low
+
+  * Initial release.
+  * For easy updating, this package has been splitted out of the GNU C
+    Library.
+  * Thanks to the authors of the langpack-locales Ubuntu package, which has
+    been used to understand how to process source timezone files.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sat,  8 Apr 2006 19:00:31 +0200

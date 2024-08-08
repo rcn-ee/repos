@@ -1,0 +1,61 @@
+Source: tzdata
+Section: localization
+Priority: required
+Build-Depends: debhelper-compat (= 13)
+Build-Depends-Indep: gawk,
+                     po-debconf,
+                     python3 (>= 3.9),
+                     python3-debian,
+                     python3-natsort,
+                     python3-polib
+Rules-Requires-Root: no
+Maintainer: GNU Libc Maintainers <debian-glibc@lists.debian.org>
+Uploaders: Clint Adams <clint@debian.org>,
+           Aurelien Jarno <aurel32@debian.org>,
+           Benjamin Drung <bdrung@debian.org>
+Standards-Version: 4.6.2
+Homepage: https://www.iana.org/time-zones
+Vcs-Git: https://salsa.debian.org/glibc-team/tzdata.git
+Vcs-Browser: https://salsa.debian.org/glibc-team/tzdata
+
+Package: tzdata
+Architecture: all
+Multi-Arch: foreign
+Depends: debconf | debconf-2.0, ${misc:Depends}
+Breaks: tzdata-legacy (= 2023c-8), tzdata-legacy (= 2023c-9)
+Replaces: tzdata-legacy (= 2023c-8), tzdata-legacy (= 2023c-9)
+Provides: tzdata-trixie
+Description: time zone and daylight-saving time data
+ This package contains data required for the implementation of
+ standard local time for many representative locations around the
+ globe. It is updated periodically to reflect changes made by
+ political bodies to time zone boundaries, UTC offsets, and
+ daylight-saving rules.
+
+Package: tzdata-legacy
+Architecture: all
+Multi-Arch: foreign
+Priority: optional
+Depends: tzdata, ${misc:Depends}
+Breaks: tzdata (<< 2024a-2~)
+Conflicts: tzdata-bookworm, tzdata-bullseye
+Replaces: tzdata (<< 2024a-2~), tzdata-bookworm, tzdata-bullseye
+Description: time zone data for TAI minus ten seconds
+ This package contains data required for the implementation of
+ standard local time for many representative locations around the
+ globe. It is updated periodically to reflect changes made by
+ political bodies to time zone boundaries, UTC offsets, and
+ daylight-saving rules.
+ .
+ This package contains timezones counted in International Atomic Time with a
+ -10 second offset (TAI-10s) in /usr/share/zoneinfo/right. This is the current
+ IBM recommended setting of hardware clocks on IBM mainframes, which ran on
+ GMT until the inception of UTC in 1972 when TAI was 10 seconds ahead of UTC.
+ IBM switched to running clocks at the atomic rate and introduced the
+ 10-second offset in order to avoid a discontinuity.
+ .
+ This package also contains legacy timezone symlinks that are not following
+ the current rule of using the geographical region (continent or ocean) and
+ city name.
+ .
+ You do not need this package if you are unsure.
