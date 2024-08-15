@@ -31,15 +31,15 @@ setup_update_sbuild () {
 			sbuild-createchroot ${options} --arch=${arch} --make-sbuild-tarball=/var/lib/sbuild/${dist}-${arch}.tar ${dist} `mktemp -d` ${mirror}
 		else
 			chown -R root:root /var/lib/sbuild/${dist}-${arch}.tar
-			sbuild-update -udcar ${dist}-${arch}-sbuild
 			sbuild-apt ${dist}-${arch}-sbuild apt-get update
 			sbuild-apt ${dist}-${arch}-sbuild apt-get install ca-certificates
+			sbuild-update -udcar ${dist}-${arch}-sbuild
 		fi
 	else
 		chown -R root:root /var/lib/sbuild/${dist}-${arch}.tar.gz
-		sbuild-update -udcar ${dist}-${arch}-sbuild
 		sbuild-apt ${dist}-${arch}-sbuild apt-get update
 		sbuild-apt ${dist}-${arch}-sbuild apt-get install ca-certificates
+		sbuild-update -udcar ${dist}-${arch}-sbuild
 	fi
 }
 
