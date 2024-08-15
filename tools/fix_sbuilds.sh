@@ -33,13 +33,13 @@ setup_update_sbuild () {
 			chown -R root:root /var/lib/sbuild/${dist}-${arch}.tar
 			sbuild-update -udcar ${dist}-${arch}-sbuild
 			sbuild-apt ${dist}-${arch}-sbuild apt-get update
-			sbuild-apt ${dist}-${arch}-sbuild apt-get install ca-certificates -y
+			sbuild-apt ${dist}-${arch}-sbuild apt-get install ca-certificates
 		fi
 	else
 		chown -R root:root /var/lib/sbuild/${dist}-${arch}.tar.gz
 		sbuild-update -udcar ${dist}-${arch}-sbuild
 		sbuild-apt ${dist}-${arch}-sbuild apt-get update
-		sbuild-apt ${dist}-${arch}-sbuild apt-get install ca-certificates -y
+		sbuild-apt ${dist}-${arch}-sbuild apt-get install ca-certificates
 	fi
 }
 
