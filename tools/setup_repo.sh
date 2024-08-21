@@ -308,4 +308,9 @@ suite="bookworm"
 archs="amd64 source"
 setup_repo
 
+dist="debian-amd64"
+suite="trixie"
+archs="amd64 source"
+setup_repo
+
 #
