@@ -275,6 +275,11 @@ setup_repo
 ###Debian (riscv64):
 
 dist="debian-riscv64"
+
+suite="trixie"
+archs="riscv64 source"
+setup_repo
+
 suite="sid"
 archs="riscv64 source"
 setup_repo
