@@ -7,7 +7,7 @@ current_kernel () {
 		rm -rf /tmp/LATEST-${var} | true
 	fi
 	unset latest_kernel
-	wget --quiet --directory-prefix=/tmp/ https://rcn-ee.us/repos/latest/${dist}-${arch}/LATEST-${var} || true
+	wget --quiet --directory-prefix=/tmp/ https://rcn-ee.net/repos/latest/${dist}-${arch}/LATEST-${var} || true
 	if [ -f /tmp/LATEST-${var} ] ; then
 		latest_kernel=$(cat "/tmp/LATEST-${var}" | grep "ABI:1 ${ver}" | awk '{print $3}')
 		echo ${dist}-${arch}-${latest_kernel}
@@ -148,47 +148,47 @@ changelog () {
 }
 
 do_all_lts () {
-	msg="5.10-bone" ; var="omap-psp" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_bone
-	msg="5.15-bone" ; var="omap-psp" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.1-bone"  ; var="omap-psp" ; ver="LTS61"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.6-bone"  ; var="omap-psp" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="5.10-bone" ; var="omap-psp" ; ver="LTS510X" ; current_kernel ; generate_kernel_mainline_bone
+	msg="5.15-bone" ; var="omap-psp" ; ver="LTS515X" ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.1-bone"  ; var="omap-psp" ; ver="LTS61X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.6-bone"  ; var="omap-psp" ; ver="LTS66X"  ; current_kernel ; generate_kernel_mainline_bone
 
-	msg="5.10-bone-rt" ; var="bone-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_bone
-	msg="5.15-bone-rt" ; var="bone-rt" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.1-bone-rt"  ; var="bone-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.6-bone-rt"  ; var="bone-rt" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="5.10-bone-rt" ; var="bone-rt" ; ver="LTS510X" ; current_kernel ; generate_kernel_mainline_bone
+	msg="5.15-bone-rt" ; var="bone-rt" ; ver="LTS515X" ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.1-bone-rt"  ; var="bone-rt" ; ver="LTS61X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.6-bone-rt"  ; var="bone-rt" ; ver="LTS66X"  ; current_kernel ; generate_kernel_mainline_bone
 
-	msg="5.10-armv7" ; var="armv7" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_armv7
-	msg="5.15-armv7" ; var="armv7" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_armv7
-	msg="6.1-armv7"  ; var="armv7" ; ver="LTS61"  ; current_kernel ; generate_kernel_mainline_armv7
-	msg="6.6-armv7"  ; var="armv7" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_armv7
+	msg="5.10-armv7" ; var="armv7" ; ver="LTS510X" ; current_kernel ; generate_kernel_mainline_armv7
+	msg="5.15-armv7" ; var="armv7" ; ver="LTS515X" ; current_kernel ; generate_kernel_mainline_armv7
+	msg="6.1-armv7"  ; var="armv7" ; ver="LTS61X"  ; current_kernel ; generate_kernel_mainline_armv7
+	msg="6.6-armv7"  ; var="armv7" ; ver="LTS66X"  ; current_kernel ; generate_kernel_mainline_armv7
 
-	msg="5.10-armv7-rt" ; var="armv7-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_armv7
-	msg="5.15-armv7-rt" ; var="armv7-rt" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_armv7
-	msg="6.1-armv7-rt"  ; var="armv7-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_mainline_armv7
-	msg="6.6-armv7-rt"  ; var="armv7-rt" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_armv7
+	msg="5.10-armv7-rt" ; var="armv7-rt" ; ver="LTS510X" ; current_kernel ; generate_kernel_mainline_armv7
+	msg="5.15-armv7-rt" ; var="armv7-rt" ; ver="LTS515X" ; current_kernel ; generate_kernel_mainline_armv7
+	msg="6.1-armv7-rt"  ; var="armv7-rt" ; ver="LTS61X"  ; current_kernel ; generate_kernel_mainline_armv7
+	msg="6.6-armv7-rt"  ; var="armv7-rt" ; ver="LTS66X"  ; current_kernel ; generate_kernel_mainline_armv7
 
-	msg="5.10-armv7-lpae" ; var="armv7-lpae" ; ver="LTS510" ; current_kernel ; generate_kernel_mainline_armv7_lpae
-	msg="5.15-armv7-lpae" ; var="armv7-lpae" ; ver="LTS515" ; current_kernel ; generate_kernel_mainline_armv7_lpae
-	msg="6.1-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS61"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
-	msg="6.6-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
+	msg="5.10-armv7-lpae" ; var="armv7-lpae" ; ver="LTS510X" ; current_kernel ; generate_kernel_mainline_armv7_lpae
+	msg="5.15-armv7-lpae" ; var="armv7-lpae" ; ver="LTS515X" ; current_kernel ; generate_kernel_mainline_armv7_lpae
+	msg="6.1-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS61X"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
+	msg="6.6-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS66X"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
 }
 
 do_some_lts () {
-	msg="6.1-bone"  ; var="omap-psp" ; ver="LTS61"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.6-bone"  ; var="omap-psp" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.1-bone"  ; var="omap-psp" ; ver="LTS61X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.6-bone"  ; var="omap-psp" ; ver="LTS66X"  ; current_kernel ; generate_kernel_mainline_bone
 
-	msg="6.1-bone-rt"  ; var="bone-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_mainline_bone
-	msg="6.6-bone-rt"  ; var="bone-rt" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.1-bone-rt"  ; var="bone-rt" ; ver="LTS61X"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.6-bone-rt"  ; var="bone-rt" ; ver="LTS66X"  ; current_kernel ; generate_kernel_mainline_bone
 
-	msg="6.1-armv7"  ; var="armv7" ; ver="LTS61"  ; current_kernel ; generate_kernel_mainline_armv7
-	msg="6.6-armv7"  ; var="armv7" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_armv7
+	msg="6.1-armv7"  ; var="armv7" ; ver="LTS61X"  ; current_kernel ; generate_kernel_mainline_armv7
+	msg="6.6-armv7"  ; var="armv7" ; ver="LTS66X"  ; current_kernel ; generate_kernel_mainline_armv7
 
-	msg="6.1-armv7-rt"  ; var="armv7-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_mainline_armv7
-	msg="6.6-armv7-rt"  ; var="armv7-rt" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_armv7
+	msg="6.1-armv7-rt"  ; var="armv7-rt" ; ver="LTS61X"  ; current_kernel ; generate_kernel_mainline_armv7
+	msg="6.6-armv7-rt"  ; var="armv7-rt" ; ver="LTS66X"  ; current_kernel ; generate_kernel_mainline_armv7
 
-	msg="6.1-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS61"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
-	msg="6.6-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS66"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
+	msg="6.1-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS61X"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
+	msg="6.6-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS66X"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
 }
 
 do_some_bone () {
@@ -218,16 +218,16 @@ do_focal () {
 	rtl8723bu="enabled"
 	rtl8821cu="enabled"
 
-	msg="4.19-ti"    ; var="ti"    ; ver="LTS419" ; current_kernel ; generate_kernel_ti
-	msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_ti
-	msg="5.4-ti"     ; var="ti"    ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
-	msg="5.4-ti-rt"  ; var="ti-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
+	msg="4.19-ti"    ; var="ti"    ; ver="LTS419X" ; current_kernel ; generate_kernel_ti
+	msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419X" ; current_kernel ; generate_kernel_ti
+	msg="5.4-ti"     ; var="ti"    ; ver="LTS54X"  ; current_kernel ; generate_kernel_ti
+	msg="5.4-ti-rt"  ; var="ti-rt" ; ver="LTS54X"  ; current_kernel ; generate_kernel_ti
 
 	rtl8723du="enabled"
 	qcacld="enabled"
 
-	msg="5.10-ti"    ; var="ti"    ; ver="LTS510" ; current_kernel ; generate_kernel_ti
-	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_ti
+	msg="5.10-ti"    ; var="ti"    ; ver="LTS510X" ; current_kernel ; generate_kernel_ti
+	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510X" ; current_kernel ; generate_kernel_ti
 
 	unset qcacld
 	unset rtl8723bu
@@ -235,12 +235,12 @@ do_focal () {
 	unset sgxjacinto6evm
 	unset sgxti335x
 
-	msg="6.1-ti"     ; var="ti"    ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
-	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
+	msg="6.1-ti"     ; var="ti"    ; ver="LTS61X"  ; current_kernel ; generate_kernel_ti
+	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61X"  ; current_kernel ; generate_kernel_ti
 	unset rtl8723du
 
-	msg="6.6-ti"     ; var="ti"    ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
-	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
+	msg="6.6-ti"     ; var="ti"    ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
+	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
 
 	do_all_lts
 
@@ -267,8 +267,8 @@ do_jammy () {
 	rtl8723du="enabled"
 	qcacld="enabled"
 
-	msg="5.10-ti"    ; var="ti"    ; ver="LTS510" ; current_kernel ; generate_kernel_ti
-	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_ti
+	msg="5.10-ti"    ; var="ti"    ; ver="LTS510X" ; current_kernel ; generate_kernel_ti
+	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510X" ; current_kernel ; generate_kernel_ti
 
 	unset qcacld
 	unset rtl8723bu
@@ -276,12 +276,12 @@ do_jammy () {
 	unset sgxjacinto6evm
 	unset sgxti335x
 
-	msg="6.1-ti"     ; var="ti"    ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
-	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
+	msg="6.1-ti"     ; var="ti"    ; ver="LTS61X"  ; current_kernel ; generate_kernel_ti
+	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61X"  ; current_kernel ; generate_kernel_ti
 	unset rtl8723du
 
-	msg="6.6-ti"     ; var="ti"    ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
-	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
+	msg="6.6-ti"     ; var="ti"    ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
+	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
 
 	do_all_lts
 
@@ -308,8 +308,8 @@ do_noble () {
 	rtl8723du="enabled"
 	qcacld="enabled"
 
-	msg="5.10-ti"    ; var="ti"    ; ver="LTS510" ; current_kernel ; generate_kernel_ti
-	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_ti
+	msg="5.10-ti"    ; var="ti"    ; ver="LTS510X" ; current_kernel ; generate_kernel_ti
+	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510X" ; current_kernel ; generate_kernel_ti
 
 	unset qcacld
 	unset rtl8723bu
@@ -317,12 +317,12 @@ do_noble () {
 	unset sgxjacinto6evm
 	unset sgxti335x
 
-	msg="6.1-ti"     ; var="ti"    ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
-	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
+	msg="6.1-ti"     ; var="ti"    ; ver="LTS61X"  ; current_kernel ; generate_kernel_ti
+	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61X"  ; current_kernel ; generate_kernel_ti
 	unset rtl8723du
 
-	msg="6.6-ti"     ; var="ti"    ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
-	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
+	msg="6.6-ti"     ; var="ti"    ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
+	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
 
 	do_all_lts
 
@@ -344,18 +344,18 @@ do_bullseye () {
 	rtl8723bu="enabled"
 	rtl8821cu="enabled"
 
-	msg="4.14-ti-xenomai" ; var="ti-xenomai" ; ver="LTS414" ; current_kernel ; generate_kernel_ti
+	msg="4.14-ti-xenomai" ; var="ti-xenomai" ; ver="LTS414X" ; current_kernel ; generate_kernel_ti
 
-	msg="4.19-ti"    ; var="ti"    ; ver="LTS419" ; current_kernel ; generate_kernel_ti
-	msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_ti
-	msg="5.4-ti"     ; var="ti"    ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
-	msg="5.4-ti-rt"  ; var="ti-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
+	msg="4.19-ti"    ; var="ti"    ; ver="LTS419X" ; current_kernel ; generate_kernel_ti
+	msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419X" ; current_kernel ; generate_kernel_ti
+	msg="5.4-ti"     ; var="ti"    ; ver="LTS54X"  ; current_kernel ; generate_kernel_ti
+	msg="5.4-ti-rt"  ; var="ti-rt" ; ver="LTS54X"  ; current_kernel ; generate_kernel_ti
 
 	rtl8723du="enabled"
 	qcacld="enabled"
 
-	msg="5.10-ti"    ; var="ti"    ; ver="LTS510" ; current_kernel ; generate_kernel_ti
-	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_ti
+	msg="5.10-ti"    ; var="ti"    ; ver="LTS510X" ; current_kernel ; generate_kernel_ti
+	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510X" ; current_kernel ; generate_kernel_ti
 
 	unset qcacld
 	unset rtl8723bu
@@ -363,27 +363,27 @@ do_bullseye () {
 	unset sgxjacinto6evm
 	unset sgxti335x
 
-	msg="6.1-ti"     ; var="ti"    ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
-	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
+	msg="6.1-ti"     ; var="ti"    ; ver="LTS61X"  ; current_kernel ; generate_kernel_ti
+	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61X"  ; current_kernel ; generate_kernel_ti
 	unset rtl8723du
 
-	msg="6.6-ti"     ; var="ti"    ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
-	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
+	msg="6.6-ti"     ; var="ti"    ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
+	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
 
-	msg="4.19-bone" ; var="omap-psp" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_bone
-	msg="5.4-bone"  ; var="omap-psp" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="4.19-bone" ; var="omap-psp" ; ver="LTS419X" ; current_kernel ; generate_kernel_mainline_bone
+	msg="5.4-bone"  ; var="omap-psp" ; ver="LTS54X"  ; current_kernel ; generate_kernel_mainline_bone
 
-	msg="4.19-bone-rt" ; var="bone-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_bone
-	msg="5.4-bone-rt"  ; var="bone-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_bone
+	msg="4.19-bone-rt" ; var="bone-rt" ; ver="LTS419X" ; current_kernel ; generate_kernel_mainline_bone
+	msg="5.4-bone-rt"  ; var="bone-rt" ; ver="LTS54X"  ; current_kernel ; generate_kernel_mainline_bone
 
-	msg="4.19-armv7" ; var="armv7" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_armv7
-	msg="5.4-armv7"  ; var="armv7" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_armv7
+	msg="4.19-armv7" ; var="armv7" ; ver="LTS419X" ; current_kernel ; generate_kernel_mainline_armv7
+	msg="5.4-armv7"  ; var="armv7" ; ver="LTS54X"  ; current_kernel ; generate_kernel_mainline_armv7
 
-	msg="4.19-armv7-rt" ; var="armv7-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_armv7
-	msg="5.4-armv7-rt"  ; var="armv7-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_armv7
+	msg="4.19-armv7-rt" ; var="armv7-rt" ; ver="LTS419X" ; current_kernel ; generate_kernel_mainline_armv7
+	msg="5.4-armv7-rt"  ; var="armv7-rt" ; ver="LTS54X"  ; current_kernel ; generate_kernel_mainline_armv7
 
-	msg="4.19-armv7-lpae" ; var="armv7-lpae" ; ver="LTS419" ; current_kernel ; generate_kernel_mainline_armv7_lpae
-	msg="5.4-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS54"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
+	msg="4.19-armv7-lpae" ; var="armv7-lpae" ; ver="LTS419X" ; current_kernel ; generate_kernel_mainline_armv7_lpae
+	msg="5.4-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS54X"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
 
 	do_all_lts
 
@@ -411,16 +411,16 @@ do_bookworm () {
 	rtl8723bu="enabled"
 	rtl8821cu="enabled"
 
-	msg="4.19-ti"    ; var="ti"    ; ver="LTS419" ; current_kernel ; generate_kernel_ti
-	msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_ti
-	msg="5.4-ti"     ; var="ti"    ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
-	msg="5.4-ti-rt"  ; var="ti-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
+	msg="4.19-ti"    ; var="ti"    ; ver="LTS419X" ; current_kernel ; generate_kernel_ti
+	msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419X" ; current_kernel ; generate_kernel_ti
+	msg="5.4-ti"     ; var="ti"    ; ver="LTS54X"  ; current_kernel ; generate_kernel_ti
+	msg="5.4-ti-rt"  ; var="ti-rt" ; ver="LTS54X"  ; current_kernel ; generate_kernel_ti
 
 	rtl8723du="enabled"
 	qcacld="enabled"
 
-	msg="5.10-ti"    ; var="ti"    ; ver="LTS510" ; current_kernel ; generate_kernel_ti
-	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_ti
+	msg="5.10-ti"    ; var="ti"    ; ver="LTS510X" ; current_kernel ; generate_kernel_ti
+	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510X" ; current_kernel ; generate_kernel_ti
 
 	unset qcacld
 	unset rtl8723bu
@@ -428,12 +428,12 @@ do_bookworm () {
 	unset sgxjacinto6evm
 	unset sgxti335x
 
-	msg="6.1-ti"     ; var="ti"    ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
-	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
+	msg="6.1-ti"     ; var="ti"    ; ver="LTS61X"  ; current_kernel ; generate_kernel_ti
+	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61X"  ; current_kernel ; generate_kernel_ti
 	unset rtl8723du
 
-	msg="6.6-ti"     ; var="ti"    ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
-	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
+	msg="6.6-ti"     ; var="ti"    ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
+	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
 
 	do_all_lts
 
@@ -456,16 +456,16 @@ do_trixie () {
 	rtl8821cu="enabled"
 
 	#4.19-ti/5.4-ti will not build on trixie/sid...
-	#msg="4.19-ti"    ; var="ti"    ; ver="LTS419" ; current_kernel ; generate_kernel_ti
-	#msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419" ; current_kernel ; generate_kernel_ti
-	#msg="5.4-ti"     ; var="ti"    ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
-	#msg="5.4-ti-rt"  ; var="ti-rt" ; ver="LTS54"  ; current_kernel ; generate_kernel_ti
+	#msg="4.19-ti"    ; var="ti"    ; ver="LTS419X" ; current_kernel ; generate_kernel_ti
+	#msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419X" ; current_kernel ; generate_kernel_ti
+	#msg="5.4-ti"     ; var="ti"    ; ver="LTS54X"  ; current_kernel ; generate_kernel_ti
+	#msg="5.4-ti-rt"  ; var="ti-rt" ; ver="LTS54X"  ; current_kernel ; generate_kernel_ti
 
 	rtl8723du="enabled"
 	qcacld="enabled"
 
-	msg="5.10-ti"    ; var="ti"    ; ver="LTS510" ; current_kernel ; generate_kernel_ti
-	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510" ; current_kernel ; generate_kernel_ti
+	msg="5.10-ti"    ; var="ti"    ; ver="LTS510X" ; current_kernel ; generate_kernel_ti
+	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510X" ; current_kernel ; generate_kernel_ti
 
 	unset qcacld
 	unset rtl8723bu
@@ -473,12 +473,12 @@ do_trixie () {
 	unset sgxjacinto6evm
 	unset sgxti335x
 
-	msg="6.1-ti"     ; var="ti"    ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
-	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61"  ; current_kernel ; generate_kernel_ti
+	msg="6.1-ti"     ; var="ti"    ; ver="LTS61X"  ; current_kernel ; generate_kernel_ti
+	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61X"  ; current_kernel ; generate_kernel_ti
 	unset rtl8723du
 
-	msg="6.6-ti"     ; var="ti"    ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
-	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66"  ; current_kernel ; generate_kernel_ti
+	msg="6.6-ti"     ; var="ti"    ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
+	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
 
 	do_all_lts
 
