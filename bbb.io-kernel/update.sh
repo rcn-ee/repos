@@ -203,6 +203,8 @@ do_some_bone () {
 	msg="6.10-bone" ; var="omap-psp" ; ver="V610X" ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.11-bone" ; var="omap-psp" ; ver="V611X" ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.12-bone" ; var="omap-psp" ; ver="V612X" ; current_kernel ; generate_kernel_mainline_bone
+
+	msg="6.13-bone" ; var="omap-psp" ; ver="V613X" ; current_kernel ; generate_kernel_mainline_bone
 }
 
 do_focal () {
