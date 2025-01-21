@@ -192,7 +192,6 @@ start_run () {
 	suite="trixie" ; runner
 
 	dist="ubuntu"
-	suite="focal" ; runner
 	suite="jammy" ; runner
 	suite="noble" ; runner
 }

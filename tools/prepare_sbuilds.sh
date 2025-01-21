@@ -64,11 +64,6 @@ setup_update_sbuild
 mirror="http://${proxy}${ubuntu_server}"
 #deboot="gutsy"
 
-dist="focal"
-arch="armhf"
-options="--exclude=debfoster"
-setup_update_sbuild
-
 dist="jammy"
 arch="armhf"
 options="--exclude=debfoster"
