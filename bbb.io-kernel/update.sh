@@ -207,52 +207,6 @@ do_some_bone () {
 	msg="6.13-bone" ; var="omap-psp" ; ver="V613X" ; current_kernel ; generate_kernel_mainline_bone
 }
 
-do_focal () {
-	#20.04
-	arch="armhf"
-	dist="focal"
-	debhelper="12"
-	wfile="control"
-	generate_header
-
-	sgxti335x="enabled"
-	sgxjacinto6evm="enabled"
-	rtl8723bu="enabled"
-	rtl8821cu="enabled"
-
-	msg="4.19-ti"    ; var="ti"    ; ver="LTS419X" ; current_kernel ; generate_kernel_ti
-	msg="4.19-ti-rt" ; var="ti-rt" ; ver="LTS419X" ; current_kernel ; generate_kernel_ti
-	msg="5.4-ti"     ; var="ti"    ; ver="LTS54X"  ; current_kernel ; generate_kernel_ti
-	msg="5.4-ti-rt"  ; var="ti-rt" ; ver="LTS54X"  ; current_kernel ; generate_kernel_ti
-
-	rtl8723du="enabled"
-	qcacld="enabled"
-
-	msg="5.10-ti"    ; var="ti"    ; ver="LTS510X" ; current_kernel ; generate_kernel_ti
-	msg="5.10-ti-rt" ; var="ti-rt" ; ver="LTS510X" ; current_kernel ; generate_kernel_ti
-
-	unset qcacld
-	unset rtl8723bu
-	unset rtl8821cu
-	unset sgxjacinto6evm
-	unset sgxti335x
-
-	msg="6.1-ti"     ; var="ti"    ; ver="LTS61X"  ; current_kernel ; generate_kernel_ti
-	msg="6.1-ti-rt"  ; var="ti-rt" ; ver="LTS61X"  ; current_kernel ; generate_kernel_ti
-	unset rtl8723du
-
-	msg="6.6-ti"     ; var="ti"    ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
-	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
-
-	do_all_lts
-
-	msg="5.19-bone" ; var="omap-psp" ; ver="V519X"  ; current_kernel ; generate_kernel_mainline_bone
-
-	do_some_bone
-
-	changelog
-}
-
 do_jammy () {
 	#22.04
 	arch="armhf"
@@ -489,7 +443,6 @@ do_trixie () {
 	changelog
 }
 
-do_focal
 do_jammy
 do_noble
 do_bullseye
