@@ -10,7 +10,9 @@ current_kernel () {
 	wget --quiet --directory-prefix=/tmp/ https://rcn-ee.net/repos/latest/${dist}-${arch}/LATEST-${var} || true
 	if [ -f /tmp/LATEST-${var} ] ; then
 		latest_kernel=$(cat "/tmp/LATEST-${var}" | grep "ABI:1 ${ver}" | awk '{print $3}')
-		echo ${dist}-${arch}-${latest_kernel}
+		if [ ! "x${latest_kernel}" = "x" ] ; then
+			echo ${dist}-${arch}-${latest_kernel}
+		fi
 	fi
 }
 
@@ -205,6 +207,7 @@ do_some_bone () {
 	msg="6.12-bone" ; var="omap-psp" ; ver="V612X" ; current_kernel ; generate_kernel_mainline_bone
 
 	msg="6.13-bone" ; var="omap-psp" ; ver="V613X" ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.14-bone" ; var="omap-psp" ; ver="V614X" ; current_kernel ; generate_kernel_mainline_bone
 }
 
 do_jammy () {
