@@ -242,6 +242,8 @@ do_jammy () {
 	msg="6.6-ti"     ; var="ti"    ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
 	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
 
+	msg="6.12-ti"    ; var="ti"    ; ver="LTS612X" ; current_kernel ; generate_kernel_ti
+
 	do_all_lts
 
 	msg="5.19-bone" ; var="omap-psp" ; ver="V519X"  ; current_kernel ; generate_kernel_mainline_bone
@@ -282,6 +284,8 @@ do_noble () {
 
 	msg="6.6-ti"     ; var="ti"    ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
 	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
+
+	msg="6.12-ti"    ; var="ti"    ; ver="LTS612X" ; current_kernel ; generate_kernel_ti
 
 	do_all_lts
 
@@ -394,6 +398,8 @@ do_bookworm () {
 	msg="6.6-ti"     ; var="ti"    ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
 	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
 
+	msg="6.12-ti"    ; var="ti"    ; ver="LTS612X" ; current_kernel ; generate_kernel_ti
+
 	do_all_lts
 
 	do_some_bone
@@ -438,6 +444,8 @@ do_trixie () {
 
 	msg="6.6-ti"     ; var="ti"    ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
 	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
+
+	msg="6.12-ti"    ; var="ti"    ; ver="LTS612X" ; current_kernel ; generate_kernel_ti
 
 	do_all_lts
 
