@@ -98,6 +98,20 @@ generate_kernel_ti () {
 	fi
 }
 
+
+generate_mainline_kernel () {
+	if [ ! "x${latest_kernel}" = "x" ] ; then
+		echo "" >> ./suite/${dist}/debian/${wfile}
+		echo "Package: bbb.io-kernel-${msg}" >> ./suite/${dist}/debian/${wfile}
+		echo "Section: metapackages" >> ./suite/${dist}/debian/${wfile}
+		echo "Architecture: armhf" >> ./suite/${dist}/debian/${wfile}
+		echo "Pre-Depends: linux-image-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
+		echo "Depends: \${misc:Depends}, bbb.io-kernel-tasks (= \${source:Version})" >> ./suite/${dist}/debian/${wfile}
+		echo "Description: BeagleBoard.org Mainline" >> ./suite/${dist}/debian/${wfile}
+		echo " This metapackage will install Mainline in Debian." >> ./suite/${dist}/debian/${wfile}
+	fi
+}
+
 generate_kernel_mainline_bone () {
 	if [ ! "x${latest_kernel}" = "x" ] ; then
 		echo "" >> ./suite/${dist}/debian/${wfile}
@@ -150,6 +164,9 @@ changelog () {
 }
 
 do_all_lts () {
+	msg="omap2plus" ; var="omap2plus" ; ver="STABLE" ; current_kernel ; generate_mainline_kernel
+	msg="multiv7"   ; var="multiv7"   ; ver="STABLE" ; current_kernel ; generate_mainline_kernel
+
 	msg="5.10-bone" ; var="omap-psp" ; ver="LTS510X" ; current_kernel ; generate_kernel_mainline_bone
 	msg="5.15-bone" ; var="omap-psp" ; ver="LTS515X" ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.1-bone"  ; var="omap-psp" ; ver="LTS61X"  ; current_kernel ; generate_kernel_mainline_bone
