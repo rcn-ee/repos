@@ -2,7 +2,7 @@
 
 if ! id | grep -q root; then
 	echo "must be run as root"
-	exit
+	exit 1
 fi
 
 wdir="/opt/u-boot/bb-u-boot-am335x-evm"
