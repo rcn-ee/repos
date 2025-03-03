@@ -355,6 +355,8 @@ do_bullseye () {
 	msg="6.6-ti"     ; var="ti"    ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
 	msg="6.6-ti-rt"  ; var="ti-rt" ; ver="LTS66X"  ; current_kernel ; generate_kernel_ti
 
+	msg="6.12-ti"    ; var="ti"    ; ver="LTS612X" ; current_kernel ; generate_kernel_ti
+
 	msg="4.19-bone" ; var="omap-psp" ; ver="LTS419X" ; current_kernel ; generate_kernel_mainline_bone
 	msg="4.19-bone-rt" ; var="bone-rt" ; ver="LTS419X" ; current_kernel ; generate_kernel_mainline_bone
 	msg="4.19-armv7" ; var="armv7" ; ver="LTS419X" ; current_kernel ; generate_kernel_mainline_armv7
