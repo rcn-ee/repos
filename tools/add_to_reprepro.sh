@@ -37,5 +37,9 @@ start_run () {
 	suite="noble" ; runner
 }
 
-start_run
+if [ ! -f /tmp/cron.lock ] ; then
+	start_run
+else
+	echo "reprepro running"
+fi
 #
