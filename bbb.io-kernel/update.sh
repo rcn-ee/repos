@@ -196,6 +196,7 @@ do_all_lts () {
 	msg="5.15-armv7-lpae" ; var="armv7-lpae" ; ver="LTS515X" ; current_kernel ; generate_kernel_mainline_armv7_lpae
 	msg="6.1-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS61X"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
 	msg="6.6-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS66X"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
+	msg="6.12-armv7-lpae" ; var="armv7-lpae" ; ver="LTS612X" ; current_kernel ; generate_kernel_mainline_armv7_lpae
 }
 
 do_some_lts () {
@@ -213,6 +214,8 @@ do_some_lts () {
 
 	msg="6.1-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS61X"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
 	msg="6.6-armv7-lpae"  ; var="armv7-lpae" ; ver="LTS66X"  ; current_kernel ; generate_kernel_mainline_armv7_lpae
+
+	msg="6.12-armv7-lpae" ; var="armv7-lpae" ; ver="LTS612X" ; current_kernel ; generate_kernel_mainline_armv7_lpae
 }
 
 do_some_bone () {
