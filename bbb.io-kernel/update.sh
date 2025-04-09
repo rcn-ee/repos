@@ -45,7 +45,7 @@ generate_kernel_ti () {
 		echo "Pre-Depends: linux-image-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
 		echo "Depends:" >> ./suite/${dist}/debian/${wfile}
 		echo " \${misc:Depends}" >> ./suite/${dist}/debian/${wfile}
-		echo " , bbb.io-kernel-tasks (= \${source:Version})" >> ./suite/${dist}/debian/${wfile}
+		echo " , bbb.io-kernel-tasks" >> ./suite/${dist}/debian/${wfile}
 		echo "Recommends: libpruio-modules-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
 		echo "Description: BeagleBoard.org ${msg}" >> ./suite/${dist}/debian/${wfile}
 		echo " This metapackage will install linux-image-${msg} in Debian." >> ./suite/${dist}/debian/${wfile}
@@ -57,7 +57,7 @@ generate_kernel_ti () {
 		echo "Pre-Depends: linux-image-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
 		echo "Depends:" >> ./suite/${dist}/debian/${wfile}
 		echo " \${misc:Depends}" >> ./suite/${dist}/debian/${wfile}
-		echo " , bbb.io-kernel-tasks (= \${source:Version})" >> ./suite/${dist}/debian/${wfile}
+		echo " , bbb.io-kernel-tasks" >> ./suite/${dist}/debian/${wfile}
 		echo "Recommends:" >> ./suite/${dist}/debian/${wfile}
 		echo " libpruio-modules-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
 		if [ "x${sgxti335x}" = "xenabled" ] ; then
@@ -86,7 +86,7 @@ generate_kernel_ti () {
 		echo "Pre-Depends: linux-image-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
 		echo "Depends:" >> ./suite/${dist}/debian/${wfile}
 		echo " \${misc:Depends}" >> ./suite/${dist}/debian/${wfile}
-		echo " , bbb.io-kernel-tasks (= \${source:Version})" >> ./suite/${dist}/debian/${wfile}
+		echo " , bbb.io-kernel-tasks" >> ./suite/${dist}/debian/${wfile}
 		echo "Recommends:" >> ./suite/${dist}/debian/${wfile}
 		echo " libpruio-modules-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
 		if [ "x${sgxjacinto6evm}" = "xenabled" ] ; then
@@ -106,7 +106,7 @@ generate_mainline_kernel () {
 		echo "Section: metapackages" >> ./suite/${dist}/debian/${wfile}
 		echo "Architecture: armhf" >> ./suite/${dist}/debian/${wfile}
 		echo "Pre-Depends: linux-image-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
-		echo "Depends: \${misc:Depends}, bbb.io-kernel-tasks (= \${source:Version})" >> ./suite/${dist}/debian/${wfile}
+		echo "Depends: \${misc:Depends}, bbb.io-kernel-tasks" >> ./suite/${dist}/debian/${wfile}
 		echo "Description: BeagleBoard.org Mainline" >> ./suite/${dist}/debian/${wfile}
 		echo " This metapackage will install Mainline in Debian." >> ./suite/${dist}/debian/${wfile}
 	fi
@@ -119,7 +119,7 @@ generate_kernel_mainline_bone () {
 		echo "Section: metapackages" >> ./suite/${dist}/debian/${wfile}
 		echo "Architecture: armhf" >> ./suite/${dist}/debian/${wfile}
 		echo "Pre-Depends: linux-image-${latest_kernel}," >> ./suite/${dist}/debian/${wfile}
-		echo "Depends: \${misc:Depends}, bbb.io-kernel-tasks (= \${source:Version})" >> ./suite/${dist}/debian/${wfile}
+		echo "Depends: \${misc:Depends}, bbb.io-kernel-tasks" >> ./suite/${dist}/debian/${wfile}
 		echo "Recommends: libpruio-modules-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
 		echo "Description: BeagleBoard.org ${msg} for am335x" >> ./suite/${dist}/debian/${wfile}
 		echo " This metapackage will install linux-image-${msg} for am335x in Debian." >> ./suite/${dist}/debian/${wfile}
@@ -133,7 +133,7 @@ generate_kernel_mainline_armv7 () {
 		echo "Section: metapackages" >> ./suite/${dist}/debian/${wfile}
 		echo "Architecture: armhf" >> ./suite/${dist}/debian/${wfile}
 		echo "Pre-Depends: linux-image-${latest_kernel}," >> ./suite/${dist}/debian/${wfile}
-		echo "Depends: \${misc:Depends}, bbb.io-kernel-tasks (= \${source:Version})" >> ./suite/${dist}/debian/${wfile}
+		echo "Depends: \${misc:Depends}, bbb.io-kernel-tasks" >> ./suite/${dist}/debian/${wfile}
 		echo "Recommends: libpruio-modules-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
 		echo "Description: BeagleBoard.org ${msg} for armv7" >> ./suite/${dist}/debian/${wfile}
 		echo " This metapackage will install linux-image-${msg} for armv7 in Debian." >> ./suite/${dist}/debian/${wfile}
@@ -147,7 +147,7 @@ generate_kernel_mainline_armv7_lpae () {
 		echo "Section: metapackages" >> ./suite/${dist}/debian/${wfile}
 		echo "Architecture: armhf" >> ./suite/${dist}/debian/${wfile}
 		echo "Pre-Depends: linux-image-${latest_kernel}," >> ./suite/${dist}/debian/${wfile}
-		echo "Depends: \${misc:Depends}, bbb.io-kernel-tasks (= \${source:Version})" >> ./suite/${dist}/debian/${wfile}
+		echo "Depends: \${misc:Depends}, bbb.io-kernel-tasks" >> ./suite/${dist}/debian/${wfile}
 		echo "Recommends: libpruio-modules-${latest_kernel}" >> ./suite/${dist}/debian/${wfile}
 		echo "Description: BeagleBoard.org ${msg} for armv7-lpae" >> ./suite/${dist}/debian/${wfile}
 		echo " This metapackage will install linux-image-${msg} for armv7-lpae in Debian." >> ./suite/${dist}/debian/${wfile}
@@ -233,6 +233,7 @@ do_some_bone () {
 
 	msg="6.13-bone" ; var="omap-psp" ; ver="V613X" ; current_kernel ; generate_kernel_mainline_bone
 	msg="6.14-bone" ; var="omap-psp" ; ver="V614X" ; current_kernel ; generate_kernel_mainline_bone
+	msg="6.15-bone" ; var="omap-psp" ; ver="V615X" ; current_kernel ; generate_kernel_mainline_bone
 }
 
 do_jammy () {
@@ -466,7 +467,6 @@ do_trixie () {
 	changelog
 }
 
-do_jammy
 do_noble
 do_bullseye
 do_bookworm

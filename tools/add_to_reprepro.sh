@@ -33,7 +33,6 @@ start_run () {
 	suite="noble" ; runner
 
 	dist="ubuntu"
-	suite="jammy" ; runner
 	suite="noble" ; runner
 }
 
